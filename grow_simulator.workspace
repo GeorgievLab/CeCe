@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="grow_simulator" Database="">
+  <Project Name="gui" Path="gui/gui.project" Active="Yes"/>
+  <Project Name="core" Path="core/core.project" Active="No"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="gui" ConfigName="Debug"/>
+      <Project Name="core" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="gui" ConfigName="Release"/>
+      <Project Name="core" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

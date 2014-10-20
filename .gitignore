@@ -1,0 +1,11 @@
+
+.codelite/*
+
+core/core.mk
+core/core.txt
+core/Debug/*
+
+gui/Debug/*
+gui/gui.mk
+gui/gui.txt
+
