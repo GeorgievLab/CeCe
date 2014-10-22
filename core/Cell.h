@@ -7,14 +7,9 @@
 // C++
 #include <cstddef>
 
-// wxWidgets
-#include <wx/dc.h>
-
-// Box2D
-#include <Box2D/Box2D.h>
-
 // Core
 #include "Units.h"
+#include "CellPhysics.h"
 
 /* ************************************************************************ */
 
@@ -25,7 +20,7 @@ class World;
 /**
  * @brief Cell representation.
  */
-class Cell
+class Cell : public CellPhysics
 {
 public:
 
@@ -81,35 +76,12 @@ public:
     }
 
 
-    /**
-     * @brief Returns body for physics.
-     *
-     * @return
-     */
-    b2Body* GetPhysicsBody() const noexcept
-    {
-        return m_physicsBody;
-    }
-
-
 public:
 
 
     /**
-     * @brief Spawn cell in given world.
-     *
-     * @param world World where to spawn.
-     * @param pos   Position to spawn.
-     */
-    virtual void Spawn(World* world, const b2Vec2& pos) {}
-
-
-    /**
      * @brief Render cell.
-     *
-     * @param dc Device context.
      */
-    //virtual void Render(wxDC& dc) const noexcept
     virtual void Render() const noexcept
     {
         // Nothing to do
@@ -127,9 +99,6 @@ private:
 
     /// Cell world.
     World* m_world;
-
-    /// Physical body.
-    b2Body* m_physicsBody = nullptr;
 
 };
 

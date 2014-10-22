@@ -9,10 +9,8 @@
 #include <memory>
 #include <cassert>
 
-// Box2D
-#include <Box2D/Box2D.h>
-
 // Library
+#include "WorldPhysics.h"
 #include "Cell.h"
 #include "Barrier.h"
 
@@ -21,7 +19,7 @@
 /**
  * @brief World for cells.
  */
-class World
+class World : public WorldPhysics
 {
 public:
 
@@ -49,28 +47,6 @@ public:
 
 
 public:
-
-
-    /**
-     * @brief Return physical world.
-     *
-     * @return
-     */
-    b2World& GetPhysicsWorld() noexcept
-    {
-        return m_physicsWorld;
-    }
-
-
-    /**
-     * @brief Return physical world.
-     *
-     * @return
-     */
-    const b2World& GetPhysicsWorld() const noexcept
-    {
-        return m_physicsWorld;
-    }
 
 
     /**
@@ -204,10 +180,7 @@ public:
 
     /**
      * @brief Render world.
-     *
-     * @param dc Device context.
      */
-    //void Render(wxDC& dc) const noexcept;
     void Render() const noexcept;
 
 
@@ -221,9 +194,6 @@ private:
 
     /// Barriers
     BarrierContainer m_barriers;
-
-    /// Physical world.
-    b2World m_physicsWorld;
 
 };
 

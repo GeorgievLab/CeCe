@@ -46,7 +46,7 @@
       <Linker Options="">
         <LibraryPath Value="."/>
         <Library Value="core"/>
-        <Library Value="Box2D"/>
+        <Library Value="bullet"/>
         <Library Value="v8"/>
         <Library Value="GL"/>
       </Linker>

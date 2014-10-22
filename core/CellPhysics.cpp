@@ -2,28 +2,22 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "Cell.h"
+#include "CellPhysics.h"
 
 // Core
 #include "World.h"
 
 /* ************************************************************************ */
 
-Cell::Id Cell::s_id = 0;
-
-/* ************************************************************************ */
-
-Cell::Cell(World* world, MicroMeters x, MicroMeters y)
-    : CellPhysics(world, x, y)
-    , m_id(s_id++)
-    , m_world(world)
+CellPhysics::CellPhysics(World* world, MicroMeters x, MicroMeters y)
+    : m_world(world)
 {
 
 }
 
 /* ************************************************************************ */
 
-Cell::~Cell()
+CellPhysics::~CellPhysics()
 {
 
 }

@@ -76,11 +76,8 @@ public:
 
 
     /**
-     * @brief Render cell.
-     *
-     * @param dc Device context.
+     * @brief Render the cell.
      */
-    //void Render(wxDC& dc) const noexcept override;
     void Render() const noexcept override;
 
 

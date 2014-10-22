@@ -33,6 +33,10 @@
     <File Name="JsWorld.cpp"/>
     <File Name="Flow.cpp"/>
     <File Name="Barrier.cpp"/>
+    <VirtualDirectory Name="physics">
+      <File Name="WorldPhysics.cpp"/>
+      <File Name="CellPhysics.cpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Cell.h"/>
@@ -45,15 +49,17 @@
     <File Name="Flow.h"/>
     <File Name="Vect.h"/>
     <File Name="Barrier.h"/>
+    <VirtualDirectory Name="physics">
+      <File Name="WorldPhysics.h"/>
+      <File Name="CellPhysics.h"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
-        <IncludePath Value="."/>
+        <IncludePath Value="/usr/include/bullet"/>
       </Compiler>
-      <Linker Options="">
-        <LibraryPath Value="."/>
-      </Linker>
+      <Linker Options=""/>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="clang++" DebuggerType="LLDB Debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">

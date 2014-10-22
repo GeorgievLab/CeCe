@@ -13,7 +13,6 @@
 /* ************************************************************************ */
 
 World::World() noexcept
-    : m_physicsWorld(b2Vec2())
 {
     // Nothing to do
 }
@@ -76,7 +75,7 @@ void World::Sort() noexcept
 
 void World::Update() noexcept
 {
-    m_physicsWorld.Step(1.f / 30, 4, 8);
+    WorldPhysics::Update();
 }
 
 /* ************************************************************************ */
