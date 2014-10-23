@@ -1,5 +1,10 @@
 
 .codelite/*
+.clang/*
+.build-debug/*
+
+build-debug/*
+build-release/*
 
 core/core.mk
 core/core.txt

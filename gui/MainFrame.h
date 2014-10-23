@@ -1,12 +1,20 @@
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
 
-#include <memory>
+/* ************************************************************************ */
 
+// wxWidgets
+#include <wx/scopedptr.h>
+
+// wxCrafter
 #include "wxcrafter.h"
 
-#include "Simulator.h"
-#include "WorldLoader.h"
+// Simulator
+#include "simulator/World.h"
+#include "simulator/Simulator.h"
+#include "simulator/WorldFactory.h"
+
+/* ************************************************************************ */
 
 class MainFrame : public MainFrameBaseClass
 {
@@ -33,12 +41,18 @@ protected:
     virtual void OnSimulationStep(wxCommandEvent& event);
 
 private:
+
+    /// Current loaded file name.
     wxString m_fileName;
 
     /// Simulator.
-    Simulator m_simulator;
+    simulator::Simulator m_simulator;
 
-    std::unique_ptr<WorldLoader> m_worldLoader;
+    /// World factory
+    wxScopedPtr<simulator::WorldFactory> m_worldFactory;
 
 };
+
+/* ************************************************************************ */
+
 #endif // MAINFRAME_H

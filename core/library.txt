@@ -1,1 +1,0 @@
-./Debug/Cell.cpp.o ./Debug/World.cpp.o ./Debug/Yeast.cpp.o

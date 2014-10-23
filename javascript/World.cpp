@@ -2,20 +2,24 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "JsWorld.h"
+#include "javascript/World.h"
 
 // C++
 #include <cassert>
 
 // Core
-#include "Yeast.h"
+#include "simulator/Yeast.h"
+
+/* ************************************************************************ */
+
+namespace javascript {
 
 /* ************************************************************************ */
 
 /**
  * @brief Returns a pointer to world.
  */
-static JsWorld* GetWorld()
+static simulator::World* get_world()
 {
     v8::HandleScope handle_scope;
 
@@ -24,7 +28,7 @@ static JsWorld* GetWorld()
     v8::Handle<v8::Value> worldValue = global->Get(v8::String::New("world"));
     assert(worldValue->IsExternal());
     v8::Handle<v8::External> worldHandle = worldValue.As<v8::External>();
-    JsWorld* world = reinterpret_cast<JsWorld*>(worldHandle->Value());
+    simulator::World* world = reinterpret_cast<simulator::World*>(worldHandle->Value());
     assert(world);
     return world;
 }
@@ -34,12 +38,12 @@ static JsWorld* GetWorld()
 /**
  * @brief Create a new yeast.
  */
-static v8::Handle<v8::Value> CreateYeast(const v8::Arguments& args)
+static v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
 {
     v8::HandleScope handle_scope;
 
     // Get world object
-    JsWorld* world = GetWorld();
+    simulator::World* world = get_world();
 
     MicroMeters x = 0_um;
     MicroMeters y = 0_um;
@@ -111,12 +115,12 @@ static v8::Handle<v8::Value> CreateYeast(const v8::Arguments& args)
     if (radius.value())
     {
         // Create a new yeast
-        world->NewCell<Yeast>(x, y, radius);
+        world->NewCell<simulator::Yeast>(x, y, radius);
     }
     else if (volume.value())
     {
         // Create a new yeast
-        world->NewCell<Yeast>(x, y, volume);
+        world->NewCell<simulator::Yeast>(x, y, volume);
     }
     else
     {
@@ -128,49 +132,15 @@ static v8::Handle<v8::Value> CreateYeast(const v8::Arguments& args)
 
 /* ************************************************************************ */
 
-/**
- * @brief Create a new barrier.
- */
-static v8::Handle<v8::Value> CreateBarrier(const v8::Arguments& args)
-{
-    v8::HandleScope handle_scope;
-
-    // Get world object
-    JsWorld* world = GetWorld();
-
-    // Arguments
-    if (args.Length() < 4)
-    {
-        v8::ThrowException(v8::String::New("Missing arguments"));
-    }
-
-    v8::Local<v8::Number> x1val = args[0].As<v8::Number>();
-    v8::Local<v8::Number> y1val = args[1].As<v8::Number>();
-    v8::Local<v8::Number> x2val = args[2].As<v8::Number>();
-    v8::Local<v8::Number> y2val = args[3].As<v8::Number>();
-
-    MicroMeters x1(x1val->Value());
-    MicroMeters y1(y1val->Value());
-    MicroMeters x2(x2val->Value());
-    MicroMeters y2(y2val->Value());
-
-    world->NewBarrier(x1, y1, x2, y2);
-
-    return v8::Undefined();
-}
-
-/* ************************************************************************ */
-
-JsWorld::JsWorld() noexcept
+WorldImplData::WorldImplData() noexcept
 {
     v8::HandleScope handle_scope;
 
     v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
 
     // Global functions
-    global->Set("yeast", v8::FunctionTemplate::New(CreateYeast));
-    global->Set("barrier", v8::FunctionTemplate::New(CreateBarrier));
-    global->Set("world", v8::External::New(this));
+    global->Set("yeast", v8::FunctionTemplate::New(create_yeast));
+    //global->Set("barrier", v8::FunctionTemplate::New(createBarrier));
 
     // Create context
     m_context = v8::Context::New(nullptr, global);
@@ -178,9 +148,13 @@ JsWorld::JsWorld() noexcept
 
 /* ************************************************************************ */
 
-JsWorld::~JsWorld()
+WorldImplData::~WorldImplData()
 {
     m_context.Dispose();
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

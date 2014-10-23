@@ -1,15 +1,21 @@
 
-#ifndef _LIBRARY_YEAST_H_
-#define _LIBRARY_YEAST_H_
+#ifndef _SIMULATOR_YEAST_H_
+#define _SIMULATOR_YEAST_H_
 
 /* ************************************************************************ */
 
 // C++
 #include <cmath>
 
-// Library
-#include "Cell.h"
-#include "Units.h"
+// Core
+#include "core/Units.h"
+
+// Simulator
+#include "simulator/Cell.h"
+
+/* ************************************************************************ */
+
+namespace simulator {
 
 /* ************************************************************************ */
 
@@ -19,6 +25,7 @@
 class Yeast : public Cell
 {
 
+// Public Ctors
 public:
 
 
@@ -44,6 +51,7 @@ public:
     Yeast(World* world, MicroMeters x, MicroMeters y, MicroMeters3 volume = 1_um3);
 
 
+// Public Accessors
 public:
 
 
@@ -52,9 +60,9 @@ public:
      *
      * @return
      */
-    MicroMeters3 GetVolume() const noexcept
+    MicroMeters3 getVolume() const noexcept
     {
-        return m_volume;
+        return calcVolume(m_radius);
     }
 
 
@@ -63,22 +71,22 @@ public:
      *
      * @return
      */
-    MicroMeters GetRadius() const noexcept
+    MicroMeters getRadius() const noexcept
     {
-        return CalcRadius(m_volume);
+        return m_radius;
     }
 
 
-public:
-
-
+// Public Operations
 public:
 
 
     /**
-     * @brief Render the cell.
+     * @brief Render the yeast.
+     *
+     * @param context
      */
-    void Render() const noexcept override;
+    void draw(render::Context& context) const noexcept override;
 
 
     /**
@@ -88,7 +96,7 @@ public:
      *
      * @return Radius.
      */
-    static MicroMeters CalcRadius(MicroMeters3 volume) noexcept
+    static MicroMeters calcRadius(MicroMeters3 volume) noexcept
     {
         // 3th root of ((3 / 4 * pi) * volume)
         return MicroMeters(0.62035f * std::pow(volume.value(), 0.3333333f));
@@ -102,19 +110,24 @@ public:
      *
      * @return Volume.
      */
-    static MicroMeters3 CalcVolume(MicroMeters radius) noexcept
+    static MicroMeters3 calcVolume(MicroMeters radius) noexcept
     {
         return MicroMeters3(4.188790205f * radius.value() * radius.value() * radius.value());
     }
 
 
+// Private Data Members
 private:
 
-    /// Yeast volume.
-    MicroMeters3 m_volume;
+    /// Yeast radius.
+    MicroMeters m_radius;
 
 };
 
 /* ************************************************************************ */
 
-#endif // _LIBRARY_YEAST_H_
+}
+
+/* ************************************************************************ */
+
+#endif // _SIMULATOR_YEAST_H_

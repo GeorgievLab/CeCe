@@ -1,12 +1,16 @@
 
-#ifndef _LIBRARY_WORLD_LOADER_H_
-#define _LIBRARY_WORLD_LOADER_H_
+#ifndef _SIMULATOR_WORLD_FACTORY_H_
+#define _SIMULATOR_WORLD_FACTORY_H_
 
 /* ************************************************************************ */
 
 // C++
 #include <memory>
 #include <string>
+
+/* ************************************************************************ */
+
+namespace simulator {
 
 /* ************************************************************************ */
 
@@ -17,8 +21,20 @@ class World;
 /**
  * @brief WorldLoader interface.
  */
-class WorldLoader
+class WorldFactory
 {
+
+// Public Dtors
+public:
+
+
+    /**
+     * @brief Virtual destructor.
+     */
+    virtual ~WorldFactory() {}
+
+
+// Public Operations
 public:
 
 
@@ -27,7 +43,7 @@ public:
      *
      * @param filename
      */
-    virtual std::unique_ptr<World> CreateWorldFromFile(const std::string& filename) const = 0;
+    virtual std::unique_ptr<World> createWorldFromFile(const std::string& filename) const;
 
 
     /**
@@ -35,10 +51,14 @@ public:
      *
      * @param source
      */
-    virtual std::unique_ptr<World> CreateWorldFromSource(const std::string& source) const = 0;
+    virtual std::unique_ptr<World> createWorldFromSource(const std::string& source) const = 0;
 
 };
 
 /* ************************************************************************ */
 
-#endif // _LIBRARY_WORLD_LOADER_H_
+}
+
+/* ************************************************************************ */
+
+#endif // _SIMULATOR_WORLD_FACTORY_H_

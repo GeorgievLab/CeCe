@@ -1,15 +1,26 @@
 
-#ifndef _LIBRARY_CELL_H_
-#define _LIBRARY_CELL_H_
+#ifndef _SIMULATOR_CELL_H_
+#define _SIMULATOR_CELL_H_
 
 /* ************************************************************************ */
 
 // C++
 #include <cstddef>
+#include <memory>
 
 // Core
-#include "Units.h"
-#include "CellPhysics.h"
+#include "core/Units.h"
+
+// Physics
+#include "physics/Cell.h"
+
+/* ************************************************************************ */
+
+namespace render { class Context; }
+
+/* ************************************************************************ */
+
+namespace simulator {
 
 /* ************************************************************************ */
 
@@ -20,7 +31,7 @@ class World;
 /**
  * @brief Cell representation.
  */
-class Cell : public CellPhysics
+class Cell : public physics::Cell
 {
 public:
 
@@ -70,9 +81,18 @@ public:
      *
      * @return
      */
-    Id GetId() const noexcept
+    Id getId() const noexcept
     {
         return m_id;
+    }
+
+
+    /**
+     * @brief Returns world.
+     */
+    World* getWorld() const noexcept
+    {
+        return m_world;
     }
 
 
@@ -81,11 +101,10 @@ public:
 
     /**
      * @brief Render cell.
+     *
+     * @param context
      */
-    virtual void Render() const noexcept
-    {
-        // Nothing to do
-    }
+    virtual void draw(render::Context& context) const noexcept = 0;
 
 
 private:
@@ -104,4 +123,8 @@ private:
 
 /* ************************************************************************ */
 
-#endif // _LIBRARY_CELL_H_
+}
+
+/* ************************************************************************ */
+
+#endif // _SIMULATOR_CELL_H_

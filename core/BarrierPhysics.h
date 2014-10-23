@@ -1,6 +1,6 @@
 
-#ifndef _LIBRARY_CELL_PHYSICS_H_
-#define _LIBRARY_CELL_PHYSICS_H_
+#ifndef _LIBRARY_BARRIER_PHYSICS_H_
+#define _LIBRARY_BARRIER_PHYSICS_H_
 
 /* ************************************************************************ */
 
@@ -22,7 +22,7 @@ class World;
 /**
  * @brief Cell physics.
  */
-class CellPhysics
+class BarrierPhysics
 {
 
 // Public Ctors & Dtors
@@ -36,13 +36,13 @@ public:
      * @param x
      * @param y
      */
-    CellPhysics(World* world, MicroMeters x, MicroMeters y);
+    BarrierPhysics(World* world, MicroMeters x1, MicroMeters y1, MicroMeters x2, MicroMeters y2);
 
 
     /**
      * @brief Destructor.
      */
-    virtual ~CellPhysics();
+    virtual ~BarrierPhysics();
 
 
 public:
@@ -55,6 +55,8 @@ public:
 
 // Protected Data Members
 protected:
+
+    World* m_world;
 
     /// Object shape.
     std::unique_ptr<btCollisionShape> m_shape;
@@ -69,4 +71,4 @@ protected:
 
 /* ************************************************************************ */
 
-#endif // _LIBRARY_CELL_PHYSICS_H_
+#endif // _LIBRARY_BARRIER_PHYSICS_H_

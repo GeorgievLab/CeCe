@@ -2,48 +2,29 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "JsWorldLoader.h"
-
-// C++
-#include <fstream>
-#include <stdexcept>
+#include "javascript/WorldFactory.h"
 
 // V8
 #include <v8.h>
 
 // Core
-#include "JsWorld.h"
+#include "javascript/World.h"
 
 /* ************************************************************************ */
 
-std::unique_ptr<World> JsWorldLoader::CreateWorldFromFile(const std::string& filename) const
-{
-    std::string source;
-
-    {
-        std::ifstream file(filename, std::ios::in);
-
-        std::string line;
-        while (std::getline(file, line))
-        {
-            // Read source
-            source.append(line);
-        }
-    }
-
-    return CreateWorldFromSource(source);
-}
+namespace javascript {
 
 /* ************************************************************************ */
 
-std::unique_ptr<World> JsWorldLoader::CreateWorldFromSource(const std::string& source) const
+std::unique_ptr<simulator::World> WorldFactory::createWorldFromSource(const std::string& source) const
 {
     v8::HandleScope handle_scope;
 
-    std::unique_ptr<JsWorld> world(new JsWorld());
+    // Create world data
+    std::unique_ptr<javascript::WorldImplData> data(new javascript::WorldImplData());
 
     // Select V8 scope
-    v8::Context::Scope context_scope(world->GetContext());
+    v8::Context::Scope context_scope(data->GetContext());
 
     // Create V8 source
     v8::Handle<v8::String> script = v8::String::New(source.data(), source.length());
@@ -59,6 +40,13 @@ std::unique_ptr<World> JsWorldLoader::CreateWorldFromSource(const std::string& s
         throw std::invalid_argument(*error);
     }
 
+    // Create world
+    std::unique_ptr<simulator::World> world(new simulator::World(std::move(data)));
+
+    // Register world object
+    v8::Handle<v8::Object> global = v8::Context::GetCurrent()->Global();
+    global->Set(v8::String::New("world"), v8::External::New(world.get()));
+
     // Execute script
     compiled_script->Run();
 
@@ -68,7 +56,11 @@ std::unique_ptr<World> JsWorldLoader::CreateWorldFromSource(const std::string& s
         throw std::invalid_argument(*error);
     }
 
-    return std::unique_ptr<World>{world.release()};
+    return world;
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

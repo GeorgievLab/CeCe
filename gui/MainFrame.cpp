@@ -5,16 +5,18 @@
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 
-#include "World.h"
-#include "Yeast.h"
-#include "JsWorldLoader.h"
+// JavaScript
+#include "javascript/WorldFactory.h"
 
 /* ************************************************************************ */
 
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
-    , m_simulator(this)
+    , m_simulator()
 {
+    // Set simulator
+    m_glCanvasView->SetSimulator(&m_simulator);
+
     wxFont font = m_stcSource->GetFont();
     font.SetFamily(wxFONTFAMILY_TELETYPE);
     m_stcSource->StyleSetFont(wxSTC_C_DEFAULT, font);
@@ -70,9 +72,9 @@ MainFrame::MainFrame(wxWindow* parent)
         "Math NaN name Number Object "
         "prototype String toString undefined valueOf");
 
-    m_worldLoader.reset(new JsWorldLoader);
+    m_worldFactory.reset(new javascript::WorldFactory());
 
-    Bind(EVT_SIMULATION_UPDATE, &MainFrame::OnSimulationUpdate, this);
+    //Bind(EVT_SIMULATION_UPDATE, &MainFrame::OnSimulationUpdate, this);
 }
 
 /* ************************************************************************ */
@@ -185,18 +187,15 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
 void MainFrame::OnSimulationStart(wxCommandEvent& event)
 {
     // If source code is modified, load modified version
-    if ((m_stcSource->IsModified() && !m_stcSource->IsEmpty()) || !m_simulator.GetWorld())
+    if ((m_stcSource->IsModified() && !m_stcSource->IsEmpty()) || !m_simulator.getWorld())
     {
         try
         {
             // Create a new world
-            m_simulator.SetWorld(m_worldLoader->CreateWorldFromSource(m_stcSource->GetText().To8BitData().data()));
+            m_simulator.setWorld(m_worldFactory->createWorldFromSource(m_stcSource->GetText().To8BitData().data()));
 
             // Source is not modified
             m_stcSource->SetModified(false);
-
-            // Set world to canvas
-            m_glCanvasView->SetWorld(m_simulator.GetWorld());
         }
         catch (const std::exception& e)
         {
@@ -210,24 +209,23 @@ void MainFrame::OnSimulationStart(wxCommandEvent& event)
         return;
     }
 
-    wxASSERT(!m_simulator.IsRunning());
-    m_simulator.Start();
+    wxASSERT(!m_simulator.isRunning());
+    m_simulator.start();
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationStop(wxCommandEvent& event)
 {
-    wxASSERT(m_simulator.IsRunning());
-    m_simulator.Stop();
+    wxASSERT(m_simulator.isRunning());
+    m_simulator.stop();
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 {
-    m_glCanvasView->SetWorld(nullptr);
-    m_simulator.SetWorld(nullptr);
+    m_simulator.setWorld(nullptr);
     m_glCanvasView->Update();
 }
 
@@ -235,8 +233,8 @@ void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 
 void MainFrame::OnSimulationStep(wxCommandEvent& event)
 {
-    wxASSERT(!m_simulator.IsRunning());
-    m_simulator.Step();
+    wxASSERT(!m_simulator.isRunning());
+    m_simulator.step();
     m_glCanvasView->Update();
 }
 
@@ -244,14 +242,14 @@ void MainFrame::OnSimulationStep(wxCommandEvent& event)
 
 void MainFrame::OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event)
 {
-    event.Enable(!m_simulator.IsRunning());
+    event.Enable(!m_simulator.isRunning());
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
 {
-    event.Enable(m_simulator.IsRunning());
+    event.Enable(m_simulator.isRunning());
 }
 
 /* ************************************************************************ */

@@ -1,21 +1,25 @@
 
-#ifndef _LIBRARY_JS_WORLD_H_
-#define _LIBRARY_JS_WORLD_H_
+#ifndef _JAVASCRIPT_WORLD_H_
+#define _JAVASCRIPT_WORLD_H_
 
 /* ************************************************************************ */
 
 // V8
 #include <v8.h>
 
-// Core
-#include "World.h"
+// Simulator
+#include "simulator/World.h"
+
+/* ************************************************************************ */
+
+namespace javascript {
 
 /* ************************************************************************ */
 
 /**
- * @brief World for JavaScript (V8 engine)
+ * @brief World data.
  */
-class JsWorld : public World
+class WorldImplData : public simulator::WorldImplData
 {
 public:
 
@@ -23,15 +27,16 @@ public:
     /**
      * @brief Constructor.
      */
-    JsWorld() noexcept;
+    WorldImplData() noexcept;
 
 
     /**
      * @brief Destructor.
      */
-    ~JsWorld();
+    ~WorldImplData();
 
 
+// Public Accessors
 public:
 
 
@@ -57,6 +62,7 @@ public:
     }
 
 
+// Private Data Members
 private:
 
     /// V8 run context.
@@ -66,4 +72,8 @@ private:
 
 /* ************************************************************************ */
 
-#endif // _LIBRARY_JS_WORLD_LOADER_H_
+}
+
+/* ************************************************************************ */
+
+#endif // _JAVASCRIPT_WORLD_H_

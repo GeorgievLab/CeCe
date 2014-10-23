@@ -4,13 +4,16 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <cassert>
+
 // wxWidgets
 #include <wx/scopedptr.h>
 #include <wx/glcanvas.h>
 
-/* ************************************************************************ */
-
-class World;
+// Simulator
+#include "simulator/World.h"
+#include "simulator/Simulator.h"
 
 /* ************************************************************************ */
 
@@ -41,9 +44,10 @@ public:
      *
      * @return
      */
-    World* GetWorld() const noexcept
+    simulator::World* GetWorld() const noexcept
     {
-        return m_world;
+        assert(m_simulator);
+        return m_simulator->getWorld();
     }
 
 
@@ -51,13 +55,13 @@ public:
 
 
     /**
-     * @brief Change current world.
+     * @brief Set current simulator.
      *
      * @return
      */
-    void SetWorld(World* world) noexcept
+    void SetSimulator(simulator::Simulator* simulator) noexcept
     {
-        m_world = world;
+        m_simulator = simulator;
     }
 
 
@@ -125,8 +129,8 @@ private:
     /// If is initialized
     bool m_init = false;
 
-    /// Current world.
-    World* m_world;
+    /// Simulator pointer.
+    simulator::Simulator* m_simulator;
 
     /// Zoom value.
     float m_zoom = 1.f;

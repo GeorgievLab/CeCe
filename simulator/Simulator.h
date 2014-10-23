@@ -1,52 +1,41 @@
-#ifndef _SIMULATOR_H_
-#define _SIMULATOR_H_
+#ifndef _SIMULATOR_SIMULATOR_H_
+#define _SIMULATOR_SIMULATOR_H_
 
 /* ************************************************************************ */
 
 // C++
 #include <memory>
-
-// wxWidget
-#include <wx/scopedptr.h>
-#include <wx/thread.h>
-#include <wx/event.h>
-
-// Core
-#include "World.h"
+#include <thread>
+#include <atomic>
 
 /* ************************************************************************ */
 
-wxDECLARE_EVENT(EVT_SIMULATION_UPDATE, wxThreadEvent);
+namespace simulator {
+
+/* ************************************************************************ */
+
+class World;
 
 /* ************************************************************************ */
 
 /**
  * @brief World simulator.
  */
-class Simulator : public wxThreadHelper
+class Simulator
 {
 public:
 
 
     /**
      * @brief Constructor.
-     *
-     * @param handler Event handler.
      */
-    explicit Simulator(wxEvtHandler* handler)
-        : m_handler(handler)
-    {
-        // Nothing to do
-    }
+    Simulator();
 
 
     /**
      * @brief Destructor.
      */
-    ~Simulator()
-    {
-        Stop();
-    }
+    virtual ~Simulator();
 
 
 public:
@@ -57,9 +46,9 @@ public:
      *
      * @return
      */
-    bool IsRunning() const noexcept
+    bool isRunning() const noexcept
     {
-        return GetThread() && GetThread()->IsRunning();
+        return m_isRunning;
     }
 
 
@@ -68,7 +57,7 @@ public:
      *
      * @return
      */
-    World* GetWorld() const noexcept
+    World* getWorld() const noexcept
     {
         return m_world.get();
     }
@@ -82,7 +71,7 @@ public:
      *
      * @param world
      */
-    void SetWorld(std::unique_ptr<World> world) noexcept
+    void setWorld(std::unique_ptr<World> world) noexcept
     {
         m_world = std::move(world);
     }
@@ -94,37 +83,35 @@ public:
     /**
      * @brief Start simulation.
      */
-    void Start();
+    void start();
 
 
     /**
      * @brief Stop simulation.
      */
-    void Stop();
+    void stop();
 
 
     /**
      * @brief Perform one simulation step.
      */
-    void Step();
-
-
-protected:
+    void step();
 
 
     /**
-     * @brief Background thread code.
-     *
-     * @return
+     * @brief Reset simulation.
      */
-    wxThread::ExitCode Entry() override;
+    void reset();
 
 
+// Data Members
 private:
 
+    /// Background thread.
+    std::thread m_thread;
 
-    /// Event handler for world update events.
-    wxEvtHandler* m_handler;
+    /// Flag if thread is running
+    std::atomic<bool> m_isRunning{false};
 
     /// Simulated world.
     std::unique_ptr<World> m_world;
@@ -133,4 +120,8 @@ private:
 
 /* ************************************************************************ */
 
-#endif // _SIMULATOR_H_
+}
+
+/* ************************************************************************ */
+
+#endif // _SIMULATOR_SIMULATOR_H_

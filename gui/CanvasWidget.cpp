@@ -10,8 +10,11 @@
 // wxWidgets
 #include <wx/dcclient.h>
 
-// Core
-#include "World.h"
+// Simulator
+#include "simulator/World.h"
+
+// Render
+#include "render/Context.h"
 
 /* ************************************************************************ */
 
@@ -86,14 +89,12 @@ void CanvasWidget::Render() noexcept
     // Clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // TODO: Draw
-    if (m_world)
+    // Render world
+    if (m_simulator->getWorld())
     {
-        m_world->Render();
-    }
-    else
-    {
-        //dc.DrawText("Nothing to render", 0, 0);
+        render::Context context;
+
+        m_simulator->getWorld()->draw(context);
     }
 
     glFlush();

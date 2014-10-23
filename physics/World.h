@@ -1,21 +1,34 @@
 
-#ifndef _LIBRARY_WORLD_PHYSICS_H_
-#define _LIBRARY_WORLD_PHYSICS_H_
+#ifndef _PHYSICS_WORLD_H_
+#define _PHYSICS_WORLD_H_
 
 /* ************************************************************************ */
 
 // C++
 #include <memory>
 
-// Bullet
-#include <btBulletDynamicsCommon.h>
+/* ************************************************************************ */
+
+class btBroadphaseInterface;
+class btDefaultCollisionConfiguration;
+class btCollisionDispatcher;
+class btSequentialImpulseConstraintSolver;
+class btDiscreteDynamicsWorld;
+
+/* ************************************************************************ */
+
+namespace physics {
+
+/* ************************************************************************ */
+
+class Ground;
 
 /* ************************************************************************ */
 
 /**
- * @brief World physics simulation part.
+ * @brief World physics.
  */
-class WorldPhysics
+class World
 {
 
 // Public Ctors
@@ -25,13 +38,13 @@ public:
     /**
      * @brief Constructor.
      */
-    WorldPhysics() noexcept;
+    World() noexcept;
 
 
     /**
      * @brief Destructor.
      */
-    virtual ~WorldPhysics() noexcept;
+    virtual ~World() noexcept;
 
 
 // Public Accessors
@@ -43,14 +56,21 @@ public:
      *
      * @return
      */
-    btDiscreteDynamicsWorld* GetDynamicsWorld() const noexcept
+    btDiscreteDynamicsWorld* getDynamicsWorld() const noexcept
     {
         return m_dynamicsWorld.get();
     }
 
 
-public:
-
+    /**
+     * @brief Returns ground object.
+     *
+     * @return
+     */
+    Ground* getGround() const noexcept
+    {
+        return m_ground.get();
+    }
 
 
 // Public Operations.
@@ -81,17 +101,15 @@ private:
     /// Dynamic world.
     std::unique_ptr<btDiscreteDynamicsWorld> m_dynamicsWorld;
 
-    /// Ground.
-    std::unique_ptr<btCollisionShape> m_groundShape;
-
-    /// Motion state for ground.
-    std::unique_ptr<btDefaultMotionState> m_groundMotionState;
-
-    /// Rigid body of the ground.
-    std::unique_ptr<btRigidBody> m_groundRigidBody;
+    /// Ground object.
+    std::unique_ptr<Ground> m_ground;
 
 };
 
 /* ************************************************************************ */
 
-#endif // _LIBRARY_WORLD_PHYSICS_H_
+}
+
+/* ************************************************************************ */
+
+#endif // _PHYSICS_WORLD_H_
