@@ -4,13 +4,13 @@
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
-  "enabled": false,
+  "enabled": true,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
   "generator": "",
   "buildType": "",
   "arguments": [],
-  "parentProject": ""
+  "parentProject": "gui"
  }]]]>
     </Plugin>
   </Plugins>
@@ -28,6 +28,8 @@
     <File Name="Ground.h"/>
     <File Name="Cell.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -114,6 +116,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

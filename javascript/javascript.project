@@ -4,13 +4,13 @@
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
-  "enabled": false,
+  "enabled": true,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
   "generator": "",
   "buildType": "",
   "arguments": [],
-  "parentProject": ""
+  "parentProject": "gui"
  }]]]>
     </Plugin>
   </Plugins>

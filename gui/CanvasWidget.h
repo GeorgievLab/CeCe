@@ -10,6 +10,7 @@
 // wxWidgets
 #include <wx/scopedptr.h>
 #include <wx/glcanvas.h>
+#include <wx/timer.h>
 
 // Simulator
 #include "simulator/World.h"
@@ -134,6 +135,9 @@ private:
 
     /// Zoom value.
     float m_zoom = 1.f;
+
+    /// Redraw timer.
+    wxTimer m_timer;
 
 };
 

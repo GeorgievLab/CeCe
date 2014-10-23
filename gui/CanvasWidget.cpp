@@ -29,6 +29,12 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
     Bind(wxEVT_PAINT, &CanvasWidget::OnPaint, this);
     Bind(wxEVT_SIZE, &CanvasWidget::OnResize, this);
     Bind(wxEVT_MOUSEWHEEL, &CanvasWidget::OnZoom, this);
+
+    // Repeat run timer
+    m_timer.Bind(wxEVT_TIMER, [this](wxTimerEvent& event) { Update(); });
+
+    // Run at 30 FPS
+    m_timer.Start(1000 / 30.f);
 }
 
 /* ************************************************************************ */

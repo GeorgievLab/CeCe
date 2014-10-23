@@ -4,13 +4,13 @@
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
-  "enabled": false,
+  "enabled": true,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
   "generator": "",
   "buildType": "",
   "arguments": [],
-  "parentProject": ""
+  "parentProject": "gui"
  }, {
   "name": "Release",
   "enabled": false,
@@ -30,6 +30,8 @@
     <File Name="Units.h"/>
     <File Name="Vect.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -115,6 +117,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>
