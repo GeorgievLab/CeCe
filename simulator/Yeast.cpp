@@ -18,6 +18,7 @@ namespace simulator {
 
 Yeast::Yeast(World* world, MicroMeters x, MicroMeters y, MicroMeters radius)
     : Cell(world, x, y)
+    , m_radius(radius)
 {
     // Use sphere body
     createSphereBody(radius);

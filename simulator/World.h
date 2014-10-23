@@ -8,6 +8,7 @@
 #include <vector>
 #include <memory>
 #include <cassert>
+#include <mutex>
 
 // Physics
 #include "physics/World.h"
@@ -139,6 +140,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Mutex for shared access.
+    mutable std::mutex m_accessMutex;
 
     /// World implementation data.
     std::unique_ptr<WorldImplData> m_implData;

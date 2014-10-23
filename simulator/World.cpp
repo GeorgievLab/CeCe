@@ -4,11 +4,11 @@
 // Declaration
 #include "World.h"
 
-// C++
-#include <algorithm>
+// Simulator
+#include "simulator/Cell.h"
 
-// Library
-#include "Cell.h"
+// Render
+#include "render/World.h"
 
 /* ************************************************************************ */
 
@@ -34,6 +34,8 @@ World::~World()
 
 void World::update() noexcept
 {
+    std::lock_guard<std::mutex> _(m_accessMutex);
+
     physics::World::Update();
 }
 
@@ -41,27 +43,12 @@ void World::update() noexcept
 
 void World::draw(render::Context& context) const noexcept
 {
-    /*
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glScalef(5, 5, 5);
+    std::lock_guard<std::mutex> _(m_accessMutex);
 
-    glBegin(GL_LINES);
+    // Render world
+    render::World::render(context);
 
-    glColor3d(1.0, 0.0, 0.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(1.0, 0.0, 0.0);
-
-    glColor3d(0.0, 1.0, 0.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(0.0, 1.0, 0.0);
-
-    glColor3d(0.0, 0.0, 1.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(0.0, 0.0, 1.0);
-
-    glEnd();
-*/
+    // Render cells
     for (const auto& cell : m_cells)
     {
         assert(cell);

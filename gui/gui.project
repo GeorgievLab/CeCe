@@ -6,7 +6,7 @@
   "name": "Debug",
   "enabled": true,
   "buildDirectory": "build-debug",
-  "sourceDirectory": "$(ProjectPath)",
+  "sourceDirectory": "$(WorkspacePath)",
   "generator": "Unix Makefiles",
   "buildType": "Debug",
   "arguments": [],
