@@ -56,6 +56,129 @@ public:
     }
 
 
+// Public Operators
+public:
+
+
+    /**
+     * @brief Plus unary operator.
+     *
+     * @return *this.
+     */
+    constexpr Unit operator+() const noexcept
+    {
+        return *this;
+    }
+
+
+    /**
+     * @brief Minus unary operator.
+     */
+    constexpr Unit operator-() const noexcept
+    {
+        return Unit(-value());
+    }
+
+
+    /**
+     * @brief Prefix increment operator.
+     */
+    Unit& operator++() noexcept
+    {
+        ++m_value;
+        return *this;
+    }
+
+
+    /**
+     * @brief Postfix increment operator.
+     */
+    Unit operator++(int) noexcept
+    {
+        return Unit(m_value++);
+    }
+
+
+    /**
+     * @brief Prefix decrement operator.
+     */
+    Unit& operator--() noexcept
+    {
+        --m_value;
+        return *this;
+    }
+
+
+    /**
+     * @brief Postfix decrement operator.
+     */
+    Unit operator--(int) noexcept
+    {
+        return Unit(m_value--);
+    }
+
+
+    /**
+     * @brief Add operator.
+     */
+    Unit& operator+=(const Unit& d) noexcept
+    {
+        m_value += d.m_value;
+        return *this;
+    }
+
+
+    /**
+     * @brief Substract operator.
+     */
+    Unit& operator-=(const Unit& d) noexcept
+    {
+        m_value += d.m_value;
+        return *this;
+    }
+
+
+    /**
+     * @brief Multiplication operator.
+     */
+    Unit& operator*=(const Rep& rhs) noexcept
+    {
+        m_value *= rhs;
+        return *this;
+    }
+
+
+    /**
+     * @brief Divide operator.
+     */
+    Unit& operator/=(const Rep& rhs) noexcept
+    {
+        m_value /= rhs;
+        return *this;
+    }
+
+
+    /**
+     * @brief Modulo operator.
+     */
+    Unit& operator%=(const Rep& rhs) noexcept
+    {
+        m_value %= rhs;
+        return *this;
+    }
+
+
+    /**
+     * @brief Modulo operator.
+     */
+    Unit& operator%=(const Unit& rhs) noexcept
+    {
+        m_value %= rhs.m_value;
+        return *this;
+    }
+
+
+// Public Accessors
 public:
 
 
@@ -70,12 +193,63 @@ public:
     }
 
 
+// Private Data Members
 private:
 
     /// Stored value.
     Rep m_value{};
 
 };
+
+/* ************************************************************************ */
+
+template<class Rep1, class Ratio1, class Rep2, class Ratio2>
+inline
+typename std::common_type<Rep1, Rep2>::type
+constexpr operator+(const Unit<Rep1, Ratio1>& lhs, const Unit<Rep2, Ratio2>& rhs)
+{
+
+}
+
+/* ************************************************************************ */
+
+template<class Rep1, class Ratio1, class Rep2, class Ratio2>
+inline
+typename std::common_type<Rep1, Rep2>::type
+constexpr operator-(const Unit<Rep1, Ratio1>& lhs, const Unit<Rep2, Ratio2>& rhs)
+{
+
+}
+
+/* ************************************************************************ */
+
+template<class Rep1, class Period1, class Rep2>
+inline
+Unit<typename std::common_type<Rep1, Rep2>::type, Period1>
+constexpr operator*(const Unit<Rep1, Period1>& d, const Rep2& s)
+{
+    return Unit<typename std::common_type<Rep1, Rep2>::type, Period1>{d.value() * s};
+}
+
+/* ************************************************************************ */
+
+template<class Rep1, class Rep2, class Period2>
+inline
+Unit<typename std::common_type<Rep1, Rep2>::type, Period2>
+constexpr operator*(const Rep1& s, const Unit<Rep2, Period2>& d)
+{
+    return Unit<typename std::common_type<Rep1, Rep2>::type, Period2>{s * d.value()};
+}
+
+/* ************************************************************************ */
+
+template< class Rep1, class Period1, class Rep2>
+inline
+Unit<typename std::common_type<Rep1, Rep2>::type, Period1>
+constexpr operator/(const Unit<Rep1, Period1>& d, const Rep2& s)
+{
+    return Unit<typename std::common_type<Rep1, Rep2>::type, Period1>{d.value() / s};
+}
 
 /* ************************************************************************ */
 
