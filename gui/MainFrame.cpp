@@ -253,3 +253,17 @@ void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
 }
 
 /* ************************************************************************ */
+
+void MainFrame::OnViewIsometric(wxCommandEvent& event)
+{
+    m_glCanvasView->SetProjection(CanvasWidget::Projection::Isometric);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewTop(wxCommandEvent& event)
+{
+    m_glCanvasView->SetProjection(CanvasWidget::Projection::Top);
+}
+
+/* ************************************************************************ */

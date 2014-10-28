@@ -5,10 +5,7 @@ project(render)
 # Sources
 set(CXX_SRCS
     Context.h
-    Yeast.h
-    Yeast.cpp
-    World.h
-    World.cpp
+    Context.cpp
 )
 
 # Create library
@@ -17,6 +14,6 @@ add_library(render
 )
 
 # Setup dependencies
-add_dependencies(render core)
+add_dependencies(render core simulator)
 
 # ######################################################################### #

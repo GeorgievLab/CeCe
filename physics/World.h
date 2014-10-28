@@ -79,8 +79,10 @@ public:
 
     /**
      * @brief Update world.
+     *
+     * @param step
      */
-    void Update() noexcept;
+    void update(float step) noexcept;
 
 
 // Private Data Members

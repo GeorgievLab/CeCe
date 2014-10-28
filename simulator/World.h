@@ -18,10 +18,6 @@
 
 /* ************************************************************************ */
 
-namespace render { class Context; }
-
-/* ************************************************************************ */
-
 namespace simulator {
 
 /* ************************************************************************ */
@@ -55,6 +51,7 @@ public:
     using BarrierContainer = std::vector<std::unique_ptr<Barrier>>;
 
 
+// Public Ctors
 public:
 
 
@@ -64,24 +61,58 @@ public:
     World(std::unique_ptr<WorldImplData> data = nullptr) noexcept;
 
 
-    /**
-     * @brief Destructor.
-     */
-    virtual ~World();
-
-
+// Public Accessors
 public:
 
 
     /**
      * @brief Return cell container.
+     *
+     * @return
      */
-    const CellContainer& GetCells() const noexcept
+    const CellContainer& getCells() const noexcept
     {
         return m_cells;
     }
 
+
+    /**
+     * @brief Returns world width.
+     *
+     * @return
+     */
+    MicroMeters getWidth() const noexcept
+    {
+        return m_width;
+    }
+
+
+    /**
+     * @brief Returns world height.
+     *
+     * @return
+     */
+    MicroMeters getHeight() const noexcept
+    {
+        return m_height;
+    }
+
+
+// Public Mutators
 public:
+
+
+    /**
+     * @brief Resize world.
+     *
+     * @param width
+     * @param height
+     */
+    void resize(MicroMeters width, MicroMeters height) noexcept
+    {
+        m_width = width;
+        m_height = height;
+    }
 
 
     /**
@@ -89,7 +120,7 @@ public:
      *
      * @param cell
      */
-    void AddCell(std::unique_ptr<Cell> cell)
+    void addCell(std::unique_ptr<Cell> cell)
     {
         assert(cell);
         m_cells.push_back(std::move(cell));
@@ -102,9 +133,9 @@ public:
      * @param cell
      */
     template<typename T, typename... Args>
-    void NewCell(Args&&... args)
+    void newCell(Args&&... args)
     {
-        AddCell(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
+        addCell(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
     }
 
 
@@ -114,38 +145,23 @@ public:
      * @param args...
      */
     template<typename... Args>
-    void NewBarrier(Args&&... args)
+    void newBarrier(Args&&... args)
     {
         //m_barriers.emplace_back(new Barrier(this, std::forward<Args>(args)...));
     }
 
 
-// Public Operations
-public:
-
-
-    /**
-     * @brief Update world.
-     */
-    void update() noexcept;
-
-
-    /**
-     * @brief Render world.
-     *
-     * @param context
-     */
-    void draw(render::Context& context) const noexcept;
-
-
 // Private Data Members
 private:
 
-    /// Mutex for shared access.
-    mutable std::mutex m_accessMutex;
-
     /// World implementation data.
     std::unique_ptr<WorldImplData> m_implData;
+
+    /// World width.
+    MicroMeters m_width{400};
+
+    /// World height.
+    MicroMeters m_height{400};
 
     /// Cell population
     CellContainer m_cells;

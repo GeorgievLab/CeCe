@@ -28,6 +28,8 @@ public:
     void OnSimulationUpdate(wxThreadEvent& evt);
 
 protected:
+    virtual void OnViewIsometric(wxCommandEvent& event);
+    virtual void OnViewTop(wxCommandEvent& event);
 
     virtual void OnSimulationStart(wxCommandEvent& event);
     virtual void OnSimulationStop(wxCommandEvent& event);

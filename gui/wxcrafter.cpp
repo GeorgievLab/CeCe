@@ -46,6 +46,15 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuItemFileExit = new wxMenuItem(m_menuFile, wxID_EXIT, _("&Exit\tCtrl+Q"), _("Quit"), wxITEM_NORMAL);
     m_menuFile->Append(m_menuItemFileExit);
     
+    m_menuView = new wxMenu();
+    m_menuBar->Append(m_menuView, _("&View"));
+    
+    m_menuItemTop = new wxMenuItem(m_menuView, wxID_ANY, _("Top"), wxT(""), wxITEM_RADIO);
+    m_menuView->Append(m_menuItemTop);
+    
+    m_menuItemIsometric = new wxMenuItem(m_menuView, wxID_ANY, _("Isometric"), wxT(""), wxITEM_RADIO);
+    m_menuView->Append(m_menuItemIsometric);
+    
     m_menuSimulation = new wxMenu();
     m_menuBar->Append(m_menuSimulation, _("&Simulation"));
     
@@ -93,7 +102,16 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizerView = new wxBoxSizer(wxVERTICAL);
     m_splitterPageView->SetSizer(boxSizerView);
     
-    int *m_glCanvasViewAttr = NULL;
+    int *m_glCanvasViewAttr = new int[ 9 ];
+    m_glCanvasViewAttr[0] = WX_GL_RGBA;
+    m_glCanvasViewAttr[1] = GL_TRUE;
+    m_glCanvasViewAttr[2] = WX_GL_DOUBLEBUFFER;
+    m_glCanvasViewAttr[3] = GL_TRUE;
+    m_glCanvasViewAttr[4] = WX_GL_DEPTH_SIZE;
+    m_glCanvasViewAttr[5] = 16;
+    m_glCanvasViewAttr[6] = WX_GL_SAMPLE_BUFFERS;
+    m_glCanvasViewAttr[7] = GL_TRUE;
+    m_glCanvasViewAttr[8] = 0;
     m_glCanvasView = new CanvasWidget(m_splitterPageView, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
     wxDELETEA( m_glCanvasViewAttr );
     
@@ -164,6 +182,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemFileSave->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileSave), NULL, this);
     this->Connect(m_menuItemFileSaveAs->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileSaveAs), NULL, this);
     this->Connect(m_menuItemFileExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
+    this->Connect(m_menuItemTop->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewTop), NULL, this);
+    this->Connect(m_menuItemIsometric->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewIsometric), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Connect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
@@ -186,6 +206,8 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemFileSave->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileSave), NULL, this);
     this->Disconnect(m_menuItemFileSaveAs->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileSaveAs), NULL, this);
     this->Disconnect(m_menuItemFileExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
+    this->Disconnect(m_menuItemTop->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewTop), NULL, this);
+    this->Disconnect(m_menuItemIsometric->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewIsometric), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Disconnect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);

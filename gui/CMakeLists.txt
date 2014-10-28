@@ -31,6 +31,7 @@ target_link_libraries(gui
     BulletCollision
     LinearMath
     GL
+    GLU
     ${wxWidgets_LIBRARIES}
 )
 

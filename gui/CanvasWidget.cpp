@@ -18,11 +18,22 @@
 
 /* ************************************************************************ */
 
+const int g_attribList[] = {
+    WX_GL_RGBA,
+    WX_GL_DOUBLEBUFFER,
+    WX_GL_SAMPLE_BUFFERS, GL_TRUE, // Multi-sampling
+    WX_GL_SAMPLES, 4,
+    WX_GL_DEPTH_SIZE, 16,
+    0, 0
+};
+
+/* ************************************************************************ */
+
 CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
                            const int* attribList, const wxPoint& pos,
                            const wxSize& size, long style,
                            const wxString& name, const wxPalette& palette)
-    : wxGLCanvas(parent, id, attribList, pos, size, style, name, palette)
+    : wxGLCanvas(parent, id, g_attribList, pos, size, style, name, palette)
 {
     m_context.reset(new wxGLContext(this));
 
@@ -48,8 +59,7 @@ void CanvasWidget::Update() noexcept
 
 void CanvasWidget::Init() noexcept
 {
-    // Clear color.
-    glClearColor(1.f, 1.f, 1.f, 1.f);
+    m_renderer.init();
 
     // Initial projection
     SetupProjection();
@@ -59,21 +69,17 @@ void CanvasWidget::Init() noexcept
 
 void CanvasWidget::SetupProjection() noexcept
 {
-    const int width = GetSize().GetWidth();
-    const int height = GetSize().GetHeight();
-    const GLdouble wh = width / 2.0;
-    const GLdouble hh = height / 2.0;
+    switch (m_projectionType)
+    {
+    default:
+    case Projection::Top:
+        m_renderer.setTopView(GetSize().GetWidth(), GetSize().GetHeight(), m_zoom);
+        break;
 
-    // Setup viewport (whole window)
-    glViewport(0, 0, width, height);
-
-    // Setup projection matrix
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-wh, wh, -hh, hh, -1, 1);
-
-    // Apply zoom matrix
-    glScalef(m_zoom, m_zoom, m_zoom);
+    case Projection::Isometric:
+        m_renderer.setIsometricView(GetSize().GetWidth(), GetSize().GetHeight(), m_zoom);
+        break;
+    }
 }
 
 /* ************************************************************************ */
@@ -92,18 +98,18 @@ void CanvasWidget::Render() noexcept
         m_init = true;
     }
 
-    // Clear
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_renderer.frameBegin();
 
     // Render world
+    wxASSERT(m_simulator);
     if (m_simulator->getWorld())
     {
-        render::Context context;
+        std::lock_guard<std::mutex> _(m_simulator->getMuttex());
 
-        m_simulator->getWorld()->draw(context);
+        m_renderer.drawWorld(*m_simulator->getWorld());
     }
 
-    glFlush();
+    m_renderer.frameEnd();
     SwapBuffers();
 }
 

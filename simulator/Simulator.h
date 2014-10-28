@@ -7,6 +7,7 @@
 #include <memory>
 #include <thread>
 #include <atomic>
+#include <mutex>
 
 /* ************************************************************************ */
 
@@ -63,6 +64,15 @@ public:
     }
 
 
+    /**
+     * @brief Returns a mutable reference to mutex.
+     */
+    std::mutex& getMuttex() noexcept
+    {
+        return m_accessMutex;
+    }
+
+
 public:
 
 
@@ -106,6 +116,9 @@ public:
 
 // Data Members
 private:
+
+    /// Mutex for shared access.
+    std::mutex m_accessMutex;
 
     /// Background thread.
     std::thread m_thread;

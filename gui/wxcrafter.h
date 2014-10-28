@@ -41,6 +41,9 @@ protected:
     wxMenuItem* m_menuItemFileSaveAs;
     wxMenuItem* m_menuItemFileSep1;
     wxMenuItem* m_menuItemFileExit;
+    wxMenu* m_menuView;
+    wxMenuItem* m_menuItemTop;
+    wxMenuItem* m_menuItemIsometric;
     wxMenu* m_menuSimulation;
     wxMenuItem* m_menuItemSimulationStart;
     wxMenuItem* m_menuItemSimulationStop;
@@ -62,6 +65,8 @@ protected:
     virtual void OnFileSave(wxCommandEvent& event) { event.Skip(); }
     virtual void OnFileSaveAs(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnViewTop(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnViewIsometric(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationStart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }

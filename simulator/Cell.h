@@ -16,10 +16,6 @@
 
 /* ************************************************************************ */
 
-namespace render { class Context; }
-
-/* ************************************************************************ */
-
 namespace simulator {
 
 /* ************************************************************************ */
@@ -96,19 +92,8 @@ public:
     }
 
 
-public:
-
-
-    /**
-     * @brief Render cell.
-     *
-     * @param context
-     */
-    virtual void draw(render::Context& context) const noexcept = 0;
-
-
+// Private Data Members
 private:
-
 
     /// Unique cell ID.
     static Id s_id;

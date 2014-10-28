@@ -82,14 +82,6 @@ public:
 
 
     /**
-     * @brief Render the yeast.
-     *
-     * @param context
-     */
-    void draw(render::Context& context) const noexcept override;
-
-
-    /**
      * @brief Calculate radius from volume.
      *
      * @param volume Volume.

@@ -16,6 +16,9 @@
 #include "simulator/World.h"
 #include "simulator/Simulator.h"
 
+// Render
+#include "render/Context.h"
+
 /* ************************************************************************ */
 
 /**
@@ -23,6 +26,20 @@
  */
 class CanvasWidget : public wxGLCanvas
 {
+
+// Public Enums
+public:
+
+    /**
+     * @brief Projection types.
+     */
+    enum class Projection
+    {
+        Top,
+        Isometric
+    };
+
+
 public:
 
 
@@ -63,6 +80,19 @@ public:
     void SetSimulator(simulator::Simulator* simulator) noexcept
     {
         m_simulator = simulator;
+    }
+
+
+    /**
+     * @brief Change projection type.
+     *
+     * @param projection
+     */
+    void SetProjection(Projection projection) noexcept
+    {
+        m_projectionType = projection;
+        SetupProjection();
+        Update();
     }
 
 
@@ -138,6 +168,12 @@ private:
 
     /// Redraw timer.
     wxTimer m_timer;
+
+    /// Render context.
+    render::Context m_renderer;
+
+    /// Projection type.
+    Projection m_projectionType = Projection::Top;
 
 };
 

@@ -17,6 +17,6 @@ add_library(simulator
 )
 
 # Setup dependencies
-add_dependencies(simulator core physics render)
+add_dependencies(simulator core physics)
 
 # ######################################################################### #

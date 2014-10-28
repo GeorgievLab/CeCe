@@ -208,7 +208,8 @@ inline
 typename std::common_type<Rep1, Rep2>::type
 constexpr operator+(const Unit<Rep1, Ratio1>& lhs, const Unit<Rep2, Ratio2>& rhs)
 {
-
+    // TODO implement
+    return typename std::common_type<Rep1, Rep2>::type{};
 }
 
 /* ************************************************************************ */
@@ -218,7 +219,8 @@ inline
 typename std::common_type<Rep1, Rep2>::type
 constexpr operator-(const Unit<Rep1, Ratio1>& lhs, const Unit<Rep2, Ratio2>& rhs)
 {
-
+    // TODO implement
+    return typename std::common_type<Rep1, Rep2>::type{};
 }
 
 /* ************************************************************************ */

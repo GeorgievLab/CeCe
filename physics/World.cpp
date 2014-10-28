@@ -40,9 +40,9 @@ World::~World() noexcept
 
 /* ************************************************************************ */
 
-void World::Update() noexcept
+void World::update(float step) noexcept
 {
-    m_dynamicsWorld->stepSimulation(1 / 60.f, 5);
+    m_dynamicsWorld->stepSimulation(step, 5);
 }
 
 /* ************************************************************************ */

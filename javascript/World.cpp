@@ -115,12 +115,12 @@ static v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
     if (radius.value())
     {
         // Create a new yeast
-        world->NewCell<simulator::Yeast>(x, y, radius);
+        world->newCell<simulator::Yeast>(x, y, radius);
     }
     else if (volume.value())
     {
         // Create a new yeast
-        world->NewCell<simulator::Yeast>(x, y, volume);
+        world->newCell<simulator::Yeast>(x, y, volume);
     }
     else
     {
