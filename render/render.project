@@ -17,13 +17,10 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Yeast.cpp"/>
-    <File Name="World.cpp"/>
+    <File Name="Context.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Yeast.h"/>
     <File Name="Context.h"/>
-    <File Name="World.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

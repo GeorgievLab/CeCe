@@ -4,9 +4,73 @@
 #include <wx/aboutdlg.h>
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
+#include <wx/config.h>
 
 // JavaScript
 #include "javascript/WorldFactory.h"
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts string into wxPoint.
+ *
+ * @param str   Source string.
+ * @param point Result point.
+ *
+ * @return If conversion was successful.
+ */
+inline bool wxFromString(const wxString& str, wxPoint*& point)
+{
+    return sscanf(str.c_str(), "%d:%d", &(point->x), &(point->y)) == 2;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts string into wxSize.
+ *
+ * @param str  Source string.
+ * @param size Result size.
+ *
+ * @return If conversion was successful.
+ */
+inline bool wxFromString(const wxString& str, wxSize*& size)
+{
+    int width, height;
+    if (sscanf(str.c_str(), "%d:%d", &width, &height) != 2)
+        return false;
+
+    size->Set(width, height);
+    return true;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts wxPoint into string.
+ *
+ * @param point Source point.
+ *
+ * @return Result string.
+ */
+inline wxString wxToString(const wxPoint& point)
+{
+    return wxString::Format("%d:%d", point.x, point.y);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts wxSize into string.
+ *
+ * @param size Source size.
+ *
+ * @return Result string.
+ */
+inline wxString wxToString(const wxSize& size)
+{
+    return wxString::Format("%d:%d", size.GetWidth(), size.GetHeight());
+}
 
 /* ************************************************************************ */
 
@@ -14,6 +78,8 @@ MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
     , m_simulator()
 {
+    m_fileHistory.UseMenu(m_menuFileRecent);
+
     // Set simulator
     m_glCanvasView->SetSimulator(&m_simulator);
 
@@ -75,12 +141,20 @@ MainFrame::MainFrame(wxWindow* parent)
     m_worldFactory.reset(new javascript::WorldFactory());
 
     //Bind(EVT_SIMULATION_UPDATE, &MainFrame::OnSimulationUpdate, this);
+
+    Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
+
+    LoadConfig();
 }
 
 /* ************************************************************************ */
 
 MainFrame::~MainFrame()
 {
+    if (!m_fileName.IsEmpty())
+        m_fileHistory.AddFileToHistory(m_fileName);
+
+    StoreConfig();
 }
 
 /* ************************************************************************ */
@@ -115,7 +189,11 @@ void MainFrame::OnSimulationUpdate(wxThreadEvent& evt)
 
 void MainFrame::OnFileNew(wxCommandEvent& event)
 {
+    if (!m_fileName.IsEmpty())
+        m_fileHistory.AddFileToHistory(m_fileName);
+
     m_stcSource->ClearAll();
+    m_fileName.Clear();
 }
 
 /* ************************************************************************ */
@@ -133,6 +211,9 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
 
     if (selection.IsEmpty())
         return;
+
+    if (!m_fileName.IsEmpty())
+        m_fileHistory.AddFileToHistory(m_fileName);
 
     m_fileName = selection;
     m_stcSource->LoadFile(selection);
@@ -178,8 +259,24 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
+    if (!m_fileName.IsEmpty())
+        m_fileHistory.AddFileToHistory(m_fileName);
+
     m_fileName = selection;
     m_stcSource->SaveFile(selection);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnFileOpenRecent(wxCommandEvent& event)
+{
+    wxString selection = m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1);
+
+    if (!m_fileName.IsEmpty())
+        m_fileHistory.AddFileToHistory(m_fileName);
+
+    m_fileName = selection;
+    m_stcSource->LoadFile(selection);
 }
 
 /* ************************************************************************ */
@@ -264,6 +361,47 @@ void MainFrame::OnViewIsometric(wxCommandEvent& event)
 void MainFrame::OnViewTop(wxCommandEvent& event)
 {
     m_glCanvasView->SetProjection(CanvasWidget::Projection::Top);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::LoadConfig()
+{
+    wxConfigBase* config = wxConfig::Get();
+
+    bool maximized = false;
+    if (config->Read("maximized", &maximized))
+        Maximize(maximized);
+
+    if (!maximized)
+    {
+        wxSize size;
+        if (config->Read("size", &size))
+            SetSize(size);
+
+        wxPoint point;
+        if (config->Read("position", &point))
+            SetPosition(point);
+    }
+
+    m_fileHistory.Load(*config);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::StoreConfig()
+{
+    wxConfigBase* config = wxConfig::Get();
+
+    config->Write("maximized", IsMaximized());
+
+    if (!IsMaximized())
+    {
+        config->Write("size", GetSize());
+        config->Write("position", GetPosition());
+    }
+
+    m_fileHistory.Save(*config);
 }
 
 /* ************************************************************************ */

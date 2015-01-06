@@ -43,6 +43,11 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_menuFile->AppendSeparator();
     
+    m_menuFileRecent = new wxMenu();
+    m_menuFile->AppendSubMenu(m_menuFileRecent, _("Recent"));
+    
+    m_menuFile->AppendSeparator();
+    
     m_menuItemFileExit = new wxMenuItem(m_menuFile, wxID_EXIT, _("&Exit\tCtrl+Q"), _("Quit"), wxITEM_NORMAL);
     m_menuFile->Append(m_menuItemFileExit);
     
@@ -102,16 +107,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizerView = new wxBoxSizer(wxVERTICAL);
     m_splitterPageView->SetSizer(boxSizerView);
     
-    int *m_glCanvasViewAttr = new int[ 9 ];
-    m_glCanvasViewAttr[0] = WX_GL_RGBA;
-    m_glCanvasViewAttr[1] = GL_TRUE;
-    m_glCanvasViewAttr[2] = WX_GL_DOUBLEBUFFER;
-    m_glCanvasViewAttr[3] = GL_TRUE;
-    m_glCanvasViewAttr[4] = WX_GL_DEPTH_SIZE;
-    m_glCanvasViewAttr[5] = 16;
-    m_glCanvasViewAttr[6] = WX_GL_SAMPLE_BUFFERS;
-    m_glCanvasViewAttr[7] = GL_TRUE;
-    m_glCanvasViewAttr[8] = 0;
+    int *m_glCanvasViewAttr = NULL;
     m_glCanvasView = new CanvasWidget(m_splitterPageView, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
     wxDELETEA( m_glCanvasViewAttr );
     

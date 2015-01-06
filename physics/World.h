@@ -73,7 +73,7 @@ public:
     }
 
 
-// Public Operations.
+// Public Operations
 public:
 
 

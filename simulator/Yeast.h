@@ -35,9 +35,10 @@ public:
      * @param world
      * @param x
      * @param y
+     * @param fn
      * @param radius
      */
-    Yeast(World* world, MicroMeters x, MicroMeters y, MicroMeters radius = 1_um);
+    Yeast(World* world, MicroMeters x, MicroMeters y, BehaviourFn fn, MicroMeters radius);
 
 
     /**
@@ -46,9 +47,10 @@ public:
      * @param world
      * @param x
      * @param y
+     * @param fn
      * @param volume
      */
-    Yeast(World* world, MicroMeters x, MicroMeters y, MicroMeters3 volume = 1_um3);
+    Yeast(World* world, MicroMeters x, MicroMeters y, BehaviourFn fn, MicroMeters3 volume);
 
 
 // Public Accessors

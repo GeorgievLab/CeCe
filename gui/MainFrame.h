@@ -5,6 +5,7 @@
 
 // wxWidgets
 #include <wx/scopedptr.h>
+#include <wx/filehistory.h>
 
 // wxCrafter
 #include "wxcrafter.h"
@@ -39,8 +40,26 @@ protected:
     virtual void OnFileOpen(wxCommandEvent& event);
     virtual void OnFileSave(wxCommandEvent& event);
     virtual void OnFileSaveAs(wxCommandEvent& event);
+    void OnFileOpenRecent(wxCommandEvent& event);
     virtual void OnSimulationRestart(wxCommandEvent& event);
     virtual void OnSimulationStep(wxCommandEvent& event);
+
+
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Load configuration.
+     */
+    void LoadConfig();
+
+
+    /**
+     * @brief Store configuration.
+     */
+    void StoreConfig();
+
 
 private:
 
@@ -53,6 +72,8 @@ private:
     /// World factory
     wxScopedPtr<simulator::WorldFactory> m_worldFactory;
 
+    /// File history
+    wxFileHistory m_fileHistory;
 };
 
 /* ************************************************************************ */

@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Workspace name
-project(grow_simulator)
+project(cell-sim)
 
 # Default include directories
 include_directories(

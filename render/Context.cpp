@@ -63,6 +63,9 @@ void Context::setIsometricView(int width, int height, float zoom) noexcept
 
     const GLdouble dist = sqrt(1 / 3.0);
 
+    gluPerspective(10.f * zoom, (float) width / (float) height, 0.1f, 100);
+    glFrustum(-1 * zoom, -1 * zoom, -1 * zoom, 1 * zoom, 0.1f, 100);
+
     gluLookAt(dist, dist, dist,
               0.0,  0.0,  0.0,
               0.0,  0.0,  1.0);
@@ -174,7 +177,15 @@ void Context::drawYeast(const simulator::Yeast& yeast) noexcept
     glPushMatrix();
     glTranslatef(pos.x.value(), pos.y.value(), 0);
 
-    glColor4f(0, 0, 0, 0.5f);
+    auto gfp = yeast.getGfp();
+    auto rfp = yeast.getRfp();
+    auto yfp = yeast.getYfp();
+
+    float red = rfp / 1000.f + yfp / 1000.f;
+    float green = gfp / 1000.f + yfp / 1000.f;
+    float blue = 0;
+
+    glColor4f(red, green, blue, 0.5f);
 
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(0, 0);

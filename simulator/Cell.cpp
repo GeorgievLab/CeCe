@@ -17,10 +17,11 @@ Cell::Id Cell::s_id = 0;
 
 /* ************************************************************************ */
 
-Cell::Cell(World* world, MicroMeters x, MicroMeters y)
+Cell::Cell(World* world, MicroMeters x, MicroMeters y, BehaviourFn fn)
     : physics::Cell(world, x, y)
     , m_id(s_id++)
     , m_world(world)
+    , m_behaviour(std::move(fn))
 {
     // Nothing to do
 }

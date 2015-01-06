@@ -7,6 +7,7 @@
 // C++
 #include <cstddef>
 #include <memory>
+#include <functional>
 
 // Core
 #include "core/Units.h"
@@ -35,6 +36,8 @@ public:
     /// Cell ID type.
     using Id = std::size_t;
 
+    /// Behaviour function type.
+    using BehaviourFn = std::function<void(Cell&)>;
 
 public:
 
@@ -45,8 +48,9 @@ public:
      * @param world
      * @param x
      * @param y
+     * @param fn
      */
-    Cell(World* world, MicroMeters x, MicroMeters y);
+    Cell(World* world, MicroMeters x, MicroMeters y, BehaviourFn fn);
 
 
     /**
@@ -85,10 +89,73 @@ public:
 
     /**
      * @brief Returns world.
+     *
+     * @return
      */
     World* getWorld() const noexcept
     {
         return m_world;
+    }
+
+
+    /**
+     * @brief Returns cell behaviour function.
+     *
+     * @return
+     */
+    const BehaviourFn& getBehaviour() const noexcept
+    {
+        return m_behaviour;
+    }
+
+
+    unsigned int getGfp() const noexcept
+    {
+        return m_gfp;
+    }
+
+
+    unsigned int getRfp() const noexcept
+    {
+        return m_rfp;
+    }
+
+
+    unsigned int getYfp() const noexcept
+    {
+        return m_yfp;
+    }
+
+
+public:
+
+
+    /**
+     * @brief Set cell behaviour function.
+     *
+     * @param fn Function.
+     */
+    void setBehaviour(BehaviourFn fn) noexcept
+    {
+        m_behaviour = std::move(fn);
+    }
+
+
+    void setGfp(unsigned int gfp) noexcept
+    {
+        m_gfp = gfp;
+    }
+
+
+    void setRfp(unsigned int rfp) noexcept
+    {
+        m_rfp = rfp;
+    }
+
+
+    void setYfp(unsigned int yfp) noexcept
+    {
+        m_yfp = yfp;
     }
 
 
@@ -103,6 +170,18 @@ private:
 
     /// Cell world.
     World* m_world;
+
+    /// Behaviour function.
+    BehaviourFn m_behaviour;
+
+    /// Number of GFP proteins.
+    unsigned int m_gfp = 0;
+
+    /// Number of RFP proteins.
+    unsigned int m_rfp = 0;
+
+    /// Number of YFP proteins.
+    unsigned int m_yfp = 0;
 
 };
 

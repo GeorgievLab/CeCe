@@ -12,8 +12,11 @@ public:
     bool OnInit() override
     {
         // Add the common image handlers
-        wxImage::AddHandler( new wxPNGHandler );
-        wxImage::AddHandler( new wxJPEGHandler );
+        wxImage::AddHandler(new wxPNGHandler);
+        wxImage::AddHandler(new wxJPEGHandler);
+
+        SetAppName("cell-sim");
+        SetAppDisplayName("Cell simulator");
 
         SetTopWindow(new MainFrame());
         return GetTopWindow()->Show();

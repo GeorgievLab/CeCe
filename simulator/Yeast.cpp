@@ -13,8 +13,8 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-Yeast::Yeast(World* world, MicroMeters x, MicroMeters y, MicroMeters radius)
-    : Cell(world, x, y)
+Yeast::Yeast(World* world, MicroMeters x, MicroMeters y, BehaviourFn fn, MicroMeters radius)
+    : Cell(world, x, y, std::move(fn))
     , m_radius(radius)
 {
     // Use sphere body
@@ -23,8 +23,8 @@ Yeast::Yeast(World* world, MicroMeters x, MicroMeters y, MicroMeters radius)
 
 /* ************************************************************************ */
 
-Yeast::Yeast(World* world, MicroMeters x, MicroMeters y, MicroMeters3 volume)
-    : Yeast(world, x, y, calcRadius(volume))
+Yeast::Yeast(World* world, MicroMeters x, MicroMeters y, BehaviourFn fn, MicroMeters3 volume)
+    : Yeast(world, x, y, std::move(fn), calcRadius(volume))
 {
     // Nothing to do
 }

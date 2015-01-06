@@ -40,6 +40,8 @@ protected:
     wxMenuItem* m_menuItemFileSave;
     wxMenuItem* m_menuItemFileSaveAs;
     wxMenuItem* m_menuItemFileSep1;
+    wxMenu* m_menuFileRecent;
+    wxMenuItem* m_menuItemFileSep2;
     wxMenuItem* m_menuItemFileExit;
     wxMenu* m_menuView;
     wxMenuItem* m_menuItemTop;

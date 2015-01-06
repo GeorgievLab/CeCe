@@ -21,6 +21,20 @@ World::World(std::unique_ptr<WorldImplData> data) noexcept
 
 /* ************************************************************************ */
 
+void World::update(float step) noexcept
+{
+    // Update all cells
+    for (auto& cell : m_cells)
+    {
+        if (cell->getBehaviour())
+            cell->getBehaviour()(*cell);
+    }
+
+    physics::World::update(step);
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

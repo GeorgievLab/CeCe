@@ -120,10 +120,11 @@ public:
      *
      * @param cell
      */
-    void addCell(std::unique_ptr<Cell> cell)
+    Cell* addCell(std::unique_ptr<Cell> cell)
     {
         assert(cell);
         m_cells.push_back(std::move(cell));
+        return m_cells.back().get();
     }
 
 
@@ -131,11 +132,13 @@ public:
      * @brief Create a new cell to population.
      *
      * @param cell
+     *
+     * @return
      */
     template<typename T, typename... Args>
-    void newCell(Args&&... args)
+    Cell* newCell(Args&&... args)
     {
-        addCell(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
+        return addCell(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
     }
 
 
@@ -149,6 +152,18 @@ public:
     {
         //m_barriers.emplace_back(new Barrier(this, std::forward<Args>(args)...));
     }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Update world.
+     *
+     * @param step
+     */
+    void update(float step) noexcept;
 
 
 // Private Data Members
