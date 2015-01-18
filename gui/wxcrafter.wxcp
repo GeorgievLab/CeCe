@@ -74,7 +74,7 @@
     }, {
      "type": "string",
      "m_label": "Title:",
-     "m_value": "Yeast Simulation"
+     "m_value": "Cell simulator"
     }, {
      "type": "virtualFolderPicker",
      "m_label": "Virtual Folder:",

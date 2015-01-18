@@ -8,7 +8,6 @@
 #include <vector>
 #include <memory>
 #include <cassert>
-#include <mutex>
 
 // Physics
 #include "physics/World.h"
@@ -23,16 +22,6 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Barrier;
-
-/* ************************************************************************ */
-
-/**
- * @brief World implementation data.
- */
-struct WorldImplData
-{
-    virtual ~WorldImplData() {}
-};
 
 /* ************************************************************************ */
 
@@ -58,7 +47,13 @@ public:
     /**
      * @brief Constructor.
      */
-    World(std::unique_ptr<WorldImplData> data = nullptr) noexcept;
+    World() noexcept;
+
+
+    /**
+     * @brief Virtual destructor.
+     */
+    virtual ~World();
 
 
 // Public Accessors
@@ -159,6 +154,20 @@ public:
 
 
     /**
+     * @brief Reset world.
+     */
+    virtual void reset();
+
+
+    /**
+     * @brief Load world code.
+     *
+     * @param source
+     */
+    virtual void load(std::string source) = 0;
+
+
+    /**
      * @brief Update world.
      *
      * @param step
@@ -168,9 +177,6 @@ public:
 
 // Private Data Members
 private:
-
-    /// World implementation data.
-    std::unique_ptr<WorldImplData> m_implData;
 
     /// World width.
     MicroMeters m_width{400};

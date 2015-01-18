@@ -39,6 +39,14 @@ public:
 
 
     /**
+     * @brief Create empty world.
+     *
+     * @return
+     */
+    virtual std::unique_ptr<World> createWorld() const = 0;
+
+
+    /**
      * @brief Create a new world from source file.
      *
      * @param filename
@@ -51,7 +59,7 @@ public:
      *
      * @param source
      */
-    virtual std::unique_ptr<World> createWorldFromSource(const std::string& source) const = 0;
+    virtual std::unique_ptr<World> createWorldFromSource(const std::string& source) const;
 
 };
 

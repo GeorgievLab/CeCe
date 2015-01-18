@@ -12,6 +12,29 @@
 #include "simulator/Cell.h"
 #include "simulator/Yeast.h"
 
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns pointer.
+ *
+ * @param info
+ */
+template<typename T>
+T* get_pointer(const v8::AccessorInfo& info) noexcept
+{
+    using namespace v8;
+
+    Local<Object> self = info.Holder();
+    Local<External> wrap = Local<External>::Cast(self->GetInternalField(0));
+    return static_cast<T*>(wrap->Value());
+}
+
+/* ************************************************************************ */
+
+}
+
 /* ************************************************************************ */
 
 namespace javascript {
@@ -27,10 +50,7 @@ static simulator::World* get_world()
 
     // Get world object
     v8::Handle<v8::Object> global = v8::Context::GetCurrent()->Global();
-    v8::Handle<v8::Value> worldValue = global->Get(v8::String::New("world"));
-    assert(worldValue->IsExternal());
-    v8::Handle<v8::External> worldHandle = worldValue.As<v8::External>();
-    simulator::World* world = reinterpret_cast<simulator::World*>(worldHandle->Value());
+    simulator::World* world = reinterpret_cast<simulator::World*>(global->GetPointerFromInternalField(0));
     assert(world);
     return world;
 }
@@ -271,28 +291,116 @@ static v8::Handle<v8::Value> js_rand(const v8::Arguments& args)
 
 /* ************************************************************************ */
 
-WorldImplData::WorldImplData() noexcept
+World::World() noexcept
 {
     std::srand(std::time(0));
 
-    v8::HandleScope handle_scope;
-
-    v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-
-    // Global functions
-    global->Set("yeast", v8::FunctionTemplate::New(create_yeast));
-    global->Set("rand", v8::FunctionTemplate::New(js_rand));
-    //global->Set("barrier", v8::FunctionTemplate::New(createBarrier));
-
-    // Create context
-    m_context = v8::Context::New(nullptr, global);
+    initContext();
 }
 
 /* ************************************************************************ */
 
-WorldImplData::~WorldImplData()
+World::~World()
 {
     m_context.Dispose();
+}
+
+/* ************************************************************************ */
+
+void World::reset()
+{
+    simulator::World::reset();
+
+    using namespace v8;
+
+    // Reset context
+    m_context.Dispose();
+    initContext();
+
+    load(std::move(m_source));
+}
+
+/* ************************************************************************ */
+
+void World::load(std::string source)
+{
+    m_source = std::move(source);
+
+    using namespace v8;
+
+    HandleScope handle_scope;
+
+    // Select V8 scope
+    Context::Scope context_scope(m_context);
+
+    // Create V8 source
+    Handle<String> code = String::New(m_source.data(), m_source.length());
+
+    TryCatch try_catch;
+
+    // Compile the script and check for errors.
+    auto script = Script::Compile(code);
+
+    if (try_catch.HasCaught() || script.IsEmpty())
+    {
+        String::Utf8Value error(try_catch.Exception());
+        throw std::invalid_argument(*error);
+    }
+
+    runScript(script);
+}
+
+/* ************************************************************************ */
+
+void World::initContext()
+{
+    using namespace v8;
+
+    HandleScope handle_scope;
+
+    // Create global object -> world
+    Handle<ObjectTemplate> world_tpl = ObjectTemplate::New();
+    // First field is a pointer to this
+    world_tpl->SetInternalFieldCount(1);
+
+    //world_tpl->SetAccessor(String::New("width"), &World::GetWidth);
+    //world_tpl->SetAccessor(String::New("height"), &World::GetHeight);
+
+    // Global functions
+    world_tpl->Set("yeast", v8::FunctionTemplate::New(create_yeast));
+    world_tpl->Set("rand", v8::FunctionTemplate::New(js_rand));
+    //global->Set("barrier", v8::FunctionTemplate::New(createBarrier));
+
+    // Create context
+    m_context = Context::New(nullptr, world_tpl);
+
+    {
+        Context::Scope scope(m_context);
+
+        // Set pointer to global object
+        Handle<Object> world = m_context->Global();
+        assert(!world.IsEmpty());
+        world->SetPointerInInternalField(0, this);
+    }
+}
+
+/* ************************************************************************ */
+
+void World::runScript(v8::Handle<v8::Script> script)
+{
+    using namespace v8;
+
+    HandleScope handle_scope;
+    TryCatch try_catch;
+
+    // Execute script
+    script->Run();
+
+    if (try_catch.HasCaught())
+    {
+        String::Utf8Value error(try_catch.Exception());
+        throw std::invalid_argument(*error);
+    }
 }
 
 /* ************************************************************************ */

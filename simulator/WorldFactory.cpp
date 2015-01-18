@@ -36,6 +36,16 @@ std::unique_ptr<World> WorldFactory::createWorldFromFile(const std::string& file
 
 /* ************************************************************************ */
 
+std::unique_ptr<World> WorldFactory::createWorldFromSource(const std::string& source) const
+{
+    auto world = createWorld();
+    world->load(source);
+
+    return world;
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

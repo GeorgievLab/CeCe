@@ -5,6 +5,7 @@
 
 // wxWidgets
 #include <wx/scopedptr.h>
+#include <wx/filename.h>
 #include <wx/filehistory.h>
 
 // wxCrafter
@@ -50,6 +51,22 @@ protected:
 
 
     /**
+     * @brief Load file and create world.
+     *
+     * @param path Path to file.
+     */
+    void LoadFile(const wxFileName& path);
+
+
+    /**
+     * @brief Load text into world.
+     *
+     * @param code Simulation code.
+     */
+    void LoadText(const wxString& code);
+
+
+    /**
      * @brief Load configuration.
      */
     void LoadConfig();
@@ -64,7 +81,7 @@ protected:
 private:
 
     /// Current loaded file name.
-    wxString m_fileName;
+    wxFileName m_fileName;
 
     /// Simulator.
     simulator::Simulator m_simulator;

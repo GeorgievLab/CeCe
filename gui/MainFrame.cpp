@@ -145,14 +145,17 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
 
     LoadConfig();
+
+    wxASSERT(m_worldFactory);
+    m_simulator.setWorld(m_worldFactory->createWorld());
 }
 
 /* ************************************************************************ */
 
 MainFrame::~MainFrame()
 {
-    if (!m_fileName.IsEmpty())
-        m_fileHistory.AddFileToHistory(m_fileName);
+    if (m_fileName.IsOk())
+        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
 
     StoreConfig();
 }
@@ -189,8 +192,8 @@ void MainFrame::OnSimulationUpdate(wxThreadEvent& evt)
 
 void MainFrame::OnFileNew(wxCommandEvent& event)
 {
-    if (!m_fileName.IsEmpty())
-        m_fileHistory.AddFileToHistory(m_fileName);
+    if (m_fileName.IsOk())
+        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
 
     m_stcSource->ClearAll();
     m_fileName.Clear();
@@ -212,8 +215,8 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
-    if (!m_fileName.IsEmpty())
-        m_fileHistory.AddFileToHistory(m_fileName);
+    if (m_fileName.IsOk())
+        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
 
     m_fileName = selection;
     m_stcSource->LoadFile(selection);
@@ -223,7 +226,7 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
 
 void MainFrame::OnFileSave(wxCommandEvent& event)
 {
-    if (m_fileName.IsEmpty())
+    if (!m_fileName.IsOk())
     {
         wxString selection = wxFileSelector(
             wxFileSelectorPromptStr,
@@ -240,7 +243,7 @@ void MainFrame::OnFileSave(wxCommandEvent& event)
         m_fileName = selection;
     }
 
-    m_stcSource->SaveFile(m_fileName);
+    m_stcSource->SaveFile(m_fileName.GetFullPath());
 }
 
 /* ************************************************************************ */
@@ -259,11 +262,7 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
-    if (!m_fileName.IsEmpty())
-        m_fileHistory.AddFileToHistory(m_fileName);
-
-    m_fileName = selection;
-    m_stcSource->SaveFile(selection);
+    LoadFile(selection);
 }
 
 /* ************************************************************************ */
@@ -272,11 +271,7 @@ void MainFrame::OnFileOpenRecent(wxCommandEvent& event)
 {
     wxString selection = m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1);
 
-    if (!m_fileName.IsEmpty())
-        m_fileHistory.AddFileToHistory(m_fileName);
-
-    m_fileName = selection;
-    m_stcSource->LoadFile(selection);
+    LoadFile(selection);
 }
 
 /* ************************************************************************ */
@@ -284,26 +279,18 @@ void MainFrame::OnFileOpenRecent(wxCommandEvent& event)
 void MainFrame::OnSimulationStart(wxCommandEvent& event)
 {
     // If source code is modified, load modified version
-    if ((m_stcSource->IsModified() && !m_stcSource->IsEmpty()) || !m_simulator.getWorld())
+    if (m_stcSource->IsModified())
     {
-        try
+        if (m_stcSource->IsEmpty())
         {
-            // Create a new world
-            m_simulator.setWorld(m_worldFactory->createWorldFromSource(m_stcSource->GetText().To8BitData().data()));
-
-            // Source is not modified
-            m_stcSource->SetModified(false);
-        }
-        catch (const std::exception& e)
-        {
-            wxMessageBox(e.what(), wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
+            wxMessageBox("Source script is empty, nothing to simulate!", wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
             return;
         }
-    }
-    else if (m_stcSource->IsEmpty())
-    {
-        wxMessageBox("Source script is empty, nothing to simulate!", wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
-        return;
+
+        LoadText(m_stcSource->GetText());
+
+        // Source is not modified
+        m_stcSource->SetModified(false);
     }
 
     wxASSERT(!m_simulator.isRunning());
@@ -322,7 +309,7 @@ void MainFrame::OnSimulationStop(wxCommandEvent& event)
 
 void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 {
-    m_simulator.setWorld(nullptr);
+    m_simulator.getWorld()->reset();
     m_glCanvasView->Update();
 }
 
@@ -361,6 +348,41 @@ void MainFrame::OnViewIsometric(wxCommandEvent& event)
 void MainFrame::OnViewTop(wxCommandEvent& event)
 {
     m_glCanvasView->SetProjection(CanvasWidget::Projection::Top);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::LoadFile(const wxFileName& path)
+{
+    if (m_fileName.IsOk())
+        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
+
+    m_fileName = path;
+    m_stcSource->LoadFile(path.GetFullPath());
+
+    if (m_stcSource->IsEmpty())
+    {
+        wxMessageBox("Source script is empty, nothing to simulate!", wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
+        return;
+    }
+
+    LoadText(m_stcSource->GetText());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::LoadText(const wxString& code)
+{
+    try
+    {
+        // Create a new world
+        m_simulator.setWorld(m_worldFactory->createWorldFromSource(code.To8BitData().data()));
+    }
+    catch (const std::exception& e)
+    {
+        wxMessageBox(e.what(), wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
+        return;
+    }
 }
 
 /* ************************************************************************ */

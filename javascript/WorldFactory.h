@@ -26,11 +26,11 @@ public:
 
 
     /**
-     * @brief Create a new world from source code.
+     * @brief Create empty world.
      *
-     * @param source
+     * @return
      */
-    std::unique_ptr<simulator::World> createWorldFromSource(const std::string& source) const override;
+    std::unique_ptr<simulator::World> createWorld() const override;
 
 };
 

@@ -13,10 +13,23 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-World::World(std::unique_ptr<WorldImplData> data) noexcept
-    : m_implData(std::move(data))
+World::World() noexcept
 {
     // Nothing to do
+}
+
+/* ************************************************************************ */
+
+World::~World()
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+void World::reset()
+{
+    m_cells.clear();
 }
 
 /* ************************************************************************ */
@@ -26,8 +39,10 @@ void World::update(float step) noexcept
     // Update all cells
     for (auto& cell : m_cells)
     {
-        if (cell->getBehaviour())
-            cell->getBehaviour()(*cell);
+        const auto& fn = cell->getBehaviour();
+
+        if (fn)
+            fn(*cell);
     }
 
     physics::World::update(step);
