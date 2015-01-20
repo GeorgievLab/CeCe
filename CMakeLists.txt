@@ -7,6 +7,7 @@ project(cell-sim)
 
 option(ASAN "If address sanitizer should be used" Off)
 option(MSAN "If memory sanitizer should be used" Off)
+option(USE_LIBCPP "If libc++ should be used" Off)
 
 # Default include directories
 include_directories(
@@ -14,8 +15,13 @@ include_directories(
 )
 
 # C++11 required
-add_compile_options(-pedantic-errors -pedantic -std=c++11 -stdlib=libc++)
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+add_compile_options(-pedantic-errors -pedantic -std=c++11)
+
+# Use libc++
+if (USE_LIBCPP)
+    add_compile_options(-stdlib=libc++)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+endif()
 
 # Debug flags
 if (ASAN)

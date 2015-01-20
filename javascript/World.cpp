@@ -125,6 +125,8 @@ void SetYfp(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8
  */
 static v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
 {
+    using namespace v8;
+
     v8::HandleScope handle_scope;
 
     // Get world object
@@ -212,7 +214,7 @@ static v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
             gfp = val->Int32Value();
         }
 
-        // GFP
+        // RFP
         if (options->Has(rfpName))
         {
             v8::Local<v8::Value> val = options->Get(rfpName);
@@ -235,11 +237,8 @@ static v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
         // Function defined
         if (args.Length() >= 2)
         {
-            v8::Handle<v8::Function> callback = v8::Local<v8::Function>::Cast(args[1]->ToObject());
-
-            fn = [obj, callback](simulator::Cell& cell) {
-                //callback->Call(obj, 0, nullptr);
-            };
+            // Store program
+            obj->Set(String::New("program"), Local<Function>::Cast(args[1]));
         }
     }
 
@@ -293,7 +292,7 @@ static v8::Handle<v8::Value> js_rand(const v8::Arguments& args)
 
 World::World() noexcept
 {
-    std::srand(std::time(0));
+    std::srand(time(0));
 
     initContext();
 }
