@@ -1,5 +1,5 @@
-#ifndef _SIMULATOR_SIMULATOR_H_
-#define _SIMULATOR_SIMULATOR_H_
+
+#pragma once
 
 /* ************************************************************************ */
 
@@ -64,15 +64,6 @@ public:
     }
 
 
-    /**
-     * @brief Returns a mutable reference to mutex.
-     */
-    std::mutex& getMuttex() noexcept
-    {
-        return m_accessMutex;
-    }
-
-
 public:
 
 
@@ -117,12 +108,6 @@ public:
 // Data Members
 private:
 
-    /// Mutex for shared access.
-    std::mutex m_accessMutex;
-
-    /// Background thread.
-    std::thread m_thread;
-
     /// Flag if thread is running
     std::atomic<bool> m_isRunning{false};
 
@@ -136,5 +121,3 @@ private:
 }
 
 /* ************************************************************************ */
-
-#endif // _SIMULATOR_SIMULATOR_H_

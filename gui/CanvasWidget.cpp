@@ -106,8 +106,6 @@ void CanvasWidget::Render() noexcept
     wxASSERT(m_simulator);
     if (m_simulator->getWorld())
     {
-        std::lock_guard<std::mutex> _(m_simulator->getMuttex());
-
         m_renderer.drawWorld(*m_simulator->getWorld());
     }
 

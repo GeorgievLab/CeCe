@@ -22,11 +22,13 @@
     <File Name="wxcrafter.cpp"/>
     <File Name="wxcrafter_bitmaps.cpp"/>
     <File Name="CanvasWidget.cpp"/>
+    <File Name="SimulatorThread.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>
     <File Name="wxcrafter.h"/>
     <File Name="CanvasWidget.h"/>
+    <File Name="SimulatorThread.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>

@@ -35,12 +35,11 @@ Simulator::~Simulator()
 void Simulator::start()
 {
     m_isRunning = true;
-    m_thread = std::thread([this] {
-        while (m_isRunning)
-        {
-            step();
-        }
-    });
+
+    while (m_isRunning)
+    {
+        step();
+    }
 }
 
 /* ************************************************************************ */
@@ -48,8 +47,6 @@ void Simulator::start()
 void Simulator::stop()
 {
     m_isRunning = false;
-    if (m_thread.joinable())
-        m_thread.join();
 }
 
 /* ************************************************************************ */
@@ -60,9 +57,6 @@ void Simulator::step()
     auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(1000 / 60);
 
     {
-        // Lock access to world
-        std::lock_guard<std::mutex> _(m_accessMutex);
-
         assert(m_world);
         m_world->update(1 / 60.f);
     }
