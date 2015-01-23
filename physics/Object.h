@@ -7,6 +7,9 @@
 // C++
 #include <memory>
 
+// Physics
+#include "physics/Position.h"
+
 /* ************************************************************************ */
 
 class btCollisionShape;
@@ -61,6 +64,14 @@ public:
 
 
     /**
+     * @brief Returns current position.
+     *
+     * @return
+     */
+    Position getPosition() const noexcept;
+
+
+    /**
      * @brief Returns object shape.
      *
      * @return
@@ -91,6 +102,18 @@ public:
     {
         return m_motionState.get();
     }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Change object position.
+     *
+     * @param pos
+     */
+    void setPosition(Position pos) noexcept;
 
 
 // Public Operations

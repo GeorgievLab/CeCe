@@ -2,30 +2,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/Cell.h"
-
-// Core
-#include "simulator/World.h"
+#include "render/Camera.hpp"
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace render {
 
 /* ************************************************************************ */
-
-Cell::Cell(World* world, Shape shape)
-    : physics::Cell(world, shape)
-    , m_world(world)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-Cell::~Cell()
-{
-    // Nothing to do
-}
 
 /* ************************************************************************ */
 

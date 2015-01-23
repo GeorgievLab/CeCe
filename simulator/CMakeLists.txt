@@ -2,21 +2,22 @@
 
 project(simulator)
 
-# Sources
-set(CXX_SRCS
+# Create library
+add_library(simulator
+    Cell.h
     Cell.cpp
+    World.h
     World.cpp
-    Yeast.cpp
+    WorldFactory.h
     WorldFactory.cpp
+    Simulator.h
     Simulator.cpp
 )
 
-# Create library
-add_library(simulator
-    ${CXX_SRCS}
-)
-
 # Setup dependencies
-add_dependencies(simulator core physics)
+add_dependencies(simulator
+    core
+    physics
+)
 
 # ######################################################################### #

@@ -30,15 +30,16 @@ class World;
  */
 class Cell : public physics::Cell
 {
+
+// Public Types
 public:
 
-
-    /// Cell ID type.
-    using Id = std::size_t;
 
     /// Behaviour function type.
     using BehaviourFn = std::function<void(Cell&)>;
 
+
+// Public Ctors & Dtors
 public:
 
 
@@ -46,11 +47,9 @@ public:
      * @brief Constructor.
      *
      * @param world
-     * @param x
-     * @param y
-     * @param fn
+     * @param shape Cell shape.
      */
-    Cell(World* world, MicroMeters x, MicroMeters y, BehaviourFn fn);
+    Cell(World* world, Shape shape = Shape::Sphere);
 
 
     /**
@@ -59,32 +58,8 @@ public:
     virtual ~Cell();
 
 
+// Public Accessors
 public:
-
-
-    /**
-     * @brief Operator for sorting.
-     *
-     * @param cell
-     */
-    bool operator<(const Cell& cell) const noexcept
-    {
-        return m_id < cell.m_id;
-    }
-
-
-public:
-
-
-    /**
-     * @brief Returns ID.
-     *
-     * @return
-     */
-    Id getId() const noexcept
-    {
-        return m_id;
-    }
 
 
     /**
@@ -109,24 +84,40 @@ public:
     }
 
 
+    /**
+     * @brief Returns a number of GFP proteins.
+     *
+     * @return
+     */
     unsigned int getGfp() const noexcept
     {
         return m_gfp;
     }
 
 
+    /**
+     * @brief Returns a number of RFP proteins.
+     *
+     * @return
+     */
     unsigned int getRfp() const noexcept
     {
         return m_rfp;
     }
 
 
+    /**
+     * @brief Returns a number of YFP proteins.
+     *
+     * @return
+     */
     unsigned int getYfp() const noexcept
     {
         return m_yfp;
     }
 
 
+// Public Mutators
 public:
 
 
@@ -141,18 +132,33 @@ public:
     }
 
 
+    /**
+     * @brief Set a number of GFP proteins in the cell.
+     *
+     * @param gfp
+     */
     void setGfp(unsigned int gfp) noexcept
     {
         m_gfp = gfp;
     }
 
 
+    /**
+     * @brief Set a number of RFP proteins in the cell.
+     *
+     * @param rfp
+     */
     void setRfp(unsigned int rfp) noexcept
     {
         m_rfp = rfp;
     }
 
 
+    /**
+     * @brief Set a number of YFP proteins in the cell.
+     *
+     * @param yfp
+     */
     void setYfp(unsigned int yfp) noexcept
     {
         m_yfp = yfp;
@@ -162,14 +168,8 @@ public:
 // Private Data Members
 private:
 
-    /// Unique cell ID.
-    static Id s_id;
-
-    /// Cell ID.
-    Id m_id;
-
     /// Cell world.
-    World* m_world;
+    World* const m_world;
 
     /// Behaviour function.
     BehaviourFn m_behaviour;

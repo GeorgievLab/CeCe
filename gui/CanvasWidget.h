@@ -163,9 +163,6 @@ private:
     /// Simulator pointer.
     simulator::Simulator* m_simulator;
 
-    /// Zoom value.
-    float m_zoom = 1.f;
-
     /// Redraw timer.
     wxTimer m_timer;
 

@@ -1,6 +1,5 @@
 
-#ifndef _JAVASCRIPT_WORLD_H_
-#define _JAVASCRIPT_WORLD_H_
+#pragma once
 
 /* ************************************************************************ */
 
@@ -83,8 +82,12 @@ public:
     void load(std::string source) override;
 
 
-// Public V8
-public:
+    /**
+     * @brief Update world.
+     *
+     * @param step
+     */
+    void update(float step) noexcept override;
 
 
 // Protected Operations
@@ -118,8 +121,13 @@ private:
 
 /* ************************************************************************ */
 
-}
+/**
+ * @brief Returns a pointer to world instance.
+ */
+World* get_world();
 
 /* ************************************************************************ */
 
-#endif // _JAVASCRIPT_WORLD_H_
+}
+
+/* ************************************************************************ */

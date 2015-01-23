@@ -277,11 +277,38 @@ class Volume : public Unit<Rep, Ratio>
 
 /* ************************************************************************ */
 
+/**
+ * @brief Class for representing volume.
+ */
+template<class Rep = float, class Ratio = std::ratio<1> >
+class Angle : public Unit<Rep, Ratio>
+{
+    using Unit<Rep, Ratio>::Unit;
+};
+
+/* ************************************************************************ */
+
 using MicroMeters = Distance<>;
 
 /* ************************************************************************ */
 
+using MilliMeters = Distance<float, std::ratio<1000>>;
+
+/* ************************************************************************ */
+
+using CentiMeters = Distance<float, std::ratio<10 * 1000>>;
+
+/* ************************************************************************ */
+
+using Meters = Distance<float, std::ratio<1000 * 1000>>;
+
+/* ************************************************************************ */
+
 using MicroMeters3 = Volume<>;
+
+/* ************************************************************************ */
+
+using Radian = Angle<>;
 
 /* ************************************************************************ */
 
@@ -306,6 +333,36 @@ inline MicroMeters operator"" _um(unsigned long long int value)
 /* ************************************************************************ */
 
 /**
+ * @brief MilliMeters literal.
+ */
+inline MilliMeters operator"" _mm(unsigned long long int value)
+{
+    return MilliMeters(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief CentiMeters literal.
+ */
+inline CentiMeters operator"" _cm(unsigned long long int value)
+{
+    return CentiMeters(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Meters literal.
+ */
+inline Meters operator"" _m(unsigned long long int value)
+{
+    return Meters(value);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Micrometers^3 literal.
  */
 inline MicroMeters3 operator"" _um3(long double value)
@@ -321,6 +378,46 @@ inline MicroMeters3 operator"" _um3(long double value)
 inline MicroMeters3 operator"" _um3(unsigned long long int value)
 {
     return MicroMeters3(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Radian literal.
+ */
+inline Radian operator"" _rad(long double value)
+{
+    return Radian(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Radian literal.
+ */
+inline Radian operator"" _rad(unsigned long long int value)
+{
+    return Radian(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Radian literal.
+ */
+inline Radian operator"" _deg(long double value)
+{
+    return Radian(value * 0.01745329252);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Radian literal.
+ */
+inline Radian operator"" _deg(unsigned long long int value)
+{
+    return Radian(value * 0.01745329252);
 }
 
 /* ************************************************************************ */

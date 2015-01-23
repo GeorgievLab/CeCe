@@ -2,18 +2,18 @@
 
 project(render)
 
-# Sources
-set(CXX_SRCS
-    Context.h
-    Context.cpp
-)
-
 # Create library
 add_library(render
-    ${CXX_SRCS}
+    Context.h
+    Context.cpp
+    Camera.hpp
+    Camera.cpp
 )
 
 # Setup dependencies
-add_dependencies(render core simulator)
+add_dependencies(render
+    core
+    simulator
+)
 
 # ######################################################################### #

@@ -40,6 +40,15 @@ World::~World() noexcept
 
 /* ************************************************************************ */
 
+std::array<float, 3> World::getGravity() const noexcept
+{
+    auto grav = m_dynamicsWorld->getGravity();
+
+    return {grav.x(), grav.y(), grav.z()};
+}
+
+/* ************************************************************************ */
+
 void World::update(float step) noexcept
 {
     m_dynamicsWorld->stepSimulation(step, 5);

@@ -1,8 +1,10 @@
 
-#ifndef _PHYSICS_CELL_H_
-#define _PHYSICS_CELL_H_
+#pragma once
 
 /* ************************************************************************ */
+
+// C++
+#include <cmath>
 
 // Core
 #include "core/Units.h"
@@ -27,6 +29,20 @@ class World;
 class Cell : public Object
 {
 
+
+// Public Enums
+public:
+
+
+    /**
+     * @brief Cell shapes.
+     */
+    enum class Shape
+    {
+        Sphere
+    };
+
+
 // Public Ctors & Dtors
 public:
 
@@ -34,11 +50,10 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param world Physical world.
-     * @param x     Initial X coordinate (2D).
-     * @param y     Initial Y coordinate (2D).
+     * @param world     Physical world.
+     * @param shapeType Cell shape.
      */
-    Cell(World* world, MicroMeters x, MicroMeters y);
+    Cell(World* world, Shape shapeType);
 
 
 // Public Accessors
@@ -46,11 +61,37 @@ public:
 
 
     /**
-     * @brief Returns current position.
+     * @brief Returns cell shape.
      *
      * @return
      */
-    Vect<MicroMeters> getPosition() const noexcept;
+    Shape getShapeType() const noexcept
+    {
+        return m_shapeType;
+    }
+
+
+    /**
+     * @brief Get cell volume.
+     *
+     * @return
+     */
+    MicroMeters3 getVolume() const noexcept
+    {
+        return m_volume;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set cell volume.
+     *
+     * @param volume
+     */
+    void setVolume(MicroMeters3 volume) noexcept;
 
 
 // Public Operations
@@ -58,9 +99,17 @@ public:
 
 
     /**
-     * @brief Reset cell state.
+     * @brief Calculate radius for sphere shapes - from cell volume.
+     *
+     * @param volume Cell volume.
+     *
+     * @return Radius.
      */
-    virtual void reset() noexcept;
+    static MicroMeters calcSphereRadius(MicroMeters3 volume) noexcept
+    {
+        // 3th root of ((3 / 4 * pi) * volume)
+        return MicroMeters(0.62035f * std::pow(volume.value(), 0.3333333f));
+    }
 
 
 // Protected Operations
@@ -68,19 +117,19 @@ protected:
 
 
     /**
-     * @brief Create sphere body.
-     *
-     * @param radius Sphere radius.
+     * @brief Update (create) sphere body.
      */
-    void createSphereBody(MicroMeters radius) noexcept;
+    void updateSphereBody() noexcept;
 
 
 // Private Data Members
 private:
 
+    /// Cell shape.
+    Shape m_shapeType;
 
-    /// Initial position.
-    Vect<MicroMeters> m_initPos;
+    /// Cell volume.
+    MicroMeters3 m_volume = 0_um;
 
 };
 
@@ -89,5 +138,3 @@ private:
 }
 
 /* ************************************************************************ */
-
-#endif // _PHYSICS_CELL_H_

@@ -172,7 +172,7 @@ public:
      *
      * @param step
      */
-    void update(float step) noexcept;
+    virtual void update(float step) noexcept;
 
 
 // Private Data Members

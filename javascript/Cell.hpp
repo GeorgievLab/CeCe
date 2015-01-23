@@ -1,31 +1,21 @@
 
-/* ************************************************************************ */
-
-// Declaration
-#include "simulator/Cell.h"
-
-// Core
-#include "simulator/World.h"
+#pragma once
 
 /* ************************************************************************ */
 
-namespace simulator {
+// V8
+#include <v8.h>
 
 /* ************************************************************************ */
 
-Cell::Cell(World* world, Shape shape)
-    : physics::Cell(world, shape)
-    , m_world(world)
-{
-    // Nothing to do
-}
+namespace javascript {
 
 /* ************************************************************************ */
 
-Cell::~Cell()
-{
-    // Nothing to do
-}
+/**
+ * @brief Create a cell object.
+ */
+v8::Handle<v8::Value> create_cell(const v8::Arguments& args);
 
 /* ************************************************************************ */
 

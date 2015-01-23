@@ -16,47 +16,53 @@ namespace physics {
 
 /* ************************************************************************ */
 
-Cell::Cell(World* world, MicroMeters x, MicroMeters y)
+Cell::Cell(World* world, Shape shapeType)
     : Object(world)
+    , m_shapeType(shapeType)
 {
-    // Create initial motion state
-    m_motionState.reset(new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(x.value(), 1, y.value()))));
+    setVolume(10000_um3);
 }
 
 /* ************************************************************************ */
 
-Vect<MicroMeters> Cell::getPosition() const noexcept
+void Cell::setVolume(MicroMeters3 volume) noexcept
 {
-    btTransform trans;
-    m_rigidBody->getMotionState()->getWorldTransform(trans);
+    m_volume = volume;
 
-    auto pos = trans.getOrigin();
-
-    return {MicroMeters(pos.x()), MicroMeters(pos.z())};
+    // Update shape
+    switch (m_shapeType)
+    {
+    case Shape::Sphere:
+        updateSphereBody();
+        break;
+    }
 }
 
 /* ************************************************************************ */
 
-void Cell::reset() noexcept
-{
-    // TODO: implement
-    //btTransform(btQuaternion(0, 0, 0, 1), btVector3(x.value(), 1, y.value()))
-}
-
-/* ************************************************************************ */
-
-void Cell::createSphereBody(MicroMeters radius) noexcept
+void Cell::updateSphereBody() noexcept
 {
     float mass = 1;
     btVector3 fallInertia(0, 0, 0);
 
-    m_shape.reset(new btSphereShape(radius.value()));
-    m_shape->calculateLocalInertia(mass, fallInertia);
+    btSphereShape* shape = dynamic_cast<btSphereShape*>(m_shape.get());
 
-    m_rigidBody.reset(new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(mass, m_motionState.get(), m_shape.get(), fallInertia)));
+    if (shape)
+    {
+        // Update radius
+        shape->setUnscaledRadius(calcSphereRadius(m_volume).value());
+        shape->calculateLocalInertia(mass, fallInertia);
+    }
+    else
+    {
+        m_shape.reset(new btSphereShape(calcSphereRadius(m_volume).value()));
+        m_shape->calculateLocalInertia(mass, fallInertia);
 
-    // Register body
-    registerRigidBody();
+        m_rigidBody.reset(new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(mass, m_motionState.get(), m_shape.get(), fallInertia)));
+
+        // Register body
+        registerRigidBody();
+    }
 }
 
 /* ************************************************************************ */

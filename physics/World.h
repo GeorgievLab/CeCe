@@ -6,6 +6,7 @@
 
 // C++
 #include <memory>
+#include <array>
 
 /* ************************************************************************ */
 
@@ -71,6 +72,14 @@ public:
     {
         return m_ground.get();
     }
+
+
+    /**
+     * @brief Returns gravity.
+     *
+     * @return
+     */
+    std::array<float, 3> getGravity() const noexcept;
 
 
 // Public Operations

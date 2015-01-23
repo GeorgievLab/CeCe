@@ -2,15 +2,14 @@
 
 project(javascript)
 
-# C++ source
-set(CXX_SRCS
-    WorldFactory.cpp
-    World.cpp
-)
-
 # Add sources
 add_library(javascript
-    ${CXX_SRCS}
+    WorldFactory.h
+    WorldFactory.cpp
+    World.h
+    World.cpp
+    Cell.hpp
+    Cell.cpp
 )
 
 # Library dependency
@@ -19,6 +18,9 @@ target_link_libraries(javascript
 )
 
 # Setup dependencies
-add_dependencies(simulator core physics)
+add_dependencies(simulator
+    core
+    physics
+)
 
 # ######################################################################### #

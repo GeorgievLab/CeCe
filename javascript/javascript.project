@@ -19,10 +19,12 @@
   <VirtualDirectory Name="src">
     <File Name="WorldFactory.cpp"/>
     <File Name="World.cpp"/>
+    <File Name="Cell.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="WorldFactory.h"/>
     <File Name="World.h"/>
+    <File Name="Cell.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="simulator"/>

@@ -1,5 +1,5 @@
 
-new yeast({
+new Cell({
 		yfp: 100 + rand() % 200
 	},
 	function () {	

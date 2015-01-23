@@ -18,9 +18,11 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Context.cpp"/>
+    <File Name="Camera.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Context.h"/>
+    <File Name="Camera.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

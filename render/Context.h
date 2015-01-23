@@ -1,9 +1,11 @@
 
-#ifndef _RENDER_CONTEXT_H_
-#define _RENDER_CONTEXT_H_
+#pragma once
 
 /* ************************************************************************ */
-/* FORWARD DECLARATIONS                                                     */
+
+// Render
+#include "render/Camera.hpp"
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -12,7 +14,6 @@ namespace simulator {
 
 class World;
 class Cell;
-class Yeast;
 
 /* ************************************************************************ */
 
@@ -23,14 +24,27 @@ class Yeast;
 namespace render {
 
 /* ************************************************************************ */
-/* CLASSES                                                                  */
-/* ************************************************************************ */
 
 /**
  * @brief Renderer context.
  */
 class Context
 {
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns context camera.
+     *
+     * @return
+     */
+    Camera& getCamera() noexcept
+    {
+        return m_camera;
+    }
+
 
 // Public Operations
 public:
@@ -43,29 +57,21 @@ public:
 
 
     /**
-     * @brief Setup view from top.
+     * @brief Setup camera view.
      *
      * @param width  View width.
      * @param height View height.
-     * @param zoom   View zoom.
      */
-    void setTopView(int width, int height, float zoom) noexcept;
-
-
-    /**
-     * @brief Setup isometric view.
-     *
-     * @param width  View width.
-     * @param height View height.
-     * @param zoom   View zoom.
-     */
-    void setIsometricView(int width, int height, float zoom) noexcept;
+    void setView(int width, int height) noexcept;
 
 
     /**
      * @brief Begin frame rendering.
+     *
+     * @param width  View width.
+     * @param height View height.
      */
-    void frameBegin() noexcept;
+    void frameBegin(int width, int height) noexcept;
 
 
     /**
@@ -91,11 +97,18 @@ public:
 
 
     /**
-     * @brief Draw yeast.
+     * @brief Draw cell with sphere shape.
      *
-     * @param yeast
+     * @param cell
      */
-    void drawYeast(const simulator::Yeast& yeast) noexcept;
+    void drawCellSphere(const simulator::Cell& cell) noexcept;
+
+
+// Private Data Members
+private:
+
+    /// Camera.
+    Camera m_camera;
 
 };
 
@@ -105,4 +118,3 @@ public:
 
 /* ************************************************************************ */
 
-#endif // _RENDER_CONTEXT_H_

@@ -19,14 +19,12 @@
   <VirtualDirectory Name="src">
     <File Name="Cell.cpp"/>
     <File Name="World.cpp"/>
-    <File Name="Yeast.cpp"/>
     <File Name="WorldFactory.cpp"/>
     <File Name="Simulator.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Cell.h"/>
     <File Name="World.h"/>
-    <File Name="Yeast.h"/>
     <File Name="WorldFactory.h"/>
     <File Name="Simulator.h"/>
   </VirtualDirectory>

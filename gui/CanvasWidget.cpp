@@ -69,15 +69,17 @@ void CanvasWidget::Init() noexcept
 
 void CanvasWidget::SetupProjection() noexcept
 {
+    auto& camera = m_renderer.getCamera();
+
     switch (m_projectionType)
     {
     default:
     case Projection::Top:
-        m_renderer.setTopView(GetSize().GetWidth(), GetSize().GetHeight(), m_zoom);
+        camera.setMode(render::Camera::Mode::Top);
         break;
 
     case Projection::Isometric:
-        m_renderer.setIsometricView(GetSize().GetWidth(), GetSize().GetHeight(), m_zoom);
+        camera.setMode(render::Camera::Mode::Isometric);
         break;
     }
 }
@@ -98,7 +100,7 @@ void CanvasWidget::Render() noexcept
         m_init = true;
     }
 
-    m_renderer.frameBegin();
+    m_renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
 
     // Render world
     wxASSERT(m_simulator);
@@ -123,11 +125,16 @@ void CanvasWidget::OnZoom(wxMouseEvent& event) noexcept
         return;
     }
 
-    m_zoom += 0.001 * event.GetWheelRotation();
-    m_zoom = std::min(std::max(0.1f, m_zoom), 10.f);
+    auto& camera = m_renderer.getCamera();
+    auto zoom = camera.getZoom();
+
+    zoom -= 0.001 * event.GetWheelRotation();
+    zoom = std::min(std::max(0.1f, zoom), 10.f);
+
+    // Set camera zoom
+    camera.setZoom(zoom);
 
     // Refresh view
-    SetupProjection();
     Update();
 }
 

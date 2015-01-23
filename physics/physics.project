@@ -27,6 +27,7 @@
     <File Name="World.h"/>
     <File Name="Ground.h"/>
     <File Name="Cell.h"/>
+    <File Name="Position.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
