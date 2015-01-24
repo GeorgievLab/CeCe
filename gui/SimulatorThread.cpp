@@ -10,8 +10,9 @@
 
 /* ************************************************************************ */
 
-SimulatorThread::SimulatorThread(wxEvtHandler* handler)
+SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::WorldFactory* factory)
     : m_handler(handler)
+    , m_worldFactory(factory)
 {
     if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
     {
@@ -31,23 +32,67 @@ SimulatorThread::SimulatorThread(wxEvtHandler* handler)
 SimulatorThread::~SimulatorThread()
 {
     if (GetThread() && GetThread()->IsRunning())
+    {
+        GetThread()->Delete();
         GetThread()->Wait();
+    }
 }
 
 /* ************************************************************************ */
 
 wxThread::ExitCode SimulatorThread::Entry()
 {
+    // Create new world
+    m_simulator.setWorld(m_worldFactory->createWorld());
+
     // Check if thread is still alive
     while (!GetThread()->TestDestroy())
     {
         HandleMessages();
 
         if (m_running)
-            m_simulator.step();
+            DoStep();
+
+        // Send repaint event
+        //wxQueueEvent(m_handler, new wxPaintEvent());
     }
 
     return (wxThread::ExitCode) 0;
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::SendStart()
+{
+    m_queue.Post({Message::START});
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::SendStep()
+{
+    m_queue.Post({Message::STEP});
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::SendStop()
+{
+    m_queue.Post({Message::STOP});
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::SendRestart()
+{
+    m_queue.Post({Message::RESTART});
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::SendLoad(const wxString& code)
+{
+    m_queue.Post({Message::LOAD, code});
 }
 
 /* ************************************************************************ */
@@ -65,20 +110,19 @@ void SimulatorThread::HandleMessages()
         switch (msg.code)
         {
         case Message::LOAD:
-            wxASSERT(m_simulator.getWorld());
-            m_simulator.getWorld()->load(msg.string.To8BitData().data());
+            DoLoad(msg.string);
             break;
 
         case Message::START:
-            m_running = true;
+            DoStart();
             break;
 
         case Message::STEP:
-            m_simulator.step();
+            DoStep();
             break;
 
         case Message::STOP:
-            m_running = false;
+            DoStop();
             break;
 
         case Message::RESTART:
@@ -90,6 +134,39 @@ void SimulatorThread::HandleMessages()
             break;
         }
     }
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::DoStart()
+{
+    m_running = true;
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::DoStep()
+{
+    wxMutexLocker lock(m_mutex);
+
+    m_simulator.step();
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::DoStop()
+{
+    m_running = false;
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::DoLoad(const wxString& code)
+{
+    wxMutexLocker lock(m_mutex);
+
+    wxASSERT(m_simulator.getWorld());
+    m_simulator.getWorld()->load(code.To8BitData().data());
 }
 
 /* ************************************************************************ */

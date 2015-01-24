@@ -7,9 +7,12 @@
 #include <wx/string.h>
 #include <wx/thread.h>
 #include <wx/msgqueue.h>
+#include <wx/scopedptr.h>
 #include <wx/event.h>
 
 // Simulator
+#include "simulator/World.h"
+#include "simulator/WorldFactory.h"
 #include "simulator/Simulator.h"
 
 /* ************************************************************************ */
@@ -48,8 +51,9 @@ public:
      * @brief Constructor.
      *
      * @param handler Event handler.
+     * @param factory World factory.
      */
-    explicit SimulatorThread(wxEvtHandler* handler);
+    explicit SimulatorThread(wxEvtHandler* handler, simulator::WorldFactory* factory);
 
 
     /**
@@ -63,6 +67,17 @@ public:
 
 
     /**
+     * @brief If simulation is running.
+     *
+     * @return
+     */
+    bool isRunning() const noexcept
+    {
+        return m_running;
+    }
+
+
+    /**
      * @brief Returns message queue.
      *
      * @return
@@ -70,6 +85,28 @@ public:
     wxMessageQueue<Message>& GetQueue() noexcept
     {
         return m_queue;
+    }
+
+
+    /**
+     * @brief Returns simulator.
+     *
+     * @return
+     */
+    simulator::Simulator* GetSimulator() noexcept
+    {
+        return &m_simulator;
+    }
+
+
+    /**
+     * @brief Returns simulator mutex.
+     *
+     * @return
+     */
+    wxMutex* GetMutex() noexcept
+    {
+        return &m_mutex;
     }
 
 
@@ -83,6 +120,36 @@ public:
     wxThread::ExitCode Entry() override;
 
 
+    /**
+     * @brief Send start message.
+     */
+    void SendStart();
+
+
+    /**
+     * @brief Send step message.
+     */
+    void SendStep();
+
+
+    /**
+     * @brief Send stop message.
+     */
+    void SendStop();
+
+
+    /**
+     * @brief Send re-start message.
+     */
+    void SendRestart();
+
+
+    /**
+     * @brief Send load message.
+     */
+    void SendLoad(const wxString& code);
+
+
 // Protected Operations
 protected:
 
@@ -91,6 +158,32 @@ protected:
      * @brief Handle incomming messages.
      */
     void HandleMessages();
+
+
+    /**
+     * @brief Perform simulation start.
+     */
+    void DoStart();
+
+
+    /**
+     * @brief Perform simulation step.
+     */
+    void DoStep();
+
+
+    /**
+     * @brief Perform simulation stop.
+     */
+    void DoStop();
+
+
+    /**
+     * @brief Do load.
+     *
+     * @param code
+     */
+    void DoLoad(const wxString& code);
 
 
 // Private Data Members
@@ -102,12 +195,17 @@ private:
     /// Message queue.
     wxMessageQueue<Message> m_queue;
 
+    /// Simulator mutex.
+    wxMutex m_mutex;
+
     /// Simulator.
     simulator::Simulator m_simulator;
 
     /// If simulator should run.
     bool m_running = false;
 
+    /// World factory
+    wxScopedPtr<simulator::WorldFactory> m_worldFactory;
 };
 
 /* ************************************************************************ */

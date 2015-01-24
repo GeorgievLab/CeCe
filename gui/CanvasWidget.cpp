@@ -40,12 +40,6 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
     Bind(wxEVT_PAINT, &CanvasWidget::OnPaint, this);
     Bind(wxEVT_SIZE, &CanvasWidget::OnResize, this);
     Bind(wxEVT_MOUSEWHEEL, &CanvasWidget::OnZoom, this);
-
-    // Repeat run timer
-    m_timer.Bind(wxEVT_TIMER, [this](wxTimerEvent& event) { Update(); });
-
-    // Run at 30 FPS
-    m_timer.Start(1000 / 30.f);
 }
 
 /* ************************************************************************ */
@@ -102,11 +96,16 @@ void CanvasWidget::Render() noexcept
 
     m_renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
 
-    // Render world
-    wxASSERT(m_simulator);
-    if (m_simulator->getWorld())
     {
-        m_renderer.drawWorld(*m_simulator->getWorld());
+        wxASSERT(m_mutex);
+        wxMutexLocker lock(*m_mutex);
+
+        // Render world
+        wxASSERT(m_simulator);
+        if (m_simulator->getWorld())
+        {
+            m_renderer.drawWorld(*m_simulator->getWorld());
+        }
     }
 
     m_renderer.frameEnd();

@@ -111,6 +111,9 @@ public:
 // Private Data Members
 private:
 
+    /// V8 isolate
+    v8::Isolate* m_isolate;
+
     /// V8 run context.
     v8::Persistent<v8::Context> m_context;
 

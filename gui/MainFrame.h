@@ -1,10 +1,9 @@
-#ifndef MAINFRAME_H
-#define MAINFRAME_H
+
+#pragma once
 
 /* ************************************************************************ */
 
 // wxWidgets
-#include <wx/scopedptr.h>
 #include <wx/filename.h>
 #include <wx/filehistory.h>
 
@@ -15,6 +14,9 @@
 #include "simulator/World.h"
 #include "simulator/Simulator.h"
 #include "simulator/WorldFactory.h"
+
+// GUI
+#include "gui/SimulatorThread.hpp"
 
 /* ************************************************************************ */
 
@@ -78,21 +80,17 @@ protected:
     void StoreConfig();
 
 
+// Private Data Members
 private:
 
     /// Current loaded file name.
     wxFileName m_fileName;
 
-    /// Simulator.
-    simulator::Simulator m_simulator;
-
-    /// World factory
-    wxScopedPtr<simulator::WorldFactory> m_worldFactory;
+    /// Simulator thread.
+    SimulatorThread m_simulatorThread;
 
     /// File history
     wxFileHistory m_fileHistory;
 };
 
 /* ************************************************************************ */
-
-#endif // MAINFRAME_H

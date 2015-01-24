@@ -46,6 +46,7 @@ static v8::Handle<v8::Value> js_rand(const v8::Arguments& args)
 /* ************************************************************************ */
 
 World::World() noexcept
+    : m_isolate(v8::Isolate::New())
 {
     std::srand(time(0));
 
@@ -56,7 +57,7 @@ World::World() noexcept
 
 World::~World()
 {
-    m_context.Dispose();
+    m_isolate->Dispose();
 }
 
 /* ************************************************************************ */
@@ -82,6 +83,8 @@ void World::load(std::string source)
 
     // Store source code
     m_source = std::move(source);
+
+    Isolate::Scope isolate_scope(m_isolate);
 
     HandleScope handle_scope;
 
@@ -120,6 +123,8 @@ void World::initContext()
 {
     using namespace v8;
 
+    Isolate::Scope isolate_scope(m_isolate);
+
     HandleScope handle_scope;
 
     // Create global object -> world
@@ -153,6 +158,8 @@ void World::initContext()
 void World::runScript(v8::Handle<v8::Script> script)
 {
     using namespace v8;
+
+    Isolate::Scope isolate_scope(m_isolate);
 
     HandleScope handle_scope;
     TryCatch try_catch;

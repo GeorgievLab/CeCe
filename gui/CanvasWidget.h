@@ -10,7 +10,6 @@
 // wxWidgets
 #include <wx/scopedptr.h>
 #include <wx/glcanvas.h>
-#include <wx/timer.h>
 
 // Simulator
 #include "simulator/World.h"
@@ -40,6 +39,7 @@ public:
     };
 
 
+// Public Ctors & Dtors
 public:
 
 
@@ -54,6 +54,7 @@ public:
                  const wxPalette& palette = wxNullPalette);
 
 
+// Public Accessors
 public:
 
 
@@ -69,6 +70,7 @@ public:
     }
 
 
+// Public Mutators
 public:
 
 
@@ -77,9 +79,10 @@ public:
      *
      * @return
      */
-    void SetSimulator(simulator::Simulator* simulator) noexcept
+    void SetSimulator(simulator::Simulator* simulator, wxMutex* mutex) noexcept
     {
         m_simulator = simulator;
+        m_mutex = mutex;
     }
 
 
@@ -96,6 +99,7 @@ public:
     }
 
 
+// Public Operations
 public:
 
 
@@ -131,6 +135,7 @@ public:
     void OnZoom(wxMouseEvent& event) noexcept;
 
 
+// Protected Operations
 protected:
 
 
@@ -152,6 +157,7 @@ protected:
     void Render() noexcept;
 
 
+// Private Data Members
 private:
 
     // GL canvas.
@@ -163,8 +169,8 @@ private:
     /// Simulator pointer.
     simulator::Simulator* m_simulator;
 
-    /// Redraw timer.
-    wxTimer m_timer;
+    /// Simulator mutex.
+    wxMutex* m_mutex;
 
     /// Render context.
     render::Context m_renderer;
