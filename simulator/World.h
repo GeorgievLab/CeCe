@@ -154,6 +154,12 @@ public:
 
 
     /**
+     * @brief Clean world data.
+     */
+    virtual void clean();
+
+
+    /**
      * @brief Reset world.
      */
     virtual void reset();

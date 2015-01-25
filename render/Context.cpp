@@ -20,7 +20,7 @@ namespace render {
 
 void Context::init() noexcept
 {
-    GLfloat sun_direction[] = { 0.0, 2.0, -1.0, 1.0 };
+    GLfloat sun_direction[] = { 0.0, 0.0, -1.0, 1.0 };
     GLfloat sun_intensity[] = { 0.7, 0.7, 0.7, 1.0 };
     GLfloat ambient_intensity[] = { 0.3, 0.3, 0.3, 1.0 };
 
@@ -32,7 +32,7 @@ void Context::init() noexcept
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_DEPTH_TEST);
-/*
+
     glEnable(GL_LIGHTING);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_intensity);
 
@@ -42,7 +42,6 @@ void Context::init() noexcept
 
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    */
 }
 
 /* ************************************************************************ */

@@ -46,18 +46,16 @@ static v8::Handle<v8::Value> js_rand(const v8::Arguments& args)
 /* ************************************************************************ */
 
 World::World() noexcept
-    : m_isolate(v8::Isolate::New())
 {
     std::srand(time(0));
-
-    initContext();
 }
 
 /* ************************************************************************ */
 
 World::~World()
 {
-    m_isolate->Dispose();
+    if (m_isolate)
+        m_isolate->Dispose();
 }
 
 /* ************************************************************************ */
@@ -66,12 +64,7 @@ void World::reset()
 {
     simulator::World::reset();
 
-    using namespace v8;
-
-    // Reset context
-    m_context.Dispose();
-    initContext();
-
+    // Reload source
     load(std::move(m_source));
 }
 
@@ -84,28 +77,42 @@ void World::load(std::string source)
     // Store source code
     m_source = std::move(source);
 
-    Isolate::Scope isolate_scope(m_isolate);
+    // Reset simulation
+    simulator::World::clean();
 
-    HandleScope handle_scope;
+    // Dispose old isolate
+    if (m_isolate)
+        m_isolate->Dispose();
 
-    // Select V8 scope
-    Context::Scope context_scope(m_context);
+    // Create new isolate
+    m_isolate = v8::Isolate::New();
 
-    // Create V8 source
-    Handle<String> code = String::New(m_source.data(), m_source.length());
-
-    TryCatch try_catch;
-
-    // Compile the script and check for errors.
-    auto script = Script::Compile(code);
-
-    if (try_catch.HasCaught() || script.IsEmpty())
     {
-        String::Utf8Value error(try_catch.Exception());
-        throw std::invalid_argument(*error);
-    }
+        Isolate::Scope isolate_scope(m_isolate);
 
-    runScript(script);
+        // Initialize context
+        initContext();
+
+        // Select V8 scope
+        Context::Scope context_scope(m_context);
+        HandleScope handle_scope;
+
+        // Create V8 source
+        Handle<String> code = String::New(m_source.data(), m_source.length());
+
+        TryCatch try_catch;
+
+        // Compile the script and check for errors.
+        auto script = Script::Compile(code);
+
+        if (try_catch.HasCaught() || script.IsEmpty())
+        {
+            String::Utf8Value error(try_catch.Exception());
+            throw std::invalid_argument(*error);
+        }
+
+        runScript(script);
+    }
 }
 
 /* ************************************************************************ */
@@ -122,8 +129,6 @@ void World::update(float step) noexcept
 void World::initContext()
 {
     using namespace v8;
-
-    Isolate::Scope isolate_scope(m_isolate);
 
     HandleScope handle_scope;
 
@@ -158,8 +163,6 @@ void World::initContext()
 void World::runScript(v8::Handle<v8::Script> script)
 {
     using namespace v8;
-
-    Isolate::Scope isolate_scope(m_isolate);
 
     HandleScope handle_scope;
     TryCatch try_catch;

@@ -1,7 +1,7 @@
 {
  "metadata": {
   "m_generatedFilesDir": ".",
-  "m_objCounter": 101,
+  "m_objCounter": 105,
   "m_includeFiles": [],
   "m_bitmapFunction": "wxC9ED9InitBitmapResources",
   "m_bitmapsFile": "wxcrafter_bitmaps.cpp",
@@ -1804,14 +1804,7 @@
                "m_label": "Keywords Set 5",
                "m_value": ""
               }],
-             "m_events": [{
-               "m_eventName": "wxEVT_UPDATE_UI",
-               "m_eventClass": "wxUpdateUIEvent",
-               "m_eventHandler": "wxUpdateUIEventHandler",
-               "m_functionNameAndSignature": "OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event)",
-               "m_description": "Process a wxEVT_UPDATE_UI event",
-               "m_noBody": false
-              }],
+             "m_events": [],
              "m_children": []
             }]
           }]

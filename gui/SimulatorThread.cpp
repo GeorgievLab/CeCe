@@ -10,6 +10,10 @@
 
 /* ************************************************************************ */
 
+wxDEFINE_EVENT(EVT_UPDATED, wxCommandEvent);
+
+/* ************************************************************************ */
+
 SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::WorldFactory* factory)
     : m_handler(handler)
     , m_worldFactory(factory)
@@ -48,13 +52,17 @@ wxThread::ExitCode SimulatorThread::Entry()
     // Check if thread is still alive
     while (!GetThread()->TestDestroy())
     {
-        HandleMessages();
+        bool update = HandleMessages();
 
         if (m_running)
+        {
             DoStep();
+            update = true;
+        }
 
         // Send repaint event
-        //wxQueueEvent(m_handler, new wxPaintEvent());
+        if (update)
+            wxQueueEvent(m_handler, new wxCommandEvent(EVT_UPDATED));
     }
 
     return (wxThread::ExitCode) 0;
@@ -97,9 +105,10 @@ void SimulatorThread::SendLoad(const wxString& code)
 
 /* ************************************************************************ */
 
-void SimulatorThread::HandleMessages()
+bool SimulatorThread::HandleMessages()
 {
     Message msg;
+    bool result = false;
 
     while (true)
     {
@@ -111,29 +120,36 @@ void SimulatorThread::HandleMessages()
         {
         case Message::LOAD:
             DoLoad(msg.string);
+            result = true;
             break;
 
         case Message::START:
             DoStart();
+            result = true;
             break;
 
         case Message::STEP:
             DoStep();
+            result = true;
             break;
 
         case Message::STOP:
             DoStop();
+            result = true;
             break;
 
         case Message::RESTART:
             m_running = false;
-            //m_simulator.reset();
+            m_simulator.reset();
+            result = true;
             break;
 
         default:
             break;
         }
     }
+
+    return result;
 }
 
 /* ************************************************************************ */

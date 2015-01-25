@@ -16,6 +16,9 @@
 // Render
 #include "render/Context.h"
 
+// GUI
+#include "gui/SimulatorThread.hpp"
+
 /* ************************************************************************ */
 
 const int g_attribList[] = {
@@ -40,6 +43,7 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
     Bind(wxEVT_PAINT, &CanvasWidget::OnPaint, this);
     Bind(wxEVT_SIZE, &CanvasWidget::OnResize, this);
     Bind(wxEVT_MOUSEWHEEL, &CanvasWidget::OnZoom, this);
+    Bind(EVT_UPDATED, &CanvasWidget::OnUpdated, this);
 }
 
 /* ************************************************************************ */

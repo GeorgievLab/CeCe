@@ -17,6 +17,10 @@
 
 /* ************************************************************************ */
 
+wxDECLARE_EVENT(EVT_UPDATED, wxCommandEvent);
+
+/* ************************************************************************ */
+
 /**
  * @brief Helper thread for simulation.
  */
@@ -156,8 +160,10 @@ protected:
 
     /**
      * @brief Handle incomming messages.
+     *
+     * @return If repaint is needed.
      */
-    void HandleMessages();
+    bool HandleMessages();
 
 
     /**

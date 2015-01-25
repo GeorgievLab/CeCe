@@ -135,6 +135,17 @@ public:
     void OnZoom(wxMouseEvent& event) noexcept;
 
 
+    /**
+     * @brief On update paint event.
+     *
+     * @param event
+     */
+    void OnUpdated(wxCommandEvent& WXUNUSED(event))
+    {
+        Update();
+    }
+
+
 // Protected Operations
 protected:
 
