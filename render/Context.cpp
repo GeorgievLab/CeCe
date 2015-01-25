@@ -170,10 +170,41 @@ void Context::drawWorld(const simulator::World& world) noexcept
         glPopMatrix();
     }
 
-    // Draw cells
-    for (const auto& cell : world.getCells())
     {
-        drawCell(*cell);
+        // Draw cells in order to camera view
+
+        // Get camera position and order cells by distance from camera
+        const auto& cam_pos = m_camera.getPosition();
+
+        std::vector<simulator::Cell*> cells;
+
+        // Copy cell pointers
+        for (const auto& cell : world.getCells())
+        {
+            cells.push_back(cell.get());
+        }
+
+        // Order cells
+        std::sort(cells.begin(), cells.end(), [&cam_pos](const simulator::Cell* c1, const simulator::Cell* c2) {
+            auto distance = [](const Position& pos1, const Position& pos2) -> float {
+                return sqrt(
+                    ((pos1.x.value() - pos2.x.value()) * (pos1.x.value() - pos2.x.value())) +
+                    ((pos1.y.value() - pos2.y.value()) * (pos1.y.value() - pos2.y.value())) +
+                    ((pos1.z.value() - pos2.z.value()) * (pos1.z.value() - pos2.z.value()))
+                );
+            };
+
+            auto d1 = distance(c1->getPosition(), cam_pos);
+            auto d2 = distance(c2->getPosition(), cam_pos);
+
+            return d1 < d2;
+        });
+
+        // Draw cells
+        for (const auto& cell : cells)
+        {
+            drawCell(*cell);
+        }
     }
 }
 

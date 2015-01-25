@@ -611,7 +611,7 @@
           }, {
            "type": "string",
            "m_label": "Shortcut:",
-           "m_value": ""
+           "m_value": "F1"
           }, {
            "type": "string",
            "m_label": "Help String:",
@@ -662,7 +662,7 @@
           }, {
            "type": "string",
            "m_label": "Shortcut:",
-           "m_value": ""
+           "m_value": "F2"
           }, {
            "type": "string",
            "m_label": "Help String:",

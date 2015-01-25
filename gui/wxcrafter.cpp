@@ -54,10 +54,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuView = new wxMenu();
     m_menuBar->Append(m_menuView, _("&View"));
     
-    m_menuItemTop = new wxMenuItem(m_menuView, wxID_ANY, _("Top"), wxT(""), wxITEM_RADIO);
+    m_menuItemTop = new wxMenuItem(m_menuView, wxID_ANY, _("Top\tF1"), wxT(""), wxITEM_RADIO);
     m_menuView->Append(m_menuItemTop);
     
-    m_menuItemIsometric = new wxMenuItem(m_menuView, wxID_ANY, _("Isometric"), wxT(""), wxITEM_RADIO);
+    m_menuItemIsometric = new wxMenuItem(m_menuView, wxID_ANY, _("Isometric\tF2"), wxT(""), wxITEM_RADIO);
     m_menuView->Append(m_menuItemIsometric);
     
     m_menuSimulation = new wxMenu();
