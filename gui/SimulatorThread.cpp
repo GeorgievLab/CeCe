@@ -3,6 +3,7 @@
 #include "gui/SimulatorThread.hpp"
 
 // wxWidgets
+#include <wx/scopedptr.h>
 #include <wx/log.h>
 
 // Simulator
@@ -11,6 +12,7 @@
 /* ************************************************************************ */
 
 wxDEFINE_EVENT(EVT_UPDATED, wxCommandEvent);
+wxDEFINE_EVENT(EVT_ERROR, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -182,7 +184,17 @@ void SimulatorThread::DoLoad(const wxString& code)
     wxMutexLocker lock(m_mutex);
 
     wxASSERT(m_simulator.getWorld());
-    m_simulator.getWorld()->load(code.To8BitData().data());
+
+    try
+    {
+        m_simulator.getWorld()->load(code.To8BitData().data());
+    }
+    catch (const std::exception& e)
+    {
+        wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
+        event->SetString(e.what());
+        wxQueueEvent(m_handler, event.release());
+    }
 }
 
 /* ************************************************************************ */

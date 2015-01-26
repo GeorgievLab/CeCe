@@ -1,9 +1,9 @@
 
 new Cell({
-		yfp: 100 + rand() % 200
+		yfp: 100 + Math.random() * 200
 	},
 	function () {	
-		//this.yfp = 100 + rand() % 200
+		this.yfp = 100 + Math.random() * 200
 	}
 );
 

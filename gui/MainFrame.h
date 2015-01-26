@@ -31,6 +31,13 @@ public:
 
     void OnSimulationUpdate(wxThreadEvent& evt);
 
+    /**
+     * @brief Event when source code is not able compile.
+     *
+     * @param evt
+     */
+    void OnSimulationError(wxCommandEvent& evt);
+
 protected:
     virtual void OnViewIsometric(wxCommandEvent& event);
     virtual void OnViewTop(wxCommandEvent& event);

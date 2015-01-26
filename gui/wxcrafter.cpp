@@ -107,11 +107,32 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizerView = new wxBoxSizer(wxVERTICAL);
     m_splitterPageView->SetSizer(boxSizerView);
     
+    m_splitterView = new wxSplitterWindow(m_splitterPageView, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxSP_3D);
+    m_splitterView->SetSashGravity(0.8);
+    m_splitterView->SetMinimumPaneSize(10);
+    
+    boxSizerView->Add(m_splitterView, 1, wxEXPAND, 5);
+    
+    m_splitterPageCanvas = new wxPanel(m_splitterView, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    
+    wxBoxSizer* boxSizerCanvas = new wxBoxSizer(wxVERTICAL);
+    m_splitterPageCanvas->SetSizer(boxSizerCanvas);
+    
     int *m_glCanvasViewAttr = NULL;
-    m_glCanvasView = new CanvasWidget(m_splitterPageView, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
+    m_glCanvasView = new CanvasWidget(m_splitterPageCanvas, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
     wxDELETEA( m_glCanvasViewAttr );
     
-    boxSizerView->Add(m_glCanvasView, 1, wxALL|wxEXPAND, 5);
+    boxSizerCanvas->Add(m_glCanvasView, 1, wxEXPAND, 5);
+    
+    m_splitterPageConsole = new wxPanel(m_splitterView, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_splitterView->SplitHorizontally(m_splitterPageCanvas, m_splitterPageConsole, 0);
+    
+    wxBoxSizer* boxSizerConsole = new wxBoxSizer(wxVERTICAL);
+    m_splitterPageConsole->SetSizer(boxSizerConsole);
+    
+    m_textCtrlConsole = new wxTextCtrl(m_splitterPageConsole, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), wxTE_READONLY|wxTE_MULTILINE);
+    
+    boxSizerConsole->Add(m_textCtrlConsole, 1, wxEXPAND, 5);
     
     m_splitterPageSource = new wxPanel(m_splitterMain, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
     m_splitterMain->SplitVertically(m_splitterPageView, m_splitterPageSource, 100);
@@ -161,7 +182,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_stcSource->SetKeyWords(3, wxT(""));
     m_stcSource->SetKeyWords(4, wxT(""));
     
-    boxSizerSource->Add(m_stcSource, 1, wxALL|wxEXPAND, 5);
+    boxSizerSource->Add(m_stcSource, 1, wxEXPAND, 5);
     
     m_statusBar = new wxStatusBar(this, wxID_ANY, wxSTB_DEFAULT_STYLE);
     m_statusBar->SetFieldsCount(1);

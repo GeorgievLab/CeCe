@@ -20,6 +20,7 @@
 #include <wx/panel.h>
 #include <wx/glcanvas.h>
 #include "CanvasWidget.h"
+#include <wx/textctrl.h>
 #include <wx/stc/stc.h>
 #include <wx/statusbr.h>
 
@@ -56,7 +57,11 @@ protected:
     wxToolBar* m_mainToolbar;
     wxSplitterWindow* m_splitterMain;
     wxPanel* m_splitterPageView;
+    wxSplitterWindow* m_splitterView;
+    wxPanel* m_splitterPageCanvas;
     CanvasWidget* m_glCanvasView;
+    wxPanel* m_splitterPageConsole;
+    wxTextCtrl* m_textCtrlConsole;
     wxPanel* m_splitterPageSource;
     wxStyledTextCtrl* m_stcSource;
     wxStatusBar* m_statusBar;

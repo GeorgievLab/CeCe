@@ -141,6 +141,7 @@ MainFrame::MainFrame(wxWindow* parent)
     //Bind(EVT_SIMULATION_UPDATE, &MainFrame::OnSimulationUpdate, this);
 
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
+    Bind(EVT_ERROR, &MainFrame::OnSimulationError, this);
 
     LoadConfig();
 }
@@ -181,6 +182,13 @@ void MainFrame::OnAbout(wxCommandEvent& event)
 void MainFrame::OnSimulationUpdate(wxThreadEvent& evt)
 {
     m_glCanvasView->Update();
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnSimulationError(wxCommandEvent& evt)
+{
+    wxMessageBox(evt.GetString(), wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
 }
 
 /* ************************************************************************ */
@@ -366,16 +374,8 @@ void MainFrame::LoadFile(const wxFileName& path)
 
 void MainFrame::LoadText(const wxString& code)
 {
-    try
-    {
-        // Update world
-        m_simulatorThread.SendLoad(code);
-    }
-    catch (const std::exception& e)
-    {
-        wxMessageBox(e.what(), wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
-        return;
-    }
+    // Update world
+    m_simulatorThread.SendLoad(code);
 }
 
 /* ************************************************************************ */

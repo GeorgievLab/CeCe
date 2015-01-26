@@ -11,12 +11,13 @@ for (var i = 0; i < X_COUNT; ++i)
 				z: -(SPACE * Z_COUNT / 2) + SPACE * j,
 				gfp: 100 + 10 * i * j,
 				rfp: 500 - 10 * i * j,
-				yfp: 100 + rand() % 200
+				yfp: 100 + Math.random() * 200
 			},
 			function () {	
-				this.gfp += (rand() % 50 - 25);
-				this.rfp += (rand() % 50 - 25);
-				this.yfp += (rand() % 50 - 25);
+				this.gfp += (Math.random() * 20 - 10);
+				this.rfp += (Math.random() * 20 - 10);
+				this.yfp += (Math.random() * 20 - 10);
+				this.volume += (Math.random() * 1000);
 			}
 		);
 	}

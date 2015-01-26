@@ -154,6 +154,24 @@ void set_yfp(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v
 
 /* ************************************************************************ */
 
+v8::Handle<v8::Value> get_volume(v8::Local<v8::String> property, const v8::AccessorInfo &info)
+{
+    using namespace v8;
+
+    return Integer::New(get_pointer<simulator::Cell>(info)->getVolume().value());
+}
+
+/* ************************************************************************ */
+
+void set_volume(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info)
+{
+    using namespace v8;
+
+    get_pointer<simulator::Cell>(info)->setVolume(MicroMeters3(value->Int32Value()));
+}
+
+/* ************************************************************************ */
+
 /**
  * @brief Create template for cell object.
  *
@@ -173,6 +191,7 @@ v8::Local<v8::ObjectTemplate> create_cell_template()
     yeast_template->SetAccessor(String::New("gfp"), get_gfp, set_gfp);
     yeast_template->SetAccessor(String::New("rfp"), get_rfp, set_rfp);
     yeast_template->SetAccessor(String::New("yfp"), get_yfp, set_yfp);
+    yeast_template->SetAccessor(String::New("volume"), get_volume, set_volume);
 
     return handle_scope.Close(yeast_template);
 }

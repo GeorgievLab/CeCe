@@ -35,19 +35,9 @@ World* get_world()
 
 /* ************************************************************************ */
 
-/**
- * @brief Rand function.
- */
-static v8::Handle<v8::Value> js_rand(const v8::Arguments& args)
-{
-    return v8::Integer::New(std::rand());
-}
-
-/* ************************************************************************ */
-
 World::World() noexcept
 {
-    std::srand(time(0));
+    // Nothing to do
 }
 
 /* ************************************************************************ */
@@ -137,12 +127,8 @@ void World::initContext()
     // First field is a pointer to this
     world_tpl->SetInternalFieldCount(1);
 
-    //world_tpl->SetAccessor(String::New("width"), &World::GetWidth);
-    //world_tpl->SetAccessor(String::New("height"), &World::GetHeight);
-
     // Global functions
     world_tpl->Set("Cell", v8::FunctionTemplate::New(create_cell));
-    world_tpl->Set("rand", v8::FunctionTemplate::New(js_rand));
     //global->Set("barrier", v8::FunctionTemplate::New(createBarrier));
 
     // Create context
