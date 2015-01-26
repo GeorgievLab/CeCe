@@ -4,6 +4,9 @@
 // Declaration
 #include "render/Context.h"
 
+// C++
+#include <algorithm>
+
 // OpenGL
 #include <GL/gl.h>
 #include <GL/glu.h>
