@@ -8,17 +8,18 @@ find_package(Bullet REQUIRED)
 # Include dirs
 include_directories(${BULLET_INCLUDE_DIRS})
 
-# Sources
-set(CXX_SRCS
-    Object.cpp
-    World.cpp
-    Ground.cpp
-    Cell.cpp
-)
-
 # Create library
 add_library(physics
-    ${CXX_SRCS}
+    Object.h
+    Object.cpp
+    World.h
+    World.cpp
+    Ground.h
+    Ground.cpp
+    Cell.h
+    Cell.cpp
+    Barrier.hpp
+    Barrier.cpp
 )
 
 target_link_libraries(physics
@@ -26,6 +27,8 @@ target_link_libraries(physics
 )
 
 # Setup dependencies
-add_dependencies(physics core)
+add_dependencies(physics
+    core
+)
 
 # ######################################################################### #

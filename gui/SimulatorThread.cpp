@@ -13,6 +13,7 @@
 
 wxDEFINE_EVENT(EVT_UPDATED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_ERROR, wxCommandEvent);
+wxDEFINE_EVENT(EVT_LOG, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -50,6 +51,12 @@ wxThread::ExitCode SimulatorThread::Entry()
 {
     // Create new world
     m_simulator.setWorld(m_worldFactory->createWorld());
+
+    m_simulator.getWorld()->setLogFunction([this](const std::string& msg) {
+        wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_LOG));
+        event->SetString(msg);
+        wxQueueEvent(m_handler, event.release());
+    });
 
     // Check if thread is still alive
     while (!GetThread()->TestDestroy())

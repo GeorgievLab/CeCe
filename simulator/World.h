@@ -14,6 +14,7 @@
 
 // Simulator
 #include "simulator/Cell.h"
+#include "simulator/Barrier.hpp"
 
 /* ************************************************************************ */
 
@@ -38,6 +39,9 @@ public:
 
     /// Barrier container type.
     using BarrierContainer = std::vector<std::unique_ptr<Barrier>>;
+
+    /// Log callback function.
+    using LogFunction = std::function<void(const std::string&)>;
 
 
 // Public Ctors
@@ -72,6 +76,17 @@ public:
 
 
     /**
+     * @brief Return barriers container.
+     *
+     * @return
+     */
+    const BarrierContainer& getBarriers() const noexcept
+    {
+        return m_barriers;
+    }
+
+
+    /**
      * @brief Returns world width.
      *
      * @return
@@ -93,8 +108,30 @@ public:
     }
 
 
+    /**
+     * @brief Returns log callback function.
+     *
+     * @return
+     */
+    const LogFunction& getLogFunction() const noexcept
+    {
+        return m_logFunction;
+    }
+
+
 // Public Mutators
 public:
+
+
+    /**
+     * @brief Set log callback function.
+     *
+     * @param fn
+     */
+    void setLogFunction(LogFunction fn) noexcept
+    {
+        m_logFunction = std::move(fn);
+    }
 
 
     /**
@@ -138,14 +175,27 @@ public:
 
 
     /**
+     * @brief Add a new barrier.
+     *
+     * @param barrier
+     */
+    Barrier* addBarrier(std::unique_ptr<Barrier> barrier)
+    {
+        assert(barrier);
+        m_barriers.push_back(std::move(barrier));
+        return m_barriers.back().get();
+    }
+
+
+    /**
      * @brief Create a new barrier.
      *
      * @param args...
      */
-    template<typename... Args>
-    void newBarrier(Args&&... args)
+    template<typename T, typename... Args>
+    T* newBarrier(Args&&... args)
     {
-        //m_barriers.emplace_back(new Barrier(this, std::forward<Args>(args)...));
+        return addBarrier(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
     }
 
 
@@ -194,7 +244,10 @@ private:
     CellContainer m_cells;
 
     /// Barriers
-    //BarrierContainer m_barriers;
+    BarrierContainer m_barriers;
+
+    /// Log function.
+    LogFunction m_logFunction;
 
 };
 

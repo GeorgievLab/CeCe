@@ -14,6 +14,7 @@
 // Simulator
 #include "simulator/World.h"
 #include "simulator/Cell.h"
+#include "simulator/Barrier.hpp"
 
 /* ************************************************************************ */
 
@@ -173,6 +174,14 @@ void Context::drawWorld(const simulator::World& world) noexcept
         glPopMatrix();
     }
 
+    // Draw barriers
+    {
+        for (auto& barrier : world.getBarriers())
+        {
+            drawBarrier(*barrier);
+        }
+    }
+
     {
         // Draw cells in order to camera view
 
@@ -303,6 +312,77 @@ void Context::drawCellSphere(const simulator::Cell& cell) noexcept
 
     glEnd();
 */
+    glPopMatrix();
+}
+
+/* ************************************************************************ */
+
+void Context::drawBarrier(const simulator::Barrier& barrier) noexcept
+{
+    const auto pos = barrier.getPosition();
+
+    // Setup transformation matrix
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(barrier.getWidth().value(), barrier.getHeight().value(), barrier.getDepth().value());
+    glTranslatef(pos.x.value(), pos.y.value(), pos.z.value());
+
+    glColor4f(1, 0.5, 0.5, 1);
+
+    glBegin(GL_POLYGON);
+
+    // BACK
+    glNormal3f(   0,    0,   1);
+    glVertex3f( 0.5, -0.5, 0.5);
+    glNormal3f(   0,    0,   1);
+    glVertex3f( 0.5,  0.5, 0.5);
+    glNormal3f(   0,    0,   1);
+    glVertex3f(-0.5,  0.5, 0.5);
+    glNormal3f(   0,    0,   1);
+    glVertex3f(-0.5, -0.5, 0.5);
+
+    // RIGHT
+    glNormal3f(   1,    0,    0);
+    glVertex3f( 0.5, -0.5, -0.5);
+    glNormal3f(   1,    0,    0);
+    glVertex3f( 0.5,  0.5, -0.5);
+    glNormal3f(   1,    0,    0);
+    glVertex3f( 0.5,  0.5,  0.5);
+    glNormal3f(   1,    0,    0);
+    glVertex3f( 0.5, -0.5,  0.5);
+
+    // LEFT
+    glNormal3f(  -1,    0,    0);
+    glVertex3f(-0.5, -0.5,  0.5);
+    glNormal3f(  -1,    0,    0);
+    glVertex3f(-0.5,  0.5,  0.5);
+    glNormal3f(  -1,    0,    0);
+    glVertex3f(-0.5,  0.5, -0.5);
+    glNormal3f(  -1,    0,    0);
+    glVertex3f(-0.5, -0.5, -0.5);
+
+    // TOP
+    glNormal3f(   0,    1,    0);
+    glVertex3f( 0.5,  0.5,  0.5);
+    glNormal3f(   0,    1,    0);
+    glVertex3f( 0.5,  0.5, -0.5);
+    glNormal3f(   0,    1,    0);
+    glVertex3f(-0.5,  0.5, -0.5);
+    glNormal3f(   0,    1,    0);
+    glVertex3f(-0.5,  0.5,  0.5);
+
+    // BOTTOM
+    glNormal3f(   0,   -1,    0);
+    glVertex3f( 0.5, -0.5, -0.5);
+    glNormal3f(   0,   -1,    0);
+    glVertex3f( 0.5, -0.5,  0.5);
+    glNormal3f(   0,   -1,    0);
+    glVertex3f(-0.5, -0.5,  0.5);
+    glNormal3f(   0,   -1,    0);
+    glVertex3f(-0.5, -0.5, -0.5);
+
+    glEnd();
+
     glPopMatrix();
 }
 

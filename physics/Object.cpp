@@ -40,6 +40,7 @@ Object::~Object()
 
 Position Object::getPosition() const noexcept
 {
+    assert(m_rigidBody);
     auto pos = m_rigidBody->getCenterOfMassPosition();
 
     return {MicroMeters(pos.x()), MicroMeters(pos.y()), MicroMeters(pos.z())};
@@ -50,6 +51,7 @@ Position Object::getPosition() const noexcept
 void Object::setPosition(Position pos) noexcept
 {
     btTransform trans;
+    assert(m_rigidBody);
     m_rigidBody->getMotionState()->getWorldTransform(trans);
 
     // Update position

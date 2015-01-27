@@ -12,6 +12,8 @@ add_library(simulator
     WorldFactory.cpp
     Simulator.h
     Simulator.cpp
+    Barrier.hpp
+    Barrier.cpp
 )
 
 # Setup dependencies

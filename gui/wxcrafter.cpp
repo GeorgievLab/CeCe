@@ -212,6 +212,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Connect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
+    m_stcSource->Connect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(MainFrameBaseClass::OnSourceChange), NULL, this);
     
 }
 
@@ -235,5 +236,6 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Disconnect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
+    m_stcSource->Disconnect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(MainFrameBaseClass::OnSourceChange), NULL, this);
     
 }

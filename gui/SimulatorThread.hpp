@@ -19,6 +19,7 @@
 
 wxDECLARE_EVENT(EVT_UPDATED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_ERROR, wxCommandEvent);
+wxDECLARE_EVENT(EVT_LOG, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -213,6 +214,7 @@ private:
 
     /// World factory
     wxScopedPtr<simulator::WorldFactory> m_worldFactory;
+
 };
 
 /* ************************************************************************ */

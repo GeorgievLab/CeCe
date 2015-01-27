@@ -4,9 +4,6 @@
 // Declaration
 #include "World.h"
 
-// Simulator
-#include "simulator/Cell.h"
-
 /* ************************************************************************ */
 
 namespace simulator {
@@ -30,6 +27,7 @@ World::~World()
 void World::clean()
 {
     m_cells.clear();
+    m_barriers.clear();
 }
 
 /* ************************************************************************ */

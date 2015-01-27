@@ -21,6 +21,7 @@
     <File Name="World.cpp"/>
     <File Name="Ground.cpp"/>
     <File Name="Cell.cpp"/>
+    <File Name="Barrier.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Object.h"/>
@@ -28,6 +29,7 @@
     <File Name="Ground.h"/>
     <File Name="Cell.h"/>
     <File Name="Position.h"/>
+    <File Name="Barrier.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

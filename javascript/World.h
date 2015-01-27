@@ -117,6 +117,9 @@ private:
     /// V8 run context.
     v8::Persistent<v8::Context> m_context;
 
+    /// Output console object.
+    v8::Persistent<v8::Object> m_console;
+
     /// Script source.
     std::string m_source;
 

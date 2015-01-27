@@ -10,6 +10,8 @@ add_library(javascript
     World.cpp
     Cell.hpp
     Cell.cpp
+    Barrier.hpp
+    Barrier.cpp
 )
 
 # Library dependency

@@ -81,6 +81,7 @@ protected:
     virtual void OnSimulationStep(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationRestart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnSourceChange(wxStyledTextEvent& event) { event.Skip(); }
 
 public:
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);

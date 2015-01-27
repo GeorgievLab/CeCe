@@ -14,6 +14,7 @@ namespace simulator {
 
 class World;
 class Cell;
+class Barrier;
 
 /* ************************************************************************ */
 
@@ -102,6 +103,14 @@ public:
      * @param cell
      */
     void drawCellSphere(const simulator::Cell& cell) noexcept;
+
+
+    /**
+     * @brief Draw barrier.
+     *
+     * @param barrier
+     */
+    void drawBarrier(const simulator::Barrier& barrier) noexcept;
 
 
 // Private Data Members

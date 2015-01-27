@@ -142,6 +142,7 @@ MainFrame::MainFrame(wxWindow* parent)
 
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
     Bind(EVT_ERROR, &MainFrame::OnSimulationError, this);
+    Bind(EVT_LOG, &MainFrame::OnSimulationLog, this);
 
     LoadConfig();
 }
@@ -193,6 +194,13 @@ void MainFrame::OnSimulationError(wxCommandEvent& evt)
 
 /* ************************************************************************ */
 
+void MainFrame::OnSimulationLog(wxCommandEvent& evt)
+{
+    m_textCtrlConsole->AppendText(evt.GetString() + "\n");
+}
+
+/* ************************************************************************ */
+
 void MainFrame::OnFileNew(wxCommandEvent& event)
 {
     if (m_fileName.IsOk())
@@ -200,6 +208,7 @@ void MainFrame::OnFileNew(wxCommandEvent& event)
 
     m_stcSource->ClearAll();
     m_fileName.Clear();
+    m_textCtrlConsole->Clear();
 }
 
 /* ************************************************************************ */
@@ -218,11 +227,7 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
-    if (m_fileName.IsOk())
-        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
-
-    m_fileName = selection;
-    m_stcSource->LoadFile(selection);
+    LoadFile(selection);
 }
 
 /* ************************************************************************ */
@@ -275,16 +280,19 @@ void MainFrame::OnFileOpenRecent(wxCommandEvent& event)
     wxString selection = m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1);
 
     LoadFile(selection);
+    m_textCtrlConsole->Clear();
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationStart(wxCommandEvent& event)
 {
+    m_textCtrlConsole->Clear();
+
     wxASSERT(m_stcSource);
 
     // If source code is modified, load modified version
-    if (m_stcSource->IsModified())
+    if (m_stcSource->IsModified() || m_sourceChanged)
     {
         if (m_stcSource->IsEmpty())
         {
@@ -313,6 +321,8 @@ void MainFrame::OnSimulationStop(wxCommandEvent& event)
 
 void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 {
+    m_textCtrlConsole->Clear();
+
     m_simulatorThread.SendRestart();
 }
 
@@ -353,6 +363,13 @@ void MainFrame::OnViewTop(wxCommandEvent& event)
 
 /* ************************************************************************ */
 
+void MainFrame::OnSourceChange(wxStyledTextEvent& event)
+{
+    m_sourceChanged = true;
+}
+
+/* ************************************************************************ */
+
 void MainFrame::LoadFile(const wxFileName& path)
 {
     if (m_fileName.IsOk())
@@ -376,6 +393,7 @@ void MainFrame::LoadText(const wxString& code)
 {
     // Update world
     m_simulatorThread.SendLoad(code);
+    m_sourceChanged = false;
 }
 
 /* ************************************************************************ */

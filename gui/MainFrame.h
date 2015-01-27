@@ -38,7 +38,17 @@ public:
      */
     void OnSimulationError(wxCommandEvent& evt);
 
+
+    /**
+     * @brief Event when simulation wants to log something.
+     *
+     * @param evt
+     */
+    void OnSimulationLog(wxCommandEvent& evt);
+
+
 protected:
+    virtual void OnSourceChange(wxStyledTextEvent& event);
     virtual void OnViewIsometric(wxCommandEvent& event);
     virtual void OnViewTop(wxCommandEvent& event);
 
@@ -98,6 +108,9 @@ private:
 
     /// File history
     wxFileHistory m_fileHistory;
+
+    /// Flag when source is changed.
+    bool m_sourceChanged = false;
 };
 
 /* ************************************************************************ */

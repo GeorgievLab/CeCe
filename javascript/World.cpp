@@ -7,16 +7,50 @@
 // C++
 #include <cassert>
 #include <random>
+#include <sstream>
 
 // Core
 #include "simulator/Cell.h"
 
 // JavaScript
 #include "javascript/Cell.hpp"
+#include "javascript/Barrier.hpp"
 
 /* ************************************************************************ */
 
 namespace javascript {
+
+/* ************************************************************************ */
+
+static v8::Handle<v8::Value> log_callback(const v8::Arguments& args)
+{
+    using namespace v8;
+
+    // Get world pointer
+    World* world = get_world();
+
+    HandleScope handle_scope;
+
+    auto log = world->getLogFunction();
+    if (!log)
+        return {};
+
+    std::ostringstream oss;
+
+    for (int i = 0; i < args.Length(); ++i)
+    {
+        // Convert to string
+        String::Utf8Value arg(args[i]->ToString());
+
+        // Write string
+        oss << *arg;
+    }
+
+    // Log value
+    log(oss.str());
+
+    return {};
+}
 
 /* ************************************************************************ */
 
@@ -128,8 +162,11 @@ void World::initContext()
     world_tpl->SetInternalFieldCount(1);
 
     // Global functions
-    world_tpl->Set("Cell", v8::FunctionTemplate::New(create_cell));
-    //global->Set("barrier", v8::FunctionTemplate::New(createBarrier));
+    world_tpl->Set("Cell", FunctionTemplate::New(create_cell));
+    world_tpl->Set("Barrier", FunctionTemplate::New(create_barrier));
+
+    Local<ObjectTemplate> console_tpl = ObjectTemplate::New();
+    console_tpl->Set("log", FunctionTemplate::New(log_callback));
 
     // Create context
     m_context = Context::New(nullptr, world_tpl);
@@ -141,6 +178,8 @@ void World::initContext()
         Handle<Object> world = m_context->Global();
         assert(!world.IsEmpty());
         world->SetPointerInInternalField(0, this);
+
+        world->Set(String::New("console"), console_tpl->NewInstance());
     }
 }
 
