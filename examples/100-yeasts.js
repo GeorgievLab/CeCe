@@ -17,7 +17,7 @@ for (var i = 0; i < X_COUNT; ++i)
 				this.gfp += (Math.random() * 20 - 10);
 				this.rfp += (Math.random() * 20 - 10);
 				this.yfp += (Math.random() * 20 - 10);
-				this.volume += (Math.random() * 500);
+				//this.volume += (Math.random() * 500);
 			}
 		);
 	}
