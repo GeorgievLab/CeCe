@@ -165,6 +165,16 @@ public:
     }
 
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Update cell state.
+     */
+    virtual void update();
+
+
 // Private Data Members
 private:
 

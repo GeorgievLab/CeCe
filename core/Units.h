@@ -1,18 +1,17 @@
 
-#ifndef _LIBRARY_UNITS_H_
-#define _LIBRARY_UNITS_H_
+#pragma once
 
 /* ************************************************************************ */
 
 // C++
-#include <ratio>
+#include <type_traits>
 
 /* ************************************************************************ */
 
 /**
  * @brief Base class for units.
  */
-template<class Rep, class Ratio>
+template<class Rep>
 class Unit
 {
 public:
@@ -35,22 +34,8 @@ public:
      *
      * @param v
      */
-    template<class Rep2>
-    constexpr explicit Unit(const Rep2& v)
+    constexpr explicit Unit(const Rep& v)
         : m_value(v)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Construct from different ratio.
-     *
-     * @param v
-     */
-    template<class Rep2, class Ratio2>
-    constexpr Unit(const Unit<Rep2, Ratio2>& v)
-        : m_value(v.value() * Ratio2::num / Ratio2::den)
     {
         // Nothing to do
     }
@@ -203,54 +188,56 @@ private:
 
 /* ************************************************************************ */
 
-template<class Rep1, class Ratio1, class Rep2, class Ratio2>
-inline
-typename std::common_type<Rep1, Rep2>::type
-constexpr operator+(const Unit<Rep1, Ratio1>& lhs, const Unit<Rep2, Ratio2>& rhs)
+template<class Rep1, class Rep2>
+inline constexpr
+Unit<typename std::common_type<Rep1, Rep2>::type> operator+(const Unit<Rep1>& lhs, const Unit<Rep2>& rhs)
 {
-    // TODO implement
-    return typename std::common_type<Rep1, Rep2>::type{};
+    return Unit<typename std::common_type<Rep1, Rep2>::type>{lhs.value() + rhs.value()};
 }
 
 /* ************************************************************************ */
 
-template<class Rep1, class Ratio1, class Rep2, class Ratio2>
-inline
-typename std::common_type<Rep1, Rep2>::type
-constexpr operator-(const Unit<Rep1, Ratio1>& lhs, const Unit<Rep2, Ratio2>& rhs)
+template<class Rep1, class Rep2>
+inline constexpr
+Unit<typename std::common_type<Rep1, Rep2>::type> operator-(const Unit<Rep1>& lhs, const Unit<Rep2>& rhs)
 {
-    // TODO implement
-    return typename std::common_type<Rep1, Rep2>::type{};
+    return Unit<typename std::common_type<Rep1, Rep2>::type>{lhs.value() - rhs.value()};
 }
 
 /* ************************************************************************ */
 
-template<class Rep1, class Period1, class Rep2>
-inline
-Unit<typename std::common_type<Rep1, Rep2>::type, Period1>
-constexpr operator*(const Unit<Rep1, Period1>& d, const Rep2& s)
+template<class Rep1, class Rep2>
+inline constexpr
+Unit<typename std::common_type<Rep1, Rep2>::type> operator*(const Unit<Rep1>& d, const Rep2& s)
 {
-    return Unit<typename std::common_type<Rep1, Rep2>::type, Period1>{d.value() * s};
+    return Unit<typename std::common_type<Rep1, Rep2>::type>{d.value() * s};
 }
 
 /* ************************************************************************ */
 
-template<class Rep1, class Rep2, class Period2>
-inline
-Unit<typename std::common_type<Rep1, Rep2>::type, Period2>
-constexpr operator*(const Rep1& s, const Unit<Rep2, Period2>& d)
+template<class Rep1, class Rep2>
+inline constexpr
+Unit<typename std::common_type<Rep1, Rep2>::type> operator*(const Rep2& s, const Unit<Rep1>& d)
 {
-    return Unit<typename std::common_type<Rep1, Rep2>::type, Period2>{s * d.value()};
+    return Unit<typename std::common_type<Rep1, Rep2>::type>{s * d.value()};
 }
 
 /* ************************************************************************ */
 
-template< class Rep1, class Period1, class Rep2>
-inline
-Unit<typename std::common_type<Rep1, Rep2>::type, Period1>
-constexpr operator/(const Unit<Rep1, Period1>& d, const Rep2& s)
+template<class Rep1, class Rep2>
+inline constexpr
+Unit<typename std::common_type<Rep1, Rep2>::type> operator/(const Unit<Rep1>& d, const Rep2& s)
 {
-    return Unit<typename std::common_type<Rep1, Rep2>::type, Period1>{d.value() / s};
+    return Unit<typename std::common_type<Rep1, Rep2>::type>{d.value() / s};
+}
+
+/* ************************************************************************ */
+
+template<class Rep1, class Rep2>
+inline constexpr
+Unit<typename std::common_type<Rep1, Rep2>::type> operator/(const Rep2& s, const Unit<Rep1>& d)
+{
+    return Unit<typename std::common_type<Rep1, Rep2>::type>{s / d.value()};
 }
 
 /* ************************************************************************ */
@@ -258,66 +245,30 @@ constexpr operator/(const Unit<Rep1, Period1>& d, const Rep2& s)
 /**
  * @brief Class for representing distance (micrometers).
  */
-template<class Rep = float, class Ratio = std::ratio<1> >
-class Distance : public Unit<Rep, Ratio>
-{
-    using Unit<Rep, Ratio>::Unit;
-};
+using Length = Unit<float>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing volume.
  */
-template<class Rep = float, class Ratio = std::ratio<1> >
-class Volume : public Unit<Rep, Ratio>
-{
-    using Unit<Rep, Ratio>::Unit;
-};
+using Volume = Unit<float>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing volume.
  */
-template<class Rep = float, class Ratio = std::ratio<1> >
-class Angle : public Unit<Rep, Ratio>
-{
-    using Unit<Rep, Ratio>::Unit;
-};
-
-/* ************************************************************************ */
-
-using MicroMeters = Distance<>;
-
-/* ************************************************************************ */
-
-using MilliMeters = Distance<float, std::ratio<1000>>;
-
-/* ************************************************************************ */
-
-using CentiMeters = Distance<float, std::ratio<10 * 1000>>;
-
-/* ************************************************************************ */
-
-using Meters = Distance<float, std::ratio<1000 * 1000>>;
-
-/* ************************************************************************ */
-
-using MicroMeters3 = Volume<>;
-
-/* ************************************************************************ */
-
-using Radian = Angle<>;
+using Angle = Unit<float>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Micrometers literal.
  */
-inline MicroMeters operator"" _um(long double value)
+inline Length operator"" _um(long double value)
 {
-    return MicroMeters(value);
+    return Length(value);
 }
 
 /* ************************************************************************ */
@@ -325,9 +276,9 @@ inline MicroMeters operator"" _um(long double value)
 /**
  * @brief Micrometers literal.
  */
-inline MicroMeters operator"" _um(unsigned long long int value)
+inline Length operator"" _um(unsigned long long int value)
 {
-    return MicroMeters(value);
+    return Length(value);
 }
 
 /* ************************************************************************ */
@@ -335,9 +286,9 @@ inline MicroMeters operator"" _um(unsigned long long int value)
 /**
  * @brief MilliMeters literal.
  */
-inline MilliMeters operator"" _mm(unsigned long long int value)
+inline Length operator"" _mm(unsigned long long int value)
 {
-    return MilliMeters(value);
+    return Length(1000 * value);
 }
 
 /* ************************************************************************ */
@@ -345,9 +296,9 @@ inline MilliMeters operator"" _mm(unsigned long long int value)
 /**
  * @brief CentiMeters literal.
  */
-inline CentiMeters operator"" _cm(unsigned long long int value)
+inline Length operator"" _cm(unsigned long long int value)
 {
-    return CentiMeters(value);
+    return Length(10 * 1000 * value);
 }
 
 /* ************************************************************************ */
@@ -355,9 +306,9 @@ inline CentiMeters operator"" _cm(unsigned long long int value)
 /**
  * @brief Meters literal.
  */
-inline Meters operator"" _m(unsigned long long int value)
+inline Length operator"" _m(unsigned long long int value)
 {
-    return Meters(value);
+    return Length(1000 * 1000 * value);
 }
 
 /* ************************************************************************ */
@@ -365,9 +316,9 @@ inline Meters operator"" _m(unsigned long long int value)
 /**
  * @brief Micrometers^3 literal.
  */
-inline MicroMeters3 operator"" _um3(long double value)
+inline Volume operator"" _um3(long double value)
 {
-    return MicroMeters3(value);
+    return Volume(value);
 }
 
 /* ************************************************************************ */
@@ -375,9 +326,9 @@ inline MicroMeters3 operator"" _um3(long double value)
 /**
  * @brief Micrometers^3 literal.
  */
-inline MicroMeters3 operator"" _um3(unsigned long long int value)
+inline Volume operator"" _um3(unsigned long long int value)
 {
-    return MicroMeters3(value);
+    return Volume(value);
 }
 
 /* ************************************************************************ */
@@ -385,9 +336,9 @@ inline MicroMeters3 operator"" _um3(unsigned long long int value)
 /**
  * @brief Radian literal.
  */
-inline Radian operator"" _rad(long double value)
+inline Angle operator"" _rad(long double value)
 {
-    return Radian(value);
+    return Angle(value);
 }
 
 /* ************************************************************************ */
@@ -395,9 +346,9 @@ inline Radian operator"" _rad(long double value)
 /**
  * @brief Radian literal.
  */
-inline Radian operator"" _rad(unsigned long long int value)
+inline Angle operator"" _rad(unsigned long long int value)
 {
-    return Radian(value);
+    return Angle(value);
 }
 
 /* ************************************************************************ */
@@ -405,9 +356,9 @@ inline Radian operator"" _rad(unsigned long long int value)
 /**
  * @brief Radian literal.
  */
-inline Radian operator"" _deg(long double value)
+inline Angle operator"" _deg(long double value)
 {
-    return Radian(value * 0.01745329252);
+    return Angle(value * 0.01745329252);
 }
 
 /* ************************************************************************ */
@@ -415,11 +366,9 @@ inline Radian operator"" _deg(long double value)
 /**
  * @brief Radian literal.
  */
-inline Radian operator"" _deg(unsigned long long int value)
+inline Angle operator"" _deg(unsigned long long int value)
 {
-    return Radian(value * 0.01745329252);
+    return Angle(value * 0.01745329252);
 }
 
 /* ************************************************************************ */
-
-#endif // _LIBRARY_UNITS_H_

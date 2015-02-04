@@ -25,7 +25,7 @@ Cell::Cell(World* world, Shape shapeType)
 
 /* ************************************************************************ */
 
-void Cell::setVolume(MicroMeters3 volume) noexcept
+void Cell::setVolume(Volume volume) noexcept
 {
     m_volume = volume;
 

@@ -76,7 +76,7 @@ public:
      *
      * @return
      */
-    MicroMeters3 getVolume() const noexcept
+    virtual Volume getVolume() const noexcept
     {
         return m_volume;
     }
@@ -91,7 +91,7 @@ public:
      *
      * @param volume
      */
-    void setVolume(MicroMeters3 volume) noexcept;
+    virtual void setVolume(Volume volume) noexcept;
 
 
 // Public Operations
@@ -105,10 +105,10 @@ public:
      *
      * @return Radius.
      */
-    static MicroMeters calcSphereRadius(MicroMeters3 volume) noexcept
+    static Length calcSphereRadius(Volume volume) noexcept
     {
         // 3th root of ((3 / 4 * pi) * volume)
-        return MicroMeters(0.62035f * std::pow(volume.value(), 0.3333333f));
+        return Length(0.62035f * std::pow(volume.value(), 0.3333333f));
     }
 
 
@@ -129,7 +129,7 @@ private:
     Shape m_shapeType;
 
     /// Cell volume.
-    MicroMeters3 m_volume = 0_um;
+    Volume m_volume = 0_um;
 
 };
 

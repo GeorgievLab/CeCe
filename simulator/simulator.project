@@ -22,6 +22,7 @@
     <File Name="WorldFactory.cpp"/>
     <File Name="Simulator.cpp"/>
     <File Name="Barrier.cpp"/>
+    <File Name="Yeast.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Cell.h"/>
@@ -29,6 +30,7 @@
     <File Name="WorldFactory.h"/>
     <File Name="Simulator.h"/>
     <File Name="Barrier.hpp"/>
+    <File Name="Yeast.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug">

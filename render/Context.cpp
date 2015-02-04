@@ -164,7 +164,7 @@ void Context::drawWorld(const simulator::World& world) noexcept
         auto hh = height / 2.0;
 
         glBegin(GL_QUADS);
-        glColor3d(0.9, 0.9, 0.9);
+        glColor4d(0.9, 0.9, 0.9, 0.6);
         glNormal3f(0, 1, 0);
         glVertex3d(-wh, 0, -hh);
         glNormal3f(0, 1, 0);

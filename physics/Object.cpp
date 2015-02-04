@@ -43,7 +43,7 @@ Position Object::getPosition() const noexcept
     assert(m_rigidBody);
     auto pos = m_rigidBody->getCenterOfMassPosition();
 
-    return {MicroMeters(pos.x()), MicroMeters(pos.y()), MicroMeters(pos.z())};
+    return {Length(pos.x()), Length(pos.y()), Length(pos.z())};
 }
 
 /* ************************************************************************ */

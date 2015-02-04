@@ -14,6 +14,8 @@ add_library(simulator
     Simulator.cpp
     Barrier.hpp
     Barrier.cpp
+    Yeast.hpp
+    Yeast.cpp
 )
 
 # Setup dependencies

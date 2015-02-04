@@ -51,7 +51,7 @@ public:
      *
      * @return
      */
-    MicroMeters getWidth() const noexcept
+    Length getWidth() const noexcept
     {
         return m_width;
     }
@@ -62,7 +62,7 @@ public:
      *
      * @return
      */
-    MicroMeters getDepth() const noexcept
+    Length getDepth() const noexcept
     {
         return m_depth;
     }
@@ -73,7 +73,7 @@ public:
      *
      * @return
      */
-    MicroMeters getHeight() const noexcept
+    Length getHeight() const noexcept
     {
         return m_height;
     }
@@ -88,7 +88,7 @@ public:
      *
      * @param width
      */
-    void setWidth(MicroMeters width) noexcept
+    void setWidth(Length width) noexcept
     {
         m_width = width;
     }
@@ -99,7 +99,7 @@ public:
      *
      * @param depth
      */
-    void setDepth(MicroMeters depth) noexcept
+    void setDepth(Length depth) noexcept
     {
         m_depth = depth;
     }
@@ -110,7 +110,7 @@ public:
      *
      * @param height
      */
-    void setHeight(MicroMeters height) noexcept
+    void setHeight(Length height) noexcept
     {
         m_height = height;
     }
@@ -131,13 +131,13 @@ private:
 
 
     /// Barrier width.
-    MicroMeters m_width;
+    Length m_width;
 
     /// Barrier height.
-    MicroMeters m_height;
+    Length m_height;
 
     /// Barrier depth.
-    MicroMeters m_depth;
+    Length m_depth;
 
 };
 

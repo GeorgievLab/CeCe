@@ -54,6 +54,54 @@ static v8::Handle<v8::Value> log_callback(const v8::Arguments& args)
 
 /* ************************************************************************ */
 
+static v8::Handle<v8::Value> unit_um(const v8::Arguments& args)
+{
+    using namespace v8;
+
+    if (args.Length() == 0)
+        ThrowException(String::New("Missing argument"));
+
+    return args[0];
+}
+
+/* ************************************************************************ */
+
+static v8::Handle<v8::Value> unit_mm(const v8::Arguments& args)
+{
+    using namespace v8;
+
+    if (args.Length() == 0)
+        ThrowException(String::New("Missing argument"));
+
+    return args[0];
+}
+
+/* ************************************************************************ */
+
+static v8::Handle<v8::Value> unit_um3(const v8::Arguments& args)
+{
+    using namespace v8;
+
+    if (args.Length() == 0)
+        ThrowException(String::New("Missing argument"));
+
+    return args[0];
+}
+
+/* ************************************************************************ */
+
+static v8::Handle<v8::Value> unit_mm3(const v8::Arguments& args)
+{
+    using namespace v8;
+
+    if (args.Length() == 0)
+        ThrowException(String::New("Missing argument"));
+
+    return args[0];
+}
+
+/* ************************************************************************ */
+
 World* get_world()
 {
     using namespace v8;
@@ -164,6 +212,12 @@ void World::initContext()
     // Global functions
     world_tpl->Set("Cell", FunctionTemplate::New(create_cell));
     world_tpl->Set("Barrier", FunctionTemplate::New(create_barrier));
+
+    // Units
+    world_tpl->Set("um", FunctionTemplate::New(unit_um));
+    world_tpl->Set("mm", FunctionTemplate::New(unit_mm));
+    world_tpl->Set("um3", FunctionTemplate::New(unit_um3));
+    world_tpl->Set("mm3", FunctionTemplate::New(unit_mm3));
 
     Local<ObjectTemplate> console_tpl = ObjectTemplate::New();
     console_tpl->Set("log", FunctionTemplate::New(log_callback));

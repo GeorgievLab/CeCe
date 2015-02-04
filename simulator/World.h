@@ -91,7 +91,7 @@ public:
      *
      * @return
      */
-    MicroMeters getWidth() const noexcept
+    Length getWidth() const noexcept
     {
         return m_width;
     }
@@ -102,7 +102,7 @@ public:
      *
      * @return
      */
-    MicroMeters getHeight() const noexcept
+    Length getHeight() const noexcept
     {
         return m_height;
     }
@@ -140,7 +140,7 @@ public:
      * @param width
      * @param height
      */
-    void resize(MicroMeters width, MicroMeters height) noexcept
+    void resize(Length width, Length height) noexcept
     {
         m_width = width;
         m_height = height;
@@ -235,10 +235,10 @@ public:
 private:
 
     /// World width.
-    MicroMeters m_width{400};
+    Length m_width{400_um};
 
     /// World height.
-    MicroMeters m_height{400};
+    Length m_height{400_um};
 
     /// Cell population
     CellContainer m_cells;

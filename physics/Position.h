@@ -13,9 +13,9 @@
  */
 struct Position
 {
-    MicroMeters x;
-    MicroMeters y;
-    MicroMeters z;
+    Length x;
+    Length y;
+    Length z;
 };
 
 /* ************************************************************************ */
