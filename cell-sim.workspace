@@ -9,6 +9,7 @@
     <![CDATA[]]>
   </Environment>
   <Project Name="javascript" Path="javascript/javascript.project"/>
+  <Project Name="cli" Path="cli/cli.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="gui" ConfigName="Debug"/>
@@ -17,6 +18,7 @@
       <Project Name="simulator" ConfigName="Debug"/>
       <Project Name="render" ConfigName="Debug"/>
       <Project Name="javascript" ConfigName="Debug"/>
+      <Project Name="cli" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -25,6 +27,7 @@
       <Project Name="simulator" ConfigName="Release"/>
       <Project Name="render" ConfigName="Release"/>
       <Project Name="javascript" ConfigName="Release"/>
+      <Project Name="cli" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

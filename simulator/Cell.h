@@ -1,6 +1,5 @@
 
-#ifndef _SIMULATOR_CELL_H_
-#define _SIMULATOR_CELL_H_
+#pragma once
 
 /* ************************************************************************ */
 
@@ -14,6 +13,11 @@
 
 // Physics
 #include "physics/Cell.h"
+
+#ifdef ENABLE_GUI
+// Render
+#include "render/Context.h"
+#endif
 
 /* ************************************************************************ */
 
@@ -174,6 +178,16 @@ public:
      */
     virtual void update();
 
+#ifdef ENABLE_GUI
+
+    /**
+     * @brief Render cell.
+     *
+     * @param context
+     */
+    virtual void draw(render::Context& context);
+
+#endif
 
 // Private Data Members
 private:
