@@ -5,13 +5,13 @@
 #include "javascript/Yeast.hpp"
 
 // Core
-#include "core/Units.h"
+#include "core/Units.hpp"
 
 // Simulator
 #include "simulator/Yeast.hpp"
 
 // JavaScript
-#include "javascript/World.h"
+#include "javascript/World.hpp"
 
 /* ************************************************************************ */
 

@@ -5,7 +5,7 @@
 #include "simulator/Barrier.hpp"
 
 // Core
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 

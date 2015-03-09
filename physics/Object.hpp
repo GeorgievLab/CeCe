@@ -8,7 +8,7 @@
 #include <memory>
 
 // Physics
-#include "physics/Position.h"
+#include "physics/Position.hpp"
 
 /* ************************************************************************ */
 

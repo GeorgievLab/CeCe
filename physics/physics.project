@@ -24,12 +24,12 @@
     <File Name="Barrier.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Object.h"/>
-    <File Name="World.h"/>
-    <File Name="Ground.h"/>
-    <File Name="Cell.h"/>
-    <File Name="Position.h"/>
     <File Name="Barrier.hpp"/>
+    <File Name="Cell.hpp"/>
+    <File Name="Ground.hpp"/>
+    <File Name="Object.hpp"/>
+    <File Name="Position.hpp"/>
+    <File Name="World.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

@@ -7,11 +7,11 @@
 #include <cmath>
 
 // Core
-#include "core/Units.h"
-#include "core/Vect.h"
+#include "core/Units.hpp"
+#include "core/Vect.hpp"
 
 // Physics
-#include "physics/Object.h"
+#include "physics/Object.hpp"
 
 /* ************************************************************************ */
 
@@ -82,6 +82,17 @@ public:
     }
 
 
+    /**
+     * @brief Get cell density.
+     *
+     * @return
+     */
+    virtual Density getDensity() const noexcept
+    {
+        return m_density;
+    }
+
+
 // Public Mutators
 public:
 
@@ -92,6 +103,14 @@ public:
      * @param volume
      */
     virtual void setVolume(Volume volume) noexcept;
+
+
+    /**
+     * @brief Set cell density.
+     *
+     * @param density
+     */
+    virtual void setDensity(Density density) noexcept;
 
 
 // Public Operations
@@ -129,7 +148,10 @@ private:
     Shape m_shapeType;
 
     /// Cell volume.
-    Volume m_volume = 0_um;
+    Volume m_volume = 1_um;
+
+    /// Cell density.
+    Density m_density{1};
 
 };
 

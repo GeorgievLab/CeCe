@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/Simulator.h"
+#include "simulator/Simulator.hpp"
 
 // C++
 #include <cassert>
@@ -10,7 +10,7 @@
 #include <chrono>
 
 // Simulator
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 

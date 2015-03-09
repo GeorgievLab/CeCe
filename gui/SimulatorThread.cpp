@@ -7,7 +7,7 @@
 #include <wx/log.h>
 
 // Simulator
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 

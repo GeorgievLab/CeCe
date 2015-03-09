@@ -5,7 +5,7 @@
 #include "javascript/Barrier.hpp"
 
 // JavaScript
-#include "javascript/World.h"
+#include "javascript/World.hpp"
 
 /* ************************************************************************ */
 

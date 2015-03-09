@@ -7,11 +7,11 @@
 #include <memory>
 
 // Physics
-#include "simulator/Cell.h"
+#include "simulator/Cell.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
-#include "render/Context.h"
+#include "render/Context.hpp"
 #endif
 
 /* ************************************************************************ */

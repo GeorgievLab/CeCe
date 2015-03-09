@@ -257,6 +257,13 @@ using Volume = Unit<float>;
 /* ************************************************************************ */
 
 /**
+ * @brief Class for representing density.
+ */
+using Density = Unit<float>;
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing volume.
  */
 using Angle = Unit<float>;

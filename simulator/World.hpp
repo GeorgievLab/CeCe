@@ -10,15 +10,15 @@
 #include <cassert>
 
 // Physics
-#include "physics/World.h"
+#include "physics/World.hpp"
 
 // Simulator
-#include "simulator/Cell.h"
+#include "simulator/Cell.hpp"
 #include "simulator/Barrier.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
-#include "render/Context.h"
+#include "render/Context.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -67,6 +67,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns step number.
+     *
+     * @return
+     */
+    unsigned long long getStepNumber() const noexcept
+    {
+        return m_stepNumber;
+    }
 
 
     /**
@@ -205,6 +216,20 @@ public:
     }
 
 
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Set render context.
+     *
+     * @param context
+     */
+    virtual void setContext(render::Context& context)
+    {
+        // Nothing to do
+    }
+
+#endif
+
 // Public Operations
 public:
 
@@ -249,6 +274,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Number of simulation steps.
+    unsigned long long m_stepNumber = 0;
 
     /// World width.
     Length m_width{400_um};

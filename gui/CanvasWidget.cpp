@@ -11,10 +11,10 @@
 #include <wx/dcclient.h>
 
 // Simulator
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 // Render
-#include "render/Context.h"
+#include "render/Context.hpp"
 
 // GUI
 #include "gui/SimulatorThread.hpp"

@@ -5,6 +5,10 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <vector>
+#include <cstdint>
+
 // Render
 #include "render/Camera.hpp"
 #include "render/Position.hpp"
@@ -35,6 +39,14 @@ public:
     {
         return m_camera;
     }
+
+
+    /**
+     * @brief Get current image data.
+     *
+     * @return
+     */
+    std::vector<std::uint8_t> getData() const noexcept;
 
 
 // Public Operations

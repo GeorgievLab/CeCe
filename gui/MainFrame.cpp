@@ -7,7 +7,7 @@
 #include <wx/config.h>
 
 // JavaScript
-#include "javascript/WorldFactory.h"
+#include "javascript/WorldFactory.hpp"
 
 /* ************************************************************************ */
 

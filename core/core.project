@@ -27,8 +27,8 @@
   <Dependencies/>
   <VirtualDirectory Name="src"/>
   <VirtualDirectory Name="include">
-    <File Name="Units.h"/>
-    <File Name="Vect.h"/>
+    <File Name="Units.hpp"/>
+    <File Name="Vect.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>

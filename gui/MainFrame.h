@@ -11,9 +11,9 @@
 #include "wxcrafter.h"
 
 // Simulator
-#include "simulator/World.h"
-#include "simulator/Simulator.h"
-#include "simulator/WorldFactory.h"
+#include "simulator/World.hpp"
+#include "simulator/Simulator.hpp"
+#include "simulator/WorldFactory.hpp"
 
 // GUI
 #include "gui/SimulatorThread.hpp"

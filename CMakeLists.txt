@@ -11,6 +11,14 @@ option(USE_LIBCPP "If libc++ should be used" Off)
 option(ENABLE_GUI "Enable GUI" On)
 option(ENABLE_RENDER "Enable simulation rendering" On)
 
+# JPEG support
+find_package(JPEG)
+
+if (JPEG_FOUND)
+    message("-- JPEG support enabled")
+    add_definitions(-DJPEG_SUPPORT)
+endif ()
+
 # Default include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}

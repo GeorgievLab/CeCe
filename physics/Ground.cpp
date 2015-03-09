@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "physics/Ground.h"
+#include "physics/Ground.hpp"
 
 // C++
 #include <cassert>

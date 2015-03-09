@@ -21,10 +21,10 @@
     <File Name="Camera.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Context.h"/>
     <File Name="Camera.hpp"/>
     <File Name="Color.hpp"/>
     <File Name="Position.hpp"/>
+    <File Name="Context.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

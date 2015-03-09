@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "World.h"
+#include "World.hpp"
 
 // C++
 #include <algorithm>
@@ -29,6 +29,7 @@ World::~World()
 
 void World::clean()
 {
+    m_stepNumber = 0;
     m_cells.clear();
     m_barriers.clear();
 }
@@ -44,6 +45,9 @@ void World::reset()
 
 void World::update(float step) noexcept
 {
+    // Increase step number
+    m_stepNumber++;
+
     // Update all cells
     for (auto& cell : m_cells)
     {

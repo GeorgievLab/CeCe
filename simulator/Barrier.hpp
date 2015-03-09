@@ -8,7 +8,7 @@
 
 #ifdef ENABLE_RENDER
 // Render
-#include "render/Context.h"
+#include "render/Context.hpp"
 #endif
 
 /* ************************************************************************ */

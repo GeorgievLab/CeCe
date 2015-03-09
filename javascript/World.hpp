@@ -10,7 +10,7 @@
 #include <v8.h>
 
 // Simulator
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 
@@ -64,6 +64,20 @@ public:
     }
 
 
+// Public Mutators
+public:
+
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Set render context.
+     *
+     * @param context
+     */
+    void setContext(render::Context& context) override;
+
+#endif
+
 // Public Operations
 public:
 
@@ -110,6 +124,10 @@ public:
 
 // Private Data Members
 private:
+
+#ifdef ENABLE_RENDER
+    render::Context* m_renderContext = nullptr;
+#endif
 
     /// V8 isolate
     v8::Isolate* m_isolate = nullptr;

@@ -11,9 +11,9 @@
 #include <wx/event.h>
 
 // Simulator
-#include "simulator/World.h"
-#include "simulator/WorldFactory.h"
-#include "simulator/Simulator.h"
+#include "simulator/World.hpp"
+#include "simulator/WorldFactory.hpp"
+#include "simulator/Simulator.hpp"
 
 /* ************************************************************************ */
 

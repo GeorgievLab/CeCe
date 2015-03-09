@@ -2,10 +2,10 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "javascript/WorldFactory.h"
+#include "javascript/WorldFactory.hpp"
 
 // Core
-#include "javascript/World.h"
+#include "javascript/World.hpp"
 
 /* ************************************************************************ */
 

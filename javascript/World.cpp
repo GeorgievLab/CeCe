@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "javascript/World.h"
+#include "javascript/World.hpp"
 
 // C++
 #include <cassert>
@@ -10,12 +10,13 @@
 #include <sstream>
 
 // Core
-#include "simulator/Cell.h"
+#include "simulator/Cell.hpp"
 
 // JavaScript
 #include "javascript/Cell.hpp"
 #include "javascript/Yeast.hpp"
 #include "javascript/Barrier.hpp"
+#include "javascript/Canvas.hpp"
 
 /* ************************************************************************ */
 
@@ -118,6 +119,17 @@ World* get_world()
 
 /* ************************************************************************ */
 
+static v8::Handle<v8::Value> world_step_number(v8::Local<v8::String> property, const v8::AccessorInfo &info)
+{
+    using namespace v8;
+
+    auto value = get_world()->getStepNumber();
+
+    return Integer::New(value);
+}
+
+/* ************************************************************************ */
+
 World::World() noexcept
 {
     // Nothing to do
@@ -130,6 +142,17 @@ World::~World()
     if (m_isolate)
         m_isolate->Dispose();
 }
+
+/* ************************************************************************ */
+
+#ifdef ENABLE_RENDER
+
+void World::setContext(render::Context& context)
+{
+    m_renderContext = &context;
+}
+
+#endif
 
 /* ************************************************************************ */
 
@@ -210,6 +233,9 @@ void World::initContext()
     // First field is a pointer to this
     world_tpl->SetInternalFieldCount(1);
 
+    // Set global variables
+    world_tpl->SetAccessor(String::New("stepNumber"), world_step_number);
+
     // Global functions
     world_tpl->Set("Cell", FunctionTemplate::New(create_cell));
     world_tpl->Set("Yeast", FunctionTemplate::New(create_yeast));
@@ -236,6 +262,11 @@ void World::initContext()
         world->SetPointerInInternalField(0, this);
 
         world->Set(String::New("console"), console_tpl->NewInstance());
+
+#ifdef ENABLE_RENDER
+        assert(m_renderContext);
+        world->Set(String::New("canvas"), create_canvas(*m_renderContext));
+#endif
     }
 }
 

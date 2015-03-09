@@ -2,13 +2,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/WorldFactory.h"
+#include "simulator/WorldFactory.hpp"
 
 // C++
 #include <fstream>
 
 // Simulator
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 

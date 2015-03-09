@@ -25,12 +25,12 @@
     <File Name="Yeast.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Cell.h"/>
-    <File Name="World.h"/>
-    <File Name="WorldFactory.h"/>
-    <File Name="Simulator.h"/>
     <File Name="Barrier.hpp"/>
     <File Name="Yeast.hpp"/>
+    <File Name="Cell.hpp"/>
+    <File Name="Simulator.hpp"/>
+    <File Name="World.hpp"/>
+    <File Name="WorldFactory.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release"/>
   <Dependencies Name="Debug">

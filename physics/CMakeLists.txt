@@ -10,13 +10,13 @@ include_directories(${BULLET_INCLUDE_DIRS})
 
 # Create library
 add_library(physics
-    Object.h
+    Object.hpp
     Object.cpp
-    World.h
+    World.hpp
     World.cpp
-    Ground.h
+    Ground.hpp
     Ground.cpp
-    Cell.h
+    Cell.hpp
     Cell.cpp
     Barrier.hpp
     Barrier.cpp

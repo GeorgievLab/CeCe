@@ -8,7 +8,7 @@
 #include <btBulletDynamicsCommon.h>
 
 // Core
-#include "physics/World.h"
+#include "physics/World.hpp"
 
 /* ************************************************************************ */
 

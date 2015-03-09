@@ -4,13 +4,13 @@ project(simulator)
 
 # Create library
 add_library(simulator
-    Cell.h
+    Cell.hpp
     Cell.cpp
-    World.h
+    World.hpp
     World.cpp
-    WorldFactory.h
+    WorldFactory.hpp
     WorldFactory.cpp
-    Simulator.h
+    Simulator.hpp
     Simulator.cpp
     Barrier.hpp
     Barrier.cpp

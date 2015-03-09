@@ -9,7 +9,7 @@
 #include <random>
 
 // Core
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 

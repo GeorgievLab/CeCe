@@ -1,36 +1,38 @@
 
-#ifndef _JAVASCRIPT_WORLD_FACTORY_H_
-#define _JAVASCRIPT_WORLD_FACTORY_H_
+#ifndef _PHYSICS_GROUND_H_
+#define _PHYSICS_GROUND_H_
 
 /* ************************************************************************ */
 
-// C++
-#include <memory>
-#include <string>
-
-// Core
-#include "simulator/WorldFactory.h"
+// Physics
+#include "physics/Object.hpp"
 
 /* ************************************************************************ */
 
-namespace javascript {
+namespace physics {
+
+/* ************************************************************************ */
+
+class World;
 
 /* ************************************************************************ */
 
 /**
- * @brief WorldFactory for JavaScript (V8 engine)
+ * @brief Ground physical object.
  */
-class WorldFactory : public simulator::WorldFactory
+class Ground : public Object
 {
+
+// Public Ctors & Dtors
 public:
 
 
     /**
-     * @brief Create empty world.
+     * @brief Constructor.
      *
-     * @return
+     * @param world
      */
-    std::unique_ptr<simulator::World> createWorld() const override;
+    explicit Ground(World* world);
 
 };
 
@@ -40,4 +42,4 @@ public:
 
 /* ************************************************************************ */
 
-#endif // _JAVASCRIPT_WORLD_FACTORY_H_
+#endif // _PHYSICS_GROUND_H_

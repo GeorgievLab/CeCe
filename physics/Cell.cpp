@@ -2,13 +2,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "physics/Cell.h"
+#include "physics/Cell.hpp"
 
 // Bullet
 #include <btBulletDynamicsCommon.h>
 
 // Core
-#include "physics/World.h"
+#include "physics/World.hpp"
 
 /* ************************************************************************ */
 
@@ -40,9 +40,24 @@ void Cell::setVolume(Volume volume) noexcept
 
 /* ************************************************************************ */
 
+void Cell::setDensity(Density density) noexcept
+{
+    m_density = density;
+
+    // Update shape
+    switch (m_shapeType)
+    {
+    case Shape::Sphere:
+        updateSphereBody();
+        break;
+    }
+}
+
+/* ************************************************************************ */
+
 void Cell::updateSphereBody() noexcept
 {
-    float mass = 1;
+    float mass = m_volume.value() * m_density.value();
     btVector3 fallInertia(0, 0, 0);
 
     btSphereShape* shape = dynamic_cast<btSphereShape*>(m_shape.get());

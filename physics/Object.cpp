@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "physics/Object.h"
+#include "physics/Object.hpp"
 
 // C++
 #include <cassert>
@@ -11,7 +11,7 @@
 #include <btBulletDynamicsCommon.h>
 
 // Physics
-#include "physics/World.h"
+#include "physics/World.hpp"
 
 /* ************************************************************************ */
 

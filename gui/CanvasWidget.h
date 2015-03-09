@@ -12,11 +12,11 @@
 #include <wx/glcanvas.h>
 
 // Simulator
-#include "simulator/World.h"
-#include "simulator/Simulator.h"
+#include "simulator/World.hpp"
+#include "simulator/Simulator.hpp"
 
 // Render
-#include "render/Context.h"
+#include "render/Context.hpp"
 
 /* ************************************************************************ */
 

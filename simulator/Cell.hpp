@@ -9,14 +9,14 @@
 #include <functional>
 
 // Core
-#include "core/Units.h"
+#include "core/Units.hpp"
 
 // Physics
-#include "physics/Cell.h"
+#include "physics/Cell.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
-#include "render/Context.h"
+#include "render/Context.hpp"
 #endif
 
 /* ************************************************************************ */

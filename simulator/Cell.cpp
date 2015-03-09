@@ -2,10 +2,10 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/Cell.h"
+#include "simulator/Cell.hpp"
 
 // Core
-#include "simulator/World.h"
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 

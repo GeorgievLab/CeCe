@@ -10,9 +10,9 @@
 #include <mutex>
 
 // Cell Sim
-#include "simulator/Simulator.h"
-#include "simulator/World.h"
-#include "javascript/WorldFactory.h"
+#include "simulator/Simulator.hpp"
+#include "simulator/World.hpp"
+#include "javascript/WorldFactory.hpp"
 
 /* ************************************************************************ */
 

@@ -8,20 +8,36 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "render/Context.h"
+#include "render/Context.hpp"
 
 // OpenGL
 #include <GL/gl.h>
 #include <GL/glu.h>
 
 // Simulator
-#include "simulator/World.h"
-#include "simulator/Cell.h"
+#include "simulator/World.hpp"
+#include "simulator/Cell.hpp"
 #include "simulator/Barrier.hpp"
 
 /* ************************************************************************ */
 
 namespace render {
+
+/* ************************************************************************ */
+
+std::vector<std::uint8_t> Context::getData() const noexcept
+{
+    std::vector<std::uint8_t> data;
+
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    glReadBuffer(GL_FRONT);
+    glReadPixels(viewport[0], viewport[1], viewport[2], viewport[3],
+                 GL_RGBA, GL_UNSIGNED_BYTE, data.data());
+
+    return data;
+}
 
 /* ************************************************************************ */
 

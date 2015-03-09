@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "physics/World.h"
+#include "physics/World.hpp"
 
 // C++
 #include <algorithm>
@@ -11,7 +11,7 @@
 #include <btBulletDynamicsCommon.h>
 
 // Library
-#include "physics/Ground.h"
+#include "physics/Ground.hpp"
 
 /* ************************************************************************ */
 

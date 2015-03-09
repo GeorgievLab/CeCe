@@ -37,6 +37,7 @@ target_link_libraries(gui
     LinearMath
     ${RENDER_LIBS}
     ${wxWidgets_LIBRARIES}
+    ${JPEG_LIBRARIES}
 )
 
 # Setup dependencies

@@ -7,11 +7,11 @@
 #include <cmath>
 
 // Core
-#include "core/Units.h"
-#include "core/Vect.h"
+#include "core/Units.hpp"
+#include "core/Vect.hpp"
 
 // Physics
-#include "physics/Object.h"
+#include "physics/Object.hpp"
 
 /* ************************************************************************ */
 

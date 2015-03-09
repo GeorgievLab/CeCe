@@ -6,7 +6,7 @@ project(render)
 add_library(render
     Position.hpp
     Color.hpp
-    Context.h
+    Context.hpp
     Context.cpp
     Camera.hpp
     Camera.cpp

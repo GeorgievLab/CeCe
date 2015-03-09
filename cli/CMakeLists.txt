@@ -23,6 +23,7 @@ target_link_libraries(cli
     BulletCollision
     LinearMath
     ${RENDER_LIBS}
+    ${JPEG_LIBRARIES}
 )
 
 # Setup dependencies

@@ -5,10 +5,10 @@
 #include "javascript/Cell.hpp"
 
 // Core
-#include "core/Units.h"
+#include "core/Units.hpp"
 
 // JavaScript
-#include "javascript/World.h"
+#include "javascript/World.hpp"
 
 /* ************************************************************************ */
 
