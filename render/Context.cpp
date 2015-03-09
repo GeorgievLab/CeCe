@@ -1,11 +1,14 @@
 
 /* ************************************************************************ */
 
+#ifndef ENABLE_RENDER
+#error ENABLE_RENDER must be 1 to compile render context.
+#endif
+
+/* ************************************************************************ */
+
 // Declaration
 #include "render/Context.h"
-
-// C++
-#include <algorithm>
 
 // OpenGL
 #include <GL/gl.h>
@@ -104,176 +107,75 @@ void Context::frameEnd() noexcept
 
 /* ************************************************************************ */
 
-void Context::drawWorld(const simulator::World& world) noexcept
+void Context::drawAxis(const Position& pos, float scale) noexcept
 {
-    // Gravity
-    {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(scale, scale, scale);
+    glTranslatef(pos.x, pos.y, pos.z);
 
-        auto gravity = world.getGravity();
+    glBegin(GL_LINES);
 
-        glBegin(GL_LINES);
+    // X
+    glColor3d(1.0, 0.0, 0.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(1.0, 0.0, 0.0);
 
-        // X
-        glColor3d(0.0, 0.0, 0.0);
-        glVertex3d(0.0, 0.0, 0.0);
-        glVertex3d(gravity[0], gravity[1], gravity[2]);
+    // Y
+    glColor3d(0.0, 1.0, 0.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, 1.0, 0.0);
 
-        glEnd();
+    // Z
+    glColor3d(0.0, 0.0, 1.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, 0.0, 1.0);
 
-        glPopMatrix();
-    }
+    glEnd();
 
-    // Axis
-    {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glScalef(5, 5, 5);
-
-        glBegin(GL_LINES);
-
-        // X
-        glColor3d(1.0, 0.0, 0.0);
-        glVertex3d(0.0, 0.0, 0.0);
-        glVertex3d(1.0, 0.0, 0.0);
-
-        // Y
-        glColor3d(0.0, 1.0, 0.0);
-        glVertex3d(0.0, 0.0, 0.0);
-        glVertex3d(0.0, 1.0, 0.0);
-
-        // Z
-        glColor3d(0.0, 0.0, 1.0);
-        glVertex3d(0.0, 0.0, 0.0);
-        glVertex3d(0.0, 0.0, 1.0);
-
-        glEnd();
-
-        glPopMatrix();
-    }
-
-    // Plane
-    {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-
-        auto width = world.getWidth().value();
-        auto height = world.getHeight().value();
-        auto wh = width / 2.0;
-        auto hh = height / 2.0;
-
-        glBegin(GL_QUADS);
-        glColor4d(0.9, 0.9, 0.9, 0.6);
-        glNormal3f(0, 1, 0);
-        glVertex3d(-wh, 0, -hh);
-        glNormal3f(0, 1, 0);
-        glVertex3d(-wh, 0,  hh);
-        glNormal3f(0, 1, 0);
-        glVertex3d( wh, 0,  hh);
-        glNormal3f(0, 1, 0);
-        glVertex3d( wh, 0, -hh);
-        glEnd();
-
-        glPopMatrix();
-    }
-
-    // Draw barriers
-    {
-        for (auto& barrier : world.getBarriers())
-        {
-            drawBarrier(*barrier);
-        }
-    }
-
-    {
-        // Draw cells in order to camera view
-
-        // Get camera position and order cells by distance from camera
-        const auto& cam_pos = m_camera.getPosition();
-
-        std::vector<simulator::Cell*> cells;
-
-        // Copy cell pointers
-        for (const auto& cell : world.getCells())
-        {
-            cells.push_back(cell.get());
-        }
-
-        // Order cells
-        std::sort(cells.begin(), cells.end(), [&cam_pos](const simulator::Cell* c1, const simulator::Cell* c2) {
-            auto distance = [](const Position& pos1, const Position& pos2) -> float {
-                return sqrt(
-                    ((pos1.x.value() - pos2.x.value()) * (pos1.x.value() - pos2.x.value())) +
-                    ((pos1.y.value() - pos2.y.value()) * (pos1.y.value() - pos2.y.value())) +
-                    ((pos1.z.value() - pos2.z.value()) * (pos1.z.value() - pos2.z.value()))
-                );
-            };
-
-            auto d1 = distance(c1->getPosition(), cam_pos);
-            auto d2 = distance(c2->getPosition(), cam_pos);
-
-            return d1 < d2;
-        });
-
-        // Draw cells
-        for (const auto& cell : cells)
-        {
-            drawCell(*cell);
-        }
-    }
+    glPopMatrix();
 }
 
 /* ************************************************************************ */
 
-void Context::drawCell(const simulator::Cell& cell) noexcept
+void Context::drawPlane(const Position& pos, float width, float height, const Color& color) noexcept
 {
-    switch (cell.getShapeType())
-    {
-    case simulator::Cell::Shape::Sphere:
-        drawCellSphere(cell);
-        break;
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glTranslatef(pos.x, pos.y, pos.z);
 
-    default:
-        // Unsupported type
-        break;
-    }
+    auto wh = width / 2.0f;
+    auto hh = height / 2.0f;
+
+    glBegin(GL_QUADS);
+    glColor4f(color.red, color.green, color.blue, color.alpha);
+    glNormal3f(0, 1, 0);
+    glVertex3d(-wh, 0, -hh);
+    glNormal3f(0, 1, 0);
+    glVertex3d(-wh, 0,  hh);
+    glNormal3f(0, 1, 0);
+    glVertex3d( wh, 0,  hh);
+    glNormal3f(0, 1, 0);
+    glVertex3d( wh, 0, -hh);
+    glEnd();
+
+    glPopMatrix();
 }
 
 /* ************************************************************************ */
 
-void Context::drawCellSphere(const simulator::Cell& cell) noexcept
+void Context::drawSphere(const Position& pos, float radius, const Color& color) noexcept
 {
     constexpr float DEG2RAD = 3.14159f / 180.f;
-
-    const auto pos = cell.getPosition();
-    const auto radius = simulator::Cell::calcSphereRadius(cell.getVolume()).value();
 
     // Setup transformation matrix
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glTranslatef(pos.x.value(), pos.y.value(), pos.z.value());
+    glTranslatef(pos.x, pos.y, pos.z);
 
-    auto gfp = cell.getGfp();
-    auto rfp = cell.getRfp();
-    auto yfp = cell.getYfp();
+    // Sphere color
+    glColor4f(color.red, color.green, color.blue, color.alpha);
 
-    // TODO: Better calculation
-    float red = rfp / 1000.f + yfp / 1000.f;
-    float green = gfp / 1000.f + yfp / 1000.f;
-    float blue = 0;
-
-    glColor4f(red, green, blue, 0.5f);
-/*
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(0, 0);
-
-    for (int i = 0; i <= 360; i++)
-    {
-        float degInRad = i * DEG2RAD;
-        glVertex2f(cos(degInRad) * radius, sin(degInRad) * radius);
-    }
-*/
     constexpr int LATS = 20;
     constexpr int LONGS = 20;
 
@@ -320,7 +222,7 @@ void Context::drawCellSphere(const simulator::Cell& cell) noexcept
 }
 
 /* ************************************************************************ */
-
+/*
 void Context::drawBarrier(const simulator::Barrier& barrier) noexcept
 {
     const auto pos = barrier.getPosition();
@@ -389,7 +291,7 @@ void Context::drawBarrier(const simulator::Barrier& barrier) noexcept
 
     glPopMatrix();
 }
-
+*/
 /* ************************************************************************ */
 
 }

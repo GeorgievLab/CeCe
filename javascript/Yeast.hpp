@@ -1,42 +1,30 @@
 
-/* ************************************************************************ */
-
-// Declaration
-#include "simulator/Barrier.hpp"
-
-// Core
-#include "simulator/World.h"
+#pragma once
 
 /* ************************************************************************ */
 
-namespace simulator {
+// V8
+#include <v8.h>
 
 /* ************************************************************************ */
 
-Barrier::Barrier(World* world)
-    : physics::Barrier(world)
-    , m_world(world)
-{
-    // Nothing to do
-}
+namespace javascript {
 
 /* ************************************************************************ */
 
-Barrier::~Barrier()
-{
-    // Nothing to do
-}
+/**
+ * @brief Create template for cell object.
+ *
+ * @param Template.
+ */
+v8::Local<v8::ObjectTemplate> create_yeast_template();
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
-
-void Barrier::draw(render::Context& context)
-{
-
-}
-
-#endif
+/**
+ * @brief Create a yeast object.
+ */
+v8::Handle<v8::Value> create_yeast(const v8::Arguments& args);
 
 /* ************************************************************************ */
 

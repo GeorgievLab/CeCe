@@ -2,10 +2,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "javascript/Cell.hpp"
+#include "javascript/Yeast.hpp"
 
 // Core
 #include "core/Units.h"
+
+// Simulator
+#include "simulator/Yeast.hpp"
 
 // JavaScript
 #include "javascript/World.h"
@@ -26,13 +29,27 @@ namespace {
  * @param info
  */
 template<typename T>
+T* get_pointer(const v8::Local<v8::Object>& object) noexcept
+{
+    using namespace v8;
+
+    Local<External> wrap = Local<External>::Cast(object->GetInternalField(0));
+    return static_cast<T*>(wrap->Value());
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns pointer.
+ *
+ * @param info
+ */
+template<typename T>
 T* get_pointer(const v8::AccessorInfo& info) noexcept
 {
     using namespace v8;
 
-    Local<Object> self = info.Holder();
-    Local<External> wrap = Local<External>::Cast(self->GetInternalField(0));
-    return static_cast<T*>(wrap->Value());
+    return get_pointer<T>(info.Holder());
 }
 
 /* ************************************************************************ */
@@ -41,7 +58,7 @@ v8::Handle<v8::Value> get_id(v8::Local<v8::String> property, const v8::AccessorI
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getId());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getId());
 }
 
 /* ************************************************************************ */
@@ -50,7 +67,7 @@ v8::Handle<v8::Value> get_x(v8::Local<v8::String> property, const v8::AccessorIn
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getPosition().x.value());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getPosition().x.value());
 }
 
 /* ************************************************************************ */
@@ -59,7 +76,7 @@ void set_x(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8:
 {
     using namespace v8;
 
-    auto cell = get_pointer<simulator::Cell>(info);
+    auto cell = get_pointer<simulator::Yeast>(info);
 
     auto pos = cell->getPosition();
     pos.x = Length(value->Int32Value());
@@ -72,7 +89,7 @@ v8::Handle<v8::Value> get_y(v8::Local<v8::String> property, const v8::AccessorIn
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getPosition().y.value());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getPosition().y.value());
 }
 
 /* ************************************************************************ */
@@ -81,7 +98,7 @@ void set_y(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8:
 {
     using namespace v8;
 
-    auto cell = get_pointer<simulator::Cell>(info);
+    auto cell = get_pointer<simulator::Yeast>(info);
 
     auto pos = cell->getPosition();
     pos.y = Length(value->Int32Value());
@@ -94,7 +111,7 @@ v8::Handle<v8::Value> get_z(v8::Local<v8::String> property, const v8::AccessorIn
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getPosition().z.value());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getPosition().z.value());
 }
 
 /* ************************************************************************ */
@@ -103,7 +120,7 @@ void set_z(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8:
 {
     using namespace v8;
 
-    auto cell = get_pointer<simulator::Cell>(info);
+    auto cell = get_pointer<simulator::Yeast>(info);
 
     auto pos = cell->getPosition();
     pos.z = Length(value->Int32Value());
@@ -116,7 +133,7 @@ v8::Handle<v8::Value> get_gfp(v8::Local<v8::String> property, const v8::Accessor
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getGfp());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getGfp());
 }
 
 /* ************************************************************************ */
@@ -125,7 +142,7 @@ void set_gfp(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v
 {
     using namespace v8;
 
-    get_pointer<simulator::Cell>(info)->setGfp(value->Int32Value());
+    get_pointer<simulator::Yeast>(info)->setGfp(value->Int32Value());
 }
 
 /* ************************************************************************ */
@@ -134,7 +151,7 @@ v8::Handle<v8::Value> get_rfp(v8::Local<v8::String> property, const v8::Accessor
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getRfp());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getRfp());
 }
 
 /* ************************************************************************ */
@@ -143,7 +160,7 @@ void set_rfp(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v
 {
     using namespace v8;
 
-    get_pointer<simulator::Cell>(info)->setRfp(value->Int32Value());
+    get_pointer<simulator::Yeast>(info)->setRfp(value->Int32Value());
 }
 
 /* ************************************************************************ */
@@ -152,7 +169,7 @@ v8::Handle<v8::Value> get_yfp(v8::Local<v8::String> property, const v8::Accessor
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getYfp());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getYfp());
 }
 
 /* ************************************************************************ */
@@ -161,7 +178,7 @@ void set_yfp(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v
 {
     using namespace v8;
 
-    get_pointer<simulator::Cell>(info)->setYfp(value->Int32Value());
+    get_pointer<simulator::Yeast>(info)->setYfp(value->Int32Value());
 }
 
 /* ************************************************************************ */
@@ -170,7 +187,7 @@ v8::Handle<v8::Value> get_volume(v8::Local<v8::String> property, const v8::Acces
 {
     using namespace v8;
 
-    return Integer::New(get_pointer<simulator::Cell>(info)->getVolume().value());
+    return Integer::New(get_pointer<simulator::Yeast>(info)->getVolume().value());
 }
 
 /* ************************************************************************ */
@@ -179,17 +196,61 @@ void set_volume(v8::Local<v8::String> property, v8::Local<v8::Value> value, cons
 {
     using namespace v8;
 
-    get_pointer<simulator::Cell>(info)->setVolume(Length(value->Int32Value()));
+    get_pointer<simulator::Yeast>(info)->setVolume(Length(value->Int32Value()));
 }
 
 /* ************************************************************************ */
 
-/**
- * @brief Create template for cell object.
- *
- * @param Template.
- */
-v8::Local<v8::ObjectTemplate> create_cell_template()
+v8::Handle<v8::Value> get_bud(v8::Local<v8::String> property, const v8::AccessorInfo &info)
+{
+    using namespace v8;
+
+    auto ptr = get_pointer<simulator::Yeast>(info);
+    auto bud = ptr->getBud();
+
+    if (bud)
+    {
+        HandleScope handle_scope;
+
+        // Cell object template
+        Local<ObjectTemplate> yeast_template = create_yeast_template();
+
+        // Create new instance
+        Local<Object> obj = yeast_template->NewInstance();
+
+        // Store pointer into JS object
+        obj->SetInternalField(0, External::New(bud));
+
+        return handle_scope.Close(obj);
+    }
+
+    return Null();
+}
+
+/* ************************************************************************ */
+
+v8::Handle<v8::Value> bud_create(const v8::Arguments& args)
+{
+    get_pointer<simulator::Yeast>(args.Holder())->budCreate(Volume(500));
+    return v8::Handle<v8::Value>{};
+}
+
+/* ************************************************************************ */
+
+v8::Handle<v8::Value> bud_release(const v8::Arguments& args)
+{
+    auto ptr = get_pointer<simulator::Yeast>(args.Holder());
+    if (ptr) ptr->budRelease();
+    return v8::Handle<v8::Value>{};
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+v8::Local<v8::ObjectTemplate> create_yeast_template()
 {
     using namespace v8;
 
@@ -205,12 +266,12 @@ v8::Local<v8::ObjectTemplate> create_cell_template()
     yeast_template->SetAccessor(String::New("rfp"), get_rfp, set_rfp);
     yeast_template->SetAccessor(String::New("yfp"), get_yfp, set_yfp);
     yeast_template->SetAccessor(String::New("volume"), get_volume, set_volume);
+    yeast_template->SetAccessor(String::New("bud"), get_bud);
+
+    yeast_template->Set(String::New("budCreate"), FunctionTemplate::New(bud_create));
+    yeast_template->Set(String::New("budRelease"), FunctionTemplate::New(bud_release));
 
     return handle_scope.Close(yeast_template);
-}
-
-/* ************************************************************************ */
-
 }
 
 /* ************************************************************************ */
@@ -218,14 +279,14 @@ v8::Local<v8::ObjectTemplate> create_cell_template()
 /**
  * @brief Create a new cell.
  */
-v8::Handle<v8::Value> create_cell(const v8::Arguments& args)
+v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
 {
     using namespace v8;
 
     HandleScope handle_scope;
 
     // Cell object template
-    Local<ObjectTemplate> yeast_template = create_cell_template();
+    Local<ObjectTemplate> yeast_template = create_yeast_template();
 
     // Create new instance
     Local<Object> obj = yeast_template->NewInstance();
@@ -234,7 +295,7 @@ v8::Handle<v8::Value> create_cell(const v8::Arguments& args)
     auto world = get_world();
 
     // Create new cell
-    simulator::Cell* cell = world->newCell<simulator::Cell>(simulator::Cell::Shape::Sphere);
+    simulator::Yeast* cell = world->newCell<simulator::Yeast>();
 
     // Store pointer into JS object
     obj->SetInternalField(0, External::New(cell));

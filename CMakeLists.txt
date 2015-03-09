@@ -8,6 +8,8 @@ project(cell-sim)
 option(ASAN "If address sanitizer should be used" Off)
 option(MSAN "If memory sanitizer should be used" Off)
 option(USE_LIBCPP "If libc++ should be used" Off)
+option(ENABLE_GUI "Enable GUI" On)
+option(ENABLE_RENDER "Enable simulation rendering" On)
 
 # Default include directories
 include_directories(
@@ -25,19 +27,41 @@ endif()
 
 # Debug flags
 if (ASAN)
+    message("-- Using address sanitizer")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
 elseif (MSAN)
+    message("-- Using memory sanitizer")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
 endif ()
 
+if (ENABLE_GUI)
+    message("-- GUI enabled")
+    set(ENABLE_RENDER 1)
+    add_definitions(-DENABLE_GUI=1)
+endif ()
+
+if (ENABLE_RENDER)
+    message("-- OpenGL rendering enabled")
+    add_definitions(-DENABLE_RENDER=1)
+endif ()
+
 # Projects
 add_subdirectory(core)
-add_subdirectory(render)
+
+if (ENABLE_RENDER)
+    add_subdirectory(render)
+endif ()
+
 add_subdirectory(physics)
 add_subdirectory(simulator)
 add_subdirectory(javascript)
-add_subdirectory(gui)
+
+if (ENABLE_GUI)
+    add_subdirectory(gui)
+else ()
+    add_subdirectory(cli)
+endif ()
 
 # ######################################################################### #

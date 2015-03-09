@@ -14,7 +14,7 @@
 // Physics
 #include "physics/Cell.h"
 
-#ifdef ENABLE_GUI
+#ifdef ENABLE_RENDER
 // Render
 #include "render/Context.h"
 #endif
@@ -38,6 +38,9 @@ class Cell : public physics::Cell
 // Public Types
 public:
 
+
+    /// Cell ID type.
+    using Id = unsigned long;
 
     /// Behaviour function type.
     using BehaviourFn = std::function<void(Cell&)>;
@@ -64,6 +67,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns cell ID.
+     *
+     * @return
+     */
+    Id getId() const noexcept
+    {
+        return m_id;
+    }
 
 
     /**
@@ -178,7 +192,7 @@ public:
      */
     virtual void update();
 
-#ifdef ENABLE_GUI
+#ifdef ENABLE_RENDER
 
     /**
      * @brief Render cell.
@@ -191,6 +205,12 @@ public:
 
 // Private Data Members
 private:
+
+    /// ID generator.
+    static Id s_id;
+
+    /// Cell ID
+    Id m_id;
 
     /// Cell world.
     World* const m_world;
@@ -215,4 +235,3 @@ private:
 
 /* ************************************************************************ */
 
-#endif // _SIMULATOR_CELL_H_

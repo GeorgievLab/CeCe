@@ -21,12 +21,14 @@
     <File Name="World.cpp"/>
     <File Name="Cell.cpp"/>
     <File Name="Barrier.cpp"/>
+    <File Name="Yeast.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="WorldFactory.h"/>
     <File Name="World.h"/>
     <File Name="Cell.hpp"/>
     <File Name="Barrier.hpp"/>
+    <File Name="Yeast.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="simulator"/>

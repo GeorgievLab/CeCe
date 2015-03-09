@@ -12,6 +12,8 @@ add_library(javascript
     Cell.cpp
     Barrier.hpp
     Barrier.cpp
+    Yeast.hpp
+    Yeast.cpp
 )
 
 # Library dependency

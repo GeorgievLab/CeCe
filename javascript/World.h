@@ -112,7 +112,7 @@ public:
 private:
 
     /// V8 isolate
-    v8::Isolate* m_isolate;
+    v8::Isolate* m_isolate = nullptr;
 
     /// V8 run context.
     v8::Persistent<v8::Context> m_context;

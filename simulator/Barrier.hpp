@@ -6,6 +6,11 @@
 // Physics
 #include "physics/Barrier.hpp"
 
+#ifdef ENABLE_RENDER
+// Render
+#include "render/Context.h"
+#endif
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -58,6 +63,21 @@ public:
 // Public Mutators
 public:
 
+
+// Public Operations
+public:
+
+
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Render barrier.
+     *
+     * @param context
+     */
+    virtual void draw(render::Context& context);
+
+#endif
 
 
 // Private Data Members

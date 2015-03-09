@@ -2,6 +2,11 @@
 
 project(gui)
 
+if (ENABLE_RENDER)
+    set(RENDER_LIBS GL GLU)
+    set(RENDER_DEP render)
+endif ()
+
 # wxWidgets
 find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
 include(${wxWidgets_USE_FILE})
@@ -25,17 +30,22 @@ target_link_libraries(gui
     javascript
     simulator
     physics
-    render
+    ${RENDER_DEP}
     v8
     BulletDynamics
     BulletCollision
     LinearMath
-    GL
-    GLU
+    ${RENDER_LIBS}
     ${wxWidgets_LIBRARIES}
 )
 
 # Setup dependencies
-add_dependencies(gui javascript simulator core render physics)
+add_dependencies(gui
+    javascript
+    simulator
+    core
+    ${RENDER_DEP}
+    physics
+)
 
 # ######################################################################### #

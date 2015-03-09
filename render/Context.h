@@ -1,24 +1,14 @@
 
 #pragma once
 
+#ifdef ENABLE_RENDER
+
 /* ************************************************************************ */
 
 // Render
 #include "render/Camera.hpp"
-
-/* ************************************************************************ */
-
-namespace simulator {
-
-/* ************************************************************************ */
-
-class World;
-class Cell;
-class Barrier;
-
-/* ************************************************************************ */
-
-}
+#include "render/Position.hpp"
+#include "render/Color.hpp"
 
 /* ************************************************************************ */
 
@@ -82,27 +72,33 @@ public:
 
 
     /**
-     * @brief Draw world.
+     * @brief Draw axis.
      *
-     * @param world
+     * @param pos   Axis position.
+     * @param scale Axis scale.
      */
-    void drawWorld(const simulator::World& world) noexcept;
+    void drawAxis(const Position& pos, float scale) noexcept;
 
 
     /**
-     * @brief Draw cell.
+     * @brief Draw plane.
      *
-     * @param cell
+     * @param pos    Plane position.
+     * @param width  Plane width.
+     * @param height Plane height.
+     * @param color  Plane color.
      */
-    void drawCell(const simulator::Cell& cell) noexcept;
+    void drawPlane(const Position& pos, float width, float height, const Color& color) noexcept;
 
 
     /**
-     * @brief Draw cell with sphere shape.
+     * @brief Draw sphere shape.
      *
-     * @param cell
+     * @param pos    Sphere position.
+     * @param radius Sphere radius.
+     * @param color  Sphere color.
      */
-    void drawCellSphere(const simulator::Cell& cell) noexcept;
+    void drawSphere(const Position& pos, float radius, const Color& color) noexcept;
 
 
     /**
@@ -110,7 +106,7 @@ public:
      *
      * @param barrier
      */
-    void drawBarrier(const simulator::Barrier& barrier) noexcept;
+    //void drawBarrier(const simulator::Barrier& barrier) noexcept;
 
 
 // Private Data Members
@@ -127,3 +123,6 @@ private:
 
 /* ************************************************************************ */
 
+#endif
+
+/* ************************************************************************ */

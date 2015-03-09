@@ -155,7 +155,7 @@ v8::Handle<v8::Value> create_barrier(const v8::Arguments& args)
                 if (!val->IsNumber())
                     ThrowException(String::New("Yeast option 'x' must be a number"));
 
-                position.x = MicroMeters(val->NumberValue());
+                position.x = Length(val->NumberValue());
             }
 
             // Y
@@ -165,7 +165,7 @@ v8::Handle<v8::Value> create_barrier(const v8::Arguments& args)
                 if (!val->IsNumber())
                     ThrowException(String::New("Yeast option 'y' must be a number"));
 
-                position.y = MicroMeters(val->NumberValue());
+                position.y = Length(val->NumberValue());
             }
 
             // Y
@@ -175,7 +175,7 @@ v8::Handle<v8::Value> create_barrier(const v8::Arguments& args)
                 if (!val->IsNumber())
                     ThrowException(String::New("Yeast option 'z' must be a number"));
 
-                position.z = MicroMeters(val->NumberValue());
+                position.z = Length(val->NumberValue());
             }
 
             // Set new position
@@ -189,7 +189,7 @@ v8::Handle<v8::Value> create_barrier(const v8::Arguments& args)
             if (!val->IsNumber())
                 ThrowException(String::New("Yeast option 'width' must be a number"));
 
-            barrier->setWidth(MicroMeters(val->NumberValue()));
+            barrier->setWidth(Length(val->NumberValue()));
         }
 
         // Height
@@ -199,7 +199,7 @@ v8::Handle<v8::Value> create_barrier(const v8::Arguments& args)
             if (!val->IsNumber())
                 ThrowException(String::New("Yeast option 'height' must be a number"));
 
-            barrier->setHeight(MicroMeters(val->NumberValue()));
+            barrier->setHeight(Length(val->NumberValue()));
         }
 
         // Depth
@@ -209,7 +209,7 @@ v8::Handle<v8::Value> create_barrier(const v8::Arguments& args)
             if (!val->IsNumber())
                 v8::ThrowException(String::New("Yeast option 'depth' must be a number"));
 
-            barrier->setDepth(MicroMeters(val->NumberValue()));
+            barrier->setDepth(Length(val->NumberValue()));
         }
     }
 

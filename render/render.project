@@ -23,6 +23,8 @@
   <VirtualDirectory Name="include">
     <File Name="Context.h"/>
     <File Name="Camera.hpp"/>
+    <File Name="Color.hpp"/>
+    <File Name="Position.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

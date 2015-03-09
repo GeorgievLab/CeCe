@@ -14,6 +14,7 @@
 
 // JavaScript
 #include "javascript/Cell.hpp"
+#include "javascript/Yeast.hpp"
 #include "javascript/Barrier.hpp"
 
 /* ************************************************************************ */
@@ -211,6 +212,7 @@ void World::initContext()
 
     // Global functions
     world_tpl->Set("Cell", FunctionTemplate::New(create_cell));
+    world_tpl->Set("Yeast", FunctionTemplate::New(create_yeast));
     world_tpl->Set("Barrier", FunctionTemplate::New(create_barrier));
 
     // Units

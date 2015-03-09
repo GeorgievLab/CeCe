@@ -106,9 +106,10 @@ void CanvasWidget::Render() noexcept
 
         // Render world
         wxASSERT(m_simulator);
-        if (m_simulator->getWorld())
+        auto world = m_simulator->getWorld();
+        if (world)
         {
-            m_renderer.drawWorld(*m_simulator->getWorld());
+            world->draw(m_renderer);
         }
     }
 

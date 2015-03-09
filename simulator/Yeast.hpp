@@ -9,6 +9,11 @@
 // Physics
 #include "simulator/Cell.h"
 
+#ifdef ENABLE_RENDER
+// Render
+#include "render/Context.h"
+#endif
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -56,6 +61,17 @@ public:
     Volume getVolume() const noexcept override;
 
 
+    /**
+     * @brief Returns yeast's bud.
+     *
+     * @return
+     */
+    Yeast* getBud() const noexcept
+    {
+        return m_bud.get();
+    }
+
+
 // Public Mutators
 public:
 
@@ -77,6 +93,31 @@ public:
      */
     void update() override;
 
+
+    /**
+     * @brief Create new yeast bud.
+     *
+     * @param volume Bud volume.
+     */
+    void budCreate(Volume volume);
+
+
+    /**
+     * @brief Release bud cell.
+     */
+    void budRelease();
+
+
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Render cell.
+     *
+     * @param context
+     */
+    virtual void draw(render::Context& context);
+
+#endif
 
 // Private Data Members
 private:

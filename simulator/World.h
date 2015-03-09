@@ -16,6 +16,11 @@
 #include "simulator/Cell.h"
 #include "simulator/Barrier.hpp"
 
+#ifdef ENABLE_RENDER
+// Render
+#include "render/Context.h"
+#endif
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -152,11 +157,12 @@ public:
      *
      * @param cell
      */
-    Cell* addCell(std::unique_ptr<Cell> cell)
+    template<typename T>
+    T* addCell(std::unique_ptr<T> cell)
     {
         assert(cell);
         m_cells.push_back(std::move(cell));
-        return m_cells.back().get();
+        return static_cast<T*>(m_cells.back().get());
     }
 
 
@@ -168,7 +174,7 @@ public:
      * @return
      */
     template<typename T, typename... Args>
-    Cell* newCell(Args&&... args)
+    T* newCell(Args&&... args)
     {
         return addCell(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
     }
@@ -230,6 +236,16 @@ public:
      */
     virtual void update(float step) noexcept;
 
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Render world.
+     *
+     * @param context
+     */
+    virtual void draw(render::Context& context);
+
+#endif
 
 // Private Data Members
 private:
