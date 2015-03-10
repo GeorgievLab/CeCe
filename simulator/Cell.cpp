@@ -36,10 +36,14 @@ Cell::~Cell()
 
 void Cell::update()
 {
+    // Update object state
     const auto& fn = getBehaviour();
 
     if (fn)
         fn(*this);
+
+    // Update physics object
+    physics::Cell::update();
 }
 
 /* ************************************************************************ */

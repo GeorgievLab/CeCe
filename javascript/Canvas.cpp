@@ -185,7 +185,7 @@ v8::Local<v8::Object> create_canvas(render::Context& context)
     HandleScope handle_scope;
 
     // Get template
-    static Local<ObjectTemplate> tpl = create_canvas_template();
+    Local<ObjectTemplate> tpl = create_canvas_template();
 
     // Create new instance
     Local<Object> obj = tpl->NewInstance();

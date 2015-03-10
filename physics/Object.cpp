@@ -62,6 +62,13 @@ void Object::setPosition(Position pos) noexcept
 
 /* ************************************************************************ */
 
+void Object::update()
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
 void Object::registerRigidBody() noexcept
 {
     assert(m_rigidBody);

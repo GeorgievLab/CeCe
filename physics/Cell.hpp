@@ -76,7 +76,7 @@ public:
      *
      * @return
      */
-    virtual Volume getVolume() const noexcept
+    Volume getVolume() const noexcept
     {
         return m_volume;
     }
@@ -87,7 +87,7 @@ public:
      *
      * @return
      */
-    virtual Density getDensity() const noexcept
+    Density getDensity() const noexcept
     {
         return m_density;
     }
@@ -102,7 +102,10 @@ public:
      *
      * @param volume
      */
-    virtual void setVolume(Volume volume) noexcept;
+    void setVolume(Volume volume) noexcept
+    {
+        m_volume = volume;
+    }
 
 
     /**
@@ -110,7 +113,10 @@ public:
      *
      * @param density
      */
-    virtual void setDensity(Density density) noexcept;
+    void setDensity(Density density) noexcept
+    {
+        m_density = density;
+    }
 
 
 // Public Operations
@@ -129,6 +135,16 @@ public:
         // 3th root of ((3 / 4 * pi) * volume)
         return Length(0.62035f * std::pow(volume.value(), 0.3333333f));
     }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Update cell state.
+     */
+    void update() override;
 
 
 // Protected Operations

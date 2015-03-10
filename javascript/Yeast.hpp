@@ -13,11 +13,20 @@ namespace javascript {
 /* ************************************************************************ */
 
 /**
- * @brief Create template for cell object.
+ * @brief Create template for yeast object.
  *
  * @param Template.
  */
 v8::Local<v8::ObjectTemplate> create_yeast_template();
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create template for yeast bud object.
+ *
+ * @param Template.
+ */
+v8::Local<v8::ObjectTemplate> create_yeast_bud_template();
 
 /* ************************************************************************ */
 

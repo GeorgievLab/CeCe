@@ -121,6 +121,12 @@ public:
 
 
     /**
+     * @brief Update cell state.
+     */
+    virtual void update();
+
+
+    /**
      * @brief Register rigid body to world.
      */
     void registerRigidBody() noexcept;

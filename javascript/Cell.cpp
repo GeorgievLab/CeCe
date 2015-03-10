@@ -195,18 +195,18 @@ v8::Local<v8::ObjectTemplate> create_cell_template()
 
     HandleScope handle_scope;
 
-    Local<ObjectTemplate> yeast_template = ObjectTemplate::New();
-    yeast_template->SetInternalFieldCount(1);
-    yeast_template->SetAccessor(String::New("id"), get_id);
-    yeast_template->SetAccessor(String::New("x"), get_x, set_x);
-    yeast_template->SetAccessor(String::New("y"), get_y, set_y);
-    yeast_template->SetAccessor(String::New("z"), get_z, set_z);
-    yeast_template->SetAccessor(String::New("gfp"), get_gfp, set_gfp);
-    yeast_template->SetAccessor(String::New("rfp"), get_rfp, set_rfp);
-    yeast_template->SetAccessor(String::New("yfp"), get_yfp, set_yfp);
-    yeast_template->SetAccessor(String::New("volume"), get_volume, set_volume);
+    Local<ObjectTemplate> tpl = ObjectTemplate::New();
+    tpl->SetInternalFieldCount(1);
+    tpl->SetAccessor(String::New("id"), get_id);
+    tpl->SetAccessor(String::New("x"), get_x, set_x);
+    tpl->SetAccessor(String::New("y"), get_y, set_y);
+    tpl->SetAccessor(String::New("z"), get_z, set_z);
+    tpl->SetAccessor(String::New("gfp"), get_gfp, set_gfp);
+    tpl->SetAccessor(String::New("rfp"), get_rfp, set_rfp);
+    tpl->SetAccessor(String::New("yfp"), get_yfp, set_yfp);
+    tpl->SetAccessor(String::New("volume"), get_volume, set_volume);
 
-    return handle_scope.Close(yeast_template);
+    return handle_scope.Close(tpl);
 }
 
 /* ************************************************************************ */

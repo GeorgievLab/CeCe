@@ -201,6 +201,24 @@ void set_volume(v8::Local<v8::String> property, v8::Local<v8::Value> value, cons
 
 /* ************************************************************************ */
 
+v8::Handle<v8::Value> get_bud_volume(v8::Local<v8::String> property, const v8::AccessorInfo &info)
+{
+    using namespace v8;
+
+    return Integer::New(get_pointer<simulator::Yeast::Bud>(info)->getVolume().value());
+}
+
+/* ************************************************************************ */
+
+void set_bud_volume(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info)
+{
+    using namespace v8;
+
+    get_pointer<simulator::Yeast::Bud>(info)->setVolume(Length(value->Int32Value()));
+}
+
+/* ************************************************************************ */
+
 v8::Handle<v8::Value> get_bud(v8::Local<v8::String> property, const v8::AccessorInfo &info)
 {
     using namespace v8;
@@ -213,10 +231,10 @@ v8::Handle<v8::Value> get_bud(v8::Local<v8::String> property, const v8::Accessor
         HandleScope handle_scope;
 
         // Cell object template
-        Local<ObjectTemplate> yeast_template = create_yeast_template();
+        Local<ObjectTemplate> tpl = create_yeast_bud_template();
 
         // Create new instance
-        Local<Object> obj = yeast_template->NewInstance();
+        Local<Object> obj = tpl->NewInstance();
 
         // Store pointer into JS object
         obj->SetInternalField(0, External::New(bud));
@@ -231,7 +249,9 @@ v8::Handle<v8::Value> get_bud(v8::Local<v8::String> property, const v8::Accessor
 
 v8::Handle<v8::Value> bud_create(const v8::Arguments& args)
 {
-    get_pointer<simulator::Yeast>(args.Holder())->budCreate(Volume(500));
+    auto ptr = get_pointer<simulator::Yeast>(args.Holder());
+    assert(ptr);
+    ptr->budCreate();
     return v8::Handle<v8::Value>{};
 }
 
@@ -240,7 +260,8 @@ v8::Handle<v8::Value> bud_create(const v8::Arguments& args)
 v8::Handle<v8::Value> bud_release(const v8::Arguments& args)
 {
     auto ptr = get_pointer<simulator::Yeast>(args.Holder());
-    if (ptr) ptr->budRelease();
+    assert(ptr);
+    ptr->budRelease();
     return v8::Handle<v8::Value>{};
 }
 
@@ -256,29 +277,41 @@ v8::Local<v8::ObjectTemplate> create_yeast_template()
 
     HandleScope handle_scope;
 
-    Local<ObjectTemplate> yeast_template = ObjectTemplate::New();
-    yeast_template->SetInternalFieldCount(1);
-    yeast_template->SetAccessor(String::New("id"), get_id);
-    yeast_template->SetAccessor(String::New("x"), get_x, set_x);
-    yeast_template->SetAccessor(String::New("y"), get_y, set_y);
-    yeast_template->SetAccessor(String::New("z"), get_z, set_z);
-    yeast_template->SetAccessor(String::New("gfp"), get_gfp, set_gfp);
-    yeast_template->SetAccessor(String::New("rfp"), get_rfp, set_rfp);
-    yeast_template->SetAccessor(String::New("yfp"), get_yfp, set_yfp);
-    yeast_template->SetAccessor(String::New("volume"), get_volume, set_volume);
-    yeast_template->SetAccessor(String::New("bud"), get_bud);
+    Local<ObjectTemplate> tpl = ObjectTemplate::New();
+    tpl->SetInternalFieldCount(1);
+    tpl->SetAccessor(String::New("id"), get_id);
+    tpl->SetAccessor(String::New("x"), get_x, set_x);
+    tpl->SetAccessor(String::New("y"), get_y, set_y);
+    tpl->SetAccessor(String::New("z"), get_z, set_z);
+    tpl->SetAccessor(String::New("gfp"), get_gfp, set_gfp);
+    tpl->SetAccessor(String::New("rfp"), get_rfp, set_rfp);
+    tpl->SetAccessor(String::New("yfp"), get_yfp, set_yfp);
+    tpl->SetAccessor(String::New("volume"), get_volume, set_volume);
+    tpl->SetAccessor(String::New("bud"), get_bud);
 
-    yeast_template->Set(String::New("budCreate"), FunctionTemplate::New(bud_create));
-    yeast_template->Set(String::New("budRelease"), FunctionTemplate::New(bud_release));
+    tpl->Set(String::New("budCreate"), FunctionTemplate::New(bud_create));
+    tpl->Set(String::New("budRelease"), FunctionTemplate::New(bud_release));
 
-    return handle_scope.Close(yeast_template);
+    return handle_scope.Close(tpl);
 }
 
 /* ************************************************************************ */
 
-/**
- * @brief Create a new cell.
- */
+v8::Local<v8::ObjectTemplate> create_yeast_bud_template()
+{
+    using namespace v8;
+
+    HandleScope handle_scope;
+
+    Local<ObjectTemplate> tpl = ObjectTemplate::New();
+    tpl->SetInternalFieldCount(1);
+    tpl->SetAccessor(String::New("volume"), get_bud_volume, set_bud_volume);
+
+    return handle_scope.Close(tpl);
+}
+
+/* ************************************************************************ */
+
 v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
 {
     using namespace v8;
@@ -342,18 +375,6 @@ v8::Handle<v8::Value> create_yeast(const v8::Arguments& args)
 
             // Set new position
             cell->setPosition(position);
-        }
-
-        // Radius
-        if (options->Has(String::New("radius")))
-        {
-            Local<Value> val = options->Get(String::New("radius"));
-            if (!val->IsNumber())
-                ThrowException(String::New("Yeast option 'radius' must be a number"));
-
-            // TODO: set radius
-            //cell->setVolume()
-            //radius = MicroMeters(val->NumberValue());
         }
 
         // Volume

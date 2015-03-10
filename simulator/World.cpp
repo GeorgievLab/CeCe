@@ -49,12 +49,11 @@ void World::update(float step) noexcept
     m_stepNumber++;
 
     // Update all cells
+    // Cell update can update cell list
     for (auto& cell : m_cells)
     {
-        //assert(cell);
-        // Update cell data
-        // FIXME not null
-        if (cell) cell->update();
+        assert(cell);
+        cell->update();
     }
 
     // Update physics

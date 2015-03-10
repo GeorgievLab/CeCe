@@ -6,6 +6,7 @@
 
 // C++
 #include <vector>
+#include <list>
 #include <memory>
 #include <cassert>
 
@@ -40,7 +41,7 @@ public:
 
 
     /// Cell container type.
-    using CellContainer = std::vector<std::unique_ptr<Cell>>;
+    using CellContainer = std::list<std::unique_ptr<Cell>>;
 
     /// Barrier container type.
     using BarrierContainer = std::vector<std::unique_ptr<Barrier>>;

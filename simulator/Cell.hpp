@@ -190,7 +190,7 @@ public:
     /**
      * @brief Update cell state.
      */
-    virtual void update();
+    void update() override;
 
 #ifdef ENABLE_RENDER
 

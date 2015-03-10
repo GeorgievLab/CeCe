@@ -4,6 +4,7 @@
 .build-debug/*
 
 build-debug/*
+build-debug-cli/*
 build-release/*
 
 core/core.mk

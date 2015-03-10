@@ -21,28 +21,14 @@ Cell::Cell(World* world, Shape shapeType)
     , m_shapeType(shapeType)
 {
     setVolume(10000_um3);
+    update();
 }
 
 /* ************************************************************************ */
 
-void Cell::setVolume(Volume volume) noexcept
+void Cell::update()
 {
-    m_volume = volume;
-
-    // Update shape
-    switch (m_shapeType)
-    {
-    case Shape::Sphere:
-        updateSphereBody();
-        break;
-    }
-}
-
-/* ************************************************************************ */
-
-void Cell::setDensity(Density density) noexcept
-{
-    m_density = density;
+    Object::update();
 
     // Update shape
     switch (m_shapeType)

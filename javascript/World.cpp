@@ -104,6 +104,18 @@ static v8::Handle<v8::Value> unit_mm3(const v8::Arguments& args)
 
 /* ************************************************************************ */
 
+static v8::Handle<v8::Value> unit_ul(const v8::Arguments& args)
+{
+    using namespace v8;
+
+    if (args.Length() == 0)
+        ThrowException(String::New("Missing argument"));
+
+    return args[0];
+}
+
+/* ************************************************************************ */
+
 World* get_world()
 {
     using namespace v8;
@@ -203,7 +215,9 @@ void World::load(std::string source)
 
         if (try_catch.HasCaught() || script.IsEmpty())
         {
-            String::Utf8Value error(try_catch.Exception());
+            Local<Message> msg = try_catch.Message();
+
+            String::Utf8Value error(msg->Get());
             throw std::invalid_argument(*error);
         }
 
@@ -246,6 +260,7 @@ void World::initContext()
     world_tpl->Set("mm", FunctionTemplate::New(unit_mm));
     world_tpl->Set("um3", FunctionTemplate::New(unit_um3));
     world_tpl->Set("mm3", FunctionTemplate::New(unit_mm3));
+    world_tpl->Set("ul", FunctionTemplate::New(unit_ul));
 
     Local<ObjectTemplate> console_tpl = ObjectTemplate::New();
     console_tpl->Set("log", FunctionTemplate::New(log_callback));
@@ -264,8 +279,8 @@ void World::initContext()
         world->Set(String::New("console"), console_tpl->NewInstance());
 
 #ifdef ENABLE_RENDER
-        assert(m_renderContext);
-        world->Set(String::New("canvas"), create_canvas(*m_renderContext));
+        //assert(m_renderContext);
+        //world->Set(String::New("canvas"), create_canvas(*m_renderContext));
 #endif
     }
 }
