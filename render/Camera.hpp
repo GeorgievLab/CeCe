@@ -79,6 +79,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns camera rotation.
+     *
+     * @return
+     */
+    float getRotation() const noexcept
+    {
+        return m_rotation;
+    }
+
+
 // Public Mutators
 public:
 
@@ -116,6 +127,17 @@ public:
     }
 
 
+    /**
+     * @brief Set camera rotation.
+     *
+     * @param rotation
+     */
+    void setRotation(float rotation) noexcept
+    {
+        m_rotation = rotation;
+    }
+
+
 // Private Data Members
 private:
 
@@ -127,6 +149,9 @@ private:
 
     /// Zoom value.
     float m_zoom = 1.0;
+
+    /// Rotation.
+    float m_rotation = 0.f;
 
 };
 

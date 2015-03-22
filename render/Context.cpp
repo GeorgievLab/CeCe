@@ -102,6 +102,9 @@ void Context::setView(int width, int height) noexcept
     // Apply zoom matrix
     float scale = 1 / m_camera.getZoom();
     glScalef(scale, scale, scale);
+
+    // Rotate camera
+    glRotatef(m_camera.getRotation(), 0, 1, 0);
 }
 
 /* ************************************************************************ */
@@ -308,6 +311,61 @@ void Context::drawBarrier(const simulator::Barrier& barrier) noexcept
     glPopMatrix();
 }
 */
+
+/* ************************************************************************ */
+
+void Context::drawGrid3d(const Position& pos, const Position& size,
+                         const Vector3<unsigned>& count, const Color& color) noexcept
+{
+    const Vector3<float> start{
+        pos.x - size.x / 2.f,
+        pos.y - size.y / 2.f,
+        pos.z - size.z / 2.f
+    };
+
+    const Vector3<float> step{
+        size.x / count.x,
+        size.y / count.y,
+        size.z / count.z
+    };
+
+    // Setup transformation matrix
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glTranslatef(pos.x, pos.y, pos.z);
+
+    // Sphere color
+    glColor4f(color.red, color.green, color.blue, color.alpha);
+
+    glBegin(GL_LINES);
+
+    for (unsigned j = 0; j <= count.y; ++j)
+    {
+        for (unsigned i = 0; i <= count.z; ++i)
+        {
+            glVertex3f(start.x, start.y + j * step.y, start.z + i * step.z);
+            glVertex3f(start.x + size.x, start.y + j * step.y, start.z + i * step.z);
+        }
+
+        for (unsigned i = 0; i <= count.x; ++i)
+        {
+            glVertex3f(start.x + i * step.x, start.y + j * step.y, start.z);
+            glVertex3f(start.x + i * step.x, start.y + j * step.y, start.z + size.z);
+        }
+    }
+
+    for (unsigned j = 0; j <= count.z; ++j)
+    {
+        for (unsigned i = 0; i <= count.x; ++i)
+        {
+            glVertex3f(start.x + i * step.x, start.y, start.z + j * step.z);
+            glVertex3f(start.x + i * step.x, start.y + size.y, start.z + j * step.z);
+        }
+    }
+
+    glEnd();
+}
+
 /* ************************************************************************ */
 
 }

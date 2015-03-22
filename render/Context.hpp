@@ -12,6 +12,7 @@
 // Render
 #include "render/Camera.hpp"
 #include "render/Position.hpp"
+#include "render/Vector3.hpp"
 #include "render/Color.hpp"
 
 /* ************************************************************************ */
@@ -119,6 +120,18 @@ public:
      * @param barrier
      */
     //void drawBarrier(const simulator::Barrier& barrier) noexcept;
+
+
+    /**
+     * @brief Draw 3D grid.
+     *
+     * @param pos    Origin position.
+     * @param size   Grid size.
+     * @param count  Number of parts.
+     * @param color  Grid color.
+     */
+    void drawGrid3d(const Position& pos, const Position& size,
+                    const Vector3<unsigned>& count, const Color& color) noexcept;
 
 
 // Private Data Members

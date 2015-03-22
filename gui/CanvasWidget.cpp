@@ -43,6 +43,9 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
     Bind(wxEVT_PAINT, &CanvasWidget::OnPaint, this);
     Bind(wxEVT_SIZE, &CanvasWidget::OnResize, this);
     Bind(wxEVT_MOUSEWHEEL, &CanvasWidget::OnZoom, this);
+    Bind(wxEVT_LEFT_DOWN, &CanvasWidget::OnMouseDown, this);
+    Bind(wxEVT_MOTION, &CanvasWidget::OnMouseMotion, this);
+    Bind(wxEVT_LEFT_UP, &CanvasWidget::OnMouseUp, this);
     Bind(EVT_UPDATED, &CanvasWidget::OnUpdated, this);
 }
 
@@ -51,6 +54,16 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
 void CanvasWidget::Update() noexcept
 {
     Refresh(false);
+}
+
+/* ************************************************************************ */
+
+void CanvasWidget::ViewReset() noexcept
+{
+    m_renderer.getCamera().setRotation(0.f);
+
+    // Refresh view
+    Update();
 }
 
 /* ************************************************************************ */
@@ -138,6 +151,50 @@ void CanvasWidget::OnZoom(wxMouseEvent& event) noexcept
 
     // Refresh view
     Update();
+}
+
+/* ************************************************************************ */
+
+void CanvasWidget::OnMouseDown(wxMouseEvent& event)
+{
+    m_dragStart = event.GetPosition();
+}
+
+/* ************************************************************************ */
+
+void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
+{
+    if (!event.LeftIsDown())
+    {
+        event.Skip();
+        return;
+    }
+
+    auto& camera = m_renderer.getCamera();
+    auto angle = camera.getRotation();
+
+    // Move change
+    const wxPoint diff = m_dragStart - event.GetPosition();
+
+    angle -= 0.05f * diff.x;
+
+    if (angle >= 180)
+        angle = -180;
+    else if (angle <= -180)
+        angle = 180;
+
+    // Set camera rotation
+    camera.setRotation(angle);
+
+    // Refresh view
+    Update();
+}
+
+/* ************************************************************************ */
+
+void CanvasWidget::OnMouseUp(wxMouseEvent& event)
+{
+    m_dragStart = wxPoint{};
 }
 
 /* ************************************************************************ */

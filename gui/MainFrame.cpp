@@ -438,3 +438,10 @@ void MainFrame::StoreConfig()
 }
 
 /* ************************************************************************ */
+
+void MainFrame::OnViewReset(wxCommandEvent& event)
+{
+    m_glCanvasView->ViewReset();
+}
+
+/* ************************************************************************ */

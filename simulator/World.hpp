@@ -16,6 +16,7 @@
 // Simulator
 #include "simulator/Cell.hpp"
 #include "simulator/Barrier.hpp"
+#include "simulator/Grid.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
@@ -122,6 +123,17 @@ public:
     Length getHeight() const noexcept
     {
         return m_height;
+    }
+
+
+    /**
+     * @brief Returns world height.
+     *
+     * @return
+     */
+    Length getDepth() const noexcept
+    {
+        return m_depth;
     }
 
 
@@ -285,6 +297,9 @@ private:
     /// World height.
     Length m_height{400_um};
 
+    /// World depth.
+    Length m_depth{400_um};
+
     /// Cell population
     CellContainer m_cells;
 
@@ -293,6 +308,9 @@ private:
 
     /// Log function.
     LogFunction m_logFunction;
+
+    /// Signal grid.
+    Grid<int> m_signalGrid;
 
 };
 

@@ -102,11 +102,16 @@ public:
 // Public Operations
 public:
 
-
     /**
      * @brief Update view.
      */
     void Update() noexcept;
+
+
+    /**
+     * @brief Reset view.
+     */
+    void ViewReset() noexcept;
 
 
     /**
@@ -144,6 +149,38 @@ public:
     {
         Update();
     }
+
+
+    /**
+     * @brief Process mouse move event.
+     *
+     * @param event
+     */
+    void OnMouseMove(wxMouseEvent& event);
+
+
+    /**
+     * @brief Process mouse events.
+     *
+     * @param event
+     */
+    void OnMouseDown(wxMouseEvent& event);
+
+
+    /**
+     * @brief Process mouse events.
+     *
+     * @param event
+     */
+    void OnMouseMotion(wxMouseEvent& event);
+
+
+    /**
+     * @brief Process mouse events.
+     *
+     * @param event
+     */
+    void OnMouseUp(wxMouseEvent& event);
 
 
 // Protected Operations
@@ -188,6 +225,9 @@ private:
 
     /// Projection type.
     Projection m_projectionType = Projection::Top;
+
+    /// Position of dragging start.
+    wxPoint m_dragStart;
 
 };
 

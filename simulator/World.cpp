@@ -14,6 +14,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 World::World() noexcept
+    : m_signalGrid(50, 50, 50)
 {
     // Nothing to do
 }
@@ -88,11 +89,17 @@ void World::update(float step) noexcept
 
 void World::draw(render::Context& context)
 {
+    // Plane
+    //context.drawPlane({0, 0, 0}, getWidth().value(), getHeight().value(), {0.9f, 0.9f, 0.9f, 0.6f});
+
+    context.drawGrid3d({0, 0, 0},
+        {getWidth().value(), getHeight().value(), getDepth().value()},
+        {m_signalGrid.getWidth(), m_signalGrid.getHeight(), m_signalGrid.getHeight()},
+        {0.9f, 0.5f, 0.5f, 0.2f}
+    );
+
     // Axis
     context.drawAxis({0, 0, 0}, 5);
-
-    // Plane
-    context.drawPlane({0, 0, 0}, getWidth().value(), getHeight().value(), {0.9f, 0.9f, 0.9f, 0.6f});
 
     // Draw barriers
     {

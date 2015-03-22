@@ -60,6 +60,11 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuItemIsometric = new wxMenuItem(m_menuView, wxID_ANY, _("Isometric\tF2"), wxT(""), wxITEM_RADIO);
     m_menuView->Append(m_menuItemIsometric);
     
+    m_menuView->AppendSeparator();
+    
+    m_menuItemViewReset = new wxMenuItem(m_menuView, wxID_ANY, _("Reset"), wxT(""), wxITEM_NORMAL);
+    m_menuView->Append(m_menuItemViewReset);
+    
     m_menuSimulation = new wxMenu();
     m_menuBar->Append(m_menuSimulation, _("&Simulation"));
     
@@ -201,6 +206,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemFileExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItemTop->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewTop), NULL, this);
     this->Connect(m_menuItemIsometric->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewIsometric), NULL, this);
+    this->Connect(m_menuItemViewReset->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewReset), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Connect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
@@ -225,6 +231,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemFileExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItemTop->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewTop), NULL, this);
     this->Disconnect(m_menuItemIsometric->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewIsometric), NULL, this);
+    this->Disconnect(m_menuItemViewReset->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewReset), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Disconnect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
