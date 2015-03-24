@@ -43,7 +43,7 @@ public:
      *
      * @return
      */
-    virtual std::unique_ptr<World> createWorld() const = 0;
+    virtual std::unique_ptr<World> createWorld() const;
 
 
     /**
@@ -51,7 +51,7 @@ public:
      *
      * @param filename
      */
-    virtual std::unique_ptr<World> createWorldFromFile(const std::string& filename) const;
+    virtual std::unique_ptr<World> fromFile(const std::string& filename) const;
 
 
     /**
@@ -59,7 +59,7 @@ public:
      *
      * @param source
      */
-    virtual std::unique_ptr<World> createWorldFromSource(const std::string& source) const;
+    virtual std::unique_ptr<World> fromSource(const std::string& source) const = 0;
 
 };
 

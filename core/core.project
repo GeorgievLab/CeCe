@@ -28,10 +28,8 @@
   <VirtualDirectory Name="src"/>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
-    <File Name="Vect.hpp"/>
+    <File Name="Vector.hpp"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -117,4 +115,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

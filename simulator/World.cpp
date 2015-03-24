@@ -2,10 +2,15 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "World.hpp"
+#include "simulator/World.hpp"
 
 // C++
 #include <algorithm>
+#include <random>
+
+// Simulator
+#include "simulator/StaticObject.hpp"
+#include "simulator/DynamicObject.hpp"
 
 /* ************************************************************************ */
 
@@ -14,9 +19,22 @@ namespace simulator {
 /* ************************************************************************ */
 
 World::World() noexcept
-    : m_signalGrid(50, 50, 50)
+    : m_grid(50)
 {
-    // Nothing to do
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0, 1);
+
+    for (Grid<GridCell>::SizeType i = 0; i < m_grid.getWidth(); ++i)
+    {
+        for (Grid<GridCell>::SizeType j = 0; j < m_grid.getHeight(); ++j)
+        {
+            GridCell& cell = m_grid(i, j);
+
+            cell.velocity.x = dis(gen);
+            cell.velocity.y = dis(gen);
+        }
+    }
 }
 
 /* ************************************************************************ */
@@ -31,8 +49,7 @@ World::~World()
 void World::clean()
 {
     m_stepNumber = 0;
-    m_cells.clear();
-    m_barriers.clear();
+    m_objects.clear();
 }
 
 /* ************************************************************************ */
@@ -44,42 +61,65 @@ void World::reset()
 
 /* ************************************************************************ */
 
-void World::update(float step) noexcept
+void World::update(Duration dt) noexcept
 {
     // Increase step number
     m_stepNumber++;
 
     // Update all cells
     // Cell update can update cell list
-    for (auto& cell : m_cells)
+    for (auto& obj : getObjects())
     {
-        assert(cell);
-        cell->update();
+        assert(obj);
+        obj->update(dt);
     }
 
-    // Update physics
-    physics::World::update(step);
-
-    const auto wh = getWidth() / 2.f;
-    const auto hh = getWidth() / 2.f;
-
-    // Kill overflow cells
-    for (auto it = m_cells.begin(); it != m_cells.end();)
+    // Apply streamlines
     {
-        const auto& cell = *it;
-        const auto& pos = cell->getPosition();
+        const Vector<float> start{
+            -getWidth() / 2.f,
+            -getHeight() / 2.f
+        };
 
-        // World space
-        if (((pos.x.value() >= -wh.value()) && (pos.x.value() <= wh.value())) &&
-            ((pos.z.value() >= -hh.value()) && (pos.z.value() <= hh.value())))
+        for (auto& obj : getObjects())
         {
-            ++it;
+            auto ptr = dynamic_cast<DynamicObject*>(obj.get());
+            if (!ptr)
+                continue;
+
+            auto pos = ptr->getPosition();
+            pos.x -= start.x;
+            pos.y -= start.y;
+
+            // Get grid position
+            unsigned int i = pos.x / m_grid.getWidth();
+            unsigned int j = pos.y / m_grid.getHeight();
+
+            const GridCell& cell = m_grid(i, j);
+
+            // TODO: apply cell force
         }
-        else
-        {
-            // Kill
-            it = m_cells.erase(it);
-        }
+    }
+
+    {
+        const auto wh = getWidth() / 2.f;
+        const auto hh = getWidth() / 2.f;
+
+        // Kill objects that are outside world
+        std::remove_if(m_objects.begin(), m_objects.end(), [wh, hh](const ObjectContainer::value_type& obj) {
+            auto ptr = dynamic_cast<StaticObject*>(obj.get());
+
+            if (!ptr)
+                return false;
+
+            // Get object position
+            const Position& pos = ptr->getPosition();
+
+            return not
+                ((pos.x >= -wh) && (pos.x <= wh)) &&
+                ((pos.y >= -hh) && (pos.y <= hh))
+            ;
+        });
     }
 }
 
@@ -87,61 +127,46 @@ void World::update(float step) noexcept
 
 #ifdef ENABLE_RENDER
 
-void World::draw(render::Context& context)
+void World::render(render::Context& context)
 {
-    // Plane
-    //context.drawPlane({0, 0, 0}, getWidth().value(), getHeight().value(), {0.9f, 0.9f, 0.9f, 0.6f});
-
-    context.drawGrid3d({0, 0, 0},
-        {getWidth().value(), getHeight().value(), getDepth().value()},
-        {m_signalGrid.getWidth(), m_signalGrid.getHeight(), m_signalGrid.getHeight()},
+    context.drawGrid(
+        {getWidth(), getHeight()},
+        {m_grid.getWidth(), m_grid.getHeight()},
         {0.9f, 0.5f, 0.5f, 0.2f}
     );
 
-    // Axis
-    context.drawAxis({0, 0, 0}, 5);
-
-    // Draw barriers
     {
-        //for (auto& barrier : getBarriers())
-        //    context.drawBarrier(*barrier);
-    }
+        const Vector<float> start{
+            -getWidth() / 2.f,
+            -getHeight() / 2.f
+        };
 
-    {
-        // Draw cells in order to camera view
+        const Vector<float> step{
+            getWidth() / m_grid.getWidth(),
+            getHeight() / m_grid.getHeight()
+        };
 
-        // Get camera position and order cells by distance from camera
-        const auto& cam_pos = context.getCamera().getPosition();
-
-        std::vector<Cell*> cells;
-
-        // Copy cell pointers
-        for (const auto& cell : getCells())
+        // Draw grid vectors
+        for (Grid<GridCell>::SizeType i = 0; i < m_grid.getWidth(); ++i)
         {
-            cells.push_back(cell.get());
-        }
+            for (Grid<GridCell>::SizeType j = 0; j < m_grid.getHeight(); ++j)
+            {
+                const GridCell& cell = m_grid(i, j);
+                float x = start.x + i * step.x + step.x / 2.f;
+                float y = start.y + j * step.y + step.y / 2.f;
 
-        // Order cells
-        std::sort(cells.begin(), cells.end(), [&cam_pos](const Cell* c1, const Cell* c2) {
-            auto distance = [](const Position& pos1, const Position& pos2) -> float {
-                return sqrt(
-                    ((pos1.x.value() - pos2.x.value()) * (pos1.x.value() - pos2.x.value())) +
-                    ((pos1.y.value() - pos2.y.value()) * (pos1.y.value() - pos2.y.value())) +
-                    ((pos1.z.value() - pos2.z.value()) * (pos1.z.value() - pos2.z.value()))
+                context.drawLine(
+                    {x, y},
+                    {cell.velocity.x * step.x / 2.f, cell.velocity.y * step.y / 2.f},
+                    {cell.velocity.x, cell.velocity.y, 0, 1}
                 );
-            };
-
-            const auto cpos = Position{Length(cam_pos.x), Length(cam_pos.y), Length(cam_pos.z)};
-            auto d1 = distance(c1->getPosition(), cpos);
-            auto d2 = distance(c2->getPosition(), cpos);
-
-            return d1 < d2;
-        });
-
-        // Draw cells
-        for (const auto& cell : cells)
-            cell->draw(context);
+            }
+        }
     }
+
+    // Draw objects
+    for (const auto& obj : getObjects())
+        obj->render(context);
 }
 
 #endif

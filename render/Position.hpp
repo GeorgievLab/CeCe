@@ -4,7 +4,7 @@
 /* ************************************************************************ */
 
 // Render
-#include "Vector3.hpp"
+#include "core/Vector.hpp"
 
 /* ************************************************************************ */
 
@@ -15,7 +15,7 @@ namespace render {
 /**
  * @brief Render position.
  */
-using Position = Vector3<float>;
+using Position = Vector<float>;
 
 /* ************************************************************************ */
 

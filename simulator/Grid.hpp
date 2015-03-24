@@ -19,6 +19,16 @@ template<typename T>
 class Grid
 {
 
+// Public Types
+public:
+
+
+    /**
+     * @brief Size type.
+     */
+    using SizeType = unsigned int;
+
+
 // Public Ctors & Dtors
 public:
 
@@ -28,8 +38,8 @@ public:
      *
      * @param size
      */
-    explicit Grid(unsigned int size)
-        : Grid(size, size, size)
+    explicit Grid(SizeType size)
+        : Grid(size, size)
     {
         // Nothing to do
     }
@@ -42,12 +52,11 @@ public:
      * @param height
      * @param depth
      */
-    Grid(unsigned int width, unsigned int height, unsigned int depth)
+    Grid(SizeType width, SizeType height)
         : m_width(width)
         , m_height(height)
-        , m_depth(depth)
     {
-        m_data.resize(width * height * depth);
+        resize(width, height);
     }
 
 
@@ -60,13 +69,12 @@ public:
      *
      * @param x
      * @param y
-     * @param z
      *
      * @return
      */
-    T& operator()(unsigned int x, unsigned int y, unsigned int z) noexcept
+    T& operator()(SizeType x, SizeType y) noexcept
     {
-        return m_data[x + y * m_width + z * m_width * m_height];
+        return m_data[x + y * m_width];
     }
 
 
@@ -75,13 +83,12 @@ public:
      *
      * @param x
      * @param y
-     * @param z
      *
      * @return
      */
-    const T& operator()(unsigned int x, unsigned int y, unsigned int z) const noexcept
+    const T& operator()(SizeType x, SizeType y) const noexcept
     {
-        return m_data[x + y * m_width + z * m_width * m_height];
+        return m_data[x + y * m_width];
     }
 
 
@@ -90,7 +97,7 @@ public:
      *
      * @return
      */
-    unsigned int getWidth() const noexcept
+    SizeType getWidth() const noexcept
     {
         return m_width;
     }
@@ -101,20 +108,35 @@ public:
      *
      * @return
      */
-    unsigned int getHeight() const noexcept
+    SizeType getHeight() const noexcept
     {
         return m_height;
     }
 
 
+// Public Operations
+public:
+
+
     /**
-     * @brief Returns grid depth.
+     * @brief Resize grid.
      *
-     * @return
+     * @param size Grid size.
      */
-    unsigned int getDepth() const noexcept
+    void resize(SizeType size)
     {
-        return m_depth;
+        resize(size, size);
+    }
+
+
+    /**
+     * @brief Resize grid.
+     *
+     * @param size Grid size.
+     */
+    void resize(SizeType width, SizeType height)
+    {
+        m_data.resize(width * height);
     }
 
 
@@ -125,13 +147,10 @@ private:
     std::vector<T> m_data;
 
     /// Width size (x).
-    unsigned int m_width;
+    SizeType m_width;
 
     /// Height size (y).
-    unsigned int m_height;
-
-    /// Depth size (z).
-    unsigned int m_depth;
+    SizeType m_height;
 
 };
 

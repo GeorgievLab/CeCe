@@ -1,14 +1,13 @@
 
-#ifndef _LIBRARY_VECT_H_
-#define _LIBRARY_VECT_H_
+#pragma once
 
 /* ************************************************************************ */
 
 /**
- * @brief Vector.
+ * @brief 2D vector.
  */
 template<typename T>
-struct Vect
+struct Vector
 {
     T x;
     T y;
@@ -16,4 +15,3 @@ struct Vect
 
 /* ************************************************************************ */
 
-#endif // _LIBRARY_VECT_H_

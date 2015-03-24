@@ -3,8 +3,8 @@
 
 /* ************************************************************************ */
 
-// Physics
-#include "physics/Barrier.hpp"
+// Simulator
+#include "core/Units.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
@@ -17,15 +17,19 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class World;
-
-/* ************************************************************************ */
-
 /**
- * @brief Barrier representation.
+ * @brief Simulation object.
  */
-class Barrier : public physics::Barrier
+class Object
 {
+
+// Public Types
+public:
+
+
+    /// Cell ID type.
+    using Id = unsigned long;
+
 
 // Public Ctors & Dtors
 public:
@@ -33,16 +37,14 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param world
      */
-    explicit Barrier(World* world);
+    Object();
 
 
     /**
      * @brief Destructor.
      */
-    virtual ~Barrier();
+    virtual ~Object();
 
 
 // Public Accessors
@@ -50,41 +52,49 @@ public:
 
 
     /**
-     * @brief Returns world.
+     * @brief Returns cell ID.
      *
      * @return
      */
-    World* getWorld() const noexcept
+    Id getId() const noexcept
     {
-        return m_world;
+        return m_id;
     }
-
-
-// Public Mutators
-public:
 
 
 // Public Operations
 public:
 
 
+    /**
+     * @brief Update object state.
+     *
+     * @param dt Time step.
+     */
+    virtual void update(Duration dt) = 0;
+
 #ifdef ENABLE_RENDER
 
     /**
-     * @brief Render barrier.
+     * @brief Render object.
      *
      * @param context
      */
-    virtual void draw(render::Context& context);
+    virtual void render(render::Context& context)
+    {
+        // Nothing to do
+    }
 
 #endif
-
 
 // Private Data Members
 private:
 
-    /// Cell world.
-    World* const m_world;
+    /// ID generator.
+    static Id s_id;
+
+    /// Cell ID
+    Id m_id;
 
 };
 

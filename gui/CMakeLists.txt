@@ -27,14 +27,8 @@ add_executable(gui
 
 # Link libraries
 target_link_libraries(gui
-    javascript
     simulator
-    physics
     ${RENDER_DEP}
-    v8
-    BulletDynamics
-    BulletCollision
-    LinearMath
     ${RENDER_LIBS}
     ${wxWidgets_LIBRARIES}
     ${JPEG_LIBRARIES}
@@ -42,11 +36,9 @@ target_link_libraries(gui
 
 # Setup dependencies
 add_dependencies(gui
-    javascript
     simulator
     core
     ${RENDER_DEP}
-    physics
 )
 
 # ######################################################################### #

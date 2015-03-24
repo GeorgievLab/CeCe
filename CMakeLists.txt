@@ -62,9 +62,7 @@ if (ENABLE_RENDER)
     add_subdirectory(render)
 endif ()
 
-add_subdirectory(physics)
 add_subdirectory(simulator)
-add_subdirectory(javascript)
 
 if (ENABLE_GUI)
     add_subdirectory(gui)

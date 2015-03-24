@@ -4,15 +4,11 @@
 /* ************************************************************************ */
 
 // C++
-#include <cstddef>
-#include <memory>
-#include <functional>
+#include <cmath>
 
-// Core
+// Simulator
 #include "core/Units.hpp"
-
-// Physics
-#include "physics/Cell.hpp"
+#include "simulator/DynamicObject.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
@@ -25,80 +21,31 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class World;
+/**
+ * @brief Type for string number of fluorescent proteins.
+ */
+using FluorescentProteinCount = unsigned int;
 
 /* ************************************************************************ */
 
 /**
  * @brief Cell representation.
  */
-class Cell : public physics::Cell
+class Cell : public DynamicObject
 {
-
-// Public Types
-public:
-
-
-    /// Cell ID type.
-    using Id = unsigned long;
-
-    /// Behaviour function type.
-    using BehaviourFn = std::function<void(Cell&)>;
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param world
-     * @param shape Cell shape.
-     */
-    Cell(World* world, Shape shape = Shape::Sphere);
-
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~Cell();
-
 
 // Public Accessors
 public:
 
 
     /**
-     * @brief Returns cell ID.
+     * @brief Get cell volume.
      *
      * @return
      */
-    Id getId() const noexcept
+    Volume getVolume() const noexcept
     {
-        return m_id;
-    }
-
-
-    /**
-     * @brief Returns world.
-     *
-     * @return
-     */
-    World* getWorld() const noexcept
-    {
-        return m_world;
-    }
-
-
-    /**
-     * @brief Returns cell behaviour function.
-     *
-     * @return
-     */
-    const BehaviourFn& getBehaviour() const noexcept
-    {
-        return m_behaviour;
+        return m_volume;
     }
 
 
@@ -107,7 +54,7 @@ public:
      *
      * @return
      */
-    unsigned int getGfp() const noexcept
+    FluorescentProteinCount getGfp() const noexcept
     {
         return m_gfp;
     }
@@ -118,7 +65,7 @@ public:
      *
      * @return
      */
-    unsigned int getRfp() const noexcept
+    FluorescentProteinCount getRfp() const noexcept
     {
         return m_rfp;
     }
@@ -129,7 +76,7 @@ public:
      *
      * @return
      */
-    unsigned int getYfp() const noexcept
+    FluorescentProteinCount getYfp() const noexcept
     {
         return m_yfp;
     }
@@ -140,13 +87,13 @@ public:
 
 
     /**
-     * @brief Set cell behaviour function.
+     * @brief Set cell volume.
      *
-     * @param fn Function.
+     * @param volume
      */
-    void setBehaviour(BehaviourFn fn) noexcept
+    void setVolume(Volume volume) noexcept
     {
-        m_behaviour = std::move(fn);
+        m_volume = volume;
     }
 
 
@@ -155,7 +102,7 @@ public:
      *
      * @param gfp
      */
-    void setGfp(unsigned int gfp) noexcept
+    void setGfp(FluorescentProteinCount gfp) noexcept
     {
         m_gfp = gfp;
     }
@@ -166,7 +113,7 @@ public:
      *
      * @param rfp
      */
-    void setRfp(unsigned int rfp) noexcept
+    void setRfp(FluorescentProteinCount rfp) noexcept
     {
         m_rfp = rfp;
     }
@@ -177,7 +124,7 @@ public:
      *
      * @param yfp
      */
-    void setYfp(unsigned int yfp) noexcept
+    void setYfp(FluorescentProteinCount yfp) noexcept
     {
         m_yfp = yfp;
     }
@@ -189,8 +136,10 @@ public:
 
     /**
      * @brief Update cell state.
+     *
+     * @param dt Time step.
      */
-    void update() override;
+    void update(Duration dt) override;
 
 #ifdef ENABLE_RENDER
 
@@ -199,33 +148,39 @@ public:
      *
      * @param context
      */
-    virtual void draw(render::Context& context);
+    virtual void render(render::Context& context);
 
 #endif
+
+
+    /**
+     * @brief Calculate radius for sphere shapes - from cell volume.
+     *
+     * @param volume Cell volume.
+     *
+     * @return Radius.
+     */
+    static Length calcSphereRadius(Volume volume) noexcept
+    {
+        // 3th root of ((3 / 4 * pi) * volume)
+        return Length(0.62035f * std::pow(volume, 0.3333333f));
+    }
+
 
 // Private Data Members
 private:
 
-    /// ID generator.
-    static Id s_id;
-
-    /// Cell ID
-    Id m_id;
-
-    /// Cell world.
-    World* const m_world;
-
-    /// Behaviour function.
-    BehaviourFn m_behaviour;
+    /// Cell volume.
+    Volume m_volume = 1_um;
 
     /// Number of GFP proteins.
-    unsigned int m_gfp = 0;
+    FluorescentProteinCount m_gfp = 0;
 
     /// Number of RFP proteins.
-    unsigned int m_rfp = 0;
+    FluorescentProteinCount m_rfp = 0;
 
     /// Number of YFP proteins.
-    unsigned int m_yfp = 0;
+    FluorescentProteinCount m_yfp = 0;
 
 };
 

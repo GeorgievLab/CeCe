@@ -45,9 +45,6 @@ protected:
     wxMenuItem* m_menuItemFileSep2;
     wxMenuItem* m_menuItemFileExit;
     wxMenu* m_menuView;
-    wxMenuItem* m_menuItemTop;
-    wxMenuItem* m_menuItemIsometric;
-    wxMenuItem* m_menuItemViewSep1;
     wxMenuItem* m_menuItemViewReset;
     wxMenu* m_menuSimulation;
     wxMenuItem* m_menuItemSimulationStart;
@@ -74,8 +71,6 @@ protected:
     virtual void OnFileSave(wxCommandEvent& event) { event.Skip(); }
     virtual void OnFileSaveAs(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnViewTop(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnViewIsometric(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewReset(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationStart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
@@ -87,18 +82,6 @@ protected:
     virtual void OnSourceChange(wxStyledTextEvent& event) { event.Skip(); }
 
 public:
-    wxMenuBar* GetMenuBar() { return m_menuBar; }
-    wxToolBar* GetMainToolbar() { return m_mainToolbar; }
-    CanvasWidget* GetGlCanvasView() { return m_glCanvasView; }
-    wxPanel* GetSplitterPageCanvas() { return m_splitterPageCanvas; }
-    wxTextCtrl* GetTextCtrlConsole() { return m_textCtrlConsole; }
-    wxPanel* GetSplitterPageConsole() { return m_splitterPageConsole; }
-    wxSplitterWindow* GetSplitterView() { return m_splitterView; }
-    wxPanel* GetSplitterPageView() { return m_splitterPageView; }
-    wxStyledTextCtrl* GetStcSource() { return m_stcSource; }
-    wxPanel* GetSplitterPageSource() { return m_splitterPageSource; }
-    wxSplitterWindow* GetSplitterMain() { return m_splitterMain; }
-    wxStatusBar* GetStatusBar() { return m_statusBar; }
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };

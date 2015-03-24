@@ -1,48 +1,34 @@
 
-#pragma once
+/* ************************************************************************ */
+
+// Declaration
+#include "simulator/Object.hpp"
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
+namespace simulator {
 
 /* ************************************************************************ */
 
-// V8
-#include <v8.h>
-
-// Render
-#include "render/Context.hpp"
+Object::Id Object::s_id = 0;
 
 /* ************************************************************************ */
 
-namespace javascript {
-
-/* ************************************************************************ */
-
-/**
- * @brief Create template object for canvas.
- *
- * @return Template object.
- */
-v8::Local<v8::ObjectTemplate> create_canvas_template();
-
-/* ************************************************************************ */
-
-/**
- * @brief Create wrapper object for canvas.
- *
- * @param context Render context.
- *
- * @return Wrapped object.
- */
-v8::Local<v8::Object> create_canvas(render::Context& context);
-
-/* ************************************************************************ */
-
+Object::Object()
+    : m_id(++s_id)
+{
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
-#endif
+Object::~Object()
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */

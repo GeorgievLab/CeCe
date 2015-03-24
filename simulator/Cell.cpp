@@ -13,44 +13,16 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-Cell::Id Cell::s_id = 0;
-
-/* ************************************************************************ */
-
-Cell::Cell(World* world, Shape shape)
-    : physics::Cell(world, shape)
-    , m_id(++s_id)
-    , m_world(world)
+void Cell::update(Duration dt)
 {
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-Cell::~Cell()
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-void Cell::update()
-{
-    // Update object state
-    const auto& fn = getBehaviour();
-
-    if (fn)
-        fn(*this);
-
-    // Update physics object
-    physics::Cell::update();
+    DynamicObject::update(dt);
 }
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
 
-void Cell::draw(render::Context& context)
+void Cell::render(render::Context& context)
 {
     auto gfp = getGfp();
     auto rfp = getRfp();
@@ -61,14 +33,10 @@ void Cell::draw(render::Context& context)
     float green = gfp / 1000.f + yfp / 1000.f;
     float blue = 0;
 
-    auto pos = getPosition();
-    auto x = pos.x;
-    auto y = pos.y;
-    auto z = pos.z;
+    const auto pos = getPosition();
+    const auto radius = calcSphereRadius(getVolume());
 
-    auto radius = calcSphereRadius(getVolume());
-
-    context.drawSphere({x.value(), y.value(), z.value()}, radius.value(), {red, green, blue, 0.5f});
+    context.drawCircle({pos.x, pos.y}, radius, {red, green, blue, 0.5f});
 }
 
 #endif

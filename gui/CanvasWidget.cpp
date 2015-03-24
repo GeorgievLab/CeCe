@@ -60,8 +60,6 @@ void CanvasWidget::Update() noexcept
 
 void CanvasWidget::ViewReset() noexcept
 {
-    m_renderer.getCamera().setRotation(0.f);
-
     // Refresh view
     Update();
 }
@@ -71,28 +69,6 @@ void CanvasWidget::ViewReset() noexcept
 void CanvasWidget::Init() noexcept
 {
     m_renderer.init();
-
-    // Initial projection
-    SetupProjection();
-}
-
-/* ************************************************************************ */
-
-void CanvasWidget::SetupProjection() noexcept
-{
-    auto& camera = m_renderer.getCamera();
-
-    switch (m_projectionType)
-    {
-    default:
-    case Projection::Top:
-        camera.setMode(render::Camera::Mode::Top);
-        break;
-
-    case Projection::Isometric:
-        camera.setMode(render::Camera::Mode::Isometric);
-        break;
-    }
 }
 
 /* ************************************************************************ */
@@ -122,7 +98,7 @@ void CanvasWidget::Render() noexcept
         auto world = m_simulator->getWorld();
         if (world)
         {
-            world->draw(m_renderer);
+            world->render(m_renderer);
         }
     }
 
@@ -170,21 +146,7 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
         return;
     }
 
-    auto& camera = m_renderer.getCamera();
-    auto angle = camera.getRotation();
-
-    // Move change
-    const wxPoint diff = m_dragStart - event.GetPosition();
-
-    angle -= 0.05f * diff.x;
-
-    if (angle >= 180)
-        angle = -180;
-    else if (angle <= -180)
-        angle = 180;
-
-    // Set camera rotation
-    camera.setRotation(angle);
+    // TODO: move camera
 
     // Refresh view
     Update();

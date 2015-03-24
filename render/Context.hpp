@@ -9,10 +9,10 @@
 #include <vector>
 #include <cstdint>
 
-// Render
+// Simulator
+#include "core/Vector.hpp"
 #include "render/Camera.hpp"
 #include "render/Position.hpp"
-#include "render/Vector3.hpp"
 #include "render/Color.hpp"
 
 /* ************************************************************************ */
@@ -85,23 +85,13 @@ public:
 
 
     /**
-     * @brief Draw axis.
+     * @brief Draw line.
      *
-     * @param pos   Axis position.
-     * @param scale Axis scale.
+     * @param pos   Origin.
+     * @param dir   Direction.
+     * @param color Color.
      */
-    void drawAxis(const Position& pos, float scale) noexcept;
-
-
-    /**
-     * @brief Draw plane.
-     *
-     * @param pos    Plane position.
-     * @param width  Plane width.
-     * @param height Plane height.
-     * @param color  Plane color.
-     */
-    void drawPlane(const Position& pos, float width, float height, const Color& color) noexcept;
+    void drawLine(const Position& pos, const Vector<float>& dir, const Color& color) noexcept;
 
 
     /**
@@ -111,27 +101,27 @@ public:
      * @param radius Sphere radius.
      * @param color  Sphere color.
      */
-    void drawSphere(const Position& pos, float radius, const Color& color) noexcept;
+    //void drawSphere(const Position& pos, float radius, const Color& color) noexcept;
 
 
     /**
-     * @brief Draw barrier.
+     * @brief Draw circle shape.
      *
-     * @param barrier
+     * @param pos    Circle position.
+     * @param radius Circle radius.
+     * @param color  Circle color.
      */
-    //void drawBarrier(const simulator::Barrier& barrier) noexcept;
+    void drawCircle(const Position& pos, float radius, const Color& color) noexcept;
 
 
     /**
-     * @brief Draw 3D grid.
+     * @brief Draw grid.
      *
-     * @param pos    Origin position.
      * @param size   Grid size.
      * @param count  Number of parts.
      * @param color  Grid color.
      */
-    void drawGrid3d(const Position& pos, const Position& size,
-                    const Vector3<unsigned>& count, const Color& color) noexcept;
+    void drawGrid(const Vector<float>& size, const Vector<unsigned>& count, const Color& color) noexcept;
 
 
 // Private Data Members

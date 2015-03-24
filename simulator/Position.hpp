@@ -1,22 +1,22 @@
 
-/* ************************************************************************ */
+#pragma once
 
-// Declaration
-#include "javascript/WorldFactory.hpp"
+/* ************************************************************************ */
 
 // Core
-#include "javascript/World.hpp"
+#include "core/Units.hpp"
+#include "core/Vector.hpp"
 
 /* ************************************************************************ */
 
-namespace javascript {
+namespace simulator {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::World> WorldFactory::createWorld() const
-{
-    return std::unique_ptr<simulator::World>{new javascript::World{}};
-}
+/**
+ * @brief Position structure.
+ */
+using Position = Vector<Length>;
 
 /* ************************************************************************ */
 

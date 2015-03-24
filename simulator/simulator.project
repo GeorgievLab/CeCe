@@ -21,23 +21,23 @@
     <File Name="World.cpp"/>
     <File Name="WorldFactory.cpp"/>
     <File Name="Simulator.cpp"/>
-    <File Name="Barrier.cpp"/>
     <File Name="Yeast.cpp"/>
+    <File Name="Object.cpp"/>
+    <File Name="DynamicObject.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Barrier.hpp"/>
     <File Name="Yeast.hpp"/>
     <File Name="Cell.hpp"/>
     <File Name="Simulator.hpp"/>
     <File Name="World.hpp"/>
     <File Name="WorldFactory.hpp"/>
+    <File Name="Object.hpp"/>
+    <File Name="Position.hpp"/>
+    <File Name="Velocity.hpp"/>
+    <File Name="StaticObject.hpp"/>
+    <File Name="DynamicObject.hpp"/>
+    <File Name="Grid.hpp"/>
   </VirtualDirectory>
-  <Dependencies Name="Release"/>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="physics"/>
-    <Project Name="render"/>
-  </Dependencies>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -125,4 +125,9 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="core"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

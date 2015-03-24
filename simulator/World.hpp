@@ -1,21 +1,16 @@
 
-#ifndef _SIMULATOR_WORLD_H_
-#define _SIMULATOR_WORLD_H_
+#pragma once
 
 /* ************************************************************************ */
 
 // C++
 #include <vector>
-#include <list>
 #include <memory>
 #include <cassert>
 
-// Physics
-#include "physics/World.hpp"
-
 // Simulator
-#include "simulator/Cell.hpp"
-#include "simulator/Barrier.hpp"
+#include "simulator/Velocity.hpp"
+#include "simulator/Object.hpp"
 #include "simulator/Grid.hpp"
 
 #ifdef ENABLE_RENDER
@@ -29,23 +24,38 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Barrier;
+/**
+ * @brief Type for step number.
+ */
+using StepNumber = unsigned long long;
 
 /* ************************************************************************ */
 
 /**
  * @brief World for cells.
  */
-class World : public physics::World
+class World
 {
+
+// Public Structures
 public:
 
 
-    /// Cell container type.
-    using CellContainer = std::list<std::unique_ptr<Cell>>;
+    /**
+     * @brief Grid cell structure.
+     */
+    struct GridCell
+    {
+        Velocity velocity;
+    };
 
-    /// Barrier container type.
-    using BarrierContainer = std::vector<std::unique_ptr<Barrier>>;
+
+// Public Types
+public:
+
+
+    /// Object container type.
+    using ObjectContainer = std::vector<std::unique_ptr<Object>>;
 
     /// Log callback function.
     using LogFunction = std::function<void(const std::string&)>;
@@ -76,31 +86,20 @@ public:
      *
      * @return
      */
-    unsigned long long getStepNumber() const noexcept
+    StepNumber getStepNumber() const noexcept
     {
         return m_stepNumber;
     }
 
 
     /**
-     * @brief Return cell container.
+     * @brief Return a list of world objects.
      *
      * @return
      */
-    const CellContainer& getCells() const noexcept
+    const ObjectContainer& getObjects() const noexcept
     {
-        return m_cells;
-    }
-
-
-    /**
-     * @brief Return barriers container.
-     *
-     * @return
-     */
-    const BarrierContainer& getBarriers() const noexcept
-    {
-        return m_barriers;
+        return m_objects;
     }
 
 
@@ -127,17 +126,6 @@ public:
 
 
     /**
-     * @brief Returns world height.
-     *
-     * @return
-     */
-    Length getDepth() const noexcept
-    {
-        return m_depth;
-    }
-
-
-    /**
      * @brief Returns log callback function.
      *
      * @return
@@ -145,6 +133,28 @@ public:
     const LogFunction& getLogFunction() const noexcept
     {
         return m_logFunction;
+    }
+
+
+    /**
+     * @brief Returns grid.
+     *
+     * @return
+     */
+    Grid<GridCell>& getGrid() noexcept
+    {
+        return m_grid;
+    }
+
+
+    /**
+     * @brief Returns grid.
+     *
+     * @return
+     */
+    const Grid<GridCell>& getGrid() const noexcept
+    {
+        return m_grid;
     }
 
 
@@ -177,71 +187,32 @@ public:
 
 
     /**
-     * @brief Add a new cell to population.
+     * @brief Add a new object to the world.
      *
-     * @param cell
+     * @param obj
      */
     template<typename T>
-    T* addCell(std::unique_ptr<T> cell)
+    T* addObject(std::unique_ptr<T> obj)
     {
-        assert(cell);
-        m_cells.push_back(std::move(cell));
-        return static_cast<T*>(m_cells.back().get());
+        assert(obj);
+        m_objects.push_back(std::move(obj));
+        return static_cast<T*>(m_objects.back().get());
     }
 
 
     /**
-     * @brief Create a new cell to population.
+     * @brief Create a new object.
      *
-     * @param cell
+     * @param args...
      *
      * @return
      */
     template<typename T, typename... Args>
-    T* newCell(Args&&... args)
+    T* createObject(Args&&... args)
     {
-        return addCell(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
+        return addObject(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
     }
 
-
-    /**
-     * @brief Add a new barrier.
-     *
-     * @param barrier
-     */
-    Barrier* addBarrier(std::unique_ptr<Barrier> barrier)
-    {
-        assert(barrier);
-        m_barriers.push_back(std::move(barrier));
-        return m_barriers.back().get();
-    }
-
-
-    /**
-     * @brief Create a new barrier.
-     *
-     * @param args...
-     */
-    template<typename T, typename... Args>
-    T* newBarrier(Args&&... args)
-    {
-        return addBarrier(std::unique_ptr<T>(new T(this, std::forward<Args>(args)...)));
-    }
-
-
-#ifdef ENABLE_RENDER
-
-    /**
-     * @brief Set render context.
-     *
-     * @param context
-     */
-    virtual void setContext(render::Context& context)
-    {
-        // Nothing to do
-    }
-
-#endif
 
 // Public Operations
 public:
@@ -260,19 +231,11 @@ public:
 
 
     /**
-     * @brief Load world code.
-     *
-     * @param source
-     */
-    virtual void load(std::string source) = 0;
-
-
-    /**
      * @brief Update world.
      *
      * @param step
      */
-    virtual void update(float step) noexcept;
+    virtual void update(Duration step) noexcept;
 
 #ifdef ENABLE_RENDER
 
@@ -281,7 +244,7 @@ public:
      *
      * @param context
      */
-    virtual void draw(render::Context& context);
+    virtual void render(render::Context& context);
 
 #endif
 
@@ -289,7 +252,7 @@ public:
 private:
 
     /// Number of simulation steps.
-    unsigned long long m_stepNumber = 0;
+    StepNumber m_stepNumber = 0;
 
     /// World width.
     Length m_width{400_um};
@@ -300,17 +263,14 @@ private:
     /// World depth.
     Length m_depth{400_um};
 
-    /// Cell population
-    CellContainer m_cells;
-
-    /// Barriers
-    BarrierContainer m_barriers;
+    /// World objects.
+    ObjectContainer m_objects;
 
     /// Log function.
     LogFunction m_logFunction;
 
     /// Signal grid.
-    Grid<int> m_signalGrid;
+    Grid<GridCell> m_grid;
 
 };
 
@@ -319,5 +279,3 @@ private:
 }
 
 /* ************************************************************************ */
-
-#endif // _SIMULATOR_WORLD_H_

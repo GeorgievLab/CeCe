@@ -10,14 +10,12 @@
 // Declaration
 #include "render/Context.hpp"
 
+// C++
+#include <cmath>
+
 // OpenGL
 #include <GL/gl.h>
 #include <GL/glu.h>
-
-// Simulator
-#include "simulator/World.hpp"
-#include "simulator/Cell.hpp"
-#include "simulator/Barrier.hpp"
 
 /* ************************************************************************ */
 
@@ -56,15 +54,15 @@ void Context::init() noexcept
 
     glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_LIGHTING);
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_intensity);
+    //glEnable(GL_LIGHTING);
+    //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_intensity);
 
-    glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0, GL_POSITION, sun_direction);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_intensity);
+    //glEnable(GL_LIGHT0);
+    //glLightfv(GL_LIGHT0, GL_POSITION, sun_direction);
+    //glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_intensity);
 
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    //glEnable(GL_COLOR_MATERIAL);
+    //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 }
 
 /* ************************************************************************ */
@@ -82,19 +80,7 @@ void Context::setView(int width, int height) noexcept
     const GLdouble hh = height / 2.0;
 
     glOrtho(-wh, wh, -hh, hh, -1000, 1000);
-
-    if (m_camera.getMode() == Camera::Mode::Top)
-    {
-        glRotatef(90, 1, 0, 0);
-    }
-    else if (m_camera.getMode() == Camera::Mode::Isometric)
-    {
-        const GLdouble dist = 100 * sqrt(1 / 3.0);
-
-        gluLookAt(dist, dist, dist,
-                  0.0,  0.0,  0.0,
-                  0.0,  1.0,  0.0);
-    }
+    //glRotatef(90, 1, 0, 0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -104,7 +90,7 @@ void Context::setView(int width, int height) noexcept
     glScalef(scale, scale, scale);
 
     // Rotate camera
-    glRotatef(m_camera.getRotation(), 0, 1, 0);
+    //glRotatef(m_camera.getRotation(), 0, 1, 0);
 }
 
 /* ************************************************************************ */
@@ -126,29 +112,20 @@ void Context::frameEnd() noexcept
 
 /* ************************************************************************ */
 
-void Context::drawAxis(const Position& pos, float scale) noexcept
+void Context::drawLine(const Position& pos, const Vector<float>& dir, const Color& color) noexcept
 {
+    // Setup transformation matrix
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glScalef(scale, scale, scale);
-    glTranslatef(pos.x, pos.y, pos.z);
+    glTranslatef(pos.x, pos.y, 0);
+
+    // Draw color
+    glColor3f(color.red, color.green, color.blue);
 
     glBegin(GL_LINES);
 
-    // X
-    glColor3d(1.0, 0.0, 0.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(1.0, 0.0, 0.0);
-
-    // Y
-    glColor3d(0.0, 1.0, 0.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(0.0, 1.0, 0.0);
-
-    // Z
-    glColor3d(0.0, 0.0, 1.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(0.0, 0.0, 1.0);
+    glVertex2f(0, 0);
+    glVertex2f(dir.x, dir.y);
 
     glEnd();
 
@@ -157,32 +134,35 @@ void Context::drawAxis(const Position& pos, float scale) noexcept
 
 /* ************************************************************************ */
 
-void Context::drawPlane(const Position& pos, float width, float height, const Color& color) noexcept
+void Context::drawCircle(const Position& pos, float radius, const Color& color) noexcept
 {
+    // Draw color
+    glColor4f(color.red, color.green, color.blue, color.alpha);
+
+    // Setup transformation matrix
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glTranslatef(pos.x, pos.y, pos.z);
+    glTranslatef(pos.x, pos.y, 0);
 
-    auto wh = width / 2.0f;
-    auto hh = height / 2.0f;
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(0, 0);
 
-    glBegin(GL_QUADS);
-    glColor4f(color.red, color.green, color.blue, color.alpha);
-    glNormal3f(0, 1, 0);
-    glVertex3d(-wh, 0, -hh);
-    glNormal3f(0, 1, 0);
-    glVertex3d(-wh, 0,  hh);
-    glNormal3f(0, 1, 0);
-    glVertex3d( wh, 0,  hh);
-    glNormal3f(0, 1, 0);
-    glVertex3d( wh, 0, -hh);
+    constexpr unsigned SEGMENTS = 20;
+    constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;;
+
+    for (unsigned n = 0; n <= SEGMENTS; ++n)
+    {
+        float alpha = STEP * n;
+        glVertex2f(sin(alpha) * radius, cos(alpha) * radius);
+    }
+
     glEnd();
 
     glPopMatrix();
 }
 
 /* ************************************************************************ */
-
+/*
 void Context::drawSphere(const Position& pos, float radius, const Color& color) noexcept
 {
     constexpr float DEG2RAD = 3.14159f / 180.f;
@@ -224,146 +204,49 @@ void Context::drawSphere(const Position& pos, float radius, const Color& color) 
 
         glEnd();
     }
-/*
-    glColor3f(0.2f, 0.2f, 0.2f);
-
-    glBegin(GL_LINES);
-
-    for (int i = 0; i <= 360; i++)
-    {
-        float degInRad = i * DEG2RAD;
-        glVertex2f(cos(degInRad) * radius, sin(degInRad) * radius);
-    }
-
-    glEnd();
-*/
-    glPopMatrix();
-}
-
-/* ************************************************************************ */
-/*
-void Context::drawBarrier(const simulator::Barrier& barrier) noexcept
-{
-    const auto pos = barrier.getPosition();
-
-    // Setup transformation matrix
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glScalef(barrier.getWidth().value(), barrier.getHeight().value(), barrier.getDepth().value());
-    glTranslatef(pos.x.value(), pos.y.value(), pos.z.value());
-
-    glColor4f(1, 0.5, 0.5, 1);
-
-    glBegin(GL_POLYGON);
-
-    // BACK
-    glNormal3f(   0,    0,   1);
-    glVertex3f( 0.5, -0.5, 0.5);
-    glNormal3f(   0,    0,   1);
-    glVertex3f( 0.5,  0.5, 0.5);
-    glNormal3f(   0,    0,   1);
-    glVertex3f(-0.5,  0.5, 0.5);
-    glNormal3f(   0,    0,   1);
-    glVertex3f(-0.5, -0.5, 0.5);
-
-    // RIGHT
-    glNormal3f(   1,    0,    0);
-    glVertex3f( 0.5, -0.5, -0.5);
-    glNormal3f(   1,    0,    0);
-    glVertex3f( 0.5,  0.5, -0.5);
-    glNormal3f(   1,    0,    0);
-    glVertex3f( 0.5,  0.5,  0.5);
-    glNormal3f(   1,    0,    0);
-    glVertex3f( 0.5, -0.5,  0.5);
-
-    // LEFT
-    glNormal3f(  -1,    0,    0);
-    glVertex3f(-0.5, -0.5,  0.5);
-    glNormal3f(  -1,    0,    0);
-    glVertex3f(-0.5,  0.5,  0.5);
-    glNormal3f(  -1,    0,    0);
-    glVertex3f(-0.5,  0.5, -0.5);
-    glNormal3f(  -1,    0,    0);
-    glVertex3f(-0.5, -0.5, -0.5);
-
-    // TOP
-    glNormal3f(   0,    1,    0);
-    glVertex3f( 0.5,  0.5,  0.5);
-    glNormal3f(   0,    1,    0);
-    glVertex3f( 0.5,  0.5, -0.5);
-    glNormal3f(   0,    1,    0);
-    glVertex3f(-0.5,  0.5, -0.5);
-    glNormal3f(   0,    1,    0);
-    glVertex3f(-0.5,  0.5,  0.5);
-
-    // BOTTOM
-    glNormal3f(   0,   -1,    0);
-    glVertex3f( 0.5, -0.5, -0.5);
-    glNormal3f(   0,   -1,    0);
-    glVertex3f( 0.5, -0.5,  0.5);
-    glNormal3f(   0,   -1,    0);
-    glVertex3f(-0.5, -0.5,  0.5);
-    glNormal3f(   0,   -1,    0);
-    glVertex3f(-0.5, -0.5, -0.5);
-
-    glEnd();
 
     glPopMatrix();
 }
 */
-
 /* ************************************************************************ */
 
-void Context::drawGrid3d(const Position& pos, const Position& size,
-                         const Vector3<unsigned>& count, const Color& color) noexcept
+void Context::drawGrid(const Vector<float>& size, const Vector<unsigned>& count,
+                       const Color& color) noexcept
 {
-    const Vector3<float> start{
-        pos.x - size.x / 2.f,
-        pos.y - size.y / 2.f,
-        pos.z - size.z / 2.f
+    const Vector<float> start{
+        -size.x / 2.f,
+        -size.y / 2.f
     };
 
-    const Vector3<float> step{
+    const Vector<float> step{
         size.x / count.x,
-        size.y / count.y,
-        size.z / count.z
+        size.y / count.y
     };
 
     // Setup transformation matrix
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glTranslatef(pos.x, pos.y, pos.z);
 
     // Sphere color
     glColor4f(color.red, color.green, color.blue, color.alpha);
 
     glBegin(GL_LINES);
 
-    for (unsigned j = 0; j <= count.y; ++j)
+    for (unsigned i = 0; i <= count.x; ++i)
     {
-        for (unsigned i = 0; i <= count.z; ++i)
-        {
-            glVertex3f(start.x, start.y + j * step.y, start.z + i * step.z);
-            glVertex3f(start.x + size.x, start.y + j * step.y, start.z + i * step.z);
-        }
-
-        for (unsigned i = 0; i <= count.x; ++i)
-        {
-            glVertex3f(start.x + i * step.x, start.y + j * step.y, start.z);
-            glVertex3f(start.x + i * step.x, start.y + j * step.y, start.z + size.z);
-        }
+        glVertex2f(start.x + i * step.x, start.y);
+        glVertex2f(start.x + i * step.x, start.y + size.y);
     }
 
-    for (unsigned j = 0; j <= count.z; ++j)
+    for (unsigned i = 0; i <= count.y; ++i)
     {
-        for (unsigned i = 0; i <= count.x; ++i)
-        {
-            glVertex3f(start.x + i * step.x, start.y, start.z + j * step.z);
-            glVertex3f(start.x + i * step.x, start.y + size.y, start.z + j * step.z);
-        }
+        glVertex2f(start.x, start.y + i * step.y);
+        glVertex2f(start.x + size.x, start.y + i * step.y);
     }
 
     glEnd();
+
+    glPopMatrix();
 }
 
 /* ************************************************************************ */

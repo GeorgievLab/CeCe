@@ -50,8 +50,6 @@ public:
 protected:
     virtual void OnViewReset(wxCommandEvent& event);
     virtual void OnSourceChange(wxStyledTextEvent& event);
-    virtual void OnViewIsometric(wxCommandEvent& event);
-    virtual void OnViewTop(wxCommandEvent& event);
 
     virtual void OnSimulationStart(wxCommandEvent& event);
     virtual void OnSimulationStop(wxCommandEvent& event);

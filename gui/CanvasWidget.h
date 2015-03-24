@@ -26,19 +26,6 @@
 class CanvasWidget : public wxGLCanvas
 {
 
-// Public Enums
-public:
-
-    /**
-     * @brief Projection types.
-     */
-    enum class Projection
-    {
-        Top,
-        Isometric
-    };
-
-
 // Public Ctors & Dtors
 public:
 
@@ -86,19 +73,6 @@ public:
     }
 
 
-    /**
-     * @brief Change projection type.
-     *
-     * @param projection
-     */
-    void SetProjection(Projection projection) noexcept
-    {
-        m_projectionType = projection;
-        SetupProjection();
-        Update();
-    }
-
-
 // Public Operations
 public:
 
@@ -126,9 +100,9 @@ public:
     /**
      * @brief On resize event.
      */
-    void OnResize(wxSizeEvent& WXUNUSED(event))
+    void OnResize(wxSizeEvent& event)
     {
-        SetupProjection();
+        m_renderer.setView(event.GetSize().GetWidth(), event.GetSize().GetHeight());
     }
 
 
@@ -222,9 +196,6 @@ private:
 
     /// Render context.
     render::Context m_renderer;
-
-    /// Projection type.
-    Projection m_projectionType = Projection::Top;
 
     /// Position of dragging start.
     wxPoint m_dragStart;

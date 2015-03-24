@@ -6,8 +6,8 @@
 #include <wx/msgdlg.h>
 #include <wx/config.h>
 
-// JavaScript
-#include "javascript/WorldFactory.hpp"
+// Simulator
+#include "simulator/Cell.hpp"
 
 /* ************************************************************************ */
 
@@ -74,9 +74,30 @@ inline wxString wxToString(const wxSize& size)
 
 /* ************************************************************************ */
 
+class DummyWorldFactory : public simulator::WorldFactory
+{
+    std::unique_ptr<simulator::World> createWorld() const override
+    {
+        auto world = simulator::WorldFactory::createWorld();
+
+        auto cell = world->createObject<simulator::Cell>();
+        cell->setVolume(5000);
+        cell->setVelocity({10, 15});
+
+        return world;
+    }
+
+    std::unique_ptr<simulator::World> fromSource(const std::string& source) const override
+    {
+        return createWorld();
+    }
+};
+
+/* ************************************************************************ */
+
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
-    , m_simulatorThread(m_glCanvasView, new javascript::WorldFactory())
+    , m_simulatorThread(m_glCanvasView, new DummyWorldFactory())
 {
     m_fileHistory.UseMenu(m_menuFileRecent);
 
@@ -345,20 +366,6 @@ void MainFrame::OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event)
 void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
 {
     event.Enable(m_simulatorThread.isRunning());
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewIsometric(wxCommandEvent& event)
-{
-    m_glCanvasView->SetProjection(CanvasWidget::Projection::Isometric);
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewTop(wxCommandEvent& event)
-{
-    m_glCanvasView->SetProjection(CanvasWidget::Projection::Top);
 }
 
 /* ************************************************************************ */

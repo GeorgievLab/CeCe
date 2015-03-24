@@ -16,7 +16,14 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-std::unique_ptr<World> WorldFactory::createWorldFromFile(const std::string& filename) const
+std::unique_ptr<World> WorldFactory::createWorld() const
+{
+    return std::unique_ptr<World>(new World());
+}
+
+/* ************************************************************************ */
+
+std::unique_ptr<World> WorldFactory::fromFile(const std::string& filename) const
 {
     std::string source;
 
@@ -31,17 +38,7 @@ std::unique_ptr<World> WorldFactory::createWorldFromFile(const std::string& file
         }
     }
 
-    return createWorldFromSource(source);
-}
-
-/* ************************************************************************ */
-
-std::unique_ptr<World> WorldFactory::createWorldFromSource(const std::string& source) const
-{
-    auto world = createWorld();
-    world->load(source);
-
-    return world;
+    return fromSource(source);
 }
 
 /* ************************************************************************ */

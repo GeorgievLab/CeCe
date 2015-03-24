@@ -1,24 +1,30 @@
 
-#pragma once
+/* ************************************************************************ */
+
+// Declaration
+#include "simulator/DynamicObject.hpp"
 
 /* ************************************************************************ */
 
-// V8
-#include <v8.h>
+namespace simulator {
 
 /* ************************************************************************ */
 
-namespace javascript {
+void DynamicObject::update(Duration dt)
+{
+    auto pos = getPosition();
+    auto vel = getVelocity();
 
-/* ************************************************************************ */
+    pos.x += vel.x * dt;
+    pos.y += vel.y * dt;
 
-/**
- * @brief Create a cell object.
- */
-v8::Handle<v8::Value> create_cell(const v8::Arguments& args);
+    setPosition(pos);
+}
 
 /* ************************************************************************ */
 
 }
 
 /* ************************************************************************ */
+
+
