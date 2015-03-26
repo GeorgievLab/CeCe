@@ -108,7 +108,7 @@ public:
      *
      * @return
      */
-    Length getWidth() const noexcept
+    units::Length getWidth() const noexcept
     {
         return m_width;
     }
@@ -119,7 +119,7 @@ public:
      *
      * @return
      */
-    Length getHeight() const noexcept
+    units::Length getHeight() const noexcept
     {
         return m_height;
     }
@@ -179,7 +179,7 @@ public:
      * @param width
      * @param height
      */
-    void resize(Length width, Length height) noexcept
+    void resize(units::Length width, units::Length height) noexcept
     {
         m_width = width;
         m_height = height;
@@ -235,7 +235,7 @@ public:
      *
      * @param step
      */
-    virtual void update(Duration step) noexcept;
+    virtual void update(units::Duration step) noexcept;
 
 #ifdef ENABLE_RENDER
 
@@ -255,13 +255,10 @@ private:
     StepNumber m_stepNumber = 0;
 
     /// World width.
-    Length m_width{400_um};
+    units::Length m_width = units::um(400);
 
     /// World height.
-    Length m_height{400_um};
-
-    /// World depth.
-    Length m_depth{400_um};
+    units::Length m_height = units::um(400);
 
     /// World objects.
     ObjectContainer m_objects;

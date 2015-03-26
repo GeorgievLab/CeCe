@@ -10,15 +10,12 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-void DynamicObject::update(Duration dt)
+void DynamicObject::update(units::Duration dt)
 {
     auto pos = getPosition();
     auto vel = getVelocity();
 
-    pos.x += vel.x * dt;
-    pos.y += vel.y * dt;
-
-    setPosition(pos);
+    setPosition(pos + vel * dt);
 }
 
 /* ************************************************************************ */

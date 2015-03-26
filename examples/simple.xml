@@ -1,0 +1,4 @@
+<world width="500um" height="500um" grid-width="100" grid-height="100">
+  <cell volume="1000um3" position-x="0" position-y="0" velocity-x="10" velocity-y="50" />
+  <cell volume="1000um3" position-x="0" position-y="0" velocity-x="-10" velocity-y="-20" />
+</world>

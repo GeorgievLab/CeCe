@@ -53,8 +53,6 @@ public:
      * @param depth
      */
     Grid(SizeType width, SizeType height)
-        : m_width(width)
-        , m_height(height)
     {
         resize(width, height);
     }
@@ -136,6 +134,8 @@ public:
      */
     void resize(SizeType width, SizeType height)
     {
+        m_width = width;
+        m_height = height;
         m_data.resize(width * height);
     }
 

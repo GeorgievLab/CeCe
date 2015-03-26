@@ -13,7 +13,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-void Cell::update(Duration dt)
+void Cell::update(units::Duration dt)
 {
     DynamicObject::update(dt);
 }

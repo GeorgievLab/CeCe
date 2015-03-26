@@ -165,7 +165,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_stcSource->SetMarginMask(3, 0);
     m_stcSource->SetMarginWidth(3,0);
     // Select the lexer
-    m_stcSource->SetLexer(wxSTC_LEX_CPP);
+    m_stcSource->SetLexer(wxSTC_LEX_XML);
     // Set default font / styles
     m_stcSource->StyleClearAll();
     for(int i=0; i<wxSTC_STYLE_MAX; ++i) {

@@ -7,7 +7,7 @@
 #include <wx/config.h>
 
 // Simulator
-#include "simulator/Cell.hpp"
+#include "parser/WorldFactory.hpp"
 
 /* ************************************************************************ */
 
@@ -74,30 +74,9 @@ inline wxString wxToString(const wxSize& size)
 
 /* ************************************************************************ */
 
-class DummyWorldFactory : public simulator::WorldFactory
-{
-    std::unique_ptr<simulator::World> createWorld() const override
-    {
-        auto world = simulator::WorldFactory::createWorld();
-
-        auto cell = world->createObject<simulator::Cell>();
-        cell->setVolume(5000);
-        cell->setVelocity({10, 15});
-
-        return world;
-    }
-
-    std::unique_ptr<simulator::World> fromSource(const std::string& source) const override
-    {
-        return createWorld();
-    }
-};
-
-/* ************************************************************************ */
-
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
-    , m_simulatorThread(m_glCanvasView, new DummyWorldFactory())
+    , m_simulatorThread(m_glCanvasView, new parser::WorldFactory())
 {
     m_fileHistory.UseMenu(m_menuFileRecent);
 
@@ -241,7 +220,7 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
         wxEmptyString,
         wxEmptyString,
         wxEmptyString,
-        "JavaScript (*.js)|*.js",
+        "XML (*.xml)|*.xml",
         wxFD_OPEN | wxFD_FILE_MUST_EXIST
     );
 
@@ -262,7 +241,7 @@ void MainFrame::OnFileSave(wxCommandEvent& event)
             wxEmptyString,
             wxEmptyString,
             wxEmptyString,
-            "JavaScript (*.js)|*.js",
+            "XML (*.xml)|*.xml",
             wxFD_SAVE | wxFD_OVERWRITE_PROMPT
         );
 
@@ -284,7 +263,7 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
         wxEmptyString,
         wxEmptyString,
         wxEmptyString,
-        "JavaScript (*.js)|*.js",
+        "XML (*.xml)|*.xml",
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT
     );
 

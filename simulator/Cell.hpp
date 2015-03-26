@@ -43,7 +43,7 @@ public:
      *
      * @return
      */
-    Volume getVolume() const noexcept
+    units::Volume getVolume() const noexcept
     {
         return m_volume;
     }
@@ -91,7 +91,7 @@ public:
      *
      * @param volume
      */
-    void setVolume(Volume volume) noexcept
+    void setVolume(units::Volume volume) noexcept
     {
         m_volume = volume;
     }
@@ -139,7 +139,7 @@ public:
      *
      * @param dt Time step.
      */
-    void update(Duration dt) override;
+    void update(units::Duration dt) override;
 
 #ifdef ENABLE_RENDER
 
@@ -160,10 +160,10 @@ public:
      *
      * @return Radius.
      */
-    static Length calcSphereRadius(Volume volume) noexcept
+    static units::Length calcSphereRadius(units::Volume volume) noexcept
     {
         // 3th root of ((3 / 4 * pi) * volume)
-        return Length(0.62035f * std::pow(volume, 0.3333333f));
+        return units::Length(0.62035f * std::pow(volume, 0.3333333f));
     }
 
 
@@ -171,7 +171,7 @@ public:
 private:
 
     /// Cell volume.
-    Volume m_volume = 1_um;
+    units::Volume m_volume = units::um(1);
 
     /// Number of GFP proteins.
     FluorescentProteinCount m_gfp = 0;

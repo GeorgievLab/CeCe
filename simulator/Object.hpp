@@ -71,7 +71,7 @@ public:
      *
      * @param dt Time step.
      */
-    virtual void update(Duration dt) = 0;
+    virtual void update(units::Duration dt) = 0;
 
 #ifdef ENABLE_RENDER
 

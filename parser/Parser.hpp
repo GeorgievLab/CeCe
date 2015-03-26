@@ -3,20 +3,32 @@
 
 /* ************************************************************************ */
 
-// Core
-#include "core/Units.hpp"
-#include "core/Vector.hpp"
+// C++
+#include <memory>
+#include <istream>
+#include <stdexcept>
+
+// Simulator
+#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace parser {
+
+/* ************************************************************************ */
+
+using Exception = std::runtime_error;
 
 /* ************************************************************************ */
 
 /**
- * @brief Velocity structure.
+ * @brief Parse world from source.
+ *
+ * @param source
+ *
+ * @return
  */
-using Velocity = Vector<units::Length>;
+std::unique_ptr<simulator::World> fromStream(std::istream& source);
 
 /* ************************************************************************ */
 

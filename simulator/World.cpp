@@ -61,7 +61,7 @@ void World::reset()
 
 /* ************************************************************************ */
 
-void World::update(Duration dt) noexcept
+void World::update(units::Duration dt) noexcept
 {
     // Increase step number
     m_stepNumber++;

@@ -16,7 +16,7 @@ namespace simulator {
 /**
  * @brief Position structure.
  */
-using Position = Vector<Length>;
+using Position = Vector<units::Length>;
 
 /* ************************************************************************ */
 

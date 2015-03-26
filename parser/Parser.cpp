@@ -1,0 +1,158 @@
+
+/* ************************************************************************ */
+
+// Declaration
+#include "parser/Parser.hpp"
+
+// C++
+#include <string>
+#include <istream>
+#include <cstring>
+
+// pugixml
+#include "pugixml/pugixml.hpp"
+
+// Simulator
+#include "core/Units.hpp"
+#include "simulator/World.hpp"
+#include "simulator/Cell.hpp"
+
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
+units::Length parse_length(const char* value)
+{
+    char* end;
+    float val = std::strtof(value, &end);
+
+    // Possible suffixes
+    if (!strcmp(end, "um"))
+    {
+        return units::um(val);
+    }
+    else
+    {
+        return val;
+    }
+}
+
+/* ************************************************************************ */
+
+units::Volume parse_volume(const char* value)
+{
+    char* end;
+    float val = std::strtof(value, &end);
+
+    // Possible suffixes
+    if (!strcmp(end, "um3"))
+    {
+        return units::um3(val);
+    }
+    else
+    {
+        return val;
+    }
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Process cell node.
+ *
+ * @param node
+ * @param world
+ */
+void process_cell_node(const pugi::xml_node& node, simulator::World& world)
+{
+    // Create cell
+    auto cell = world.createObject<simulator::Cell>();
+
+    // Set cell volume
+    cell->setVolume(parse_volume(node.attribute("volume").value()));
+
+    // Set position
+    cell->setPosition({
+        parse_length(node.attribute("position-x").value()),
+        parse_length(node.attribute("position-y").value())
+    });
+
+    // Set velocity
+    cell->setVelocity({
+        parse_length(node.attribute("velocity-x").value()),
+        parse_length(node.attribute("velocity-y").value())
+    });
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Process world node.
+ *
+ * @param node
+ * @param world
+ */
+void process_world_node(const pugi::xml_node& node, simulator::World& world)
+{
+    // Resize world
+    {
+        auto width = parse_length(node.attribute("width").value());
+        auto height = parse_length(node.attribute("height").value());
+
+        if (width == 0 || height == 0)
+            throw parser::Exception("Width or height is zero!");
+
+        world.resize(width, height);
+    }
+
+    // Resize grid
+    {
+        auto grid_width = node.attribute("grid-width").as_int(50);
+        auto grid_height = node.attribute("grid-height").as_int(50);
+
+        if (grid_width == 0 || grid_height == 0)
+            throw parser::Exception("Grid width or height is zero!");
+
+        world.getGrid().resize(grid_width, grid_height);
+    }
+
+    for (const auto& child : node.children("cell"))
+    {
+        process_cell_node(child, world);
+    }
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+namespace parser {
+
+/* ************************************************************************ */
+
+std::unique_ptr<simulator::World> fromStream(std::istream& source)
+{
+    std::unique_ptr<simulator::World> world(new simulator::World());
+
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load(source);
+
+    if (!result)
+        throw Exception("XML parse error: " + std::string(result.description()));
+
+    // Parse DOM
+    process_world_node(doc.document_element(), *world);
+
+    return world;
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+

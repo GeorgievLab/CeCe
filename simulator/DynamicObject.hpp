@@ -58,7 +58,7 @@ public:
      *
      * @param dt Time step.
      */
-    void update(Duration dt) override;
+    void update(units::Duration dt) override;
 
 
 // Private Data Members

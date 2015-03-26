@@ -28,6 +28,7 @@ add_executable(gui
 # Link libraries
 target_link_libraries(gui
     simulator
+    parser
     ${RENDER_DEP}
     ${RENDER_LIBS}
     ${wxWidgets_LIBRARIES}
@@ -37,6 +38,7 @@ target_link_libraries(gui
 # Setup dependencies
 add_dependencies(gui
     simulator
+    parser
     core
     ${RENDER_DEP}
 )

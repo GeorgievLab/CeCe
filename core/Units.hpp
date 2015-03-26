@@ -3,6 +3,10 @@
 
 /* ************************************************************************ */
 
+namespace units {
+
+/* ************************************************************************ */
+
 /**
  * @brief Class for representing distance (micrometers).
  */
@@ -39,11 +43,71 @@ using Duration = float;
 /* ************************************************************************ */
 
 /**
+ * @brief Micrometer value.
+ *
+ * @param value
+ */
+constexpr Length um(float value) noexcept
+{
+    return Length(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Millimeter value.
+ *
+ * @param value
+ */
+constexpr Length mm(float value) noexcept
+{
+    return Length(1000 * value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Centimeter value.
+ *
+ * @param value
+ */
+constexpr Length cm(float value) noexcept
+{
+    return Length(10 * 1000 * value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Meter value.
+ *
+ * @param value
+ */
+constexpr Length m(float value) noexcept
+{
+    return Length(1000 * 1000 * value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Micrometer^3 value.
+ *
+ * @param value
+ */
+constexpr Volume um3(float value) noexcept
+{
+    return Volume(value);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Micrometers literal.
  */
 inline Length operator"" _um(long double value)
 {
-    return Length(value);
+    return um(value);
 }
 
 /* ************************************************************************ */
@@ -53,7 +117,7 @@ inline Length operator"" _um(long double value)
  */
 inline Length operator"" _um(unsigned long long int value)
 {
-    return Length(value);
+    return um(value);
 }
 
 /* ************************************************************************ */
@@ -63,7 +127,7 @@ inline Length operator"" _um(unsigned long long int value)
  */
 inline Length operator"" _mm(unsigned long long int value)
 {
-    return Length(1000 * value);
+    return mm(value);
 }
 
 /* ************************************************************************ */
@@ -73,7 +137,7 @@ inline Length operator"" _mm(unsigned long long int value)
  */
 inline Length operator"" _cm(unsigned long long int value)
 {
-    return Length(10 * 1000 * value);
+    return cm(value);
 }
 
 /* ************************************************************************ */
@@ -83,7 +147,7 @@ inline Length operator"" _cm(unsigned long long int value)
  */
 inline Length operator"" _m(unsigned long long int value)
 {
-    return Length(1000 * 1000 * value);
+    return m(value);
 }
 
 /* ************************************************************************ */
@@ -93,7 +157,7 @@ inline Length operator"" _m(unsigned long long int value)
  */
 inline Volume operator"" _um3(long double value)
 {
-    return Volume(value);
+    return um3(value);
 }
 
 /* ************************************************************************ */
@@ -103,7 +167,7 @@ inline Volume operator"" _um3(long double value)
  */
 inline Volume operator"" _um3(unsigned long long int value)
 {
-    return Volume(value);
+    return um3(value);
 }
 
 /* ************************************************************************ */
@@ -184,6 +248,10 @@ inline Duration operator"" _ms(long double value)
 inline Duration operator"" _ms(unsigned long long int value)
 {
     return Duration(value * 0.001);
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

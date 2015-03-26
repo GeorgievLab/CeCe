@@ -63,6 +63,7 @@ if (ENABLE_RENDER)
 endif ()
 
 add_subdirectory(simulator)
+add_subdirectory(parser)
 
 if (ENABLE_GUI)
     add_subdirectory(gui)
