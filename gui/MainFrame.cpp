@@ -143,8 +143,14 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
     Bind(EVT_ERROR, &MainFrame::OnSimulationError, this);
     Bind(EVT_LOG, &MainFrame::OnSimulationLog, this);
+    Bind(REPORT_RENDER_TIME, &MainFrame::OnRenderTime, this);
 
     LoadConfig();
+
+    {
+        int widths[] = {-1, 150};
+        m_statusBar->SetStatusWidths(sizeof(widths) / sizeof(widths[0]), widths);
+    }
 }
 
 /* ************************************************************************ */
@@ -197,6 +203,22 @@ void MainFrame::OnSimulationError(wxCommandEvent& evt)
 void MainFrame::OnSimulationLog(wxCommandEvent& evt)
 {
     m_textCtrlConsole->AppendText(evt.GetString() + "\n");
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnRenderTime(wxCommandEvent& evt)
+{
+    long time = evt.GetExtraLong();
+    float fps = 0;
+
+    if (time)
+        fps = (1000000.f / time);
+
+    m_statusBar->SetStatusText(
+        wxString::Format("%.3f ms / %.3f FPS", time / 1000.f, fps),
+        1
+    );
 }
 
 /* ************************************************************************ */
@@ -428,6 +450,34 @@ void MainFrame::StoreConfig()
 void MainFrame::OnViewReset(wxCommandEvent& event)
 {
     m_glCanvasView->ViewReset();
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewGrid(wxCommandEvent& event)
+{
+    auto flags = m_glCanvasView->GetWorld()->getRenderFlags();
+
+    if (m_menuItemViewGrid->IsChecked())
+        flags |= simulator::World::RENDER_GRID;
+    else
+        flags &= ~simulator::World::RENDER_GRID;
+
+    m_glCanvasView->GetWorld()->setRenderFlags(flags);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewVelocity(wxCommandEvent& event)
+{
+    auto flags = m_glCanvasView->GetWorld()->getRenderFlags();
+
+    if (m_menuItemViewVelocity->IsChecked())
+        flags |= simulator::World::RENDER_VELOCITY;
+    else
+        flags &= ~simulator::World::RENDER_VELOCITY;
+
+    m_glCanvasView->GetWorld()->setRenderFlags(flags);
 }
 
 /* ************************************************************************ */

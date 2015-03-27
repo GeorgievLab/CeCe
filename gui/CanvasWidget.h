@@ -21,6 +21,13 @@
 /* ************************************************************************ */
 
 /**
+ * @brief Report render time
+ */
+wxDECLARE_EVENT(REPORT_RENDER_TIME, wxCommandEvent);
+
+/* ************************************************************************ */
+
+/**
  * @brief Canvas widget.
  */
 class CanvasWidget : public wxGLCanvas
@@ -54,6 +61,17 @@ public:
     {
         assert(m_simulator);
         return m_simulator->getWorld();
+    }
+
+
+    /**
+     * @brief Returns number of milliseconds to render a frame.
+     *
+     * @return
+     */
+    long GetRenderTime() const noexcept
+    {
+        return m_renderTime;
     }
 
 
@@ -200,6 +218,8 @@ private:
     /// Position of dragging start.
     wxPoint m_dragStart;
 
+    /// Number of milliseconds to render a frame.
+    long m_renderTime = 0;
 };
 
 /* ************************************************************************ */

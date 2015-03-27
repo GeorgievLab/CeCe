@@ -19,12 +19,15 @@
   <VirtualDirectory Name="src">
     <File Name="Context.cpp"/>
     <File Name="Camera.cpp"/>
+    <File Name="Circle.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
     <File Name="Color.hpp"/>
     <File Name="Position.hpp"/>
     <File Name="Context.hpp"/>
+    <File Name="Drawable.hpp"/>
+    <File Name="Circle.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -86,7 +86,7 @@ void World::update(units::Duration dt) noexcept
 
             const GridCell& cell = m_grid(i, j);
 
-            // TODO: apply cell force
+            // Use velocity
             ptr->setVelocity(cell.velocity);
         }
     }
@@ -119,15 +119,18 @@ void World::update(units::Duration dt) noexcept
 
 void World::render(render::Context& context)
 {
-    /*
-    context.drawGrid(
-        {getWidth(), getHeight()},
-        {m_grid.getWidth(), m_grid.getHeight()},
-        {0.9f, 0.5f, 0.5f, 0.2f}
-    );
-*/
+    if (getRenderFlags() & RENDER_GRID)
+    {
+        context.drawGrid(
+            {getWidth(), getHeight()},
+            {m_grid.getWidth(), m_grid.getHeight()},
+            {0.9f, 0.5f, 0.5f, 0.2f}
+        );
+    }
+
     context.drawCircle({0, 0}, 10, {0, 0, 0, 1});
 
+    if (getRenderFlags() & RENDER_VELOCITY)
     {
         const Vector<float> start{
             -getWidth() / 2.f,
@@ -140,7 +143,7 @@ void World::render(render::Context& context)
         };
 
         const auto U = 200;
-#if 0
+
         // Draw grid vectors
         for (Grid<GridCell>::SizeType i = 0; i < m_grid.getWidth(); ++i)
         {
@@ -157,8 +160,6 @@ void World::render(render::Context& context)
                 );
             }
         }
-
-#endif
     }
 
     // Draw objects

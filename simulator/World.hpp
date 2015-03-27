@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <cassert>
+#include <type_traits>
 
 // Simulator
 #include "simulator/Velocity.hpp"
@@ -36,6 +37,22 @@ using StepNumber = unsigned long long;
  */
 class World
 {
+
+// Public Enums
+public:
+
+#ifdef ENABLE_RENDER
+
+    enum RenderFlags
+    {
+        RENDER_NONE = 0,
+        RENDER_GRID = 1,
+        RENDER_VELOCITY = 2,
+    };
+
+    using RenderFlagsType = typename std::underlying_type<RenderFlags>::type;
+
+#endif
 
 // Public Structures
 public:
@@ -157,6 +174,20 @@ public:
         return m_grid;
     }
 
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Returns render flags.
+     *
+     * @return
+     */
+    RenderFlagsType getRenderFlags() const noexcept
+    {
+        return m_renderFlags;
+    };
+
+#endif
+
 
 // Public Mutators
 public:
@@ -213,6 +244,20 @@ public:
         return addObject(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
     }
 
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Set render flags.
+     *
+     * @param flags
+     */
+    void setRenderFlags(RenderFlagsType flags) noexcept
+    {
+        m_renderFlags = flags;
+    };
+
+#endif
+
 
 // Public Operations
 public:
@@ -268,6 +313,12 @@ private:
 
     /// Signal grid.
     Grid<GridCell> m_grid;
+
+#ifdef ENABLE_RENDER
+
+    RenderFlagsType m_renderFlags = RENDER_NONE;
+
+#endif
 
 };
 

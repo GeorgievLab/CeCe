@@ -14,8 +14,13 @@
 #include <cmath>
 
 // OpenGL
+#define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/freeglut.h>
+
+// Simulator
+#include "render/Circle.hpp"
 
 /* ************************************************************************ */
 
@@ -52,7 +57,7 @@ void Context::init() noexcept
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
 
     //glEnable(GL_LIGHTING);
     //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_intensity);
@@ -143,20 +148,10 @@ void Context::drawCircle(const Position& pos, float radius, const Color& color) 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glTranslatef(pos.x, pos.y, 0);
+    glScalef(radius, radius, radius);
 
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(0, 0);
-
-    constexpr unsigned SEGMENTS = 50;
-    constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;
-
-    for (unsigned n = 0; n <= SEGMENTS; ++n)
-    {
-        float alpha = STEP * n;
-        glVertex2f(sin(alpha) * radius, cos(alpha) * radius);
-    }
-
-    glEnd();
+    static Circle circle;
+    circle.render();
 
     glPopMatrix();
 }
@@ -251,6 +246,15 @@ void Context::drawGrid(const Vector<float>& size, const Vector<unsigned>& count,
 
 /* ************************************************************************ */
 
+void Context::drawText(const std::string& text, float x, float y)
+{
+    glRasterPos2f(x, y);
+    //glutBitmapString(GLUT_BITMAP_HELVETICA_12, reinterpret_cast<const unsigned char*>(text.c_str()));
 }
 
 /* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+

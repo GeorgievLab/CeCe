@@ -7,6 +7,7 @@
 
 // C++
 #include <vector>
+#include <string>
 #include <cstdint>
 
 // Simulator
@@ -122,6 +123,16 @@ public:
      * @param color  Grid color.
      */
     void drawGrid(const Vector<float>& size, const Vector<unsigned>& count, const Color& color) noexcept;
+
+
+    /**
+     * @brief Draw 2d text.
+     *
+     * @param text
+     * @param x
+     * @param y
+     */
+    void drawText(const std::string& text, float x, float y);
 
 
 // Private Data Members

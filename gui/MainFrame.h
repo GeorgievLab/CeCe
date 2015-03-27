@@ -47,7 +47,17 @@ public:
     void OnSimulationLog(wxCommandEvent& evt);
 
 
+    /**
+     * @brief Handle event reporting render time.
+     *
+     * @param evt
+     */
+    void OnRenderTime(wxCommandEvent& evt);
+
+
 protected:
+    virtual void OnViewGrid(wxCommandEvent& event);
+    virtual void OnViewVelocity(wxCommandEvent& event);
     virtual void OnViewReset(wxCommandEvent& event);
     virtual void OnSourceChange(wxStyledTextEvent& event);
 

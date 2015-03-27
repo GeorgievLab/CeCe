@@ -9,6 +9,7 @@
 
 // wxWidgets
 #include <wx/dcclient.h>
+#include <wx/stopwatch.h>
 
 // Simulator
 #include "simulator/World.hpp"
@@ -18,6 +19,10 @@
 
 // GUI
 #include "gui/SimulatorThread.hpp"
+
+/* ************************************************************************ */
+
+wxDEFINE_EVENT(REPORT_RENDER_TIME, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -87,6 +92,8 @@ void CanvasWidget::Render() noexcept
         m_init = true;
     }
 
+    wxStopWatch sw;
+
     m_renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
 
     {
@@ -104,6 +111,14 @@ void CanvasWidget::Render() noexcept
 
     m_renderer.frameEnd();
     SwapBuffers();
+
+    // Store render time
+    m_renderTime = sw.TimeInMicro().GetValue();
+
+    // Report render time
+    wxCommandEvent event(REPORT_RENDER_TIME);
+    event.SetExtraLong(m_renderTime);
+    wxPostEvent(this, event);
 }
 
 /* ************************************************************************ */

@@ -141,6 +141,7 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
                 if (r2 <= R)
                     continue;
 
+                // COPYRIGHT: Hynek magic
                 cell.velocity.x = U * (1 + (R * R) / (r2) + 2 * (x * x * R * R) / (r2 * r2));
                 cell.velocity.y = U * -2 * (R * R * x * y) / (r2 * r2);
             }
