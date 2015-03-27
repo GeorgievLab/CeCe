@@ -8,6 +8,7 @@
 #include <string>
 #include <istream>
 #include <cstring>
+#include <random>
 
 // pugixml
 #include "pugixml/pugixml.hpp"
@@ -109,13 +110,41 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
 
     // Resize grid
     {
-        auto grid_width = node.attribute("grid-width").as_int(50);
-        auto grid_height = node.attribute("grid-height").as_int(50);
+        auto grid_width = node.attribute("grid-width").as_int(0);
+        auto grid_height = node.attribute("grid-height").as_int(0);
 
         if (grid_width == 0 || grid_height == 0)
             throw parser::Exception("Grid width or height is zero!");
 
         world.getGrid().resize(grid_width, grid_height);
+
+        auto& grid = world.getGrid();
+        const auto R = units::um(100);
+        const auto U = 10;
+
+        for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
+        {
+            for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
+            {
+                auto& cell = grid(i, j);
+
+                float x = i - grid.getWidth() / 2.f;
+                float y = j - grid.getHeight() / 2.f;
+
+                auto r2 = x * x + y * y;
+                //auto theta = atan2(i2, j2);
+                //auto ur = 1 * cos(theta) * (1 - R * R / (r * r));
+                //auto ut = -1 * sin(theta) * (1 + R * R / (r * r));
+                //auto u = ur * cos(theta) - ut * sin(theta);
+                //auto v = ur * sin(theta) + ut * cos(theta);
+
+                if (r2 <= R)
+                    continue;
+
+                cell.velocity.x = U * (1 + (R * R) / (r2) + 2 * (x * x * R * R) / (r2 * r2));
+                cell.velocity.y = U * -2 * (R * R * x * y) / (r2 * r2);
+            }
+        }
     }
 
     for (const auto& child : node.children("cell"))

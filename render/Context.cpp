@@ -147,8 +147,8 @@ void Context::drawCircle(const Position& pos, float radius, const Color& color) 
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(0, 0);
 
-    constexpr unsigned SEGMENTS = 20;
-    constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;;
+    constexpr unsigned SEGMENTS = 50;
+    constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;
 
     for (unsigned n = 0; n <= SEGMENTS; ++n)
     {

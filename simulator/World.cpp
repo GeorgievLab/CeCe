@@ -6,7 +6,6 @@
 
 // C++
 #include <algorithm>
-#include <random>
 
 // Simulator
 #include "simulator/StaticObject.hpp"
@@ -19,22 +18,9 @@ namespace simulator {
 /* ************************************************************************ */
 
 World::World() noexcept
-    : m_grid(50)
+    : m_grid(10)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0, 1);
-
-    for (Grid<GridCell>::SizeType i = 0; i < m_grid.getWidth(); ++i)
-    {
-        for (Grid<GridCell>::SizeType j = 0; j < m_grid.getHeight(); ++j)
-        {
-            GridCell& cell = m_grid(i, j);
-
-            cell.velocity.x = dis(gen);
-            cell.velocity.y = dis(gen);
-        }
-    }
+    // Nothing to do
 }
 
 /* ************************************************************************ */
@@ -91,13 +77,17 @@ void World::update(units::Duration dt) noexcept
             pos.x -= start.x;
             pos.y -= start.y;
 
+            auto step_x = getWidth() / m_grid.getWidth();
+            auto step_y = getHeight() / m_grid.getHeight();
+
             // Get grid position
-            unsigned int i = pos.x / m_grid.getWidth();
-            unsigned int j = pos.y / m_grid.getHeight();
+            unsigned int i = pos.x / step_x;
+            unsigned int j = pos.y / step_y;
 
             const GridCell& cell = m_grid(i, j);
 
             // TODO: apply cell force
+            ptr->setVelocity(cell.velocity);
         }
     }
 
@@ -129,11 +119,14 @@ void World::update(units::Duration dt) noexcept
 
 void World::render(render::Context& context)
 {
+    /*
     context.drawGrid(
         {getWidth(), getHeight()},
         {m_grid.getWidth(), m_grid.getHeight()},
         {0.9f, 0.5f, 0.5f, 0.2f}
     );
+*/
+    context.drawCircle({0, 0}, 10, {0, 0, 0, 1});
 
     {
         const Vector<float> start{
@@ -146,6 +139,8 @@ void World::render(render::Context& context)
             getHeight() / m_grid.getHeight()
         };
 
+        const auto U = 200;
+#if 0
         // Draw grid vectors
         for (Grid<GridCell>::SizeType i = 0; i < m_grid.getWidth(); ++i)
         {
@@ -157,11 +152,13 @@ void World::render(render::Context& context)
 
                 context.drawLine(
                     {x, y},
-                    {cell.velocity.x * step.x / 2.f, cell.velocity.y * step.y / 2.f},
+                    {cell.velocity.x * step.x / 2.f / U, cell.velocity.y * step.y / 2.f / U},
                     {cell.velocity.x, cell.velocity.y, 0, 1}
                 );
             }
         }
+
+#endif
     }
 
     // Draw objects

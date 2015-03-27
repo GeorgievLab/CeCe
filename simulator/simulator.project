@@ -37,6 +37,7 @@
     <File Name="StaticObject.hpp"/>
     <File Name="DynamicObject.hpp"/>
     <File Name="Grid.hpp"/>
+    <File Name="Acceleration.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
