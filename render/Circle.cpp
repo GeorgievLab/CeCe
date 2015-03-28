@@ -7,6 +7,10 @@
 // C++
 #include <cmath>
 #include <array>
+#include <cassert>
+
+// Simulator
+#include "render/errors.hpp"
 
 /* ************************************************************************ */
 
@@ -17,7 +21,6 @@ namespace render {
 Circle::Circle() noexcept
     : Drawable()
 {
-#if RENDER_USE_VBO
     constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;
 
     struct Vertex { GLfloat x, y; };
@@ -33,46 +36,40 @@ Circle::Circle() noexcept
 
     vertices[SEGMENTS + 1] = vertices[1];
 
-    glBindBuffer(GL_ARRAY_BUFFER, getBuffer());
-    glBufferData(GL_ARRAY_BUFFER,
+    assert(getBuffer() != 0);
+
+    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBufferData(GL_ARRAY_BUFFER,
         vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data(),
         GL_STATIC_DRAW
-    );
-#endif
+    ));
 }
 
 /* ************************************************************************ */
 
-void Circle::render() noexcept
+void Circle::render(const Position& pos, float radius, const Color& color) noexcept
 {
-#if RENDER_USE_VBO
+    // Draw color
+    gl(glColor4f(color.red, color.green, color.blue, color.alpha));
+
+    gl(glPushMatrix());
+    gl(glTranslatef(pos.x, pos.y, 0));
+    gl(glScalef(radius, radius, radius));
+
     // Bind buffer
-    glBindBuffer(GL_ARRAY_BUFFER, getBuffer());
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, 0);
+    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glEnableClientState(GL_VERTEX_ARRAY));
+    gl(glVertexPointer(2, GL_FLOAT, 0, 0));
 
     // Draw circle
-    glDrawArrays(GL_TRIANGLE_FAN, 0, SEGMENTS + 2);
+    gl(glDrawArrays(GL_TRIANGLE_FAN, 0, SEGMENTS + 2));
 
     // Disable states
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-#else
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(0, 0);
+    gl(glDisableClientState(GL_VERTEX_ARRAY));
+    gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
-    constexpr unsigned SEGMENTS = 50;
-    constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;
-
-    for (unsigned n = 0; n <= SEGMENTS; ++n)
-    {
-        float alpha = STEP * n;
-        glVertex2f(sin(alpha) * radius, cos(alpha) * radius);
-    }
-
-    glEnd();
-#endif
+    gl(glPopMatrix());
 }
 
 /* ************************************************************************ */

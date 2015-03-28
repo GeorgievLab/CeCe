@@ -17,6 +17,8 @@
 #ifdef ENABLE_RENDER
 // Render
 #include "render/Context.hpp"
+#include "render/Grid.hpp"
+#include "render/GridVector.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -174,19 +176,16 @@ public:
         return m_grid;
     }
 
-#ifdef ENABLE_RENDER
 
     /**
-     * @brief Returns render flags.
+     * @brief Get radius of the main cell.
      *
      * @return
      */
-    RenderFlagsType getRenderFlags() const noexcept
+    units::Length getMainCellRadius() const noexcept
     {
-        return m_renderFlags;
-    };
-
-#endif
+        return m_mainCellRadius;
+    }
 
 
 // Public Mutators
@@ -244,19 +243,16 @@ public:
         return addObject(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
     }
 
-#ifdef ENABLE_RENDER
 
     /**
-     * @brief Set render flags.
+     * @brief Set radius of the main cell.
      *
-     * @param flags
+     * @param radius
      */
-    void setRenderFlags(RenderFlagsType flags) noexcept
+    void setMainCellRadius(units::Length radius) noexcept
     {
-        m_renderFlags = flags;
-    };
-
-#endif
+        m_mainCellRadius = radius;
+    }
 
 
 // Public Operations
@@ -277,10 +273,8 @@ public:
 
     /**
      * @brief Update world.
-     *
-     * @param step
      */
-    virtual void update(units::Duration step) noexcept;
+    virtual void update() noexcept;
 
 #ifdef ENABLE_RENDER
 
@@ -288,8 +282,9 @@ public:
      * @brief Render world.
      *
      * @param context
+     * @param flags
      */
-    virtual void render(render::Context& context);
+    virtual void render(render::Context& context, RenderFlagsType flags = RENDER_NONE);
 
 #endif
 
@@ -298,6 +293,9 @@ private:
 
     /// Number of simulation steps.
     StepNumber m_stepNumber = 0;
+
+    /// Duration step
+    units::Duration m_timeStep = 0.002f;
 
     /// World width.
     units::Length m_width = units::um(400);
@@ -311,12 +309,19 @@ private:
     /// Log function.
     LogFunction m_logFunction;
 
+    /// World main cell radius.
+    units::Length m_mainCellRadius = units::um(20);
+
     /// Signal grid.
     Grid<GridCell> m_grid;
 
 #ifdef ENABLE_RENDER
 
-    RenderFlagsType m_renderFlags = RENDER_NONE;
+    /// Render grid
+    std::unique_ptr<render::Grid> m_renderGrid;
+
+    /// Render grid for velocities
+    std::unique_ptr<render::GridVector> m_renderGridVelocity;
 
 #endif
 

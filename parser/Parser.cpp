@@ -108,6 +108,12 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
         world.resize(width, height);
     }
 
+    // Main cell size
+    {
+        auto radius = parse_length(node.attribute("main-cell-radius").value());
+        world.setMainCellRadius(radius);
+    }
+
     // Resize grid
     {
         auto grid_width = node.attribute("grid-width").as_int(0);
@@ -119,8 +125,13 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
         world.getGrid().resize(grid_width, grid_height);
 
         auto& grid = world.getGrid();
-        const auto R = units::um(100);
-        const auto U = 10;
+        const auto R = world.getMainCellRadius();
+        const auto U = 1000;
+
+        // Precompute values
+        const auto R2 = R * R;
+        const Vector<float> start{-world.getWidth() / 2.f, -world.getHeight() / 2.f};
+        const Vector<float> step{world.getWidth() / grid.getWidth(), world.getHeight() / grid.getHeight()};
 
         for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
         {
@@ -128,22 +139,28 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
             {
                 auto& cell = grid(i, j);
 
-                float x = i - grid.getWidth() / 2.f;
-                float y = j - grid.getHeight() / 2.f;
+                // Transform i, j coordinates to position
+                const float x = start.x + i * step.x + step.x / 2.f;
+                const float y = start.y + j * step.y + step.y / 2.f;
 
-                auto r2 = x * x + y * y;
+                const auto r2 = x * x + y * y;
                 //auto theta = atan2(i2, j2);
                 //auto ur = 1 * cos(theta) * (1 - R * R / (r * r));
                 //auto ut = -1 * sin(theta) * (1 + R * R / (r * r));
                 //auto u = ur * cos(theta) - ut * sin(theta);
                 //auto v = ur * sin(theta) + ut * cos(theta);
 
-                if (r2 <= R)
+                if (r2 <= R2)
                     continue;
 
+                // Precompute values
+                const float r4 = r2 * r2;
+                const float x2 = x * x;
+                const float xy = x * y;
+
                 // COPYRIGHT: Hynek magic
-                cell.velocity.x = U * (1 + (R * R) / (r2) + 2 * (x * x * R * R) / (r2 * r2));
-                cell.velocity.y = U * -2 * (R * R * x * y) / (r2 * r2);
+                cell.velocity.x = U * (1 + R2 / r2 - 2 * (x2 * R2) / r4);
+                cell.velocity.y = U * -2 * (R2 * xy) / r4;
             }
         }
     }

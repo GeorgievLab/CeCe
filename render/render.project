@@ -20,6 +20,10 @@
     <File Name="Context.cpp"/>
     <File Name="Camera.cpp"/>
     <File Name="Circle.cpp"/>
+    <File Name="Grid.cpp"/>
+    <File Name="errors.cpp"/>
+    <File Name="Drawable.cpp"/>
+    <File Name="GridVector.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
@@ -28,6 +32,9 @@
     <File Name="Context.hpp"/>
     <File Name="Drawable.hpp"/>
     <File Name="Circle.hpp"/>
+    <File Name="Grid.hpp"/>
+    <File Name="errors.hpp"/>
+    <File Name="GridVector.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

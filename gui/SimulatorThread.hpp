@@ -9,6 +9,7 @@
 #include <wx/msgqueue.h>
 #include <wx/scopedptr.h>
 #include <wx/event.h>
+#include <wx/glcanvas.h>
 
 // Simulator
 #include "simulator/World.hpp"

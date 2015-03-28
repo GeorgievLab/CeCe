@@ -1,15 +1,16 @@
 
-#ifndef _GUI_CANVAS_WIDGET_H_
-#define _GUI_CANVAS_WIDGET_H_
+#pragma once
 
 /* ************************************************************************ */
 
 // C++
 #include <cassert>
+#include <chrono>
 
 // wxWidgets
 #include <wx/scopedptr.h>
 #include <wx/glcanvas.h>
+#include <wx/timer.h>
 
 // Simulator
 #include "simulator/World.hpp"
@@ -23,7 +24,7 @@
 /**
  * @brief Report render time
  */
-wxDECLARE_EVENT(REPORT_RENDER_TIME, wxCommandEvent);
+wxDECLARE_EVENT(REPORT_FPS, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -53,6 +54,17 @@ public:
 
 
     /**
+     * @brief Return OpenGL context.
+     *
+     * @return
+     */
+    wxGLContext* getContext() const noexcept
+    {
+        return m_context.get();
+    }
+
+
+    /**
      * @brief Returns current world.
      *
      * @return
@@ -65,14 +77,19 @@ public:
 
 
     /**
-     * @brief Returns number of milliseconds to render a frame.
+     * @brief If grid is rendered.
      *
      * @return
      */
-    long GetRenderTime() const noexcept
-    {
-        return m_renderTime;
-    }
+    bool IsViewGrid() const noexcept;
+
+
+    /**
+     * @brief If velocity is rendered.
+     *
+     * @param flag
+     */
+    bool IsViewVelocity() const noexcept;
 
 
 // Public Mutators
@@ -89,6 +106,22 @@ public:
         m_simulator = simulator;
         m_mutex = mutex;
     }
+
+
+    /**
+     * @brief Show or hide grid render.
+     *
+     * @param flag
+     */
+    void SetViewGrid(bool flag) noexcept;
+
+
+    /**
+     * @brief Show or hide velocity render.
+     *
+     * @param flag
+     */
+    void SetViewVelocity(bool flag) noexcept;
 
 
 // Public Operations
@@ -120,7 +153,7 @@ public:
      */
     void OnResize(wxSizeEvent& event)
     {
-        m_renderer.setView(event.GetSize().GetWidth(), event.GetSize().GetHeight());
+        //Update();
     }
 
 
@@ -138,6 +171,17 @@ public:
      * @param event
      */
     void OnUpdated(wxCommandEvent& WXUNUSED(event))
+    {
+        Update();
+    }
+
+
+    /**
+     * @brief On timer event.
+     *
+     * @param event
+     */
+    void OnTimer(wxTimerEvent& WXUNUSED(event))
     {
         Update();
     }
@@ -180,12 +224,6 @@ protected:
 
 
     /**
-     * @brief Init OpenGL.
-     */
-    void Init() noexcept;
-
-
-    /**
      * @brief Setup projection matrix.
      */
     void SetupProjection() noexcept;
@@ -203,8 +241,8 @@ private:
     // GL canvas.
     wxScopedPtr<wxGLContext> m_context;
 
-    /// If is initialized
-    bool m_init = false;
+    // Redraw timer.
+    wxTimer m_timer;
 
     /// Simulator pointer.
     simulator::Simulator* m_simulator;
@@ -218,10 +256,18 @@ private:
     /// Position of dragging start.
     wxPoint m_dragStart;
 
-    /// Number of milliseconds to render a frame.
-    long m_renderTime = 0;
+    /// Time when the last frame was rendered.
+    std::chrono::high_resolution_clock::time_point m_renderTime;
+
+    /// Number of rendered frames.
+    unsigned long m_renderFrames = 0;
+
+    /// Time from last FPS recalculation.
+    std::chrono::milliseconds m_renderFpsRecalc;
+
+    /// Render flags.
+    simulator::World::RenderFlagsType m_renderFlags = simulator::World::RENDER_NONE;
+
 };
 
 /* ************************************************************************ */
-
-#endif // _GUI_CANVAS_WIDGET_H_

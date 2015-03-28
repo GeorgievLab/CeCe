@@ -8,6 +8,8 @@
 #include <GL/gl.h>
 
 // Simulator
+#include "render/Position.hpp"
+#include "render/Color.hpp"
 #include "render/Drawable.hpp"
 
 /* ************************************************************************ */
@@ -43,8 +45,12 @@ public:
 
     /**
      * @brief Render at current position.
+     *
+     * @param pos    Position where to render.
+     * @param radius Circle radius.
+     * @param color  Circle color.
      */
-    void render() noexcept;
+    void render(const Position& pos, float radius, const Color& color) noexcept;
 
 };
 

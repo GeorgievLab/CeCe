@@ -2,8 +2,6 @@
 
 project(render)
 
-add_definitions(-DRENDER_USE_VBO=1)
-
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 
@@ -16,13 +14,20 @@ include_directories(
 add_library(render
     Position.hpp
     Color.hpp
+    errors.hpp
+    errors.cpp
     Context.hpp
     Context.cpp
     Camera.hpp
     Camera.cpp
     Drawable.hpp
+    Drawable.cpp
     Circle.hpp
     Circle.cpp
+    Grid.hpp
+    Grid.cpp
+    GridVector.hpp
+    GridVector.cpp
 )
 
 # Setup dependencies

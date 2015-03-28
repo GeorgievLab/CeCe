@@ -12,6 +12,7 @@
 
 // C++
 #include <cmath>
+#include <cassert>
 
 // OpenGL
 #define GL_GLEXT_PROTOTYPES
@@ -21,6 +22,7 @@
 
 // Simulator
 #include "render/Circle.hpp"
+#include "render/Grid.hpp"
 
 /* ************************************************************************ */
 
@@ -46,6 +48,8 @@ std::vector<std::uint8_t> Context::getData() const noexcept
 
 void Context::init() noexcept
 {
+    assert(!isInit());
+
     GLfloat sun_direction[] = { 0.0, -1.0, 0.0, 1.0 };
     GLfloat sun_intensity[] = { 0.7, 0.7, 0.7, 1.0 };
     GLfloat ambient_intensity[] = { 0.3, 0.3, 0.3, 1.0 };
@@ -68,12 +72,17 @@ void Context::init() noexcept
 
     //glEnable(GL_COLOR_MATERIAL);
     //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+    m_is_init = true;
 }
 
 /* ************************************************************************ */
 
 void Context::setView(int width, int height) noexcept
 {
+    if (!m_is_init)
+        return;
+
      // Setup viewport (whole window)
     glViewport(0, 0, width, height);
 
@@ -102,6 +111,8 @@ void Context::setView(int width, int height) noexcept
 
 void Context::frameBegin(int width, int height) noexcept
 {
+    assert(isInit());
+
     // Clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -112,6 +123,8 @@ void Context::frameBegin(int width, int height) noexcept
 
 void Context::frameEnd() noexcept
 {
+    assert(isInit());
+
     glFlush();
 }
 
@@ -119,6 +132,8 @@ void Context::frameEnd() noexcept
 
 void Context::drawLine(const Position& pos, const Vector<float>& dir, const Color& color) noexcept
 {
+    assert(isInit());
+
     // Setup transformation matrix
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -141,19 +156,10 @@ void Context::drawLine(const Position& pos, const Vector<float>& dir, const Colo
 
 void Context::drawCircle(const Position& pos, float radius, const Color& color) noexcept
 {
-    // Draw color
-    glColor4f(color.red, color.green, color.blue, color.alpha);
-
-    // Setup transformation matrix
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glTranslatef(pos.x, pos.y, 0);
-    glScalef(radius, radius, radius);
+    assert(isInit());
 
     static Circle circle;
-    circle.render();
-
-    glPopMatrix();
+    circle.render(pos, radius, color);
 }
 
 /* ************************************************************************ */
@@ -208,46 +214,19 @@ void Context::drawSphere(const Position& pos, float radius, const Color& color) 
 void Context::drawGrid(const Vector<float>& size, const Vector<unsigned>& count,
                        const Color& color) noexcept
 {
-    const Vector<float> start{
-        -size.x / 2.f,
-        -size.y / 2.f
-    };
+    assert(isInit());
 
-    const Vector<float> step{
-        size.x / count.x,
-        size.y / count.y
-    };
-
-    // Setup transformation matrix
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-
-    // Sphere color
-    glColor4f(color.red, color.green, color.blue, color.alpha);
-
-    glBegin(GL_LINES);
-
-    for (unsigned i = 0; i <= count.x; ++i)
-    {
-        glVertex2f(start.x + i * step.x, start.y);
-        glVertex2f(start.x + i * step.x, start.y + size.y);
-    }
-
-    for (unsigned i = 0; i <= count.y; ++i)
-    {
-        glVertex2f(start.x, start.y + i * step.y);
-        glVertex2f(start.x + size.x, start.y + i * step.y);
-    }
-
-    glEnd();
-
-    glPopMatrix();
+    static Grid grid;
+    grid.resize(count.x, count.y);
+    grid.render(size, color);
 }
 
 /* ************************************************************************ */
 
 void Context::drawText(const std::string& text, float x, float y)
 {
+    assert(isInit());
+
     glRasterPos2f(x, y);
     //glutBitmapString(GLUT_BITMAP_HELVETICA_12, reinterpret_cast<const unsigned char*>(text.c_str()));
 }

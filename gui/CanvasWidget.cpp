@@ -9,7 +9,6 @@
 
 // wxWidgets
 #include <wx/dcclient.h>
-#include <wx/stopwatch.h>
 
 // Simulator
 #include "simulator/World.hpp"
@@ -22,7 +21,7 @@
 
 /* ************************************************************************ */
 
-wxDEFINE_EVENT(REPORT_RENDER_TIME, wxCommandEvent);
+wxDEFINE_EVENT(REPORT_FPS, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -42,6 +41,8 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
                            const wxSize& size, long style,
                            const wxString& name, const wxPalette& palette)
     : wxGLCanvas(parent, id, g_attribList, pos, size, style, name, palette)
+    , m_timer(this)
+    , m_renderTime(std::chrono::high_resolution_clock::now())
 {
     m_context.reset(new wxGLContext(this));
 
@@ -51,7 +52,51 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
     Bind(wxEVT_LEFT_DOWN, &CanvasWidget::OnMouseDown, this);
     Bind(wxEVT_MOTION, &CanvasWidget::OnMouseMotion, this);
     Bind(wxEVT_LEFT_UP, &CanvasWidget::OnMouseUp, this);
-    Bind(EVT_UPDATED, &CanvasWidget::OnUpdated, this);
+    //Bind(EVT_UPDATED, &CanvasWidget::OnUpdated, this);
+
+    // Bind timer
+    Bind(wxEVT_TIMER, &CanvasWidget::OnTimer, this);
+
+    // Start timer
+    m_timer.Start(1000 / 60);
+}
+
+/* ************************************************************************ */
+
+bool CanvasWidget::IsViewGrid() const noexcept
+{
+    return m_renderFlags & simulator::World::RENDER_GRID;
+}
+
+/* ************************************************************************ */
+
+bool CanvasWidget::IsViewVelocity() const noexcept
+{
+    return m_renderFlags & simulator::World::RENDER_VELOCITY;
+}
+
+/* ************************************************************************ */
+
+void CanvasWidget::SetViewGrid(bool flag) noexcept
+{
+    if (flag)
+        m_renderFlags |= simulator::World::RENDER_GRID;
+    else
+        m_renderFlags &= ~simulator::World::RENDER_GRID;
+
+    Update();
+}
+
+/* ************************************************************************ */
+
+void CanvasWidget::SetViewVelocity(bool flag) noexcept
+{
+    if (flag)
+        m_renderFlags |= simulator::World::RENDER_VELOCITY;
+    else
+        m_renderFlags &= ~simulator::World::RENDER_VELOCITY;
+
+    Update();
 }
 
 /* ************************************************************************ */
@@ -71,28 +116,19 @@ void CanvasWidget::ViewReset() noexcept
 
 /* ************************************************************************ */
 
-void CanvasWidget::Init() noexcept
-{
-    m_renderer.init();
-}
-
-/* ************************************************************************ */
-
 void CanvasWidget::Render() noexcept
 {
     if (!IsShown())
         return;
 
-    SetCurrent(*m_context);
-    wxPaintDC dc(this);
-
-    if (!m_init)
+    // Init renderer
+    if (!m_renderer.isInit())
     {
-        Init();
-        m_init = true;
+        SetCurrent(*m_context);
+        m_renderer.init();
     }
 
-    wxStopWatch sw;
+    wxPaintDC dc(this);
 
     m_renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
 
@@ -105,20 +141,35 @@ void CanvasWidget::Render() noexcept
         auto world = m_simulator->getWorld();
         if (world)
         {
-            world->render(m_renderer);
+            world->render(m_renderer, m_renderFlags);
         }
     }
 
     m_renderer.frameEnd();
     SwapBuffers();
 
-    // Store render time
-    m_renderTime = sw.TimeInMicro().GetValue();
+    {
+        using namespace std::chrono;
 
-    // Report render time
-    wxCommandEvent event(REPORT_RENDER_TIME);
-    event.SetExtraLong(m_renderTime);
-    wxPostEvent(this, event);
+        // Increase a number of rendered frames
+        m_renderFrames++;
+
+        // Calculate time that takes to render time
+        // Even call to render function.
+        m_renderFpsRecalc += duration_cast<milliseconds>(high_resolution_clock::now() - m_renderTime);
+
+        if (m_renderFpsRecalc > milliseconds(1000))
+        {
+            int fps = m_renderFrames * 1000 / m_renderFpsRecalc.count();
+
+            // Report render time
+            wxCommandEvent event(REPORT_FPS);
+            event.SetInt(fps);
+            wxPostEvent(this, event);
+
+            m_renderFpsRecalc = milliseconds(0);
+        }
+    }
 }
 
 /* ************************************************************************ */

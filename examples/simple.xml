@@ -1,6 +1,3 @@
-<world width="500um" height="500um" grid-width="1000" grid-height="1000">
-  <cell volume="1000um3" position-x="100" position-y="100" velocity-x="10" velocity-y="50" />
-  <cell volume="1000um3" position-x="-100" position-y="-100" velocity-x="-10" velocity-y="-20" />
-  <cell volume="1000um3" position-x="100" position-y="-150" velocity-x="-10" velocity-y="-20" />
-  <cell volume="1000um3" position-x="-100" position-y="-10" velocity-x="-10" velocity-y="-20" />
+<world width="500um" height="500um" grid-width="100" grid-height="100" main-cell-radius="50um">
+
 </world>

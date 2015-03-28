@@ -24,6 +24,7 @@
     <File Name="Yeast.cpp"/>
     <File Name="Object.cpp"/>
     <File Name="DynamicObject.cpp"/>
+    <File Name="CellGenerator.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Yeast.hpp"/>
@@ -38,6 +39,7 @@
     <File Name="DynamicObject.hpp"/>
     <File Name="Grid.hpp"/>
     <File Name="Acceleration.hpp"/>
+    <File Name="CellGenerator.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

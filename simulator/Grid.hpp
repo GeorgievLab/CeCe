@@ -112,6 +112,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns grid plain data.
+     *
+     * @return
+     */
+    const T* getData() const noexcept
+    {
+        return m_data.data();
+    }
+
+
 // Public Operations
 public:
 

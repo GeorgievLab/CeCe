@@ -33,6 +33,18 @@ public:
 
 
     /**
+     * @brief Returns if context is init.
+     *
+     * @return
+     */
+    bool isInit() noexcept
+    {
+        return m_is_init;
+    }
+
+
+
+    /**
      * @brief Returns context camera.
      *
      * @return
@@ -137,6 +149,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// If context is init
+    bool m_is_init = false;
 
     /// Camera.
     Camera m_camera;

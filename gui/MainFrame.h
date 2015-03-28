@@ -56,6 +56,8 @@ public:
 
 
 protected:
+    virtual void OnViewGridUpdateUi(wxUpdateUIEvent& event);
+    virtual void OnViewVelocityUpdateUi(wxUpdateUIEvent& event);
     virtual void OnViewGrid(wxCommandEvent& event);
     virtual void OnViewVelocity(wxCommandEvent& event);
     virtual void OnViewReset(wxCommandEvent& event);
@@ -74,8 +76,8 @@ protected:
     virtual void OnSimulationStep(wxCommandEvent& event);
 
 
-// Protected Operations
-protected:
+// Public Operations
+public:
 
 
     /**

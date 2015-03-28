@@ -3,61 +3,46 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
 // Simulator
-#include "render/errors.hpp"
+#include "simulator/Object.hpp"
+#include "simulator/Position.hpp"
 
 /* ************************************************************************ */
 
-namespace render {
+namespace simulator {
 
 /* ************************************************************************ */
 
 /**
- * @brief OpenGL drawable object.
+ * @brief Cell generator.
  */
-class Drawable
+class CellGenerator : public Object
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    Drawable() noexcept;
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Drawable();
-
 
 // Public Accessors
 public:
 
 
+
+// Public Mutators
+public:
+
+
+
+// Public Operations
+public:
+
+
     /**
-     * @brief Return OpenGL buffer ID.
+     * @brief Update object state.
      *
-     * @return
+     * @param dt Time step.
      */
-    GLuint getBuffer() const noexcept
-    {
-        return m_buffer;
-    }
+    void update(units::Duration dt) override;
 
 
 // Private Data Members
 private:
-
-    /// OpenGL buffer.
-    GLuint m_buffer;
 
 };
 

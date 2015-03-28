@@ -732,6 +732,13 @@
            "m_functionNameAndSignature": "OnViewGrid(wxCommandEvent& event)",
            "m_description": "Menu item has been clicked",
            "m_noBody": false
+          }, {
+           "m_eventName": "wxEVT_UPDATE_UI",
+           "m_eventClass": "wxUpdateUIEvent",
+           "m_eventHandler": "wxUpdateUIEventHandler",
+           "m_functionNameAndSignature": "OnViewGridUpdateUi(wxUpdateUIEvent& event)",
+           "m_description": "Process a wxEVT_UPDATE_UI event",
+           "m_noBody": false
           }],
          "m_children": []
         }, {
@@ -782,6 +789,13 @@
            "m_eventHandler": "wxCommandEventHandler",
            "m_functionNameAndSignature": "OnViewVelocity(wxCommandEvent& event)",
            "m_description": "Menu item has been clicked",
+           "m_noBody": false
+          }, {
+           "m_eventName": "wxEVT_UPDATE_UI",
+           "m_eventClass": "wxUpdateUIEvent",
+           "m_eventHandler": "wxUpdateUIEventHandler",
+           "m_functionNameAndSignature": "OnViewVelocityUpdateUi(wxUpdateUIEvent& event)",
+           "m_description": "Process a wxEVT_UPDATE_UI event",
            "m_noBody": false
           }],
          "m_children": []

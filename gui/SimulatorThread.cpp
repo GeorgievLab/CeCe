@@ -49,9 +49,6 @@ SimulatorThread::~SimulatorThread()
 
 wxThread::ExitCode SimulatorThread::Entry()
 {
-    // Create dummy world
-    m_simulator.setWorld(m_worldFactory->createWorld());
-
     // Check if thread is still alive
     while (!GetThread()->TestDestroy())
     {
@@ -60,12 +57,12 @@ wxThread::ExitCode SimulatorThread::Entry()
         if (m_running)
         {
             DoStep();
-            update = true;
+            //update = true;
         }
 
         // Send repaint event
-        if (update)
-            wxQueueEvent(m_handler, new wxCommandEvent(EVT_UPDATED));
+        //if (update)
+        //    wxQueueEvent(m_handler, new wxCommandEvent(EVT_UPDATED));
     }
 
     return (wxThread::ExitCode) 0;
@@ -82,7 +79,8 @@ void SimulatorThread::SendStart()
 
 void SimulatorThread::SendStep()
 {
-    m_queue.Post({Message::STEP});
+    //m_queue.Post({Message::STEP});
+    DoStep();
 }
 
 /* ************************************************************************ */
@@ -103,7 +101,8 @@ void SimulatorThread::SendRestart()
 
 void SimulatorThread::SendLoad(const wxString& code)
 {
-    m_queue.Post({Message::LOAD, code});
+    //m_queue.Post({Message::LOAD, code});
+    DoLoad(code);
 }
 
 /* ************************************************************************ */
@@ -183,8 +182,6 @@ void SimulatorThread::DoStop()
 void SimulatorThread::DoLoad(const wxString& code)
 {
     wxMutexLocker lock(m_mutex);
-
-    wxASSERT(m_simulator.getWorld());
 
     try
     {
