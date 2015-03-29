@@ -63,7 +63,7 @@ void World::update() noexcept
         std::random_device rd;
         std::default_random_engine eng(rd());
 
-        std::bernoulli_distribution d(0.25);
+        std::bernoulli_distribution d(0.5);
 
         // If cell should be generated
         if (d(eng))
@@ -191,6 +191,33 @@ void World::recalcFlowstreams()
 
 void World::render(render::Context& context, RenderFlagsType flags)
 {
+
+    {
+        auto rgridw = m_renderGridSignal.getWidth();
+        auto rgridh = m_renderGridSignal.getHeight();
+        auto gridw = m_grid.getWidth();
+        auto gridh = m_grid.getHeight();
+
+        // Resize
+        if (!(rgridw == gridw && rgridh == gridh))
+        {
+            std::vector<unsigned char> data(m_grid.getWidth() * m_grid.getHeight());
+            //const auto* grid_data = m_grid.getData();
+
+            std::random_device rd;
+            std::default_random_engine e1(rd());
+            std::uniform_int_distribution<int> uniform_dist(0, 255);
+
+            for (std::size_t i = 0; i < data.size(); ++i)
+                //data[i] = grid_data[i].signal;
+                data[i] = uniform_dist(e1);
+
+            m_renderGridSignal.resize(gridw, gridh, data.data());
+        }
+
+        m_renderGridSignal.render({getWidth(), getHeight()});
+    }
+
     if (flags & RENDER_GRID)
     {
         if (!m_renderGrid)
@@ -211,12 +238,6 @@ void World::render(render::Context& context, RenderFlagsType flags)
         // Render grid
         assert(m_renderGrid);
         m_renderGrid->render({getWidth(), getHeight()}, {0.9f, 0.5f, 0.5f, 0.2f});
-    }
-
-    // Draw main cell
-    if (getMainCellRadius())
-    {
-        context.drawCircle({0, 0}, getMainCellRadius(), {0, 0, 0, 1});
     }
 
     if (flags & RENDER_VELOCITY)
@@ -255,6 +276,12 @@ void World::render(render::Context& context, RenderFlagsType flags)
         // Render grid
         assert(m_renderGridVelocity);
         m_renderGridVelocity->render({getWidth(), getHeight()});
+    }
+
+    // Draw main cell
+    if (getMainCellRadius())
+    {
+        context.drawCircle({0, 0}, getMainCellRadius(), {0, 0, 0, 1});
     }
 
     // Draw objects

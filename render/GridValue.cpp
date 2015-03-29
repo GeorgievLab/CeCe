@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "render/GridVector.hpp"
+#include "render/GridValue.hpp"
 
 // C++
 #include <vector>
@@ -26,7 +26,7 @@ namespace render {
 
 /* ************************************************************************ */
 
-void GridVector::render(const Vector<float>& scale) noexcept
+void GridValue::render(const Vector<float>& scale) noexcept
 {
     gl(glPushMatrix());
     gl(glScalef(scale.x, scale.y, 1));
@@ -39,7 +39,7 @@ void GridVector::render(const Vector<float>& scale) noexcept
     gl(glColorPointer(3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(GLfloat))));
 
     // Draw circle
-    gl(glDrawArrays(GL_LINES, 0, 2 * m_width * m_height));
+    gl(glDrawArrays(GL_QUADS, 0, 4 * m_width * m_height));
 
     // Disable states
     gl(glDisableClientState(GL_COLOR_ARRAY));
@@ -51,7 +51,7 @@ void GridVector::render(const Vector<float>& scale) noexcept
 
 /* ************************************************************************ */
 
-void GridVector::resize(unsigned int width, unsigned int height, const Vector<float>* data) noexcept
+void GridValue::resize(unsigned int width, unsigned int height, const unsigned char* data) noexcept
 {
     m_width = width;
     m_height = height;
@@ -60,24 +60,7 @@ void GridVector::resize(unsigned int width, unsigned int height, const Vector<fl
     const Vector<float> step{1.f / m_width, 1.f / m_height};
 
     std::vector<Vertex> vertices;
-    vertices.reserve(2 * m_width * m_height);
-
-    // Get maximum value
-    float max_squared = 1.f;
-    for (decltype(m_width) i = 0; i < m_width; ++i)
-    {
-        for (decltype(m_height) j = 0; j < m_height; ++j)
-        {
-            const Vector<float>& vec = data[i + j * m_width];
-            const float len_squared = vec.getLengthSquared();
-
-            if (max_squared < len_squared)
-                max_squared = len_squared;
-        }
-    }
-
-    // Maximum value
-    const float max = std::sqrt(max_squared);
+    vertices.reserve(4 * m_width * m_height);
 
     // Draw grid vectors
     for (decltype(m_width) i = 0; i < m_width; ++i)
@@ -85,16 +68,16 @@ void GridVector::resize(unsigned int width, unsigned int height, const Vector<fl
         for (decltype(m_height) j = 0; j < m_height; ++j)
         {
             // Get vector normalized by max length
-            const Vector<float> vec = data[i + j * m_width] / max;
-            const Vector<float> pos{start.x + i * step.x + step.x / 2.f, start.y + j * step.y + step.y / 2.f};
-            const float red = fabs(vec.x);
-            const float green = 5 * fabs(vec.y);
-            const float blue = 0;
-
-            const Vector<float> dest = pos + vec * step;
+            const unsigned value = data[i + j * m_width];
+            const Vector<float> pos{start.x + i * step.x, start.y + j * step.y};
+            const float red = 0;
+            const float green = 0;
+            const float blue = value / 256.f;
 
             vertices.push_back(Vertex{pos.x, pos.y, red, green, blue});
-            vertices.push_back(Vertex{dest.x, dest.y, red, green, blue});
+            vertices.push_back(Vertex{pos.x, pos.y + step.y, red, green, blue});
+            vertices.push_back(Vertex{pos.x + step.x, pos.y + step.y, red, green, blue});
+            vertices.push_back(Vertex{pos.x + step.x, pos.y, red, green, blue});
         }
     }
 

@@ -110,7 +110,9 @@ void CanvasWidget::Update() noexcept
 
 void CanvasWidget::ViewReset() noexcept
 {
-    m_renderer.getCamera().setPosition({0, 0});
+    auto& camera = m_renderer.getCamera();
+    camera.setZoom(1.f);
+    camera.setPosition({0, 0});
 
     // Refresh view
     Update();

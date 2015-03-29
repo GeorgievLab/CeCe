@@ -19,6 +19,7 @@
 #include "render/Context.hpp"
 #include "render/Grid.hpp"
 #include "render/GridVector.hpp"
+#include "render/GridValue.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -66,6 +67,7 @@ public:
     struct GridCell
     {
         Velocity velocity;
+        unsigned char signal;
     };
 
 
@@ -329,6 +331,9 @@ private:
 
     /// Render grid for velocities
     std::unique_ptr<render::GridVector> m_renderGridVelocity;
+
+    /// Render grid for signal
+    render::GridValue m_renderGridSignal;
 
 #endif
 
