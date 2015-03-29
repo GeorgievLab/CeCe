@@ -99,6 +99,9 @@ void Context::setView(int width, int height) noexcept
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    // Move camera
+    glTranslatef(m_camera.getPosition().x, m_camera.getPosition().y, 0);
+
     // Apply zoom matrix
     float scale = 1 / m_camera.getZoom();
     glScalef(scale, scale, scale);

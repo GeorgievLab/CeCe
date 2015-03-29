@@ -142,6 +142,51 @@ void World::update() noexcept
 
 /* ************************************************************************ */
 
+void World::recalcFlowstreams()
+{
+    auto& grid = getGrid();
+    const auto R = getMainCellRadius();
+    const auto U = 10000;
+
+    // Precompute values
+    const auto R2 = R * R;
+    const Vector<float> start{-getWidth() / 2.f, -getHeight() / 2.f};
+    const Vector<float> step{getWidth() / grid.getWidth(), getHeight() / grid.getHeight()};
+
+    for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
+    {
+        for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
+        {
+            auto& cell = grid(i, j);
+
+            // Transform i, j coordinates to position
+            const float x = start.x + i * step.x + step.x / 2.f;
+            const float y = start.y + j * step.y + step.y / 2.f;
+
+            const auto r2 = x * x + y * y;
+            //auto theta = atan2(i2, j2);
+            //auto ur = 1 * cos(theta) * (1 - R * R / (r * r));
+            //auto ut = -1 * sin(theta) * (1 + R * R / (r * r));
+            //auto u = ur * cos(theta) - ut * sin(theta);
+            //auto v = ur * sin(theta) + ut * cos(theta);
+
+            if (r2 <= R2)
+                continue;
+
+            // Precompute values
+            const float r4 = r2 * r2;
+            const float x2 = x * x;
+            const float xy = x * y;
+
+            // COPYRIGHT: Hynek magic
+            cell.velocity.x = U * (1 + R2 / r2 - 2 * (x2 * R2) / r4);
+            cell.velocity.y = U * -2 * (R2 * xy) / r4;
+        }
+    }
+}
+
+/* ************************************************************************ */
+
 #ifdef ENABLE_RENDER
 
 void World::render(render::Context& context, RenderFlagsType flags)

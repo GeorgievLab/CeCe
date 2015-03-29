@@ -110,6 +110,8 @@ void CanvasWidget::Update() noexcept
 
 void CanvasWidget::ViewReset() noexcept
 {
+    m_renderer.getCamera().setPosition({0, 0});
+
     // Refresh view
     Update();
 }
@@ -213,6 +215,18 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
     }
 
     // TODO: move camera
+    auto& camera = m_renderer.getCamera();
+    auto pos = camera.getPosition();
+
+    // Change vector
+    auto change = event.GetPosition() - m_dragStart;
+
+    pos.x += change.x;
+    pos.y -= change.y;
+
+    camera.setPosition(pos);
+
+    m_dragStart = event.GetPosition();
 
     // Refresh view
     Update();

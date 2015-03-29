@@ -262,19 +262,26 @@ public:
     /**
      * @brief Clean world data.
      */
-    virtual void clean();
+    void clean();
 
 
     /**
      * @brief Reset world.
      */
-    virtual void reset();
+    void reset();
 
 
     /**
      * @brief Update world.
      */
-    virtual void update() noexcept;
+    void update() noexcept;
+
+
+    /**
+     * @brief Recalculate flow streams.
+     */
+    void recalcFlowstreams();
+
 
 #ifdef ENABLE_RENDER
 
@@ -284,7 +291,7 @@ public:
      * @param context
      * @param flags
      */
-    virtual void render(render::Context& context, RenderFlagsType flags = RENDER_NONE);
+    void render(render::Context& context, RenderFlagsType flags = RENDER_NONE);
 
 #endif
 
