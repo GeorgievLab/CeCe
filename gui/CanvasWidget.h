@@ -219,6 +219,14 @@ public:
     void OnMouseUp(wxMouseEvent& event);
 
 
+    /**
+     * @brief On key down event.
+     *
+     * @param event
+     */
+    void OnKeyDown(wxKeyEvent& event);
+
+
 // Protected Operations
 protected:
 

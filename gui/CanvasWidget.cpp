@@ -53,6 +53,7 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
     Bind(wxEVT_MOTION, &CanvasWidget::OnMouseMotion, this);
     Bind(wxEVT_LEFT_UP, &CanvasWidget::OnMouseUp, this);
     //Bind(EVT_UPDATED, &CanvasWidget::OnUpdated, this);
+    Bind(wxEVT_KEY_DOWN, &CanvasWidget::OnKeyDown, this);
 
     // Bind timer
     Bind(wxEVT_TIMER, &CanvasWidget::OnTimer, this);
@@ -239,6 +240,30 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
 void CanvasWidget::OnMouseUp(wxMouseEvent& event)
 {
     m_dragStart = wxPoint{};
+}
+
+/* ************************************************************************ */
+
+void CanvasWidget::OnKeyDown(wxKeyEvent& event)
+{
+    auto pos = GetWorld()->getMainCellPosition();
+
+    switch (event.GetKeyCode())
+    {
+    default: break;
+    case 'W':
+    case 'w': pos.y += units::um(10); break;
+    case 'S':
+    case 's': pos.y -= units::um(10); break;
+    case 'A':
+    case 'a': pos.x -= units::um(10); break;
+    case 'D':
+    case 'd': pos.x += units::um(10); break;
+    }
+
+    GetWorld()->setMainCellPosition(pos);
+    GetWorld()->recalcFlowstreams();
+    Update();
 }
 
 /* ************************************************************************ */

@@ -160,8 +160,8 @@ void World::recalcFlowstreams()
             auto& cell = grid(i, j);
 
             // Transform i, j coordinates to position
-            const float x = start.x + i * step.x + step.x / 2.f;
-            const float y = start.y + j * step.y + step.y / 2.f;
+            const float x = start.x + i * step.x + step.x / 2.f - m_mainCellPosition.x;
+            const float y = start.y + j * step.y + step.y / 2.f - m_mainCellPosition.y;
 
             const auto r2 = x * x + y * y;
             //auto theta = atan2(i2, j2);
@@ -183,6 +183,8 @@ void World::recalcFlowstreams()
             cell.velocity.y = U * -2 * (R2 * xy) / r4;
         }
     }
+
+    m_updateGridVelocity = true;
 }
 
 /* ************************************************************************ */
@@ -192,6 +194,7 @@ void World::recalcFlowstreams()
 void World::render(render::Context& context, RenderFlagsType flags)
 {
 
+    /*
     {
         auto rgridw = m_renderGridSignal.getWidth();
         auto rgridh = m_renderGridSignal.getHeight();
@@ -217,6 +220,7 @@ void World::render(render::Context& context, RenderFlagsType flags)
 
         m_renderGridSignal.render({getWidth(), getHeight()});
     }
+    */
 
     if (flags & RENDER_GRID)
     {
@@ -261,7 +265,7 @@ void World::render(render::Context& context, RenderFlagsType flags)
             auto gridw = m_grid.getWidth();
             auto gridh = m_grid.getHeight();
 
-            if (!(rgridw == gridw && rgridh == gridh))
+            if (!(rgridw == gridw && rgridh == gridh) || m_updateGridVelocity)
             {
                 std::vector<Vector<float>> data(m_grid.getWidth() * m_grid.getHeight());
                 const auto* grid_data = m_grid.getData();
@@ -270,6 +274,7 @@ void World::render(render::Context& context, RenderFlagsType flags)
                     data[i] = grid_data[i].velocity;
 
                 m_renderGridVelocity->resize(gridw, gridh, data.data());
+                m_updateGridVelocity = false;
             }
         }
 
@@ -281,7 +286,9 @@ void World::render(render::Context& context, RenderFlagsType flags)
     // Draw main cell
     if (getMainCellRadius())
     {
-        context.drawCircle({0, 0}, getMainCellRadius(), {0, 0, 0, 1});
+        const auto& pos = getMainCellPosition();
+
+        context.drawCircle({pos.x, pos.y}, getMainCellRadius(), {0, 0, 0, 1});
     }
 
     // Draw objects

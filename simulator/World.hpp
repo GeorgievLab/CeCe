@@ -190,6 +190,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns main cell position.
+     *
+     * @return
+     */
+    const Vector<units::Length>& getMainCellPosition() const noexcept
+    {
+        return m_mainCellPosition;
+    }
+
+
 // Public Mutators
 public:
 
@@ -257,6 +268,17 @@ public:
     }
 
 
+    /**
+     * @brief Set main cell position.
+     *
+     * @param pos
+     */
+    void setMainCellPosition(const Vector<units::Length>& pos) noexcept
+    {
+        m_mainCellPosition = pos;
+    }
+
+
 // Public Operations
 public:
 
@@ -321,6 +343,9 @@ private:
     /// World main cell radius.
     units::Length m_mainCellRadius = units::um(20);
 
+    /// Main cell position.
+    Vector<units::Length> m_mainCellPosition{units::um(0), units::um(0)};
+
     /// Signal grid.
     Grid<GridCell> m_grid;
 
@@ -332,8 +357,11 @@ private:
     /// Render grid for velocities
     std::unique_ptr<render::GridVector> m_renderGridVelocity;
 
+    /// If velocity grid shoudl be updated.
+    bool m_updateGridVelocity = false;
+
     /// Render grid for signal
-    render::GridValue m_renderGridSignal;
+    //render::GridValue m_renderGridSignal;
 
 #endif
 
