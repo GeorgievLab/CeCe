@@ -147,6 +147,9 @@ void World::recalcFlowstreams()
     auto& grid = getGrid();
     const auto R = getMainCellRadius();
     const auto U = 10000;
+#if ENABLE_ROTATION
+    const auto rotation = 1.f;
+#endif
 
     // Precompute values
     const auto R2 = R * R;
@@ -160,27 +163,34 @@ void World::recalcFlowstreams()
             auto& cell = grid(i, j);
 
             // Transform i, j coordinates to position
-            const float x = start.x + i * step.x + step.x / 2.f - m_mainCellPosition.x;
-            const float y = start.y + j * step.y + step.y / 2.f - m_mainCellPosition.y;
+            // Cell center position
+            const Vector<float> coord = Vector<float>{float(i), float(j)} + 0.5f;
+            // Real position in the world
+            const Vector<float> pos = start + step * coord - m_mainCellPosition;
 
-            const auto r2 = x * x + y * y;
-            //auto theta = atan2(i2, j2);
-            //auto ur = 1 * cos(theta) * (1 - R * R / (r * r));
-            //auto ut = -1 * sin(theta) * (1 + R * R / (r * r));
-            //auto u = ur * cos(theta) - ut * sin(theta);
-            //auto v = ur * sin(theta) + ut * cos(theta);
+            // Calculate squared distance from main cell
+            const auto distSq = pos.getLengthSquared();
 
-            if (r2 <= R2)
+            // Cell is in main cell, ignore
+            if (distSq <= R2)
                 continue;
 
             // Precompute values
-            const float r4 = r2 * r2;
-            const float x2 = x * x;
-            const float xy = x * y;
+            const float distQuad = distSq * distSq;
+            const float xx = pos.x * pos.x;
+            const float xy = pos.x * pos.y;
 
             // COPYRIGHT: Hynek magic
-            cell.velocity.x = U * (1 + R2 / r2 - 2 * (x2 * R2) / r4);
-            cell.velocity.y = U * -2 * (R2 * xy) / r4;
+            cell.velocity.x = U * (1 + R2 / distSq - 2 * (xx * R2) / distQuad);
+            cell.velocity.y = U * -2 * (R2 * xy) / distQuad;
+#if ENABLE_ROTATION
+            const Vector<float> tmp{
+                cell.velocity.x * cosf(rotation) - cell.velocity.y * sinf(rotation),
+                cell.velocity.x * sinf(rotation) + cell.velocity.y * cosf(rotation)
+            };
+
+            cell.velocity = tmp;
+#endif
         }
     }
 
