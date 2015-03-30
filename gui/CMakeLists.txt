@@ -23,6 +23,11 @@ add_executable(gui
     CanvasWidget.cpp
     SimulatorThread.hpp
     SimulatorThread.cpp
+    VectorCtrlBase.h
+    VectorIntCtrl.h
+    VectorIntCtrl.cpp
+    VectorFloatCtrl.h
+    VectorFloatCtrl.cpp
 )
 
 # Link libraries

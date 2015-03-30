@@ -20,16 +20,72 @@
 
 /* ************************************************************************ */
 
+/**
+ * @brief Main frame.
+ */
 class MainFrame : public MainFrameBaseClass
 {
+
+// Public Ctors & Dtors
 public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @return
+     */
     MainFrame(wxWindow* parent = nullptr);
+
+
+    /**
+     * @brief Destructor.
+     */
     virtual ~MainFrame();
 
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns current world.
+     *
+     * @return
+     */
+    simulator::World* GetWorld() const noexcept
+    {
+        return m_glCanvasView->GetWorld();
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief On exit event.
+     *
+     * @param event
+     */
     void OnExit(wxCommandEvent& event);
+
+
+    /**
+     * @brief On about event.
+     *
+     * @param event
+     */
     void OnAbout(wxCommandEvent& event);
 
+
+    /**
+     * @brief Simulation step event.
+     *
+     * @param evt
+     */
     void OnSimulationUpdate(wxThreadEvent& evt);
+
 
     /**
      * @brief Event when source code is not able compile.
@@ -37,14 +93,6 @@ public:
      * @param evt
      */
     void OnSimulationError(wxCommandEvent& evt);
-
-
-    /**
-     * @brief Event when simulation wants to log something.
-     *
-     * @param evt
-     */
-    void OnSimulationLog(wxCommandEvent& evt);
 
 
     /**
@@ -56,24 +104,24 @@ public:
 
 
 protected:
-    virtual void OnViewGridUpdateUi(wxUpdateUIEvent& event);
-    virtual void OnViewVelocityUpdateUi(wxUpdateUIEvent& event);
-    virtual void OnViewGrid(wxCommandEvent& event);
-    virtual void OnViewVelocity(wxCommandEvent& event);
-    virtual void OnViewReset(wxCommandEvent& event);
-    virtual void OnSourceChange(wxStyledTextEvent& event);
 
-    virtual void OnSimulationStart(wxCommandEvent& event);
-    virtual void OnSimulationStop(wxCommandEvent& event);
-    virtual void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event);
-    virtual void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event);
-    virtual void OnFileNew(wxCommandEvent& event);
-    virtual void OnFileOpen(wxCommandEvent& event);
-    virtual void OnFileSave(wxCommandEvent& event);
-    virtual void OnFileSaveAs(wxCommandEvent& event);
+    void OnViewGridUpdateUi(wxUpdateUIEvent& event) override;
+    void OnViewVelocityUpdateUi(wxUpdateUIEvent& event) override;
+    void OnViewGrid(wxCommandEvent& event) override;
+    void OnViewVelocity(wxCommandEvent& event) override;
+    void OnViewReset(wxCommandEvent& event) override;
+
+    void OnSimulationStart(wxCommandEvent& event) override;
+    void OnSimulationStop(wxCommandEvent& event) override;
+    void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) override;
+    void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event) override;
+    void OnFileNew(wxCommandEvent& event) override;
+    void OnFileOpen(wxCommandEvent& event) override;
+    void OnFileSave(wxCommandEvent& event) override;
+    void OnFileSaveAs(wxCommandEvent& event) override;
     void OnFileOpenRecent(wxCommandEvent& event);
-    virtual void OnSimulationRestart(wxCommandEvent& event);
-    virtual void OnSimulationStep(wxCommandEvent& event);
+    void OnSimulationRestart(wxCommandEvent& event) override;
+    void OnSimulationStep(wxCommandEvent& event) override;
 
 
 // Public Operations

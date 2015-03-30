@@ -22,7 +22,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 World::World() noexcept
-    : m_grid(2)
+    : m_grid(100)
 {
     // Nothing to do
 }
@@ -146,8 +146,7 @@ void World::recalcFlowstreams()
 {
     auto& grid = getGrid();
     const auto R = getMainCellRadius();
-    const auto U = 1000;
-    const auto rotation = 1.f;
+    const auto U = getFlowSpeed();
 
     // Precompute values
     const auto R2 = R * R;
@@ -300,7 +299,7 @@ void World::render(render::Context& context, RenderFlagsType flags)
     {
         const auto& pos = getMainCellPosition();
 
-        context.drawCircle({pos.x, pos.y}, getMainCellRadius(), {0, 0, 0, 1});
+        context.drawCircle({pos.x, pos.y}, getMainCellRadius(), {0.5f, 0.5f, 0.5f, 0.8f});
     }
 
     // Draw objects

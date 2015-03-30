@@ -30,7 +30,7 @@ public:
     /**
      * @brief Number of circle segments
      */
-    static constexpr unsigned SEGMENTS = 50;
+    static constexpr unsigned SEGMENTS = 100;
 
 
 // Public Ctors & Dtors

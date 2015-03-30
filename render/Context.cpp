@@ -50,28 +50,13 @@ void Context::init() noexcept
 {
     assert(!isInit());
 
-    GLfloat sun_direction[] = { 0.0, -1.0, 0.0, 1.0 };
-    GLfloat sun_intensity[] = { 0.7, 0.7, 0.7, 1.0 };
-    GLfloat ambient_intensity[] = { 0.3, 0.3, 0.3, 1.0 };
-
     // Clear color.
-    glClearColor(1.f, 1.f, 1.f, 1.f);
+    //glClearColor(1.f, 1.f, 1.f, 1.f);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
 
     // Enable blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    //glEnable(GL_DEPTH_TEST);
-
-    //glEnable(GL_LIGHTING);
-    //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_intensity);
-
-    //glEnable(GL_LIGHT0);
-    //glLightfv(GL_LIGHT0, GL_POSITION, sun_direction);
-    //glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_intensity);
-
-    //glEnable(GL_COLOR_MATERIAL);
-    //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
     m_is_init = true;
 }

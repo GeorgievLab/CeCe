@@ -191,7 +191,7 @@ void CanvasWidget::OnZoom(wxMouseEvent& event) noexcept
     auto zoom = camera.getZoom();
 
     zoom -= 0.001 * event.GetWheelRotation();
-    zoom = std::min(std::max(0.1f, zoom), 10.f);
+    zoom = std::min(std::max(0.05f, zoom), 10.f);
 
     // Set camera zoom
     camera.setZoom(zoom);
@@ -247,6 +247,7 @@ void CanvasWidget::OnMouseUp(wxMouseEvent& event)
 void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 {
     auto pos = GetWorld()->getMainCellPosition();
+    auto speed = GetWorld()->getFlowSpeed();
 
     switch (event.GetKeyCode())
     {
@@ -259,9 +260,17 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
     case 'a': pos.x -= units::um(10); break;
     case 'D':
     case 'd': pos.x += units::um(10); break;
+    case WXK_NUMPAD_ADD:
+    case '+': speed += 1000; break;
+    case WXK_NUMPAD_SUBTRACT:
+    case '-': speed -= 1000; break;
     }
 
+    //if (speed < 0)
+    //    speed = 0;
+
     GetWorld()->setMainCellPosition(pos);
+    GetWorld()->setFlowSpeed(speed);
     GetWorld()->recalcFlowstreams();
     Update();
 }

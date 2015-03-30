@@ -29,14 +29,14 @@ void Cell::render(render::Context& context)
     auto yfp = getYfp();
 
     // TODO: Better calculation
-    float red = rfp / 1000.f + yfp / 1000.f;
-    float green = gfp / 1000.f + yfp / 1000.f;
-    float blue = 0;
+    float red = 0.5f + rfp / 1000.f + yfp / 1000.f;
+    float green = 0.5f + gfp / 1000.f + yfp / 1000.f;
+    float blue = 0.5f + 0;
 
     const auto pos = getPosition();
     const auto radius = calcSphereRadius(getVolume());
 
-    context.drawCircle({pos.x, pos.y}, radius, {red, green, blue, 0.5f});
+    context.drawCircle({pos.x, pos.y}, radius, {red, green, blue, 0.8f});
 }
 
 #endif

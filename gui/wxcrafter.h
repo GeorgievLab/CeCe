@@ -16,19 +16,8 @@
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 #include <wx/sizer.h>
-#include <wx/splitter.h>
-#include <wx/panel.h>
 #include <wx/glcanvas.h>
 #include "CanvasWidget.h"
-#include <wx/textctrl.h>
-#include <wx/notebook.h>
-#include <wx/imaglist.h>
-#include <wx/statbox.h>
-#include <wx/stattext.h>
-#include <wx/spinctrl.h>
-#include "gui/VectorFloatCtrl.h"
-#include "gui/VectorIntCtrl.h"
-#include <wx/stc/stc.h>
 #include <wx/statusbr.h>
 
 class MainFrameBaseClass : public wxFrame
@@ -64,32 +53,7 @@ protected:
     wxMenu* m_menuHelp;
     wxMenuItem* m_menuItemAbout;
     wxToolBar* m_mainToolbar;
-    wxSplitterWindow* m_splitterMain;
-    wxPanel* m_splitterPageView;
-    wxSplitterWindow* m_splitterView;
-    wxPanel* m_splitterPageCanvas;
     CanvasWidget* m_glCanvasView;
-    wxPanel* m_splitterPageConsole;
-    wxTextCtrl* m_textCtrlConsole;
-    wxPanel* m_splitterPageSideBar;
-    wxNotebook* m_notebookSideBar;
-    wxPanel* m_panelParams;
-    wxStaticText* m_staticTextParamsMainCellRadius;
-    wxSpinCtrl* m_spinCtrlParamsMainCellRadius;
-    wxStaticText* m_staticTextParamsMainCellPosition;
-    VectorFloatCtrl* m_paramsMainCellPosition;
-    wxStaticText* m_staticTextParamsGridSize;
-    VectorFloatCtrl* m_paramsGridSize;
-    wxStaticText* m_staticTextParamsGridSplit;
-    VectorIntCtrl* m_paramsGridSplit;
-    wxStaticText* m_staticTextParamsFlowDirection;
-    VectorFloatCtrl* m_paramsFlowDirection;
-    wxStaticText* m_staticTextFlowStrength;
-    wxSpinCtrl* m_spinCtrlFlowStrength;
-    wxStaticText* m_staticTextGeneratorProb;
-    wxSpinCtrl* m_spinCtrlGeneratorProb;
-    wxPanel* m_panelSource;
-    wxStyledTextCtrl* m_stcSource;
     wxStatusBar* m_statusBar;
 
 protected:
@@ -110,9 +74,12 @@ protected:
     virtual void OnSimulationStep(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationRestart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnSourceChange(wxStyledTextEvent& event) { event.Skip(); }
 
 public:
+    wxMenuBar* GetMenuBar() { return m_menuBar; }
+    wxToolBar* GetMainToolbar() { return m_mainToolbar; }
+    CanvasWidget* GetGlCanvasView() { return m_glCanvasView; }
+    wxStatusBar* GetStatusBar() { return m_statusBar; }
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };

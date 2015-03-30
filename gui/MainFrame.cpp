@@ -5,6 +5,8 @@
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 #include <wx/config.h>
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
 
 // Simulator
 #include "parser/WorldFactory.hpp"
@@ -83,66 +85,8 @@ MainFrame::MainFrame(wxWindow* parent)
     // Set simulator
     m_glCanvasView->SetSimulator(m_simulatorThread.GetSimulator(), m_simulatorThread.GetMutex());
 
-    wxFont font = m_stcSource->GetFont();
-    font.SetFamily(wxFONTFAMILY_TELETYPE);
-    m_stcSource->StyleSetFont(wxSTC_C_DEFAULT, font);
-    m_stcSource->StyleSetFont(wxSTC_C_CHARACTER, font);
-    m_stcSource->StyleSetFont(wxSTC_C_COMMENT, font);
-    m_stcSource->StyleSetFont(wxSTC_C_COMMENTDOC, font);
-    m_stcSource->StyleSetFont(wxSTC_C_COMMENTDOCKEYWORD, font);
-    m_stcSource->StyleSetFont(wxSTC_C_COMMENTDOCKEYWORDERROR, font);
-    m_stcSource->StyleSetFont(wxSTC_C_COMMENTLINE, font);
-    m_stcSource->StyleSetFont(wxSTC_C_COMMENTLINEDOC, font);
-    m_stcSource->StyleSetFont(wxSTC_C_GLOBALCLASS, font);
-    m_stcSource->StyleSetFont(wxSTC_C_HASHQUOTEDSTRING, font);
-    m_stcSource->StyleSetFont(wxSTC_C_IDENTIFIER, font);
-    m_stcSource->StyleSetFont(wxSTC_C_NUMBER, font);
-    m_stcSource->StyleSetFont(wxSTC_C_OPERATOR, font);
-    m_stcSource->StyleSetFont(wxSTC_C_REGEX, font);
-    m_stcSource->StyleSetFont(wxSTC_C_STRING, font);
-    m_stcSource->StyleSetFont(wxSTC_C_STRINGEOL, font);
-    m_stcSource->StyleSetFont(wxSTC_C_STRINGRAW, font);
-    m_stcSource->StyleSetFont(wxSTC_C_WORD, font);
-    m_stcSource->StyleSetFont(wxSTC_C_WORD2, font);
-
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar
-    m_stcSource->StyleSetForeground(wxSTC_C_IDENTIFIER, *wxBLACK);
-    m_stcSource->StyleSetForeground(wxSTC_C_WORD, wxColor(0, 0x77, 0xAA));
-    m_stcSource->StyleSetForeground(wxSTC_C_WORD2, wxColor(0x99, 0x99, 0x99));
-    m_stcSource->StyleSetForeground(wxSTC_C_STRING, wxColor(0x66, 0x99, 0));
-    m_stcSource->StyleSetForeground(wxSTC_C_COMMENT, wxColor(0x70, 0x80, 0x90));
-    m_stcSource->StyleSetForeground(wxSTC_C_COMMENTDOC, wxColor(0x70, 0x80, 0x90));
-    m_stcSource->StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORD, wxColor(0x70, 0x80, 0x90));
-    m_stcSource->StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORDERROR, wxColor(0x70, 0x80, 0x90));
-    m_stcSource->StyleSetForeground(wxSTC_C_COMMENTLINE, wxColor(0x70, 0x80, 0x90));
-    m_stcSource->StyleSetForeground(wxSTC_C_COMMENTLINEDOC, wxColor(0x70, 0x80, 0x90));
-    m_stcSource->StyleSetForeground(wxSTC_C_NUMBER, wxColor(0x99, 0, 0x55));
-
-    // ECMAScript 6
-    m_stcSource->SetKeyWords(0,
-        "abstract arguments boolean break byte case catch char class const "
-        "continue debugger default delete do "
-        "double else enum eval export "
-        "extends false final finally float "
-        "for function goto if implements "
-        "import in instanceof int interface "
-        "let long native new null "
-        "package private protected public return "
-        "short static super switch synchronized "
-        "this throw throws transient true "
-        "try typeof var void volatile "
-        "while with yield");
-
-    m_stcSource->SetKeyWords(1, "Array Date eval function hasOwnProperty "
-        "Infinity isFinite isNaN isPrototypeOf length "
-        "Math NaN name Number Object "
-        "prototype String toString undefined valueOf");
-
-    //Bind(EVT_SIMULATION_UPDATE, &MainFrame::OnSimulationUpdate, this);
-
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
     Bind(EVT_ERROR, &MainFrame::OnSimulationError, this);
-    Bind(EVT_LOG, &MainFrame::OnSimulationLog, this);
     Bind(REPORT_FPS, &MainFrame::OnRenderTime, this);
 
     LoadConfig();
@@ -200,13 +144,6 @@ void MainFrame::OnSimulationError(wxCommandEvent& evt)
 
 /* ************************************************************************ */
 
-void MainFrame::OnSimulationLog(wxCommandEvent& evt)
-{
-    m_textCtrlConsole->AppendText(evt.GetString() + "\n");
-}
-
-/* ************************************************************************ */
-
 void MainFrame::OnRenderTime(wxCommandEvent& evt)
 {
     int fps = evt.GetInt();
@@ -224,9 +161,7 @@ void MainFrame::OnFileNew(wxCommandEvent& event)
     if (m_fileName.IsOk())
         m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
 
-    m_stcSource->ClearAll();
     m_fileName.Clear();
-    m_textCtrlConsole->Clear();
 }
 
 /* ************************************************************************ */
@@ -269,7 +204,7 @@ void MainFrame::OnFileSave(wxCommandEvent& event)
         m_fileName = selection;
     }
 
-    m_stcSource->SaveFile(m_fileName.GetFullPath());
+    // TODO save file
 }
 
 /* ************************************************************************ */
@@ -298,32 +233,12 @@ void MainFrame::OnFileOpenRecent(wxCommandEvent& event)
     wxString selection = m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1);
 
     LoadFile(selection);
-    m_textCtrlConsole->Clear();
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationStart(wxCommandEvent& event)
 {
-    m_textCtrlConsole->Clear();
-
-    wxASSERT(m_stcSource);
-
-    // If source code is modified, load modified version
-    if (m_stcSource->IsModified() || m_sourceChanged)
-    {
-        if (m_stcSource->IsEmpty())
-        {
-            wxMessageBox("Source script is empty, nothing to simulate!", wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
-            return;
-        }
-
-        LoadText(m_stcSource->GetText());
-
-        // Source is not modified
-        m_stcSource->SetModified(false);
-    }
-
     // Start simulation
     m_simulatorThread.SendStart();
 }
@@ -339,8 +254,6 @@ void MainFrame::OnSimulationStop(wxCommandEvent& event)
 
 void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 {
-    m_textCtrlConsole->Clear();
-
     m_simulatorThread.SendRestart();
 }
 
@@ -367,28 +280,24 @@ void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnSourceChange(wxStyledTextEvent& event)
-{
-    m_sourceChanged = true;
-}
-
-/* ************************************************************************ */
-
 void MainFrame::LoadFile(const wxFileName& path)
 {
     if (m_fileName.IsOk())
         m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
 
     m_fileName = path;
-    m_stcSource->LoadFile(path.GetFullPath());
 
-    if (m_stcSource->IsEmpty())
+    wxFileInputStream input(m_fileName.GetFullPath());
+    wxTextInputStream text(input);
+
+    wxString code;
+
+    while (input.IsOk() && !input.Eof())
     {
-        wxMessageBox("Source script is empty, nothing to simulate!", wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
-        return;
+        code += text.ReadLine();
     }
 
-    LoadText(m_stcSource->GetText());
+    LoadText(code);
 }
 
 /* ************************************************************************ */
@@ -397,7 +306,6 @@ void MainFrame::LoadText(const wxString& code)
 {
     // Update world
     m_simulatorThread.SendLoad(code);
-    m_sourceChanged = false;
 }
 
 /* ************************************************************************ */

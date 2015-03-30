@@ -101,214 +101,11 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizerMain = new wxBoxSizer(wxVERTICAL);
     this->SetSizer(boxSizerMain);
     
-    m_splitterMain = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxSP_3D);
-    m_splitterMain->SetSashGravity(0.6);
-    m_splitterMain->SetMinimumPaneSize(100);
-    
-    boxSizerMain->Add(m_splitterMain, 1, wxALL|wxEXPAND, 5);
-    
-    m_splitterPageView = new wxPanel(m_splitterMain, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    
-    wxBoxSizer* boxSizerView = new wxBoxSizer(wxVERTICAL);
-    m_splitterPageView->SetSizer(boxSizerView);
-    
-    m_splitterView = new wxSplitterWindow(m_splitterPageView, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxSP_3D);
-    m_splitterView->SetSashGravity(0.8);
-    m_splitterView->SetMinimumPaneSize(10);
-    
-    boxSizerView->Add(m_splitterView, 1, wxEXPAND, 5);
-    
-    m_splitterPageCanvas = new wxPanel(m_splitterView, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    
-    wxBoxSizer* boxSizerCanvas = new wxBoxSizer(wxVERTICAL);
-    m_splitterPageCanvas->SetSizer(boxSizerCanvas);
-    
     int *m_glCanvasViewAttr = NULL;
-    m_glCanvasView = new CanvasWidget(m_splitterPageCanvas, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
+    m_glCanvasView = new CanvasWidget(this, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
     wxDELETEA( m_glCanvasViewAttr );
     
-    boxSizerCanvas->Add(m_glCanvasView, 1, wxEXPAND, 5);
-    
-    m_splitterPageConsole = new wxPanel(m_splitterView, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    m_splitterView->SplitHorizontally(m_splitterPageCanvas, m_splitterPageConsole, 0);
-    
-    wxBoxSizer* boxSizerConsole = new wxBoxSizer(wxVERTICAL);
-    m_splitterPageConsole->SetSizer(boxSizerConsole);
-    
-    m_textCtrlConsole = new wxTextCtrl(m_splitterPageConsole, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), wxTE_READONLY|wxTE_MULTILINE);
-    
-    boxSizerConsole->Add(m_textCtrlConsole, 1, wxEXPAND, 5);
-    
-    m_splitterPageSideBar = new wxPanel(m_splitterMain, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    m_splitterMain->SplitVertically(m_splitterPageView, m_splitterPageSideBar, 100);
-    
-    wxBoxSizer* boxSizerSideBar = new wxBoxSizer(wxVERTICAL);
-    m_splitterPageSideBar->SetSizer(boxSizerSideBar);
-    
-    m_notebookSideBar = new wxNotebook(m_splitterPageSideBar, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxBK_DEFAULT);
-    
-    boxSizerSideBar->Add(m_notebookSideBar, 1, wxALL|wxEXPAND, 0);
-    
-    m_panelParams = new wxPanel(m_notebookSideBar, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    m_notebookSideBar->AddPage(m_panelParams, _("Parameters"), true);
-    
-    wxBoxSizer* boxSizerParams = new wxBoxSizer(wxVERTICAL);
-    m_panelParams->SetSizer(boxSizerParams);
-    
-    wxStaticBoxSizer* staticBoxSizerParamsMainCell = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Main Cell")), wxVERTICAL);
-    
-    boxSizerParams->Add(staticBoxSizerParamsMainCell, 0, wxALL|wxEXPAND, 5);
-    
-    wxFlexGridSizer* flexGridSizerParamsMainCell = new wxFlexGridSizer(0, 2, 5, 5);
-    flexGridSizerParamsMainCell->SetFlexibleDirection( wxBOTH );
-    flexGridSizerParamsMainCell->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-    flexGridSizerParamsMainCell->AddGrowableCol(1);
-    
-    staticBoxSizerParamsMainCell->Add(flexGridSizerParamsMainCell, 1, wxALL|wxEXPAND, 5);
-    
-    m_staticTextParamsMainCellRadius = new wxStaticText(m_panelParams, wxID_ANY, _("Radius:"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizerParamsMainCell->Add(m_staticTextParamsMainCellRadius, 0, wxALIGN_CENTER_VERTICAL, 5);
-    m_staticTextParamsMainCellRadius->SetMinSize(wxSize(60,-1));
-    
-    m_spinCtrlParamsMainCellRadius = new wxSpinCtrl(m_panelParams, wxID_ANY, wxT("50"), wxDefaultPosition, wxSize(-1,-1), wxSP_ARROW_KEYS);
-    m_spinCtrlParamsMainCellRadius->SetRange(1, 1000);
-    m_spinCtrlParamsMainCellRadius->SetValue(50);
-    
-    flexGridSizerParamsMainCell->Add(m_spinCtrlParamsMainCellRadius, 1, 0, 5);
-    
-    m_staticTextParamsMainCellPosition = new wxStaticText(m_panelParams, wxID_ANY, _("Position:"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizerParamsMainCell->Add(m_staticTextParamsMainCellPosition, 0, wxALIGN_CENTER_VERTICAL, 5);
-    
-    m_paramsMainCellPosition = new VectorFloatCtrl(m_panelParams, wxID_ANY);
-    flexGridSizerParamsMainCell->Add(m_paramsMainCellPosition, 1, 0, 5);
-    
-    wxStaticBoxSizer* staticBoxSizerParamsGrid = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Grid")), wxVERTICAL);
-    
-    boxSizerParams->Add(staticBoxSizerParamsGrid, 0, wxALL|wxEXPAND, 5);
-    
-    wxFlexGridSizer* flexGridSizerParamsGrid = new wxFlexGridSizer(0, 2, 5, 5);
-    flexGridSizerParamsGrid->SetFlexibleDirection( wxBOTH );
-    flexGridSizerParamsGrid->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-    flexGridSizerParamsGrid->AddGrowableCol(1);
-    
-    staticBoxSizerParamsGrid->Add(flexGridSizerParamsGrid, 1, wxALL|wxEXPAND, 5);
-    
-    m_staticTextParamsGridSize = new wxStaticText(m_panelParams, wxID_ANY, _("Size:"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizerParamsGrid->Add(m_staticTextParamsGridSize, 0, wxALIGN_CENTER_VERTICAL, 5);
-    m_staticTextParamsGridSize->SetMinSize(wxSize(60,-1));
-    
-    m_paramsGridSize = new VectorFloatCtrl(m_panelParams, wxID_ANY);
-    flexGridSizerParamsGrid->Add(m_paramsGridSize, 1, 0, 5);
-    
-    m_staticTextParamsGridSplit = new wxStaticText(m_panelParams, wxID_ANY, _("Split:"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizerParamsGrid->Add(m_staticTextParamsGridSplit, 0, wxALIGN_CENTER_VERTICAL, 5);
-    
-    m_paramsGridSplit = new VectorIntCtrl(m_panelParams, wxID_ANY);
-    flexGridSizerParamsGrid->Add(m_paramsGridSplit, 1, 0, 5);
-    
-    wxStaticBoxSizer* staticBoxSizerParamsFlow = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Flow")), wxVERTICAL);
-    
-    boxSizerParams->Add(staticBoxSizerParamsFlow, 0, wxALL|wxEXPAND, 5);
-    
-    wxFlexGridSizer* flexGridSizerParamsFlow = new wxFlexGridSizer(0, 2, 5, 5);
-    flexGridSizerParamsFlow->SetFlexibleDirection( wxBOTH );
-    flexGridSizerParamsFlow->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-    flexGridSizerParamsFlow->AddGrowableCol(1);
-    
-    staticBoxSizerParamsFlow->Add(flexGridSizerParamsFlow, 1, wxALL|wxEXPAND, 5);
-    
-    m_staticTextParamsFlowDirection = new wxStaticText(m_panelParams, wxID_ANY, _("Direction:"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizerParamsFlow->Add(m_staticTextParamsFlowDirection, 0, wxALIGN_CENTER_VERTICAL, 5);
-    m_staticTextParamsFlowDirection->SetMinSize(wxSize(60,-1));
-    
-    m_paramsFlowDirection = new VectorFloatCtrl(m_panelParams, wxID_ANY);
-    flexGridSizerParamsFlow->Add(m_paramsFlowDirection, 1, 0, 5);
-    
-    m_staticTextFlowStrength = new wxStaticText(m_panelParams, wxID_ANY, _("Strength:"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizerParamsFlow->Add(m_staticTextFlowStrength, 0, wxALIGN_CENTER_VERTICAL, 5);
-    
-    m_spinCtrlFlowStrength = new wxSpinCtrl(m_panelParams, wxID_ANY, wxT("1"), wxDefaultPosition, wxSize(-1,-1), wxSP_ARROW_KEYS);
-    m_spinCtrlFlowStrength->SetRange(1, 100);
-    m_spinCtrlFlowStrength->SetValue(1);
-    
-    flexGridSizerParamsFlow->Add(m_spinCtrlFlowStrength, 1, 0, 5);
-    
-    wxStaticBoxSizer* staticBoxSizerParamsGenerator = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Generator")), wxVERTICAL);
-    
-    boxSizerParams->Add(staticBoxSizerParamsGenerator, 0, wxALL|wxEXPAND, 5);
-    
-    wxFlexGridSizer* flexGridSizerParamsGenerator = new wxFlexGridSizer(0, 2, 5, 5);
-    flexGridSizerParamsGenerator->SetFlexibleDirection( wxBOTH );
-    flexGridSizerParamsGenerator->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-    flexGridSizerParamsGenerator->AddGrowableCol(1);
-    
-    staticBoxSizerParamsGenerator->Add(flexGridSizerParamsGenerator, 1, wxALL|wxEXPAND, 5);
-    
-    m_staticTextGeneratorProb = new wxStaticText(m_panelParams, wxID_ANY, _("Probability:"), wxDefaultPosition, wxSize(-1,-1), 0);
-    
-    flexGridSizerParamsGenerator->Add(m_staticTextGeneratorProb, 0, wxALIGN_CENTER_VERTICAL, 5);
-    
-    m_spinCtrlGeneratorProb = new wxSpinCtrl(m_panelParams, wxID_ANY, wxT("1"), wxDefaultPosition, wxSize(-1,-1), wxSP_ARROW_KEYS);
-    m_spinCtrlGeneratorProb->SetRange(1, 100);
-    m_spinCtrlGeneratorProb->SetValue(1);
-    
-    flexGridSizerParamsGenerator->Add(m_spinCtrlGeneratorProb, 1, 0, 5);
-    
-    m_panelSource = new wxPanel(m_notebookSideBar, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    m_notebookSideBar->AddPage(m_panelSource, _("Source"), false);
-    
-    wxBoxSizer* boxSizerSource = new wxBoxSizer(wxVERTICAL);
-    m_panelSource->SetSizer(boxSizerSource);
-    
-    m_stcSource = new wxStyledTextCtrl(m_panelSource, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), 0);
-    wxFont m_stcSourceFont = wxSystemSettings::GetFont(wxSYS_SYSTEM_FIXED_FONT);
-    m_stcSource->SetFont(m_stcSourceFont);
-    // Configure the fold margin
-    m_stcSource->SetMarginType     (4, wxSTC_MARGIN_SYMBOL);
-    m_stcSource->SetMarginMask     (4, wxSTC_MASK_FOLDERS);
-    m_stcSource->SetMarginSensitive(4, true);
-    m_stcSource->SetMarginWidth    (4, 0);
-    
-    // Configure the tracker margin
-    m_stcSource->SetMarginWidth(1, 0);
-    
-    // Configure the symbol margin
-    m_stcSource->SetMarginType (2, wxSTC_MARGIN_SYMBOL);
-    m_stcSource->SetMarginMask (2, ~(wxSTC_MASK_FOLDERS));
-    m_stcSource->SetMarginWidth(2, 0);
-    m_stcSource->SetMarginSensitive(2, true);
-    
-    // Configure the line numbers margin
-    int m_stcSource_PixelWidth = 4 + 5 *m_stcSource->TextWidth(wxSTC_STYLE_LINENUMBER, wxT("9"));
-    m_stcSource->SetMarginType(0, wxSTC_MARGIN_NUMBER);
-    m_stcSource->SetMarginWidth(0,m_stcSource_PixelWidth);
-    
-    // Configure the line symbol margin
-    m_stcSource->SetMarginType(3, wxSTC_MARGIN_FORE);
-    m_stcSource->SetMarginMask(3, 0);
-    m_stcSource->SetMarginWidth(3,0);
-    // Select the lexer
-    m_stcSource->SetLexer(wxSTC_LEX_XML);
-    // Set default font / styles
-    m_stcSource->StyleClearAll();
-    for(int i=0; i<wxSTC_STYLE_MAX; ++i) {
-        m_stcSource->StyleSetFont(i, m_stcSourceFont);
-    }
-    m_stcSource->SetWrapMode(0);
-    m_stcSource->SetIndentationGuides(0);
-    m_stcSource->SetKeyWords(0, wxT(""));
-    m_stcSource->SetKeyWords(1, wxT(""));
-    m_stcSource->SetKeyWords(2, wxT(""));
-    m_stcSource->SetKeyWords(3, wxT(""));
-    m_stcSource->SetKeyWords(4, wxT(""));
-    
-    boxSizerSource->Add(m_stcSource, 1, wxEXPAND, 5);
+    boxSizerMain->Add(m_glCanvasView, 1, wxLEFT|wxRIGHT|wxEXPAND, 5);
     
     m_statusBar = new wxStatusBar(this, wxID_ANY, wxSTB_DEFAULT_STYLE);
     m_statusBar->SetFieldsCount(2);
@@ -341,7 +138,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Connect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
-    m_stcSource->Connect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(MainFrameBaseClass::OnSourceChange), NULL, this);
     
 }
 
@@ -368,6 +164,5 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Disconnect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
-    m_stcSource->Disconnect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(MainFrameBaseClass::OnSourceChange), NULL, this);
     
 }

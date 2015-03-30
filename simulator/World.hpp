@@ -201,6 +201,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns flow speed.
+     *
+     * @return
+     */
+    float getFlowSpeed() const noexcept
+    {
+        return m_flowSpeed;
+    }
+
+
 // Public Mutators
 public:
 
@@ -279,6 +290,17 @@ public:
     }
 
 
+    /**
+     * @brief Set flow speed.
+     *
+     * @param speed.
+     */
+    void setFlowSpeed(float speed) noexcept
+    {
+        m_flowSpeed = speed;
+    }
+
+
 // Public Operations
 public:
 
@@ -348,6 +370,9 @@ private:
 
     /// Signal grid.
     Grid<GridCell> m_grid;
+
+    /// Flow speed.
+    float m_flowSpeed = 1000.f;
 
 #ifdef ENABLE_RENDER
 

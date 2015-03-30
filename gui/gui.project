@@ -23,6 +23,8 @@
     <File Name="wxcrafter_bitmaps.cpp"/>
     <File Name="CanvasWidget.cpp"/>
     <File Name="SimulatorThread.cpp"/>
+    <File Name="VectorFloatCtrl.cpp"/>
+    <File Name="VectorIntCtrl.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>

@@ -11,6 +11,14 @@
 
 /* ************************************************************************ */
 
+using VectorFloatCtrlEvent = VectorCtrlEventBase<float>;
+
+/* ************************************************************************ */
+
+wxDECLARE_EVENT(EVT_VECTOR_FLOAT_CTRL_UPDATED, VectorFloatCtrlEvent);
+
+/* ************************************************************************ */
+
 /**
  * @brief Control for integer vector.
  */
@@ -30,9 +38,35 @@ public:
     VectorFloatCtrl(wxWindow* parent, wxWindowID id)
         : VectorCtrlBase<wxSpinCtrlDouble, float>(parent, id)
     {
-        // Nothing to do
+        m_valueX->Bind(wxEVT_SPINCTRLDOUBLE, &VectorFloatCtrl::OnChange, this);
+        m_valueY->Bind(wxEVT_SPINCTRLDOUBLE, &VectorFloatCtrl::OnChange, this);
     }
 
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief One of the values has been changed.
+     *
+     * @param event
+     */
+    void OnChange(wxSpinDoubleEvent& event)
+    {
+        VectorFloatCtrlEvent evt;
+        evt.SetValue(GetValue());
+        wxPostEvent(GetParent(), evt);
+    }
 };
+
+/* ************************************************************************ */
+
+using VectorFloatCtrlEventFunction = void (wxEvtHandler::*)(VectorFloatCtrlEvent&);
+
+/* ************************************************************************ */
+
+#define VectorFloatCtrlEventHandler(func) \
+    wxEVENT_HANDLER_CAST(VectorFloatCtrlEventFunction, func)
 
 /* ************************************************************************ */

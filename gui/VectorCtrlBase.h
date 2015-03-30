@@ -13,6 +13,52 @@
 /* ************************************************************************ */
 
 /**
+ * @brief Event.
+ */
+template<typename Value>
+class VectorCtrlEventBase : public wxCommandEvent
+{
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns stored value.
+     *
+     * @return
+     */
+    const Vector<Value>& GetValue() const noexcept
+    {
+        return m_value;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set value.
+     *
+     * @param value
+     */
+    void SetValue(const Vector<Value>& value) noexcept
+    {
+        m_value = value;
+    }
+
+
+// Private Data Members
+private:
+
+    /// Stored value.
+    Vector<Value> m_value;
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Base control for Vector values.
  */
 template<typename Ctrl, typename Value>
@@ -70,8 +116,8 @@ public:
     }
 
 
-// Private Data Members
-private:
+// Protected Data Members
+protected:
 
     /// X value.
     Ctrl* m_valueX;
