@@ -6,6 +6,9 @@
 // C++
 #include <cmath>
 
+// Simulator
+#include "core/Units.hpp"
+
 /* ************************************************************************ */
 
 /**
@@ -21,6 +24,29 @@ public:
 
     T x;
     T y;
+
+
+// Public Ctors
+public:
+
+
+    /**
+     * @brief Default constructor.
+     */
+    constexpr Vector() = default;
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param x
+     * @param y
+     */
+    constexpr Vector(T x, T y) noexcept
+        : x(x), y(y)
+    {
+        // Nothing to do
+    }
 
 
 // Public Operators
@@ -289,6 +315,22 @@ public:
     T getLengthSquared() const noexcept
     {
         return x * x + y * y;
+    }
+
+
+    /**
+     * @brief Rotate current vector.
+     *
+     * @param angle
+     *
+     * @return
+     */
+    Vector rotate(units::Angle angle) const noexcept
+    {
+        return Vector(
+            x * cos(angle) - y * sin(angle),
+            x * sin(angle) + y * cos(angle)
+        );
     }
 
 };

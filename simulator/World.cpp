@@ -146,10 +146,8 @@ void World::recalcFlowstreams()
 {
     auto& grid = getGrid();
     const auto R = getMainCellRadius();
-    const auto U = 10000;
-#if ENABLE_ROTATION
+    const auto U = 1000;
     const auto rotation = 1.f;
-#endif
 
     // Precompute values
     const auto R2 = R * R;
@@ -173,8 +171,11 @@ void World::recalcFlowstreams()
 
             // Cell is in main cell, ignore
             if (distSq <= R2)
+            {
+                cell.velocity = Vector<float>{0.f, 0.f};
                 continue;
-
+            }
+/*
             // Precompute values
             const float distQuad = distSq * distSq;
             const float xx = pos.x * pos.x;
@@ -183,14 +184,15 @@ void World::recalcFlowstreams()
             // COPYRIGHT: Hynek magic
             cell.velocity.x = U * (1 + R2 / distSq - 2 * (xx * R2) / distQuad);
             cell.velocity.y = U * -2 * (R2 * xy) / distQuad;
-#if ENABLE_ROTATION
-            const Vector<float> tmp{
-                cell.velocity.x * cosf(rotation) - cell.velocity.y * sinf(rotation),
-                cell.velocity.x * sinf(rotation) + cell.velocity.y * cosf(rotation)
+*/
+            const float theta = atan2(pos.y, pos.x);
+
+            const Vector<float> u = Vector<float>{
+                cosf(theta) * (1 - R2 / distSq),
+                -sinf(theta) * (1 + R2 / distSq)
             };
 
-            cell.velocity = tmp;
-#endif
+            cell.velocity = u.rotate(theta) * U;
         }
     }
 

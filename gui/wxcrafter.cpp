@@ -139,13 +139,134 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizerConsole->Add(m_textCtrlConsole, 1, wxEXPAND, 5);
     
-    m_splitterPageSource = new wxPanel(m_splitterMain, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    m_splitterMain->SplitVertically(m_splitterPageView, m_splitterPageSource, 100);
+    m_splitterPageSideBar = new wxPanel(m_splitterMain, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_splitterMain->SplitVertically(m_splitterPageView, m_splitterPageSideBar, 100);
+    
+    wxBoxSizer* boxSizerSideBar = new wxBoxSizer(wxVERTICAL);
+    m_splitterPageSideBar->SetSizer(boxSizerSideBar);
+    
+    m_notebookSideBar = new wxNotebook(m_splitterPageSideBar, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxBK_DEFAULT);
+    
+    boxSizerSideBar->Add(m_notebookSideBar, 1, wxALL|wxEXPAND, 0);
+    
+    m_panelParams = new wxPanel(m_notebookSideBar, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_notebookSideBar->AddPage(m_panelParams, _("Parameters"), true);
+    
+    wxBoxSizer* boxSizerParams = new wxBoxSizer(wxVERTICAL);
+    m_panelParams->SetSizer(boxSizerParams);
+    
+    wxStaticBoxSizer* staticBoxSizerParamsMainCell = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Main Cell")), wxVERTICAL);
+    
+    boxSizerParams->Add(staticBoxSizerParamsMainCell, 0, wxALL|wxEXPAND, 5);
+    
+    wxFlexGridSizer* flexGridSizerParamsMainCell = new wxFlexGridSizer(0, 2, 5, 5);
+    flexGridSizerParamsMainCell->SetFlexibleDirection( wxBOTH );
+    flexGridSizerParamsMainCell->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    flexGridSizerParamsMainCell->AddGrowableCol(1);
+    
+    staticBoxSizerParamsMainCell->Add(flexGridSizerParamsMainCell, 1, wxALL|wxEXPAND, 5);
+    
+    m_staticTextParamsMainCellRadius = new wxStaticText(m_panelParams, wxID_ANY, _("Radius:"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizerParamsMainCell->Add(m_staticTextParamsMainCellRadius, 0, wxALIGN_CENTER_VERTICAL, 5);
+    m_staticTextParamsMainCellRadius->SetMinSize(wxSize(60,-1));
+    
+    m_spinCtrlParamsMainCellRadius = new wxSpinCtrl(m_panelParams, wxID_ANY, wxT("50"), wxDefaultPosition, wxSize(-1,-1), wxSP_ARROW_KEYS);
+    m_spinCtrlParamsMainCellRadius->SetRange(1, 1000);
+    m_spinCtrlParamsMainCellRadius->SetValue(50);
+    
+    flexGridSizerParamsMainCell->Add(m_spinCtrlParamsMainCellRadius, 1, 0, 5);
+    
+    m_staticTextParamsMainCellPosition = new wxStaticText(m_panelParams, wxID_ANY, _("Position:"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizerParamsMainCell->Add(m_staticTextParamsMainCellPosition, 0, wxALIGN_CENTER_VERTICAL, 5);
+    
+    m_paramsMainCellPosition = new VectorFloatCtrl(m_panelParams, wxID_ANY);
+    flexGridSizerParamsMainCell->Add(m_paramsMainCellPosition, 1, 0, 5);
+    
+    wxStaticBoxSizer* staticBoxSizerParamsGrid = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Grid")), wxVERTICAL);
+    
+    boxSizerParams->Add(staticBoxSizerParamsGrid, 0, wxALL|wxEXPAND, 5);
+    
+    wxFlexGridSizer* flexGridSizerParamsGrid = new wxFlexGridSizer(0, 2, 5, 5);
+    flexGridSizerParamsGrid->SetFlexibleDirection( wxBOTH );
+    flexGridSizerParamsGrid->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    flexGridSizerParamsGrid->AddGrowableCol(1);
+    
+    staticBoxSizerParamsGrid->Add(flexGridSizerParamsGrid, 1, wxALL|wxEXPAND, 5);
+    
+    m_staticTextParamsGridSize = new wxStaticText(m_panelParams, wxID_ANY, _("Size:"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizerParamsGrid->Add(m_staticTextParamsGridSize, 0, wxALIGN_CENTER_VERTICAL, 5);
+    m_staticTextParamsGridSize->SetMinSize(wxSize(60,-1));
+    
+    m_paramsGridSize = new VectorFloatCtrl(m_panelParams, wxID_ANY);
+    flexGridSizerParamsGrid->Add(m_paramsGridSize, 1, 0, 5);
+    
+    m_staticTextParamsGridSplit = new wxStaticText(m_panelParams, wxID_ANY, _("Split:"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizerParamsGrid->Add(m_staticTextParamsGridSplit, 0, wxALIGN_CENTER_VERTICAL, 5);
+    
+    m_paramsGridSplit = new VectorIntCtrl(m_panelParams, wxID_ANY);
+    flexGridSizerParamsGrid->Add(m_paramsGridSplit, 1, 0, 5);
+    
+    wxStaticBoxSizer* staticBoxSizerParamsFlow = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Flow")), wxVERTICAL);
+    
+    boxSizerParams->Add(staticBoxSizerParamsFlow, 0, wxALL|wxEXPAND, 5);
+    
+    wxFlexGridSizer* flexGridSizerParamsFlow = new wxFlexGridSizer(0, 2, 5, 5);
+    flexGridSizerParamsFlow->SetFlexibleDirection( wxBOTH );
+    flexGridSizerParamsFlow->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    flexGridSizerParamsFlow->AddGrowableCol(1);
+    
+    staticBoxSizerParamsFlow->Add(flexGridSizerParamsFlow, 1, wxALL|wxEXPAND, 5);
+    
+    m_staticTextParamsFlowDirection = new wxStaticText(m_panelParams, wxID_ANY, _("Direction:"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizerParamsFlow->Add(m_staticTextParamsFlowDirection, 0, wxALIGN_CENTER_VERTICAL, 5);
+    m_staticTextParamsFlowDirection->SetMinSize(wxSize(60,-1));
+    
+    m_paramsFlowDirection = new VectorFloatCtrl(m_panelParams, wxID_ANY);
+    flexGridSizerParamsFlow->Add(m_paramsFlowDirection, 1, 0, 5);
+    
+    m_staticTextFlowStrength = new wxStaticText(m_panelParams, wxID_ANY, _("Strength:"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizerParamsFlow->Add(m_staticTextFlowStrength, 0, wxALIGN_CENTER_VERTICAL, 5);
+    
+    m_spinCtrlFlowStrength = new wxSpinCtrl(m_panelParams, wxID_ANY, wxT("1"), wxDefaultPosition, wxSize(-1,-1), wxSP_ARROW_KEYS);
+    m_spinCtrlFlowStrength->SetRange(1, 100);
+    m_spinCtrlFlowStrength->SetValue(1);
+    
+    flexGridSizerParamsFlow->Add(m_spinCtrlFlowStrength, 1, 0, 5);
+    
+    wxStaticBoxSizer* staticBoxSizerParamsGenerator = new wxStaticBoxSizer( new wxStaticBox(m_panelParams, wxID_ANY, _("Generator")), wxVERTICAL);
+    
+    boxSizerParams->Add(staticBoxSizerParamsGenerator, 0, wxALL|wxEXPAND, 5);
+    
+    wxFlexGridSizer* flexGridSizerParamsGenerator = new wxFlexGridSizer(0, 2, 5, 5);
+    flexGridSizerParamsGenerator->SetFlexibleDirection( wxBOTH );
+    flexGridSizerParamsGenerator->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    flexGridSizerParamsGenerator->AddGrowableCol(1);
+    
+    staticBoxSizerParamsGenerator->Add(flexGridSizerParamsGenerator, 1, wxALL|wxEXPAND, 5);
+    
+    m_staticTextGeneratorProb = new wxStaticText(m_panelParams, wxID_ANY, _("Probability:"), wxDefaultPosition, wxSize(-1,-1), 0);
+    
+    flexGridSizerParamsGenerator->Add(m_staticTextGeneratorProb, 0, wxALIGN_CENTER_VERTICAL, 5);
+    
+    m_spinCtrlGeneratorProb = new wxSpinCtrl(m_panelParams, wxID_ANY, wxT("1"), wxDefaultPosition, wxSize(-1,-1), wxSP_ARROW_KEYS);
+    m_spinCtrlGeneratorProb->SetRange(1, 100);
+    m_spinCtrlGeneratorProb->SetValue(1);
+    
+    flexGridSizerParamsGenerator->Add(m_spinCtrlGeneratorProb, 1, 0, 5);
+    
+    m_panelSource = new wxPanel(m_notebookSideBar, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_notebookSideBar->AddPage(m_panelSource, _("Source"), false);
     
     wxBoxSizer* boxSizerSource = new wxBoxSizer(wxVERTICAL);
-    m_splitterPageSource->SetSizer(boxSizerSource);
+    m_panelSource->SetSizer(boxSizerSource);
     
-    m_stcSource = new wxStyledTextCtrl(m_splitterPageSource, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), 0);
+    m_stcSource = new wxStyledTextCtrl(m_panelSource, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), 0);
     wxFont m_stcSourceFont = wxSystemSettings::GetFont(wxSYS_SYSTEM_FIXED_FONT);
     m_stcSource->SetFont(m_stcSourceFont);
     // Configure the fold margin
