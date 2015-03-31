@@ -15,3 +15,10 @@ gui/Debug/*
 gui/gui.mk
 gui/gui.txt
 
+/simulator/simulator.mk
+/render/render.mk
+/parser/parser.mk
+/Makefile
+/gui/.cmake_dirty
+/cli/.cmake_dirty
+/cli/cli.mk
