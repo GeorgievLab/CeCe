@@ -15,6 +15,7 @@ namespace simulator {
 
 void Cell::update(units::Duration dt)
 {
+    // Just update position
     DynamicObject::update(dt);
 }
 

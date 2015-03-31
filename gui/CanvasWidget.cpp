@@ -249,29 +249,38 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
     auto pos = GetWorld()->getMainCellPosition();
     auto speed = GetWorld()->getFlowSpeed();
 
+    bool pos_changed = false;
+    bool speed_changed = false;
+
     switch (event.GetKeyCode())
     {
     default: break;
     case 'W':
-    case 'w': pos.y += units::um(10); break;
+    case 'w': pos.y += units::um(10); pos_changed = true; break;
     case 'S':
-    case 's': pos.y -= units::um(10); break;
+    case 's': pos.y -= units::um(10); pos_changed = true; break;
     case 'A':
-    case 'a': pos.x -= units::um(10); break;
+    case 'a': pos.x -= units::um(10); pos_changed = true; break;
     case 'D':
-    case 'd': pos.x += units::um(10); break;
+    case 'd': pos.x += units::um(10); pos_changed = true; break;
     case WXK_NUMPAD_ADD:
-    case '+': speed += 1000; break;
+    case '+': speed += 1000; speed_changed = true; break;
     case WXK_NUMPAD_SUBTRACT:
-    case '-': speed -= 1000; break;
+    case '-': speed -= 1000; speed_changed = true; break;
     }
 
     //if (speed < 0)
     //    speed = 0;
 
-    GetWorld()->setMainCellPosition(pos);
-    GetWorld()->setFlowSpeed(speed);
-    GetWorld()->recalcFlowstreams();
+    if (pos_changed)
+        GetWorld()->setMainCellPosition(pos);
+
+    if (speed_changed)
+        GetWorld()->setFlowSpeed(speed);
+
+    if (pos_changed || speed_changed)
+        GetWorld()->recalcFlowstreams();
+
     Update();
 }
 

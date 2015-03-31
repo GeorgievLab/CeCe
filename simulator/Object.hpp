@@ -18,7 +18,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 /**
- * @brief Simulation object.
+ * @brief Basic simulation object.
  */
 class Object
 {
@@ -27,8 +27,8 @@ class Object
 public:
 
 
-    /// Cell ID type.
-    using Id = unsigned long;
+    /// Object ID type.
+    using IdType = unsigned long;
 
 
 // Public Ctors & Dtors
@@ -52,11 +52,11 @@ public:
 
 
     /**
-     * @brief Returns cell ID.
+     * @brief Returns object ID.
      *
      * @return
      */
-    Id getId() const noexcept
+    IdType getId() const noexcept
     {
         return m_id;
     }
@@ -69,7 +69,7 @@ public:
     /**
      * @brief Update object state.
      *
-     * @param dt Time step.
+     * @param dt Simulation time step.
      */
     virtual void update(units::Duration dt) = 0;
 
@@ -91,10 +91,10 @@ public:
 private:
 
     /// ID generator.
-    static Id s_id;
+    static IdType s_id;
 
-    /// Cell ID
-    Id m_id;
+    /// Object unique ID.
+    IdType m_id;
 
 };
 

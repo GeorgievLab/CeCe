@@ -39,7 +39,7 @@ public:
 
 
     /**
-     * @brief Get cell volume.
+     * @brief Returns cell volume.
      *
      * @return
      */
@@ -171,7 +171,7 @@ public:
 private:
 
     /// Cell volume.
-    units::Volume m_volume = units::um(1);
+    units::Volume m_volume = units::um(100);
 
     /// Number of GFP proteins.
     FluorescentProteinCount m_gfp = 0;

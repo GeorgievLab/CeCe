@@ -15,6 +15,8 @@ namespace simulator {
 
 /**
  * @brief Static simulation object with known static position.
+ *
+ * Static object doesn't need update, because is static in time.
  */
 class StaticObject : public Object
 {
@@ -45,7 +47,7 @@ public:
      */
     void setPosition(Position pos) noexcept
     {
-        m_position = pos;
+        m_position = std::move(pos);
     }
 
 

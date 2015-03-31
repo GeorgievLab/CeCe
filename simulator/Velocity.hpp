@@ -16,7 +16,7 @@ namespace simulator {
 /**
  * @brief Velocity structure.
  */
-using Velocity = Vector<units::Length>;
+using Velocity = Vector<units::Velocity>;
 
 /* ************************************************************************ */
 

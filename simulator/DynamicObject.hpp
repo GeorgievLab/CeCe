@@ -45,7 +45,7 @@ public:
      */
     void setVelocity(Velocity vel) noexcept
     {
-        m_velocity = vel;
+        m_velocity = std::move(vel);
     }
 
 
@@ -56,7 +56,9 @@ public:
     /**
      * @brief Update object state.
      *
-     * @param dt Time step.
+     * Function applies object velocity to position.
+     *
+     * @param dt Simulation time step.
      */
     void update(units::Duration dt) override;
 

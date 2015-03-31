@@ -128,6 +128,11 @@ void World::update() noexcept
             pos.x -= start.x;
             pos.y -= start.y;
 
+            // Cell is out of world
+            if ((pos.x < 0 || pos.y < 0) ||
+                (pos.x >= getWidth() || pos.y >= getHeight()))
+                continue;
+
             auto step_x = getWidth() / m_grid.getWidth();
             auto step_y = getHeight() / m_grid.getHeight();
 
@@ -138,7 +143,7 @@ void World::update() noexcept
             const GridCell& cell = m_grid(i, j);
 
             // Use velocity
-            ptr->setVelocity(cell.velocity);
+            ptr->setVelocity(cell.velocity * m_flowSpeed);
         }
     }
 }
@@ -149,7 +154,6 @@ void World::recalcFlowstreams()
 {
     auto& grid = getGrid();
     const auto R = getMainCellRadius();
-    const auto U = getFlowSpeed();
 
     // Precompute values
     const auto R2 = R * R;
@@ -194,8 +198,8 @@ void World::recalcFlowstreams()
                 -sinf(theta) * (1 + R2 / distSq)
             };
 
-            cell.velocity = u.rotate(theta) * U;
-            //cell.velocity = u * U;
+            cell.velocity = u.rotate(theta);
+            //cell.velocity = u;
         }
     }
 

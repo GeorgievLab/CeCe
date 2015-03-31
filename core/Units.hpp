@@ -15,6 +15,20 @@ using Length = float;
 /* ************************************************************************ */
 
 /**
+ * @brief Class for representing velocity (micrometers per second).
+ */
+using Velocity = float;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for representing acceleration (micrometers per second^2).
+ */
+using Acceleration = float;
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing volume.
  */
 using Volume = float;

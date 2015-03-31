@@ -19,6 +19,8 @@ class World;
 
 /**
  * @brief Simulator class.
+ *
+ * Simulator handles simulation of the given (owned) world in current thread.
  */
 class Simulator final
 {
