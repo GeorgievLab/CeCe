@@ -51,8 +51,8 @@ void Context::init() noexcept
     assert(!isInit());
 
     // Clear color.
-    //glClearColor(1.f, 1.f, 1.f, 1.f);
-    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClearColor(1.f, 1.f, 1.f, 1.f);
+    //glClearColor(0.f, 0.f, 0.f, 1.f);
 
     // Enable blending
     glEnable(GL_BLEND);
@@ -128,7 +128,7 @@ void Context::drawLine(const Position& pos, const Vector<float>& dir, const Colo
     glTranslatef(pos.x, pos.y, 0);
 
     // Draw color
-    glColor3f(color.red, color.green, color.blue);
+    glColor4f(color.red, color.green, color.blue, color.alpha);
 
     glBegin(GL_LINES);
 

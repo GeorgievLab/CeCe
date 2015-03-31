@@ -5,9 +5,7 @@
 
 // C++
 #include <memory>
-#include <thread>
 #include <atomic>
-#include <mutex>
 
 /* ************************************************************************ */
 
@@ -20,10 +18,12 @@ class World;
 /* ************************************************************************ */
 
 /**
- * @brief World simulator.
+ * @brief Simulator class.
  */
-class Simulator
+class Simulator final
 {
+
+// Public Ctors & Dtors
 public:
 
 
@@ -36,9 +36,10 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~Simulator();
+    ~Simulator();
 
 
+/// Public Accessors
 public:
 
 
@@ -56,7 +57,7 @@ public:
     /**
      * @brief Returns current world.
      *
-     * @return
+     * @return A pointer to current world or nullptr.
      */
     World* getWorld() const noexcept
     {
@@ -68,7 +69,7 @@ public:
 
 
     /**
-     * @brief Set new current world.
+     * @brief Set new current world. Previous world will be deleted.
      *
      * @param world
      */

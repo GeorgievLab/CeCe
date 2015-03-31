@@ -329,6 +329,12 @@ public:
     void recalcFlowstreams();
 
 
+    /**
+     * @brief Recalculate diffusion.
+     */
+    void recalcDiffusion();
+
+
 #ifdef ENABLE_RENDER
 
     /**
@@ -386,7 +392,10 @@ private:
     bool m_updateGridVelocity = false;
 
     /// Render grid for signal
-    //render::GridValue m_renderGridSignal;
+    std::unique_ptr<render::GridValue> m_renderGridSignal;
+
+    /// If signal grid shoudl be updated.
+    bool m_updateGridSignal = false;
 
 #endif
 

@@ -87,6 +87,30 @@ void World::update() noexcept
         obj->update(m_timeStep);
     }
 
+    // Remove cells that are outside world
+    {
+        const auto wh = getWidth() / 2.f;
+        const auto hh = getWidth() / 2.f;
+
+        // Kill objects that are outside world
+        m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [wh, hh](const ObjectContainer::value_type& obj) {
+            auto ptr = dynamic_cast<StaticObject*>(obj.get());
+
+            if (!ptr)
+                return false;
+
+            // Get object position
+            const Position& pos = ptr->getPosition();
+
+            return not (
+                ((pos.x >= -wh) && (pos.x <= wh)) &&
+                ((pos.y >= -hh) && (pos.y <= hh))
+            );
+        }), m_objects.end());
+    }
+
+    //recalcDiffusion();
+
     // Apply streamlines
     {
         const Vector<float> start{
@@ -117,27 +141,6 @@ void World::update() noexcept
             ptr->setVelocity(cell.velocity);
         }
     }
-
-    {
-        const auto wh = getWidth() / 2.f;
-        const auto hh = getWidth() / 2.f;
-
-        // Kill objects that are outside world
-        m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [wh, hh](const ObjectContainer::value_type& obj) {
-            auto ptr = dynamic_cast<StaticObject*>(obj.get());
-
-            if (!ptr)
-                return false;
-
-            // Get object position
-            const Position& pos = ptr->getPosition();
-
-            return not (
-                ((pos.x >= -wh) && (pos.x <= wh)) &&
-                ((pos.y >= -hh) && (pos.y <= hh))
-            );
-        }), m_objects.end());
-    }
 }
 
 /* ************************************************************************ */
@@ -161,7 +164,7 @@ void World::recalcFlowstreams()
 
             // Transform i, j coordinates to position
             // Cell center position
-            const Vector<float> coord = Vector<float>{float(i), float(j)} + 0.5f;
+            const Vector<float> coord = Vector<float>(i, j) + 0.5f;
             // Real position in the world
             const Vector<float> pos = start + step * coord - m_mainCellPosition;
 
@@ -192,6 +195,7 @@ void World::recalcFlowstreams()
             };
 
             cell.velocity = u.rotate(theta) * U;
+            //cell.velocity = u * U;
         }
     }
 
@@ -200,38 +204,93 @@ void World::recalcFlowstreams()
 
 /* ************************************************************************ */
 
+void World::recalcDiffusion()
+{
+    std::random_device rd;
+    std::default_random_engine e1(rd());
+    std::uniform_int_distribution<int> uniform_dist(0, 255);
+
+    auto& grid = getGrid();
+
+    for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
+    {
+        for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
+        {
+            auto& cell = grid(i, j);
+
+            cell.signal = uniform_dist(e1);
+        }
+    }
+
+    m_updateGridSignal = true;
+}
+
+/* ************************************************************************ */
+
 #ifdef ENABLE_RENDER
 
 void World::render(render::Context& context, RenderFlagsType flags)
 {
-
-    /*
+    // Draw lines around world
     {
-        auto rgridw = m_renderGridSignal.getWidth();
-        auto rgridh = m_renderGridSignal.getHeight();
-        auto gridw = m_grid.getWidth();
-        auto gridh = m_grid.getHeight();
+        const auto hw = getWidth() * 0.5f;
+        const auto hh = getHeight() * 0.5f;
+        const auto sw = getWidth() / 16.f;
+        const auto sh = getHeight() / 16.f;
 
-        // Resize
-        if (!(rgridw == gridw && rgridh == gridh))
+        const render::Color color = {0.3, 0.3, 0.3, 0.2};
+
+        context.drawLine({-hw, -hh}, {0, sh}, color);
+        context.drawLine({-hw, -hh}, {sw, 0}, color);
+
+        context.drawLine({hw, -hh}, {0, sh}, color);
+        context.drawLine({hw, -hh}, {-sw, 0}, color);
+
+        context.drawLine({-hw, hh}, {0, -sh}, color);
+        context.drawLine({-hw, hh}, {sw, 0}, color);
+
+        context.drawLine({hw, hh}, {0, -sh}, color);
+        context.drawLine({hw, hh}, {-sw, 0}, color);
+    }
+
+    if (false)
+    {
+        if (!m_renderGridSignal)
         {
             std::vector<unsigned char> data(m_grid.getWidth() * m_grid.getHeight());
-            //const auto* grid_data = m_grid.getData();
-
-            std::random_device rd;
-            std::default_random_engine e1(rd());
-            std::uniform_int_distribution<int> uniform_dist(0, 255);
+            const auto* grid_data = m_grid.getData();
 
             for (std::size_t i = 0; i < data.size(); ++i)
-                //data[i] = grid_data[i].signal;
-                data[i] = uniform_dist(e1);
+                data[i] = grid_data[i].signal;
 
-            m_renderGridSignal.resize(gridw, gridh, data.data());
+            m_renderGridSignal.reset(new render::GridValue(
+                m_grid.getWidth(), m_grid.getHeight(), data.data()
+            ));
+        }
+        else
+        {
+            auto rgridw = m_renderGridSignal->getWidth();
+            auto rgridh = m_renderGridSignal->getHeight();
+            auto gridw = m_grid.getWidth();
+            auto gridh = m_grid.getHeight();
+
+            // Resize
+            if (!(rgridw == gridw && rgridh == gridh) || m_updateGridSignal)
+            {
+                std::vector<unsigned char> data(m_grid.getWidth() * m_grid.getHeight());
+                const auto* grid_data = m_grid.getData();
+
+                for (std::size_t i = 0; i < data.size(); ++i)
+                    data[i] = grid_data[i].signal;
+
+                m_renderGridSignal->resize(gridw, gridh, data.data());
+                m_updateGridSignal = false;
+            }
         }
 
-        m_renderGridSignal.render({getWidth(), getHeight()});
+        assert(m_renderGridSignal);
+        m_renderGridSignal->render({getWidth(), getHeight()});
     }
-    */
 
     if (flags & RENDER_GRID)
     {

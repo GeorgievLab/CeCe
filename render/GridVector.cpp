@@ -87,9 +87,9 @@ void GridVector::resize(unsigned int width, unsigned int height, const Vector<fl
             // Get vector normalized by max length
             const Vector<float> vec = data[i + j * m_width] / max;
             const Vector<float> pos{start.x + i * step.x + step.x / 2.f, start.y + j * step.y + step.y / 2.f};
-            const float red = fabs(vec.x);
-            const float green = 5 * fabs(vec.y);
-            const float blue = 0;
+            const float red = 5 * fabs(vec.x);
+            const float green = 5 * std::max(vec.y, 0.f);
+            const float blue = 5 * std::max(-vec.y, 0.f);
 
             const Vector<float> dest = pos + vec * step;
 

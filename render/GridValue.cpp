@@ -17,7 +17,7 @@
 struct Vertex
 {
     GLfloat x, y;
-    GLfloat red, green, blue;
+    GLfloat red, green, blue;//, alpha;
 };
 
 /* ************************************************************************ */
@@ -70,9 +70,10 @@ void GridValue::resize(unsigned int width, unsigned int height, const unsigned c
             // Get vector normalized by max length
             const unsigned value = data[i + j * m_width];
             const Vector<float> pos{start.x + i * step.x, start.y + j * step.y};
-            const float red = 0;
-            const float green = 0;
-            const float blue = value / 256.f;
+            const float red = 1 - (value / 256.f);
+            const float green = 1 - (value / 256.f);
+            const float blue = 1;
+            const float alpha = 1.0f;//value / 256.f;
 
             vertices.push_back(Vertex{pos.x, pos.y, red, green, blue});
             vertices.push_back(Vertex{pos.x, pos.y + step.y, red, green, blue});

@@ -121,10 +121,11 @@ void MainFrame::OnAbout(wxCommandEvent& event)
 {
     wxUnusedVar(event);
     wxAboutDialogInfo info;
-    info.SetCopyright(_("2014"));
-    info.SetLicence(_("GPL v2 or later"));
-    info.SetDescription(_("Yeast Simulator"));
+    info.SetCopyright(_("2015"));
+    info.SetLicence(_("TBA"));
+    info.SetDescription(_("Cell Simulator"));
     info.AddDeveloper(wxT("Jiří Fatka"));
+    info.AddDeveloper(wxT("Hynek Kasl"));
     ::wxAboutBox(info);
 }
 

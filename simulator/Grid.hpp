@@ -73,6 +73,7 @@ public:
     T& operator()(SizeType x, SizeType y) noexcept
     {
         return m_data[x + y * m_width];
+        //return m_data[x * m_height + y];
     }
 
 
@@ -87,6 +88,7 @@ public:
     const T& operator()(SizeType x, SizeType y) const noexcept
     {
         return m_data[x + y * m_width];
+        //return m_data[x * m_height + y];
     }
 
 
