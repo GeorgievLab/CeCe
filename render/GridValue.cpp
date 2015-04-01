@@ -5,9 +5,11 @@
 #include "render/GridValue.hpp"
 
 // C++
+#include <array>
 #include <vector>
 #include <cassert>
 #include <cmath>
+#include <stdexcept>
 
 // Simulator
 #include "render/errors.hpp"
@@ -17,7 +19,7 @@
 struct Vertex
 {
     GLfloat x, y;
-    GLfloat red, green, blue;//, alpha;
+    GLfloat u, v;
 };
 
 /* ************************************************************************ */
@@ -26,61 +28,86 @@ namespace render {
 
 /* ************************************************************************ */
 
+GridValue::GridValue() noexcept
+    : Drawable()
+{
+    // Generate texture
+    gl(glGenTextures(1, &m_texture));
+
+    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    //gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST));
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
+
+/* ************************************************************************ */
+
+GridValue::~GridValue()
+{
+    // Delete program
+    gl(glDeleteTextures(1, &m_texture));
+}
+
+/* ************************************************************************ */
+
 void GridValue::render(const Vector<float>& scale) noexcept
 {
     gl(glPushMatrix());
     gl(glScalef(scale.x, scale.y, 1));
 
+    // Use texture
+    gl(glEnable(GL_TEXTURE_2D));
+    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
     gl(glEnableClientState(GL_VERTEX_ARRAY));
-    gl(glEnableClientState(GL_COLOR_ARRAY));
+    gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
-    gl(glColorPointer(3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(GLfloat))));
+    gl(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(GLfloat))));
 
     // Draw circle
-    gl(glDrawArrays(GL_QUADS, 0, 4 * m_width * m_height));
+    gl(glDrawArrays(GL_QUADS, 0, 4));
 
     // Disable states
-    gl(glDisableClientState(GL_COLOR_ARRAY));
+    gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glDisableClientState(GL_VERTEX_ARRAY));
     gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
+
+    gl(glBindTexture(GL_TEXTURE_2D, 0));
+    gl(glDisable(GL_TEXTURE_2D));
 
     gl(glPopMatrix());
 }
 
 /* ************************************************************************ */
 
-void GridValue::resize(unsigned int width, unsigned int height, const unsigned char* data) noexcept
+void GridValue::resize(unsigned int width, unsigned int height, const float* data) noexcept
 {
     m_width = width;
     m_height = height;
 
-    constexpr Vector<float> start{-0.5f, -0.5f};
-    const Vector<float> step{1.f / m_width, 1.f / m_height};
+    std::array<Vertex, 4> vertices = {{
+        { 0.5f,  0.5f, 1.0f, 1.0f},
+        { 0.5f, -0.5f, 1.0f, 0.0f},
+        {-0.5f, -0.5f, 0.0f, 0.0f},
+        {-0.5f,  0.5f, 0.0f, 1.0f}
+    }};
 
-    std::vector<Vertex> vertices;
-    vertices.reserve(4 * m_width * m_height);
+    // Generate texture
+    float pixels[] = {
+        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
+    };
 
-    // Draw grid vectors
-    for (decltype(m_width) i = 0; i < m_width; ++i)
-    {
-        for (decltype(m_height) j = 0; j < m_height; ++j)
-        {
-            // Get vector normalized by max length
-            const unsigned value = data[i + j * m_width];
-            const Vector<float> pos{start.x + i * step.x, start.y + j * step.y};
-            const float red = 1 - (value / 256.f);
-            const float green = 1 - (value / 256.f);
-            const float blue = 1;
-            const float alpha = 1.0f;//value / 256.f;
-
-            vertices.push_back(Vertex{pos.x, pos.y, red, green, blue});
-            vertices.push_back(Vertex{pos.x, pos.y + step.y, red, green, blue});
-            vertices.push_back(Vertex{pos.x + step.x, pos.y + step.y, red, green, blue});
-            vertices.push_back(Vertex{pos.x + step.x, pos.y, red, green, blue});
-        }
-    }
+    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    gl(glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, m_width, m_height));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RED, GL_FLOAT, data));
 
     assert(getBuffer() != 0);
 

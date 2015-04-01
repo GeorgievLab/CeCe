@@ -31,11 +31,7 @@ public:
     /**
      * @brief Constructor.
      */
-    GridValue() noexcept
-        : Drawable()
-    {
-        // Nothing to do
-    }
+    GridValue() noexcept;
 
 
     /**
@@ -45,11 +41,17 @@ public:
      * @param height
      * @param data
      */
-    GridValue(unsigned int width, unsigned int height, const unsigned char* data) noexcept
-        : Drawable()
+    GridValue(unsigned int width, unsigned int height, const float* data) noexcept
+        : GridValue()
     {
         resize(width, height, data);
     }
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~GridValue();
 
 
 // Public Accessors
@@ -97,7 +99,7 @@ public:
      * @param height
      * @param data
      */
-    void resize(unsigned int width, unsigned int height, const unsigned char* data) noexcept;
+    void resize(unsigned int width, unsigned int height, const float* data) noexcept;
 
 
 // Private Data Members
@@ -110,6 +112,8 @@ private:
     /// Grid width.
     unsigned int m_height;
 
+    /// Texture.
+    GLuint m_texture;
 };
 
 /* ************************************************************************ */

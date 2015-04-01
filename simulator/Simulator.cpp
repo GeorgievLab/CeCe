@@ -54,7 +54,7 @@ void Simulator::stop()
 void Simulator::step()
 {
     // When to wake-up
-    auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(50);
+    auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(16);
 
     {
         assert(m_world);

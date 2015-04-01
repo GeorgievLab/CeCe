@@ -67,7 +67,7 @@ public:
     struct GridCell
     {
         Velocity velocity;
-        unsigned char signal;
+        float signal;
     };
 
 
@@ -332,7 +332,7 @@ public:
     /**
      * @brief Recalculate diffusion.
      */
-    void recalcDiffusion();
+    void recalcDiffusion(units::Duration dt);
 
 
 #ifdef ENABLE_RENDER
@@ -354,7 +354,7 @@ private:
     StepNumber m_stepNumber = 0;
 
     /// Duration step
-    units::Duration m_timeStep = 0.002f;
+    units::Duration m_timeStep = 1.f;
 
     /// World width.
     units::Length m_width = units::um(400);
@@ -378,7 +378,7 @@ private:
     Grid<GridCell> m_grid;
 
     /// Flow speed.
-    float m_flowSpeed = 1000.f;
+    float m_flowSpeed = 1.f;
 
 #ifdef ENABLE_RENDER
 

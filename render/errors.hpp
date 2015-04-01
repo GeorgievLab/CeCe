@@ -16,7 +16,7 @@
 #ifdef NDEBUG
 #define gl(op) op
 #else
-#define gl(op) op; checkGlError(# op)
+#define gl(op) op; render::checkGlError(# op)
 #endif
 
 /* ************************************************************************ */
