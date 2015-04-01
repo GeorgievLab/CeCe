@@ -91,11 +91,11 @@ void World::update() noexcept
         std::bernoulli_distribution d(0.05f);
 
         // If diffusion should be generated
-        if (d(eng))
+        //if (d(eng))
         {
             auto& grid = getGrid();
 
-            constexpr int COUNT = 2;
+            constexpr int COUNT = 50;
             int step = grid.getHeight() / COUNT;
             int half = grid.getHeight() / 2;
 

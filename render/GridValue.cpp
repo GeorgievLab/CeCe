@@ -35,14 +35,8 @@ GridValue::GridValue() noexcept
     gl(glGenTextures(1, &m_texture));
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    //gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST));
-
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    gl(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 }
 
 /* ************************************************************************ */
@@ -63,6 +57,7 @@ void GridValue::render(const Vector<float>& scale) noexcept
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    glColor3f(1, 1, 1);
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
@@ -87,27 +82,21 @@ void GridValue::render(const Vector<float>& scale) noexcept
 
 /* ************************************************************************ */
 
-void GridValue::resize(unsigned int width, unsigned int height, const float* data) noexcept
+void GridValue::resize(unsigned int width, unsigned int height, const float* data)
 {
     m_width = width;
     m_height = height;
 
-    std::array<Vertex, 4> vertices = {{
+    const std::array<Vertex, 4> vertices = {{
         { 0.5f,  0.5f, 1.0f, 1.0f},
         { 0.5f, -0.5f, 1.0f, 0.0f},
         {-0.5f, -0.5f, 0.0f, 0.0f},
         {-0.5f,  0.5f, 0.0f, 1.0f}
     }};
 
-    // Generate texture
-    float pixels[] = {
-        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
-    };
-
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, m_width, m_height));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RED, GL_FLOAT, data));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_width, m_height, 0, GL_RED, GL_FLOAT, data));
+    //gl(glGenerateMipmap(GL_TEXTURE_2D));
 
     assert(getBuffer() != 0);
 

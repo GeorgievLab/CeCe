@@ -276,6 +276,8 @@ private:
     /// Render flags.
     simulator::World::RenderFlagsType m_renderFlags = simulator::World::RENDER_NONE;
 
+    /// Unable to render due an error.
+    bool m_error = false;
 };
 
 /* ************************************************************************ */

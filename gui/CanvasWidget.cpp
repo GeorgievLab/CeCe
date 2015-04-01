@@ -126,6 +126,9 @@ void CanvasWidget::Render() noexcept
     if (!IsShown())
         return;
 
+    if (m_error)
+        return;
+
     // Init renderer
     if (!m_renderer.isInit())
     {
@@ -146,7 +149,18 @@ void CanvasWidget::Render() noexcept
         auto world = m_simulator->getWorld();
         if (world)
         {
-            world->render(m_renderer, m_renderFlags);
+            try
+            {
+                world->render(m_renderer, m_renderFlags);
+            }
+            catch (const std::exception& e)
+            {
+                wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
+                event->SetString(e.what());
+                wxQueueEvent(GetParent(), event.release());
+                m_error = true;
+                return;
+            }
         }
     }
 

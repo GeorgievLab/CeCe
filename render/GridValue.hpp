@@ -99,7 +99,7 @@ public:
      * @param height
      * @param data
      */
-    void resize(unsigned int width, unsigned int height, const float* data) noexcept;
+    void resize(unsigned int width, unsigned int height, const float* data);
 
 
 // Private Data Members
