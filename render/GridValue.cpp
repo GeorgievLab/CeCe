@@ -24,12 +24,35 @@ struct Vertex
 
 /* ************************************************************************ */
 
+static const char g_vertexShaderSrc[] =
+    "void main() {\n"
+    "    gl_Position = ftransform();\n"
+    "    gl_TexCoord[0] = gl_MultiTexCoord0;\n"
+    "}\n"
+;
+
+/* ************************************************************************ */
+
+static const char g_fragmentShaderSrc[] =
+    "uniform sampler2D data;\n"
+    "uniform vec4 color = vec4(1, 1, 1, 1);\n"
+    "void main() {\n"
+    "    float value = texture2D(data, gl_TexCoord[0].xy).r;\n"
+	"    gl_FragColor = vec4(color.rgb * (1 - value), value);\n"
+    "}\n"
+;
+
+/* ************************************************************************ */
+
 namespace render {
 
 /* ************************************************************************ */
 
 GridValue::GridValue() noexcept
     : Drawable()
+    , m_vertexShader(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc))
+    , m_fragmentShader(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc))
+    , m_program(m_vertexShader, m_fragmentShader)
 {
     // Generate texture
     gl(glGenTextures(1, &m_texture));
@@ -37,6 +60,10 @@ GridValue::GridValue() noexcept
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+
+    // Fetch data pointers
+    m_dataPtr = glGetUniformLocation(m_program.getId(), "data");
+    m_colorPtr = glGetUniformLocation(m_program.getId(), "color");
 }
 
 /* ************************************************************************ */
@@ -57,7 +84,11 @@ void GridValue::render(const Vector<float>& scale) noexcept
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    glColor3f(1, 1, 1);
+
+    gl(glUseProgram(m_program.getId()));
+    gl(glUniform1i(m_dataPtr, 0));
+    gl(glActiveTexture(GL_TEXTURE0));
+    glUniform4f(m_colorPtr, 1, 0, 1, 1);
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
@@ -77,15 +108,16 @@ void GridValue::render(const Vector<float>& scale) noexcept
     gl(glBindTexture(GL_TEXTURE_2D, 0));
     gl(glDisable(GL_TEXTURE_2D));
 
+    gl(glUseProgram(0));
+
     gl(glPopMatrix());
 }
 
 /* ************************************************************************ */
 
-void GridValue::resize(unsigned int width, unsigned int height, const float* data)
+void GridValue::resize(Vector<unsigned int> size, const float* data)
 {
-    m_width = width;
-    m_height = height;
+    m_size = std::move(size);
 
     const std::array<Vertex, 4> vertices = {{
         { 0.5f,  0.5f, 1.0f, 1.0f},
@@ -95,7 +127,7 @@ void GridValue::resize(unsigned int width, unsigned int height, const float* dat
     }};
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_width, m_height, 0, GL_RED, GL_FLOAT, data));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_size.width, m_size.height, 0, GL_RED, GL_FLOAT, data));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
 
     assert(getBuffer() != 0);

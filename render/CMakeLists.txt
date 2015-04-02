@@ -30,6 +30,10 @@ add_library(render
     GridVector.cpp
     GridValue.hpp
     GridValue.cpp
+    Shader.hpp
+    Shader.cpp
+    Program.hpp
+    Program.cpp
 )
 
 # Setup dependencies

@@ -263,12 +263,11 @@ void World::recalcDiffusion(units::Duration dt)
 
     auto& velocityGrid = getVelocityGrid();
 
+    /// Size of mapping matrix
+    static constexpr unsigned MATRIX_SIZE = 3;
+
     // Offset coefficients for matrix
-    const Matrix<Vector<float>, 3> coeffs{{
-        {{ 1,  1}, {0,  1}, {-1,  1}},
-        {{ 1,  0}, {0,  0}, {-1,  0}},
-        {{ 1, -1}, {0, -1}, {-1, -1}},
-    }};
+    static const auto MAPPINGS = Matrix<int, MATRIX_SIZE>::makeDistance();
 
     for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
     {
@@ -295,14 +294,14 @@ void World::recalcDiffusion(units::Duration dt)
             const Vector<float> offset = new_pos - new_pos_center;
 
             /// Generate matrix with coefficients based on distance
-            const auto q = Matrix<float, 3>::generate([&step, &coeffs, &offset](int i, int j) {
-                return (step * coeffs[i][j] + offset).getLengthSquared();
+            const auto q = Matrix<float, MATRIX_SIZE>::generate([&step, &offset](int i, int j) {
+                return (step * MAPPINGS[i][j] + offset).getLengthSquared();
             });
 
             const float A = 1.f / (4 * PI * D * dt);
 
             // Create distribution matrix
-            const auto M = Matrix<float, 3>::generate([A, D, q, dt](int i, int j) {
+            const auto M = Matrix<float, MATRIX_SIZE>::generate([A, D, q, dt](int i, int j) {
                 return A * exp(-q[i][j] / (4 * D * dt));
             }).normalize();
 
@@ -391,27 +390,23 @@ void World::render(render::Context& context, RenderFlagsType flags)
 
         if (!m_renderGridSignal)
         {
-            m_renderGridSignal.reset(new render::GridValue(
-                grid.getWidth(), grid.getHeight(), grid.getData()
-            ));
+            m_renderGridSignal.reset(new render::GridValue(grid.getSize(), grid.getData()));
         }
         else
         {
-            auto rgridw = m_renderGridSignal->getWidth();
-            auto rgridh = m_renderGridSignal->getHeight();
-            auto gridw = grid.getWidth();
-            auto gridh = grid.getHeight();
+            const auto& rgridSize = m_renderGridSignal->getSize();
+            const auto& gridSize = grid.getSize();
 
             // Resize
-            if (!(rgridw == gridw && rgridh == gridh) || m_updateGridSignal)
+            if (rgridSize != gridSize || m_updateGridSignal)
             {
-                m_renderGridSignal->resize(gridw, gridh, grid.getData());
+                m_renderGridSignal->resize(gridSize, grid.getData());
                 m_updateGridSignal = false;
             }
         }
 
         assert(m_renderGridSignal);
-        m_renderGridSignal->render({getWidth(), getHeight()});
+        m_renderGridSignal->render(getSize());
     }
 
     if (flags & RENDER_GRID)

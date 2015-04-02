@@ -381,12 +381,13 @@ public:
     static Matrix<Vector<T>, SIZE> makeDistance() noexcept
     {
         static_assert(SIZE % 2 == 1, "Size must be odd");
+        static constexpr T HALF = SIZE / T(2);
 
-        Matrix val;
+        Matrix<Vector<T>, SIZE> val;
 
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
-                val.data[i][j] = Vector<T>{i - SIZE / 2, j - SIZE / 2};
+                val.data[i][j] = Vector<T>{T(i) - HALF, T(j) - HALF};
 
         return val;
     }

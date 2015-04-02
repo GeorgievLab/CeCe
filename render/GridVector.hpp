@@ -11,6 +11,7 @@
 #include "render/Position.hpp"
 #include "render/Color.hpp"
 #include "render/Drawable.hpp"
+#include "render/Shader.hpp"
 
 /* ************************************************************************ */
 

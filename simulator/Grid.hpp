@@ -72,7 +72,7 @@ public:
     }
 
 
-// Public Accessors
+// Public Operators
 public:
 
 
@@ -130,6 +130,10 @@ public:
         return m_data[x + y * getWidth()];
         //return m_data[x * m_height + y];
     }
+
+
+// Public Accessors
+public:
 
 
     /**

@@ -3,14 +3,20 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <utility>
+
 // OpenGL
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 
 // Simulator
+#include "core/Vector.hpp"
 #include "render/Position.hpp"
 #include "render/Color.hpp"
 #include "render/Drawable.hpp"
+#include "render/Shader.hpp"
+#include "render/Program.hpp"
 
 /* ************************************************************************ */
 
@@ -37,14 +43,13 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param width
-     * @param height
+     * @param size
      * @param data
      */
-    GridValue(unsigned int width, unsigned int height, const float* data) noexcept
+    GridValue(Vector<unsigned int> size, const float* data) noexcept
         : GridValue()
     {
-        resize(width, height, data);
+        resize(std::move(size), data);
     }
 
 
@@ -59,24 +64,13 @@ public:
 
 
     /**
-     * @brief Returns current grid width.
+     * @brief Returns current grid size.
      *
      * @return
      */
-    unsigned int getWidth() const noexcept
+    const Vector<unsigned int>& getSize() const noexcept
     {
-        return m_width;
-    }
-
-
-    /**
-     * @brief Returns current grid height.
-     *
-     * @return
-     */
-    unsigned int getHeight() const noexcept
-    {
-        return m_height;
+        return m_size;
     }
 
 
@@ -95,25 +89,37 @@ public:
     /**
      * @brief Resize grid.
      *
-     * @param width
-     * @param height
+     * @param size
      * @param data
      */
-    void resize(unsigned int width, unsigned int height, const float* data);
+    void resize(Vector<unsigned int> size, const float* data);
 
 
 // Private Data Members
 private:
 
 
-    /// Grid width.
-    unsigned int m_width;
-
-    /// Grid width.
-    unsigned int m_height;
+    /// Grid size.
+    Vector<unsigned int> m_size;
 
     /// Texture.
     GLuint m_texture;
+
+    /// Vertex shader.
+    Shader m_vertexShader;
+
+    /// Fragment shader.
+    Shader m_fragmentShader;
+
+    /// Program
+    Program m_program;
+
+    /// Pointer to shader data.
+    GLint m_dataPtr;
+
+    /// Pointer to shader color.
+    GLint m_colorPtr;
+
 };
 
 /* ************************************************************************ */

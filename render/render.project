@@ -25,6 +25,8 @@
     <File Name="Drawable.cpp"/>
     <File Name="GridVector.cpp"/>
     <File Name="GridValue.cpp"/>
+    <File Name="Shader.cpp"/>
+    <File Name="Program.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
@@ -37,6 +39,8 @@
     <File Name="errors.hpp"/>
     <File Name="GridVector.hpp"/>
     <File Name="GridValue.hpp"/>
+    <File Name="Shader.hpp"/>
+    <File Name="Program.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

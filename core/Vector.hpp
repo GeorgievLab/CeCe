@@ -119,6 +119,32 @@ public:
 
 
     /**
+     * @brief Compare operator.
+     *
+     * @param rhs
+     *
+     * @return
+     */
+    bool operator==(const Vector& rhs) const noexcept
+    {
+        return x == rhs.x && y == rhs.y;
+    }
+
+
+    /**
+     * @brief Compare operator.
+     *
+     * @param rhs
+     *
+     * @return
+     */
+    bool operator!=(const Vector& rhs) const noexcept
+    {
+        return !operator==(rhs);
+    }
+
+
+    /**
      * @brief Add operator.
      *
      * @param v
