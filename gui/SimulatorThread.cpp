@@ -187,13 +187,6 @@ void SimulatorThread::DoLoad(const wxString& code)
     {
         // Create new world from source
         m_simulator.setWorld(m_worldFactory->fromSource(code.To8BitData().data()));
-
-        // Setup log function
-        m_simulator.getWorld()->setLogFunction([this](const std::string& msg) {
-            wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_LOG));
-            event->SetString(msg);
-            wxQueueEvent(m_handler, event.release());
-        });
     }
     catch (const std::exception& e)
     {

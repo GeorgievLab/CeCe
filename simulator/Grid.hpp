@@ -6,6 +6,9 @@
 // C++
 #include <vector>
 
+// Simulator
+#include "core/Vector.hpp"
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -38,10 +41,9 @@ public:
      *
      * @param size
      */
-    explicit Grid(SizeType size)
-        : Grid(size, size)
+    explicit Grid(Vector<SizeType> size)
     {
-        // Nothing to do
+        resize(size);
     }
 
 
@@ -50,16 +52,54 @@ public:
      *
      * @param width
      * @param height
-     * @param depth
      */
     Grid(SizeType width, SizeType height)
+        : Grid(Vector<SizeType>{width, height})
     {
-        resize(width, height);
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param size
+     */
+    explicit Grid(SizeType size)
+        : Grid(size, size)
+    {
+        // Nothing to do
     }
 
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Array operator.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    T& operator[](const Vector<SizeType>& coord) noexcept
+    {
+        return m_data[coord.x + coord.y * getWidth()];
+    }
+
+
+    /**
+     * @brief Array operator.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    const T& operator[](const Vector<SizeType>& coord) const noexcept
+    {
+        return m_data[coord.x + coord.y * getWidth()];
+    }
 
 
     /**
@@ -72,7 +112,7 @@ public:
      */
     T& operator()(SizeType x, SizeType y) noexcept
     {
-        return m_data[x + y * m_width];
+        return m_data[x + y * getWidth()];
         //return m_data[x * m_height + y];
     }
 
@@ -87,8 +127,19 @@ public:
      */
     const T& operator()(SizeType x, SizeType y) const noexcept
     {
-        return m_data[x + y * m_width];
+        return m_data[x + y * getWidth()];
         //return m_data[x * m_height + y];
+    }
+
+
+    /**
+     * @brief Returns grid size.
+     *
+     * @return
+     */
+    const Vector<SizeType>& getSize() const noexcept
+    {
+        return m_size;
     }
 
 
@@ -99,7 +150,7 @@ public:
      */
     SizeType getWidth() const noexcept
     {
-        return m_width;
+        return m_size.width;
     }
 
 
@@ -110,7 +161,7 @@ public:
      */
     SizeType getHeight() const noexcept
     {
-        return m_height;
+        return m_size.height;
     }
 
 
@@ -143,13 +194,56 @@ public:
     /**
      * @brief Resize grid.
      *
-     * @param size Grid size.
+     * @param width
+     * @param height
      */
     void resize(SizeType width, SizeType height)
     {
-        m_width = width;
-        m_height = height;
-        m_data.resize(width * height);
+        resize({width, height});
+    }
+
+
+    /**
+     * @brief Resize grid.
+     *
+     * @param size Grid size.
+     */
+    void resize(Vector<SizeType> size)
+    {
+        m_size = std::move(size);
+        m_data.resize(m_size.width * m_size.height);
+    }
+
+
+    /**
+     * @brief Check if coordinates are in range.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    bool inRange(Vector<SizeType> coord) const noexcept
+    {
+        return
+            coord.x >= 0 &&
+            coord.y >= 0 &&
+            coord.x < getWidth() &&
+            coord.y < getHeight()
+        ;
+    }
+
+
+    /**
+     * @brief Check if coordinates are in range.
+     *
+     * @param x
+     * @param y
+     *
+     * @return
+     */
+    bool inRange(SizeType x, SizeType y) const noexcept
+    {
+        return inRange({x, y});
     }
 
 
@@ -159,11 +253,8 @@ private:
     /// Grid data.
     std::vector<T> m_data;
 
-    /// Width size (x).
-    SizeType m_width;
-
-    /// Height size (y).
-    SizeType m_height;
+    /// Grid size
+    Vector<SizeType> m_size;
 
 };
 

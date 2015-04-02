@@ -6,29 +6,24 @@ void main() {
 [FragmentShader]
 #version 120
 
-const float data[9] = float[](0.2, 0.3, 0.5, 0.7, 0.1, 0.3, 0.5, 0.8, 1.0);
-const ivec2 size = ivec2(3, 3);
+uniform sampler2D data;
+uniform bool interpolate = false;
 
-float get_value(ivec2 pos)
+float get_value(vec2 pos)
 {
-	if (pos.x < 0) pos.x = 0;
-	if (pos.y < 0) pos.y = 0;
-	if (pos.x >= size.x) pos.x = size.x - 1;
-	if (pos.y >= size.y) pos.y = size.y - 1;	
-	
-	return data[pos.x + pos.y * size.x];
+	return texture2D(data, pos).r;
 }
-/*
-float calc_value(ivec2 pos)
+
+float calc_value(vec2 pos)
 {
-	ivec2 nn = ivec2(pos.x, pos.y + 1);
-  	ivec2 ne = ivec2(pos.x + 1, pos.y + 1);
-	ivec2 ee = ivec2(pos.x + 1, pos.y);
-  	ivec2 se = ivec2(pos.x + 1, pos.y - 1);
-  	ivec2 ss = ivec2(pos.x, pos.y - 1);
-  	ivec2 sw = ivec2(pos.x - 1, pos.y - 1);
-  	ivec2 ww = ivec2(pos.x - 1, pos.y);
-  	ivec2 nw = ivec2(pos.x - 1, pos.y + 1);
+	vec2 nn = vec2(pos.x, pos.y + 1);
+  	vec2 ne = vec2(pos.x + 1, pos.y + 1);
+	vec2 ee = vec2(pos.x + 1, pos.y);
+  	vec2 se = vec2(pos.x + 1, pos.y - 1);
+  	vec2 ss = vec2(pos.x, pos.y - 1);
+  	vec2 sw = vec2(pos.x - 1, pos.y - 1);
+  	vec2 ww = vec2(pos.x - 1, pos.y);
+  	vec2 nw = vec2(pos.x - 1, pos.y + 1);
  
   	float sum = 0.;
   	sum += 0.125 * get_value(nn);
@@ -43,24 +38,19 @@ float calc_value(ivec2 pos)
  
   	return sum;
 }
-*/
+
 void main() {
 
 	// Calculate position
-	ivec2 pos = ivec2(gl_TexCoord[0].xy * size);
+	float value;	
 
-	//float value = calc_value(pos);
-	float value = get_value(pos);
+	if (interpolate)
+		value = calc_value(gl_TexCoord[0].xy);
+	else
+		value = get_value(gl_TexCoord[0].xy);
 
 	gl_FragColor = vec4(vec3(value, 0, 0), 1.0);
 }
 [Parameters]
-float _main_data_0[0][0] = 0.2;
-float _main_data_0[0][1] = 0.3;
-float _main_data_0[0][2] = 0.5;
-float _main_data_0[0][3] = 0.7;
-float _main_data_0[0][4] = 0.1;
-float _main_data_0[0][5] = 0.3;
-float _main_data_0[0][6] = 0.5;
-float _main_data_0[0][7] = 0.8;
-float _main_data_0[0][8] = 1;
+sampler2D data = load("../../qshaderedit/texture.png");
+bool interpolate = false;

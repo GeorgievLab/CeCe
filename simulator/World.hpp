@@ -57,18 +57,15 @@ public:
 
 #endif
 
-// Public Structures
+// Public Types
 public:
 
 
-    /**
-     * @brief Grid cell structure.
-     */
-    struct GridCell
-    {
-        Velocity velocity;
-        float signal;
-    };
+    /// Grid for storing velocities.
+    using GridVelocity = Grid<Velocity>;
+
+    /// Grid for storing signals.
+    using GridSignal = Grid<float>;
 
 
 // Public Types
@@ -77,9 +74,6 @@ public:
 
     /// Object container type.
     using ObjectContainer = std::vector<std::unique_ptr<Object>>;
-
-    /// Log callback function.
-    using LogFunction = std::function<void(const std::string&)>;
 
 
 // Public Ctors
@@ -125,13 +119,24 @@ public:
 
 
     /**
+     * @brief Returns world size.
+     *
+     * @return
+     */
+    const Vector<units::Length>& getSize() const noexcept
+    {
+        return m_size;
+    }
+
+
+    /**
      * @brief Returns world width.
      *
      * @return
      */
     units::Length getWidth() const noexcept
     {
-        return m_width;
+        return getSize().width;
     }
 
 
@@ -142,29 +147,18 @@ public:
      */
     units::Length getHeight() const noexcept
     {
-        return m_height;
+        return getSize().height;
     }
 
 
     /**
-     * @brief Returns log callback function.
+     * @brief Returns grid with velocities.
      *
      * @return
      */
-    const LogFunction& getLogFunction() const noexcept
+    GridVelocity& getVelocityGrid() noexcept
     {
-        return m_logFunction;
-    }
-
-
-    /**
-     * @brief Returns grid.
-     *
-     * @return
-     */
-    Grid<GridCell>& getGrid() noexcept
-    {
-        return m_grid;
+        return m_velocityGrid;
     }
 
 
@@ -173,9 +167,31 @@ public:
      *
      * @return
      */
-    const Grid<GridCell>& getGrid() const noexcept
+    const GridVelocity& getVelocityGrid() const noexcept
     {
-        return m_grid;
+        return m_velocityGrid;
+    }
+
+
+    /**
+     * @brief Returns grid with velocities.
+     *
+     * @return
+     */
+    GridSignal& getSignalGrid() noexcept
+    {
+        return m_signalGrid;
+    }
+
+
+    /**
+     * @brief Returns grid.
+     *
+     * @return
+     */
+    const GridSignal& getSignalGrid() const noexcept
+    {
+        return m_signalGrid;
     }
 
 
@@ -217,13 +233,13 @@ public:
 
 
     /**
-     * @brief Set log callback function.
+     * @brief Resize world.
      *
-     * @param fn
+     * @param size
      */
-    void setLogFunction(LogFunction fn) noexcept
+    void resize(Vector<units::Length> size) noexcept
     {
-        m_logFunction = std::move(fn);
+        m_size = std::move(size);
     }
 
 
@@ -235,8 +251,7 @@ public:
      */
     void resize(units::Length width, units::Length height) noexcept
     {
-        m_width = width;
-        m_height = height;
+        resize({width, height});
     }
 
 
@@ -347,6 +362,30 @@ public:
 
 #endif
 
+
+    /**
+     * @brief Calculate real world position based on grid coordinates.
+     *
+     * @param grid
+     * @param pos
+     *
+     * @return
+     */
+    template<typename T>
+    Vector<units::Length> getPosition(const Grid<T>& grid,
+                                      const Vector<typename Grid<T>::SizeType>& pos) const noexcept
+    {
+        const Vector<float> start{-getWidth() * 0.5f, -getHeight() * 0.5f};
+        const Vector<float> step{getWidth() / grid.getWidth(), getHeight() / grid.getHeight()};
+
+        // Transform i, j coordinates to position
+        // Cell center position
+        const Vector<float> coord = Vector<float>(pos) + 0.5f;
+        // Real position
+        return start + step * coord;
+    }
+
+
 // Private Data Members
 private:
 
@@ -356,17 +395,11 @@ private:
     /// Duration step
     units::Duration m_timeStep = 1.f;
 
-    /// World width.
-    units::Length m_width = units::um(400);
-
-    /// World height.
-    units::Length m_height = units::um(400);
+    /// World size.
+    Vector<units::Length> m_size{units::um(400), units::um(400)};
 
     /// World objects.
     ObjectContainer m_objects;
-
-    /// Log function.
-    LogFunction m_logFunction;
 
     /// World main cell radius.
     units::Length m_mainCellRadius = units::um(20);
@@ -374,8 +407,11 @@ private:
     /// Main cell position.
     Vector<units::Length> m_mainCellPosition{units::um(0), units::um(0)};
 
+    /// Velocity grid.
+    GridVelocity m_velocityGrid;
+
     /// Signal grid.
-    Grid<GridCell> m_grid;
+    GridSignal m_signalGrid;
 
     /// Flow speed.
     float m_flowSpeed = 1.f;

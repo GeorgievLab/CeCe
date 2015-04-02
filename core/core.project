@@ -29,6 +29,7 @@
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
     <File Name="Vector.hpp"/>
+    <File Name="Matrix.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

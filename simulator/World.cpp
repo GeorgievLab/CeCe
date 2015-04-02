@@ -9,6 +9,7 @@
 #include <random>
 
 // Simulator
+#include "core/Matrix.hpp"
 #include "simulator/StaticObject.hpp"
 #include "simulator/DynamicObject.hpp"
 
@@ -22,7 +23,9 @@ namespace simulator {
 /* ************************************************************************ */
 
 World::World() noexcept
-    : m_grid(100)
+    : m_timeStep(1.f)
+    , m_velocityGrid(10)
+    , m_signalGrid(10)
     , m_flowSpeed(1.f)
 {
     // Nothing to do
@@ -93,7 +96,7 @@ void World::update() noexcept
         // If diffusion should be generated
         //if (d(eng))
         {
-            auto& grid = getGrid();
+            auto& grid = getSignalGrid();
 
             constexpr int COUNT = 50;
             int step = grid.getHeight() / COUNT;
@@ -101,8 +104,8 @@ void World::update() noexcept
 
             for (int i = 1; i < COUNT; ++i)
             {
-                auto& cell = grid(0, i * step);
-                cell.signal = 1.0f;
+                auto& value = grid(0, i * step);
+                value = 1.0f;
             }
         }
     }
@@ -161,17 +164,20 @@ void World::update() noexcept
                 (pos.x >= getWidth() || pos.y >= getHeight()))
                 continue;
 
-            auto step_x = getWidth() / m_grid.getWidth();
-            auto step_y = getHeight() / m_grid.getHeight();
+            // Get grid
+            const auto& grid = getVelocityGrid();
+
+            // Get step
+            const auto step = getSize() / grid.getSize();
 
             // Get grid position
-            unsigned int i = pos.x / step_x;
-            unsigned int j = pos.y / step_y;
+            Vector<GridVelocity::SizeType> coord = pos / step;
 
-            const GridCell& cell = m_grid(i, j);
+            // Get velocity
+            const auto& velocity = grid[coord];
 
             // Use velocity
-            ptr->setVelocity(cell.velocity * m_flowSpeed);
+            ptr->setVelocity(velocity * m_flowSpeed);
         }
     }
 }
@@ -180,7 +186,7 @@ void World::update() noexcept
 
 void World::recalcFlowstreams()
 {
-    auto& grid = getGrid();
+    auto& grid = getVelocityGrid();
     const auto R = getMainCellRadius();
 
     // Precompute values
@@ -192,7 +198,7 @@ void World::recalcFlowstreams()
     {
         for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
         {
-            auto& cell = grid(i, j);
+            auto& velocity = grid(i, j);
 
             // Transform i, j coordinates to position
             // Cell center position
@@ -206,7 +212,7 @@ void World::recalcFlowstreams()
             // Cell is in main cell, ignore
             if (distSq <= R2)
             {
-                cell.velocity = Vector<float>{0.f, 0.f};
+                velocity = Vector<float>{0.f, 0.f};
                 continue;
             }
 /*
@@ -226,7 +232,7 @@ void World::recalcFlowstreams()
                 -sinf(theta) * (1 + R2 / distSq)
             };
 
-            cell.velocity = u.rotate(theta);
+            velocity = u.rotate(theta);
             //cell.velocity = u;
         }
     }
@@ -240,121 +246,99 @@ void World::recalcDiffusion(units::Duration dt)
 {
     static constexpr float PI = 3.14159265359f;
 
-    auto& grid = getGrid();
+    auto& grid = getSignalGrid();
     const Vector<float> start{-getWidth() / 2.f, -getHeight() / 2.f};
     const Vector<float> step{getWidth() / grid.getWidth(), getHeight() / grid.getHeight()};
 
-    constexpr float D = 0.05f;
+    constexpr float D = 0.5f;
 
     Grid<float> diffGrid(grid.getWidth(), grid.getHeight());
     for (decltype(diffGrid.getWidth()) i = 0; i < diffGrid.getWidth(); ++i)
     {
         for (decltype(diffGrid.getHeight()) j = 0; j < diffGrid.getHeight(); ++j)
         {
-            diffGrid(i, j) = -grid(i, j).signal;
+            diffGrid(i, j) = -grid(i, j);
         }
     }
+
+    auto& velocityGrid = getVelocityGrid();
+
+    // Offset coefficients for matrix
+    const Matrix<Vector<float>, 3> coeffs{{
+        {{ 1,  1}, {0,  1}, {-1,  1}},
+        {{ 1,  0}, {0,  0}, {-1,  0}},
+        {{ 1, -1}, {0, -1}, {-1, -1}},
+    }};
 
     for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
     {
         for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
         {
-            auto& cell = grid(i, j);
+            auto& signal = grid(i, j);
 
             // No signal to send
-            if (cell.signal == 0)
+            if (signal == 0)
                 continue;
 
-            auto get_cell_pos = [&start, &step](int i, int j) {
-                // Transform i, j coordinates to position
-                // Cell center position
-                const Vector<float> coord = Vector<float>(i, j) + 0.5f;
-                // Real position in the world
-                return start + step * coord;
-            };
+            auto& velocity = velocityGrid(i, j);
 
             // Get current position
-            const Vector<float> pos = get_cell_pos(i, j);
+            const Vector<float> pos = getPosition(grid, {i, j});
 
             // Calculate new position
-            const Vector<float> new_pos = pos + cell.velocity * dt * getFlowSpeed();
+            const Vector<float> new_pos = pos + velocity * dt * getFlowSpeed();
 
             // Get grid position
             const Vector<float> new_ij_tmp = (new_pos - start) / step;
-            const Vector<int> new_ij(new_ij_tmp.x, new_ij_tmp.y);
-            const Vector<float> new_pos_center = get_cell_pos(new_ij.x, new_ij.y);
+            const Vector<unsigned> new_ij(new_ij_tmp.x, new_ij_tmp.y);
+            const Vector<float> new_pos_center = getPosition(grid, {new_ij.x, new_ij.y});
             const Vector<float> offset = new_pos - new_pos_center;
 
-            const float q00 = (Vector<float>( step.x,  step.y) + offset).getLengthSquared();
-            const float q01 = (Vector<float>(      0,  step.y) + offset).getLengthSquared();
-            const float q02 = (Vector<float>(-step.x,  step.y) + offset).getLengthSquared();
-            const float q10 = (Vector<float>( step.x,       0) + offset).getLengthSquared();
-            const float q11 = (Vector<float>(      0,       0) + offset).getLengthSquared();
-            const float q12 = (Vector<float>(-step.x,       0) + offset).getLengthSquared();
-            const float q20 = (Vector<float>( step.x, -step.y) + offset).getLengthSquared();
-            const float q21 = (Vector<float>(      0, -step.y) + offset).getLengthSquared();
-            const float q22 = (Vector<float>(-step.x, -step.y) + offset).getLengthSquared();
+            /// Generate matrix with coefficients based on distance
+            const auto q = Matrix<float, 3>::generate([&step, &coeffs, &offset](int i, int j) {
+                return (step * coeffs[i][j] + offset).getLengthSquared();
+            });
 
             const float A = 1.f / (4 * PI * D * dt);
-            const float c00 = A * exp(-q00 / (4 * D * dt));
-            const float c01 = A * exp(-q01 / (4 * D * dt));
-            const float c02 = A * exp(-q02 / (4 * D * dt));
-            const float c10 = A * exp(-q10 / (4 * D * dt));
-            const float c11 = A * exp(-q11 / (4 * D * dt));
-            const float c12 = A * exp(-q12 / (4 * D * dt));
-            const float c20 = A * exp(-q20 / (4 * D * dt));
-            const float c21 = A * exp(-q21 / (4 * D * dt));
-            const float c22 = A * exp(-q22 / (4 * D * dt));
-            const float cnorm = c00 + c01 + c02 + c10 + c11 + c12 + c20 + c21 + c22;
 
-            // Matrix
-            const float M[3][3] = {
-                {c00 / cnorm, c01 / cnorm, c20 / cnorm},
-                {c10 / cnorm, c11 / cnorm, c21 / cnorm},
-                {c20 / cnorm, c21 / cnorm, c22 / cnorm}
-            };
+            // Create distribution matrix
+            const auto M = Matrix<float, 3>::generate([A, D, q, dt](int i, int j) {
+                return A * exp(-q[i][j] / (4 * D * dt));
+            }).normalize();
 
             // Out of range
-            if ((new_ij.x < 0 || new_ij.y < 0) ||
-                (new_ij.x >= grid.getWidth() || new_ij.y >= grid.getHeight()))
+            if (!grid.inRange(new_ij.x, new_ij.y))
                 continue;
 
-            const float signal00 = cell.signal * M[0][0];
-            const float signal01 = cell.signal * M[0][1];
-            const float signal02 = cell.signal * M[0][2];
-            const float signal10 = cell.signal * M[1][0];
-            const float signal11 = cell.signal * M[1][1];
-            const float signal12 = cell.signal * M[1][2];
-            const float signal20 = cell.signal * M[2][0];
-            const float signal21 = cell.signal * M[2][1];
-            const float signal22 = cell.signal * M[2][2];
+            // Compute signal matrix
+            const auto signalMatrix = M * signal;
 
             // Position of new cell
             if (new_ij.x > 0 && new_ij.y > 0)
-                diffGrid(new_ij.x - 1, new_ij.y - 1) += signal00;
+                diffGrid(new_ij.x - 1, new_ij.y - 1) += signalMatrix[0][0];
 
             if (new_ij.x > 0)
-                diffGrid(new_ij.x - 1, new_ij.y    ) += signal01;
+                diffGrid(new_ij.x - 1, new_ij.y    ) += signalMatrix[0][1];
 
             if (new_ij.x > 0 && (new_ij.y < diffGrid.getHeight() - 1))
-                diffGrid(new_ij.x - 1, new_ij.y + 1) += signal02;
+                diffGrid(new_ij.x - 1, new_ij.y + 1) += signalMatrix[0][2];
 
             if (new_ij.y > 0)
-                diffGrid(new_ij.x,     new_ij.y - 1) += signal10;
+                diffGrid(new_ij.x,     new_ij.y - 1) += signalMatrix[1][0];
 
-            diffGrid(new_ij.x,     new_ij.y    ) += signal11;
+            diffGrid(new_ij.x,     new_ij.y    ) += signalMatrix[1][1];
 
             if (new_ij.y < diffGrid.getHeight() - 1)
-                diffGrid(new_ij.x,     new_ij.y + 1) += signal12;
+                diffGrid(new_ij.x,     new_ij.y + 1) += signalMatrix[1][2];
 
             if ((new_ij.x < diffGrid.getWidth() - 1) && (new_ij.y > 0))
-                diffGrid(new_ij.x + 1, new_ij.y - 1) += signal20;
+                diffGrid(new_ij.x + 1, new_ij.y - 1) += signalMatrix[2][0];
 
             if (new_ij.x < diffGrid.getWidth() - 1)
-                diffGrid(new_ij.x + 1, new_ij.y    ) += signal21;
+                diffGrid(new_ij.x + 1, new_ij.y    ) += signalMatrix[2][1];
 
             if ((new_ij.x < diffGrid.getWidth() - 1) && (new_ij.y < diffGrid.getHeight() - 1))
-                diffGrid(new_ij.x + 1, new_ij.y + 1) += signal22;
+                diffGrid(new_ij.x + 1, new_ij.y + 1) += signalMatrix[2][2];
         }
     }
 
@@ -366,7 +350,7 @@ void World::recalcDiffusion(units::Duration dt)
             const float diff = diffGrid(i, j);
 
             if (fabs(diff) >= std::numeric_limits<float>::epsilon())
-                grid(i, j).signal += diff;
+                grid(i, j) += diff;
         }
     }
 
@@ -403,35 +387,25 @@ void World::render(render::Context& context, RenderFlagsType flags)
 
     //if (false)
     {
+        const auto& grid = getSignalGrid();
+
         if (!m_renderGridSignal)
         {
-            std::vector<float> data(m_grid.getWidth() * m_grid.getHeight());
-            const auto* grid_data = m_grid.getData();
-
-            for (std::size_t i = 0; i < data.size(); ++i)
-                data[i] = grid_data[i].signal;
-
             m_renderGridSignal.reset(new render::GridValue(
-                m_grid.getWidth(), m_grid.getHeight(), data.data()
+                grid.getWidth(), grid.getHeight(), grid.getData()
             ));
         }
         else
         {
             auto rgridw = m_renderGridSignal->getWidth();
             auto rgridh = m_renderGridSignal->getHeight();
-            auto gridw = m_grid.getWidth();
-            auto gridh = m_grid.getHeight();
+            auto gridw = grid.getWidth();
+            auto gridh = grid.getHeight();
 
             // Resize
             if (!(rgridw == gridw && rgridh == gridh) || m_updateGridSignal)
             {
-                std::vector<float> data(m_grid.getWidth() * m_grid.getHeight());
-                const auto* grid_data = m_grid.getData();
-
-                for (std::size_t i = 0; i < data.size(); ++i)
-                    data[i] = grid_data[i].signal;
-
-                m_renderGridSignal->resize(gridw, gridh, data.data());
+                m_renderGridSignal->resize(gridw, gridh, grid.getData());
                 m_updateGridSignal = false;
             }
         }
@@ -442,16 +416,18 @@ void World::render(render::Context& context, RenderFlagsType flags)
 
     if (flags & RENDER_GRID)
     {
+        const auto& grid = getVelocityGrid();
+
         if (!m_renderGrid)
         {
-            m_renderGrid.reset(new render::Grid{m_grid.getWidth(), m_grid.getHeight()});
+            m_renderGrid.reset(new render::Grid{grid.getWidth(), grid.getHeight()});
         }
         else
         {
             auto rgridw = m_renderGrid->getWidth();
             auto rgridh = m_renderGrid->getHeight();
-            auto gridw = m_grid.getWidth();
-            auto gridh = m_grid.getHeight();
+            auto gridw = grid.getWidth();
+            auto gridh = grid.getHeight();
 
             if (!(rgridw == gridw && rgridh == gridh))
                 m_renderGrid->resize(gridw, gridh);
@@ -464,34 +440,24 @@ void World::render(render::Context& context, RenderFlagsType flags)
 
     if (flags & RENDER_VELOCITY)
     {
+        const auto& grid = getVelocityGrid();
+
         if (!m_renderGridVelocity)
         {
-            std::vector<Vector<float>> data(m_grid.getWidth() * m_grid.getHeight());
-            const auto* grid_data = m_grid.getData();
-
-            for (std::size_t i = 0; i < data.size(); ++i)
-                data[i] = grid_data[i].velocity;
-
             m_renderGridVelocity.reset(new render::GridVector{
-                m_grid.getWidth(), m_grid.getHeight(), data.data()
+                grid.getWidth(), grid.getHeight(), grid.getData()
             });
         }
         else
         {
             auto rgridw = m_renderGridVelocity->getWidth();
             auto rgridh = m_renderGridVelocity->getHeight();
-            auto gridw = m_grid.getWidth();
-            auto gridh = m_grid.getHeight();
+            auto gridw = grid.getWidth();
+            auto gridh = grid.getHeight();
 
             if (!(rgridw == gridw && rgridh == gridh) || m_updateGridVelocity)
             {
-                std::vector<Vector<float>> data(m_grid.getWidth() * m_grid.getHeight());
-                const auto* grid_data = m_grid.getData();
-
-                for (std::size_t i = 0; i < data.size(); ++i)
-                    data[i] = grid_data[i].velocity;
-
-                m_renderGridVelocity->resize(gridw, gridh, data.data());
+                m_renderGridVelocity->resize(gridw, gridh, grid.getData());
                 m_updateGridVelocity = false;
             }
         }

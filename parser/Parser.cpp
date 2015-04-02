@@ -122,7 +122,8 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
         if (grid_width == 0 || grid_height == 0)
             throw parser::Exception("Grid width or height is zero!");
 
-        world.getGrid().resize(grid_width, grid_height);
+        world.getVelocityGrid().resize(grid_width, grid_height);
+        world.getSignalGrid().resize(grid_width, grid_height);
 
         // Recalculate flow streams
         world.recalcFlowstreams();
