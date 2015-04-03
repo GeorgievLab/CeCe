@@ -6,6 +6,7 @@
 build-debug/*
 build-debug-cli/*
 build-release/*
+build-release-cli/*
 
 core/core.mk
 core/core.txt

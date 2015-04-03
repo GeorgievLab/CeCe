@@ -7,6 +7,13 @@
 #include <memory>
 #include <atomic>
 
+// Simulator
+#include "core/Units.hpp"
+
+#ifdef ENABLE_RENDER
+#include "render/Context.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -106,6 +113,26 @@ public:
      * @brief Reset simulation.
      */
     void reset();
+
+
+    /**
+     * @brief Update world by time step.
+     *
+     * @param dt Time step.
+     */
+    void update(units::Duration dt);
+
+
+#ifdef ENABLE_RENDER
+
+    /**
+     * @brief Render simulation.
+     *
+     * @param context Render context.
+     */
+    void render(render::Context& context);
+
+#endif
 
 
 // Data Members

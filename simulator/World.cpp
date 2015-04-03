@@ -55,7 +55,7 @@ void World::reset()
 
 /* ************************************************************************ */
 
-void World::update() noexcept
+void World::update(units::Duration dt) noexcept
 {
     // Increase step number
     m_stepNumber++;
@@ -115,7 +115,7 @@ void World::update() noexcept
     for (const auto& obj : getObjects())
     {
         assert(obj);
-        obj->update(m_timeStep);
+        obj->update(dt);
     }
 
     // Remove cells that are outside world
@@ -140,7 +140,7 @@ void World::update() noexcept
         }), m_objects.end());
     }
 
-    recalcDiffusion(m_timeStep);
+    recalcDiffusion(dt);
 
     // Apply streamlines
     {

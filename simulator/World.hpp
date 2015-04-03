@@ -335,7 +335,18 @@ public:
     /**
      * @brief Update world.
      */
-    void update() noexcept;
+    void update() noexcept
+    {
+        update(m_timeStep);
+    }
+
+
+    /**
+     * @brief Update world.
+     *
+     * @param dt
+     */
+    void update(units::Duration dt) noexcept;
 
 
     /**
@@ -393,7 +404,7 @@ private:
     StepNumber m_stepNumber = 0;
 
     /// Duration step
-    units::Duration m_timeStep = 1.f;
+    units::Duration m_timeStep;
 
     /// World size.
     Vector<units::Length> m_size{units::um(400), units::um(400)};

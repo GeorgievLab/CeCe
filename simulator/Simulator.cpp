@@ -75,6 +75,26 @@ void Simulator::reset()
 
 /* ************************************************************************ */
 
+void Simulator::update(units::Duration dt)
+{
+    assert(m_world);
+    m_world->update(dt);
+}
+
+/* ************************************************************************ */
+
+#ifdef ENABLE_RENDER
+
+void Simulator::render(render::Context& context)
+{
+    assert(m_world);
+    m_world->render(context);
+}
+
+#endif
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

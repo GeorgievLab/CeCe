@@ -3,7 +3,13 @@
 project(cli)
 
 if (ENABLE_RENDER)
-    set(RENDER_LIBS GL GLU)
+    find_package(OpenGL REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIR})
+
+    find_package(GLUT REQUIRED)
+    include_directories(${GLUT_INCLUDE_DIR})
+
+    set(RENDER_LIBS ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
     set(RENDER_DEP render)
 endif ()
 
@@ -14,25 +20,20 @@ add_executable(cli
 
 # Link libraries
 target_link_libraries(cli
-    javascript
+    parser
     simulator
     ${RENDER_DEP}
-    physics
-    v8
-    BulletDynamics
-    BulletCollision
-    LinearMath
     ${RENDER_LIBS}
     ${JPEG_LIBRARIES}
+    -pthread
 )
 
 # Setup dependencies
 add_dependencies(cli
-    javascript
+    parser
     simulator
     core
     ${RENDER_DEP}
-    physics
 )
 
 # ######################################################################### #

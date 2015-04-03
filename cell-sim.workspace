@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="cell-sim" Database="">
-  <Project Name="gui" Path="gui/gui.project" Active="Yes"/>
+  <Project Name="gui" Path="gui/gui.project" Active="No"/>
   <Project Name="core" Path="core/core.project" Active="No"/>
   <Project Name="simulator" Path="simulator/simulator.project"/>
   <Project Name="render" Path="render/render.project"/>
-  <Project Name="cli" Path="cli/cli.project" Active="No"/>
+  <Project Name="cli" Path="cli/cli.project" Active="Yes"/>
   <Environment>
     <![CDATA[]]>
   </Environment>
   <Project Name="parser" Path="parser/parser.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Project Name="gui" ConfigName="Debug"/>
-      <Project Name="core" ConfigName="Debug"/>
       <Project Name="simulator" ConfigName="Debug"/>
       <Project Name="render" ConfigName="Debug"/>
-      <Project Name="cli" ConfigName="Debug"/>
       <Project Name="parser" ConfigName="Debug"/>
+      <Project Name="gui" ConfigName="Debug"/>
+      <Project Name="core" ConfigName="Debug"/>
+      <Project Name="cli" ConfigName="DebugCLI"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
