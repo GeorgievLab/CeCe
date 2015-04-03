@@ -98,7 +98,7 @@ void World::update() noexcept
         {
             auto& grid = getSignalGrid();
 
-            constexpr int COUNT = 2;
+            constexpr int COUNT = 20;
             int step = grid.getHeight() / COUNT;
             int half = grid.getHeight() / 2;
 
