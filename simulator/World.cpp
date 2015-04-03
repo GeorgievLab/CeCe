@@ -250,7 +250,7 @@ void World::recalcDiffusion(units::Duration dt)
     const Vector<float> start{-getWidth() / 2.f, -getHeight() / 2.f};
     const Vector<float> step{getWidth() / grid.getWidth(), getHeight() / grid.getHeight()};
 
-    constexpr float D = 0.5f;
+    constexpr float D = 5.f;
 
     Grid<float> diffGrid(grid.getWidth(), grid.getHeight());
     for (decltype(diffGrid.getWidth()) i = 0; i < diffGrid.getWidth(); ++i)
@@ -268,6 +268,8 @@ void World::recalcDiffusion(units::Duration dt)
 
     // Offset coefficients for matrix
     static const auto MAPPINGS = Matrix<int, MATRIX_SIZE>::makeDistance();
+
+    const float A = 1.f / (4 * PI * D * dt);
 
     for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
     {
@@ -297,8 +299,6 @@ void World::recalcDiffusion(units::Duration dt)
             const auto q = Matrix<float, MATRIX_SIZE>::generate([&step, &offset](int i, int j) {
                 return (step * MAPPINGS[i][j] + offset).getLengthSquared();
             });
-
-            const float A = 1.f / (4 * PI * D * dt);
 
             // Create distribution matrix
             const auto M = Matrix<float, MATRIX_SIZE>::generate([A, D, q, dt](int i, int j) {
@@ -392,13 +392,18 @@ void World::render(render::Context& context, RenderFlagsType flags)
         {
             m_renderGridSignal.reset(new render::GridValue(grid.getSize(), grid.getData()));
         }
+        else if (m_updateGridSignal)
+        {
+            m_renderGridSignal->update(grid.getData());
+            m_updateGridSignal = false;
+        }
         else
         {
             const auto& rgridSize = m_renderGridSignal->getSize();
             const auto& gridSize = grid.getSize();
 
             // Resize
-            if (rgridSize != gridSize || m_updateGridSignal)
+            if (rgridSize != gridSize)
             {
                 m_renderGridSignal->resize(gridSize, grid.getData());
                 m_updateGridSignal = false;

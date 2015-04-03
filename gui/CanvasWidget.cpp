@@ -278,9 +278,9 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
     case 'D':
     case 'd': pos.x += units::um(10); pos_changed = true; break;
     case WXK_NUMPAD_ADD:
-    case '+': speed += 1000; speed_changed = true; break;
+    case '+': speed += 1; speed_changed = true; break;
     case WXK_NUMPAD_SUBTRACT:
-    case '-': speed -= 1000; speed_changed = true; break;
+    case '-': speed -= 1; speed_changed = true; break;
     }
 
     //if (speed < 0)

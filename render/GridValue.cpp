@@ -50,9 +50,9 @@ namespace render {
 
 GridValue::GridValue() noexcept
     : Drawable()
-    , m_vertexShader(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc))
-    , m_fragmentShader(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc))
-    , m_program(m_vertexShader, m_fragmentShader)
+    //, m_vertexShader(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc))
+    //, m_fragmentShader(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc))
+    //, m_program(m_vertexShader, m_fragmentShader)
 {
     // Generate texture
     gl(glGenTextures(1, &m_texture));
@@ -62,8 +62,24 @@ GridValue::GridValue() noexcept
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 
     // Fetch data pointers
-    m_dataPtr = glGetUniformLocation(m_program.getId(), "data");
-    m_colorPtr = glGetUniformLocation(m_program.getId(), "color");
+    //m_dataPtr = glGetUniformLocation(m_program.getId(), "data");
+    //m_colorPtr = glGetUniformLocation(m_program.getId(), "color");
+
+    const std::array<Vertex, 4> vertices = {{
+        { 0.5f,  0.5f, 1.0f, 1.0f},
+        { 0.5f, -0.5f, 1.0f, 0.0f},
+        {-0.5f, -0.5f, 0.0f, 0.0f},
+        {-0.5f,  0.5f, 0.0f, 1.0f}
+    }};
+
+    assert(getBuffer() != 0);
+
+    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBufferData(GL_ARRAY_BUFFER,
+        vertices.size() * sizeof(decltype(vertices)::value_type),
+        vertices.data(),
+        GL_STATIC_DRAW
+    ));
 }
 
 /* ************************************************************************ */
@@ -84,11 +100,12 @@ void GridValue::render(const Vector<float>& scale) noexcept
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    glColor3f(1, 1, 1);
 
-    gl(glUseProgram(m_program.getId()));
-    gl(glUniform1i(m_dataPtr, 0));
-    gl(glActiveTexture(GL_TEXTURE0));
-    glUniform4f(m_colorPtr, 1, 0, 1, 1);
+    //gl(glUseProgram(m_program.getId()));
+    //gl(glUniform1i(m_dataPtr, 0));
+    //gl(glActiveTexture(GL_TEXTURE0));
+    //glUniform4f(m_colorPtr, 1, 0, 1, 1);
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
@@ -108,7 +125,7 @@ void GridValue::render(const Vector<float>& scale) noexcept
     gl(glBindTexture(GL_TEXTURE_2D, 0));
     gl(glDisable(GL_TEXTURE_2D));
 
-    gl(glUseProgram(0));
+    //gl(glUseProgram(0));
 
     gl(glPopMatrix());
 }
@@ -119,25 +136,17 @@ void GridValue::resize(Vector<unsigned int> size, const float* data)
 {
     m_size = std::move(size);
 
-    const std::array<Vertex, 4> vertices = {{
-        { 0.5f,  0.5f, 1.0f, 1.0f},
-        { 0.5f, -0.5f, 1.0f, 0.0f},
-        {-0.5f, -0.5f, 0.0f, 0.0f},
-        {-0.5f,  0.5f, 0.0f, 1.0f}
-    }};
-
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_size.width, m_size.height, 0, GL_RED, GL_FLOAT, data));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
+}
 
-    assert(getBuffer() != 0);
+/* ************************************************************************ */
 
-    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
-    gl(glBufferData(GL_ARRAY_BUFFER,
-        vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data(),
-        GL_STATIC_DRAW
-    ));
+void GridValue::update(const float* data) noexcept
+{
+    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_size.width, m_size.height, GL_RED, GL_FLOAT, data));
 }
 
 /* ************************************************************************ */
