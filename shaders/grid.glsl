@@ -39,7 +39,8 @@ float calc_value(vec2 pos)
   	return sum;
 }
 
-const vec4 colors[9] = vec4[9](
+const int COUNT = 9;
+const vec4 COLORS[COUNT] = vec4[COUNT](
  	vec4(0.208, 0.165, 0.529, 1.0), // '#352a87'
 	vec4(0.059, 0.361, 0.867, 1.0), // '#0f5cdd'
 	vec4(0.078, 0.506, 0.839, 1.0), // '#1481d6'
@@ -50,6 +51,7 @@ const vec4 colors[9] = vec4[9](
  	vec4(0.996, 0.784, 0.196, 1.0), // '#fec832'
  	vec4(0.976, 0.984, 0.055, 1.0)  // '#f9fb0e'
 );
+const float STEP = (1.0 / (COUNT - 1));
 	
 void main() {
 
@@ -61,12 +63,28 @@ void main() {
 	else
 		value = get_value(gl_TexCoord[0].xy);
 
-	int ix = int(value * 8);
- 	vec4 thermal = mix(colors[ix], colors[ix + 1], (value - float(ix) * (1.0 / 9.0)) / (1.0 / 9.0));
- 	gl_FragColor = thermal;
+	if (gl_TexCoord[0].y > 0.5)
+	{
+		gl_FragColor = vec4(value);
+	}
+	else
+	{
+		int ix = int(value * (COUNT - 1));
+	 	vec4 thermal = mix(COLORS[ix], COLORS[ix + 1], (value - (ix * STEP)) / STEP);
+ 		gl_FragColor = thermal;
+ 	}
 
 	//gl_FragColor = vec4(vec3(value, 0, 0), 1.0);
 }
 [Parameters]
-sampler2D data = load("../../qshaderedit/texture.png");
+vec4 _main_COLORS_0[0][0] = vec4(0.208, 0.165, 0.529, 1);
+vec4 _main_COLORS_0[0][1] = vec4(0.059, 0.361, 0.867, 1);
+vec4 _main_COLORS_0[0][2] = vec4(0.078, 0.506, 0.839, 1);
+vec4 _main_COLORS_0[0][3] = vec4(0.024, 0.643, 0.792, 1);
+vec4 _main_COLORS_0[0][4] = vec4(0.18, 0.718, 0.643, 1);
+vec4 _main_COLORS_0[0][5] = vec4(0.529, 0.749, 0.467, 1);
+vec4 _main_COLORS_0[0][6] = vec4(0.82, 0.733, 0.349, 1);
+vec4 _main_COLORS_0[0][7] = vec4(0.996, 0.784, 0.196, 1);
+vec4 _main_COLORS_0[0][8] = vec4(0.976, 0.984, 0.055, 1);
+sampler2D data = load("../../qshaderedit/colormap_gray.png");
 bool interpolate = false;
