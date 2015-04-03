@@ -114,19 +114,19 @@ private:
     GLuint m_texture;
 
     /// Vertex shader.
-    //Shader m_vertexShader;
+    Shader m_vertexShader;
 
     /// Fragment shader.
-    //Shader m_fragmentShader;
+    Shader m_fragmentShader;
 
     /// Program
-    //Program m_program;
+    Program m_program;
 
     /// Pointer to shader data.
-    //GLint m_dataPtr;
+    GLint m_dataPtr;
 
     /// Pointer to shader color.
-    //GLint m_colorPtr;
+    GLint m_colorPtr;
 
 };
 

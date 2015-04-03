@@ -34,6 +34,7 @@ static const char g_vertexShaderSrc[] =
 /* ************************************************************************ */
 
 static const char g_fragmentShaderSrc[] =
+    "#version 120\n"
     "uniform sampler2D data;\n"
     "uniform vec4 color = vec4(1, 1, 1, 1);\n"
     "void main() {\n"
@@ -50,9 +51,9 @@ namespace render {
 
 GridValue::GridValue() noexcept
     : Drawable()
-    //, m_vertexShader(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc))
-    //, m_fragmentShader(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc))
-    //, m_program(m_vertexShader, m_fragmentShader)
+    , m_vertexShader(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc))
+    , m_fragmentShader(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc))
+    , m_program(m_vertexShader, m_fragmentShader)
 {
     // Generate texture
     gl(glGenTextures(1, &m_texture));
@@ -62,8 +63,8 @@ GridValue::GridValue() noexcept
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 
     // Fetch data pointers
-    //m_dataPtr = glGetUniformLocation(m_program.getId(), "data");
-    //m_colorPtr = glGetUniformLocation(m_program.getId(), "color");
+    gl(m_dataPtr = glGetUniformLocation(m_program.getId(), "data"));
+    gl(m_colorPtr = glGetUniformLocation(m_program.getId(), "color"));
 
     const std::array<Vertex, 4> vertices = {{
         { 0.5f,  0.5f, 1.0f, 1.0f},
@@ -100,12 +101,12 @@ void GridValue::render(const Vector<float>& scale) noexcept
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    glColor3f(1, 1, 1);
+    //glColor3f(1, 1, 1);
 
-    //gl(glUseProgram(m_program.getId()));
-    //gl(glUniform1i(m_dataPtr, 0));
-    //gl(glActiveTexture(GL_TEXTURE0));
-    //glUniform4f(m_colorPtr, 1, 0, 1, 1);
+    gl(glUseProgram(m_program.getId()));
+    gl(glUniform1i(m_dataPtr, 0));
+    gl(glActiveTexture(GL_TEXTURE0));
+    glUniform4f(m_colorPtr, 0, 0, 0, 1);
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
@@ -125,7 +126,7 @@ void GridValue::render(const Vector<float>& scale) noexcept
     gl(glBindTexture(GL_TEXTURE_2D, 0));
     gl(glDisable(GL_TEXTURE_2D));
 
-    //gl(glUseProgram(0));
+    gl(glUseProgram(0));
 
     gl(glPopMatrix());
 }

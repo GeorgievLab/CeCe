@@ -6,6 +6,9 @@
 
 // C++
 #include <cassert>
+#include <vector>
+#include <string>
+#include <stdexcept>
 
 // Simulator
 #include "render/errors.hpp"
@@ -34,6 +37,21 @@ Shader::Shader(Type type, const char* source, unsigned length) noexcept
 
     // Compile shader
     gl(glCompileShader(m_id));
+
+    // Check if was compiled
+    GLint isCompiled = 0;
+    glGetShaderiv(m_id, GL_COMPILE_STATUS, &isCompiled);
+
+    if (isCompiled == GL_FALSE)
+    {
+        GLint maxLength = 0;
+        glGetShaderiv(m_id, GL_INFO_LOG_LENGTH, &maxLength);
+
+        // The maxLength includes the NULL character
+        std::vector<GLchar> err(maxLength);
+        glGetShaderInfoLog(m_id, maxLength, &maxLength, &err[0]);
+        throw std::runtime_error(std::string(err.begin(), err.end()));
+    }
 }
 
 /* ************************************************************************ */
