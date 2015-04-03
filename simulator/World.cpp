@@ -98,14 +98,14 @@ void World::update() noexcept
         {
             auto& grid = getSignalGrid();
 
-            constexpr int COUNT = 50;
+            constexpr int COUNT = 2;
             int step = grid.getHeight() / COUNT;
             int half = grid.getHeight() / 2;
 
             for (int i = 1; i < COUNT; ++i)
             {
                 auto& value = grid(0, i * step);
-                value = 1.0f;
+                value = 2.f;
             }
         }
     }
@@ -250,16 +250,7 @@ void World::recalcDiffusion(units::Duration dt)
     const Vector<float> start{-getWidth() / 2.f, -getHeight() / 2.f};
     const Vector<float> step{getWidth() / grid.getWidth(), getHeight() / grid.getHeight()};
 
-    constexpr float D = 5.f;
-
-    Grid<float> diffGrid(grid.getWidth(), grid.getHeight());
-    for (decltype(diffGrid.getWidth()) i = 0; i < diffGrid.getWidth(); ++i)
-    {
-        for (decltype(diffGrid.getHeight()) j = 0; j < diffGrid.getHeight(); ++j)
-        {
-            diffGrid(i, j) = -grid(i, j);
-        }
-    }
+    constexpr float D = 10.f;
 
     auto& velocityGrid = getVelocityGrid();
 
@@ -271,6 +262,18 @@ void World::recalcDiffusion(units::Duration dt)
 
     const float A = 1.f / (4 * PI * D * dt);
 
+    Grid<float> diffGrid(grid.getWidth(), grid.getHeight());
+
+#if 1
+    for (decltype(diffGrid.getWidth()) i = 0; i < diffGrid.getWidth(); ++i)
+    {
+        for (decltype(diffGrid.getHeight()) j = 0; j < diffGrid.getHeight(); ++j)
+        {
+            diffGrid(i, j) = -grid(i, j);
+        }
+    }
+
+    // Signal diffusion
     for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
     {
         for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
@@ -291,7 +294,12 @@ void World::recalcDiffusion(units::Duration dt)
 
             // Get grid position
             const Vector<float> new_ij_tmp = (new_pos - start) / step;
-            const Vector<unsigned> new_ij(new_ij_tmp.x, new_ij_tmp.y);
+            const Vector<unsigned> new_ij(new_ij_tmp);
+
+            // Out of range
+            if (!grid.inRange(new_ij.x, new_ij.y))
+                continue;
+
             const Vector<float> new_pos_center = getPosition(grid, {new_ij.x, new_ij.y});
             const Vector<float> offset = new_pos - new_pos_center;
 
@@ -304,10 +312,6 @@ void World::recalcDiffusion(units::Duration dt)
             const auto M = Matrix<float, MATRIX_SIZE>::generate([A, D, q, dt](int i, int j) {
                 return A * exp(-q[i][j] / (4 * D * dt));
             }).normalize();
-
-            // Out of range
-            if (!grid.inRange(new_ij.x, new_ij.y))
-                continue;
 
             // Compute signal matrix
             const auto signalMatrix = M * signal;
@@ -338,6 +342,101 @@ void World::recalcDiffusion(units::Duration dt)
 
             if ((new_ij.x < diffGrid.getWidth() - 1) && (new_ij.y < diffGrid.getHeight() - 1))
                 diffGrid(new_ij.x + 1, new_ij.y + 1) += signalMatrix[2][2];
+        }
+    }
+
+    // Apply changes
+    for (decltype(diffGrid.getWidth()) i = 0; i < diffGrid.getWidth(); ++i)
+    {
+        for (decltype(diffGrid.getHeight()) j = 0; j < diffGrid.getHeight(); ++j)
+        {
+            const float diff = diffGrid(i, j);
+
+            if (fabs(diff) >= std::numeric_limits<float>::epsilon())
+                grid(i, j) += diff;
+        }
+    }
+#endif
+    // Signal move
+    for (decltype(diffGrid.getWidth()) i = 0; i < diffGrid.getWidth(); ++i)
+    {
+        for (decltype(diffGrid.getHeight()) j = 0; j < diffGrid.getHeight(); ++j)
+        {
+            diffGrid(i, j) = -grid(i, j);
+        }
+    }
+
+    for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
+    {
+        for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
+        {
+            auto& signal = grid(i, j);
+
+            // No signal to send
+            if (signal == 0)
+                continue;
+
+            auto& velocity = velocityGrid(i, j);
+
+            // Get current position
+            const Vector<float> pos = getPosition(grid, {i, j});
+
+            // Calculate new position
+            const Vector<float> new_pos = pos + velocity * dt * getFlowSpeed();
+
+            // Get grid position
+            const Vector<float> new_ij_tmp = (new_pos - start) / step;
+            const Vector<unsigned> new_ij(new_ij_tmp);
+
+            // Out of range
+            if (!grid.inRange(new_ij))
+                continue;
+
+            //diffGrid[new_ij] += signal;
+
+            auto new_ij_tmp0 = new_ij_tmp + Vector<float>( step.x, 0) * 0.5f;
+            auto new_ij_tmp1 = new_ij_tmp + Vector<float>(0,  step.y) * 0.5f;
+            auto new_ij_tmp2 = new_ij_tmp + Vector<float>(-step.x, 0) * 0.5f;
+            auto new_ij_tmp3 = new_ij_tmp + Vector<float>(0, -step.y) * 0.5f;
+
+            const Vector<unsigned> new_ij0(new_ij_tmp0);
+            const Vector<unsigned> new_ij1(new_ij_tmp1);
+            const Vector<unsigned> new_ij2(new_ij_tmp2);
+            const Vector<unsigned> new_ij3(new_ij_tmp3);
+
+            // Get cells center positions
+            const Vector<float> pos0 = getPosition(grid, new_ij0);
+            const Vector<float> pos1 = getPosition(grid, new_ij1);
+            const Vector<float> pos2 = getPosition(grid, new_ij2);
+            const Vector<float> pos3 = getPosition(grid, new_ij3);
+
+            float distSq0 = (new_pos - pos0).getLengthSquared();
+            float distSq1 = (new_pos - pos1).getLengthSquared();
+            float distSq2 = (new_pos - pos2).getLengthSquared();
+            float distSq3 = (new_pos - pos3).getLengthSquared();
+
+            float c0 = 1.f / distSq0;
+            float c1 = 1.f / distSq1;
+            float c2 = 1.f / distSq2;
+            float c3 = 1.f / distSq3;
+            float c = c0 + c1 + c2 + c3;
+
+            float c_0 = c0 / c;
+            float c_1 = c1 / c;
+            float c_2 = c2 / c;
+            float c_3 = c3 / c;
+
+            if (diffGrid.inRange(new_ij0))
+                diffGrid[new_ij0] += c_0 * signal;
+
+            if (diffGrid.inRange(new_ij1))
+                diffGrid[new_ij1] += c_1 * signal;
+
+            if (diffGrid.inRange(new_ij2))
+                diffGrid[new_ij2] += c_2 * signal;
+
+            if (diffGrid.inRange(new_ij3))
+                diffGrid[new_ij3] += c_3 * signal;
         }
     }
 
