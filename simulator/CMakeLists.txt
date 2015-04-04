@@ -16,6 +16,10 @@ add_library(simulator
     WorldFactory.hpp
     Simulator.hpp
     Grid.hpp
+    Module.hpp
+    StreamlinesModule.hpp
+    DiffusionModule.hpp
+    DiffusionStreamlinesModule.hpp
 
     # Sources
     Object.cpp
@@ -25,6 +29,9 @@ add_library(simulator
     World.cpp
     WorldFactory.cpp
     Simulator.cpp
+    StreamlinesModule.cpp
+    DiffusionModule.cpp
+    DiffusionStreamlinesModule.cpp
 )
 
 # Setup dependencies

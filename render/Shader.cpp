@@ -19,7 +19,15 @@ namespace render {
 
 /* ************************************************************************ */
 
-Shader::Shader(Type type, const char* source, unsigned length) noexcept
+Shader::~Shader()
+{
+    if (m_id)
+        gl(glDeleteShader(m_id));
+}
+
+/* ************************************************************************ */
+
+void Shader::init(Type type, const char* source, unsigned length)
 {
     if (type == Type::VERTEX)
         m_id = glCreateShader(GL_VERTEX_SHADER);
@@ -52,13 +60,6 @@ Shader::Shader(Type type, const char* source, unsigned length) noexcept
         glGetShaderInfoLog(m_id, maxLength, &maxLength, &err[0]);
         throw std::runtime_error(std::string(err.begin(), err.end()));
     }
-}
-
-/* ************************************************************************ */
-
-Shader::~Shader()
-{
-    gl(glDeleteShader(m_id));
 }
 
 /* ************************************************************************ */

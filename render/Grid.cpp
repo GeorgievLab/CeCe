@@ -23,7 +23,7 @@ void Grid::render(const Vector<float>& scale, const Color& color) noexcept
     gl(glColor4f(color.red, color.green, color.blue, color.alpha));
 
     gl(glPushMatrix());
-    gl(glScalef(scale.x, scale.y, 1));
+    gl(glScalef(scale.getX(), scale.getY(), 1));
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
@@ -58,15 +58,15 @@ void Grid::resize(unsigned int width, unsigned int height) noexcept
     // X lines
     for (unsigned i = 0; i <= m_width; ++i)
     {
-        vertices.push_back(Vertex{start.x + i * step.x, start.y});
-        vertices.push_back(Vertex{start.x + i * step.x, start.y + 1.f});
+        vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY()});
+        vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY() + 1.f});
     }
 
     // Y lines
     for (unsigned i = 0; i <= m_height; ++i)
     {
-        vertices.push_back(Vertex{start.x, start.y + i * step.y});
-        vertices.push_back(Vertex{start.x + 1.f, start.y + i * step.y});
+        vertices.push_back(Vertex{start.getX(), start.getY() + i * step.getY()});
+        vertices.push_back(Vertex{start.getX() + 1.f, start.getY() + i * step.getY()});
     }
 
     assert(getBuffer() != 0);

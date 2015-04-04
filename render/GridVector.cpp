@@ -29,7 +29,7 @@ namespace render {
 void GridVector::render(const Vector<float>& scale) noexcept
 {
     gl(glPushMatrix());
-    gl(glScalef(scale.x, scale.y, 1));
+    gl(glScalef(scale.getX(), scale.getY(), 1));
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
@@ -86,15 +86,18 @@ void GridVector::resize(unsigned int width, unsigned int height, const Vector<fl
         {
             // Get vector normalized by max length
             const Vector<float> vec = data[i + j * m_width] / max;
-            const Vector<float> pos{start.x + i * step.x + step.x / 2.f, start.y + j * step.y + step.y / 2.f};
-            const float red = 5 * fabs(vec.x);
-            const float green = 5 * std::max(vec.y, 0.f);
-            const float blue = 5 * std::max(-vec.y, 0.f);
+            const Vector<float> pos{
+                    start.getX() + i * step.getX() + step.getX() / 2.f,
+                    start.getY() + j * step.getY() + step.getY() / 2.f
+            };
+            const float red = 5 * fabs(vec.getX());
+            const float green = 5 * std::max(vec.getY(), 0.f);
+            const float blue = 5 * std::max(-vec.getY(), 0.f);
 
             const Vector<float> dest = pos + vec * step;
 
-            vertices.push_back(Vertex{pos.x, pos.y, red, green, blue});
-            vertices.push_back(Vertex{dest.x, dest.y, red, green, blue});
+            vertices.push_back(Vertex{pos.getX(), pos.getY(), red, green, blue});
+            vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});
         }
     }
 

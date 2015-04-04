@@ -18,9 +18,10 @@ namespace render {
 
 /* ************************************************************************ */
 
-Circle::Circle() noexcept
-    : Drawable()
+void Circle::init()
 {
+    Drawable::init();
+
     constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;
 
     struct Vertex { GLfloat x, y; };
@@ -50,11 +51,13 @@ Circle::Circle() noexcept
 
 void Circle::render(const Position& pos, float radius, const Color& color) noexcept
 {
+    assert(getBuffer() != 0);
+
     // Draw color
     gl(glColor4f(color.red, color.green, color.blue, color.alpha));
 
     gl(glPushMatrix());
-    gl(glTranslatef(pos.x, pos.y, 0));
+    gl(glTranslatef(pos.getX(), pos.getY(), 0));
     gl(glScalef(radius, radius, radius));
 
     // Bind buffer

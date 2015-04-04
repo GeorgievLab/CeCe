@@ -22,7 +22,15 @@ void Cell::update(units::Duration dt)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
+void Cell::renderInit(render::Context& context)
+{
+    m_renderObject.init();
+}
+#endif
 
+/* ************************************************************************ */
+
+#ifdef ENABLE_RENDER
 void Cell::render(render::Context& context)
 {
     auto gfp = getGfp();
@@ -37,9 +45,8 @@ void Cell::render(render::Context& context)
     const auto pos = getPosition();
     const auto radius = calcSphereRadius(getVolume());
 
-    context.drawCircle({pos.x, pos.y}, radius, {red, green, blue, 0.8f});
+    m_renderObject.render(pos, radius, {red, green, blue, 0.8f});
 }
-
 #endif
 
 /* ************************************************************************ */

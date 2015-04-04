@@ -7,7 +7,6 @@
 #include "core/Units.hpp"
 
 #ifdef ENABLE_RENDER
-// Render
 #include "render/Context.hpp"
 #endif
 
@@ -17,18 +16,15 @@ namespace simulator {
 
 /* ************************************************************************ */
 
+class World;
+
+/* ************************************************************************ */
+
 /**
- * @brief Basic simulation object.
+ * @brief Abstract class for simulation modules.
  */
-class Object
+class Module
 {
-
-// Public Types
-public:
-
-
-    /// Object ID type.
-    using IdType = unsigned long;
 
 
 // Public Ctors & Dtors
@@ -36,29 +32,11 @@ public:
 
 
     /**
-     * @brief Constructor.
-     */
-    Object();
-
-
-    /**
      * @brief Destructor.
      */
-    virtual ~Object();
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns object ID.
-     *
-     * @return
-     */
-    IdType getId() const noexcept
+    virtual ~Module()
     {
-        return m_id;
+        // Nothing to do
     }
 
 
@@ -67,16 +45,17 @@ public:
 
 
     /**
-     * @brief Update object state.
+     * @brief Update module state.
      *
-     * @param dt Simulation time step.
+     * @param dt    Simulation time step.
+     * @param world World object.
      */
-    virtual void update(units::Duration dt) = 0;
+    virtual void update(units::Duration dt, World& world) = 0;
 
 
 #ifdef ENABLE_RENDER
     /**
-     * @brief Initialize object for rendering.
+     * @brief Initialize module for rendering.
      *
      * @param context
      */
@@ -86,27 +65,18 @@ public:
     }
 #endif
 
-
 #ifdef ENABLE_RENDER
     /**
-     * @brief Render object.
+     * @brief Render module.
      *
      * @param context
+     * @param world
      */
-    virtual void render(render::Context& context)
+    virtual void render(render::Context& context, const World& world)
     {
         // Nothing to do
     }
 #endif
-
-// Private Data Members
-private:
-
-    /// ID generator.
-    static IdType s_id;
-
-    /// Object unique ID.
-    IdType m_id;
 
 };
 

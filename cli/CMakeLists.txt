@@ -22,6 +22,7 @@ add_executable(cli
 target_link_libraries(cli
     parser
     simulator
+    core
     ${RENDER_DEP}
     ${RENDER_LIBS}
     ${JPEG_LIBRARIES}

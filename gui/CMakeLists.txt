@@ -34,6 +34,7 @@ add_executable(gui
 target_link_libraries(gui
     simulator
     parser
+    core
     ${RENDER_DEP}
     ${RENDER_LIBS}
     ${wxWidgets_LIBRARIES}

@@ -65,18 +65,29 @@ namespace render {
 
 /* ************************************************************************ */
 
-GridValue::GridValue() noexcept
-    : Drawable()
-    , m_vertexShader(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc))
-    , m_fragmentShader(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc))
-    , m_program(m_vertexShader, m_fragmentShader)
+GridValue::~GridValue()
 {
+    // Delete program
+    if (m_texture)
+        gl(glDeleteTextures(1, &m_texture));
+}
+
+/* ************************************************************************ */
+
+void GridValue::init(Vector<unsigned int> size, const float* data)
+{
+    Drawable::init();
+
     // Generate texture
     gl(glGenTextures(1, &m_texture));
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+
+    m_vertexShader.init(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
+    m_fragmentShader.init(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
+    m_program.init(m_vertexShader, m_fragmentShader);
 
     // Fetch data pointers
     gl(m_dataPtr = glGetUniformLocation(m_program.getId(), "data"));
@@ -97,14 +108,8 @@ GridValue::GridValue() noexcept
         vertices.data(),
         GL_STATIC_DRAW
     ));
-}
 
-/* ************************************************************************ */
-
-GridValue::~GridValue()
-{
-    // Delete program
-    gl(glDeleteTextures(1, &m_texture));
+    resize(size, data);
 }
 
 /* ************************************************************************ */
@@ -112,7 +117,7 @@ GridValue::~GridValue()
 void GridValue::render(const Vector<float>& scale) noexcept
 {
     gl(glPushMatrix());
-    gl(glScalef(scale.x, scale.y, 1));
+    gl(glScalef(scale.getX(), scale.getY(), 1));
 
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
@@ -154,7 +159,7 @@ void GridValue::resize(Vector<unsigned int> size, const float* data)
     m_size = std::move(size);
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_size.width, m_size.height, 0, GL_RED, GL_FLOAT, data));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_size.getWidth(), m_size.getHeight(), 0, GL_RED, GL_FLOAT, data));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
@@ -163,7 +168,7 @@ void GridValue::resize(Vector<unsigned int> size, const float* data)
 void GridValue::update(const float* data) noexcept
 {
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_size.width, m_size.height, GL_RED, GL_FLOAT, data));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_size.getWidth(), m_size.getHeight(), GL_RED, GL_FLOAT, data));
 }
 
 /* ************************************************************************ */

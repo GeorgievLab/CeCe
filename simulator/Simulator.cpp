@@ -19,6 +19,8 @@ namespace simulator {
 /* ************************************************************************ */
 
 Simulator::Simulator()
+    : m_isRunning{false}
+    , m_timeStep{1.0f}
 {
     // Nothing
 }
@@ -58,7 +60,7 @@ void Simulator::step()
 
     {
         assert(m_world);
-        m_world->update();
+        m_world->update(getTimeStep());
     }
 
     // Sleep
@@ -78,19 +80,42 @@ void Simulator::reset()
 void Simulator::update(units::Duration dt)
 {
     assert(m_world);
+
+    // Update modules
+    for (auto& module : getModules())
+        module->update(dt, *m_world);
+
     m_world->update(dt);
 }
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
+void Simulator::renderInit(render::Context& context)
+{
+    // Init world for rendering
+    assert(m_world);
+    m_world->renderInit(context);
 
+    // Init modules for rendering
+    for (auto& module : getModules())
+        module->renderInit(context);
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef ENABLE_RENDER
 void Simulator::render(render::Context& context)
 {
     assert(m_world);
+
+    // Render modules
+    for (auto& module : getModules())
+        module->render(context, *m_world);
+
     m_world->render(context);
 }
-
 #endif
 
 /* ************************************************************************ */

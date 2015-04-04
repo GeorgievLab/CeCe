@@ -2,4 +2,10 @@
 
 project(core)
 
+# Create library
+add_library(core
+    Vector.hpp
+    Vector.cpp
+)
+
 # ######################################################################### #

@@ -12,11 +12,15 @@
 
 /* ************************************************************************ */
 
+inline namespace core {
+
+/* ************************************************************************ */
+
 /**
  * @brief 2D vector.
  */
 template<typename T>
-struct Vector
+class Vector
 {
 
 // Public Types
@@ -30,23 +34,6 @@ public:
     using CT = typename std::common_type<T, T2>::type;
 
 
-// Public Data Members
-public:
-
-
-    union
-    {
-        T x;
-        T width;
-    };
-
-    union
-    {
-        T y;
-        T height;
-    };
-
-
 // Public Ctors
 public:
 
@@ -54,7 +41,10 @@ public:
     /**
      * @brief Default constructor.
      */
-    constexpr Vector() = default;
+    constexpr Vector()
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -77,7 +67,7 @@ public:
      */
     template<typename T2>
     constexpr Vector(const Vector<T2>& v) noexcept
-        : x(v.x), y(v.y)
+        : x(v.getX()), y(v.getY())
     {
         // Nothing to do
     }
@@ -125,7 +115,7 @@ public:
      *
      * @return
      */
-    bool operator==(const Vector& rhs) const noexcept
+    constexpr bool operator==(const Vector& rhs) const noexcept
     {
         return x == rhs.x && y == rhs.y;
     }
@@ -138,7 +128,7 @@ public:
      *
      * @return
      */
-    bool operator!=(const Vector& rhs) const noexcept
+    constexpr bool operator!=(const Vector& rhs) const noexcept
     {
         return !operator==(rhs);
     }
@@ -457,7 +447,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator*(const Vector<T2>& val) const noexcept
     {
-        return Vector<CT<T2>>{x * val.x, y * val.y};
+        return Vector<CT<T2>>{x * val.getX(), y * val.getY()};
     }
 
 
@@ -573,7 +563,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator/(const Vector<T2>& val) const noexcept
     {
-        return Vector<CT<T2>>{x / val.x, y / val.y};
+        return Vector<CT<T2>>{x / val.getX(), y / val.getY()};
     }
 
 
@@ -608,6 +598,98 @@ public:
     }
 
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns X coordinate.
+     *
+     * @return
+     */
+    T& getX() noexcept
+    {
+        return x;
+    }
+
+
+    /**
+     * @brief Returns X coordinate.
+     *
+     * @return
+     */
+    T getX() const noexcept
+    {
+        return x;
+    }
+
+
+    /**
+     * @brief Returns Y coordinate.
+     *
+     * @return
+     */
+    T& getY() noexcept
+    {
+        return y;
+    }
+
+
+    /**
+     * @brief Returns Y coordinate.
+     *
+     * @return
+     */
+    T getY() const noexcept
+    {
+        return y;
+    }
+
+
+    /**
+     * @brief Returns width.
+     *
+     * @return
+     */
+    T& getWidth() noexcept
+    {
+        return x;
+    }
+
+
+    /**
+     * @brief Returns width.
+     *
+     * @return
+     */
+    T getWidth() const noexcept
+    {
+        return x;
+    }
+
+
+    /**
+     * @brief Returns height.
+     *
+     * @return
+     */
+    T& getHeight() noexcept
+    {
+        return y;
+    }
+
+
+    /**
+     * @brief Returns height.
+     *
+     * @return
+     */
+    T getHeight() const noexcept
+    {
+        return y;
+    }
+
+
 // Public Operations
 public:
 
@@ -628,20 +710,20 @@ public:
      *
      * @return
      */
-    T getLengthSquared() const noexcept
+    constexpr T getLengthSquared() const noexcept
     {
         return x * x + y * y;
     }
 
 
     /**
-     * @brief Rotate current vector.
+     * @brief Rotate current vector and return rotated version.
      *
      * @param angle
      *
      * @return
      */
-    Vector rotate(units::Angle angle) const noexcept
+    Vector rotated(units::Angle angle) const noexcept
     {
         return Vector(
             x * cos(angle) - y * sin(angle),
@@ -649,7 +731,25 @@ public:
         );
     }
 
+
+// Private Data Members
+private:
+
+
+    /// X coordinate.
+    T x;
+
+    /// Y coordinate.
+    T y;
+
 };
 
 /* ************************************************************************ */
 
+extern template class Vector<float>;
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */

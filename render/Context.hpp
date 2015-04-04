@@ -108,26 +108,6 @@ public:
 
 
     /**
-     * @brief Draw sphere shape.
-     *
-     * @param pos    Sphere position.
-     * @param radius Sphere radius.
-     * @param color  Sphere color.
-     */
-    //void drawSphere(const Position& pos, float radius, const Color& color) noexcept;
-
-
-    /**
-     * @brief Draw circle shape.
-     *
-     * @param pos    Circle position.
-     * @param radius Circle radius.
-     * @param color  Circle color.
-     */
-    void drawCircle(const Position& pos, float radius, const Color& color) noexcept;
-
-
-    /**
      * @brief Draw grid.
      *
      * @param size   Grid size.

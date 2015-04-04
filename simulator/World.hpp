@@ -136,7 +136,7 @@ public:
      */
     units::Length getWidth() const noexcept
     {
-        return getSize().width;
+        return getSize().getWidth();
     }
 
 
@@ -147,85 +147,20 @@ public:
      */
     units::Length getHeight() const noexcept
     {
-        return getSize().height;
+        return getSize().getHeight();
     }
 
 
     /**
-     * @brief Returns grid with velocities.
+     * @brief Calculate start position of the world.
      *
      * @return
      */
-    GridVelocity& getVelocityGrid() noexcept
+    Vector<units::Length> getStartPosition() const noexcept
     {
-        return m_velocityGrid;
+        return getSize() * -0.5f;
     }
 
-
-    /**
-     * @brief Returns grid.
-     *
-     * @return
-     */
-    const GridVelocity& getVelocityGrid() const noexcept
-    {
-        return m_velocityGrid;
-    }
-
-
-    /**
-     * @brief Returns grid with velocities.
-     *
-     * @return
-     */
-    GridSignal& getSignalGrid() noexcept
-    {
-        return m_signalGrid;
-    }
-
-
-    /**
-     * @brief Returns grid.
-     *
-     * @return
-     */
-    const GridSignal& getSignalGrid() const noexcept
-    {
-        return m_signalGrid;
-    }
-
-
-    /**
-     * @brief Get radius of the main cell.
-     *
-     * @return
-     */
-    units::Length getMainCellRadius() const noexcept
-    {
-        return m_mainCellRadius;
-    }
-
-
-    /**
-     * @brief Returns main cell position.
-     *
-     * @return
-     */
-    const Vector<units::Length>& getMainCellPosition() const noexcept
-    {
-        return m_mainCellPosition;
-    }
-
-
-    /**
-     * @brief Returns flow speed.
-     *
-     * @return
-     */
-    float getFlowSpeed() const noexcept
-    {
-        return m_flowSpeed;
-    }
 
 
 // Public Mutators
@@ -265,7 +200,11 @@ public:
     {
         assert(obj);
         m_objects.push_back(std::move(obj));
-        return static_cast<T*>(m_objects.back().get());
+        T* ptr = static_cast<T*>(m_objects.back().get());
+#ifdef ENABLE_RENDER
+        m_renderInitList.push_back(ptr);
+#endif
+        return ptr;
     }
 
 
@@ -280,39 +219,6 @@ public:
     T* createObject(Args&&... args)
     {
         return addObject(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
-    }
-
-
-    /**
-     * @brief Set radius of the main cell.
-     *
-     * @param radius
-     */
-    void setMainCellRadius(units::Length radius) noexcept
-    {
-        m_mainCellRadius = radius;
-    }
-
-
-    /**
-     * @brief Set main cell position.
-     *
-     * @param pos
-     */
-    void setMainCellPosition(const Vector<units::Length>& pos) noexcept
-    {
-        m_mainCellPosition = pos;
-    }
-
-
-    /**
-     * @brief Set flow speed.
-     *
-     * @param speed.
-     */
-    void setFlowSpeed(float speed) noexcept
-    {
-        m_flowSpeed = speed;
     }
 
 
@@ -334,35 +240,23 @@ public:
 
     /**
      * @brief Update world.
-     */
-    void update() noexcept
-    {
-        update(m_timeStep);
-    }
-
-
-    /**
-     * @brief Update world.
      *
      * @param dt
      */
     void update(units::Duration dt) noexcept;
 
 
+#ifdef ENABLE_RENDER
     /**
-     * @brief Recalculate flow streams.
+     * @brief Initialize world for rendering.
+     *
+     * @param context
      */
-    void recalcFlowstreams();
-
-
-    /**
-     * @brief Recalculate diffusion.
-     */
-    void recalcDiffusion(units::Duration dt);
+    void renderInit(render::Context& context);
+#endif
 
 
 #ifdef ENABLE_RENDER
-
     /**
      * @brief Render world.
      *
@@ -370,30 +264,20 @@ public:
      * @param flags
      */
     void render(render::Context& context, RenderFlagsType flags = RENDER_NONE);
-
 #endif
 
 
     /**
-     * @brief Calculate real world position based on grid coordinates.
+     * @brief Calculate world step by given grid sizes.
      *
-     * @param grid
-     * @param pos
+     * @param size Grid size.
      *
      * @return
      */
     template<typename T>
-    Vector<units::Length> getPosition(const Grid<T>& grid,
-                                      const Vector<typename Grid<T>::SizeType>& pos) const noexcept
+    Vector<units::Length> calcStep(const Vector<T>& size) const noexcept
     {
-        const Vector<float> start{-getWidth() * 0.5f, -getHeight() * 0.5f};
-        const Vector<float> step{getWidth() / grid.getWidth(), getHeight() / grid.getHeight()};
-
-        // Transform i, j coordinates to position
-        // Cell center position
-        const Vector<float> coord = Vector<float>(pos) + 0.5f;
-        // Real position
-        return start + step * coord;
+        return getSize() / size;
     }
 
 
@@ -403,47 +287,18 @@ private:
     /// Number of simulation steps.
     StepNumber m_stepNumber = 0;
 
-    /// Duration step
-    units::Duration m_timeStep;
-
     /// World size.
     Vector<units::Length> m_size{units::um(400), units::um(400)};
 
     /// World objects.
     ObjectContainer m_objects;
 
-    /// World main cell radius.
-    units::Length m_mainCellRadius = units::um(20);
-
-    /// Main cell position.
-    Vector<units::Length> m_mainCellPosition{units::um(0), units::um(0)};
-
-    /// Velocity grid.
-    GridVelocity m_velocityGrid;
-
-    /// Signal grid.
-    GridSignal m_signalGrid;
-
-    /// Flow speed.
-    float m_flowSpeed = 1.f;
-
 #ifdef ENABLE_RENDER
-
     /// Render grid
     std::unique_ptr<render::Grid> m_renderGrid;
 
-    /// Render grid for velocities
-    std::unique_ptr<render::GridVector> m_renderGridVelocity;
-
-    /// If velocity grid shoudl be updated.
-    bool m_updateGridVelocity = false;
-
-    /// Render grid for signal
-    std::unique_ptr<render::GridValue> m_renderGridSignal;
-
-    /// If signal grid shoudl be updated.
-    bool m_updateGridSignal = false;
-
+    /// List of objects that requires init.
+    std::vector<Object*> m_renderInitList;
 #endif
 
 };

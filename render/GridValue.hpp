@@ -35,25 +35,6 @@ public:
 
 
     /**
-     * @brief Constructor.
-     */
-    GridValue() noexcept;
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param size
-     * @param data
-     */
-    GridValue(Vector<unsigned int> size, const float* data) noexcept
-        : GridValue()
-    {
-        resize(std::move(size), data);
-    }
-
-
-    /**
      * @brief Destructor.
      */
     ~GridValue();
@@ -76,6 +57,12 @@ public:
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Initialize.
+     */
+    void init(Vector<unsigned int> size, const float* data);
 
 
     /**
@@ -111,7 +98,7 @@ private:
     Vector<unsigned int> m_size;
 
     /// Texture.
-    GLuint m_texture;
+    GLuint m_texture = 0;
 
     /// Vertex shader.
     Shader m_vertexShader;

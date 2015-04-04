@@ -27,15 +27,6 @@ public:
 
 
     /**
-     * @brief Constructor.
-     *
-     * @param vs Vertex shader.
-     * @param fs Fragment shader.
-     */
-    Program(const Shader& vs, const Shader& fs) noexcept;
-
-
-    /**
      * @brief Destructor.
      */
     ~Program();
@@ -56,11 +47,24 @@ public:
     }
 
 
+// Public Operators
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param vs Vertex shader.
+     * @param fs Fragment shader.
+     */
+    void init(const Shader& vs, const Shader& fs);
+
+
 // Private Data Members
 private:
 
     /// OpenGL program object.
-    GLuint m_id;
+    GLuint m_id = 0;
 
 };
 

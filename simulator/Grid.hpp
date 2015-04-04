@@ -22,6 +22,7 @@ template<typename T>
 class Grid
 {
 
+
 // Public Types
 public:
 
@@ -30,6 +31,12 @@ public:
      * @brief Size type.
      */
     using SizeType = unsigned int;
+
+
+    /**
+     * @brief Container type.
+     */
+    using ContainerType = std::vector<T>;
 
 
 // Public Ctors & Dtors
@@ -43,7 +50,7 @@ public:
      */
     explicit Grid(Vector<SizeType> size)
     {
-        resize(size);
+        resize(std::move(size));
     }
 
 
@@ -85,7 +92,7 @@ public:
      */
     T& operator[](const Vector<SizeType>& coord) noexcept
     {
-        return m_data[coord.x + coord.y * getWidth()];
+        return m_data[calcOffset(coord)];
     }
 
 
@@ -98,7 +105,7 @@ public:
      */
     const T& operator[](const Vector<SizeType>& coord) const noexcept
     {
-        return m_data[coord.x + coord.y * getWidth()];
+        return m_data[calcOffset(coord)];
     }
 
 
@@ -112,8 +119,7 @@ public:
      */
     T& operator()(SizeType x, SizeType y) noexcept
     {
-        return m_data[x + y * getWidth()];
-        //return m_data[x * m_height + y];
+        return m_data[calcOffset(x, y)];
     }
 
 
@@ -127,8 +133,7 @@ public:
      */
     const T& operator()(SizeType x, SizeType y) const noexcept
     {
-        return m_data[x + y * getWidth()];
-        //return m_data[x * m_height + y];
+        return m_data[calcOffset(x, y)];
     }
 
 
@@ -154,7 +159,7 @@ public:
      */
     SizeType getWidth() const noexcept
     {
-        return m_size.width;
+        return m_size.getWidth();
     }
 
 
@@ -165,7 +170,7 @@ public:
      */
     SizeType getHeight() const noexcept
     {
-        return m_size.height;
+        return m_size.getHeight();
     }
 
 
@@ -177,6 +182,94 @@ public:
     const T* getData() const noexcept
     {
         return m_data.data();
+    }
+
+
+    /**
+     * @brief Returns grid inner container.
+     *
+     * @return
+     */
+    const ContainerType& getContainer() const noexcept
+    {
+        return m_data;
+    }
+
+
+    /**
+     * @brief Returns grid inner container.
+     *
+     * @return
+     */
+    ContainerType& getContainer() noexcept
+    {
+        return m_data;
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    typename ContainerType::iterator begin() noexcept
+    {
+        return m_data.begin();
+    }
+
+
+    /**
+     * @brief Returns begin constant iterator.
+     *
+     * @return
+     */
+    typename ContainerType::const_iterator begin() const noexcept
+    {
+        return m_data.begin();
+    }
+
+
+    /**
+     * @brief Returns begin constant iterator.
+     *
+     * @return
+     */
+    typename ContainerType::const_iterator cbegin() const noexcept
+    {
+        return m_data.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    typename ContainerType::iterator end() noexcept
+    {
+        return m_data.end();
+    }
+
+
+    /**
+     * @brief Returns end constant iterator.
+     *
+     * @return
+     */
+    typename ContainerType::const_iterator end() const noexcept
+    {
+        return m_data.end();
+    }
+
+
+    /**
+     * @brief Returns end constant iterator.
+     *
+     * @return
+     */
+    typename ContainerType::const_iterator cend() const noexcept
+    {
+        return m_data.cend();
     }
 
 
@@ -215,7 +308,7 @@ public:
     void resize(Vector<SizeType> size)
     {
         m_size = std::move(size);
-        m_data.resize(m_size.width * m_size.height);
+        m_data.resize(m_size.getWidth() * m_size.getHeight());
     }
 
 
@@ -226,13 +319,13 @@ public:
      *
      * @return
      */
-    bool inRange(Vector<SizeType> coord) const noexcept
+    bool inRange(const Vector<SizeType>& coord) const noexcept
     {
         return
-            coord.x >= 0 &&
-            coord.y >= 0 &&
-            coord.x < getWidth() &&
-            coord.y < getHeight()
+            coord.getX() >= 0 &&
+            coord.getY() >= 0 &&
+            coord.getX() < getWidth() &&
+            coord.getY() < getHeight()
         ;
     }
 
@@ -248,6 +341,32 @@ public:
     bool inRange(SizeType x, SizeType y) const noexcept
     {
         return inRange({x, y});
+    }
+
+
+    /**
+     * @brief Calculate array offset.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    SizeType calcOffset(const Vector<SizeType>& coord) const noexcept
+    {
+        return coord.getX() + coord.getY() * getWidth();
+    }
+
+    /**
+     * @brief Calculate array offset.
+     *
+     * @param x
+     * @param y
+     *
+     * @return
+     */
+    SizeType calcOffset(SizeType x, SizeType y) const noexcept
+    {
+        return calcOffset({x, y});
     }
 
 

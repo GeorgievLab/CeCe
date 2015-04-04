@@ -18,15 +18,23 @@ namespace render {
 
 Drawable::Drawable() noexcept
 {
-    gl(glGenBuffers(1, &m_buffer));
-    assert(m_buffer != 0);
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
 Drawable::~Drawable()
 {
-    gl(glDeleteBuffers(1, &m_buffer));
+    if (m_buffer)
+        gl(glDeleteBuffers(1, &m_buffer));
+}
+
+/* ************************************************************************ */
+
+void Drawable::init()
+{
+    gl(glGenBuffers(1, &m_buffer));
+    assert(m_buffer != 0);
 }
 
 /* ************************************************************************ */

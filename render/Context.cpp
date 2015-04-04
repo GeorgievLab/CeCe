@@ -85,7 +85,7 @@ void Context::setView(int width, int height) noexcept
     glLoadIdentity();
 
     // Move camera
-    glTranslatef(m_camera.getPosition().x, m_camera.getPosition().y, 0);
+    glTranslatef(m_camera.getPosition().getX(), m_camera.getPosition().getY(), 0);
 
     // Apply zoom matrix
     float scale = 1 / m_camera.getZoom();
@@ -125,7 +125,7 @@ void Context::drawLine(const Position& pos, const Vector<float>& dir, const Colo
     // Setup transformation matrix
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glTranslatef(pos.x, pos.y, 0);
+    glTranslatef(pos.getX(), pos.getY(), 0);
 
     // Draw color
     glColor4f(color.red, color.green, color.blue, color.alpha);
@@ -133,21 +133,11 @@ void Context::drawLine(const Position& pos, const Vector<float>& dir, const Colo
     glBegin(GL_LINES);
 
     glVertex2f(0, 0);
-    glVertex2f(dir.x, dir.y);
+    glVertex2f(dir.getX(), dir.getY());
 
     glEnd();
 
     glPopMatrix();
-}
-
-/* ************************************************************************ */
-
-void Context::drawCircle(const Position& pos, float radius, const Color& color) noexcept
-{
-    assert(isInit());
-
-    static Circle circle;
-    circle.render(pos, radius, color);
 }
 
 /* ************************************************************************ */
@@ -205,7 +195,7 @@ void Context::drawGrid(const Vector<float>& size, const Vector<unsigned>& count,
     assert(isInit());
 
     static Grid grid;
-    grid.resize(count.x, count.y);
+    grid.resize(count.getX(), count.getY());
     grid.render(size, color);
 }
 

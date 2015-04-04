@@ -38,16 +38,6 @@ public:
 
 
     /**
-     * @brief Constructor.
-     *
-     * @param type
-     * @param source
-     * @param length
-     */
-    Shader(Type type, const char* source, unsigned length) noexcept;
-
-
-    /**
      * @brief Destructor.
      */
     ~Shader();
@@ -68,11 +58,25 @@ public:
     }
 
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Init shader.
+     *
+     * @param type   Type of the shader.
+     * @param source Shader source.
+     * @param length Length of the shader source.
+     */
+    void init(Type type, const char* source, unsigned length);
+
+
 // Private Data Members
 private:
 
     /// OpenGL shader object.
-    GLuint m_id;
+    GLuint m_id = 0;
 
 };
 

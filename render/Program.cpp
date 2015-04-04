@@ -19,7 +19,15 @@ namespace render {
 
 /* ************************************************************************ */
 
-Program::Program(const Shader& vs, const Shader& fs) noexcept
+Program::~Program()
+{
+    if (m_id)
+        gl(glDeleteProgram(m_id));
+}
+
+/* ************************************************************************ */
+
+void Program::init(const Shader& vs, const Shader& fs)
 {
     m_id = glCreateProgram();
     assert(m_id);
@@ -44,13 +52,6 @@ Program::Program(const Shader& vs, const Shader& fs) noexcept
 
     glDetachShader(m_id, vs.getId());
     glDetachShader(m_id, fs.getId());
-}
-
-/* ************************************************************************ */
-
-Program::~Program()
-{
-    gl(glDeleteProgram(m_id));
 }
 
 /* ************************************************************************ */

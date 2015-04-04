@@ -11,8 +11,8 @@
 #include "simulator/DynamicObject.hpp"
 
 #ifdef ENABLE_RENDER
-// Render
 #include "render/Context.hpp"
+#include "render/Circle.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -141,15 +141,24 @@ public:
      */
     void update(units::Duration dt) override;
 
-#ifdef ENABLE_RENDER
 
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Initialize object for rendering.
+     *
+     * @param context
+     */
+    void renderInit(render::Context& context) override;
+#endif
+
+
+#ifdef ENABLE_RENDER
     /**
      * @brief Render cell.
      *
      * @param context
      */
-    virtual void render(render::Context& context);
-
+    void render(render::Context& context) override;
 #endif
 
 
@@ -182,6 +191,9 @@ private:
     /// Number of YFP proteins.
     FluorescentProteinCount m_yfp = 0;
 
+#ifdef ENABLE_RENDER
+    render::Circle m_renderObject;
+#endif
 };
 
 /* ************************************************************************ */

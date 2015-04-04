@@ -108,27 +108,6 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
         world.resize(width, height);
     }
 
-    // Main cell size
-    {
-        auto radius = parse_length(node.attribute("main-cell-radius").value());
-        world.setMainCellRadius(radius);
-    }
-
-    // Resize grid
-    {
-        auto grid_width = node.attribute("grid-width").as_int(0);
-        auto grid_height = node.attribute("grid-height").as_int(0);
-
-        if (grid_width == 0 || grid_height == 0)
-            throw parser::Exception("Grid width or height is zero!");
-
-        world.getVelocityGrid().resize(grid_width, grid_height);
-        world.getSignalGrid().resize(grid_width, grid_height);
-
-        // Recalculate flow streams
-        world.recalcFlowstreams();
-    }
-
     for (const auto& child : node.children("cell"))
     {
         process_cell_node(child, world);

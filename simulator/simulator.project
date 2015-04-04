@@ -25,6 +25,9 @@
     <File Name="Object.cpp"/>
     <File Name="DynamicObject.cpp"/>
     <File Name="CellGenerator.cpp"/>
+    <File Name="StreamlinesModule.cpp"/>
+    <File Name="DiffusionModule.cpp"/>
+    <File Name="DiffusionStreamlinesModule.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Yeast.hpp"/>
@@ -40,6 +43,10 @@
     <File Name="Grid.hpp"/>
     <File Name="Acceleration.hpp"/>
     <File Name="CellGenerator.hpp"/>
+    <File Name="Module.hpp"/>
+    <File Name="StreamlinesModule.hpp"/>
+    <File Name="DiffusionModule.hpp"/>
+    <File Name="DiffusionStreamlinesModule.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

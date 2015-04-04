@@ -33,14 +33,14 @@ public:
     static constexpr unsigned SEGMENTS = 100;
 
 
-// Public Ctors & Dtors
+// Public Operations
 public:
 
 
     /**
-     * @brief Constructor
+     * @brief Initialize.
      */
-    Circle() noexcept;
+    void init();
 
 
     /**

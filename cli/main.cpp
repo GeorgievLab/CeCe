@@ -8,6 +8,7 @@
 #include <csignal>
 #include <atomic>
 #include <mutex>
+#include <thread>
 #ifdef ENABLE_RENDER
 #include <chrono>
 #endif
@@ -21,6 +22,9 @@
 #include "simulator/World.hpp"
 #include "parser/Parser.hpp"
 #include "parser/WorldFactory.hpp"
+#include "simulator/StreamlinesModule.hpp"
+#include "simulator/DiffusionModule.hpp"
+#include "simulator/DiffusionStreamlinesModule.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -113,6 +117,11 @@ int main(int argc, char** argv)
         // Create world
         g_sim.setWorld(worldFactory.fromFile(argv[1]));
 
+        // Create modules
+        //g_sim.createModule<simulator::StreamlinesModule>();
+        //g_sim.createModule<simulator::DiffusionModule>();
+        g_sim.createModule<simulator::DiffusionStreamlinesModule>();
+
 #ifdef ENABLE_RENDER
         // Register callbacks:
         glutDisplayFunc([]() {
@@ -135,12 +144,14 @@ int main(int argc, char** argv)
 
             // Update simulation
             //g_sim.update(dt);
-            g_sim.update(1.0f);
+            g_sim.update(1.f);
 
             // Reset clock
             g_start = clock_type::now();
 
             std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(g_start - start).count() << " ms\n";
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
             // Force redraw
             glutPostRedisplay();
@@ -148,6 +159,9 @@ int main(int argc, char** argv)
 
         // Init start time
         g_start = clock_type::now();
+
+        // Initialize objects for rendering
+        g_sim.renderInit(g_context);
 
         glutMainLoop();
 #else

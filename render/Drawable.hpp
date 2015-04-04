@@ -53,11 +53,21 @@ public:
     }
 
 
+// Public Operators
+public:
+
+
+    /**
+     * @brief Initialize drawable object.
+     */
+    void init();
+
+
 // Private Data Members
 private:
 
     /// OpenGL buffer.
-    GLuint m_buffer;
+    GLuint m_buffer = 0;
 
 };
 

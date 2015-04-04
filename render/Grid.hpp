@@ -77,7 +77,7 @@ public:
     }
 
 
-// Public Operations
+// Public Operators
 public:
 
 
