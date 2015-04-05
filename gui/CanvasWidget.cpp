@@ -238,8 +238,8 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
     // Change vector
     auto change = event.GetPosition() - m_dragStart;
 
-    pos.x += change.x;
-    pos.y -= change.y;
+    pos.getX() += change.x;
+    pos.getY() += change.y;
 
     camera.setPosition(pos);
 
@@ -260,6 +260,7 @@ void CanvasWidget::OnMouseUp(wxMouseEvent& event)
 
 void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 {
+    /*
     auto pos = GetWorld()->getMainCellPosition();
     auto speed = GetWorld()->getFlowSpeed();
 
@@ -294,7 +295,7 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 
     if (pos_changed || speed_changed)
         GetWorld()->recalcFlowstreams();
-
+*/
     Update();
 }
 

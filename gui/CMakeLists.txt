@@ -32,13 +32,12 @@ add_executable(gui
 
 # Link libraries
 target_link_libraries(gui
-    simulator
     parser
+    simulator
     core
     ${RENDER_DEP}
     ${RENDER_LIBS}
     ${wxWidgets_LIBRARIES}
-    ${JPEG_LIBRARIES}
 )
 
 # Setup dependencies

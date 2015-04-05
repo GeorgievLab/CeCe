@@ -34,26 +34,24 @@ DiffusionStreamlinesModule::~DiffusionStreamlinesModule()
 
 void DiffusionStreamlinesModule::update(units::Duration dt, World& world)
 {
+    // Constants
+    constexpr float DIFFUSION_IGNORE = 0.0f;
+
     StreamlinesModule::update(dt, world);
     DiffusionModule::update(dt, world);
 
-    static constexpr float PI = 3.14159265359f;
-
-    auto& grid = DiffusionModule::getGrid();
+    auto& signalGrid = DiffusionModule::getGrid();
     auto& velocityGrid = StreamlinesModule::getGrid();
 
     // Precompute values
     const auto start = world.getStartPosition();
-    const auto step = world.calcStep(grid.getSize());
+    const auto step = world.calcStep(signalGrid.getSize());
 
     // Grid for changes
-    Grid<float> diffGrid(grid.getWidth(), grid.getHeight());
+    Grid<float> signalGridNew(signalGrid.getWidth(), signalGrid.getHeight());
 
     // Sizes must match
-    assert(std::distance(grid.begin(), grid.end()) == std::distance(diffGrid.begin(), diffGrid.end()));
-
-    // Generate initial diff grid values (remove previous values)
-    std::transform(grid.begin(), grid.end(), diffGrid.begin(), std::negate<float>());
+    assert(std::distance(signalGrid.begin(), signalGrid.end()) == std::distance(signalGridNew.begin(), signalGridNew.end()));
 
     // Transform i, j coordinates to position
     auto getPosition = [&start, &step](const Vector<unsigned int>& pos) {
@@ -63,36 +61,66 @@ void DiffusionStreamlinesModule::update(units::Duration dt, World& world)
         return start + step * coord;
     };
 
-    for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
+    for (decltype(signalGrid.getHeight()) j = 0; j < signalGrid.getHeight(); ++j)
     {
-        for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
+        for (decltype(signalGrid.getWidth()) i = 0; i < signalGrid.getWidth(); ++i)
         {
             const Vector<unsigned> ij(i, j);
 
-            auto& signal = grid[ij];
+            auto& signal = signalGrid[ij];
 
             // No signal to send
-            if (signal == 0)
+            if (signal <= DIFFUSION_IGNORE)
                 continue;
 
+            // Get velocity
+            assert(velocityGrid.inRange(ij));
             auto& velocity = velocityGrid[ij];
 
-            // Calculate new position
-            const Vector<float> new_pos = getPosition(ij) + velocity * dt * getFlowSpeed();
+            // Calculate coordinate change
+            Vector<float> dij = velocity * dt * getFlowSpeed() / step;
+            dij.getX() = std::abs(dij.getX());
+            dij.getY() = std::abs(dij.getY());
 
-            // Get grid position
-            const Vector<unsigned> new_ij = (new_pos - start) / step;
+            Matrix<float, 2> tmp;
+            int offset = 0;
 
-            // Out of range
-            if (!grid.inRange(new_ij))
-                continue;
+            if (velocity.getY() < 0)
+            {
+                tmp = Matrix<float, 2>{{
+                    {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() },
+                    {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())}
+                }};
+                offset = 1;
+            }
+            else
+            {
+                tmp = Matrix<float, 2>{{
+                    {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())},
+                    {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() }
+                }};
+                offset = 0;
+            }
 
-            diffGrid[new_ij] += signal;
+            // TODO: optimize
+            for (unsigned a = 0; a < 2; ++a)
+            {
+                for (unsigned b = 0; b < 2; ++b)
+                {
+                    Vector<int> ab(
+                        ij.getX() + b,
+                        ij.getY() - offset + a
+                    );
+
+                    if (signalGridNew.inRange(ab))
+                        signalGridNew[ab] += signal * tmp[a][b];
+                }
+            }
         }
     }
 
-    // Add changes to the main grid
-    std::transform(grid.begin(), grid.end(), diffGrid.begin(), grid.begin(), std::plus<float>());
+    // Replace the old grid with the new one
+    signalGrid = std::move(signalGridNew);
 }
 
 /* ************************************************************************ */

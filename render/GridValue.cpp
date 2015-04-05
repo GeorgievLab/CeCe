@@ -36,7 +36,8 @@ static const char g_vertexShaderSrc[] =
 static const char g_fragmentShaderSrc[] =
     "#version 120\n"
     "uniform sampler2D data;\n"
-    "uniform vec4 color = vec4(1, 1, 1, 1);\n"
+    "uniform ivec2 size = ivec2(16, 16);\n"
+    "uniform bool interpolate = false;\n"
     "const int COUNT = 9;\n"
     "const vec4 COLORS[COUNT] = vec4[COUNT](\n"
     "    vec4(0.208, 0.165, 0.529, 1.0), // '#352a87'\n"
@@ -50,9 +51,44 @@ static const char g_fragmentShaderSrc[] =
     "    vec4(0.976, 0.984, 0.055, 1.0)  // '#f9fb0e'\n"
     ");\n"
     "const float STEP = (1.0 / (COUNT - 1));\n"
+    "float get_value(vec2 pos) {\n"
+    "    return texture2D(data, pos).r;\n"
+    "}\n"
+    "float triangular(float f) {\n"
+    "    f = f * 0.5;\n"
+    "    if (f < 0.0)\n"
+    "        return (f + 1.0);\n"
+    "    else\n"
+    "        return (1.0 - f);\n"
+    "    return 0.0;\n"
+    "}\n"
+    "\n"
+    "float interpolate_value(vec2 pos) {\n"
+    "    float texelSize = 1.0 / size;\n"
+    "    float sum = 0.0;\n"
+    "    float denom = 0.0;\n"
+    "    vec2 ab = fract(pos * size);\n"
+    "    \n"
+    "    for (int m = -1; m <=2; m++) {\n"
+    "        for (int n = -1; n <= 2; n++) {\n"
+    "            vec2 mn = vec2(m, n);\n"
+    "            float vecData = get_value(pos + vec2(texelSize * mn));\n"
+    "            vec2 f = mn - ab;\n"
+    "            float c = triangular(f.x) * triangular(f.y);\n"
+    "            sum += vecData * c;\n"
+    "            denom += c;\n"
+    "        }\n"
+    "    }\n"
+    "    return (sum / denom);\n"
+    "}\n"
+    "\n"
     "void main() {\n"
-    "    float value = texture2D(data, gl_TexCoord[0].xy).r;\n"
-	//"    gl_FragColor = vec4(color.rgb * (1 - value), value);\n"
+    "    float value;\n"
+    "    if (interpolate)\n"
+    "        value = interpolate_value(gl_TexCoord[0].xy);\n"
+    "    else\n"
+    "        value = get_value(gl_TexCoord[0].xy);\n"
+    //"    gl_FragColor = vec4(color.rgb * (1 - value), value);\n"
     "    int ix = int(value * (COUNT - 1));\n"
     "    vec4 thermal = mix(COLORS[ix], COLORS[ix + 1], (value - (ix * STEP)) / STEP);\n"
     "    gl_FragColor = thermal;\n"
@@ -90,8 +126,8 @@ void GridValue::init(Vector<unsigned int> size, const float* data)
     m_program.init(m_vertexShader, m_fragmentShader);
 
     // Fetch data pointers
-    gl(m_dataPtr = glGetUniformLocation(m_program.getId(), "data"));
-    gl(m_colorPtr = glGetUniformLocation(m_program.getId(), "color"));
+    gl(m_sizePtr = glGetUniformLocation(m_program.getId(), "size"));
+    gl(m_interpolatePtr = glGetUniformLocation(m_program.getId(), "interpolate"));
 
     const std::array<Vertex, 4> vertices = {{
         { 0.5f,  0.5f, 1.0f, 1.0f},
@@ -122,12 +158,15 @@ void GridValue::render(const Vector<float>& scale) noexcept
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    //glColor3f(1, 1, 1);
 
     gl(glUseProgram(m_program.getId()));
-    gl(glUniform1i(m_dataPtr, 0));
     gl(glActiveTexture(GL_TEXTURE0));
-    glUniform4f(m_colorPtr, 0, 0, 0, 1);
+
+    // Set size
+    gl(glUniform2i(m_sizePtr, m_size.getWidth(), m_size.getHeight()));
+
+    // Set interpolate flag
+    gl(glUniform1i(m_interpolatePtr, 0));
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));

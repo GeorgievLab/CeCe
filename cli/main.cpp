@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 #ifdef ENABLE_RENDER
     glutInit(&argc, argv);
     glutInitWindowSize(g_width, g_height);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE);
     glutCreateWindow("Cell Simulator");
 
     g_context.init();
@@ -134,6 +134,11 @@ int main(int argc, char** argv)
         glutReshapeFunc([](int width, int height) {
             g_width = width;
             g_height = height;
+            auto size = g_sim.getWorld()->getSize();
+
+            g_context.getCamera().setZoom(
+                std::max(size.getWidth() / g_width, size.getHeight() / g_height)
+            );
         });
 
         // Idle function: update scene
@@ -144,14 +149,16 @@ int main(int argc, char** argv)
 
             // Update simulation
             //g_sim.update(dt);
-            g_sim.update(1.f);
+            //g_sim.update(1.f);
+            //for (int i = 0; i < 10; ++i)
+            g_sim.update(0.01f);
 
             // Reset clock
             g_start = clock_type::now();
 
             std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(g_start - start).count() << " ms\n";
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
             // Force redraw
             glutPostRedisplay();

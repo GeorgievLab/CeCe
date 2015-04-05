@@ -378,7 +378,7 @@ public:
      *
      * @return
      */
-    static Matrix<Vector<T>, SIZE> makeDistance() noexcept
+    static Matrix<Vector<T>, SIZE> makeDistances() noexcept
     {
         static_assert(SIZE % 2 == 1, "Size must be odd");
         static constexpr T HALF = SIZE / T(2);

@@ -10,6 +10,7 @@
 
 // Simulator
 #include "core/Matrix.hpp"
+#include "core/constants.hpp"
 #include "simulator/World.hpp"
 
 /* ************************************************************************ */
@@ -36,81 +37,42 @@ DiffusionModule::~DiffusionModule()
 void DiffusionModule::update(units::Duration dt, World& world)
 {
 
-    // Generate diffusion
-    if (false)
+/// GENERATION
+    if (true)
     {
-        auto& grid = getGrid();
+        constexpr float SOURCE_STRENGTH = 1000.f;
 
-        std::random_device rd;
-        std::default_random_engine eng(rd());
+        const float grid_half = m_grid.getHeight() / 2;
+        const int off = m_grid.getHeight() * 0.05f;
 
-        //std::bernoulli_distribution is(0.01f);
-
-        //if (is(eng))
-        {
-            std::uniform_int_distribution<int> x_gen(0, grid.getWidth() - 1);
-            std::uniform_int_distribution<int> y_gen(0, grid.getHeight() - 1);
-
-            std::uniform_int_distribution<int> count_gen(0, 10);
-            int count = count_gen(eng);
-
-            std::uniform_real_distribution<float> val_gen(0.2f, 1.f);
-
-            for (int i = 0; i < count; ++i)
-            {
-                grid(x_gen(eng), y_gen(eng)) += val_gen(eng);
-            }
-        }
+        m_grid(0, grid_half + off) += SOURCE_STRENGTH * dt;
+        m_grid(0, grid_half - off) += SOURCE_STRENGTH * dt;
     }
-    else if (true)
-    {
-        std::random_device rd;
-        std::default_random_engine eng(rd());
+/// END
 
-        std::bernoulli_distribution d(0.05f);
+    // Size of mapping matrix
+    constexpr unsigned OFFSET = 1;
+    constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+    constexpr float DIFFUSION_IGNORE = 0.0f;
 
-        // If diffusion should be generated
-        //if (d(eng))
-        {
-            auto& grid = getGrid();
-
-            constexpr int COUNT = 20;
-            int step = grid.getHeight() / COUNT;
-            int half = grid.getHeight() / 2;
-
-            for (int i = 1; i < COUNT; ++i)
-            {
-                auto& value = grid(0, i * step);
-                value = 2.f;
-            }
-        }
-    }
-
-
-    static constexpr float PI = 3.14159265359f;
-    /// Size of mapping matrix
-    static constexpr unsigned MATRIX_SIZE = 3;
-    constexpr float D = 5.f;
-
-    auto& grid = getGrid();
+    // Diffusion constant
+    constexpr float D = 0.1f;
 
     // Precompute values
     const auto start = world.getStartPosition();
-    const auto step = world.calcStep(grid.getSize());
+    const auto step = world.calcStep(m_grid.getSize());
 
-    const float A = 1.f / (4 * PI * D * dt);
+    //const float A = 1.f / (4 * constants::PI * D * dt);
+    const float A = 1.f / (constants::PI * dt);
 
     // Offset coefficients for matrix
-    static const auto MAPPINGS = Matrix<int, MATRIX_SIZE>::makeDistance();
+    static const auto DISTANCES = Matrix<int, MATRIX_SIZE>::makeDistances();
 
-    // Create grid for changes
-    Grid<float> diffGrid(grid.getWidth(), grid.getHeight());
+    // Create grid with modified values
+    Grid<float> gridNew(m_grid.getWidth(), m_grid.getHeight());
 
     // Sizes must match
-    assert(std::distance(grid.begin(), grid.end()) == std::distance(diffGrid.begin(), diffGrid.end()));
-
-    // Generate initial diff grid values (remove previous values)
-    std::transform(grid.begin(), grid.end(), diffGrid.begin(), std::negate<float>());
+    assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(gridNew.begin(), gridNew.end()));
 
     // Transform i, j coordinates to position
     // TODO: to function
@@ -124,25 +86,26 @@ void DiffusionModule::update(units::Duration dt, World& world)
     // Generate matrix with coefficients based on distance
     // TODO: precompute matrix
     const auto q = Matrix<float, MATRIX_SIZE>::generate([&step](int i, int j) {
-        return (step * MAPPINGS[i][j]).getLengthSquared();
+        return (step * DISTANCES[i][j]).getLengthSquared();
     });
 
     // Create distribution matrix
     const auto M = Matrix<float, MATRIX_SIZE>::generate([A, D, q, dt](int i, int j) {
-        return A * exp(-q[i][j] / (4 * D * dt));
+        //return A * exp(-q[i][j] / (4 * D * dt));
+        return A * exp(-q[i][j] / dt);
     }).normalize();
 
-    // Diffusion
-    for (decltype(grid.getHeight()) j = 0; j < grid.getHeight(); ++j)
+    // Recaulculate diffusion
+    for (decltype(m_grid.getHeight()) j = 0; j < m_grid.getHeight(); ++j)
     {
-        for (decltype(grid.getWidth()) i = 0; i < grid.getWidth(); ++i)
+        for (decltype(m_grid.getWidth()) i = 0; i < m_grid.getWidth(); ++i)
         {
             const Vector<GridType::SizeType> ij(i, j);
 
-            auto& signal = grid[ij];
+            auto& signal = m_grid[ij];
 
             // No signal to send
-            if (signal == 0)
+            if (signal <= DIFFUSION_IGNORE)
                 continue;
 
             // Get current position
@@ -151,27 +114,25 @@ void DiffusionModule::update(units::Duration dt, World& world)
             // Compute signal matrix
             const auto signalMatrix = M * signal;
 
-            constexpr unsigned int MATRIX_HALF = MATRIX_SIZE / 2;
-
             // TODO: optimize
             for (unsigned a = 0; a < MATRIX_SIZE; ++a)
             {
                 for (unsigned b = 0; b < MATRIX_SIZE; ++b)
                 {
                     Vector<int> ab(
-                        ij.getX() - MATRIX_HALF + b,
-                        ij.getY() - MATRIX_HALF + a
+                        ij.getX() - OFFSET + b,
+                        ij.getY() - OFFSET + a
                     );
 
-                    if (diffGrid.inRange(ab))
-                        diffGrid[ab] += signalMatrix[a][b];
+                    if (gridNew.inRange(ab))
+                        gridNew[ab] += signalMatrix[a][b];
                 }
             }
         }
     }
 
-    // Add changes to the main grid
-    std::transform(grid.begin(), grid.end(), diffGrid.begin(), grid.begin(), std::plus<float>());
+    // Replace the old grid with the new one
+    m_grid = std::move(gridNew);
 }
 
 /* ************************************************************************ */

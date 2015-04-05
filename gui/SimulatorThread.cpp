@@ -8,6 +8,9 @@
 
 // Simulator
 #include "simulator/World.hpp"
+#include "simulator/StreamlinesModule.hpp"
+#include "simulator/DiffusionModule.hpp"
+#include "simulator/DiffusionStreamlinesModule.hpp"
 
 /* ************************************************************************ */
 
@@ -21,6 +24,8 @@ SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::WorldFactory*
     : m_handler(handler)
     , m_worldFactory(factory)
 {
+    m_simulator.createModule<simulator::DiffusionStreamlinesModule>();
+
     if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
     {
         wxLogError("Could not create the worker thread!");

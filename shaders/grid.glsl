@@ -7,37 +7,8 @@ void main() {
 #version 120
 
 uniform sampler2D data;
+uniform ivec2 size = ivec2(16, 16);
 uniform bool interpolate = false;
-
-float get_value(vec2 pos)
-{
-	return texture2D(data, pos).r;
-}
-
-float calc_value(vec2 pos)
-{
-	vec2 nn = vec2(pos.x, pos.y + 1);
-  	vec2 ne = vec2(pos.x + 1, pos.y + 1);
-	vec2 ee = vec2(pos.x + 1, pos.y);
-  	vec2 se = vec2(pos.x + 1, pos.y - 1);
-  	vec2 ss = vec2(pos.x, pos.y - 1);
-  	vec2 sw = vec2(pos.x - 1, pos.y - 1);
-  	vec2 ww = vec2(pos.x - 1, pos.y);
-  	vec2 nw = vec2(pos.x - 1, pos.y + 1);
- 
-  	float sum = 0.;
-  	sum += 0.125 * get_value(nn);
-  	//sum += get_value(ne);
-  	sum += 0.125 * get_value(ee);
-  	//sum += get_value(se);
-  	sum += 0.125 * get_value(ss);
-  	//sum += get_value(sw);
-  	sum += 0.125 * get_value(ww);
-  	//sum += get_value(nw);
-  	sum += 0.5 * get_value(pos);
- 
-  	return sum;
-}
 
 const int COUNT = 9;
 const vec4 COLORS[COUNT] = vec4[COUNT](
@@ -52,22 +23,58 @@ const vec4 COLORS[COUNT] = vec4[COUNT](
  	vec4(0.976, 0.984, 0.055, 1.0)  // '#f9fb0e'
 );
 const float STEP = (1.0 / (COUNT - 1));
-	
+
+float get_value(vec2 pos)
+{
+	return texture2D(data, pos).r;
+}
+
+float triangular(float f) {
+	f = f * 0.5;
+	if (f < 0.0)
+		return (f + 1.0);
+	else
+		return (1.0 - f);
+	return 0.0;
+}
+
+float interpolate_value(vec2 pos)
+{
+	float texelSize = 1.0 / size;
+    float sum = 0.0;
+    float denom = 0.0;
+    vec2 ab = fract(pos * size);
+    
+    for (int m = -1; m <=2; m++)
+    {
+        for (int n = -1; n <= 2; n++)
+        {
+        	vec2 mn = vec2(m, n);
+			float vecData = get_value(pos + vec2(texelSize * mn));
+			vec2 f = mn - ab;
+			float c = triangular(f.x) * triangular(f.y);
+            sum += vecData * c;
+            denom += c;
+        }
+    }
+    return (sum / denom);
+}
+
 void main() {
 
 	// Calculate position
 	float value;	
 
 	if (interpolate)
-		value = calc_value(gl_TexCoord[0].xy);
+		value = interpolate_value(gl_TexCoord[0].xy);
 	else
 		value = get_value(gl_TexCoord[0].xy);
 
-	if (gl_TexCoord[0].y > 0.5)
-	{
-		gl_FragColor = vec4(value);
-	}
-	else
+	//if (gl_TexCoord[0].y > 0.5)
+	//{
+	//	gl_FragColor = vec4(value);
+	//}
+	//else
 	{
 		int ix = int(value * (COUNT - 1));
 	 	vec4 thermal = mix(COLORS[ix], COLORS[ix + 1], (value - (ix * STEP)) / STEP);
@@ -86,5 +93,6 @@ vec4 _main_COLORS_0[0][5] = vec4(0.529, 0.749, 0.467, 1);
 vec4 _main_COLORS_0[0][6] = vec4(0.82, 0.733, 0.349, 1);
 vec4 _main_COLORS_0[0][7] = vec4(0.996, 0.784, 0.196, 1);
 vec4 _main_COLORS_0[0][8] = vec4(0.976, 0.984, 0.055, 1);
-sampler2D data = load("../../qshaderedit/colormap_gray.png");
-bool interpolate = false;
+sampler2D data = load("../../qshaderedit/perlin.png");
+bool interpolate = true;
+ivec2 size = ivec2(16, 16);

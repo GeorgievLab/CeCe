@@ -109,11 +109,11 @@ private:
     /// Program
     Program m_program;
 
-    /// Pointer to shader data.
-    GLint m_dataPtr;
+    /// Pointer to shader texture size.
+    GLint m_sizePtr;
 
-    /// Pointer to shader color.
-    GLint m_colorPtr;
+    /// Pointer to shader interpolate bool.
+    GLint m_interpolatePtr;
 
 };
 

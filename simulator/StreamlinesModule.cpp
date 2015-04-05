@@ -20,8 +20,8 @@ namespace simulator {
 
 StreamlinesModule::StreamlinesModule()
     : m_grid(500)
-    , m_mainCellRadius(units::um(50))
-    , m_flowSpeed(5.f)
+    , m_mainCellRadius(units::um(1))
+    , m_flowSpeed(1.f)
 {
     // Nothing to do
 }
@@ -38,7 +38,7 @@ StreamlinesModule::~StreamlinesModule()
 void StreamlinesModule::update(units::Duration dt, World& world)
 {
     // Generate cells
-    //if (false)
+    if (false)
     {
         const float half = world.getHeight() / 2.f;
 
