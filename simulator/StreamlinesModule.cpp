@@ -63,54 +63,59 @@ void StreamlinesModule::update(units::Duration dt, World& world)
 
     // TODO: recalc only when parameters are changed.
 
-    const auto R = getMainCellRadius();
-
-    // Precompute values
-    const auto R2 = R * R;
-    const Vector<float> start = world.getSize() * -0.5f;
-    const Vector<float> step = world.getSize() / m_grid.getSize();
-
-    for (decltype(m_grid.getHeight()) j = 0; j < m_grid.getHeight(); ++j)
+    if (m_update)
     {
-        for (decltype(m_grid.getWidth()) i = 0; i < m_grid.getWidth(); ++i)
+        const auto R = getMainCellRadius();
+
+        // Precompute values
+        const auto R2 = R * R;
+        const Vector<float> start = world.getSize() * -0.5f;
+        const Vector<float> step = world.getSize() / m_grid.getSize();
+
+        for (decltype(m_grid.getHeight()) j = 0; j < m_grid.getHeight(); ++j)
         {
-            auto& velocity = m_grid(i, j);
-
-            // Transform i, j coordinates to position
-            // Cell center position
-            const Vector<float> coord = Vector<float>(i, j) + 0.5f;
-            // Real position in the world
-            const Vector<float> pos = start + step * coord - getMainCellPosition();
-
-            // Calculate squared distance from main cell
-            const auto distSq = pos.getLengthSquared();
-
-            // Cell is in main cell, ignore
-            if (distSq <= R2)
+            for (decltype(m_grid.getWidth()) i = 0; i < m_grid.getWidth(); ++i)
             {
-                velocity = Vector<float>{0.f, 0.f};
-                continue;
+                auto& velocity = m_grid(i, j);
+
+                // Transform i, j coordinates to position
+                // Cell center position
+                const Vector<float> coord = Vector<float>(i, j) + 0.5f;
+                // Real position in the world
+                const Vector<float> pos = start + step * coord - getMainCellPosition();
+
+                // Calculate squared distance from main cell
+                const auto distSq = pos.getLengthSquared();
+
+                // Cell is in main cell, ignore
+                if (distSq <= R2)
+                {
+                    velocity = Vector<float>{0.f, 0.f};
+                    continue;
+                }
+    /*
+                // Precompute values
+                const float distQuad = distSq * distSq;
+                const float xx = pos.x * pos.x;
+                const float xy = pos.x * pos.y;
+
+                // COPYRIGHT: Hynek magic
+                cell.velocity.x = U * (1 + R2 / distSq - 2 * (xx * R2) / distQuad);
+                cell.velocity.y = U * -2 * (R2 * xy) / distQuad;
+    */
+                const float theta = atan2(pos.getY(), pos.getX());
+
+                const Vector<float> u = Vector<float>{
+                    cosf(theta) * (1 - R2 / distSq),
+                    -sinf(theta) * (1 + R2 / distSq)
+                };
+
+                velocity = u.rotated(theta);
+                //cell.velocity = u;
             }
-/*
-            // Precompute values
-            const float distQuad = distSq * distSq;
-            const float xx = pos.x * pos.x;
-            const float xy = pos.x * pos.y;
-
-            // COPYRIGHT: Hynek magic
-            cell.velocity.x = U * (1 + R2 / distSq - 2 * (xx * R2) / distQuad);
-            cell.velocity.y = U * -2 * (R2 * xy) / distQuad;
-*/
-            const float theta = atan2(pos.getY(), pos.getX());
-
-            const Vector<float> u = Vector<float>{
-                cosf(theta) * (1 - R2 / distSq),
-                -sinf(theta) * (1 + R2 / distSq)
-            };
-
-            velocity = u.rotated(theta);
-            //cell.velocity = u;
         }
+
+        m_update = false;
     }
 
     // Apply streamlines to world objects

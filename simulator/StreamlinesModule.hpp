@@ -124,6 +124,7 @@ public:
     void setMainCellRadius(units::Length radius) noexcept
     {
         m_mainCellRadius = radius;
+        m_update = true;
     }
 
 
@@ -135,6 +136,7 @@ public:
     void setMainCellPosition(const Vector<units::Length>& pos) noexcept
     {
         m_mainCellPosition = pos;
+        m_update = true;
     }
 
 
@@ -197,6 +199,9 @@ private:
 
     /// Velocity grid.
     GridType m_grid;
+
+    /// If streams should be updated
+    bool m_update = true;
 
 #ifdef ENABLE_RENDER
     /// Render grid for velocities
