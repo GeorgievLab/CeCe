@@ -166,7 +166,7 @@ void GridValue::render(const Vector<float>& scale) noexcept
     gl(glUniform2i(m_sizePtr, m_size.getWidth(), m_size.getHeight()));
 
     // Set interpolate flag
-    gl(glUniform1i(m_interpolatePtr, 1));
+    gl(glUniform1i(m_interpolatePtr, m_interpolate));
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));

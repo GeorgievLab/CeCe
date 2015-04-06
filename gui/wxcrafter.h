@@ -45,11 +45,14 @@ protected:
     wxMenuItem* m_menuItemViewSep1;
     wxMenuItem* m_menuItemViewGrid;
     wxMenuItem* m_menuItemViewVelocity;
+    wxMenuItem* m_menuItemViewInterpolate;
     wxMenu* m_menuSimulation;
     wxMenuItem* m_menuItemSimulationStart;
     wxMenuItem* m_menuItemSimulationStop;
     wxMenuItem* m_menuItemSimulationStep;
     wxMenuItem* m_menuItemSimulationRestart;
+    wxMenuItem* m_menuItemSimulationSep1;
+    wxMenuItem* m_menuItemSimulationScreenshot;
     wxMenu* m_menuHelp;
     wxMenuItem* m_menuItemAbout;
     wxToolBar* m_mainToolbar;
@@ -67,12 +70,15 @@ protected:
     virtual void OnViewGridUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnViewVelocity(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewVelocityUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
+    virtual void OnViewInterpolate(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnViewInterpolateUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnSimulationStart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnSimulationStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationStep(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationRestart(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnSimulationScreenshot(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
 
 public:

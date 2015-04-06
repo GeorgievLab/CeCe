@@ -104,6 +104,9 @@ public:
 
 
 protected:
+    virtual void OnViewInterpolate(wxCommandEvent& event);
+    virtual void OnViewInterpolateUpdateUi(wxUpdateUIEvent& event);
+    virtual void OnSimulationScreenshot(wxCommandEvent& event);
 
     void OnViewGridUpdateUi(wxUpdateUIEvent& event) override;
     void OnViewVelocityUpdateUi(wxUpdateUIEvent& event) override;

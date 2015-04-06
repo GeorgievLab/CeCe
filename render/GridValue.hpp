@@ -55,6 +55,32 @@ public:
     }
 
 
+    /**
+     * @brief If interpolation is enabled.
+     *
+     * @return
+     */
+    bool isInterpolate() const noexcept
+    {
+        return m_interpolate;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Enable or disable interpolation.
+     *
+     * @param flag
+     */
+    void setInterpolate(bool flag) noexcept
+    {
+        m_interpolate = flag;
+    }
+
+
 // Public Operations
 public:
 
@@ -115,6 +141,8 @@ private:
     /// Pointer to shader interpolate bool.
     GLint m_interpolatePtr;
 
+    /// If interpolation is enabled.
+    bool m_interpolate = true;
 };
 
 /* ************************************************************************ */

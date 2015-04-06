@@ -112,6 +112,32 @@ public:
     }
 
 
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns render object.
+     *
+     * @return
+     */
+    render::GridVector& getRenderObject() noexcept
+    {
+        return m_renderObject;
+    }
+#endif
+
+
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns render object.
+     *
+     * @return
+     */
+    const render::GridVector& getRenderObject() const noexcept
+    {
+        return m_renderObject;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -213,6 +239,10 @@ private:
     render::Circle m_renderCell;
 #endif
 
+#ifdef ENABLE_RENDER
+    /// If render object should be updated
+    bool m_renderUpdate = false;
+#endif
 };
 
 /* ************************************************************************ */

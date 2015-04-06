@@ -108,6 +108,26 @@ public:
     }
 
 
+    /**
+     * @brief Find module by type.
+     *
+     * @tparam ModuleType Module type
+     *
+     * @return Pointer to module. If module doesn't exists, nullptr is returned.
+     */
+    template<typename ModuleType>
+    ModuleType* findModule() noexcept
+    {
+        for (auto& module : getModules())
+        {
+            if (auto ptr = dynamic_cast<ModuleType*>(module.get()))
+                return ptr;
+        }
+
+        return nullptr;
+    }
+
+
 // Public Mutators
 public:
 

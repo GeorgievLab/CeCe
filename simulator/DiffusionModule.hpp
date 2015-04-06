@@ -10,6 +10,7 @@
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/GridValue.hpp"
+#include "render/Grid.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -77,6 +78,58 @@ public:
     }
 
 
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns render object.
+     *
+     * @return
+     */
+    render::GridValue& getRenderObject() noexcept
+    {
+        return m_renderObject;
+    }
+#endif
+
+
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns render object.
+     *
+     * @return
+     */
+    const render::GridValue& getRenderObject() const noexcept
+    {
+        return m_renderObject;
+    }
+#endif
+
+
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns grid render object.
+     *
+     * @return
+     */
+    render::Grid& getRenderGridObject() noexcept
+    {
+        return m_renderGridObject;
+    }
+#endif
+
+
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns grid render object.
+     *
+     * @return
+     */
+    const render::Grid& getRenderGridObject() const noexcept
+    {
+        return m_renderGridObject;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -123,12 +176,14 @@ private:
     GridType m_grid;
 
 #ifdef ENABLE_RENDER
-
     /// Render grid for velocities
     render::GridValue m_renderObject;
-
 #endif
 
+#ifdef ENABLE_RENDER
+    /// Render grid
+    render::Grid m_renderGridObject;
+#endif
 };
 
 /* ************************************************************************ */

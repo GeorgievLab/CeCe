@@ -25,62 +25,55 @@ namespace render {
 class GridVector : public Drawable
 {
 
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    GridVector() noexcept
-        : Drawable()
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param width
-     * @param height
-     * @param data
-     */
-    GridVector(unsigned int width, unsigned int height, const Vector<float>* data) noexcept
-        : Drawable()
-    {
-        resize(width, height, data);
-    }
-
-
 // Public Accessors
 public:
 
 
     /**
-     * @brief Returns current grid width.
+     * @brief Returns current grid size.
      *
      * @return
      */
-    unsigned int getWidth() const noexcept
+    const Vector<unsigned int>& getSize() const noexcept
     {
-        return m_width;
+        return m_size;
     }
 
 
     /**
-     * @brief Returns current grid height.
+     * @brief If velocities rendering is enabled.
      *
      * @return
      */
-    unsigned int getHeight() const noexcept
+    bool isRenderVelocity() const noexcept
     {
-        return m_height;
+        return m_renderVelocity;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Enable or disable velocities rendering.
+     *
+     * @param flag
+     */
+    void setRenderVelocity(bool flag) noexcept
+    {
+        m_renderVelocity = flag;
     }
 
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Initialize.
+     */
+    void init(Vector<unsigned int> size, const Vector<float>* data);
 
 
     /**
@@ -94,22 +87,29 @@ public:
     /**
      * @brief Resize grid.
      *
-     * @param width
-     * @param height
+     * @param size
      * @param data
      */
-    void resize(unsigned int width, unsigned int height, const Vector<float>* data) noexcept;
+    void resize(Vector<unsigned int> size, const Vector<float>* data);
+
+
+    /**
+     * @brief Update data.
+     *
+     * @param data
+     */
+    void update(const Vector<float>* data) noexcept;
 
 
 // Private Data Members
 private:
 
 
-    /// Grid width.
-    unsigned int m_width;
+    /// Grid size.
+    Vector<unsigned int> m_size;
 
-    /// Grid width.
-    unsigned int m_height;
+    /// If velocities should be rendered.
+    bool m_renderVelocity = false;
 
 };
 

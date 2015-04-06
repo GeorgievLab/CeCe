@@ -11,6 +11,14 @@ endif ()
 find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
 include(${wxWidgets_USE_FILE})
 
+# PNG support
+find_package(PNG)
+
+if (PNG_FOUND)
+    message("-- PNG support enabled")
+    add_definitions(-DPNG_SUPPORT ${PNG_DEFINITIONS})
+endif ()
+
 # Create program
 add_executable(gui
     main.cpp
@@ -28,6 +36,8 @@ add_executable(gui
     VectorIntCtrl.cpp
     VectorFloatCtrl.h
     VectorFloatCtrl.cpp
+    PngImage.h
+    PngImage.cpp
 )
 
 # Link libraries
@@ -38,6 +48,7 @@ target_link_libraries(gui
     ${RENDER_DEP}
     ${RENDER_LIBS}
     ${wxWidgets_LIBRARIES}
+    ${PNG_LIBRARIES}
 )
 
 # Setup dependencies

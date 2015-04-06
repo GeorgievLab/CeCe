@@ -116,6 +116,7 @@ void StreamlinesModule::update(units::Duration dt, World& world)
         }
 
         m_update = false;
+        m_renderUpdate = true;
     }
 
     // Apply streamlines to world objects
@@ -159,7 +160,7 @@ void StreamlinesModule::update(units::Duration dt, World& world)
 void StreamlinesModule::renderInit(render::Context& context)
 {
     m_renderCell.init();
-    m_renderObject.init();
+    m_renderObject.init(m_grid.getSize(), m_grid.getData());
 }
 #endif
 
@@ -168,10 +169,13 @@ void StreamlinesModule::renderInit(render::Context& context)
 #ifdef ENABLE_RENDER
 void StreamlinesModule::render(render::Context& context, const World& world)
 {
-    // TODO: use Vector
-    // FIXME: Don't resize everytime
-    //m_renderObject.resize(m_grid.getWidth(), m_grid.getHeight(), m_grid.getData());
-    //m_renderObject.render(world.getSize());
+    if (m_renderUpdate)
+    {
+        m_renderObject.update(m_grid.getData());
+        m_renderUpdate = false;
+    }
+
+    m_renderObject.render(world.getSize());
 
     // Draw main cell
     if (getMainCellRadius())

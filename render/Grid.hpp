@@ -24,56 +24,44 @@ namespace render {
 class Grid : public Drawable
 {
 
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    Grid() noexcept
-        : Drawable()
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param width
-     * @param height
-     */
-    Grid(unsigned int width, unsigned int height) noexcept
-        : Drawable()
-    {
-        resize(width, height);
-    }
-
-
 // Public Accessors
 public:
 
 
     /**
-     * @brief Returns current grid width.
+     * @brief Returns current grid size.
      *
      * @return
      */
-    unsigned int getWidth() const noexcept
+    const Vector<unsigned int>& getSize() const noexcept
     {
-        return m_width;
+        return m_size;
     }
 
 
     /**
-     * @brief Returns current grid height.
+     * @brief If grid rendering is enabled.
      *
      * @return
      */
-    unsigned int getHeight() const noexcept
+    bool isRenderGrid() const noexcept
     {
-        return m_height;
+        return m_renderGrid;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Enable or disable grid rendering.
+     *
+     * @param flag
+     */
+    void setRenderGrid(bool flag) noexcept
+    {
+        m_renderGrid = flag;
     }
 
 
@@ -93,21 +81,20 @@ public:
     /**
      * @brief Resize grid.
      *
-     * @param width
-     * @param y
+     * @param size
      */
-    void resize(unsigned int width, unsigned int height) noexcept;
+    void resize(Vector<unsigned int> size) noexcept;
 
 
 // Private Data Members
 private:
 
 
-    /// Grid width.
-    unsigned int m_width;
+    /// Grid size.
+    Vector<unsigned int> m_size;
 
-    /// Grid width.
-    unsigned int m_height;
+    /// If grid shoudl be rendered.
+    bool m_renderGrid = false;
 
 };
 

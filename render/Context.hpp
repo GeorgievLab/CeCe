@@ -60,7 +60,7 @@ public:
      *
      * @return
      */
-    std::vector<std::uint8_t> getData() const noexcept;
+    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> getData() const noexcept;
 
 
 // Public Operations
@@ -105,26 +105,6 @@ public:
      * @param color Color.
      */
     void drawLine(const Position& pos, const Vector<float>& dir, const Color& color) noexcept;
-
-
-    /**
-     * @brief Draw grid.
-     *
-     * @param size   Grid size.
-     * @param count  Number of parts.
-     * @param color  Grid color.
-     */
-    void drawGrid(const Vector<float>& size, const Vector<unsigned>& count, const Color& color) noexcept;
-
-
-    /**
-     * @brief Draw 2d text.
-     *
-     * @param text
-     * @param x
-     * @param y
-     */
-    void drawText(const std::string& text, float x, float y);
 
 
 // Private Data Members

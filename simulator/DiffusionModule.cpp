@@ -141,6 +141,8 @@ void DiffusionModule::update(units::Duration dt, World& world)
 void DiffusionModule::renderInit(render::Context& context)
 {
     m_renderObject.init(m_grid.getSize(), m_grid.getData());
+    m_renderGridObject.init();
+    m_renderGridObject.resize(m_grid.getSize());
 }
 #endif
 
@@ -151,6 +153,7 @@ void DiffusionModule::render(render::Context& context, const World& world)
 {
     m_renderObject.update(m_grid.getData());
     m_renderObject.render(world.getSize());
+    m_renderGridObject.render(world.getSize(), {1, 0, 0, 1});
 }
 #endif
 

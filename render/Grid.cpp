@@ -19,6 +19,9 @@ namespace render {
 
 void Grid::render(const Vector<float>& scale, const Color& color) noexcept
 {
+    if (!isRenderGrid())
+        return;
+
     // Draw color
     gl(glColor4f(color.red, color.green, color.blue, color.alpha));
 
@@ -30,8 +33,11 @@ void Grid::render(const Vector<float>& scale, const Color& color) noexcept
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, 0, 0));
 
+    auto width = m_size.getWidth();
+    auto height = m_size.getHeight();
+
     // Draw circle
-    gl(glDrawArrays(GL_LINES, 0, 2 * ((m_width + 1) + (m_height + 1))));
+    gl(glDrawArrays(GL_LINES, 0, 2 * ((width + 1) + (height + 1))));
 
     // Disable states
     gl(glDisableClientState(GL_VERTEX_ARRAY));
@@ -42,28 +48,30 @@ void Grid::render(const Vector<float>& scale, const Color& color) noexcept
 
 /* ************************************************************************ */
 
-void Grid::resize(unsigned int width, unsigned int height) noexcept
+void Grid::resize(Vector<unsigned int> size) noexcept
 {
-    m_width = width;
-    m_height = height;
+    m_size = std::move(size);
+
+    auto width = m_size.getWidth();
+    auto height = m_size.getHeight();
 
     constexpr Vector<float> start{-0.5f, -0.5f};
-    const Vector<float> step{1.f / m_width, 1.f / m_height};
+    const Vector<float> step{1.f / width, 1.f / height};
 
     struct Vertex { GLfloat x, y; };
 
     std::vector<Vertex> vertices;
-    vertices.reserve((m_width + 1) * (m_height + 1));
+    vertices.reserve((width + 1) * (height + 1));
 
     // X lines
-    for (unsigned i = 0; i <= m_width; ++i)
+    for (unsigned i = 0; i <= width; ++i)
     {
         vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY()});
         vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY() + 1.f});
     }
 
     // Y lines
-    for (unsigned i = 0; i <= m_height; ++i)
+    for (unsigned i = 0; i <= height; ++i)
     {
         vertices.push_back(Vertex{start.getX(), start.getY() + i * step.getY()});
         vertices.push_back(Vertex{start.getX() + 1.f, start.getY() + i * step.getY()});

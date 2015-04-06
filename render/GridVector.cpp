@@ -26,8 +26,20 @@ namespace render {
 
 /* ************************************************************************ */
 
+void GridVector::init(Vector<unsigned int> size, const Vector<float>* data)
+{
+    Drawable::init();
+
+    resize(size, data);
+}
+
+/* ************************************************************************ */
+
 void GridVector::render(const Vector<float>& scale) noexcept
 {
+    if (!isRenderVelocity())
+        return;
+
     gl(glPushMatrix());
     gl(glScalef(scale.getX(), scale.getY(), 1));
 
@@ -39,7 +51,7 @@ void GridVector::render(const Vector<float>& scale) noexcept
     gl(glColorPointer(3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(GLfloat))));
 
     // Draw circle
-    gl(glDrawArrays(GL_LINES, 0, 2 * m_width * m_height));
+    gl(glDrawArrays(GL_LINES, 0, 2 * m_size.getWidth() * m_size.getHeight()));
 
     // Disable states
     gl(glDisableClientState(GL_COLOR_ARRAY));
@@ -51,24 +63,33 @@ void GridVector::render(const Vector<float>& scale) noexcept
 
 /* ************************************************************************ */
 
-void GridVector::resize(unsigned int width, unsigned int height, const Vector<float>* data) noexcept
+void GridVector::resize(Vector<unsigned int> size, const Vector<float>* data)
 {
-    m_width = width;
-    m_height = height;
+    m_size = std::move(size);
 
+    update(data);
+}
+
+/* ************************************************************************ */
+
+void GridVector::update(const Vector<float>* data) noexcept
+{
     constexpr Vector<float> start{-0.5f, -0.5f};
-    const Vector<float> step{1.f / m_width, 1.f / m_height};
+    const Vector<float> step{1.f / m_size.getWidth(), 1.f / m_size.getHeight()};
+
+    auto width = m_size.getWidth();
+    auto height = m_size.getHeight();
 
     std::vector<Vertex> vertices;
-    vertices.reserve(2 * m_width * m_height);
+    vertices.reserve(2 * width * height);
 
     // Get maximum value
     float max_squared = 1.f;
-    for (decltype(m_width) i = 0; i < m_width; ++i)
+    for (decltype(height) j = 0; j < height; ++j)
     {
-        for (decltype(m_height) j = 0; j < m_height; ++j)
+        for (decltype(width) i = 0; i < width; ++i)
         {
-            const Vector<float>& vec = data[i + j * m_width];
+            const Vector<float>& vec = data[i + j * width];
             const float len_squared = vec.getLengthSquared();
 
             if (max_squared < len_squared)
@@ -80,12 +101,12 @@ void GridVector::resize(unsigned int width, unsigned int height, const Vector<fl
     const float max = std::sqrt(max_squared);
 
     // Draw grid vectors
-    for (decltype(m_width) i = 0; i < m_width; ++i)
+    for (decltype(height) j = 0; j < height; ++j)
     {
-        for (decltype(m_height) j = 0; j < m_height; ++j)
+        for (decltype(width) i = 0; i < width; ++i)
         {
             // Get vector normalized by max length
-            const Vector<float> vec = data[i + j * m_width] / max;
+            const Vector<float> vec = data[i + j * width] / max;
             const Vector<float> pos{
                     start.getX() + i * step.getX() + step.getX() / 2.f,
                     start.getY() + j * step.getY() + step.getY() / 2.f

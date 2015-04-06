@@ -30,18 +30,25 @@ namespace render {
 
 /* ************************************************************************ */
 
-std::vector<std::uint8_t> Context::getData() const noexcept
+std::pair<std::vector<std::uint8_t>, Vector<unsigned>> Context::getData() const noexcept
 {
-    std::vector<std::uint8_t> data;
+    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> result;
 
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    glReadBuffer(GL_FRONT);
-    glReadPixels(viewport[0], viewport[1], viewport[2], viewport[3],
-                 GL_RGBA, GL_UNSIGNED_BYTE, data.data());
+    auto x = viewport[0];
+    auto y = viewport[1];
+    auto width = viewport[2];
+    auto height = viewport[3];
 
-    return data;
+    result.first.resize(3 * width * height);
+    result.second = Vector<unsigned>(width, height);
+
+    glReadBuffer(GL_FRONT);
+    glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, result.first.data());
+
+    return result;
 }
 
 /* ************************************************************************ */
@@ -57,6 +64,9 @@ void Context::init() noexcept
     // Enable blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
     m_is_init = true;
 }
@@ -138,75 +148,6 @@ void Context::drawLine(const Position& pos, const Vector<float>& dir, const Colo
     glEnd();
 
     glPopMatrix();
-}
-
-/* ************************************************************************ */
-/*
-void Context::drawSphere(const Position& pos, float radius, const Color& color) noexcept
-{
-    constexpr float DEG2RAD = 3.14159f / 180.f;
-
-    // Setup transformation matrix
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glTranslatef(pos.x, pos.y, pos.z);
-
-    // Sphere color
-    glColor4f(color.red, color.green, color.blue, color.alpha);
-
-    constexpr int LATS = 20;
-    constexpr int LONGS = 20;
-
-    for (int i = 0; i <= LATS; i++)
-    {
-        double lat0 = M_PI * (-0.5 + (double) (i - 1) / LATS);
-        double z0   = sin(lat0);
-        double zr0  = cos(lat0);
-
-        double lat1 = M_PI * (-0.5 + (double) i / LATS);
-        double z1 = sin(lat1);
-        double zr1 = cos(lat1);
-
-        glBegin(GL_QUAD_STRIP);
-
-        for (int j = 0; j <= LONGS; j++)
-        {
-            double lng = 2 * M_PI * (double) (j - 1) / LONGS;
-            double x = cos(lng);
-            double y = sin(lng);
-
-            glNormal3f(x * zr0, y * zr0, z0);
-            glVertex3f(radius * x * zr0, radius * y * zr0, radius * z0);
-            glNormal3f(x * zr1, y * zr1, z1);
-            glVertex3f(radius * x * zr1, radius * y * zr1, radius * z1);
-        }
-
-        glEnd();
-    }
-
-    glPopMatrix();
-}
-*/
-/* ************************************************************************ */
-
-void Context::drawGrid(const Vector<float>& size, const Vector<unsigned>& count,
-                       const Color& color) noexcept
-{
-    assert(isInit());
-
-    static Grid grid;
-    grid.resize(count.getX(), count.getY());
-    grid.render(size, color);
-}
-
-/* ************************************************************************ */
-
-void Context::drawText(const std::string& text, float x, float y)
-{
-    assert(isInit());
-
-    glRasterPos2f(x, y);
-    //glutBitmapString(GLUT_BITMAP_HELVETICA_12, reinterpret_cast<const unsigned char*>(text.c_str()));
 }
 
 /* ************************************************************************ */

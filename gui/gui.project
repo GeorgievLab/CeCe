@@ -25,6 +25,7 @@
     <File Name="SimulatorThread.cpp"/>
     <File Name="VectorFloatCtrl.cpp"/>
     <File Name="VectorIntCtrl.cpp"/>
+    <File Name="PngImage.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>
@@ -34,6 +35,7 @@
     <File Name="VectorIntCtrl.h"/>
     <File Name="VectorFloatCtrl.h"/>
     <File Name="VectorCtrlBase.h"/>
+    <File Name="PngImage.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>

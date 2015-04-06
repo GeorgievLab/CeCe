@@ -13,6 +13,7 @@
 // Simulator
 #include "simulator/World.hpp"
 #include "simulator/StreamlinesModule.hpp"
+#include "simulator/DiffusionModule.hpp"
 #include "render/Context.hpp"
 
 // GUI
@@ -65,38 +66,69 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
 
 bool CanvasWidget::IsViewGrid() const noexcept
 {
-    return m_renderFlags & simulator::World::RENDER_GRID;
+    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+
+    if (module)
+        return module->getRenderGridObject().isRenderGrid();
+
+    return false;
 }
 
 /* ************************************************************************ */
 
 bool CanvasWidget::IsViewVelocity() const noexcept
 {
-    return m_renderFlags & simulator::World::RENDER_VELOCITY;
+    auto* module = m_simulator->findModule<simulator::StreamlinesModule>();
+
+    if (module)
+        return module->getRenderObject().isRenderVelocity();
+
+    return false;
+}
+
+/* ************************************************************************ */
+
+bool CanvasWidget::IsViewInterpolation() const noexcept
+{
+    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+
+    if (module)
+        return module->getRenderObject().isInterpolate();
+
+    return false;
 }
 
 /* ************************************************************************ */
 
 void CanvasWidget::SetViewGrid(bool flag) noexcept
 {
-    if (flag)
-        m_renderFlags |= simulator::World::RENDER_GRID;
-    else
-        m_renderFlags &= ~simulator::World::RENDER_GRID;
-
-    Update();
+    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+    if (module)
+    {
+        module->getRenderGridObject().setRenderGrid(flag);
+    }
 }
 
 /* ************************************************************************ */
 
 void CanvasWidget::SetViewVelocity(bool flag) noexcept
 {
-    if (flag)
-        m_renderFlags |= simulator::World::RENDER_VELOCITY;
-    else
-        m_renderFlags &= ~simulator::World::RENDER_VELOCITY;
+    auto* module = m_simulator->findModule<simulator::StreamlinesModule>();
+    if (module)
+    {
+        module->getRenderObject().setRenderVelocity(flag);
+    }
+}
 
-    Update();
+/* ************************************************************************ */
+
+void CanvasWidget::SetViewInterpolation(bool flag) noexcept
+{
+    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+    if (module)
+    {
+        module->getRenderObject().setInterpolate(flag);
+    }
 }
 
 /* ************************************************************************ */
@@ -286,18 +318,8 @@ void CanvasWidget::OnMouseUp(wxMouseEvent& event)
 
 void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 {
-    simulator::StreamlinesModule* module = nullptr;
-
-    for (auto& mod : m_simulator->getModules())
-    {
-        auto ptr = dynamic_cast<simulator::StreamlinesModule*>(mod.get());
-
-        if (ptr)
-        {
-            module = ptr;
-            break;
-        }
-    }
+    wxASSERT(m_simulator);
+    auto* module = m_simulator->findModule<simulator::StreamlinesModule>();
 
     if (!module)
         return;

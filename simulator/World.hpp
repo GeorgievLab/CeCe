@@ -294,9 +294,6 @@ private:
     ObjectContainer m_objects;
 
 #ifdef ENABLE_RENDER
-    /// Render grid
-    std::unique_ptr<render::Grid> m_renderGrid;
-
     /// List of objects that requires init.
     std::vector<Object*> m_renderInitList;
 #endif

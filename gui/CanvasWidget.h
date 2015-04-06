@@ -77,6 +77,28 @@ public:
 
 
     /**
+     * @brief Returns renderer.
+     *
+     * @return
+     */
+    render::Context& GetRenderer() noexcept
+    {
+        return m_renderer;
+    }
+
+
+    /**
+     * @brief Returns renderer.
+     *
+     * @return
+     */
+    const render::Context& GetRenderer() const noexcept
+    {
+        return m_renderer;
+    }
+
+
+    /**
      * @brief If grid is rendered.
      *
      * @return
@@ -90,6 +112,14 @@ public:
      * @param flag
      */
     bool IsViewVelocity() const noexcept;
+
+
+    /**
+     * @brief If interpolation is enabled.
+     *
+     * @param flag
+     */
+    bool IsViewInterpolation() const noexcept;
 
 
 // Public Mutators
@@ -122,6 +152,14 @@ public:
      * @param flag
      */
     void SetViewVelocity(bool flag) noexcept;
+
+
+    /**
+     * @brief Enable or disable signal interpolation.
+     *
+     * @param flag
+     */
+    void SetViewInterpolation(bool flag) noexcept;
 
 
 // Public Operations
@@ -269,9 +307,6 @@ private:
 
     /// Time from last FPS recalculation.
     std::chrono::milliseconds m_renderFpsRecalc;
-
-    /// Render flags.
-    simulator::World::RenderFlagsType m_renderFlags = simulator::World::RENDER_NONE;
 
     /// Unable to render due an error.
     bool m_error = false;

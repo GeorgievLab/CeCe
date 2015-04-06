@@ -11,6 +11,11 @@
 // Simulator
 #include "parser/WorldFactory.hpp"
 
+// GUI
+#ifdef PNG_SUPPORT
+#include "PngImage.h"
+#endif
+
 /* ************************************************************************ */
 
 /**
@@ -383,6 +388,48 @@ void MainFrame::OnViewGridUpdateUi(wxUpdateUIEvent& event)
 void MainFrame::OnViewVelocityUpdateUi(wxUpdateUIEvent& event)
 {
     event.Check(m_glCanvasView->IsViewVelocity());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
+{
+    wxString selection = wxFileSelector(
+        wxFileSelectorPromptStr,
+        wxEmptyString,
+        "screenshot.png",
+        wxEmptyString,
+        "PNG (*.png)|*.png",
+        wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+    );
+
+    if (selection.IsEmpty())
+        return;
+
+    auto& renderer = m_glCanvasView->GetRenderer();
+
+    // Get image data
+    auto data = renderer.getData();
+#ifdef PNG_SUPPORT
+    if (!SavePNG(wxFileName::FileName(selection), data.first, data.second.getWidth(), data.second.getHeight()))
+#endif
+    {
+        wxMessageBox("Unable to save image", wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
+    }
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewInterpolate(wxCommandEvent& event)
+{
+    m_glCanvasView->SetViewInterpolation(m_menuItemViewInterpolate->IsChecked());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewInterpolateUpdateUi(wxUpdateUIEvent& event)
+{
+    event.Check(m_glCanvasView->IsViewInterpolation());
 }
 
 /* ************************************************************************ */
