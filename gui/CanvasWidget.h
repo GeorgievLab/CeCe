@@ -151,10 +151,7 @@ public:
     /**
      * @brief On resize event.
      */
-    void OnResize(wxSizeEvent& event)
-    {
-        //Update();
-    }
+    void OnResize(wxSizeEvent& event);
 
 
     /**
@@ -278,6 +275,9 @@ private:
 
     /// Unable to render due an error.
     bool m_error = false;
+
+    /// Base zoom.
+    float m_baseZoom = 1.f;
 };
 
 /* ************************************************************************ */

@@ -12,8 +12,7 @@
 
 // Simulator
 #include "simulator/World.hpp"
-
-// Render
+#include "simulator/StreamlinesModule.hpp"
 #include "render/Context.hpp"
 
 // GUI
@@ -112,7 +111,7 @@ void CanvasWidget::Update() noexcept
 void CanvasWidget::ViewReset() noexcept
 {
     auto& camera = m_renderer.getCamera();
-    camera.setZoom(1.f);
+    camera.setZoom(m_baseZoom);
     camera.setPosition({0, 0});
 
     // Refresh view
@@ -134,33 +133,33 @@ void CanvasWidget::Render() noexcept
     {
         SetCurrent(*m_context);
         m_renderer.init();
+
+        wxASSERT(m_simulator);
+        m_simulator->renderInit(m_renderer);
     }
 
     wxPaintDC dc(this);
 
     m_renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
 
+    if (m_simulator->getWorld())
     {
         wxASSERT(m_mutex);
         wxMutexLocker lock(*m_mutex);
 
         // Render world
-        wxASSERT(m_simulator);
-        auto world = m_simulator->getWorld();
-        if (world)
+        try
         {
-            try
-            {
-                world->render(m_renderer, m_renderFlags);
-            }
-            catch (const std::exception& e)
-            {
-                wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
-                event->SetString(e.what());
-                wxQueueEvent(GetParent(), event.release());
-                m_error = true;
-                return;
-            }
+            wxASSERT(m_simulator);
+            m_simulator->render(m_renderer);
+        }
+        catch (const std::exception& e)
+        {
+            wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
+            event->SetString(e.what());
+            wxQueueEvent(GetParent(), event.release());
+            m_error = true;
+            return;
         }
     }
 
@@ -193,6 +192,33 @@ void CanvasWidget::Render() noexcept
 
 /* ************************************************************************ */
 
+void CanvasWidget::OnResize(wxSizeEvent& event)
+{
+    if (!(m_simulator && m_simulator->getWorld()))
+    {
+        event.Skip();
+        return;
+    }
+
+    auto size = m_simulator->getWorld()->getSize();
+
+    m_baseZoom = std::max(
+        size.getWidth() / event.GetSize().GetWidth(),
+        size.getHeight() / event.GetSize().GetHeight()
+    );
+
+    auto& camera = m_renderer.getCamera();
+    auto zoom = camera.getZoom();
+
+    zoom = std::min(std::max(0.05f * m_baseZoom, zoom), m_baseZoom);
+
+    camera.setZoom(zoom);
+
+    Update();
+}
+
+/* ************************************************************************ */
+
 void CanvasWidget::OnZoom(wxMouseEvent& event) noexcept
 {
     if (event.GetWheelAxis() != wxMOUSE_WHEEL_VERTICAL)
@@ -204,8 +230,8 @@ void CanvasWidget::OnZoom(wxMouseEvent& event) noexcept
     auto& camera = m_renderer.getCamera();
     auto zoom = camera.getZoom();
 
-    zoom -= 0.001 * event.GetWheelRotation();
-    zoom = std::min(std::max(0.05f, zoom), 10.f);
+    zoom -= m_baseZoom * 0.001 * event.GetWheelRotation();
+    zoom = std::min(std::max(0.05f * m_baseZoom, zoom), m_baseZoom);
 
     // Set camera zoom
     camera.setZoom(zoom);
@@ -239,7 +265,7 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
     auto change = event.GetPosition() - m_dragStart;
 
     pos.getX() += change.x;
-    pos.getY() += change.y;
+    pos.getY() -= change.y;
 
     camera.setPosition(pos);
 
@@ -260,9 +286,24 @@ void CanvasWidget::OnMouseUp(wxMouseEvent& event)
 
 void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 {
-    /*
-    auto pos = GetWorld()->getMainCellPosition();
-    auto speed = GetWorld()->getFlowSpeed();
+    simulator::StreamlinesModule* module = nullptr;
+
+    for (auto& mod : m_simulator->getModules())
+    {
+        auto ptr = dynamic_cast<simulator::StreamlinesModule*>(mod.get());
+
+        if (ptr)
+        {
+            module = ptr;
+            break;
+        }
+    }
+
+    if (!module)
+        return;
+
+    auto pos = module->getMainCellPosition();
+    auto speed = module->getFlowSpeed();
 
     bool pos_changed = false;
     bool speed_changed = false;
@@ -271,13 +312,13 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
     {
     default: break;
     case 'W':
-    case 'w': pos.y += units::um(10); pos_changed = true; break;
+    case 'w': pos.getY() += units::um(1); pos_changed = true; break;
     case 'S':
-    case 's': pos.y -= units::um(10); pos_changed = true; break;
+    case 's': pos.getY() -= units::um(1); pos_changed = true; break;
     case 'A':
-    case 'a': pos.x -= units::um(10); pos_changed = true; break;
+    case 'a': pos.getX() -= units::um(1); pos_changed = true; break;
     case 'D':
-    case 'd': pos.x += units::um(10); pos_changed = true; break;
+    case 'd': pos.getX() += units::um(1); pos_changed = true; break;
     case WXK_NUMPAD_ADD:
     case '+': speed += 1; speed_changed = true; break;
     case WXK_NUMPAD_SUBTRACT:
@@ -288,14 +329,11 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
     //    speed = 0;
 
     if (pos_changed)
-        GetWorld()->setMainCellPosition(pos);
+        module->setMainCellPosition(pos);
 
     if (speed_changed)
-        GetWorld()->setFlowSpeed(speed);
+        module->setFlowSpeed(speed);
 
-    if (pos_changed || speed_changed)
-        GetWorld()->recalcFlowstreams();
-*/
     Update();
 }
 

@@ -20,7 +20,7 @@ namespace simulator {
 
 Simulator::Simulator()
     : m_isRunning{false}
-    , m_timeStep{1.0f}
+    , m_timeStep{0.01f}
 {
     // Nothing
 }
@@ -59,8 +59,7 @@ void Simulator::step()
     auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(16);
 
     {
-        assert(m_world);
-        m_world->update(getTimeStep());
+        update(getTimeStep());
     }
 
     // Sleep
