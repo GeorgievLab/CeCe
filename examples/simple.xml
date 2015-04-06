@@ -1,3 +1,3 @@
-<world width="500um" height="500um" grid-width="100" grid-height="100" main-cell-radius="50um">
+<world width="8" height="8" grid-width="1" grid-height="1" main-cell-radius="1">
 
 </world>
