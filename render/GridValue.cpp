@@ -64,7 +64,7 @@ static const char g_fragmentShaderSrc[] =
     "}\n"
     "\n"
     "float interpolate_value(vec2 pos) {\n"
-    "    float texelSize = 1.0 / size;\n"
+    "    vec2 texelSize = 1.0 / size;\n"
     "    float sum = 0.0;\n"
     "    float denom = 0.0;\n"
     "    vec2 ab = fract(pos * size);\n"
@@ -120,6 +120,8 @@ void GridValue::init(Vector<unsigned int> size, const float* data)
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
     m_vertexShader.init(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
     m_fragmentShader.init(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));

@@ -38,7 +38,6 @@ void DiffusionStreamlinesModule::update(units::Duration dt, World& world)
     constexpr float DIFFUSION_IGNORE = 0.0f;
 
     StreamlinesModule::update(dt, world);
-    DiffusionModule::update(dt, world);
 
     auto& signalGrid = DiffusionModule::getGrid();
     auto& velocityGrid = StreamlinesModule::getGrid();
@@ -121,6 +120,9 @@ void DiffusionStreamlinesModule::update(units::Duration dt, World& world)
 
     // Replace the old grid with the new one
     signalGrid = std::move(signalGridNew);
+
+    // Update diffusion
+    DiffusionModule::update(dt, world);
 }
 
 /* ************************************************************************ */

@@ -40,21 +40,21 @@ float triangular(float f) {
 
 float interpolate_value(vec2 pos)
 {
-	float texelSize = 1.0 / size;
-    float sum = 0.0;
-    float denom = 0.0;
-    vec2 ab = fract(pos * size);
+	vec2 texelSize = 1.0 / size;
+	float sum = 0.0;
+	float denom = 0.0;
+	vec2 ab = fract(pos * size);
     
-    for (int m = -1; m <=2; m++)
-    {
-        for (int n = -1; n <= 2; n++)
-        {
-        	vec2 mn = vec2(m, n);
+	for (int m = -1; m <=2; m++)
+	{
+		for (int n = -1; n <= 2; n++)
+		{
+			vec2 mn = vec2(m, n);
 			float vecData = get_value(pos + vec2(texelSize * mn));
 			vec2 f = mn - ab;
 			float c = triangular(f.x) * triangular(f.y);
-            sum += vecData * c;
-            denom += c;
+			sum += vecData * c;
+			denom += c;
         }
     }
     return (sum / denom);
@@ -84,15 +84,6 @@ void main() {
 	//gl_FragColor = vec4(vec3(value, 0, 0), 1.0);
 }
 [Parameters]
-vec4 _main_COLORS_0[0][0] = vec4(0.208, 0.165, 0.529, 1);
-vec4 _main_COLORS_0[0][1] = vec4(0.059, 0.361, 0.867, 1);
-vec4 _main_COLORS_0[0][2] = vec4(0.078, 0.506, 0.839, 1);
-vec4 _main_COLORS_0[0][3] = vec4(0.024, 0.643, 0.792, 1);
-vec4 _main_COLORS_0[0][4] = vec4(0.18, 0.718, 0.643, 1);
-vec4 _main_COLORS_0[0][5] = vec4(0.529, 0.749, 0.467, 1);
-vec4 _main_COLORS_0[0][6] = vec4(0.82, 0.733, 0.349, 1);
-vec4 _main_COLORS_0[0][7] = vec4(0.996, 0.784, 0.196, 1);
-vec4 _main_COLORS_0[0][8] = vec4(0.976, 0.984, 0.055, 1);
 sampler2D data = load("../../qshaderedit/perlin.png");
-bool interpolate = true;
 ivec2 size = ivec2(16, 16);
+bool interpolate = false;

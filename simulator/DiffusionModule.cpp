@@ -43,10 +43,10 @@ void DiffusionModule::update(units::Duration dt, World& world)
         constexpr float SOURCE_STRENGTH = 1000.f;
 
         const float grid_half = m_grid.getHeight() / 2;
-        const int off = m_grid.getHeight() * 0.05f;
+        const int off = m_grid.getHeight() * 0.1f;
 
-        m_grid(0, grid_half + off) += SOURCE_STRENGTH * dt;
-        m_grid(0, grid_half - off) += SOURCE_STRENGTH * dt;
+        for (int i = -1; i < 1; ++i)
+            m_grid(0, grid_half + (i + 0.5) * off) += SOURCE_STRENGTH * dt;
     }
 /// END
 
