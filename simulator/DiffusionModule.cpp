@@ -74,15 +74,6 @@ void DiffusionModule::update(units::Duration dt, World& world)
     // Sizes must match
     assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(gridNew.begin(), gridNew.end()));
 
-    // Transform i, j coordinates to position
-    // TODO: to function
-    auto getPosition = [&start, &step](const Vector<unsigned int>& pos) {
-        // Cell center position
-        const Vector<float> coord = Vector<float>(pos) + 0.5f;
-        // Real position
-        return start + step * coord;
-    };
-
     // Generate matrix with coefficients based on distance
     // TODO: precompute matrix
     const auto q = Matrix<float, MATRIX_SIZE>::generate([&step](int i, int j) {
@@ -107,9 +98,6 @@ void DiffusionModule::update(units::Duration dt, World& world)
             // No signal to send
             if (signal <= DIFFUSION_IGNORE)
                 continue;
-
-            // Get current position
-            const Vector<float> pos = getPosition(ij);
 
             // Compute signal matrix
             const auto signalMatrix = M * signal;

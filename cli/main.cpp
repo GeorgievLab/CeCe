@@ -156,7 +156,7 @@ int main(int argc, char** argv)
             // Reset clock
             g_start = clock_type::now();
 
-            std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(g_start - start).count() << " ms\n";
+            std::cout << "Time: " << std::chrono::duration_cast<std::chrono::microseconds>(g_start - start).count() << " us\n";
 
             //std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
