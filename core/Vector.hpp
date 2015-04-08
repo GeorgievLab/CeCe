@@ -157,7 +157,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator+(const Vector<T2>& v) const noexcept
     {
-        return Vector<CT<T2>>{x + v.x, y + v.y};
+        return Vector<CT<T2>>{x + v.getX(), y + v.getY()};
     }
 
 
@@ -186,8 +186,8 @@ public:
     template<typename T2>
     Vector& operator+=(const Vector<T2>& v) noexcept
     {
-        x += v.x;
-        y += v.y;
+        x += v.getX();
+        y += v.getY();
         return *this;
     }
 
@@ -273,7 +273,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator-(const Vector<T2>& v) const noexcept
     {
-        return Vector<CT<T2>>{x - v.x, y - v.y};
+        return Vector<CT<T2>>{x - v.getX(), y - v.getY()};
     }
 
 
@@ -302,8 +302,8 @@ public:
     template<typename T2>
     Vector& operator-=(const Vector<T2>& v) noexcept
     {
-        x -= v.x;
-        y -= v.y;
+        x -= v.getX();
+        y -= v.getY();
         return *this;
     }
 
@@ -476,8 +476,8 @@ public:
     template<typename T2>
     Vector& operator*=(const Vector<T2>& val) noexcept
     {
-        x *= val.x;
-        y *= val.y;
+        x *= val.getX();
+        y *= val.getY();
         return *this;
     }
 
