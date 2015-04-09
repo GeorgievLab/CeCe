@@ -102,7 +102,6 @@ void DiffusionModule::update(units::Duration dt, World& world)
      * [0, width * height), only one range check is required.
      */
 
-#if 0
     const int width = m_grid.getWidth();
     const int height = m_grid.getHeight();
 
@@ -112,66 +111,48 @@ void DiffusionModule::update(units::Duration dt, World& world)
         {+width - 1, +width, +width + 1}
     }};
 
+    // Current column
+    int column = 0;
+    int row = 0;
+
     // Foreach grid cells
-    for (auto it = m_grid.begin(), ite = m_grid.end(); it != ite; ++it)
+    auto gridPtr = m_grid.cbegin();
+    auto gridEndPtr = m_grid.cend();
+    auto gridNewPtr = gridNew.begin();
+
+    // Grid sizes are same, so we don't have to check both ranges
+    for (; gridPtr != gridEndPtr; ++gridPtr, ++gridNewPtr)
     {
         // Get current signal
-        const auto signal = *it;
+        const auto signal = *gridPtr;
 
         // No signal to send
-        if (signal <= DIFFUSION_IGNORE)
-            continue;
-
-        // Compute signal matrix
-        const auto signalMatrix = M * signal;
-
-        // TODO: optimize
-        for (unsigned a = 0; a < MATRIX_SIZE; ++a)
+        if (signal > DIFFUSION_IGNORE)
         {
-            for (unsigned b = 0; b < MATRIX_SIZE; ++b)
-            {
-                auto off = std::distance(m_grid.begin(), it) + MAPPING_MATRIX[a][b];
-
-                if (off >= 0 && off < width * height)
-                    *std::next(gridNew.begin(), off) += signalMatrix[a][b];
-            }
-        }
-    }
-
-#else
-    // Recaulculate diffusion
-    for (decltype(m_grid.getHeight()) j = 0; j < m_grid.getHeight(); ++j)
-    {
-        for (decltype(m_grid.getWidth()) i = 0; i < m_grid.getWidth(); ++i)
-        {
-            const Vector<GridType::SizeType> ij(i, j);
-
-            auto& signal = m_grid[ij];
-
-            // No signal to send
-            if (signal <= DIFFUSION_IGNORE)
-                continue;
-
-            // Compute signal matrix
-            const auto signalMatrix = M * signal;
-
             // TODO: optimize
-            for (unsigned a = 0; a < MATRIX_SIZE; ++a)
+            for (unsigned a = row < OFFSET ? OFFSET - row : 0;
+                 a < ((height - row) < OFFSET ? MATRIX_SIZE - (height - row) : MATRIX_SIZE);
+                 ++a)
             {
-                for (unsigned b = 0; b < MATRIX_SIZE; ++b)
+                for (unsigned b = column < OFFSET ? OFFSET - column : 0;
+                     b < ((width - column) < OFFSET ? MATRIX_SIZE - (width - column) : MATRIX_SIZE);
+                     ++b)
                 {
-                    Vector<int> ab(
-                        ij.getX() - OFFSET + b,
-                        ij.getY() - OFFSET + a
-                    );
+                    auto ptr = gridNewPtr + MAPPING_MATRIX[a][b];
 
-                    if (gridNew.inRange(ab))
-                        gridNew[ab] += signalMatrix[a][b];
+                    if (ptr >= gridNew.begin() && ptr < gridNew.end())
+                        *ptr += M[a][b] * signal;
                 }
             }
         }
+
+        if (++column == width)
+        {
+            column = 0;
+            ++row;
+        }
+
     }
-#endif
 
     // Replace the old grid with the new one
     m_grid = std::move(gridNew);
