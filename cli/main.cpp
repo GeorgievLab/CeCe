@@ -46,6 +46,11 @@ std::mutex g_log_mutex;
 
 /* ************************************************************************ */
 
+simulator::StreamlinesModule* g_streamlinesModule;
+simulator::DiffusionModule* g_diffusionModule;
+
+/* ************************************************************************ */
+
 #ifdef ENABLE_RENDER
 render::Context g_context;
 #endif
@@ -120,7 +125,11 @@ int main(int argc, char** argv)
         // Create modules
         //g_sim.createModule<simulator::StreamlinesModule>();
         //g_sim.createModule<simulator::DiffusionModule>();
-        g_sim.createModule<simulator::DiffusionStreamlinesModule>();
+        auto ptr = g_sim.createModule<simulator::DiffusionStreamlinesModule>();
+        g_diffusionModule = ptr;
+        g_streamlinesModule = ptr;
+        g_diffusionModule->getRenderObject().setInterpolate(false);
+        //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
 
 #ifdef ENABLE_RENDER
         // Register callbacks:
@@ -146,6 +155,8 @@ int main(int argc, char** argv)
             auto start = clock_type::now();
             auto diff = start - g_start;
             float dt = std::chrono::duration<float, std::chrono::seconds::period>(diff).count();
+            static decltype(diff) s_diff;
+            static unsigned int s_count = 0;
 
             // Update simulation
             //g_sim.update(dt);
@@ -156,12 +167,35 @@ int main(int argc, char** argv)
             // Reset clock
             g_start = clock_type::now();
 
-            std::cout << "Time: " << std::chrono::duration_cast<std::chrono::microseconds>(g_start - start).count() << " us\n";
+            // Add change
+            s_diff += g_start - start;
+            ++s_count;
+
+            if (s_count == 100)
+            {
+                std::cout << "Avg Time: " << std::chrono::duration_cast<std::chrono::microseconds>(s_diff / s_count).count() << " us\n";
+
+                s_diff = {};
+                s_count = 0;
+            }
 
             //std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
             // Force redraw
             glutPostRedisplay();
+        });
+
+        glutKeyboardFunc([](unsigned char key, int x, int y) {
+            auto pos = g_streamlinesModule->getMainCellPosition();
+            switch (key)
+            {
+            case 'a': case 'A': pos.getX() -= 0.5f; break;
+            case 'd': case 'D': pos.getX() += 0.5f; break;
+            case 'w': case 'W': pos.getY() += 0.5f; break;
+            case 's': case 'S': pos.getY() -= 0.5f; break;
+            }
+
+            g_streamlinesModule->setMainCellPosition(pos);
         });
 
         // Init start time
