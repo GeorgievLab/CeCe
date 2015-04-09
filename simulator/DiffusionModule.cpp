@@ -86,6 +86,59 @@ void DiffusionModule::update(units::Duration dt, World& world)
         return A * exp(-q[i][j] / dt);
     }).normalize();
 
+    /*
+     * Algorithm:
+     * Foreach whole grid in single for loop - grid storage is 1D array.
+     * This solution remove requirements for computation array offset each time
+     * for reading and writing.
+     * Diffusion mapping matrix contains offsets from current position to
+     * the coresponding positions. Mapping matrix can be constructed as:
+     * to right: +1; to left: -1; up: -width; down: +width. For 3x3 it looks:
+     *   | -width - 1, -width, -width + 1 |
+     *   |         -1       0,         +1 |
+     *   | +width - 1, +width, +width + 1 |
+     *
+     * This solutions improve range checking as well. Because range is just
+     * [0, width * height), only one range check is required.
+     */
+
+#if 0
+    const int width = m_grid.getWidth();
+    const int height = m_grid.getHeight();
+
+    const Matrix<int, 3> MAPPING_MATRIX{{
+        {-width - 1, -width, -width + 1},
+        {       - 1,      0,        + 1},
+        {+width - 1, +width, +width + 1}
+    }};
+
+    // Foreach grid cells
+    for (auto it = m_grid.begin(), ite = m_grid.end(); it != ite; ++it)
+    {
+        // Get current signal
+        const auto signal = *it;
+
+        // No signal to send
+        if (signal <= DIFFUSION_IGNORE)
+            continue;
+
+        // Compute signal matrix
+        const auto signalMatrix = M * signal;
+
+        // TODO: optimize
+        for (unsigned a = 0; a < MATRIX_SIZE; ++a)
+        {
+            for (unsigned b = 0; b < MATRIX_SIZE; ++b)
+            {
+                auto off = std::distance(m_grid.begin(), it) + MAPPING_MATRIX[a][b];
+
+                if (off >= 0 && off < width * height)
+                    *std::next(gridNew.begin(), off) += signalMatrix[a][b];
+            }
+        }
+    }
+
+#else
     // Recaulculate diffusion
     for (decltype(m_grid.getHeight()) j = 0; j < m_grid.getHeight(); ++j)
     {
@@ -118,6 +171,7 @@ void DiffusionModule::update(units::Duration dt, World& world)
             }
         }
     }
+#endif
 
     // Replace the old grid with the new one
     m_grid = std::move(gridNew);
