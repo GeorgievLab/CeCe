@@ -7,12 +7,17 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 
+// C++
+#include <array>
+#include <vector>
+
 // Simulator
 #include "core/Vector.hpp"
 #include "render/Shader.hpp"
 #include "render/Program.hpp"
 #include "render/Grid.hpp"
 #include "render/Buffer.hpp"
+#include "render/Color.hpp"
 
 // Module
 #include "Signal.hpp"
@@ -56,6 +61,18 @@ public:
     }
 
 
+    /**
+     * @brief Get signal color.
+     *
+     * @param pos
+     * @param color
+     */
+    render::Color getColor(unsigned pos) const noexcept
+    {
+        return m_colors[pos];
+    }
+
+
 // Public Mutators
 public:
 
@@ -68,6 +85,18 @@ public:
     void setInterpolate(bool flag) noexcept
     {
         m_interpolate = flag;
+    }
+
+
+    /**
+     * @brief Set signal color.
+     *
+     * @param pos
+     * @param color
+     */
+    void setColor(unsigned pos, render::Color color) noexcept
+    {
+        m_colors[pos] = color;
     }
 
 
@@ -105,6 +134,19 @@ public:
      */
     void update(const Signal* data) noexcept;
 
+// Private Operations
+private:
+
+
+    /**
+     * @brief Update texture data
+     *
+     * @param data Source data.
+     *
+     * @return Texture data
+     */
+    render::Color* updateTextureData(const Signal* data) noexcept;
+
 
 // Private Data Members
 private:
@@ -132,6 +174,21 @@ private:
 
     /// If interpolation is enabled.
     bool m_interpolate = true;
+
+    /// Background color.
+    render::Color m_background = render::colors::BLACK;
+
+    /// Signal colors.
+    std::array<render::Color, Signal::COUNT> m_colors{{
+        render::colors::CYAN,
+        render::colors::MAGENTA,
+        render::colors::YELLOW,
+        render::colors::BLUE
+    }};
+
+    /// Texture data buffer
+    std::vector<render::Color> m_textureData;
+
 };
 
 /* ************************************************************************ */

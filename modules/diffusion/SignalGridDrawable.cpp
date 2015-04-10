@@ -205,18 +205,11 @@ void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 {
     render::Grid::resize(std::move(size));
 
-    GLenum format;
-    GLenum internalFormat = GL_RGB;
-    switch (Signal::COUNT)
-    {
-    case 1: format = GL_RED; internalFormat = GL_LUMINANCE; break;
-    case 2: format = GL_RG; break;
-    case 3: format = GL_RGB; break;
-    case 4: format = GL_RGBA; break;
-    }
+    // Resize texture buffer
+    m_textureData.resize(getWidth() * getHeight());
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, getWidth(), getHeight(), 0, format, GL_FLOAT, data));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, GL_RGBA, GL_FLOAT, updateTextureData(data)));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
@@ -224,17 +217,34 @@ void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 
 void SignalGridDrawable::update(const Signal* data) noexcept
 {
-    GLenum format;
-    switch (Signal::COUNT)
+    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), GL_RGBA, GL_FLOAT, updateTextureData(data)));
+}
+
+/* ************************************************************************ */
+
+render::Color* SignalGridDrawable::updateTextureData(const Signal* data) noexcept
+{
+    // Update all pixels
+    for (auto it = m_textureData.begin(), ite = m_textureData.end(); it != ite; ++it, ++data)
     {
-    case 1: format = GL_RED; break;
-    case 2: format = GL_RG; break;
-    case 3: format = GL_RGB; break;
-    case 4: format = GL_RGBA; break;
+        // Pixel alias
+        auto& pixel = *it;
+
+        // Set initial value as background
+        pixel = m_background;
+
+        // Mixup signal colors
+        for (unsigned int i = 0; i < Signal::COUNT; ++i)
+        {
+            pixel.red += (*data)[i] * m_colors[i].red;
+            pixel.green += (*data)[i] * m_colors[i].green;
+            pixel.blue += (*data)[i] * m_colors[i].blue;
+            pixel.alpha += (*data)[i] * m_colors[i].alpha;
+        }
     }
 
-    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), format, GL_FLOAT, data));
+    return m_textureData.data();
 }
 
 /* ************************************************************************ */
