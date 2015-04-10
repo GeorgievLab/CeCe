@@ -193,6 +193,9 @@ int main(int argc, char** argv)
             case 'd': case 'D': pos.getX() += 0.5f; break;
             case 'w': case 'W': pos.getY() += 0.5f; break;
             case 's': case 'S': pos.getY() -= 0.5f; break;
+            case 'i': case 'I':
+                g_diffusionModule->getRenderObject().setInterpolate(!g_diffusionModule->getRenderObject().isInterpolate());
+                break;
             }
 
             g_streamlinesModule->setMainCellPosition(pos);
