@@ -37,7 +37,7 @@ public:
     /**
      * @brief Number of stored signals
      */
-    static constexpr unsigned int COUNT = 1;
+    static constexpr unsigned int COUNT = 3;
 
 
     /**

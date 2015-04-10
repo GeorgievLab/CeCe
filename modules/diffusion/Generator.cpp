@@ -30,10 +30,10 @@ void Generator::update(units::Duration dt, simulator::World& world)
     auto& grid = m_diffusionModule->getGrid();
 
     const float grid_half = grid.getHeight() / 2;
-    const int off = grid.getHeight() * 0.1f;
+    const int off = grid.getHeight() * 0.05f;
 
-    for (int i = -1; i < 1; ++i)
-        grid(0, grid_half + (i + 0.5) * off) += SOURCE_STRENGTH * dt;
+    for (int i = -6; i <= 6; ++i)
+        grid(0, grid_half + i * off)[(i + 6) % Signal::COUNT] += SOURCE_STRENGTH * dt;
 }
 
 /* ************************************************************************ */
