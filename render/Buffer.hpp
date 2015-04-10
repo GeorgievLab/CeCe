@@ -3,15 +3,6 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
-// Simulator
-#include "render/errors.hpp"
-
-/* ************************************************************************ */
-
 namespace render {
 
 /* ************************************************************************ */
@@ -21,6 +12,16 @@ namespace render {
  */
 class Buffer
 {
+
+// Public Types
+public:
+
+
+    /**
+     * @brief Buffer ID type.
+     */
+    using Id = unsigned int;
+
 
 // Public Ctors & Dtors
 public:
@@ -37,11 +38,11 @@ public:
 
 
     /**
-     * @brief Return OpenGL buffer ID.
+     * @brief Return buffer ID.
      *
      * @return
      */
-    GLuint getId() const noexcept
+    Id getId() const noexcept
     {
         return m_id;
     }
@@ -60,8 +61,8 @@ public:
 // Private Data Members
 private:
 
-    /// OpenGL buffer.
-    GLuint m_id = 0;
+    /// Buffer identifier.
+    Id m_id = 0;
 
 };
 

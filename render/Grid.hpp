@@ -3,14 +3,10 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
 // Simulator
-#include "render/Position.hpp"
-#include "render/Color.hpp"
+#include "core/Vector.hpp"
 #include "render/Buffer.hpp"
+#include "render/Color.hpp"
 
 /* ************************************************************************ */
 
@@ -103,7 +99,7 @@ public:
      * @param scale Grid scale.
      * @param color Grid color.
      */
-    void render(const Vector<float>& scale, const Color& color) noexcept;
+    void draw(const Vector<float>& scale, const Color& color) noexcept;
 
 
     /**

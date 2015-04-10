@@ -9,6 +9,10 @@
 #include <array>
 #include <cassert>
 
+// OpenGL
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+
 // Simulator
 #include "render/errors.hpp"
 
@@ -49,7 +53,7 @@ void Circle::init()
 
 /* ************************************************************************ */
 
-void Circle::render(const Position& pos, float radius, const Color& color) noexcept
+void Circle::draw(const Position& pos, float radius, const Color& color) noexcept
 {
     assert(m_buffer.getId() != 0);
 

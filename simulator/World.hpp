@@ -201,7 +201,7 @@ public:
         m_objects.push_back(std::move(obj));
         T* ptr = static_cast<T*>(m_objects.back().get());
 #ifdef ENABLE_RENDER
-        m_renderInitList.push_back(ptr);
+        m_drawInitList.push_back(ptr);
 #endif
         return ptr;
     }
@@ -251,7 +251,7 @@ public:
      *
      * @param context
      */
-    void renderInit(render::Context& context);
+    void drawInit(render::Context& context);
 #endif
 
 
@@ -262,7 +262,7 @@ public:
      * @param context
      * @param flags
      */
-    void render(render::Context& context, RenderFlagsType flags = RENDER_NONE);
+    void draw(render::Context& context, RenderFlagsType flags = RENDER_NONE);
 #endif
 
 
@@ -294,7 +294,7 @@ private:
 
 #ifdef ENABLE_RENDER
     /// List of objects that requires init.
-    std::vector<Object*> m_renderInitList;
+    std::vector<Object*> m_drawInitList;
 #endif
 
 };

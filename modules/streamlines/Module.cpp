@@ -158,7 +158,7 @@ void Module::update(units::Duration dt, simulator::World& world)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::renderInit(render::Context& context)
+void Module::drawInit(render::Context& context)
 {
     m_renderCell.init();
     m_renderObject.init(m_grid.getSize(), m_grid.getData());
@@ -168,7 +168,7 @@ void Module::renderInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::render(render::Context& context, const simulator::World& world)
+void Module::draw(render::Context& context, const simulator::World& world)
 {
     if (m_renderUpdate)
     {
@@ -176,13 +176,13 @@ void Module::render(render::Context& context, const simulator::World& world)
         m_renderUpdate = false;
     }
 
-    m_renderObject.render(world.getSize());
+    m_renderObject.draw(world.getSize());
 
     // Draw main cell
     if (getMainCellRadius())
     {
         const auto& pos = getMainCellPosition();
-        m_renderCell.render(pos, getMainCellRadius(), {0.5f, 0.5f, 0.5f, 0.8f});
+        m_renderCell.draw(pos, getMainCellRadius(), {0.5f, 0.5f, 0.5f, 0.8f});
     }
 }
 #endif

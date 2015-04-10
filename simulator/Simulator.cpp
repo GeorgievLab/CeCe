@@ -90,30 +90,30 @@ void Simulator::update(units::Duration dt)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Simulator::renderInit(render::Context& context)
+void Simulator::drawInit(render::Context& context)
 {
     // Init world for rendering
     assert(m_world);
-    m_world->renderInit(context);
+    m_world->drawInit(context);
 
     // Init modules for rendering
     for (auto& module : getModules())
-        module->renderInit(context);
+        module->drawInit(context);
 }
 #endif
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Simulator::render(render::Context& context)
+void Simulator::draw(render::Context& context)
 {
     assert(m_world);
 
     // Render modules
     for (auto& module : getModules())
-        module->render(context, *m_world);
+        module->draw(context, *m_world);
 
-    m_world->render(context);
+    m_world->draw(context);
 }
 #endif
 

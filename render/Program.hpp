@@ -3,10 +3,6 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
 // Simulator
 #include "render/Shader.hpp"
 
@@ -21,6 +17,16 @@ namespace render {
  */
 class Program
 {
+
+// Public Types
+public:
+
+
+    /**
+     * @brief Buffer ID type.
+     */
+    using Id = unsigned int;
+
 
 // Public Ctors & Dtors
 public:
@@ -37,11 +43,11 @@ public:
 
 
     /**
-     * @brief Return OpenGL program ID.
+     * @brief Return program ID.
      *
      * @return
      */
-    GLuint getId() const noexcept
+    Id getId() const noexcept
     {
         return m_id;
     }
@@ -52,7 +58,7 @@ public:
 
 
     /**
-     * @brief Constructor.
+     * @brief Initializer.
      *
      * @param vs Vertex shader.
      * @param fs Fragment shader.
@@ -63,8 +69,8 @@ public:
 // Private Data Members
 private:
 
-    /// OpenGL program object.
-    GLuint m_id = 0;
+    /// Program identifier.
+    Id m_id = 0;
 
 };
 

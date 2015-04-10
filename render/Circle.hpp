@@ -3,10 +3,6 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
 // Simulator
 #include "render/Position.hpp"
 #include "render/Color.hpp"
@@ -50,7 +46,7 @@ public:
      * @param radius Circle radius.
      * @param color  Circle color.
      */
-    void render(const Position& pos, float radius, const Color& color) noexcept;
+    void draw(const Position& pos, float radius, const Color& color) noexcept;
 
 
 // Private Data Members

@@ -235,7 +235,7 @@ public:
      *
      * @param context
      */
-    void renderInit(render::Context& context);
+    void drawInit(render::Context& context);
 #endif
 
 
@@ -245,7 +245,7 @@ public:
      *
      * @param context Render context.
      */
-    void render(render::Context& context);
+    void draw(render::Context& context);
 #endif
 
 

@@ -129,20 +129,20 @@ void Module::update(units::Duration dt, simulator::World& world)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::renderInit(render::Context& context)
+void Module::drawInit(render::Context& context)
 {
-    m_diffusion.renderInit(context);
-    m_streamlines.renderInit(context);
+    m_diffusion.drawInit(context);
+    m_streamlines.drawInit(context);
 }
 #endif
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::render(render::Context& context, const simulator::World& world)
+void Module::draw(render::Context& context, const simulator::World& world)
 {
-    m_diffusion.render(context, world);
-    m_streamlines.render(context, world);
+    m_diffusion.draw(context, world);
+    m_streamlines.draw(context, world);
 }
 #endif
 

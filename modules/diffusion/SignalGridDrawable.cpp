@@ -90,7 +90,8 @@ static const char g_fragmentShaderSrc[] =
     //"    gl_FragColor = vec4(color.rgb * (1 - value), value);\n"
     "    int ix = int(value * (COUNT - 1));\n"
     "    vec4 thermal = mix(COLORS[ix], COLORS[ix + 1], (value - (ix * STEP)) / STEP);\n"
-    "    gl_FragColor = thermal;\n"
+    //"    gl_FragColor = thermal;\n"
+    "    gl_FragColor = texture2D(data, gl_TexCoord[0].xy);\n"
     "}\n"
 ;
 
@@ -195,7 +196,7 @@ void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
     gl(glPopMatrix());
 
     // Render grid
-    render::Grid::render(scale, {1, 0, 0, 1});
+    render::Grid::draw(scale, {1, 0, 0, 1});
 }
 
 /* ************************************************************************ */
@@ -204,8 +205,16 @@ void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 {
     render::Grid::resize(std::move(size));
 
+    GLenum format;
+    switch (Signal::COUNT)
+    {
+    case 1: format = GL_R; break;
+    case 2: format = GL_RG; break;
+    case 3: format = GL_RGB; break;
+    }
+
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, getWidth(), getHeight(), 0, GL_RED, GL_FLOAT, data));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, format, GL_FLOAT, data));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
@@ -213,8 +222,16 @@ void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 
 void SignalGridDrawable::update(const Signal* data) noexcept
 {
+    GLenum format;
+    switch (Signal::COUNT)
+    {
+    case 1: format = GL_R; break;
+    case 2: format = GL_RG; break;
+    case 3: format = GL_RGB; break;
+    }
+
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), GL_RED, GL_FLOAT, data));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), format, GL_FLOAT, data));
 }
 
 /* ************************************************************************ */

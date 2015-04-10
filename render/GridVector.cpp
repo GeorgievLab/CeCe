@@ -9,6 +9,10 @@
 #include <cassert>
 #include <cmath>
 
+// OpenGL
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+
 // Simulator
 #include "render/errors.hpp"
 
@@ -35,7 +39,7 @@ void GridVector::init(Vector<unsigned int> size, const Vector<float>* data)
 
 /* ************************************************************************ */
 
-void GridVector::render(const Vector<float>& scale) noexcept
+void GridVector::draw(const Vector<float>& scale) noexcept
 {
     if (!isRenderVelocity())
         return;

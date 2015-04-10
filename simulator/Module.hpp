@@ -59,7 +59,7 @@ public:
      *
      * @param context
      */
-    virtual void renderInit(render::Context& context)
+    virtual void drawInit(render::Context& context)
     {
         // Nothing to do
     }
@@ -72,7 +72,7 @@ public:
      * @param context
      * @param world
      */
-    virtual void render(render::Context& context, const World& world)
+    virtual void draw(render::Context& context, const World& world)
     {
         // Nothing to do
     }

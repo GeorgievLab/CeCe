@@ -148,7 +148,7 @@ public:
      *
      * @param context
      */
-    void renderInit(render::Context& context) override;
+    void drawInit(render::Context& context) override;
 #endif
 
 
@@ -158,7 +158,7 @@ public:
      *
      * @param context
      */
-    void render(render::Context& context) override;
+    void draw(render::Context& context) override;
 #endif
 
 

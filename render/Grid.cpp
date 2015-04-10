@@ -8,6 +8,10 @@
 #include <vector>
 #include <cassert>
 
+// OpenGL
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+
 // Simulator
 #include "render/errors.hpp"
 
@@ -24,7 +28,7 @@ void Grid::init()
 
 /* ************************************************************************ */
 
-void Grid::render(const Vector<float>& scale, const Color& color) noexcept
+void Grid::draw(const Vector<float>& scale, const Color& color) noexcept
 {
     if (!isRenderGrid())
         return;

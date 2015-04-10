@@ -3,12 +3,6 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
-/* ************************************************************************ */
-
 namespace render {
 
 /* ************************************************************************ */
@@ -18,6 +12,16 @@ namespace render {
  */
 class Shader
 {
+
+// Public Types
+public:
+
+
+    /**
+     * @brief Buffer ID type.
+     */
+    using Id = unsigned int;
+
 
 // Public Enums
 public:
@@ -48,11 +52,11 @@ public:
 
 
     /**
-     * @brief Return OpenGL shader ID.
+     * @brief Return shader identifier.
      *
      * @return
      */
-    GLuint getId() const noexcept
+    Id getId() const noexcept
     {
         return m_id;
     }
@@ -75,8 +79,8 @@ public:
 // Private Data Members
 private:
 
-    /// OpenGL shader object.
-    GLuint m_id = 0;
+    /// Shader identifier.
+    Id m_id = 0;
 
 };
 

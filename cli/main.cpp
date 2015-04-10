@@ -138,7 +138,7 @@ int main(int argc, char** argv)
         // Register callbacks:
         glutDisplayFunc([]() {
             g_context.frameBegin(g_width, g_height);
-            g_sim.render(g_context);
+            g_sim.draw(g_context);
             g_context.frameEnd();
             glutSwapBuffers();
         });
@@ -208,7 +208,7 @@ int main(int argc, char** argv)
         g_start = clock_type::now();
 
         // Initialize objects for rendering
-        g_sim.renderInit(g_context);
+        g_sim.drawInit(g_context);
 
         glutMainLoop();
 #else

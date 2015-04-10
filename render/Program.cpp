@@ -10,6 +10,10 @@
 #include <string>
 #include <stdexcept>
 
+// OpenGL
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+
 // Simulator
 #include "render/errors.hpp"
 

@@ -22,7 +22,7 @@ void Cell::update(units::Duration dt)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Cell::renderInit(render::Context& context)
+void Cell::drawInit(render::Context& context)
 {
     m_renderObject.init();
 }
@@ -31,7 +31,7 @@ void Cell::renderInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Cell::render(render::Context& context)
+void Cell::draw(render::Context& context)
 {
     auto gfp = getGfp();
     auto rfp = getRfp();
@@ -45,7 +45,7 @@ void Cell::render(render::Context& context)
     const auto pos = getPosition();
     const auto radius = calcSphereRadius(getVolume());
 
-    m_renderObject.render(pos, radius, {red, green, blue, 0.8f});
+    m_renderObject.draw(pos, radius, {red, green, blue, 0.8f});
 }
 #endif
 

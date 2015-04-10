@@ -80,7 +80,7 @@ public:
      *
      * @param context
      */
-    virtual void renderInit(render::Context& context)
+    virtual void drawInit(render::Context& context)
     {
         // Nothing to do
     }
@@ -93,7 +93,7 @@ public:
      *
      * @param context
      */
-    virtual void render(render::Context& context)
+    virtual void draw(render::Context& context)
     {
         // Nothing to do
     }

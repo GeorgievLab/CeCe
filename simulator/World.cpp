@@ -86,13 +86,13 @@ void World::update(units::Duration dt) noexcept
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void World::renderInit(render::Context& context)
+void World::drawInit(render::Context& context)
 {
     // Prepare objects for rendering
     for (const auto& obj : getObjects())
     {
         assert(obj);
-        obj->renderInit(context);
+        obj->drawInit(context);
     }
 }
 #endif
@@ -100,17 +100,17 @@ void World::renderInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void World::render(render::Context& context, RenderFlagsType flags)
+void World::draw(render::Context& context, RenderFlagsType flags)
 {
     // Prepare objects for rendering
     {
-        for (auto ptr : m_renderInitList)
+        for (auto ptr : m_drawInitList)
         {
             assert(ptr);
-            ptr->renderInit(context);
+            ptr->drawInit(context);
         }
 
-        m_renderInitList.clear();
+        m_drawInitList.clear();
     }
 
     // Draw lines around world
@@ -139,7 +139,7 @@ void World::render(render::Context& context, RenderFlagsType flags)
     for (const auto& obj : getObjects())
     {
         assert(obj);
-        obj->render(context);
+        obj->draw(context);
     }
 }
 

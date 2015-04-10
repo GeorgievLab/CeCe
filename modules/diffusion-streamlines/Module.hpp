@@ -105,7 +105,7 @@ public:
      *
      * @param context
      */
-    void renderInit(render::Context& context) override;
+    void drawInit(render::Context& context) override;
 #endif
 
 
@@ -116,7 +116,7 @@ public:
      * @param context
      * @param world
      */
-    void render(render::Context& context, const simulator::World& world) override;
+    void draw(render::Context& context, const simulator::World& world) override;
 #endif
 
 
