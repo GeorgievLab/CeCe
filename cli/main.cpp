@@ -22,9 +22,9 @@
 #include "simulator/World.hpp"
 #include "parser/Parser.hpp"
 #include "parser/WorldFactory.hpp"
-#include "modules/streamlines/StreamlinesModule.hpp"
-#include "modules/diffusion/DiffusionModule.hpp"
-#include "modules/diffusion-streamlines/DiffusionStreamlinesModule.hpp"
+#include "modules/streamlines/Module.hpp"
+#include "modules/diffusion/Module.hpp"
+#include "modules/diffusion-streamlines/Module.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -46,8 +46,8 @@ std::mutex g_log_mutex;
 
 /* ************************************************************************ */
 
-simulator::StreamlinesModule* g_streamlinesModule;
-simulator::DiffusionModule* g_diffusionModule;
+module::streamlines::Module* g_streamlinesModule;
+module::diffusion::Module* g_diffusionModule;
 
 /* ************************************************************************ */
 
@@ -123,11 +123,11 @@ int main(int argc, char** argv)
         g_sim.setWorld(worldFactory.fromFile(argv[1]));
 
         // Create modules
-        //g_sim.createModule<simulator::StreamlinesModule>();
-        //g_sim.createModule<simulator::DiffusionModule>();
-        auto ptr = g_sim.createModule<simulator::DiffusionStreamlinesModule>();
-        g_diffusionModule = ptr;
-        g_streamlinesModule = ptr;
+        //g_sim.createModule<module::streamlines::Module>();
+        //g_sim.createModule<module::diffusion::Module>();
+        auto ptr = g_sim.createModule<module::diffusion_streamlines::Module>();
+        g_diffusionModule = &ptr->getDiffusion();
+        g_streamlinesModule = &ptr->getStreamlines();
         g_diffusionModule->getRenderObject().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
 

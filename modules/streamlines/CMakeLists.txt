@@ -4,8 +4,8 @@ project(module-streamlines)
 
 # Create library
 add_library(module-streamlines
-    StreamlinesModule.hpp
-    StreamlinesModule.cpp
+    Module.hpp
+    Module.cpp
 )
 
 # Setup dependencies

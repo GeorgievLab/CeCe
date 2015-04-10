@@ -8,9 +8,9 @@
 
 // Simulator
 #include "simulator/World.hpp"
-#include "simulator/StreamlinesModule.hpp"
-#include "simulator/DiffusionModule.hpp"
-#include "simulator/DiffusionStreamlinesModule.hpp"
+#include "simulator/Module.hpp"
+#include "simulator/Module.hpp"
+#include "simulator/Module.hpp"
 
 /* ************************************************************************ */
 

@@ -17,10 +17,10 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="StreamlinesModule.cpp"/>
+    <File Name="Module.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="StreamlinesModule.hpp"/>
+    <File Name="Module.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

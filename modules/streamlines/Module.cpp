@@ -1,6 +1,6 @@
 
 // Declaration
-#include "StreamlinesModule.hpp"
+#include "Module.hpp"
 
 // C++
 #include <random>
@@ -14,11 +14,12 @@
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace module {
+namespace streamlines {
 
 /* ************************************************************************ */
 
-StreamlinesModule::StreamlinesModule()
+Module::Module()
     : m_grid(500)
     , m_mainCellRadius(units::um(1))
     , m_flowSpeed(1.f)
@@ -28,14 +29,14 @@ StreamlinesModule::StreamlinesModule()
 
 /* ************************************************************************ */
 
-StreamlinesModule::~StreamlinesModule()
+Module::~Module()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-void StreamlinesModule::update(units::Duration dt, World& world)
+void Module::update(units::Duration dt, simulator::World& world)
 {
     // Generate cells
     if (false)
@@ -54,7 +55,7 @@ void StreamlinesModule::update(units::Duration dt, World& world)
             float y = dist(eng);
 
             // Create cell
-            Cell* cell = world.createObject<Cell>();
+            simulator::Cell* cell = world.createObject<simulator::Cell>();
             cell->setVolume(units::um3(200));
             cell->setVelocity({10, 0});
             cell->setPosition({-world.getWidth() / 2.f, y});
@@ -125,7 +126,7 @@ void StreamlinesModule::update(units::Duration dt, World& world)
 
         for (auto& obj : world.getObjects())
         {
-            auto ptr = dynamic_cast<DynamicObject*>(obj.get());
+            auto ptr = dynamic_cast<simulator::DynamicObject*>(obj.get());
             if (!ptr)
                 continue;
 
@@ -157,7 +158,7 @@ void StreamlinesModule::update(units::Duration dt, World& world)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void StreamlinesModule::renderInit(render::Context& context)
+void Module::renderInit(render::Context& context)
 {
     m_renderCell.init();
     m_renderObject.init(m_grid.getSize(), m_grid.getData());
@@ -167,7 +168,7 @@ void StreamlinesModule::renderInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void StreamlinesModule::render(render::Context& context, const World& world)
+void Module::render(render::Context& context, const simulator::World& world)
 {
     if (m_renderUpdate)
     {
@@ -188,6 +189,7 @@ void StreamlinesModule::render(render::Context& context, const World& world)
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */

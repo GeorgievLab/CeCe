@@ -12,8 +12,8 @@
 
 // Simulator
 #include "simulator/World.hpp"
-#include "simulator/StreamlinesModule.hpp"
-#include "simulator/DiffusionModule.hpp"
+#include "simulator/Module.hpp"
+#include "simulator/Module.hpp"
 #include "render/Context.hpp"
 
 // GUI

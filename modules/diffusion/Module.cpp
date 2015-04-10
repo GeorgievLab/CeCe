@@ -1,10 +1,9 @@
 
 // Declaration
-#include "DiffusionModule.hpp"
+#include "Module.hpp"
 
 // C++
 #include <limits>
-#include <algorithm>
 #include <functional>
 #include <random>
 
@@ -15,11 +14,12 @@
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace module {
+namespace diffusion {
 
 /* ************************************************************************ */
 
-DiffusionModule::DiffusionModule()
+Module::Module()
     : m_grid(500)
 {
     // Nothing to do
@@ -27,14 +27,14 @@ DiffusionModule::DiffusionModule()
 
 /* ************************************************************************ */
 
-DiffusionModule::~DiffusionModule()
+Module::~Module()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-void DiffusionModule::update(units::Duration dt, World& world)
+void Module::update(units::Duration dt, simulator::World& world)
 {
 
 /// GENERATION
@@ -69,7 +69,7 @@ void DiffusionModule::update(units::Duration dt, World& world)
     static const auto DISTANCES = Matrix<int, MATRIX_SIZE>::makeDistances();
 
     // Create grid with modified values
-    Grid<float> gridNew(m_grid.getWidth(), m_grid.getHeight());
+    decltype(m_grid) gridNew(m_grid.getWidth(), m_grid.getHeight());
 
     // Sizes must match
     assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(gridNew.begin(), gridNew.end()));
@@ -161,7 +161,7 @@ void DiffusionModule::update(units::Duration dt, World& world)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void DiffusionModule::renderInit(render::Context& context)
+void Module::renderInit(render::Context& context)
 {
     m_renderObject.init(m_grid.getSize(), m_grid.getData());
     m_renderGridObject.init();
@@ -172,7 +172,7 @@ void DiffusionModule::renderInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void DiffusionModule::render(render::Context& context, const World& world)
+void Module::render(render::Context& context, const simulator::World& world)
 {
     m_renderObject.update(m_grid.getData());
     m_renderObject.render(world.getSize());
@@ -182,6 +182,7 @@ void DiffusionModule::render(render::Context& context, const World& world)
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */

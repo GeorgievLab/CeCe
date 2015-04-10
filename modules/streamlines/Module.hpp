@@ -16,14 +16,15 @@
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace module {
+namespace streamlines {
 
 /* ************************************************************************ */
 
 /**
  * @brief Module for streamlines.
  */
-class StreamlinesModule : public virtual Module
+class Module : public simulator::Module
 {
 
 // Public Types
@@ -31,7 +32,7 @@ public:
 
 
     /// Grid type.
-    using GridType = Grid<Velocity>;
+    using GridType = simulator::Grid<simulator::Velocity>;
 
     /// Grid size type.
     using SizeType = GridType::SizeType;
@@ -44,13 +45,13 @@ public:
     /**
      * @brief Constructor.
      */
-    StreamlinesModule();
+    Module();
 
 
     /**
      * @brief Destructor.
      */
-    virtual ~StreamlinesModule();
+    virtual ~Module();
 
 
 // Public Accessors
@@ -187,7 +188,7 @@ public:
      * @param dt    Simulation time step.
      * @param world World object.
      */
-    void update(units::Duration dt, World& world) override;
+    void update(units::Duration dt, simulator::World& world) override;
 
 
 #ifdef ENABLE_RENDER
@@ -207,7 +208,7 @@ public:
      * @param context
      * @param world
      */
-    void render(render::Context& context, const World& world) override;
+    void render(render::Context& context, const simulator::World& world) override;
 #endif
 
 
@@ -247,6 +248,7 @@ private:
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */

@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "DiffusionStreamlinesModule.hpp"
+#include "Module.hpp"
 
 // C++
 #include <limits>
@@ -14,40 +14,41 @@
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace module {
+namespace diffusion_streamlines {
 
 /* ************************************************************************ */
 
-DiffusionStreamlinesModule::DiffusionStreamlinesModule()
+Module::Module()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-DiffusionStreamlinesModule::~DiffusionStreamlinesModule()
+Module::~Module()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-void DiffusionStreamlinesModule::update(units::Duration dt, World& world)
+void Module::update(units::Duration dt, simulator::World& world)
 {
     // Constants
     constexpr float DIFFUSION_IGNORE = 0.0f;
 
-    StreamlinesModule::update(dt, world);
+    m_streamlines.update(dt, world);
 
-    auto& signalGrid = DiffusionModule::getGrid();
-    auto& velocityGrid = StreamlinesModule::getGrid();
+    auto& signalGrid = m_diffusion.getGrid();
+    auto& velocityGrid = m_streamlines.getGrid();
 
     // Precompute values
     const auto start = world.getStartPosition();
     const auto step = world.calcStep(signalGrid.getSize());
 
     // Grid for changes
-    Grid<float> signalGridNew(signalGrid.getWidth(), signalGrid.getHeight());
+    simulator::Grid<float> signalGridNew(signalGrid.getWidth(), signalGrid.getHeight());
 
     // Sizes must match
     assert(std::distance(signalGrid.begin(), signalGrid.end()) == std::distance(signalGridNew.begin(), signalGridNew.end()));
@@ -77,7 +78,7 @@ void DiffusionStreamlinesModule::update(units::Duration dt, World& world)
             auto& velocity = velocityGrid[ij];
 
             // Calculate coordinate change
-            Vector<float> dij = velocity * dt * getFlowSpeed() / step;
+            Vector<float> dij = velocity * dt * m_streamlines.getFlowSpeed() / step;
             dij.getX() = std::abs(dij.getX());
             dij.getY() = std::abs(dij.getY());
 
@@ -122,31 +123,32 @@ void DiffusionStreamlinesModule::update(units::Duration dt, World& world)
     signalGrid = std::move(signalGridNew);
 
     // Update diffusion
-    DiffusionModule::update(dt, world);
+    m_diffusion.update(dt, world);
 }
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void DiffusionStreamlinesModule::renderInit(render::Context& context)
+void Module::renderInit(render::Context& context)
 {
-    DiffusionModule::renderInit(context);
-    StreamlinesModule::renderInit(context);
+    m_diffusion.renderInit(context);
+    m_streamlines.renderInit(context);
 }
 #endif
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void DiffusionStreamlinesModule::render(render::Context& context, const World& world)
+void Module::render(render::Context& context, const simulator::World& world)
 {
-    DiffusionModule::render(context, world);
-    StreamlinesModule::render(context, world);
+    m_diffusion.render(context, world);
+    m_streamlines.render(context, world);
 }
 #endif
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */

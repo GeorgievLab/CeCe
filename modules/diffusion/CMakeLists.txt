@@ -4,8 +4,8 @@ project(module-diffusion)
 
 # Create library
 add_library(module-diffusion
-    DiffusionModule.hpp
-    DiffusionModule.cpp
+    Module.hpp
+    Module.cpp
 )
 
 # Setup dependencies

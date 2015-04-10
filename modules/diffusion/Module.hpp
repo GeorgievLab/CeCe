@@ -15,14 +15,15 @@
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace module {
+namespace diffusion {
 
 /* ************************************************************************ */
 
 /**
  * @brief Module for diffusion.
  */
-class DiffusionModule : public virtual Module
+class Module : public simulator::Module
 {
 
 // Public Types
@@ -30,7 +31,7 @@ public:
 
 
     /// Grid type.
-    using GridType = Grid<float>;
+    using GridType = simulator::Grid<float>;
 
     /// Grid size type.
     using SizeType = GridType::SizeType;
@@ -43,13 +44,13 @@ public:
     /**
      * @brief Constructor.
      */
-    DiffusionModule();
+    Module();
 
 
     /**
      * @brief Destructor.
      */
-    virtual ~DiffusionModule();
+    virtual ~Module();
 
 
 // Public Accessors
@@ -145,7 +146,7 @@ public:
      * @param dt    Simulation time step.
      * @param world World object.
      */
-    void update(units::Duration dt, World& world) override;
+    void update(units::Duration dt, simulator::World& world) override;
 
 
 #ifdef ENABLE_RENDER
@@ -165,7 +166,7 @@ public:
      * @param context
      * @param world
      */
-    void render(render::Context& context, const World& world) override;
+    void render(render::Context& context, const simulator::World& world) override;
 #endif
 
 
@@ -188,6 +189,7 @@ private:
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */
