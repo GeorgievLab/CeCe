@@ -21,6 +21,7 @@
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
+    <File Name="Signal.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

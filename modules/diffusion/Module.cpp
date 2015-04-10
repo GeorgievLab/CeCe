@@ -53,7 +53,6 @@ void Module::update(units::Duration dt, simulator::World& world)
     // Size of mapping matrix
     constexpr unsigned OFFSET = 1;
     constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
-    constexpr float DIFFUSION_IGNORE = 0.0f;
 
     // Diffusion constant
     constexpr float D = 0.1f;
@@ -127,7 +126,7 @@ void Module::update(units::Duration dt, simulator::World& world)
         const auto signal = *gridPtr;
 
         // No signal to send
-        if (signal > DIFFUSION_IGNORE)
+        if (signal)
         {
             // TODO: optimize
             for (unsigned a = row < OFFSET ? OFFSET - row : 0;
@@ -141,7 +140,7 @@ void Module::update(units::Duration dt, simulator::World& world)
                     auto ptr = gridNewPtr + MAPPING_MATRIX[a][b];
 
                     if (ptr >= gridNew.begin() && ptr < gridNew.end())
-                        *ptr += M[a][b] * signal;
+                        *ptr += signal * M[a][b];
                 }
             }
         }

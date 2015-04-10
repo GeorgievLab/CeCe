@@ -13,6 +13,9 @@
 #include "render/Grid.hpp"
 #endif
 
+// Module
+#include "Signal.hpp"
+
 /* ************************************************************************ */
 
 namespace module {
@@ -31,7 +34,7 @@ public:
 
 
     /// Grid type.
-    using GridType = simulator::Grid<float>;
+    using GridType = simulator::Grid<Signal>;
 
     /// Grid size type.
     using SizeType = GridType::SizeType;
