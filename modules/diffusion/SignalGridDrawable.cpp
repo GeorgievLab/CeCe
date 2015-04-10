@@ -206,15 +206,17 @@ void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
     render::Grid::resize(std::move(size));
 
     GLenum format;
+    GLenum internalFormat = GL_RGB;
     switch (Signal::COUNT)
     {
-    case 1: format = GL_R; break;
+    case 1: format = GL_RED; internalFormat = GL_LUMINANCE; break;
     case 2: format = GL_RG; break;
     case 3: format = GL_RGB; break;
+    case 4: format = GL_RGBA; break;
     }
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, format, GL_FLOAT, data));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, getWidth(), getHeight(), 0, format, GL_FLOAT, data));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
@@ -225,9 +227,10 @@ void SignalGridDrawable::update(const Signal* data) noexcept
     GLenum format;
     switch (Signal::COUNT)
     {
-    case 1: format = GL_R; break;
+    case 1: format = GL_RED; break;
     case 2: format = GL_RG; break;
     case 3: format = GL_RGB; break;
+    case 4: format = GL_RGBA; break;
     }
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
