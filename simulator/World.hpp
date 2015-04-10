@@ -19,7 +19,6 @@
 #include "render/Context.hpp"
 #include "render/Grid.hpp"
 #include "render/GridVector.hpp"
-#include "render/GridValue.hpp"
 #endif
 
 /* ************************************************************************ */

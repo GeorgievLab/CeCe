@@ -24,6 +24,7 @@
 #include "parser/WorldFactory.hpp"
 #include "modules/streamlines/Module.hpp"
 #include "modules/diffusion/Module.hpp"
+#include "modules/diffusion/Generator.hpp"
 #include "modules/diffusion-streamlines/Module.hpp"
 
 #ifdef ENABLE_RENDER
@@ -130,6 +131,8 @@ int main(int argc, char** argv)
         g_streamlinesModule = &ptr->getStreamlines();
         g_diffusionModule->getRenderObject().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
+
+        g_sim.createModule<module::diffusion::Generator>(g_diffusionModule);
 
 #ifdef ENABLE_RENDER
         // Register callbacks:

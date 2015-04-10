@@ -28,8 +28,6 @@ add_library(render
     Grid.cpp
     GridVector.hpp
     GridVector.cpp
-    GridValue.hpp
-    GridValue.cpp
     Shader.hpp
     Shader.cpp
     Program.hpp

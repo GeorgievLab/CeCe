@@ -3,31 +3,33 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <utility>
-
 // OpenGL
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 
 // Simulator
 #include "core/Vector.hpp"
-#include "render/Position.hpp"
-#include "render/Color.hpp"
 #include "render/Drawable.hpp"
 #include "render/Shader.hpp"
 #include "render/Program.hpp"
 
+// Module
+#include "modules/diffusion/Signal.hpp"
+
 /* ************************************************************************ */
 
+namespace module {
+namespace diffusion {
 namespace render {
 
 /* ************************************************************************ */
 
 /**
- * @brief OpenGL grid for value object.
+ * @brief Signal grid.
  */
-class GridValue : public Drawable
+class SignalGrid
+    : public simulator::Grid<Signal>
+    , public render::Drawable
 {
 
 // Public Ctors & Dtors
@@ -35,9 +37,15 @@ public:
 
 
     /**
-     * @brief Destructor.
+     * @brief Constructor.
+     *
+     * @param size
      */
-    ~GridValue();
+    explicit SignalGrid(Vector<SizeType> size)
+        : simulator::Grid<Signal>(std::move(size))
+    {
+        // Nothing to do
+    }
 
 
 // Public Accessors
@@ -88,7 +96,7 @@ public:
     /**
      * @brief Initialize.
      */
-    void init(Vector<unsigned int> size, const float* data);
+    void init(Vector<unsigned int> size, const Signal* data);
 
 
     /**
@@ -96,7 +104,7 @@ public:
      *
      * @param scale Grid scale.
      */
-    void render(const Vector<float>& scale) noexcept;
+    void draw(const Vector<float>& scale) noexcept;
 
 
     /**
@@ -105,7 +113,7 @@ public:
      * @param size
      * @param data
      */
-    void resize(Vector<unsigned int> size, const float* data);
+    void resize(Vector<unsigned int> size, const Signal* data);
 
 
     /**
@@ -113,7 +121,7 @@ public:
      *
      * @param data
      */
-    void update(const float* data) noexcept;
+    void update(const Signal* data) noexcept;
 
 
 // Private Data Members
@@ -127,13 +135,13 @@ private:
     GLuint m_texture = 0;
 
     /// Vertex shader.
-    Shader m_vertexShader;
+    ::render::Shader m_vertexShader;
 
     /// Fragment shader.
-    Shader m_fragmentShader;
+    ::render::Shader m_fragmentShader;
 
     /// Program
-    Program m_program;
+    ::render::Program m_program;
 
     /// Pointer to shader texture size.
     GLint m_sizePtr;
@@ -147,6 +155,8 @@ private:
 
 /* ************************************************************************ */
 
+}
+}
 }
 
 /* ************************************************************************ */

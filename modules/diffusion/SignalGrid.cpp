@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "render/GridValue.hpp"
+#include "modules/diffusion/render/SignalGrid.hpp"
 
 // C++
 #include <array>
@@ -97,11 +97,13 @@ static const char g_fragmentShaderSrc[] =
 
 /* ************************************************************************ */
 
+namespace module {
+namespace diffusion {
 namespace render {
 
 /* ************************************************************************ */
 
-GridValue::~GridValue()
+SignalGrid::~SignalGrid()
 {
     // Delete program
     if (m_texture)
@@ -110,7 +112,7 @@ GridValue::~GridValue()
 
 /* ************************************************************************ */
 
-void GridValue::init(Vector<unsigned int> size, const float* data)
+void SignalGrid::init(Vector<unsigned int> size, const Signal* data)
 {
     Drawable::init();
 
@@ -123,8 +125,8 @@ void GridValue::init(Vector<unsigned int> size, const float* data)
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-    m_vertexShader.init(Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
-    m_fragmentShader.init(Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
+    m_vertexShader.init(::render::Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
+    m_fragmentShader.init(::render::Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
     m_program.init(m_vertexShader, m_fragmentShader);
 
     // Fetch data pointers
@@ -152,7 +154,7 @@ void GridValue::init(Vector<unsigned int> size, const float* data)
 
 /* ************************************************************************ */
 
-void GridValue::render(const Vector<float>& scale) noexcept
+void SignalGrid::draw(const Vector<float>& scale) noexcept
 {
     gl(glPushMatrix());
     gl(glScalef(scale.getX(), scale.getY(), 1));
@@ -195,7 +197,7 @@ void GridValue::render(const Vector<float>& scale) noexcept
 
 /* ************************************************************************ */
 
-void GridValue::resize(Vector<unsigned int> size, const float* data)
+void SignalGrid::resize(Vector<unsigned int> size, const Signal* data)
 {
     m_size = std::move(size);
 
@@ -206,7 +208,7 @@ void GridValue::resize(Vector<unsigned int> size, const float* data)
 
 /* ************************************************************************ */
 
-void GridValue::update(const float* data) noexcept
+void SignalGrid::update(const Signal* data) noexcept
 {
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_size.getWidth(), m_size.getHeight(), GL_RED, GL_FLOAT, data));
@@ -214,6 +216,8 @@ void GridValue::update(const float* data) noexcept
 
 /* ************************************************************************ */
 
+}
+}
 }
 
 /* ************************************************************************ */

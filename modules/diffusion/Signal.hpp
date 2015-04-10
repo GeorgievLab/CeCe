@@ -13,7 +13,7 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-#if BETTER_SIGNAL
+#if 1 // BETTER_SIGNAL
 /**
  * @brief Signal container - it can store multiple signals.
  */
