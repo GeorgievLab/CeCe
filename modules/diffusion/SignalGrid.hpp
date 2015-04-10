@@ -3,159 +3,26 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
 // Simulator
-#include "core/Vector.hpp"
-#include "render/Drawable.hpp"
-#include "render/Shader.hpp"
-#include "render/Program.hpp"
+#include "simulator/Grid.hpp"
 
 // Module
-#include "modules/diffusion/Signal.hpp"
+#include "Signal.hpp"
 
 /* ************************************************************************ */
 
 namespace module {
 namespace diffusion {
-namespace render {
 
 /* ************************************************************************ */
 
 /**
  * @brief Signal grid.
  */
-class SignalGrid
-    : public simulator::Grid<Signal>
-    , public render::Drawable
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param size
-     */
-    explicit SignalGrid(Vector<SizeType> size)
-        : simulator::Grid<Signal>(std::move(size))
-    {
-        // Nothing to do
-    }
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns current grid size.
-     *
-     * @return
-     */
-    const Vector<unsigned int>& getSize() const noexcept
-    {
-        return m_size;
-    }
-
-
-    /**
-     * @brief If interpolation is enabled.
-     *
-     * @return
-     */
-    bool isInterpolate() const noexcept
-    {
-        return m_interpolate;
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Enable or disable interpolation.
-     *
-     * @param flag
-     */
-    void setInterpolate(bool flag) noexcept
-    {
-        m_interpolate = flag;
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Initialize.
-     */
-    void init(Vector<unsigned int> size, const Signal* data);
-
-
-    /**
-     * @brief Render at current position.
-     *
-     * @param scale Grid scale.
-     */
-    void draw(const Vector<float>& scale) noexcept;
-
-
-    /**
-     * @brief Resize grid.
-     *
-     * @param size
-     * @param data
-     */
-    void resize(Vector<unsigned int> size, const Signal* data);
-
-
-    /**
-     * @brief Update data.
-     *
-     * @param data
-     */
-    void update(const Signal* data) noexcept;
-
-
-// Private Data Members
-private:
-
-
-    /// Grid size.
-    Vector<unsigned int> m_size;
-
-    /// Texture.
-    GLuint m_texture = 0;
-
-    /// Vertex shader.
-    ::render::Shader m_vertexShader;
-
-    /// Fragment shader.
-    ::render::Shader m_fragmentShader;
-
-    /// Program
-    ::render::Program m_program;
-
-    /// Pointer to shader texture size.
-    GLint m_sizePtr;
-
-    /// Pointer to shader interpolate bool.
-    GLint m_interpolatePtr;
-
-    /// If interpolation is enabled.
-    bool m_interpolate = true;
-};
+using SignalGrid = simulator::Grid<Signal>;
 
 /* ************************************************************************ */
 
-}
 }
 }
 

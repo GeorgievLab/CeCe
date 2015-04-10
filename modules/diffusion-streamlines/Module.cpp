@@ -48,7 +48,7 @@ void Module::update(units::Duration dt, simulator::World& world)
     const auto step = world.calcStep(signalGrid.getSize());
 
     // Grid for changes
-    simulator::Grid<float> signalGridNew(signalGrid.getWidth(), signalGrid.getHeight());
+    diffusion::SignalGrid signalGridNew(signalGrid.getWidth(), signalGrid.getHeight());
 
     // Sizes must match
     assert(std::distance(signalGrid.begin(), signalGrid.end()) == std::distance(signalGridNew.begin(), signalGridNew.end()));

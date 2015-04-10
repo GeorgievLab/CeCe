@@ -2,14 +2,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "modules/diffusion/render/SignalGrid.hpp"
+#include "SignalGridDrawable.hpp"
 
 // C++
 #include <array>
 #include <vector>
 #include <cassert>
 #include <cmath>
-#include <stdexcept>
 
 // Simulator
 #include "render/errors.hpp"
@@ -99,11 +98,10 @@ static const char g_fragmentShaderSrc[] =
 
 namespace module {
 namespace diffusion {
-namespace render {
 
 /* ************************************************************************ */
 
-SignalGrid::~SignalGrid()
+SignalGridDrawable::~SignalGridDrawable()
 {
     // Delete program
     if (m_texture)
@@ -112,7 +110,7 @@ SignalGrid::~SignalGrid()
 
 /* ************************************************************************ */
 
-void SignalGrid::init(Vector<unsigned int> size, const Signal* data)
+void SignalGridDrawable::init(Vector<SignalGrid::SizeType> size, const Signal* data)
 {
     Drawable::init();
 
@@ -154,7 +152,7 @@ void SignalGrid::init(Vector<unsigned int> size, const Signal* data)
 
 /* ************************************************************************ */
 
-void SignalGrid::draw(const Vector<float>& scale) noexcept
+void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
 {
     gl(glPushMatrix());
     gl(glScalef(scale.getX(), scale.getY(), 1));
@@ -197,7 +195,7 @@ void SignalGrid::draw(const Vector<float>& scale) noexcept
 
 /* ************************************************************************ */
 
-void SignalGrid::resize(Vector<unsigned int> size, const Signal* data)
+void SignalGridDrawable::resize(Vector<SignalGrid::SizeType> size, const Signal* data)
 {
     m_size = std::move(size);
 
@@ -208,7 +206,7 @@ void SignalGrid::resize(Vector<unsigned int> size, const Signal* data)
 
 /* ************************************************************************ */
 
-void SignalGrid::update(const Signal* data) noexcept
+void SignalGridDrawable::update(const Signal* data) noexcept
 {
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_size.getWidth(), m_size.getHeight(), GL_RED, GL_FLOAT, data));
@@ -216,7 +214,6 @@ void SignalGrid::update(const Signal* data) noexcept
 
 /* ************************************************************************ */
 
-}
 }
 }
 

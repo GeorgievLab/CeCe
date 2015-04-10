@@ -36,20 +36,6 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::World& world)
 {
-
-/// GENERATION
-    if (true)
-    {
-        constexpr float SOURCE_STRENGTH = 1000.f;
-
-        const float grid_half = m_grid.getHeight() / 2;
-        const int off = m_grid.getHeight() * 0.1f;
-
-        for (int i = -1; i < 1; ++i)
-            m_grid(0, grid_half + (i + 0.5) * off) += SOURCE_STRENGTH * dt;
-    }
-/// END
-
     // Size of mapping matrix
     constexpr unsigned OFFSET = 1;
     constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
@@ -174,7 +160,7 @@ void Module::renderInit(render::Context& context)
 void Module::render(render::Context& context, const simulator::World& world)
 {
     m_renderObject.update(m_grid.getData());
-    m_renderObject.render(world.getSize());
+    m_renderObject.draw(world.getSize());
     m_renderGridObject.render(world.getSize(), {1, 0, 0, 1});
 }
 #endif

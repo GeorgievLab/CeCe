@@ -9,8 +9,8 @@
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
-#include "render/GridValue.hpp"
 #include "render/Grid.hpp"
+#include "SignalGridDrawable.hpp"
 #endif
 
 // Module
@@ -88,7 +88,7 @@ public:
      *
      * @return
      */
-    render::GridValue& getRenderObject() noexcept
+    SignalGridDrawable& getRenderObject() noexcept
     {
         return m_renderObject;
     }
@@ -101,7 +101,7 @@ public:
      *
      * @return
      */
-    const render::GridValue& getRenderObject() const noexcept
+    const SignalGridDrawable& getRenderObject() const noexcept
     {
         return m_renderObject;
     }
@@ -181,7 +181,7 @@ private:
 
 #ifdef ENABLE_RENDER
     /// Render grid for velocities
-    render::GridValue m_renderObject;
+    SignalGridDrawable m_renderObject;
 #endif
 
 #ifdef ENABLE_RENDER

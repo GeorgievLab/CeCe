@@ -10,7 +10,8 @@ add_library(module-diffusion
     Generator.hpp
     Generator.cpp
     SignalGrid.hpp
-    SignalGrid.cpp
+    SignalGridDrawable.hpp
+    SignalGridDrawable.cpp
 )
 
 # Setup dependencies
