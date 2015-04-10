@@ -10,6 +10,7 @@ option(MSAN "If memory sanitizer should be used" Off)
 option(USE_LIBCPP "If libc++ should be used" Off)
 option(ENABLE_GUI "Enable GUI" On)
 option(ENABLE_RENDER "Enable simulation rendering" On)
+option(INCLUDE_SOURCE "Include source code in object files" Off)
 
 # Default include directories
 include_directories(
@@ -18,6 +19,10 @@ include_directories(
 
 # C++11 required
 add_compile_options(-pedantic-errors -pedantic -std=c++11)
+
+if (INCLUDE_SOURCE)
+    add_compile_options(-g)
+endif ()
 
 # Use libc++
 if (USE_LIBCPP)
