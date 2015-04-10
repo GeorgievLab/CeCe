@@ -19,14 +19,6 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-Module::Module()
-    : m_grid(500)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
 Module::~Module()
 {
     // Nothing to do
@@ -139,8 +131,14 @@ void Module::update(units::Duration dt, simulator::World& world)
 
     }
 
-    // Replace the old grid with the new one
-    m_grid = std::move(gridNew);
+    {
+#ifdef THREAD_SAFE
+        std::lock_guard<std::mutex> lock(m_mutex);
+#endif
+
+        // Replace the old grid with the new one
+        m_grid = std::move(gridNew);
+    }
 }
 
 /* ************************************************************************ */
@@ -148,6 +146,10 @@ void Module::update(units::Duration dt, simulator::World& world)
 #ifdef ENABLE_RENDER
 void Module::drawInit(render::Context& context)
 {
+#ifdef THREAD_SAFE
+    std::lock_guard<std::mutex> lock(m_mutex);
+#endif
+
     getDrawable().init(m_grid.getSize(), m_grid.getData());
 }
 #endif
@@ -157,7 +159,13 @@ void Module::drawInit(render::Context& context)
 #ifdef ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::World& world)
 {
-    getDrawable().update(m_grid.getData());
+    {
+#ifdef THREAD_SAFE
+        std::lock_guard<std::mutex> lock(m_mutex);
+#endif
+        getDrawable().update(m_grid.getData());
+    }
+
     getDrawable().draw(world.getSize());
 }
 #endif

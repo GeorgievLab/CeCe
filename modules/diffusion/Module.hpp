@@ -3,6 +3,10 @@
 
 /* ************************************************************************ */
 
+#ifdef THREAD_SAFE
+#include <mutex>
+#endif
+
 // Simulator
 #include "simulator/Module.hpp"
 #include "simulator/Grid.hpp"
@@ -15,6 +19,7 @@
 
 // Module
 #include "Signal.hpp"
+#include "SignalGrid.hpp"
 
 /* ************************************************************************ */
 
@@ -29,17 +34,6 @@ namespace diffusion {
 class Module : public simulator::Module
 {
 
-// Public Types
-public:
-
-
-    /// Grid type.
-    using GridType = simulator::Grid<Signal>;
-
-    /// Grid size type.
-    using SizeType = GridType::SizeType;
-
-
 // Public Ctors & Dtors
 public:
 
@@ -47,7 +41,24 @@ public:
     /**
      * @brief Constructor.
      */
-    Module();
+    Module()
+        : m_grid(500)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param size Signal grid size.
+     */
+    template<typename... Args>
+    Module(Args&&... args)
+        : m_grid(std::forward<Args>(args)...)
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -65,7 +76,7 @@ public:
      *
      * @return
      */
-    GridType& getGrid() noexcept
+    SignalGrid& getGrid() noexcept
     {
         return m_grid;
     }
@@ -76,7 +87,7 @@ public:
      *
      * @return
      */
-    const GridType& getGrid() const noexcept
+    const SignalGrid& getGrid() const noexcept
     {
         return m_grid;
     }
@@ -150,13 +161,16 @@ public:
 private:
 
     /// Velocity grid.
-    GridType m_grid;
+    SignalGrid m_grid;
 
 #ifdef ENABLE_RENDER
     /// Drawable signal grid
     SignalGridDrawable m_drawable;
 #endif
 
+#ifdef THREAD_SAFE
+    std::mutex m_mutex;
+#endif
 };
 
 /* ************************************************************************ */

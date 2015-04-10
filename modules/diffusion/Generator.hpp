@@ -20,7 +20,7 @@ class Module;
 /* ************************************************************************ */
 
 /**
- * @brief Diffusion generator.
+ * @brief Signal generator for diffusion module.
  */
 class Generator : public simulator::Module
 {
@@ -32,19 +32,13 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param module
+     * @param module A pointer to diffusion module.
      */
     explicit Generator(module::diffusion::Module* module) noexcept
         : m_diffusionModule(module)
     {
         // Nothing to do
     }
-
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~Generator();
 
 
 // Public Operations

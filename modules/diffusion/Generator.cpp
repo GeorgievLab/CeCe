@@ -15,13 +15,6 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-Generator::~Generator()
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
 void Generator::update(units::Duration dt, simulator::World& world)
 {
     constexpr float SOURCE_STRENGTH = 1000.f;
