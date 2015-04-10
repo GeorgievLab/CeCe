@@ -28,7 +28,7 @@ namespace render {
 
 void GridVector::init(Vector<unsigned int> size, const Vector<float>* data)
 {
-    Drawable::init();
+    m_buffer.init();
 
     resize(size, data);
 }
@@ -44,7 +44,7 @@ void GridVector::render(const Vector<float>& scale) noexcept
     gl(glScalef(scale.getX(), scale.getY(), 1));
 
     // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glEnableClientState(GL_COLOR_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
@@ -122,9 +122,9 @@ void GridVector::update(const Vector<float>* data) noexcept
         }
     }
 
-    assert(getBuffer() != 0);
+    assert(m_buffer.getId() != 0);
 
-    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
     gl(glBufferData(GL_ARRAY_BUFFER,
         vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data(),

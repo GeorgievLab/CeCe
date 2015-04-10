@@ -129,7 +129,7 @@ int main(int argc, char** argv)
         auto ptr = g_sim.createModule<module::diffusion_streamlines::Module>();
         g_diffusionModule = &ptr->getDiffusion();
         g_streamlinesModule = &ptr->getStreamlines();
-        g_diffusionModule->getRenderObject().setInterpolate(false);
+        g_diffusionModule->getDrawable().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
 
         g_sim.createModule<module::diffusion::Generator>(g_diffusionModule);
@@ -197,7 +197,7 @@ int main(int argc, char** argv)
             case 'w': case 'W': pos.getY() += 0.5f; break;
             case 's': case 'S': pos.getY() -= 0.5f; break;
             case 'i': case 'I':
-                g_diffusionModule->getRenderObject().setInterpolate(!g_diffusionModule->getRenderObject().isInterpolate());
+                g_diffusionModule->getDrawable().setInterpolate(!g_diffusionModule->getDrawable().isInterpolate());
                 break;
             }
 

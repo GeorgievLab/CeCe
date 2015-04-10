@@ -88,9 +88,9 @@ public:
      *
      * @return
      */
-    SignalGridDrawable& getRenderObject() noexcept
+    SignalGridDrawable& getDrawable() noexcept
     {
-        return m_renderObject;
+        return m_drawable;
     }
 #endif
 
@@ -101,38 +101,11 @@ public:
      *
      * @return
      */
-    const SignalGridDrawable& getRenderObject() const noexcept
+    const SignalGridDrawable& getDrawable() const noexcept
     {
-        return m_renderObject;
+        return m_drawable;
     }
 #endif
-
-
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns grid render object.
-     *
-     * @return
-     */
-    render::Grid& getRenderGridObject() noexcept
-    {
-        return m_renderGridObject;
-    }
-#endif
-
-
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns grid render object.
-     *
-     * @return
-     */
-    const render::Grid& getRenderGridObject() const noexcept
-    {
-        return m_renderGridObject;
-    }
-#endif
-
 
 // Public Mutators
 public:
@@ -180,14 +153,10 @@ private:
     GridType m_grid;
 
 #ifdef ENABLE_RENDER
-    /// Render grid for velocities
-    SignalGridDrawable m_renderObject;
+    /// Drawable signal grid
+    SignalGridDrawable m_drawable;
 #endif
 
-#ifdef ENABLE_RENDER
-    /// Render grid
-    render::Grid m_renderGridObject;
-#endif
 };
 
 /* ************************************************************************ */

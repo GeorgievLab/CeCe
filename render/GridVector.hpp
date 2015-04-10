@@ -10,7 +10,7 @@
 // Simulator
 #include "render/Position.hpp"
 #include "render/Color.hpp"
-#include "render/Drawable.hpp"
+#include "render/Buffer.hpp"
 #include "render/Shader.hpp"
 
 /* ************************************************************************ */
@@ -22,7 +22,7 @@ namespace render {
 /**
  * @brief OpenGL grid for vectors object.
  */
-class GridVector : public Drawable
+class GridVector
 {
 
 // Public Accessors
@@ -104,6 +104,8 @@ public:
 // Private Data Members
 private:
 
+    /// Buffer object.
+    Buffer m_buffer;
 
     /// Grid size.
     Vector<unsigned int> m_size;

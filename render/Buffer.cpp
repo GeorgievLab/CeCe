@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "render/Drawable.hpp"
+#include "render/Buffer.hpp"
 
 // C++
 #include <cassert>
@@ -16,25 +16,18 @@ namespace render {
 
 /* ************************************************************************ */
 
-Drawable::Drawable() noexcept
+Buffer::~Buffer()
 {
-    // Nothing to do
+    if (m_id)
+        gl(glDeleteBuffers(1, &m_id));
 }
 
 /* ************************************************************************ */
 
-Drawable::~Drawable()
+void Buffer::init()
 {
-    if (m_buffer)
-        gl(glDeleteBuffers(1, &m_buffer));
-}
-
-/* ************************************************************************ */
-
-void Drawable::init()
-{
-    gl(glGenBuffers(1, &m_buffer));
-    assert(m_buffer != 0);
+    gl(glGenBuffers(1, &m_id));
+    assert(m_id != 0);
 }
 
 /* ************************************************************************ */

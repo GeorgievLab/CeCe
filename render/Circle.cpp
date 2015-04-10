@@ -20,7 +20,7 @@ namespace render {
 
 void Circle::init()
 {
-    Drawable::init();
+    m_buffer.init();
 
     constexpr float STEP = 2 * 3.14159265359 / SEGMENTS;
 
@@ -37,9 +37,9 @@ void Circle::init()
 
     vertices[SEGMENTS + 1] = vertices[1];
 
-    assert(getBuffer() != 0);
+    assert(m_buffer.getId() != 0);
 
-    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
     gl(glBufferData(GL_ARRAY_BUFFER,
         vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data(),
@@ -51,7 +51,7 @@ void Circle::init()
 
 void Circle::render(const Position& pos, float radius, const Color& color) noexcept
 {
-    assert(getBuffer() != 0);
+    assert(m_buffer.getId() != 0);
 
     // Draw color
     gl(glColor4f(color.red, color.green, color.blue, color.alpha));
@@ -61,7 +61,7 @@ void Circle::render(const Position& pos, float radius, const Color& color) noexc
     gl(glScalef(radius, radius, radius));
 
     // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, 0, 0));
 

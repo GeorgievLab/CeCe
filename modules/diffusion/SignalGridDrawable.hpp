@@ -9,9 +9,10 @@
 
 // Simulator
 #include "core/Vector.hpp"
-#include "render/Drawable.hpp"
 #include "render/Shader.hpp"
 #include "render/Program.hpp"
+#include "render/Grid.hpp"
+#include "render/Buffer.hpp"
 
 // Module
 #include "Signal.hpp"
@@ -27,7 +28,7 @@ namespace diffusion {
 /**
  * @brief Signal grid renderer.
  */
-class SignalGridDrawable : public render::Drawable
+class SignalGridDrawable : public render::Grid
 {
 
 // Public Ctors & Dtors
@@ -42,17 +43,6 @@ public:
 
 // Public Accessors
 public:
-
-
-    /**
-     * @brief Returns current grid size.
-     *
-     * @return
-     */
-    const Vector<SignalGrid::SizeType>& getSize() const noexcept
-    {
-        return m_size;
-    }
 
 
     /**
@@ -88,7 +78,7 @@ public:
     /**
      * @brief Initialize.
      */
-    void init(Vector<SignalGrid::SizeType> size, const Signal* data);
+    void init(Vector<unsigned int> size, const Signal* data);
 
 
     /**
@@ -105,7 +95,7 @@ public:
      * @param size
      * @param data
      */
-    void resize(Vector<SignalGrid::SizeType> size, const Signal* data);
+    void resize(Vector<unsigned int> size, const Signal* data);
 
 
     /**
@@ -119,21 +109,20 @@ public:
 // Private Data Members
 private:
 
-
-    /// Grid size.
-    Vector<SignalGrid::SizeType> m_size;
+    /// Draw buffer
+    render::Buffer m_buffer;
 
     /// Texture.
     GLuint m_texture = 0;
 
     /// Vertex shader.
-    ::render::Shader m_vertexShader;
+    render::Shader m_vertexShader;
 
     /// Fragment shader.
-    ::render::Shader m_fragmentShader;
+    render::Shader m_fragmentShader;
 
     /// Program
-    ::render::Program m_program;
+    render::Program m_program;
 
     /// Pointer to shader texture size.
     GLint m_sizePtr;

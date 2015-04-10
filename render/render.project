@@ -22,23 +22,23 @@
     <File Name="Circle.cpp"/>
     <File Name="Grid.cpp"/>
     <File Name="errors.cpp"/>
-    <File Name="Drawable.cpp"/>
     <File Name="GridVector.cpp"/>
     <File Name="Shader.cpp"/>
     <File Name="Program.cpp"/>
+    <File Name="Buffer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
     <File Name="Color.hpp"/>
     <File Name="Position.hpp"/>
     <File Name="Context.hpp"/>
-    <File Name="Drawable.hpp"/>
     <File Name="Circle.hpp"/>
     <File Name="Grid.hpp"/>
     <File Name="errors.hpp"/>
     <File Name="GridVector.hpp"/>
     <File Name="Shader.hpp"/>
     <File Name="Program.hpp"/>
+    <File Name="Buffer.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

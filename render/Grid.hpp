@@ -10,7 +10,7 @@
 // Simulator
 #include "render/Position.hpp"
 #include "render/Color.hpp"
-#include "render/Drawable.hpp"
+#include "render/Buffer.hpp"
 
 /* ************************************************************************ */
 
@@ -21,7 +21,7 @@ namespace render {
 /**
  * @brief OpenGL grid object.
  */
-class Grid : public Drawable
+class Grid
 {
 
 // Public Accessors
@@ -36,6 +36,28 @@ public:
     const Vector<unsigned int>& getSize() const noexcept
     {
         return m_size;
+    }
+
+
+    /**
+     * @brief Returns grid width.
+     *
+     * @return
+     */
+    unsigned int getWidth() const noexcept
+    {
+        return m_size.getWidth();
+    }
+
+
+    /**
+     * @brief Returns grid height.
+     *
+     * @return
+     */
+    unsigned int getHeight() const noexcept
+    {
+        return m_size.getHeight();
     }
 
 
@@ -70,6 +92,12 @@ public:
 
 
     /**
+     * @brief Initialize.
+     */
+    void init();
+
+
+    /**
      * @brief Render at current position.
      *
      * @param scale Grid scale.
@@ -89,6 +117,8 @@ public:
 // Private Data Members
 private:
 
+    /// Buffer object.
+    Buffer m_buffer;
 
     /// Grid size.
     Vector<unsigned int> m_size;

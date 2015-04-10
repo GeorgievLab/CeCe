@@ -17,9 +17,9 @@ namespace render {
 /* ************************************************************************ */
 
 /**
- * @brief OpenGL drawable object.
+ * @brief OpenGL buffer.
  */
-class Drawable
+class Buffer
 {
 
 // Public Ctors & Dtors
@@ -27,15 +27,9 @@ public:
 
 
     /**
-     * @brief Constructor.
-     */
-    Drawable() noexcept;
-
-
-    /**
      * @brief Destructor.
      */
-    ~Drawable();
+    ~Buffer();
 
 
 // Public Accessors
@@ -47,9 +41,9 @@ public:
      *
      * @return
      */
-    GLuint getBuffer() const noexcept
+    GLuint getId() const noexcept
     {
-        return m_buffer;
+        return m_id;
     }
 
 
@@ -58,7 +52,7 @@ public:
 
 
     /**
-     * @brief Initialize drawable object.
+     * @brief Initialize buffer object.
      */
     void init();
 
@@ -67,7 +61,7 @@ public:
 private:
 
     /// OpenGL buffer.
-    GLuint m_buffer = 0;
+    GLuint m_id = 0;
 
 };
 

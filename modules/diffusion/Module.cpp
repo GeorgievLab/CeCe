@@ -148,9 +148,7 @@ void Module::update(units::Duration dt, simulator::World& world)
 #ifdef ENABLE_RENDER
 void Module::renderInit(render::Context& context)
 {
-    m_renderObject.init(m_grid.getSize(), m_grid.getData());
-    m_renderGridObject.init();
-    m_renderGridObject.resize(m_grid.getSize());
+    getDrawable().init(m_grid.getSize(), m_grid.getData());
 }
 #endif
 
@@ -159,9 +157,8 @@ void Module::renderInit(render::Context& context)
 #ifdef ENABLE_RENDER
 void Module::render(render::Context& context, const simulator::World& world)
 {
-    m_renderObject.update(m_grid.getData());
-    m_renderObject.draw(world.getSize());
-    m_renderGridObject.render(world.getSize(), {1, 0, 0, 1});
+    getDrawable().update(m_grid.getData());
+    getDrawable().draw(world.getSize());
 }
 #endif
 

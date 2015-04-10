@@ -10,7 +10,7 @@
 // Simulator
 #include "render/Position.hpp"
 #include "render/Color.hpp"
-#include "render/Drawable.hpp"
+#include "render/Buffer.hpp"
 
 /* ************************************************************************ */
 
@@ -21,7 +21,7 @@ namespace render {
 /**
  * @brief OpenGL circle object.
  */
-class Circle : public Drawable
+class Circle
 {
 
 // Public Constants
@@ -51,6 +51,13 @@ public:
      * @param color  Circle color.
      */
     void render(const Position& pos, float radius, const Color& color) noexcept;
+
+
+// Private Data Members
+private:
+
+    /// Buffer object.
+    Buffer m_buffer;
 
 };
 

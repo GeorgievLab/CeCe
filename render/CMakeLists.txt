@@ -20,8 +20,8 @@ add_library(render
     Context.cpp
     Camera.hpp
     Camera.cpp
-    Drawable.hpp
-    Drawable.cpp
+    Buffer.hpp
+    Buffer.cpp
     Circle.hpp
     Circle.cpp
     Grid.hpp

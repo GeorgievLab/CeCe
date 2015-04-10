@@ -110,9 +110,11 @@ SignalGridDrawable::~SignalGridDrawable()
 
 /* ************************************************************************ */
 
-void SignalGridDrawable::init(Vector<SignalGrid::SizeType> size, const Signal* data)
+void SignalGridDrawable::init(Vector<unsigned int> size, const Signal* data)
 {
-    Drawable::init();
+    render::Grid::init();
+
+    m_buffer.init();
 
     // Generate texture
     gl(glGenTextures(1, &m_texture));
@@ -123,8 +125,8 @@ void SignalGridDrawable::init(Vector<SignalGrid::SizeType> size, const Signal* d
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-    m_vertexShader.init(::render::Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
-    m_fragmentShader.init(::render::Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
+    m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
+    m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
     m_program.init(m_vertexShader, m_fragmentShader);
 
     // Fetch data pointers
@@ -138,9 +140,9 @@ void SignalGridDrawable::init(Vector<SignalGrid::SizeType> size, const Signal* d
         {-0.5f,  0.5f, 0.0f, 1.0f}
     }};
 
-    assert(getBuffer() != 0);
+    assert(m_buffer.getId() != 0);
 
-    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
     gl(glBufferData(GL_ARRAY_BUFFER,
         vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data(),
@@ -165,13 +167,13 @@ void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
     gl(glActiveTexture(GL_TEXTURE0));
 
     // Set size
-    gl(glUniform2i(m_sizePtr, m_size.getWidth(), m_size.getHeight()));
+    gl(glUniform2i(m_sizePtr, getWidth(), getHeight()));
 
     // Set interpolate flag
     gl(glUniform1i(m_interpolatePtr, m_interpolate));
 
     // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, getBuffer()));
+    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
@@ -191,16 +193,19 @@ void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
     gl(glUseProgram(0));
 
     gl(glPopMatrix());
+
+    // Render grid
+    render::Grid::render(scale, {1, 0, 0, 1});
 }
 
 /* ************************************************************************ */
 
-void SignalGridDrawable::resize(Vector<SignalGrid::SizeType> size, const Signal* data)
+void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 {
-    m_size = std::move(size);
+    render::Grid::resize(std::move(size));
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_size.getWidth(), m_size.getHeight(), 0, GL_RED, GL_FLOAT, data));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, getWidth(), getHeight(), 0, GL_RED, GL_FLOAT, data));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
@@ -209,7 +214,7 @@ void SignalGridDrawable::resize(Vector<SignalGrid::SizeType> size, const Signal*
 void SignalGridDrawable::update(const Signal* data) noexcept
 {
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_size.getWidth(), m_size.getHeight(), GL_RED, GL_FLOAT, data));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), GL_RED, GL_FLOAT, data));
 }
 
 /* ************************************************************************ */
