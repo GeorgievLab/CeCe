@@ -6,6 +6,10 @@
 // C++
 #include <array>
 
+#ifdef __SSE__
+#include <xmmintrin.h>
+#endif
+
 /* ************************************************************************ */
 
 namespace module {
@@ -37,7 +41,7 @@ public:
     /**
      * @brief Number of stored signals
      */
-    static constexpr unsigned int COUNT = 3;
+    static constexpr unsigned int COUNT = 4;
 
 
     /**
@@ -222,7 +226,14 @@ public:
 private:
 
     /// Container for values.
-    std::array<ValueType, COUNT> m_values{};
+#ifdef __SSE__
+    union {
+#endif
+        std::array<ValueType, COUNT> m_values{};
+#ifdef __SSE__
+        __m128 m_sse;
+    };
+#endif
 
 };
 #else
