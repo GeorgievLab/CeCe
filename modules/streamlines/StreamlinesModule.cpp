@@ -1,6 +1,6 @@
 
 // Declaration
-#include "simulator/StreamlinesModule.hpp"
+#include "StreamlinesModule.hpp"
 
 // C++
 #include <random>

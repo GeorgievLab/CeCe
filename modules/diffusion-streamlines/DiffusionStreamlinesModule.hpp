@@ -4,8 +4,8 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "simulator/DiffusionModule.hpp"
-#include "simulator/StreamlinesModule.hpp"
+#include "../diffusion/DiffusionModule.hpp"
+#include "../streamlines/StreamlinesModule.hpp"
 
 /* ************************************************************************ */
 

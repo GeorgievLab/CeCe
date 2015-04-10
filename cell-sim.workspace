@@ -9,6 +9,9 @@
     <![CDATA[]]>
   </Environment>
   <Project Name="parser" Path="parser/parser.project" Active="No"/>
+  <Project Name="diffusion" Path="modules/diffusion/diffusion.project" Active="No"/>
+  <Project Name="diffusion-streamlines" Path="modules/diffusion-streamline/diffusion-streamlines.project" Active="No"/>
+  <Project Name="streamlines" Path="modules/streamlines/streamlines.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -17,6 +20,9 @@
       <Project Name="gui" ConfigName="Debug"/>
       <Project Name="core" ConfigName="Debug"/>
       <Project Name="cli" ConfigName="DebugCLI"/>
+      <Project Name="module-diffusion" ConfigName="Debug"/>
+      <Project Name="module-diffusion-streamlines" ConfigName="Debug"/>
+      <Project Name="module-streamlines" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -25,6 +31,9 @@
       <Project Name="render" ConfigName="Release"/>
       <Project Name="cli" ConfigName="Release"/>
       <Project Name="parser" ConfigName="Release"/>
+      <Project Name="module-diffusion" ConfigName="Release"/>
+      <Project Name="module-diffusion-streamlines" ConfigName="Release"/>
+      <Project Name="module-streamlines" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

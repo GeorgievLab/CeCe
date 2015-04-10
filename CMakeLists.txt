@@ -62,6 +62,11 @@ endif ()
 add_subdirectory(simulator)
 add_subdirectory(parser)
 
+# Modules
+add_subdirectory(modules/streamlines)
+add_subdirectory(modules/diffusion)
+add_subdirectory(modules/diffusion-streamlines)
+
 if (ENABLE_GUI)
     add_subdirectory(gui)
 else ()

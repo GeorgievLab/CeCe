@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/DiffusionStreamlinesModule.hpp"
+#include "DiffusionStreamlinesModule.hpp"
 
 // C++
 #include <limits>

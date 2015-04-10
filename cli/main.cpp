@@ -22,9 +22,9 @@
 #include "simulator/World.hpp"
 #include "parser/Parser.hpp"
 #include "parser/WorldFactory.hpp"
-#include "simulator/StreamlinesModule.hpp"
-#include "simulator/DiffusionModule.hpp"
-#include "simulator/DiffusionStreamlinesModule.hpp"
+#include "modules/streamlines/StreamlinesModule.hpp"
+#include "modules/diffusion/DiffusionModule.hpp"
+#include "modules/diffusion-streamlines/DiffusionStreamlinesModule.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"

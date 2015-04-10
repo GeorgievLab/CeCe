@@ -20,6 +20,9 @@ add_executable(cli
 
 # Link libraries
 target_link_libraries(cli
+    module-diffusion-streamlines
+    module-diffusion
+    module-streamlines
     parser
     simulator
     core

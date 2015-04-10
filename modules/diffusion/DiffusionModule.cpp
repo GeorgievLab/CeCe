@@ -1,6 +1,6 @@
 
 // Declaration
-#include "simulator/DiffusionModule.hpp"
+#include "DiffusionModule.hpp"
 
 // C++
 #include <limits>
