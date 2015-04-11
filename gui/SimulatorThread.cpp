@@ -8,9 +8,8 @@
 
 // Simulator
 #include "simulator/World.hpp"
-#include "simulator/Module.hpp"
-#include "simulator/Module.hpp"
-#include "simulator/Module.hpp"
+#include "modules/diffusion-streamlines/Module.hpp"
+#include "modules/diffusion/Generator.hpp"
 
 /* ************************************************************************ */
 
@@ -24,7 +23,8 @@ SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::WorldFactory*
     : m_handler(handler)
     , m_worldFactory(factory)
 {
-    m_simulator.createModule<simulator::DiffusionStreamlinesModule>();
+    auto* module = m_simulator.createModule<module::diffusion_streamlines::Module>();
+    m_simulator.createModule<module::diffusion::Generator>(&module->getDiffusion());
 
     if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
     {

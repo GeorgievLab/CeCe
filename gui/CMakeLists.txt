@@ -42,6 +42,9 @@ add_executable(gui
 
 # Link libraries
 target_link_libraries(gui
+    module-diffusion-streamlines
+    module-diffusion
+    module-streamlines
     parser
     simulator
     core

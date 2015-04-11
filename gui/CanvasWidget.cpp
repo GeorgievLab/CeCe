@@ -12,9 +12,8 @@
 
 // Simulator
 #include "simulator/World.hpp"
-#include "simulator/Module.hpp"
-#include "simulator/Module.hpp"
 #include "render/Context.hpp"
+#include "modules/diffusion-streamlines/Module.hpp"
 
 // GUI
 #include "gui/SimulatorThread.hpp"
@@ -66,10 +65,10 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
 
 bool CanvasWidget::IsViewGrid() const noexcept
 {
-    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
 
     if (module)
-        return module->getRenderGridObject().isRenderGrid();
+        return module->getDiffusion().getDrawable().isRenderGrid();
 
     return false;
 }
@@ -78,10 +77,10 @@ bool CanvasWidget::IsViewGrid() const noexcept
 
 bool CanvasWidget::IsViewVelocity() const noexcept
 {
-    auto* module = m_simulator->findModule<simulator::StreamlinesModule>();
+    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
 
     if (module)
-        return module->getRenderObject().isRenderVelocity();
+        return module->getStreamlines().getRenderObject().isRenderVelocity();
 
     return false;
 }
@@ -90,10 +89,10 @@ bool CanvasWidget::IsViewVelocity() const noexcept
 
 bool CanvasWidget::IsViewInterpolation() const noexcept
 {
-    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
 
     if (module)
-        return module->getRenderObject().isInterpolate();
+        return module->getDiffusion().getDrawable().isInterpolate();
 
     return false;
 }
@@ -102,10 +101,10 @@ bool CanvasWidget::IsViewInterpolation() const noexcept
 
 void CanvasWidget::SetViewGrid(bool flag) noexcept
 {
-    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
     if (module)
     {
-        module->getRenderGridObject().setRenderGrid(flag);
+        module->getDiffusion().getDrawable().setRenderGrid(flag);
     }
 }
 
@@ -113,10 +112,10 @@ void CanvasWidget::SetViewGrid(bool flag) noexcept
 
 void CanvasWidget::SetViewVelocity(bool flag) noexcept
 {
-    auto* module = m_simulator->findModule<simulator::StreamlinesModule>();
+    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
     if (module)
     {
-        module->getRenderObject().setRenderVelocity(flag);
+        module->getStreamlines().getRenderObject().setRenderVelocity(flag);
     }
 }
 
@@ -124,10 +123,10 @@ void CanvasWidget::SetViewVelocity(bool flag) noexcept
 
 void CanvasWidget::SetViewInterpolation(bool flag) noexcept
 {
-    auto* module = m_simulator->findModule<simulator::DiffusionModule>();
+    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
     if (module)
     {
-        module->getRenderObject().setInterpolate(flag);
+        module->getDiffusion().getDrawable().setInterpolate(flag);
     }
 }
 
@@ -167,7 +166,7 @@ void CanvasWidget::Render() noexcept
         m_renderer.init();
 
         wxASSERT(m_simulator);
-        m_simulator->renderInit(m_renderer);
+        m_simulator->drawInit(m_renderer);
     }
 
     wxPaintDC dc(this);
@@ -183,7 +182,7 @@ void CanvasWidget::Render() noexcept
         try
         {
             wxASSERT(m_simulator);
-            m_simulator->render(m_renderer);
+            m_simulator->draw(m_renderer);
         }
         catch (const std::exception& e)
         {
@@ -319,13 +318,13 @@ void CanvasWidget::OnMouseUp(wxMouseEvent& event)
 void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 {
     wxASSERT(m_simulator);
-    auto* module = m_simulator->findModule<simulator::StreamlinesModule>();
+    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
 
     if (!module)
         return;
 
-    auto pos = module->getMainCellPosition();
-    auto speed = module->getFlowSpeed();
+    auto pos = module->getStreamlines().getMainCellPosition();
+    auto speed = module->getStreamlines().getFlowSpeed();
 
     bool pos_changed = false;
     bool speed_changed = false;
@@ -351,10 +350,10 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
     //    speed = 0;
 
     if (pos_changed)
-        module->setMainCellPosition(pos);
+        module->getStreamlines().setMainCellPosition(pos);
 
     if (speed_changed)
-        module->setFlowSpeed(speed);
+        module->getStreamlines().setFlowSpeed(speed);
 
     Update();
 }
