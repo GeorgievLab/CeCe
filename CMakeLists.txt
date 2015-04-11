@@ -10,6 +10,7 @@ option(MSAN "If memory sanitizer should be used" Off)
 option(USE_LIBCPP "If libc++ should be used" Off)
 option(ENABLE_GUI "Enable GUI" On)
 option(ENABLE_RENDER "Enable simulation rendering" On)
+option(ENABLE_SSE "Enable SSE instructions" On)
 option(INCLUDE_SOURCE "Include source code in object files" Off)
 
 # Default include directories
@@ -50,6 +51,11 @@ endif ()
 if (ENABLE_RENDER)
     message("-- OpenGL rendering enabled")
     add_definitions(-DENABLE_RENDER=1)
+endif ()
+
+if (ENABLE_SSE)
+    message("-- Use SSE instructions")
+    add_definitions(-DENABLE_SSE=1)
 endif ()
 
 # Projects

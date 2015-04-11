@@ -6,6 +6,10 @@
 // C++
 #include <array>
 
+#if ENABLE_SSE && __SSE__
+#include <xmmintrin.h>
+#endif
+
 /* ************************************************************************ */
 
 namespace module {
@@ -13,9 +17,10 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-#if 1 // BETTER_SIGNAL
 /**
  * @brief Signal container - it can store multiple signals.
+ *
+ * @note If SSE is enabled multiple signals are compute at once.
  */
 class Signal
 {
@@ -37,7 +42,7 @@ public:
     /**
      * @brief Number of stored signals
      */
-    static constexpr unsigned int COUNT = 3;
+    static constexpr unsigned int COUNT = 4;
 
 
     /**
@@ -53,7 +58,15 @@ public:
     /**
      * @brief Default constructor.
      */
-    Signal() = default;
+    Signal()
+#if ENABLE_SSE && __SSE__
+        : m_sse(_mm_setzero_ps())
+#else
+        : m_values{}
+#endif
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -68,6 +81,20 @@ public:
     }
 
 
+#if ENABLE_SSE && __SSE__
+    /**
+     * @brief Constructor.
+     *
+     * @param values
+     */
+    Signal(__m128 values)
+        : m_sse(values)
+    {
+        // Nothing to do
+    }
+#endif
+
+
 // Public Operators
 public:
 
@@ -77,12 +104,15 @@ public:
      */
     operator bool() const noexcept
     {
-        // TODO: Optimized??
+#if ENABLE_SSE && __SSE__
+        return _mm_movemask_ps(_mm_cmpgt_ps(m_sse, _mm_set1_ps(IGNORE_LEVEL)));
+#else
         for (ValueType v : m_values)
             if (v > IGNORE_LEVEL)
                 return true;
 
         return false;
+#endif
     }
 
 
@@ -113,71 +143,167 @@ public:
 
 
     /**
-     * @brief Multiply all signals by one value.
+     * @brief Add other signal values.
      *
-     * @param val
+     * @param sig Second signals array.
      *
      * @return Modified signal.
      */
     Signal operator+(Signal sig) const noexcept
     {
+#if ENABLE_SSE && __SSE__
+        return Signal{_mm_add_ps(m_sse, sig.m_sse)};
+#else
         Signal tmp(m_values);
 
         for (unsigned i = 0; i < COUNT; ++i)
             tmp.m_values[i] += sig[i];
 
         return tmp;
+#endif
     }
 
 
     /**
-     * @brief Multiply all signals by one value.
+     * @brief Add other signal values.
      *
-     * @param val
+     * @param sig Second signals array.
      *
      * @return this
      */
     Signal& operator+=(Signal sig) noexcept
     {
+#if ENABLE_SSE && __SSE__
+        m_sse = _mm_add_ps(m_sse, sig.m_sse);
+#else
         for (unsigned i = 0; i < COUNT; ++i)
             m_values[i] += sig[i];
 
         return *this;
+#endif
     }
 
 
     /**
-     * @brief Multiply all signals by one value.
+     * @brief Add value to all signals.
      *
-     * @param val
+     * @param val Signal value.
      *
      * @return Modified signal.
      */
-    template<typename T>
-    Signal operator+(T val) const noexcept
+    Signal operator+(ValueType val) const noexcept
     {
+#if ENABLE_SSE && __SSE__
+        return Signal{_mm_add_ps(m_sse, _mm_set1_ps(val))};
+#else
         Signal tmp(m_values);
 
         for (auto& v : tmp.m_values)
             v += val;
 
         return tmp;
+#endif
     }
 
 
     /**
-     * @brief Multiply all signals by one value.
+     * @brief Add value to all signals.
+     *
+     * @param val Signal value.
+     *
+     * @return this
+     */
+    Signal& operator+=(ValueType val) noexcept
+    {
+#if ENABLE_SSE && __SSE__
+        m_sse = _mm_add_ps(m_sse, _mm_set1_ps(val));
+#else
+        for (auto& v : m_values)
+            v += val;
+#endif
+        return *this;
+    }
+
+
+    /**
+     * @brief Substract all signals by one value.
+     *
+     * @param sig Second signals array.
+     *
+     * @return Modified signals.
+     */
+    Signal operator-(Signal sig) const noexcept
+    {
+#if ENABLE_SSE && __SSE__
+        return Signal{_mm_add_ps(m_sse, sig.m_sse)};
+#else
+        Signal tmp(m_values);
+
+        for (unsigned i = 0; i < COUNT; ++i)
+            tmp.m_values[i] += sig[i];
+
+        return tmp;
+#endif
+    }
+
+
+    /**
+     * @brief Substract all signals by one value.
+     *
+     * @param sig Second signals array.
+     *
+     * @return this
+     */
+    Signal& operator-=(Signal sig) noexcept
+    {
+#if ENABLE_SSE && __SSE__
+        m_sse = _mm_sub_ps(m_sse, sig.m_sse);
+#else
+        for (unsigned i = 0; i < COUNT; ++i)
+            m_values[i] += sig[i];
+
+        return *this;
+#endif
+    }
+
+
+    /**
+     * @brief Substract all signals by one value.
+     *
+     * @param val
+     *
+     * @return Modified signal.
+     */
+    Signal operator-(ValueType val) const noexcept
+    {
+#if ENABLE_SSE && __SSE__
+        return Signal{_mm_sub_ps(m_sse, _mm_set1_ps(val))};
+#else
+        Signal tmp(m_values);
+
+        for (auto& v : tmp.m_values)
+            v += val;
+
+        return tmp;
+#endif
+    }
+
+
+    /**
+     * @brief Substract all signals by one value.
      *
      * @param val
      *
      * @return this
      */
-    template<typename T>
-    Signal& operator+=(T val) noexcept
+    Signal& operator-=(ValueType val) noexcept
     {
+#if ENABLE_SSE && __SSE__
+        m_sse = _mm_sub_ps(m_sse, _mm_set1_ps(val));
+#else
         for (auto& v : m_values)
             v += val;
-
+#endif
         return *this;
     }
 
@@ -189,15 +315,18 @@ public:
      *
      * @return Modified signal.
      */
-    template<typename T>
-    Signal operator*(T val) const noexcept
+    Signal operator*(ValueType val) const noexcept
     {
+#if ENABLE_SSE && __SSE__
+        return Signal{_mm_mul_ps(m_sse, _mm_set1_ps(val))};
+#else
         Signal tmp(m_values);
 
         for (auto& v : tmp.m_values)
             v *= val;
 
         return tmp;
+#endif
     }
 
 
@@ -208,12 +337,14 @@ public:
      *
      * @return this
      */
-    template<typename T>
     Signal& operator*=(ValueType val) noexcept
     {
+#if ENABLE_SSE && __SSE__
+        m_sse = _mm_mul_ps(m_sse, _mm_set1_ps(val));
+#else
         for (auto& v : m_values)
             v *= val;
-
+#endif
         return *this;
     }
 
@@ -222,12 +353,17 @@ public:
 private:
 
     /// Container for values.
+#if ENABLE_SSE && __SSE__
+    union {
+        __m128 m_sse;
+        std::array<ValueType, COUNT> m_values;
+    };
+#else
     std::array<ValueType, COUNT> m_values{};
+#endif
 
 };
-#else
-using Signal = float;
-#endif
+
 /* ************************************************************************ */
 
 }
