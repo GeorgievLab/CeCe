@@ -58,7 +58,7 @@ void Circle::draw(const Position& pos, float radius, const Color& color) noexcep
     assert(m_buffer.getId() != 0);
 
     // Draw color
-    gl(glColor4f(color.red, color.green, color.blue, color.alpha));
+    gl(glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 
     gl(glPushMatrix());
     gl(glTranslatef(pos.getX(), pos.getY(), 0));

@@ -138,7 +138,7 @@ void Context::drawLine(const Position& pos, const Vector<float>& dir, const Colo
     glTranslatef(pos.getX(), pos.getY(), 0);
 
     // Draw color
-    glColor4f(color.red, color.green, color.blue, color.alpha);
+    glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
     glBegin(GL_LINES);
 

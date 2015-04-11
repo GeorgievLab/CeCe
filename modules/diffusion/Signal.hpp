@@ -349,6 +349,47 @@ public:
     }
 
 
+    /**
+     * @brief Divide all signals by one value.
+     *
+     * @param val
+     *
+     * @return Modified signal.
+     */
+    Signal operator/(ValueType val) const noexcept
+    {
+#if ENABLE_SSE && __SSE__
+        return Signal{_mm_div_ps(m_sse, _mm_set1_ps(val))};
+#else
+        Signal tmp(m_values);
+
+        for (auto& v : tmp.m_values)
+            v *= val;
+
+        return tmp;
+#endif
+    }
+
+
+    /**
+     * @brief Divide all signals by one value.
+     *
+     * @param val
+     *
+     * @return this
+     */
+    Signal& operator/=(ValueType val) noexcept
+    {
+#if ENABLE_SSE && __SSE__
+        m_sse = _mm_div_ps(m_sse, _mm_set1_ps(val));
+#else
+        for (auto& v : m_values)
+            v *= val;
+#endif
+        return *this;
+    }
+
+
 // Private Data Members
 private:
 

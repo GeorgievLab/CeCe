@@ -34,7 +34,7 @@ void Grid::draw(const Vector<float>& scale, const Color& color) noexcept
         return;
 
     // Draw color
-    gl(glColor4f(color.red, color.green, color.blue, color.alpha));
+    gl(glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 
     gl(glPushMatrix());
     gl(glScalef(scale.getX(), scale.getY(), 1));

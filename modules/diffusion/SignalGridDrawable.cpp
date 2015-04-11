@@ -37,21 +37,8 @@ static const char g_fragmentShaderSrc[] =
     "uniform sampler2D data;\n"
     "uniform ivec2 size = ivec2(16, 16);\n"
     "uniform bool interpolate = false;\n"
-    "const int COUNT = 9;\n"
-    "const vec4 COLORS[COUNT] = vec4[COUNT](\n"
-    "    vec4(0.208, 0.165, 0.529, 1.0), // '#352a87'\n"
-    "    vec4(0.059, 0.361, 0.867, 1.0), // '#0f5cdd'\n"
-    "    vec4(0.078, 0.506, 0.839, 1.0), // '#1481d6'\n"
-    "    vec4(0.024, 0.643, 0.792, 1.0), // '#06a4ca'\n"
-    "    vec4(0.180, 0.718, 0.643, 1.0), // '#2eb7a4'\n"
-    "    vec4(0.529, 0.749, 0.467, 1.0), // '#87bf77'\n"
-    "    vec4(0.820, 0.733, 0.349, 1.0), // '#d1bb59'\n"
-    "    vec4(0.996, 0.784, 0.196, 1.0), // '#fec832'\n"
-    "    vec4(0.976, 0.984, 0.055, 1.0)  // '#f9fb0e'\n"
-    ");\n"
-    "const float STEP = (1.0 / (COUNT - 1));\n"
-    "float get_value(vec2 pos) {\n"
-    "    return texture2D(data, pos).r;\n"
+    "vec4 get_pixel(vec2 pos) {\n"
+    "    return texture2D(data, pos);\n"
     "}\n"
     "float triangular(float f) {\n"
     "    f = f * 0.5;\n"
@@ -62,19 +49,19 @@ static const char g_fragmentShaderSrc[] =
     "    return 0.0;\n"
     "}\n"
     "\n"
-    "float interpolate_value(vec2 pos) {\n"
+    "vec4 interpolate_value(vec2 pos) {\n"
     "    vec2 texelSize = 1.0 / size;\n"
-    "    float sum = 0.0;\n"
-    "    float denom = 0.0;\n"
+    "    vec4 sum = vec4(0.0);\n"
+    "    vec4 denom = vec4(0.0);\n"
     "    vec2 ab = fract(pos * size);\n"
     "    \n"
     "    for (int m = -1; m <=2; m++) {\n"
     "        for (int n = -1; n <= 2; n++) {\n"
     "            vec2 mn = vec2(m, n);\n"
-    "            float vecData = get_value(pos + vec2(texelSize * mn));\n"
+    "            vec4 pix = get_pixel(pos + vec2(texelSize * mn));\n"
     "            vec2 f = mn - ab;\n"
     "            float c = triangular(f.x) * triangular(f.y);\n"
-    "            sum += vecData * c;\n"
+    "            sum += pix * c;\n"
     "            denom += c;\n"
     "        }\n"
     "    }\n"
@@ -82,16 +69,10 @@ static const char g_fragmentShaderSrc[] =
     "}\n"
     "\n"
     "void main() {\n"
-    "    float value;\n"
     "    if (interpolate)\n"
-    "        value = interpolate_value(gl_TexCoord[0].xy);\n"
+    "        gl_FragColor = interpolate_value(gl_TexCoord[0].xy);\n"
     "    else\n"
-    "        value = get_value(gl_TexCoord[0].xy);\n"
-    //"    gl_FragColor = vec4(color.rgb * (1 - value), value);\n"
-    "    int ix = int(value * (COUNT - 1));\n"
-    "    vec4 thermal = mix(COLORS[ix], COLORS[ix + 1], (value - (ix * STEP)) / STEP);\n"
-    //"    gl_FragColor = thermal;\n"
-    "    gl_FragColor = texture2D(data, gl_TexCoord[0].xy);\n"
+    "        gl_FragColor = get_pixel(gl_TexCoord[0].xy);\n"
     "}\n"
 ;
 
@@ -237,10 +218,7 @@ render::Color* SignalGridDrawable::updateTextureData(const Signal* data) noexcep
         // Mixup signal colors
         for (unsigned int i = 0; i < Signal::COUNT; ++i)
         {
-            pixel.red += (*data)[i] * m_colors[i].red;
-            pixel.green += (*data)[i] * m_colors[i].green;
-            pixel.blue += (*data)[i] * m_colors[i].blue;
-            pixel.alpha += (*data)[i] * m_colors[i].alpha;
+            pixel += m_colors[i] * (*data)[i];
         }
     }
 
