@@ -9,6 +9,8 @@ add_library(module-diffusion
     Module.cpp
     Generator.hpp
     Generator.cpp
+    GeneratorCell.hpp
+    GeneratorCell.cpp
     SignalGrid.hpp
     SignalGridDrawable.hpp
     SignalGridDrawable.cpp

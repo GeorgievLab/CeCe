@@ -20,6 +20,7 @@
     <File Name="Module.cpp"/>
     <File Name="Generator.cpp"/>
     <File Name="SignalGridDrawable.cpp"/>
+    <File Name="GeneratorCell.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
@@ -27,6 +28,7 @@
     <File Name="Generator.hpp"/>
     <File Name="SignalGrid.hpp"/>
     <File Name="SignalGridDrawable.hpp"/>
+    <File Name="GeneratorCell.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

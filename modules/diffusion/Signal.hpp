@@ -20,7 +20,7 @@ namespace diffusion {
 /**
  * @brief Signal container - it can store multiple signals.
  *
- * @note If SSE is enabled multiple signals are compute at once.
+ * @note If SSE is enabled multiple signals are computed at once.
  */
 class Signal
 {

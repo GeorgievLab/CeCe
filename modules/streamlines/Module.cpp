@@ -39,14 +39,14 @@ Module::~Module()
 void Module::update(units::Duration dt, simulator::World& world)
 {
     // Generate cells
-    if (false)
+    if (!false)
     {
         const float half = world.getHeight() / 2.f;
 
         std::random_device rd;
         std::default_random_engine eng(rd());
 
-        std::bernoulli_distribution d(0.5);
+        std::bernoulli_distribution d(0.02);
 
         // If cell should be generated
         if (d(eng))
@@ -56,9 +56,9 @@ void Module::update(units::Duration dt, simulator::World& world)
 
             // Create cell
             simulator::Cell* cell = world.createObject<simulator::Cell>();
-            cell->setVolume(units::um3(200));
+            cell->setVolume(units::um3(0.01));
             cell->setVelocity({10, 0});
-            cell->setPosition({-world.getWidth() / 2.f, y});
+            cell->setPosition({-world.getWidth() / 2.f + 0.1f, y});
         }
     }
 
@@ -122,7 +122,11 @@ void Module::update(units::Duration dt, simulator::World& world)
 
     // Apply streamlines to world objects
     {
+        // Get grid
+        const auto& grid = getGrid();
+
         const Vector<float> start = world.getSize() * -0.5;
+        const auto step = world.getSize() / grid.getSize();
 
         for (auto& obj : world.getObjects())
         {
@@ -136,12 +140,6 @@ void Module::update(units::Duration dt, simulator::World& world)
             if ((pos.getX() < 0 || pos.getY() < 0) ||
                 (pos.getX() >= world.getWidth() || pos.getY() >= world.getHeight()))
                 continue;
-
-            // Get grid
-            const auto& grid = getGrid();
-
-            // Get step
-            const auto step = world.getSize() / grid.getSize();
 
             // Get grid position
             Vector<SizeType> coord = pos / step;
