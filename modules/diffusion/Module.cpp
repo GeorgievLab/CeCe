@@ -117,8 +117,8 @@ void Module::update(units::Duration dt, simulator::World& world)
                 {
                     auto ptr = gridNewPtr + MAPPING_MATRIX[a][b];
 
-                    if (ptr >= gridNew.begin() && ptr < gridNew.end())
-                        *ptr += signal * M[a][b];
+                    assert(ptr >= gridNew.begin() && ptr < gridNew.end());
+                    *ptr += signal * M[a][b];
                 }
             }
         }

@@ -23,6 +23,7 @@ target_link_libraries(cli
     module-diffusion-streamlines
     module-diffusion
     module-streamlines
+    module-physics
     parser
     simulator
     core

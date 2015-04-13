@@ -27,6 +27,7 @@
 #include "modules/diffusion/Generator.hpp"
 #include "modules/diffusion/GeneratorCell.hpp"
 #include "modules/diffusion-streamlines/Module.hpp"
+#include "modules/physics/Module.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -124,17 +125,22 @@ int main(int argc, char** argv)
         // Create world
         g_sim.setWorld(worldFactory.fromFile(argv[1]));
 
+        // Grid size
+        auto grid_size = 200;
+
         // Create modules
-        //g_sim.createModule<module::streamlines::Module>();
-        //g_sim.createModule<module::diffusion::Module>();
-        auto ptr = g_sim.createModule<module::diffusion_streamlines::Module>();
+        //g_streamlinesModule = g_sim.createModule<module::streamlines::Module>(grid_size);
+        //g_diffusionModule = g_sim.createModule<module::diffusion::Module>(grid_size);
+        auto ptr = g_sim.createModule<module::diffusion_streamlines::Module>(grid_size);
         g_diffusionModule = &ptr->getDiffusion();
         g_streamlinesModule = &ptr->getStreamlines();
-        g_diffusionModule->getDrawable().setInterpolate(false);
+        //g_diffusionModule->getDrawable().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
 
         //g_sim.createModule<module::diffusion::Generator>(g_diffusionModule);
         g_sim.createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
+
+        //g_sim.createModule<module::physics::Module>();
 
 #ifdef ENABLE_RENDER
         // Register callbacks:
