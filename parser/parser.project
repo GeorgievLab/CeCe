@@ -120,4 +120,7 @@
   </Settings>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="examples">
+    <File Name="../examples/simple.xml"/>
+  </VirtualDirectory>
 </CodeLite_Project>
