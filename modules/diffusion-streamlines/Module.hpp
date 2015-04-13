@@ -29,7 +29,25 @@ public:
     /**
      * @brief Constructor.
      */
-    Module();
+    Module()
+        : Module(200)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param size Signal grid size.
+     */
+    template<typename... Args>
+    Module(Args&&... args)
+        : m_diffusion(std::forward<Args>(args)...)
+        , m_streamlines(std::forward<Args>(args)...)
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -94,9 +112,9 @@ public:
      * @brief Update module state.
      *
      * @param dt    Simulation time step.
-     * @param world World object.
+     * @param simulation
      */
-    void update(units::Duration dt, simulator::World& world) override;
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
 #ifdef ENABLE_RENDER
@@ -114,9 +132,9 @@ public:
      * @brief Render module.
      *
      * @param context
-     * @param world
+     * @param simulation
      */
-    void draw(render::Context& context, const simulator::World& world) override;
+    void draw(render::Context& context, const simulator::Simulation& simulation) override;
 #endif
 
 

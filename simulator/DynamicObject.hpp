@@ -19,6 +19,20 @@ namespace simulator {
 class DynamicObject : public StaticObject
 {
 
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    DynamicObject()
+    {
+        setFlag(OBJECT_DYNAMIC);
+    }
+
+
 // Public Accessors
 public:
 

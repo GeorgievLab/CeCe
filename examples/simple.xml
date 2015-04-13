@@ -1,3 +1,5 @@
-<world width="8" height="8" grid-width="1" grid-height="1" main-cell-radius="1">
-
-</world>
+<simulation world-size="8 8">
+    <module name="diffusion-streamlines">
+        <cell radius="1" position="0 0" />
+    </module>
+</simulation>

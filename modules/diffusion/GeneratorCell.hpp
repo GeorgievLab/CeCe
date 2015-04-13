@@ -18,9 +18,9 @@ class Module;
 /* ************************************************************************ */
 
 /**
- * @brief Signal generator for diffusion module.
+ * @brief Signal generator from cells presented in simulations.
  */
-class Generator : public simulator::Module
+class GeneratorCell : public simulator::Module
 {
 
 // Public Ctors & Dtors
@@ -32,7 +32,7 @@ public:
      *
      * @param module A pointer to diffusion module.
      */
-    explicit Generator(module::diffusion::Module* module) noexcept
+    explicit GeneratorCell(module::diffusion::Module* module) noexcept
         : m_diffusionModule(module)
     {
         // Nothing to do

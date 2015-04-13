@@ -45,7 +45,24 @@ public:
     /**
      * @brief Constructor.
      */
-    Module();
+    Module()
+        : Module(200)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param size Signal grid size.
+     */
+    template<typename... Args>
+    Module(Args&&... args)
+        : m_grid(std::forward<Args>(args)...)
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -185,10 +202,10 @@ public:
     /**
      * @brief Update module state.
      *
-     * @param dt    Simulation time step.
-     * @param world World object.
+     * @param dt         Simulation time step.
+     * @param simulation
      */
-    void update(units::Duration dt, simulator::World& world) override;
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
 #ifdef ENABLE_RENDER
@@ -206,9 +223,9 @@ public:
      * @brief Render module.
      *
      * @param context
-     * @param world
+     * @param simulation
      */
-    void draw(render::Context& context, const simulator::World& world) override;
+    void draw(render::Context& context, const simulator::Simulation& simulation) override;
 #endif
 
 
@@ -216,7 +233,7 @@ public:
 private:
 
     /// World main cell radius.
-    units::Length m_mainCellRadius = units::um(20);
+    units::Length m_mainCellRadius = units::um(1);
 
     /// Main cell position.
     Vector<units::Length> m_mainCellPosition{units::um(0), units::um(0)};

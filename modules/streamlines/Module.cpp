@@ -6,7 +6,7 @@
 #include <random>
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/DynamicObject.hpp"
 
 // TODO remove
@@ -19,16 +19,6 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-Module::Module()
-    : m_grid(500)
-    , m_mainCellRadius(units::um(1))
-    , m_flowSpeed(1.f)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
 Module::~Module()
 {
     // Nothing to do
@@ -36,17 +26,17 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::World& world)
+void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     // Generate cells
-    if (false)
+    if (!false)
     {
-        const float half = world.getHeight() / 2.f;
+        const float half = simulation.getWorldSize().getHeight() / 2.f;
 
         std::random_device rd;
         std::default_random_engine eng(rd());
 
-        std::bernoulli_distribution d(0.5);
+        std::bernoulli_distribution d(0.02);
 
         // If cell should be generated
         if (d(eng))
@@ -55,10 +45,10 @@ void Module::update(units::Duration dt, simulator::World& world)
             float y = dist(eng);
 
             // Create cell
-            simulator::Cell* cell = world.createObject<simulator::Cell>();
-            cell->setVolume(units::um3(200));
+            simulator::Cell* cell = simulation.createObject<simulator::Cell>();
+            cell->setVolume(units::um3(0.01));
             cell->setVelocity({10, 0});
-            cell->setPosition({-world.getWidth() / 2.f, y});
+            cell->setPosition({-simulation.getWorldSize().getWidth() / 2.f + 0.1f, y});
         }
     }
 
@@ -70,8 +60,8 @@ void Module::update(units::Duration dt, simulator::World& world)
 
         // Precompute values
         const auto R2 = R * R;
-        const Vector<float> start = world.getSize() * -0.5f;
-        const Vector<float> step = world.getSize() / m_grid.getSize();
+        const Vector<float> start = simulation.getWorldSize() * -0.5f;
+        const Vector<float> step = simulation.getWorldSize() / m_grid.getSize();
 
         for (decltype(m_grid.getHeight()) j = 0; j < m_grid.getHeight(); ++j)
         {
@@ -122,26 +112,27 @@ void Module::update(units::Duration dt, simulator::World& world)
 
     // Apply streamlines to world objects
     {
-        const Vector<float> start = world.getSize() * -0.5;
+        // Get grid
+        const auto& grid = getGrid();
 
-        for (auto& obj : world.getObjects())
+        const Vector<float> start = simulation.getWorldSize() * -0.5;
+        const auto step = simulation.getWorldSize() / grid.getSize();
+
+        for (auto& obj : simulation.getObjects())
         {
-            auto ptr = dynamic_cast<simulator::DynamicObject*>(obj.get());
-            if (!ptr)
+            if (!obj->hasFlag(simulator::OBJECT_DYNAMIC))
                 continue;
 
+            // Cast to dynamic object
+            auto ptr = obj->cast<simulator::DynamicObject>();
+
+            // Get position
             auto pos = ptr->getPosition() - start;
 
-            // Cell is out of world
+            // TODO: improve
             if ((pos.getX() < 0 || pos.getY() < 0) ||
-                (pos.getX() >= world.getWidth() || pos.getY() >= world.getHeight()))
+                (pos.getX() >= simulation.getWorldSize().getWidth() || pos.getY() >= simulation.getWorldSize().getHeight()))
                 continue;
-
-            // Get grid
-            const auto& grid = getGrid();
-
-            // Get step
-            const auto step = world.getSize() / grid.getSize();
 
             // Get grid position
             Vector<SizeType> coord = pos / step;
@@ -168,7 +159,7 @@ void Module::drawInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::World& world)
+void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
     if (m_renderUpdate)
     {
@@ -176,7 +167,7 @@ void Module::draw(render::Context& context, const simulator::World& world)
         m_renderUpdate = false;
     }
 
-    m_renderObject.draw(world.getSize());
+    m_renderObject.draw(simulation.getWorldSize());
 
     // Draw main cell
     if (getMainCellRadius())

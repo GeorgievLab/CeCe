@@ -12,6 +12,7 @@ option(ENABLE_GUI "Enable GUI" On)
 option(ENABLE_RENDER "Enable simulation rendering" On)
 option(ENABLE_SSE "Enable SSE instructions" On)
 option(INCLUDE_SOURCE "Include source code in object files" Off)
+option(NATIVE_BUILD "If sources should be build for current CPU -march=native" Off)
 
 # Default include directories
 include_directories(
@@ -23,6 +24,11 @@ add_compile_options(-pedantic-errors -pedantic -std=c++11)
 
 if (INCLUDE_SOURCE)
     add_compile_options(-g)
+endif ()
+
+if (NATIVE_BUILD)
+    message("-- Native architecture build")
+    add_compile_options(-march=native)
 endif ()
 
 # Use libc++
@@ -72,6 +78,7 @@ add_subdirectory(parser)
 add_subdirectory(modules/streamlines)
 add_subdirectory(modules/diffusion)
 add_subdirectory(modules/diffusion-streamlines)
+add_subdirectory(modules/physics)
 
 if (ENABLE_GUI)
     add_subdirectory(gui)

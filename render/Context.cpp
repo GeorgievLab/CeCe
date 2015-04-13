@@ -107,6 +107,41 @@ void Context::setView(int width, int height) noexcept
 
 /* ************************************************************************ */
 
+void Context::setStencilBuffer(float width, float height) noexcept
+{
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_STENCIL_TEST);
+
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glDepthMask(GL_FALSE);
+    glStencilFunc(GL_NEVER, 1, 0xFF);
+    glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);
+
+    // draw stencil pattern
+    glStencilMask(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+    float wh = width * 0.5f;
+    float hh = height * 0.5f;
+
+    glBegin(GL_QUADS);
+    glVertex2f(-wh, -hh);
+    glVertex2f( wh, -hh);
+    glVertex2f( wh,  hh);
+    glVertex2f(-wh,  hh);
+    glEnd();
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glDepthMask(GL_TRUE);
+    glStencilMask(0x00);
+    glStencilFunc(GL_EQUAL, 0, 0xFF);
+    glStencilFunc(GL_EQUAL, 1, 0xFF);
+
+    //glDisable(GL_STENCIL_TEST);
+}
+
+/* ************************************************************************ */
+
 void Context::frameBegin(int width, int height) noexcept
 {
     assert(isInit());

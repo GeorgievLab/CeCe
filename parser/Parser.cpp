@@ -15,7 +15,8 @@
 
 // Simulator
 #include "core/Units.hpp"
-#include "simulator/World.hpp"
+#include "core/Vector.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Cell.hpp"
 
 /* ************************************************************************ */
@@ -24,93 +25,56 @@ namespace {
 
 /* ************************************************************************ */
 
-units::Length parse_length(const char* value)
+template<typename T>
+struct value_parser
 {
-    char* end;
-    float val = std::strtof(value, &end);
+    static T parse(const char* str, char*& end)
+    {
+        auto val = std::strtof(str, &end);
 
-    // Possible suffixes
-    if (!strcmp(end, "um"))
-    {
-        return units::um(val);
+        // Possible suffixes
+        if (!strncmp(end, "um", 2))
+        {
+            end += 2;
+            return units::um(val);
+        }
+        else
+        {
+            return val;
+        }
     }
-    else
-    {
-        return val;
-    }
-}
+};
 
 /* ************************************************************************ */
 
-units::Volume parse_volume(const char* value)
+template<typename T>
+Vector<T> parse_vector(const char* value)
 {
     char* end;
-    float val = std::strtof(value, &end);
+    auto x = value_parser<T>::parse(value, end);
+    auto y = value_parser<T>::parse(end, end);
 
-    // Possible suffixes
-    if (!strcmp(end, "um3"))
-    {
-        return units::um3(val);
-    }
-    else
-    {
-        return val;
-    }
+    return {x, y};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Process cell node.
+ * @brief Process simulation node.
  *
  * @param node
- * @param world
+ * @param simulation
  */
-void process_cell_node(const pugi::xml_node& node, simulator::World& world)
-{
-    // Create cell
-    auto cell = world.createObject<simulator::Cell>();
-
-    // Set cell volume
-    cell->setVolume(parse_volume(node.attribute("volume").value()));
-
-    // Set position
-    cell->setPosition({
-        parse_length(node.attribute("position-x").value()),
-        parse_length(node.attribute("position-y").value())
-    });
-
-    // Set velocity
-    cell->setVelocity({
-        parse_length(node.attribute("velocity-x").value()),
-        parse_length(node.attribute("velocity-y").value())
-    });
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Process world node.
- *
- * @param node
- * @param world
- */
-void process_world_node(const pugi::xml_node& node, simulator::World& world)
+void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& simulation)
 {
     // Resize world
     {
-        auto width = parse_length(node.attribute("width").value());
-        auto height = parse_length(node.attribute("height").value());
+        auto size = parse_vector<units::Length>(node.attribute("world-size").value());
 
-        if (width == 0 || height == 0)
+        if (size.getWidth() == 0 || size.getHeight() == 0)
             throw parser::Exception("Width or height is zero!");
 
-        world.resize(width, height);
-    }
-
-    for (const auto& child : node.children("cell"))
-    {
-        process_cell_node(child, world);
+        simulation.setWorldSize(size);
     }
 }
 
@@ -124,9 +88,9 @@ namespace parser {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::World> fromStream(std::istream& source)
+std::unique_ptr<simulator::Simulation> fromStream(std::istream& source)
 {
-    std::unique_ptr<simulator::World> world(new simulator::World());
+    std::unique_ptr<simulator::Simulation> simulation(new simulator::Simulation());
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load(source);
@@ -135,9 +99,9 @@ std::unique_ptr<simulator::World> fromStream(std::istream& source)
         throw Exception("XML parse error: " + std::string(result.description()));
 
     // Parse DOM
-    process_world_node(doc.document_element(), *world);
+    process_simulation_node(doc.document_element(), *simulation);
 
-    return world;
+    return simulation;
 }
 
 /* ************************************************************************ */

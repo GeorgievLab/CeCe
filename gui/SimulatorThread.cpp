@@ -19,7 +19,7 @@ wxDEFINE_EVENT(EVT_LOG, wxCommandEvent);
 
 /* ************************************************************************ */
 
-SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::WorldFactory* factory)
+SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory)
     : m_handler(handler)
     , m_worldFactory(factory)
 {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="simulator" InternalType="Library">
+<CodeLite_Project Name="module-physics" InternalType="Library">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -17,30 +17,10 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Cell.cpp"/>
-    <File Name="Simulator.cpp"/>
-    <File Name="Yeast.cpp"/>
-    <File Name="Object.cpp"/>
-    <File Name="DynamicObject.cpp"/>
-    <File Name="CellGenerator.cpp"/>
-    <File Name="Simulation.cpp"/>
-    <File Name="SimulationFactory.cpp"/>
+    <File Name="Module.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Yeast.hpp"/>
-    <File Name="Cell.hpp"/>
-    <File Name="Simulator.hpp"/>
-    <File Name="Object.hpp"/>
-    <File Name="Position.hpp"/>
-    <File Name="Velocity.hpp"/>
-    <File Name="StaticObject.hpp"/>
-    <File Name="DynamicObject.hpp"/>
-    <File Name="Grid.hpp"/>
-    <File Name="Acceleration.hpp"/>
-    <File Name="CellGenerator.hpp"/>
     <File Name="Module.hpp"/>
-    <File Name="Simulation.hpp"/>
-    <File Name="SimulationFactory.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

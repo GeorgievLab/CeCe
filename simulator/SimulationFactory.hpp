@@ -14,14 +14,14 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class World;
+class Simulation;
 
 /* ************************************************************************ */
 
 /**
- * @brief WorldLoader interface.
+ * @brief Simulation factory interface.
  */
-class WorldFactory
+class SimulationFactory
 {
 
 // Public Dtors
@@ -31,7 +31,7 @@ public:
     /**
      * @brief Virtual destructor.
      */
-    virtual ~WorldFactory() {}
+    virtual ~SimulationFactory() {}
 
 
 // Public Operations
@@ -39,27 +39,27 @@ public:
 
 
     /**
-     * @brief Create empty world.
+     * @brief Create empty simulation.
      *
      * @return
      */
-    virtual std::unique_ptr<World> createWorld() const;
+    virtual std::unique_ptr<Simulation> createSimulation() const;
 
 
     /**
-     * @brief Create a new world from source file.
+     * @brief Create a new simulation from source file.
      *
      * @param filename
      */
-    virtual std::unique_ptr<World> fromFile(const std::string& filename) const;
+    virtual std::unique_ptr<Simulation> fromFile(const std::string& filename) const;
 
 
     /**
-     * @brief Create a new world from source code.
+     * @brief Create a new simulation from source code.
      *
      * @param source
      */
-    virtual std::unique_ptr<World> fromSource(const std::string& source) const = 0;
+    virtual std::unique_ptr<Simulation> fromSource(const std::string& source) const = 0;
 
 };
 

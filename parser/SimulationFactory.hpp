@@ -8,7 +8,7 @@
 #include <string>
 
 // Simulator
-#include "simulator/WorldFactory.hpp"
+#include "simulator/SimulationFactory.hpp"
 
 /* ************************************************************************ */
 
@@ -19,7 +19,7 @@ namespace parser {
 /**
  * @brief WorldLoader interface.
  */
-class WorldFactory : public simulator::WorldFactory
+class SimulationFactory : public simulator::SimulationFactory
 {
 
 // Public Operations
@@ -31,7 +31,7 @@ public:
      *
      * @param filename
      */
-    std::unique_ptr<simulator::World> fromFile(const std::string& filename) const override;
+    std::unique_ptr<simulator::Simulation> fromFile(const std::string& filename) const override;
 
 
     /**
@@ -39,7 +39,7 @@ public:
      *
      * @param source
      */
-    std::unique_ptr<simulator::World> fromSource(const std::string& source) const override;
+    std::unique_ptr<simulator::Simulation> fromSource(const std::string& source) const override;
 
 };
 

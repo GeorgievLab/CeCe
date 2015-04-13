@@ -5,22 +5,26 @@
 
 // Simulator
 #include "simulator/Module.hpp"
+#include "simulator/Velocity.hpp"
+#include "simulator/Grid.hpp"
+
+#ifdef ENABLE_RENDER
+#include "render/Context.hpp"
+#include "render/Circle.hpp"
+#include "render/GridVector.hpp"
+#endif
 
 /* ************************************************************************ */
 
 namespace module {
-namespace diffusion {
-
-/* ************************************************************************ */
-
-class Module;
+namespace physics {
 
 /* ************************************************************************ */
 
 /**
- * @brief Signal generator for diffusion module.
+ * @brief Module for physics.
  */
-class Generator : public simulator::Module
+class Module : public simulator::Module
 {
 
 // Public Ctors & Dtors
@@ -29,14 +33,14 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param module A pointer to diffusion module.
      */
-    explicit Generator(module::diffusion::Module* module) noexcept
-        : m_diffusionModule(module)
-    {
-        // Nothing to do
-    }
+    Module();
+
+
+    /**
+     * @brief Destructor.
+     */
+    virtual ~Module();
 
 
 // Public Operations
@@ -46,17 +50,10 @@ public:
     /**
      * @brief Update module state.
      *
-     * @param dt     Simulation time step.
-     * @param world  World object.
+     * @param dt    Simulation time step.
+     * @param world World object.
      */
     void update(units::Duration dt, simulator::Simulation& simulation) override;
-
-
-// Private Data Members
-private:
-
-    /// A pointer to diffusion module.
-    module::diffusion::Module* m_diffusionModule;
 
 };
 

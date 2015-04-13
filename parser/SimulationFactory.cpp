@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "parser/WorldFactory.hpp"
+#include "parser/SimulationFactory.hpp"
 
 // C++
 #include <fstream>
@@ -17,7 +17,7 @@ namespace parser {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::World> WorldFactory::fromFile(const std::string& filename) const
+std::unique_ptr<simulator::Simulation> SimulationFactory::fromFile(const std::string& filename) const
 {
     std::ifstream file(filename, std::ios::in);
 
@@ -26,7 +26,7 @@ std::unique_ptr<simulator::World> WorldFactory::fromFile(const std::string& file
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::World> WorldFactory::fromSource(const std::string& source) const
+std::unique_ptr<simulator::Simulation> SimulationFactory::fromSource(const std::string& source) const
 {
     std::istringstream iss(source);
 

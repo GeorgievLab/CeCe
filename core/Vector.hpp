@@ -135,6 +135,17 @@ public:
 
 
     /**
+     * @brief Inverse operator.
+     *
+     * @return
+     */
+    constexpr Vector operator-() const noexcept
+    {
+        return Vector{-x, -y};
+    }
+
+
+    /**
      * @brief Add operator.
      *
      * @param v

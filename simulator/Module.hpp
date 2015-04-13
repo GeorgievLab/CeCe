@@ -16,7 +16,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class World;
+class Simulation;
 
 /* ************************************************************************ */
 
@@ -47,10 +47,10 @@ public:
     /**
      * @brief Update module state.
      *
-     * @param dt    Simulation time step.
-     * @param world World object.
+     * @param dt         Simulation time step.
+     * @param simulation Simulation object.
      */
-    virtual void update(units::Duration dt, World& world) = 0;
+    virtual void update(units::Duration dt, Simulation& simulation) = 0;
 
 
 #ifdef ENABLE_RENDER
@@ -70,9 +70,9 @@ public:
      * @brief Render module.
      *
      * @param context
-     * @param world
+     * @param simulation
      */
-    virtual void draw(render::Context& context, const World& world)
+    virtual void draw(render::Context& context, const Simulation& simulation)
     {
         // Nothing to do
     }

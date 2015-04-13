@@ -9,7 +9,7 @@
 #include <wx/txtstrm.h>
 
 // Simulator
-#include "parser/WorldFactory.hpp"
+#include "parser/SimulationFactory.hpp"
 
 // GUI
 #ifdef PNG_SUPPORT
@@ -83,7 +83,7 @@ inline wxString wxToString(const wxSize& size)
 
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
-    , m_simulatorThread(m_glCanvasView, new parser::WorldFactory())
+    , m_simulatorThread(m_glCanvasView, new parser::SimulationFactory())
 {
     m_fileHistory.UseMenu(m_menuFileRecent);
 

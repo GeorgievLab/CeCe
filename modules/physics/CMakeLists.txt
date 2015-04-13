@@ -1,21 +1,15 @@
 # ######################################################################### #
 
-project(parser)
+project(module-physics)
 
 # Create library
-add_library(parser
-    Parser.hpp
-    Parser.cpp
-    SimulationFactory.hpp
-    SimulationFactory.cpp
-
-    # PugiXML library
-    pugixml/pugixml.hpp
-    pugixml/pugixml.cpp
+add_library(module-physics
+    Module.hpp
+    Module.cpp
 )
 
 # Setup dependencies
-add_dependencies(parser
+add_dependencies(module-physics
     core
     simulator
 )

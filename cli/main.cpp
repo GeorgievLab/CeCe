@@ -19,13 +19,15 @@
 
 // Simulator
 #include "simulator/Simulator.hpp"
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "parser/Parser.hpp"
-#include "parser/WorldFactory.hpp"
+#include "parser/SimulationFactory.hpp"
 #include "modules/streamlines/Module.hpp"
 #include "modules/diffusion/Module.hpp"
 #include "modules/diffusion/Generator.hpp"
+#include "modules/diffusion/GeneratorCell.hpp"
 #include "modules/diffusion-streamlines/Module.hpp"
+#include "modules/physics/Module.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -109,7 +111,7 @@ int main(int argc, char** argv)
 #ifdef ENABLE_RENDER
     glutInit(&argc, argv);
     glutInitWindowSize(g_width, g_height);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_STENCIL);
     glutCreateWindow("Cell Simulator");
 
     g_context.init();
@@ -118,21 +120,27 @@ int main(int argc, char** argv)
     try
     {
         // Create javascript world factory
-        parser::WorldFactory worldFactory;
+        parser::SimulationFactory worldFactory;
 
         // Create world
-        g_sim.setWorld(worldFactory.fromFile(argv[1]));
+        g_sim.setSimulation(worldFactory.fromFile(argv[1]));
+
+        // Grid size
+        auto grid_size = 300;
 
         // Create modules
-        //g_sim.createModule<module::streamlines::Module>();
-        //g_sim.createModule<module::diffusion::Module>();
-        auto ptr = g_sim.createModule<module::diffusion_streamlines::Module>();
+        //g_streamlinesModule = g_sim.getSimulation()->createModule<module::streamlines::Module>(grid_size);
+        //g_diffusionModule = g_sim.getSimulation()->createModule<module::diffusion::Module>(grid_size);
+        auto ptr = g_sim.getSimulation()->createModule<module::diffusion_streamlines::Module>(grid_size);
         g_diffusionModule = &ptr->getDiffusion();
         g_streamlinesModule = &ptr->getStreamlines();
-        g_diffusionModule->getDrawable().setInterpolate(false);
+        //g_diffusionModule->getDrawable().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
 
-        g_sim.createModule<module::diffusion::Generator>(g_diffusionModule);
+        g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
+        g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
+
+        //g_sim.createModule<module::physics::Module>();
 
 #ifdef ENABLE_RENDER
         // Register callbacks:
@@ -146,7 +154,7 @@ int main(int argc, char** argv)
         glutReshapeFunc([](int width, int height) {
             g_width = width;
             g_height = height;
-            auto size = g_sim.getWorld()->getSize();
+            auto size = g_sim.getSimulation()->getWorldSize();
 
             g_context.getCamera().setZoom(
                 std::max(size.getWidth() / g_width, size.getHeight() / g_height)
