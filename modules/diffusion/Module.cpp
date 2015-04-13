@@ -108,11 +108,11 @@ void Module::update(units::Duration dt, simulator::World& world)
         {
             // TODO: optimize
             for (unsigned a = row < OFFSET ? OFFSET - row : 0;
-                 a < ((height - row) < OFFSET ? MATRIX_SIZE - (height - row) : MATRIX_SIZE);
+                 a < ((height - row) <= OFFSET ? MATRIX_SIZE - (height - row) : MATRIX_SIZE);
                  ++a)
             {
                 for (unsigned b = column < OFFSET ? OFFSET - column : 0;
-                     b < ((width - column) < OFFSET ? MATRIX_SIZE - (width - column) : MATRIX_SIZE);
+                     b < ((width - column) <= OFFSET ? MATRIX_SIZE - (width - column) : MATRIX_SIZE);
                      ++b)
                 {
                     auto ptr = gridNewPtr + MAPPING_MATRIX[a][b];
