@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 #ifdef ENABLE_RENDER
     glutInit(&argc, argv);
     glutInitWindowSize(g_width, g_height);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_STENCIL);
     glutCreateWindow("Cell Simulator");
 
     g_context.init();

@@ -93,6 +93,8 @@ void Simulation::drawInit(render::Context& context)
 #ifdef ENABLE_RENDER
 void Simulation::draw(render::Context& context)
 {
+    context.setStencilBuffer(getWorldSize().getWidth(), getWorldSize().getHeight());
+
     // Render modules
     for (auto& module : getModules())
         module->draw(context, *this);

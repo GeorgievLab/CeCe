@@ -83,6 +83,15 @@ public:
 
 
     /**
+     * @brief Setup stencil buffer test.
+     *
+     * @param width  View width.
+     * @param height View height.
+     */
+    void setStencilBuffer(float width, float height) noexcept;
+
+
+    /**
      * @brief Begin frame rendering.
      *
      * @param width  View width.
