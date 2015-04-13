@@ -32,9 +32,12 @@ void GeneratorCell::update(units::Duration dt, simulator::World& world)
     // Foreach all cells
     for (auto& obj : world.getObjects())
     {
-        auto ptr = dynamic_cast<simulator::Cell*>(obj.get());
-        if (!ptr)
+        // It's not cell
+        if (!obj->hasFlag(simulator::OBJECT_CELL))
             continue;
+
+        // Cast to cell
+        auto ptr = obj->cast<simulator::Cell>();
 
         // Get cell position
         const auto pos = ptr->getPosition() - start;

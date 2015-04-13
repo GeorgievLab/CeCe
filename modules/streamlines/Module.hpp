@@ -45,7 +45,24 @@ public:
     /**
      * @brief Constructor.
      */
-    Module();
+    Module()
+        : Module(200)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param size Signal grid size.
+     */
+    template<typename... Args>
+    Module(Args&&... args)
+        : m_grid(std::forward<Args>(args)...)
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -216,7 +233,7 @@ public:
 private:
 
     /// World main cell radius.
-    units::Length m_mainCellRadius = units::um(20);
+    units::Length m_mainCellRadius = units::um(1);
 
     /// Main cell position.
     Vector<units::Length> m_mainCellPosition{units::um(0), units::um(0)};

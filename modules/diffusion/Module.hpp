@@ -42,7 +42,7 @@ public:
      * @brief Constructor.
      */
     Module()
-        : m_grid(500)
+        : Module(200)
     {
         // Nothing to do
     }

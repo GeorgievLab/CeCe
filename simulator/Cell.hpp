@@ -34,6 +34,20 @@ using FluorescentProteinCount = unsigned int;
 class Cell : public DynamicObject
 {
 
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    Cell()
+    {
+        setFlag(OBJECT_CELL);
+    }
+
+
 // Public Accessors
 public:
 

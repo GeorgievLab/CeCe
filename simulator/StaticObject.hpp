@@ -21,6 +21,20 @@ namespace simulator {
 class StaticObject : public Object
 {
 
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    StaticObject()
+    {
+        setFlag(OBJECT_STATIC);
+    }
+
+
 // Public Accessors
 public:
 

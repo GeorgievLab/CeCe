@@ -29,7 +29,25 @@ public:
     /**
      * @brief Constructor.
      */
-    Module();
+    Module()
+        : Module(200)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param size Signal grid size.
+     */
+    template<typename... Args>
+    Module(Args&&... args)
+        : m_diffusion(std::forward<Args>(args)...)
+        , m_streamlines(std::forward<Args>(args)...)
+    {
+        // Nothing to do
+    }
 
 
     /**

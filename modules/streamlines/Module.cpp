@@ -19,16 +19,6 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-Module::Module()
-    : m_grid(500)
-    , m_mainCellRadius(units::um(1))
-    , m_flowSpeed(1.f)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
 Module::~Module()
 {
     // Nothing to do
@@ -130,10 +120,13 @@ void Module::update(units::Duration dt, simulator::World& world)
 
         for (auto& obj : world.getObjects())
         {
-            auto ptr = dynamic_cast<simulator::DynamicObject*>(obj.get());
-            if (!ptr)
+            if (!obj->hasFlag(simulator::OBJECT_DYNAMIC))
                 continue;
 
+            // Cast to dynamic object
+            auto ptr = obj->cast<simulator::DynamicObject>();
+
+            // Get position
             auto pos = ptr->getPosition() - start;
 
             // Cell is out of world

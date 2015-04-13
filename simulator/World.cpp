@@ -67,10 +67,11 @@ void World::update(units::Duration dt) noexcept
 
         // Kill objects that are outside world
         m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [wh, hh](const ObjectContainer::value_type& obj) {
-            auto ptr = dynamic_cast<StaticObject*>(obj.get());
-
-            if (!ptr)
+            if (!obj->hasFlag(OBJECT_STATIC))
                 return false;
+
+            // Cast to static object
+            auto ptr = obj->cast<StaticObject>();
 
             // Get object position
             const Position& pos = ptr->getPosition();
