@@ -13,7 +13,7 @@
 // Simulator
 #include "simulator/World.hpp"
 #include "simulator/Simulator.hpp"
-#include "simulator/WorldFactory.hpp"
+#include "simulator/SimulationFactory.hpp"
 
 // GUI
 #include "gui/SimulatorThread.hpp"

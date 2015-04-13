@@ -12,8 +12,8 @@ add_library(simulator
     DynamicObject.hpp
     Cell.hpp
     #Yeast.hpp
-    World.hpp
-    WorldFactory.hpp
+    Simulation.hpp
+    SimulationFactory.hpp
     Simulator.hpp
     Grid.hpp
     Module.hpp
@@ -23,8 +23,8 @@ add_library(simulator
     DynamicObject.cpp
     Cell.cpp
     #Yeast.cpp
-    World.cpp
-    WorldFactory.cpp
+    Simulation.cpp
+    SimulationFactory.cpp
     Simulator.cpp
 )
 

@@ -23,7 +23,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class World;
+class Simulation;
 
 /* ************************************************************************ */
 
@@ -35,23 +35,8 @@ class World;
 class Simulator final
 {
 
-
-// Public Types
-public:
-
-
-    /// Module container type.
-    using ModuleContainer = std::vector<std::unique_ptr<Module>>;
-
-
 // Public Ctors & Dtors
 public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    Simulator();
 
 
     /**
@@ -76,55 +61,13 @@ public:
 
 
     /**
-     * @brief Returns simulation time step.
+     * @brief Returns current simulation.
      *
-     * @return
+     * @return A pointer to current simulation or nullptr.
      */
-    units::Duration getTimeStep() const noexcept
+    Simulation* getSimulation() const noexcept
     {
-        return m_timeStep;
-    }
-
-
-    /**
-     * @brief Returns current world.
-     *
-     * @return A pointer to current world or nullptr.
-     */
-    World* getWorld() const noexcept
-    {
-        return m_world.get();
-    }
-
-
-    /**
-     * @brief Return a list of modules.
-     *
-     * @return
-     */
-    const ModuleContainer& getModules() const noexcept
-    {
-        return m_modules;
-    }
-
-
-    /**
-     * @brief Find module by type.
-     *
-     * @tparam ModuleType Module type
-     *
-     * @return Pointer to module. If module doesn't exists, nullptr is returned.
-     */
-    template<typename ModuleType>
-    ModuleType* findModule() noexcept
-    {
-        for (auto& module : getModules())
-        {
-            if (auto ptr = dynamic_cast<ModuleType*>(module.get()))
-                return ptr;
-        }
-
-        return nullptr;
+        return m_simulation.get();
     }
 
 
@@ -133,54 +76,13 @@ public:
 
 
     /**
-     * @brief Set new current world. Previous world will be deleted.
+     * @brief Change current simulation. The old simulation will be deleted.
      *
-     * @param world
+     * @param simulation New simulation.
      */
-    void setWorld(std::unique_ptr<World> world) noexcept
+    void setSimulation(std::unique_ptr<Simulation> simulation) noexcept
     {
-        m_world = std::move(world);
-    }
-
-
-    /**
-     * @brief Set simulation time step.
-     *
-     * @param dt
-     */
-    void setTimeStep(units::Duration dt) noexcept
-    {
-        m_timeStep = dt;
-    }
-
-
-    /**
-     * @brief Add new module.
-     *
-     * @param mod
-     *
-     * @return A pointer to inserted module.
-     */
-    template<typename T>
-    T* addModule(std::unique_ptr<T> mod)
-    {
-        assert(mod);
-        m_modules.push_back(std::move(mod));
-        return reinterpret_cast<T*>(m_modules.back().get());
-    }
-
-
-    /**
-     * @brief Create module.
-     *
-     * @param args...
-     *
-     * @return A pointer to created module.
-     */
-    template<typename T, typename... Args>
-    T* createModule(Args&&... args)
-    {
-        return addModule(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+        m_simulation = std::move(simulation);
     }
 
 
@@ -223,10 +125,7 @@ public:
     /**
      * @brief Update simulation by time step.
      */
-    void update()
-    {
-        update(getTimeStep());
-    }
+    void update();
 
 
 #ifdef ENABLE_RENDER
@@ -253,16 +152,10 @@ public:
 private:
 
     /// Flag if thread is running
-    std::atomic<bool> m_isRunning;
+    std::atomic<bool> m_isRunning{false};
 
-    /// Simulation step.
-    units::Duration m_timeStep;
-
-    /// Simulated world.
-    std::unique_ptr<World> m_world;
-
-    /// Simulation modules.
-    ModuleContainer m_modules;
+    /// Current simulation
+    std::unique_ptr<Simulation> m_simulation;
 
 };
 

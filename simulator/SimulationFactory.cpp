@@ -2,13 +2,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/WorldFactory.hpp"
+#include "simulator/SimulationFactory.hpp"
 
 // C++
 #include <fstream>
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -16,14 +16,14 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-std::unique_ptr<World> WorldFactory::createWorld() const
+std::unique_ptr<Simulation> SimulationFactory::createSimulation() const
 {
-    return std::unique_ptr<World>(new World());
+    return std::unique_ptr<Simulation>(new Simulation());
 }
 
 /* ************************************************************************ */
 
-std::unique_ptr<World> WorldFactory::fromFile(const std::string& filename) const
+std::unique_ptr<Simulation> SimulationFactory::fromFile(const std::string& filename) const
 {
     std::string source;
 

@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -22,13 +22,13 @@ using Exception = std::runtime_error;
 /* ************************************************************************ */
 
 /**
- * @brief Parse world from source.
+ * @brief Parse source stream and create a new simulation.
  *
- * @param source
+ * @param source Source stream
  *
- * @return
+ * @return Simulation from stream.
  */
-std::unique_ptr<simulator::World> fromStream(std::istream& source);
+std::unique_ptr<simulator::Simulation> fromStream(std::istream& source);
 
 /* ************************************************************************ */
 

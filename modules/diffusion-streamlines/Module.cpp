@@ -10,7 +10,7 @@
 
 // Simulator
 #include "core/Matrix.hpp"
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -26,19 +26,19 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::World& world)
+void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     // Constants
     constexpr float DIFFUSION_IGNORE = 0.0f;
 
-    m_streamlines.update(dt, world);
+    m_streamlines.update(dt, simulation);
 
     auto& signalGrid = m_diffusion.getGrid();
     auto& velocityGrid = m_streamlines.getGrid();
 
     // Precompute values
-    const auto start = world.getStartPosition();
-    const auto step = world.calcStep(signalGrid.getSize());
+    const auto start = simulation.getWorldSize() * 0.5f;
+    const auto step = simulation.getWorldSize() / signalGrid.getSize();
 
     // Grid for changes
     diffusion::SignalGrid signalGridNew(signalGrid.getWidth(), signalGrid.getHeight());
@@ -116,7 +116,7 @@ void Module::update(units::Duration dt, simulator::World& world)
     signalGrid = std::move(signalGridNew);
 
     // Update diffusion
-    m_diffusion.update(dt, world);
+    m_diffusion.update(dt, simulation);
 }
 
 /* ************************************************************************ */
@@ -132,10 +132,10 @@ void Module::drawInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::World& world)
+void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
-    m_diffusion.draw(context, world);
-    m_streamlines.draw(context, world);
+    m_diffusion.draw(context, simulation);
+    m_streamlines.draw(context, simulation);
 }
 #endif
 

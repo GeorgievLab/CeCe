@@ -7,7 +7,7 @@
 
 // Simulator
 #include "simulator/Cell.hpp"
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 
 // Module
 #include "Module.hpp"
@@ -19,18 +19,18 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-void GeneratorCell::update(units::Duration dt, simulator::World& world)
+void GeneratorCell::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    constexpr float SOURCE_STRENGTH = 200.f;
+    constexpr float SOURCE_STRENGTH = 100.f;
 
     assert(m_diffusionModule);
     auto& grid = m_diffusionModule->getGrid();
 
-    const Vector<float> start = world.getSize() * -0.5;
-    const auto step = world.getSize() / grid.getSize();
+    const Vector<float> start = simulation.getWorldSize() * -0.5;
+    const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Foreach all cells
-    for (auto& obj : world.getObjects())
+    for (auto& obj : simulation.getObjects())
     {
         // It's not cell
         if (!obj->hasFlag(simulator::OBJECT_CELL))
@@ -43,9 +43,9 @@ void GeneratorCell::update(units::Duration dt, simulator::World& world)
         const auto pos = ptr->getPosition() - start;
         const unsigned int signal = ptr->getId() % Signal::COUNT;
 
-        // Cell is out of world
+        // TODO: improve
         if ((pos.getX() < 0 || pos.getY() < 0) ||
-            (pos.getX() >= world.getWidth() || pos.getY() >= world.getHeight()))
+            (pos.getX() >= simulation.getWorldSize().getWidth() || pos.getY() >= simulation.getWorldSize().getHeight()))
             continue;
 
         // Get grid position

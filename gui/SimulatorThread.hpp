@@ -13,7 +13,7 @@
 
 // Simulator
 #include "simulator/World.hpp"
-#include "simulator/WorldFactory.hpp"
+#include "simulator/SimulationFactory.hpp"
 #include "simulator/Simulator.hpp"
 
 /* ************************************************************************ */
@@ -60,7 +60,7 @@ public:
      * @param handler Event handler.
      * @param factory World factory.
      */
-    explicit SimulatorThread(wxEvtHandler* handler, simulator::WorldFactory* factory);
+    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory);
 
 
     /**
@@ -214,7 +214,7 @@ private:
     bool m_running = false;
 
     /// World factory
-    wxScopedPtr<simulator::WorldFactory> m_worldFactory;
+    wxScopedPtr<simulator::SimulationFactory> m_worldFactory;
 
 };
 

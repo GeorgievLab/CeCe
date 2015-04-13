@@ -26,12 +26,12 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="WorldFactory.cpp"/>
     <File Name="Parser.cpp"/>
+    <File Name="SimulationFactory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="WorldFactory.hpp"/>
     <File Name="Parser.hpp"/>
+    <File Name="SimulationFactory.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

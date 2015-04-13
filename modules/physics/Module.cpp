@@ -3,7 +3,7 @@
 #include "Module.hpp"
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/DynamicObject.hpp"
 #include "simulator/Cell.hpp"
 
@@ -28,11 +28,11 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::World& world)
+void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    for (auto& obj1 : world.getObjects())
+    for (auto& obj1 : simulation.getObjects())
     {
-        for (auto& obj2 : world.getObjects())
+        for (auto& obj2 : simulation.getObjects())
         {
             if (obj1 == obj2)
                 continue;

@@ -5,8 +5,6 @@
 
 // Simulator
 #include "simulator/Module.hpp"
-#include "simulator/Grid.hpp"
-#include "simulator/World.hpp"
 
 /* ************************************************************************ */
 
@@ -51,7 +49,7 @@ public:
      * @param dt     Simulation time step.
      * @param world  World object.
      */
-    void update(units::Duration dt, simulator::World& world) override;
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
 // Private Data Members

@@ -4,12 +4,12 @@ project(parser)
 
 # Create library
 add_library(parser
-    WorldFactory.hpp
     Parser.hpp
-
-    WorldFactory.cpp
     Parser.cpp
+    SimulationFactory.hpp
+    SimulationFactory.cpp
 
+    # PugiXML library
     pugixml/pugixml.hpp
     pugixml/pugixml.cpp
 )

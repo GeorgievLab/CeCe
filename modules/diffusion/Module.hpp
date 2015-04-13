@@ -133,7 +133,7 @@ public:
      * @param dt    Simulation time step.
      * @param world World object.
      */
-    void update(units::Duration dt, simulator::World& world) override;
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
 #ifdef ENABLE_RENDER
@@ -153,7 +153,7 @@ public:
      * @param context
      * @param world
      */
-    void draw(render::Context& context, const simulator::World& world) override;
+    void draw(render::Context& context, const simulator::Simulation& simulation) override;
 #endif
 
 

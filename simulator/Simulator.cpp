@@ -10,20 +10,11 @@
 #include <chrono>
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
 namespace simulator {
-
-/* ************************************************************************ */
-
-Simulator::Simulator()
-    : m_isRunning{false}
-    , m_timeStep{0.01f}
-{
-    // Nothing
-}
 
 /* ************************************************************************ */
 
@@ -59,7 +50,7 @@ void Simulator::step()
     auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(16);
 
     {
-        update(getTimeStep());
+        update(0.016f);
     }
 
     // Sleep
@@ -70,21 +61,24 @@ void Simulator::step()
 
 void Simulator::reset()
 {
-    assert(m_world);
-    m_world->reset();
+    assert(m_simulation);
+    m_simulation->reset();
 }
 
 /* ************************************************************************ */
 
 void Simulator::update(units::Duration dt)
 {
-    assert(m_world);
+    assert(m_simulation);
+    m_simulation->update(dt);
+}
 
-    // Update modules
-    for (auto& module : getModules())
-        module->update(dt, *m_world);
+/* ************************************************************************ */
 
-    m_world->update(dt);
+void Simulator::update()
+{
+    assert(m_simulation);
+    update(m_simulation->getTimeStep());
 }
 
 /* ************************************************************************ */
@@ -92,13 +86,8 @@ void Simulator::update(units::Duration dt)
 #ifdef ENABLE_RENDER
 void Simulator::drawInit(render::Context& context)
 {
-    // Init world for rendering
-    assert(m_world);
-    m_world->drawInit(context);
-
-    // Init modules for rendering
-    for (auto& module : getModules())
-        module->drawInit(context);
+    assert(m_simulation);
+    m_simulation->drawInit(context);
 }
 #endif
 
@@ -107,13 +96,8 @@ void Simulator::drawInit(render::Context& context)
 #ifdef ENABLE_RENDER
 void Simulator::draw(render::Context& context)
 {
-    assert(m_world);
-
-    // Render modules
-    for (auto& module : getModules())
-        module->draw(context, *m_world);
-
-    m_world->draw(context);
+    assert(m_simulation);
+    m_simulation->draw(context);
 }
 #endif
 

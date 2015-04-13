@@ -5,12 +5,11 @@
 // C++
 #include <limits>
 #include <functional>
-#include <random>
 
 // Simulator
 #include "core/Matrix.hpp"
 #include "core/constants.hpp"
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -26,7 +25,7 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::World& world)
+void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     // Size of mapping matrix
     constexpr unsigned OFFSET = 1;
@@ -36,8 +35,8 @@ void Module::update(units::Duration dt, simulator::World& world)
     constexpr float D = 0.1f;
 
     // Precompute values
-    const auto start = world.getStartPosition();
-    const auto step = world.calcStep(m_grid.getSize());
+    const auto start = simulation.getWorldSize() * 0.5f;
+    const auto step = simulation.getWorldSize() / m_grid.getSize();
 
     //const float A = 1.f / (4 * constants::PI * D * dt);
     const float A = 1.f / (constants::PI * dt);
@@ -157,7 +156,7 @@ void Module::drawInit(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::World& world)
+void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
     {
 #ifdef THREAD_SAFE
@@ -166,7 +165,7 @@ void Module::draw(render::Context& context, const simulator::World& world)
         getDrawable().update(m_grid.getData());
     }
 
-    getDrawable().draw(world.getSize());
+    getDrawable().draw(simulation.getWorldSize());
 }
 #endif
 

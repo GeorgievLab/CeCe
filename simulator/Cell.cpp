@@ -4,9 +4,6 @@
 // Declaration
 #include "simulator/Cell.hpp"
 
-// Core
-#include "simulator/World.hpp"
-
 /* ************************************************************************ */
 
 namespace simulator {

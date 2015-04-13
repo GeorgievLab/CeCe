@@ -2,15 +2,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 
 // C++
 #include <algorithm>
 
 // Simulator
-#include "core/Matrix.hpp"
 #include "simulator/StaticObject.hpp"
-#include "simulator/DynamicObject.hpp"
 
 /* ************************************************************************ */
 
@@ -18,55 +16,49 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-World::World() noexcept
+Simulation::Simulation() noexcept
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-World::~World()
+Simulation::~Simulation()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-void World::clean()
+void Simulation::reset()
 {
     m_stepNumber = 0;
-    m_objects.clear();
 }
 
 /* ************************************************************************ */
 
-void World::reset()
-{
-    // Nothing to do yet
-}
-
-/* ************************************************************************ */
-
-void World::update(units::Duration dt) noexcept
+void Simulation::update(units::Duration dt) noexcept
 {
     // Increase step number
     m_stepNumber++;
 
-    // Update all cells
-    // Cell update can update cell list
+    // Update modules
+    for (auto& module : getModules())
+        module->update(dt, *this);
+
+    // Update simulations objects
     for (const auto& obj : getObjects())
     {
         assert(obj);
         obj->update(dt);
     }
 
-    // Remove cells that are outside world
+    // Remove objects that are outside world.
     {
-        const auto wh = getWidth() / 2.f;
-        const auto hh = getWidth() / 2.f;
+        const auto hh = getWorldSize() * 0.5f;
 
         // Kill objects that are outside world
-        m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [wh, hh](const ObjectContainer::value_type& obj) {
+        m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [&hh](const ObjectContainer::value_type& obj) {
             if (!obj->hasFlag(OBJECT_STATIC))
                 return false;
 
@@ -76,9 +68,10 @@ void World::update(units::Duration dt) noexcept
             // Get object position
             const Position& pos = ptr->getPosition();
 
+            // TODO: optimize
             return not (
-                ((pos.getX() >= -wh) && (pos.getX() <= wh)) &&
-                ((pos.getY() >= -hh) && (pos.getY() <= hh))
+                ((pos.getX() >= -hh.getX()) && (pos.getX() <= hh.getX())) &&
+                ((pos.getY() >= -hh.getY()) && (pos.getY() <= hh.getY()))
             );
         }), m_objects.end());
     }
@@ -87,22 +80,23 @@ void World::update(units::Duration dt) noexcept
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void World::drawInit(render::Context& context)
+void Simulation::drawInit(render::Context& context)
 {
-    // Prepare objects for rendering
-    for (const auto& obj : getObjects())
-    {
-        assert(obj);
-        obj->drawInit(context);
-    }
+    // Init modules for rendering
+    for (auto& module : getModules())
+        module->drawInit(context);
 }
 #endif
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void World::draw(render::Context& context, RenderFlagsType flags)
+void Simulation::draw(render::Context& context)
 {
+    // Render modules
+    for (auto& module : getModules())
+        module->draw(context, *this);
+
     // Prepare objects for rendering
     {
         for (auto ptr : m_drawInitList)
@@ -116,10 +110,10 @@ void World::draw(render::Context& context, RenderFlagsType flags)
 
     // Draw lines around world
     {
-        const auto hw = getWidth() * 0.5f;
-        const auto hh = getHeight() * 0.5f;
-        const auto sw = getWidth() / 16.f;
-        const auto sh = getHeight() / 16.f;
+        const auto hw = getWorldSize().getWidth() * 0.5f;
+        const auto hh = getWorldSize().getHeight() * 0.5f;
+        const auto sw = getWorldSize().getWidth() / 16.f;
+        const auto sh = getWorldSize().getHeight() / 16.f;
 
         const render::Color color = {0.3, 0.3, 0.3, 0.2};
 

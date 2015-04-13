@@ -15,7 +15,7 @@
 
 // Simulator
 #include "core/Units.hpp"
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Cell.hpp"
 
 /* ************************************************************************ */
@@ -66,10 +66,10 @@ units::Volume parse_volume(const char* value)
  * @param node
  * @param world
  */
-void process_cell_node(const pugi::xml_node& node, simulator::World& world)
+void process_cell_node(const pugi::xml_node& node, simulator::Simulation& simulation)
 {
     // Create cell
-    auto cell = world.createObject<simulator::Cell>();
+    auto cell = simulation.createObject<simulator::Cell>();
 
     // Set cell volume
     cell->setVolume(parse_volume(node.attribute("volume").value()));
@@ -95,7 +95,7 @@ void process_cell_node(const pugi::xml_node& node, simulator::World& world)
  * @param node
  * @param world
  */
-void process_world_node(const pugi::xml_node& node, simulator::World& world)
+void process_world_node(const pugi::xml_node& node, simulator::Simulation& simulation)
 {
     // Resize world
     {
@@ -105,12 +105,12 @@ void process_world_node(const pugi::xml_node& node, simulator::World& world)
         if (width == 0 || height == 0)
             throw parser::Exception("Width or height is zero!");
 
-        world.resize(width, height);
+        simulation.setWorldSize(width, height);
     }
 
     for (const auto& child : node.children("cell"))
     {
-        process_cell_node(child, world);
+        process_cell_node(child, simulation);
     }
 }
 
@@ -124,9 +124,9 @@ namespace parser {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::World> fromStream(std::istream& source)
+std::unique_ptr<simulator::Simulation> fromStream(std::istream& source)
 {
-    std::unique_ptr<simulator::World> world(new simulator::World());
+    std::unique_ptr<simulator::Simulation> world(new simulator::Simulation());
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load(source);

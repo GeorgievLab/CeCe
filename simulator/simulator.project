@@ -18,20 +18,18 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Cell.cpp"/>
-    <File Name="World.cpp"/>
-    <File Name="WorldFactory.cpp"/>
     <File Name="Simulator.cpp"/>
     <File Name="Yeast.cpp"/>
     <File Name="Object.cpp"/>
     <File Name="DynamicObject.cpp"/>
     <File Name="CellGenerator.cpp"/>
+    <File Name="Simulation.cpp"/>
+    <File Name="SimulationFactory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Yeast.hpp"/>
     <File Name="Cell.hpp"/>
     <File Name="Simulator.hpp"/>
-    <File Name="World.hpp"/>
-    <File Name="WorldFactory.hpp"/>
     <File Name="Object.hpp"/>
     <File Name="Position.hpp"/>
     <File Name="Velocity.hpp"/>
@@ -41,6 +39,8 @@
     <File Name="Acceleration.hpp"/>
     <File Name="CellGenerator.hpp"/>
     <File Name="Module.hpp"/>
+    <File Name="Simulation.hpp"/>
+    <File Name="SimulationFactory.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

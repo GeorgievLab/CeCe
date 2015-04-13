@@ -202,10 +202,10 @@ public:
     /**
      * @brief Update module state.
      *
-     * @param dt    Simulation time step.
-     * @param world World object.
+     * @param dt         Simulation time step.
+     * @param simulation
      */
-    void update(units::Duration dt, simulator::World& world) override;
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
 #ifdef ENABLE_RENDER
@@ -223,9 +223,9 @@ public:
      * @brief Render module.
      *
      * @param context
-     * @param world
+     * @param simulation
      */
-    void draw(render::Context& context, const simulator::World& world) override;
+    void draw(render::Context& context, const simulator::Simulation& simulation) override;
 #endif
 
 
