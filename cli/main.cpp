@@ -133,7 +133,12 @@ int main(int argc, char** argv)
         //g_diffusionModule = g_sim.getSimulation()->createModule<module::diffusion::Module>(grid_size);
         auto ptr = g_sim.getSimulation()->createModule<module::diffusion_streamlines::Module>(grid_size);
         g_diffusionModule = &ptr->getDiffusion();
+
+#ifdef __AVX__
         g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f, 1.3f, 15.f, 1.f, 0.01f}});
+#else
+        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
+#endif
         g_streamlinesModule = &ptr->getStreamlines();
         //g_diffusionModule->getDrawable().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
