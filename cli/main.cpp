@@ -133,6 +133,7 @@ int main(int argc, char** argv)
         //g_diffusionModule = g_sim.getSimulation()->createModule<module::diffusion::Module>(grid_size);
         auto ptr = g_sim.getSimulation()->createModule<module::diffusion_streamlines::Module>(grid_size);
         g_diffusionModule = &ptr->getDiffusion();
+        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
         g_streamlinesModule = &ptr->getStreamlines();
         //g_diffusionModule->getDrawable().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
@@ -140,7 +141,7 @@ int main(int argc, char** argv)
         g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
         g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
 
-        //g_sim.createModule<module::physics::Module>();
+        //g_sim.getSimulation()->createModule<module::physics::Module>();
 
 #ifdef ENABLE_RENDER
         // Register callbacks:

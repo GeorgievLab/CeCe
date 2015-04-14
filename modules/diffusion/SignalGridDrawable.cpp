@@ -218,7 +218,7 @@ render::Color* SignalGridDrawable::updateTextureData(const Signal* data) noexcep
         // Mixup signal colors
         for (unsigned int i = 0; i < Signal::COUNT; ++i)
         {
-            pixel += m_colors[i] * (*data)[i];
+            pixel += m_colors[i % m_colors.size()] * (*data)[i];
         }
     }
 
