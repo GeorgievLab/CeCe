@@ -33,6 +33,7 @@
     <File Name="Vector.hpp"/>
     <File Name="Matrix.hpp"/>
     <File Name="constants.hpp"/>
+    <File Name="AlignedAllocator.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -179,11 +179,14 @@ private:
     render::Color m_background = render::colors::BLACK;
 
     /// Signal colors.
-    std::array<render::Color, Signal::COUNT> m_colors{{
+    std::vector<render::Color> m_colors{{
         render::colors::CYAN,
         render::colors::MAGENTA,
         render::colors::YELLOW,
-        render::colors::BLUE
+        render::colors::BLUE,
+        render::colors::RED,
+        render::colors::GREEN,
+        render::colors::WHITE
     }};
 
     /// Texture data buffer

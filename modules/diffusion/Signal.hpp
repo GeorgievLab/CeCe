@@ -7,7 +7,7 @@
 #include <array>
 
 #if ENABLE_SSE && __SSE__
-#include <xmmintrin.h>
+#include <immintrin.h>
 #endif
 
 /* ************************************************************************ */
@@ -32,7 +32,11 @@ public:
     /**
      * @brief Number of stored signals
      */
+#ifdef __AVX__
+    static constexpr unsigned int COUNT = 8;
+#else
     static constexpr unsigned int COUNT = 4;
+#endif
 
 
     /**
@@ -50,7 +54,11 @@ public:
      */
     Signal()
 #if ENABLE_SSE && __SSE__
+#ifdef __AVX__
+        : m_sse(_mm256_setzero_ps())
+#else
         : m_sse(_mm_setzero_ps())
+#endif
 #else
         : m_values{}
 #endif
@@ -66,7 +74,11 @@ public:
      */
     explicit Signal(float value)
 #if ENABLE_SSE && __SSE__
+#ifdef __AVX__
+        : m_sse(_mm256_set1_ps(value))
+#else
         : m_sse(_mm_set1_ps(value))
+#endif
 #else
         : m_values{value, value, value, value}
 #endif
@@ -93,7 +105,11 @@ public:
      *
      * @param values
      */
+#ifdef __AVX__
+    constexpr Signal(__m256 values)
+#else
     constexpr Signal(__m128 values)
+#endif
         : m_sse(values)
     {
         // Nothing to do
@@ -111,7 +127,11 @@ public:
     explicit operator bool() const noexcept
     {
 #if ENABLE_SSE && __SSE__
+#ifdef __AVX__
+        return _mm256_movemask_ps(_mm256_cmp_ps(m_sse, _mm256_set1_ps(IGNORE_LEVEL), _CMP_GT_OS));
+#else
         return _mm_movemask_ps(_mm_cmpgt_ps(m_sse, _mm_set1_ps(IGNORE_LEVEL)));
+#endif
 #else
         for (float v : m_values)
             if (v > IGNORE_LEVEL)
@@ -159,7 +179,11 @@ public:
     Signal operator+(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
+#ifdef __AVX__
+        return Signal{_mm256_add_ps(getSseValue(), rhs.getSseValue())};
+#else
         return Signal{_mm_add_ps(getSseValue(), rhs.getSseValue())};
+#endif
 #else
         Signal tmp;
 
@@ -209,7 +233,11 @@ public:
     Signal operator-(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
+#ifdef __AVX__
+        return Signal{_mm256_sub_ps(getSseValue(), rhs.getSseValue())};
+#else
         return Signal{_mm_sub_ps(getSseValue(), rhs.getSseValue())};
+#endif
 #else
         Signal tmp;
 
@@ -259,7 +287,11 @@ public:
     Signal operator*(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
+#ifdef __AVX__
+        return Signal{_mm256_mul_ps(getSseValue(), rhs.getSseValue())};
+#else
         return Signal{_mm_mul_ps(getSseValue(), rhs.getSseValue())};
+#endif
 #else
         Signal tmp;
 
@@ -309,7 +341,11 @@ public:
     Signal operator/(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
+#ifdef __AVX__
+        return Signal{_mm256_div_ps(getSseValue(), rhs.getSseValue())};
+#else
         return Signal{_mm_div_ps(getSseValue(), rhs.getSseValue())};
+#endif
 #else
         Signal tmp;
 
@@ -359,7 +395,11 @@ public:
      *
      * @return
      */
+#ifdef __AVX__
+    __m256& getSseValue() noexcept
+#else
     __m128& getSseValue() noexcept
+#endif
     {
         return m_sse;
     }
@@ -372,7 +412,11 @@ public:
      *
      * @return
      */
+#ifdef __AVX__
+    const __m256& getSseValue() const noexcept
+#else
     const __m128& getSseValue() const noexcept
+#endif
     {
         return m_sse;
     }
@@ -385,7 +429,11 @@ private:
     /// Container for values.
 #if ENABLE_SSE && __SSE__
     union {
+#ifdef __AVX__
+        __m256 m_sse;
+#else
         __m128 m_sse;
+#endif
         std::array<float, COUNT> m_values;
     };
 #else
