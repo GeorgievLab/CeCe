@@ -8,6 +8,7 @@
 
 // Simulator
 #include "core/Vector.hpp"
+#include "core/AlignedAllocator.hpp"
 
 /* ************************************************************************ */
 
@@ -36,7 +37,7 @@ public:
     /**
      * @brief Container type.
      */
-    using ContainerType = std::vector<T>;
+    using ContainerType = std::vector<T, aligned_allocator<T, 16>>;
 
 
 // Public Ctors & Dtors
@@ -374,7 +375,7 @@ public:
 private:
 
     /// Grid data.
-    std::vector<T> m_data;
+    ContainerType m_data;
 
     /// Grid size
     Vector<SizeType> m_size;
