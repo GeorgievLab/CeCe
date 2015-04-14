@@ -25,16 +25,6 @@ namespace diffusion {
 class Signal
 {
 
-// Public Types
-public:
-
-
-    /**
-     * @brief Type used for store signal value.
-     */
-    using ValueType = float;
-
-
 // Public Constants
 public:
 
@@ -48,7 +38,7 @@ public:
     /**
      * @brief Minimum signal value to be ignored.
      */
-    static constexpr ValueType IGNORE_LEVEL = 0;
+    static constexpr float IGNORE_LEVEL = 0;
 
 
 // Public Ctors & Dtors
@@ -72,9 +62,25 @@ public:
     /**
      * @brief Constructor.
      *
+     * @param value
+     */
+    explicit Signal(float value)
+#if ENABLE_SSE && __SSE__
+        : m_sse(_mm_set1_ps(value))
+#else
+        : m_values{value, value, value, value}
+#endif
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
      * @param src
      */
-    Signal(std::array<ValueType, COUNT> src)
+    constexpr Signal(std::array<float, COUNT> src)
         : m_values(std::move(src))
     {
         // Nothing to do
@@ -87,7 +93,7 @@ public:
      *
      * @param values
      */
-    Signal(__m128 values)
+    constexpr Signal(__m128 values)
         : m_sse(values)
     {
         // Nothing to do
@@ -102,12 +108,12 @@ public:
     /**
      * @brief Check if values are beyond some level.
      */
-    operator bool() const noexcept
+    explicit operator bool() const noexcept
     {
 #if ENABLE_SSE && __SSE__
         return _mm_movemask_ps(_mm_cmpgt_ps(m_sse, _mm_set1_ps(IGNORE_LEVEL)));
 #else
-        for (ValueType v : m_values)
+        for (float v : m_values)
             if (v > IGNORE_LEVEL)
                 return true;
 
@@ -123,7 +129,7 @@ public:
      *
      * @return
      */
-    ValueType& operator[](unsigned int pos) noexcept
+    float& operator[](unsigned int pos) noexcept
     {
         return m_values[pos];
     }
@@ -136,28 +142,29 @@ public:
      *
      * @return
      */
-    ValueType operator[](unsigned int pos) const noexcept
+    float operator[](unsigned int pos) const noexcept
     {
         return m_values[pos];
     }
 
 
     /**
-     * @brief Add other signal values.
+     * @brief Add two signals.
      *
-     * @param sig Second signals array.
+     * @param lhs
+     * @param rhs
      *
-     * @return Modified signal.
+     * @return New signal
      */
-    Signal operator+(Signal sig) const noexcept
+    Signal operator+(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
-        return Signal{_mm_add_ps(m_sse, sig.m_sse)};
+        return Signal{_mm_add_ps(getSseValue(), rhs.getSseValue())};
 #else
-        Signal tmp(m_values);
+        Signal tmp;
 
-        for (unsigned i = 0; i < COUNT; ++i)
-            tmp.m_values[i] += sig[i];
+        for (unsigned i = 0; i < Signal::COUNT; ++i)
+            tmp[i] = m_values[i] + rhs[i];
 
         return tmp;
 #endif
@@ -167,39 +174,47 @@ public:
     /**
      * @brief Add other signal values.
      *
-     * @param sig Second signals array.
+     * @param rhs
      *
      * @return this
      */
-    Signal& operator+=(Signal sig) noexcept
+    Signal& operator+=(const Signal& rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_add_ps(m_sse, sig.m_sse);
-#else
-        for (unsigned i = 0; i < COUNT; ++i)
-            m_values[i] += sig[i];
-
+        *this = *this + rhs;
         return *this;
-#endif
     }
 
 
     /**
      * @brief Add value to all signals.
      *
-     * @param val Signal value.
+     * @param rhs
      *
-     * @return Modified signal.
+     * @return this
      */
-    Signal operator+(ValueType val) const noexcept
+    Signal& operator+=(float rhs) noexcept
+    {
+        *this = *this + Signal{rhs};
+        return *this;
+    }
+
+
+    /**
+     * @brief Substract single value from all signals.
+     *
+     * @param rhs
+     *
+     * @return New signal
+     */
+    Signal operator-(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
-        return Signal{_mm_add_ps(m_sse, _mm_set1_ps(val))};
+        return Signal{_mm_sub_ps(getSseValue(), rhs.getSseValue())};
 #else
-        Signal tmp(m_values);
+        Signal tmp;
 
-        for (auto& v : tmp.m_values)
-            v += val;
+        for (unsigned i = 0; i < Signal::COUNT; ++i)
+            tmp[i] = m_values[i] - rhs[i];
 
         return tmp;
 #endif
@@ -207,20 +222,15 @@ public:
 
 
     /**
-     * @brief Add value to all signals.
+     * @brief Substract all signals by one value.
      *
-     * @param val Signal value.
+     * @param rhs
      *
      * @return this
      */
-    Signal& operator+=(ValueType val) noexcept
+    Signal& operator-=(const Signal& rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_add_ps(m_sse, _mm_set1_ps(val));
-#else
-        for (auto& v : m_values)
-            v += val;
-#endif
+        *this = *this - rhs;
         return *this;
     }
 
@@ -228,61 +238,33 @@ public:
     /**
      * @brief Substract all signals by one value.
      *
-     * @param sig Second signals array.
-     *
-     * @return Modified signals.
-     */
-    Signal operator-(Signal sig) const noexcept
-    {
-#if ENABLE_SSE && __SSE__
-        return Signal{_mm_add_ps(m_sse, sig.m_sse)};
-#else
-        Signal tmp(m_values);
-
-        for (unsigned i = 0; i < COUNT; ++i)
-            tmp.m_values[i] += sig[i];
-
-        return tmp;
-#endif
-    }
-
-
-    /**
-     * @brief Substract all signals by one value.
-     *
-     * @param sig Second signals array.
+     * @param rhs
      *
      * @return this
      */
-    Signal& operator-=(Signal sig) noexcept
+    Signal& operator-=(float rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_sub_ps(m_sse, sig.m_sse);
-#else
-        for (unsigned i = 0; i < COUNT; ++i)
-            m_values[i] += sig[i];
-
+        *this = *this - Signal{rhs};
         return *this;
-#endif
     }
 
 
     /**
-     * @brief Substract all signals by one value.
+     * @brief Multiple single value from all signals.
      *
-     * @param val
+     * @param rhs
      *
-     * @return Modified signal.
+     * @return New signal
      */
-    Signal operator-(ValueType val) const noexcept
+    Signal operator*(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
-        return Signal{_mm_sub_ps(m_sse, _mm_set1_ps(val))};
+        return Signal{_mm_mul_ps(getSseValue(), rhs.getSseValue())};
 #else
-        Signal tmp(m_values);
+        Signal tmp;
 
-        for (auto& v : tmp.m_values)
-            v += val;
+        for (unsigned i = 0; i < Signal::COUNT; ++i)
+            tmp[i] = m_values[i] * rhs[i];
 
         return tmp;
 #endif
@@ -290,20 +272,15 @@ public:
 
 
     /**
-     * @brief Substract all signals by one value.
+     * @brief Multiply signals.
      *
-     * @param val
+     * @param rhs
      *
      * @return this
      */
-    Signal& operator-=(ValueType val) noexcept
+    Signal& operator*=(const Signal& rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_sub_ps(m_sse, _mm_set1_ps(val));
-#else
-        for (auto& v : m_values)
-            v += val;
-#endif
+        *this = *this * rhs;
         return *this;
     }
 
@@ -311,19 +288,33 @@ public:
     /**
      * @brief Multiply all signals by one value.
      *
-     * @param val
+     * @param rhs
      *
-     * @return Modified signal.
+     * @return this
      */
-    Signal operator*(ValueType val) const noexcept
+    Signal& operator*=(float rhs) noexcept
+    {
+        *this = *this * Signal{rhs};
+        return *this;
+    }
+
+
+    /**
+     * @brief Multiple single value from all signals.
+     *
+     * @param rhs
+     *
+     * @return New signal
+     */
+    Signal operator/(const Signal& rhs) const noexcept
     {
 #if ENABLE_SSE && __SSE__
-        return Signal{_mm_mul_ps(m_sse, _mm_set1_ps(val))};
+        return Signal{_mm_div_ps(getSseValue(), rhs.getSseValue())};
 #else
-        Signal tmp(m_values);
+        Signal tmp;
 
-        for (auto& v : tmp.m_values)
-            v *= val;
+        for (unsigned i = 0; i < Signal::COUNT; ++i)
+            tmp[i] = m_values[i] / rhs[i];
 
         return tmp;
 #endif
@@ -331,63 +322,61 @@ public:
 
 
     /**
-     * @brief Multiply all signals by one value.
+     * @brief Divide signals
      *
-     * @param val
-     *
-     * @return this
-     */
-    Signal& operator*=(ValueType val) noexcept
-    {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_mul_ps(m_sse, _mm_set1_ps(val));
-#else
-        for (auto& v : m_values)
-            v *= val;
-#endif
-        return *this;
-    }
-
-
-    /**
-     * @brief Divide all signals by one value.
-     *
-     * @param val
+     * @param rhs
      *
      * @return Modified signal.
      */
-    Signal operator/(ValueType val) const noexcept
+    Signal& operator/=(const Signal& rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        return Signal{_mm_div_ps(m_sse, _mm_set1_ps(val))};
-#else
-        Signal tmp(m_values);
-
-        for (auto& v : tmp.m_values)
-            v *= val;
-
-        return tmp;
-#endif
+        *this = *this / rhs;
+        return *this;
     }
 
 
     /**
      * @brief Divide all signals by one value.
      *
-     * @param val
+     * @param rhs
      *
      * @return this
      */
-    Signal& operator/=(ValueType val) noexcept
+    Signal& operator/=(float rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_div_ps(m_sse, _mm_set1_ps(val));
-#else
-        for (auto& v : m_values)
-            v *= val;
-#endif
+        *this = *this / Signal{rhs};
         return *this;
     }
+
+
+// Public Accessors
+public:
+
+
+#if ENABLE_SSE && __SSE__
+    /**
+     * @brief Returns SSE value.
+     *
+     * @return
+     */
+    __m128& getSseValue() noexcept
+    {
+        return m_sse;
+    }
+#endif
+
+
+#if ENABLE_SSE && __SSE__
+    /**
+     * @brief Returns SSE value.
+     *
+     * @return
+     */
+    const __m128& getSseValue() const noexcept
+    {
+        return m_sse;
+    }
+#endif
 
 
 // Private Data Members
@@ -397,13 +386,157 @@ private:
 #if ENABLE_SSE && __SSE__
     union {
         __m128 m_sse;
-        std::array<ValueType, COUNT> m_values;
+        std::array<float, COUNT> m_values;
     };
 #else
-    std::array<ValueType, COUNT> m_values{};
+    std::array<float, COUNT> m_values{};
 #endif
 
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Add single value to all signals.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator+(const Signal& lhs, float rhs) noexcept
+{
+    return lhs + Signal{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Add single value to all signals.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator+(float lhs, const Signal& rhs) noexcept
+{
+    return Signal{lhs} + rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract single value from all signals.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator-(const Signal& lhs, float rhs) noexcept
+{
+    return lhs - Signal{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract single value from all signals.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator-(float lhs, const Signal& rhs) noexcept
+{
+    return Signal{lhs} - rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiple single value from all signals.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator*(const Signal& lhs, float rhs) noexcept
+{
+    return lhs * Signal{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiple single value from all signals.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator*(float lhs, const Signal& rhs) noexcept
+{
+    return Signal{lhs} * rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Divide signals by one value.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator/(const Signal& lhs, float rhs) noexcept
+{
+    return lhs / Signal{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Divide single value by signals.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New signal
+ */
+inline Signal operator/(float lhs, const Signal& rhs) noexcept
+{
+    return Signal{lhs} / rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Computes the e (Euler's number, 2.7182818) raised to the given
+ * power arg.
+ *
+ * @param arg
+ *
+ * @return
+ */
+inline Signal exp(const Signal& arg) noexcept
+{
+#if OFF // ENABLE_SSE && __SSE__
+    return Signal{_mm_exp_ps(arg.getSseValue())};
+#else
+    Signal tmp;
+
+    for (unsigned i = 0; i < Signal::COUNT; ++i)
+        tmp[i] = std::exp(arg[i]);
+
+    return tmp;
+#endif
+}
 
 /* ************************************************************************ */
 

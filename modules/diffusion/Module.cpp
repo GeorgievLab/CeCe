@@ -31,15 +31,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     constexpr unsigned OFFSET = 1;
     constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
 
-    // Diffusion constant
-    constexpr float D = 0.1f;
-
     // Precompute values
-    const auto start = simulation.getWorldSize() * 0.5f;
     const auto step = simulation.getWorldSize() / m_grid.getSize();
 
     //const float A = 1.f / (4 * constants::PI * D * dt);
-    const float A = 1.f / (constants::PI * dt);
+    const Coefficients A = 1.f / (4 * constants::PI * getCoefficients() * dt);
 
     // Offset coefficients for matrix
     static const auto DISTANCES = Matrix<int, MATRIX_SIZE>::makeDistances();
@@ -57,9 +53,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     });
 
     // Create distribution matrix
-    const auto M = Matrix<float, MATRIX_SIZE>::generate([A, D, q, dt](int i, int j) {
-        //return A * exp(-q[i][j] / (4 * D * dt));
-        return A * exp(-q[i][j] / dt);
+    const auto M = Matrix<Coefficients, MATRIX_SIZE>::generate([&](int i, int j) {
+        using std::exp;
+        return A * exp(-q[i][j] / (4.f * getCoefficients() * dt));
+        //return A * exp(-q[i][j] / (4.f * D * dt));
+        //return A * exp(-q[i][j] / dt);
     }).normalize();
 
     /*

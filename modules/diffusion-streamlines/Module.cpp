@@ -28,9 +28,6 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    // Constants
-    constexpr float DIFFUSION_IGNORE = 0.0f;
-
     m_streamlines.update(dt, simulation);
 
     auto& signalGrid = m_diffusion.getGrid();
@@ -63,7 +60,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             auto& signal = signalGrid[ij];
 
             // No signal to send
-            if (signal <= DIFFUSION_IGNORE)
+            if (!signal)
                 continue;
 
             // Get velocity

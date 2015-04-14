@@ -34,6 +34,14 @@ namespace diffusion {
 class Module : public simulator::Module
 {
 
+// Public Types
+public:
+
+
+    /// Coefficients type.
+    using Coefficients = Signal;
+
+
 // Public Ctors & Dtors
 public:
 
@@ -118,9 +126,31 @@ public:
     }
 #endif
 
+
+    /**
+     * @brief Returns diffussion coefficients.
+     *
+     * @return
+     */
+    Coefficients getCoefficients() const noexcept
+    {
+        return m_coefficients;
+    }
+
+
 // Public Mutators
 public:
 
+
+    /**
+     * @brief Change diffussion coefficients.
+     *
+     * @param coefficients
+     */
+    void setCoefficients(Coefficients coefficients) noexcept
+    {
+        m_coefficients = coefficients;
+    }
 
 
 // Public Operations
@@ -159,6 +189,10 @@ public:
 
 // Private Data Members
 private:
+
+
+    /// Diffusion coeffients.
+    Coefficients m_coefficients{1.f};
 
     /// Velocity grid.
     SignalGrid m_grid;
