@@ -64,6 +64,7 @@ public:
     template<typename... Args>
     Module(Args&&... args)
         : m_grid(std::forward<Args>(args)...)
+        , m_gridBack(std::forward<Args>(args)...)
     {
         // Nothing to do
     }
@@ -194,8 +195,11 @@ private:
     /// Diffusion coeffients.
     Coefficients m_coefficients{1.f};
 
-    /// Velocity grid.
+    /// Current signal grid.
     SignalGrid m_grid;
+
+    /// Signal grid used for updating.
+    SignalGrid m_gridBack;
 
 #ifdef ENABLE_RENDER
     /// Drawable signal grid

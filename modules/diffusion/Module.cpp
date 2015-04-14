@@ -40,11 +40,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Offset coefficients for matrix
     static const auto DISTANCES = Matrix<int, MATRIX_SIZE>::makeDistances();
 
-    // Create grid with modified values
-    decltype(m_grid) gridNew(m_grid.getWidth(), m_grid.getHeight());
-
     // Sizes must match
-    assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(gridNew.begin(), gridNew.end()));
+    assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(m_gridBack.begin(), m_gridBack.end()));
 
     // Generate matrix with coefficients based on distance
     // TODO: precompute matrix
@@ -59,6 +56,10 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         //return A * exp(-q[i][j] / (4.f * D * dt));
         //return A * exp(-q[i][j] / dt);
     }).normalize();
+
+
+    // Clear back grid
+    std::fill(m_gridBack.begin(), m_gridBack.end(), Signal{});
 
     /*
      * Algorithm:
@@ -92,7 +93,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Foreach grid cells
     auto gridPtr = m_grid.cbegin();
     auto gridEndPtr = m_grid.cend();
-    auto gridNewPtr = gridNew.begin();
+    auto gridNewPtr = m_gridBack.begin();
 
     // Grid sizes are same, so we don't have to check both ranges
     for (; gridPtr != gridEndPtr; ++gridPtr, ++gridNewPtr)
@@ -114,7 +115,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 {
                     auto ptr = gridNewPtr + MAPPING_MATRIX[a][b];
 
-                    assert(ptr >= gridNew.begin() && ptr < gridNew.end());
+                    assert(ptr >= m_gridBack.begin() && ptr < m_gridBack.end());
                     *ptr += signal * M[a][b];
                 }
             }
@@ -133,8 +134,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         std::lock_guard<std::mutex> lock(m_mutex);
 #endif
 
-        // Replace the old grid with the new one
-        m_grid = std::move(gridNew);
+        // Swap grids
+        std::swap(m_grid, m_gridBack);
     }
 }
 
