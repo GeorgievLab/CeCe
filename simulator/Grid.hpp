@@ -37,7 +37,7 @@ public:
     /**
      * @brief Container type.
      */
-    using ContainerType = std::vector<T, AlignedAllocator<T, Alignment::AVX>>;
+    using ContainerType = std::vector<T, AlignedAllocator<T>>;
 
 
 // Public Ctors & Dtors

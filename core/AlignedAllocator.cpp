@@ -4,13 +4,17 @@
 // Declaration
 #include "AlignedAllocator.hpp"
 
+// C++
+#include <cassert>
+
 /* ************************************************************************ */
 
 namespace core {
+namespace memory {
 
 /* ************************************************************************ */
 
-bool is_power_of_two(size_t x) noexcept
+bool is_power_of_two(std::size_t x) noexcept
 {
     size_t powerOfTwo = 1ul;
 
@@ -22,7 +26,7 @@ bool is_power_of_two(size_t x) noexcept
 
 /* ************************************************************************ */
 
-void* detail::allocate_aligned_memory(size_t align, size_t size)
+void* allocate_aligned_memory(std::size_t align, std::size_t size)
 {
     assert(align >= sizeof(void*));
     assert(is_power_of_two(align));
@@ -41,13 +45,14 @@ void* detail::allocate_aligned_memory(size_t align, size_t size)
 
 /* ************************************************************************ */
 
-void detail::deallocate_aligned_memory(void *ptr) noexcept
+void deallocate_aligned_memory(void* ptr) noexcept
 {
     return free(ptr);
 }
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */
