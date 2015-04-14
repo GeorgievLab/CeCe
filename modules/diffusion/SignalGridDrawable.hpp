@@ -186,7 +186,7 @@ private:
         render::colors::BLUE,
         render::colors::RED,
         render::colors::GREEN,
-        render::colors::WHITE
+        render::Color{1, 0.894f, 0.769f}
     }};
 
     /// Texture data buffer

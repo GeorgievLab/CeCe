@@ -27,6 +27,7 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Vector.cpp"/>
+    <File Name="AlignedAllocator.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
