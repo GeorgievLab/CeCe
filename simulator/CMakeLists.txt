@@ -22,6 +22,9 @@ add_library(simulator
     Simulation.cpp
     SimulationFactory.cpp
     Simulator.cpp
+
+    Library.hpp
+    Library.cpp
 )
 
 # Setup dependencies

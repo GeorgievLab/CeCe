@@ -23,6 +23,7 @@
     <File Name="CellGenerator.cpp"/>
     <File Name="Simulation.cpp"/>
     <File Name="SimulationFactory.cpp"/>
+    <File Name="Library.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
@@ -37,6 +38,7 @@
     <File Name="Module.hpp"/>
     <File Name="Simulation.hpp"/>
     <File Name="SimulationFactory.hpp"/>
+    <File Name="Library.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
