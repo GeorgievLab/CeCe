@@ -23,8 +23,7 @@ namespace simulator {
 enum ObjectFlags
 {
     OBJECT_STATIC = 0x01,
-    OBJECT_DYNAMIC = 0x02,
-    OBJECT_CELL = 0x04
+    OBJECT_DYNAMIC = 0x02
 };
 
 /* ************************************************************************ */

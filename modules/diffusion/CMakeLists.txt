@@ -20,6 +20,12 @@ add_library(module-diffusion
 add_dependencies(module-diffusion
     core
     simulator
+    module-cell
+)
+
+# Link libraries
+target_link_libraries(module-diffusion
+    module-cell
 )
 
 # ######################################################################### #

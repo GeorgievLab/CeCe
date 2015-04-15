@@ -6,11 +6,13 @@
 #include <cassert>
 
 // Simulator
-#include "simulator/Cell.hpp"
 #include "simulator/Simulation.hpp"
 
 // Module
 #include "Module.hpp"
+
+// Module "cell"
+#include "../cell/Cell.hpp"
 
 /* ************************************************************************ */
 
@@ -33,11 +35,11 @@ void GeneratorCell::update(units::Duration dt, simulator::Simulation& simulation
     for (auto& obj : simulation.getObjects())
     {
         // It's not cell
-        if (!obj->hasFlag(simulator::OBJECT_CELL))
+        if (!obj->hasFlag(module::cell::OBJECT_CELL))
             continue;
 
         // Cast to cell
-        auto ptr = obj->cast<simulator::Cell>();
+        auto ptr = obj->cast<module::cell::Cell>();
 
         // Get cell position
         const auto pos = ptr->getPosition() - start;

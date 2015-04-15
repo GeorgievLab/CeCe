@@ -9,9 +9,6 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/DynamicObject.hpp"
 
-// TODO remove
-#include "simulator/Cell.hpp"
-
 /* ************************************************************************ */
 
 namespace module {
@@ -28,32 +25,6 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    // Generate cells
-    if (!false)
-    {
-        const float half = simulation.getWorldSize().getHeight() / 2.f;
-
-        std::random_device rd;
-        std::default_random_engine eng(rd());
-
-        std::bernoulli_distribution d(0.02);
-
-        // If cell should be generated
-        if (d(eng))
-        {
-            std::uniform_real_distribution<float> dist(-half, half);
-            float y = dist(eng);
-
-            // Create cell
-            simulator::Cell* cell = simulation.createObject<simulator::Cell>();
-            cell->setVolume(units::um3(0.01));
-            cell->setVelocity({10, 0});
-            cell->setPosition({-simulation.getWorldSize().getWidth() / 2.f + 0.1f, y});
-        }
-    }
-
-    // TODO: recalc only when parameters are changed.
-
     if (m_update)
     {
         const auto R = getMainCellRadius();

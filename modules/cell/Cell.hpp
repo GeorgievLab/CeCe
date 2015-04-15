@@ -17,7 +17,8 @@
 
 /* ************************************************************************ */
 
-namespace simulator {
+namespace module {
+namespace cell {
 
 /* ************************************************************************ */
 
@@ -29,9 +30,19 @@ using FluorescentProteinCount = unsigned int;
 /* ************************************************************************ */
 
 /**
+ * @brief Predefined object flags.
+ */
+enum
+{
+    OBJECT_CELL = 0x04
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Cell representation.
  */
-class Cell : public DynamicObject
+class Cell : public simulator::DynamicObject
 {
 
 
@@ -94,6 +105,32 @@ public:
     {
         return m_yfp;
     }
+
+
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns cell render object.
+     *
+     * @return
+     */
+    render::Circle& getRenderObject() noexcept
+    {
+        return m_renderObject;
+    }
+#endif
+
+
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns cell render object.
+     *
+     * @return
+     */
+    const render::Circle& getRenderObject() const noexcept
+    {
+        return m_renderObject;
+    }
+#endif
 
 
 // Public Mutators
@@ -212,6 +249,7 @@ private:
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */

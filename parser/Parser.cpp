@@ -17,7 +17,6 @@
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "simulator/Simulation.hpp"
-#include "simulator/Cell.hpp"
 
 /* ************************************************************************ */
 

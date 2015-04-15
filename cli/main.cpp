@@ -28,6 +28,8 @@
 #include "modules/diffusion/GeneratorCell.hpp"
 #include "modules/diffusion-streamlines/Module.hpp"
 #include "modules/physics/Module.hpp"
+#include "modules/cell/Module.hpp"
+#include "modules/cell/Generator.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -145,6 +147,7 @@ int main(int argc, char** argv)
 
         g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
         g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
+        g_sim.getSimulation()->createModule<module::cell::Generator>();
 
         //g_sim.getSimulation()->createModule<module::physics::Module>();
 

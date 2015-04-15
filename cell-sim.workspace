@@ -13,6 +13,7 @@
   <Project Name="streamlines" Path="modules/streamlines/streamlines.project" Active="No"/>
   <Project Name="diffusion-streamlines" Path="modules/diffusion-streamlines/diffusion-streamlines.project" Active="No"/>
   <Project Name="physics" Path="modules/physics/physics.project" Active="No"/>
+  <Project Name="cell" Path="modules/cell/cell.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -25,6 +26,7 @@
       <Project Name="module-streamlines" ConfigName="Debug"/>
       <Project Name="module-diffusion-streamlines" ConfigName="Debug"/>
       <Project Name="module-physics" ConfigName="Debug"/>
+      <Project Name="module-cell" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -37,6 +39,7 @@
       <Project Name="module-streamlines" ConfigName="Release"/>
       <Project Name="module-diffusion-streamlines" ConfigName="Release"/>
       <Project Name="module-physics" ConfigName="Release"/>
+      <Project Name="module-cell" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

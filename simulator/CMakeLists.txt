@@ -10,8 +10,6 @@ add_library(simulator
     Object.hpp
     StaticObject.hpp
     DynamicObject.hpp
-    Cell.hpp
-    #Yeast.hpp
     Simulation.hpp
     SimulationFactory.hpp
     Simulator.hpp
@@ -21,8 +19,6 @@ add_library(simulator
     # Sources
     Object.cpp
     DynamicObject.cpp
-    Cell.cpp
-    #Yeast.cpp
     Simulation.cpp
     SimulationFactory.cpp
     Simulator.cpp

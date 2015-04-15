@@ -24,6 +24,7 @@ target_link_libraries(cli
     module-diffusion
     module-streamlines
     module-physics
+    module-cell
     parser
     simulator
     core
