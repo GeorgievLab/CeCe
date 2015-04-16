@@ -9,6 +9,30 @@
 
 /* ************************************************************************ */
 
+/**
+ * @brief Declare function for creating library class.
+ */
+#define DECLARE_LIBRARY_CREATE \
+    extern "C" simulator::Module* create_module(const char*)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define function for creating library class.
+ */
+#define DEFINE_LIBRARY_CREATE(name) \
+    simulator::Module* create_module(const char* name)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Declare library functions.
+ */
+#define DECLARE_LIBRARY \
+    DECLARE_LIBRARY_CREATE
+
+/* ************************************************************************ */
+
 namespace simulator {
 
 /* ************************************************************************ */
@@ -18,9 +42,16 @@ class Module;
 /* ************************************************************************ */
 
 /**
- * @brief Abstract class for loading module libraries into simulation.
+ * @brief Create module function.
  */
-class Library
+using CreateModule = Module* (*)(const char*);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for loading module libraries into simulation.
+ */
+class Library final
 {
 
 
@@ -39,7 +70,7 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~Library();
+    ~Library();
 
 
 // Public Accessors
@@ -96,6 +127,8 @@ private:
     struct Impl;
     std::unique_ptr<Impl> m_impl;
 
+    /// Function pointer to create module.
+    CreateModule m_createModule;
 };
 
 /* ************************************************************************ */

@@ -3,7 +3,9 @@
 project(module-cell)
 
 # Create library
-add_library(module-cell
+add_library(module-cell SHARED
+    Library.hpp
+    Library.cpp
     Module.hpp
     Module.cpp
     Cell.hpp
@@ -17,6 +19,11 @@ add_library(module-cell
 # Setup dependencies
 add_dependencies(module-cell
     core
+    simulator
+)
+
+# Link libraries
+target_link_libraries(module-cell
     simulator
 )
 

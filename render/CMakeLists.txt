@@ -37,7 +37,6 @@ add_library(render
 # Setup dependencies
 add_dependencies(render
     core
-    simulator
 )
 
 target_link_libraries(render

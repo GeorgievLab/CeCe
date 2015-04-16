@@ -4,6 +4,7 @@
 
 // C++
 #include <map>
+#include <cstdint>
 
 #if __linux__
 // Linux
@@ -19,6 +20,22 @@
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+#if __linux__
+const std::string g_extension = ".so";
+#elif __WIN32__
+const std::string g_extension = ".dll";
+#endif
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 namespace simulator {
 
 /* ************************************************************************ */
@@ -30,6 +47,32 @@ struct Library::Impl
 #elif __WIN32__
     HMODULE* lib;
 #endif
+
+    /**
+     * @brief Returns address of required symbol.
+     *
+     * @param name
+     */
+    void* getAddr(const char* name) const noexcept
+    {
+#if __linux__
+        return dlsym(lib, name);
+#elif __WIN32__
+        return GetProcAddress(lib, name);
+#endif
+    }
+
+
+    /**
+     * @brief Returns address of required symbol.
+     *
+     * @param name
+     */
+    template<typename T>
+    T getAddr(const char* name) const noexcept
+    {
+        return reinterpret_cast<T>(reinterpret_cast<std::intptr_t>(getAddr(name)));
+    }
 };
 
 /* ************************************************************************ */
@@ -37,13 +80,15 @@ struct Library::Impl
 Library::Library(const std::string& name)
     : m_impl{new Impl{nullptr}}
 {
+    const std::string filename = name + g_extension;
 #if __linux__
-    const std::string filename = name + ".so";
     m_impl->lib = dlopen(filename.c_str(), RTLD_LAZY);
 #elif __WIN32__
-    const std::string filename = name + ".dll";
     m_impl->lib = LoadLibrary(filename.c_str());
 #endif
+
+    // Set create function
+    m_createModule = m_impl->getAddr<CreateModule>("create_module");
 }
 
 /* ************************************************************************ */
@@ -72,7 +117,7 @@ bool Library::isLoaded() const noexcept
 
 std::unique_ptr<Module> Library::createModule(const std::string& name)
 {
-    return nullptr;
+    return std::unique_ptr<Module>{m_createModule(name.c_str())};
 }
 
 /* ************************************************************************ */

@@ -3,7 +3,9 @@
 project(module-diffusion)
 
 # Create library
-add_library(module-diffusion
+add_library(module-diffusion SHARED
+    Library.hpp
+    Library.cpp
     Signal.hpp
     Module.hpp
     Module.cpp
@@ -26,6 +28,7 @@ add_dependencies(module-diffusion
 # Link libraries
 target_link_libraries(module-diffusion
     module-cell
+    simulator
 )
 
 # ######################################################################### #
