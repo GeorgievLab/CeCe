@@ -26,8 +26,11 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param simulation
      */
-    DynamicObject()
+    explicit DynamicObject(Simulation& simulation) noexcept
+        : StaticObject(simulation)
     {
         setFlag(OBJECT_DYNAMIC);
     }

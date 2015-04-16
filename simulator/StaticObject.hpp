@@ -28,8 +28,11 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param simulation
      */
-    StaticObject()
+    explicit StaticObject(Simulation& simulation) noexcept
+        : Object(simulation)
     {
         setFlag(OBJECT_STATIC);
     }

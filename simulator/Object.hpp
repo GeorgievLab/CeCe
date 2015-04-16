@@ -28,6 +28,10 @@ enum ObjectFlags
 
 /* ************************************************************************ */
 
+class Simulation;
+
+/* ************************************************************************ */
+
 /**
  * @brief Basic simulation object.
  */
@@ -51,8 +55,10 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param simulation
      */
-    Object();
+    explicit Object(Simulation& simulation) noexcept;
 
 
     /**
@@ -63,6 +69,28 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Return simulation that owns object.
+     *
+     * @return
+     */
+    Simulation& getSimulation() noexcept
+    {
+        return m_simulation;
+    }
+
+
+    /**
+     * @brief Return simulation that owns object.
+     *
+     * @return
+     */
+    const Simulation& getSimulation() const noexcept
+    {
+        return m_simulation;
+    }
 
 
     /**
@@ -211,6 +239,9 @@ private:
 
     /// ID generator.
     static IdType s_id;
+
+    /// Owning simulation.
+    Simulation& m_simulation;
 
     /// Object unique ID.
     IdType m_id;

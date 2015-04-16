@@ -40,8 +40,11 @@ public:
 
     /**
      * @brief Default constructor.
+     *
+     * @param simulation
      */
-    Yeast()
+    explicit Yeast(simulator::Simulation& simulation) noexcept
+        : Cell(simulation)
     {
         setFlag(OBJECT_YEAST);
     }

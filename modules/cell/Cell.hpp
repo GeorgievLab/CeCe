@@ -52,8 +52,11 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param simulation
      */
-    Cell()
+    explicit Cell(simulator::Simulation& simulation) noexcept
+        : simulator::DynamicObject(simulation)
     {
         setFlag(OBJECT_CELL);
     }

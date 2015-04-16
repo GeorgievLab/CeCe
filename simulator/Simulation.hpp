@@ -240,7 +240,7 @@ public:
     template<typename T, typename... Args>
     T* createObject(Args&&... args)
     {
-        return addObject(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+        return addObject(std::unique_ptr<T>(new T(*this, std::forward<Args>(args)...)));
     }
 
 
