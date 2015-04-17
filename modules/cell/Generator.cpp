@@ -11,6 +11,7 @@
 // Module
 #include "Module.hpp"
 #include "Cell.hpp"
+#include "Yeast.hpp"
 
 /* ************************************************************************ */
 
@@ -35,7 +36,7 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
         float y = dist(eng);
 
         // Create cell
-        module::cell::Cell* c = simulation.createObject<module::cell::Cell>();
+        module::cell::Yeast* c = simulation.createObject<module::cell::Yeast>();
         c->setVolume(units::um3(0.01));
         c->setVelocity({10, 0});
         c->setPosition({-simulation.getWorldSize().getWidth() / 2.f + 0.1f, y});

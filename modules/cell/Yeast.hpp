@@ -56,6 +56,21 @@ public:
     ~Yeast();
 
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns if yeast has bud.
+     *
+     * @return
+     */
+    bool hasBud() const noexcept
+    {
+        return m_bud.exists;
+    }
+
+
 // Public Operations
 public:
 
