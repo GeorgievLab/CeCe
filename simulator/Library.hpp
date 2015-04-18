@@ -14,15 +14,15 @@
  * @brief Declare function for creating library class.
  */
 #define DECLARE_LIBRARY_CREATE \
-    extern "C" simulator::Module* create_module(const char*)
+    extern "C" simulator::Module* create_module(simulator::Simulation*, const char*)
 
 /* ************************************************************************ */
 
 /**
  * @brief Define function for creating library class.
  */
-#define DEFINE_LIBRARY_CREATE(name) \
-    simulator::Module* create_module(const char* name)
+#define DEFINE_LIBRARY_CREATE(sim, name) \
+    simulator::Module* create_module(simulator::Simulation* sim, const char* name)
 
 /* ************************************************************************ */
 
@@ -39,13 +39,14 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Module;
+class Simulation;
 
 /* ************************************************************************ */
 
 /**
  * @brief Create module function.
  */
-using CreateModule = Module* (*)(const char*);
+using CreateModule = Module* (*)(Simulation*, const char*);
 
 /* ************************************************************************ */
 
@@ -93,11 +94,12 @@ public:
     /**
      * @brief Create module from current library.
      *
-     * @param name Module name.
+     * @param simulation Pointer to simulation for that module is created.
+     * @param name       Module name.
      *
      * @return Created module.
      */
-    std::unique_ptr<Module> createModule(const std::string& name);
+    std::unique_ptr<Module> createModule(Simulation* simulation, const std::string& name);
 
 
     /**
@@ -118,7 +120,7 @@ public:
      *
      * @return Created module.
      */
-    static std::unique_ptr<Module> createModule(const std::string& library, const std::string& name);
+    static std::unique_ptr<Module> createModule(Simulation* simulation, const std::string& library, const std::string& name);
 
 
     /**
@@ -128,9 +130,9 @@ public:
      *
      * @return Created module.
      */
-    static std::unique_ptr<Module> createModule(const std::tuple<std::string, std::string>& path)
+    static std::unique_ptr<Module> createModule(Simulation* simulation, const std::tuple<std::string, std::string>& path)
     {
-        return createModule(std::get<0>(path), std::get<1>(path));
+        return createModule(simulation, std::get<0>(path), std::get<1>(path));
     }
 
 

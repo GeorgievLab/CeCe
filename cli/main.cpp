@@ -130,35 +130,28 @@ int main(int argc, char** argv)
         // Create world
         g_sim.setSimulation(simFactory.fromFile(argv[1]));
 
-        // Grid size
-        auto grid_size = 300;
+        // Get simulation
+        auto simulation = g_sim.getSimulation();
 
         // Load modules
-        g_sim.getSimulation()->useModule("cell.generator");
-        g_sim.getSimulation()->useModule("diffusion-streamlines");
-        g_sim.getSimulation()->useModule("diffusion.generator");
+        simulation->useModule("cell.generator");
+        simulation->useModule("diffusion-streamlines");
+        simulation->useModule("diffusion.generator");
         //g_sim.getSimulation()->useModule("diffusion.generator-cell");
 
         // Create modules
-        //g_streamlinesModule = g_sim.getSimulation()->createModule<module::streamlines::Module>(grid_size);
-        //g_diffusionModule = g_sim.getSimulation()->createModule<module::diffusion::Module>(grid_size);
-        //auto ptr = g_sim.getSimulation()->createModule<module::diffusion_streamlines::Module>(grid_size);
-        //g_diffusionModule = &ptr->getDiffusion();
+        g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
 
 #ifdef __AVX__
-        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f, 1.3f, 15.f, 1.f, 0.01f}});
+        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f, 1.3f, 15.f, 1.f, 0.01f}});
 #else
-        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
+        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
 #endif
-        //g_streamlinesModule = &ptr->getStreamlines();
-        //g_diffusionModule->getDrawable().setInterpolate(false);
-        //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
+        g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
 
         //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
         //g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
         //g_sim.getSimulation()->createModule<module::cell::Generator>();
-
-        //g_sim.getSimulation()->createModule<module::physics::Module>();
 
 #ifdef ENABLE_RENDER
         // Register callbacks:

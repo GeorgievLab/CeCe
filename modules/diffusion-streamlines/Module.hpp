@@ -28,23 +28,13 @@ public:
 
     /**
      * @brief Constructor.
-     */
-    Module()
-        : Module(200)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
      *
-     * @param size Signal grid size.
+     * @param diffusion
+     * @param streamlines
      */
-    template<typename... Args>
-    Module(Args&&... args)
-        : m_diffusion(std::forward<Args>(args)...)
-        , m_streamlines(std::forward<Args>(args)...)
+    Module(diffusion::Module* diffusion, streamlines::Module* streamlines)
+        : m_diffusion(diffusion)
+        , m_streamlines(streamlines)
     {
         // Nothing to do
     }
@@ -67,7 +57,7 @@ public:
      */
     diffusion::Module& getDiffusion() noexcept
     {
-        return m_diffusion;
+        return *m_diffusion;
     }
 
 
@@ -78,7 +68,7 @@ public:
      */
     const diffusion::Module& getDiffusion() const noexcept
     {
-        return m_diffusion;
+        return *m_diffusion;
     }
 
 
@@ -89,7 +79,7 @@ public:
      */
     streamlines::Module& getStreamlines() noexcept
     {
-        return m_streamlines;
+        return *m_streamlines;
     }
 
 
@@ -100,7 +90,7 @@ public:
      */
     const streamlines::Module& getStreamlines() const noexcept
     {
-        return m_streamlines;
+        return *m_streamlines;
     }
 
 
@@ -142,10 +132,10 @@ public:
 private:
 
     /// Diffusion module.
-    diffusion::Module m_diffusion;
+    diffusion::Module* m_diffusion;
 
     /// Streamlines module.
-    streamlines::Module m_streamlines;
+    streamlines::Module* m_streamlines;
 
 };
 

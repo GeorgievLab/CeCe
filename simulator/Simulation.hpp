@@ -106,6 +106,19 @@ public:
 
 
     /**
+     * @brief If simulation uses given module.
+     *
+     * @param name Module name.
+     *
+     * @return
+     */
+    bool hasModule(const std::string& name) const noexcept
+    {
+        return m_modules.find(name) != m_modules.end();
+    }
+
+
+    /**
      * @brief Get module by name.
      *
      * @param name Module name.
@@ -220,7 +233,7 @@ public:
     Module* useModule(const std::string& path)
     {
         // Load module
-        auto module = Library::createModule(Library::splitPath(path));
+        auto module = Library::createModule(this, Library::splitPath(path));
 
         if (module)
             return addModule(path, std::move(module));
@@ -241,7 +254,7 @@ public:
     template<typename ModuleType>
     ModuleType* useModule(const std::string& path)
     {
-        return static_cast<ModuleType>(useModule(path));
+        return static_cast<ModuleType*>(useModule(path));
     }
 
 

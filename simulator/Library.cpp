@@ -137,10 +137,10 @@ bool Library::isLoaded() const noexcept
 
 /* ************************************************************************ */
 
-std::unique_ptr<Module> Library::createModule(const std::string& name)
+std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std::string& name)
 {
     assert(m_createModule);
-    return std::unique_ptr<Module>{m_createModule(name.c_str())};
+    return std::unique_ptr<Module>{m_createModule(simulation, name.c_str())};
 }
 
 /* ************************************************************************ */
@@ -169,7 +169,7 @@ Library* Library::load(const std::string& name)
 
 /* ************************************************************************ */
 
-std::unique_ptr<Module> Library::createModule(const std::string& library, const std::string& name)
+std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std::string& library, const std::string& name)
 {
     // Load library
     Library* lib = load(library);
@@ -183,7 +183,7 @@ std::unique_ptr<Module> Library::createModule(const std::string& library, const 
     }
 
     // Create module
-    return lib->createModule(name);
+    return lib->createModule(simulation, name);
 }
 
 /* ************************************************************************ */

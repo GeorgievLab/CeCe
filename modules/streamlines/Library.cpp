@@ -9,7 +9,7 @@
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE(name)
+DEFINE_LIBRARY_CREATE(simulation, name)
 {
     return new module::streamlines::Module{};
 }

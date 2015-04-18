@@ -5,6 +5,7 @@
 #include "Module.hpp"
 
 // C++
+#include <cassert>
 #include <limits>
 #include <algorithm>
 
@@ -28,10 +29,13 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    m_streamlines.update(dt, simulation);
+    assert(m_streamlines);
+    assert(m_diffusion);
 
-    auto& signalGrid = m_diffusion.getGrid();
-    auto& velocityGrid = m_streamlines.getGrid();
+    m_streamlines->update(dt, simulation);
+
+    auto& signalGrid = m_diffusion->getGrid();
+    auto& velocityGrid = m_streamlines->getGrid();
 
     // Precompute values
     const auto start = simulation.getWorldSize() * 0.5f;
@@ -68,7 +72,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             auto& velocity = velocityGrid[ij];
 
             // Calculate coordinate change
-            Vector<float> dij = velocity * dt * m_streamlines.getFlowSpeed() / step;
+            Vector<float> dij = velocity * dt * m_streamlines->getFlowSpeed() / step;
             dij.getX() = std::abs(dij.getX());
             dij.getY() = std::abs(dij.getY());
 
@@ -113,7 +117,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     signalGrid = std::move(signalGridNew);
 
     // Update diffusion
-    m_diffusion.update(dt, simulation);
+    m_diffusion->update(dt, simulation);
 }
 
 /* ************************************************************************ */
@@ -121,8 +125,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 #ifdef ENABLE_RENDER
 void Module::drawInit(render::Context& context)
 {
-    m_diffusion.drawInit(context);
-    m_streamlines.drawInit(context);
+    assert(m_streamlines);
+    assert(m_diffusion);
+
+    m_diffusion->drawInit(context);
+    m_streamlines->drawInit(context);
 }
 #endif
 
@@ -131,8 +138,11 @@ void Module::drawInit(render::Context& context)
 #ifdef ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
-    m_diffusion.draw(context, simulation);
-    m_streamlines.draw(context, simulation);
+    assert(m_streamlines);
+    assert(m_diffusion);
+
+    m_diffusion->draw(context, simulation);
+    m_streamlines->draw(context, simulation);
 }
 #endif
 
