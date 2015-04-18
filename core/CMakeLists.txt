@@ -22,6 +22,8 @@ add_library(${PROJECT_NAME} OBJECT
     Vector.cpp
     AlignedAllocator.hpp
     AlignedAllocator.cpp
+    Log.hpp
+    Log.cpp
 )
 
 # ######################################################################### #
