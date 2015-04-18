@@ -20,8 +20,11 @@
 // Simulator
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
+#include "simulator/Library.hpp"
+#include "simulator/Module.hpp"
 #include "parser/Parser.hpp"
 #include "parser/SimulationFactory.hpp"
+
 #include "modules/streamlines/Module.hpp"
 #include "modules/diffusion/Module.hpp"
 #include "modules/diffusion/Generator.hpp"
@@ -122,32 +125,38 @@ int main(int argc, char** argv)
     try
     {
         // Create javascript world factory
-        parser::SimulationFactory worldFactory;
+        parser::SimulationFactory simFactory;
 
         // Create world
-        g_sim.setSimulation(worldFactory.fromFile(argv[1]));
+        g_sim.setSimulation(simFactory.fromFile(argv[1]));
 
         // Grid size
         auto grid_size = 300;
 
+        // Load modules
+        g_sim.getSimulation()->useModule("cell.generator");
+        g_sim.getSimulation()->useModule("diffusion-streamlines");
+        g_sim.getSimulation()->useModule("diffusion.generator");
+        //g_sim.getSimulation()->useModule("diffusion.generator-cell");
+
         // Create modules
         //g_streamlinesModule = g_sim.getSimulation()->createModule<module::streamlines::Module>(grid_size);
         //g_diffusionModule = g_sim.getSimulation()->createModule<module::diffusion::Module>(grid_size);
-        auto ptr = g_sim.getSimulation()->createModule<module::diffusion_streamlines::Module>(grid_size);
-        g_diffusionModule = &ptr->getDiffusion();
+        //auto ptr = g_sim.getSimulation()->createModule<module::diffusion_streamlines::Module>(grid_size);
+        //g_diffusionModule = &ptr->getDiffusion();
 
 #ifdef __AVX__
-        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f, 1.3f, 15.f, 1.f, 0.01f}});
+        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f, 1.3f, 15.f, 1.f, 0.01f}});
 #else
-        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
+        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
 #endif
-        g_streamlinesModule = &ptr->getStreamlines();
+        //g_streamlinesModule = &ptr->getStreamlines();
         //g_diffusionModule->getDrawable().setInterpolate(false);
         //g_diffusionModule->getRenderGridObject().setRenderGrid(true);
 
-        g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
-        g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
-        g_sim.getSimulation()->createModule<module::cell::Generator>();
+        //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
+        //g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
+        //g_sim.getSimulation()->createModule<module::cell::Generator>();
 
         //g_sim.getSimulation()->createModule<module::physics::Module>();
 

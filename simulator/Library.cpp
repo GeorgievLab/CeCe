@@ -5,6 +5,7 @@
 // C++
 #include <map>
 #include <cstdint>
+#include <cassert>
 
 #if __linux__
 // Linux
@@ -16,11 +17,20 @@
 #endif
 
 // Simulator
+#include "core/Log.hpp"
 #include "Module.hpp"
 
 /* ************************************************************************ */
 
 namespace {
+
+/* ************************************************************************ */
+
+#if __linux__
+const std::string g_prefix = "libmodule-";
+#elif __WIN32__
+const std::string g_prefix = "libmodule-";
+#endif
 
 /* ************************************************************************ */
 
@@ -47,6 +57,20 @@ struct Library::Impl
 #elif __WIN32__
     HMODULE* lib;
 #endif
+
+    /**
+     * @brief Returns if library is loaded.
+     *
+     * @return
+     */
+    bool isLoaded() const noexcept
+    {
+#if __linux__
+        return lib != nullptr;
+#elif __WIN32__
+        return lib != nullptr;
+#endif
+    }
 
     /**
      * @brief Returns address of required symbol.
@@ -79,8 +103,9 @@ struct Library::Impl
 
 Library::Library(const std::string& name)
     : m_impl{new Impl{nullptr}}
+    , m_createModule(nullptr)
 {
-    const std::string filename = name + g_extension;
+    const std::string filename = g_prefix + name + g_extension;
 #if __linux__
     m_impl->lib = dlopen(filename.c_str(), RTLD_LAZY);
 #elif __WIN32__
@@ -88,7 +113,8 @@ Library::Library(const std::string& name)
 #endif
 
     // Set create function
-    m_createModule = m_impl->getAddr<CreateModule>("create_module");
+    if (m_impl->isLoaded())
+        m_createModule = m_impl->getAddr<CreateModule>("create_module");
 }
 
 /* ************************************************************************ */
@@ -106,17 +132,14 @@ Library::~Library()
 
 bool Library::isLoaded() const noexcept
 {
-#if __linux__
-    return m_impl->lib != nullptr;
-#elif __WIN32__
-    return m_impl->lib != nullptr;
-#endif
+    return m_impl->isLoaded();
 }
 
 /* ************************************************************************ */
 
 std::unique_ptr<Module> Library::createModule(const std::string& name)
 {
+    assert(m_createModule);
     return std::unique_ptr<Module>{m_createModule(name.c_str())};
 }
 
@@ -150,16 +173,30 @@ std::unique_ptr<Module> Library::createModule(const std::string& library, const 
 {
     // Load library
     Library* lib = load(library);
+    assert(lib);
 
     // Unable to load library
-    if (lib == nullptr)
+    if (!lib->isLoaded())
     {
-        // TODO: print warning
+        Log::warning("Unable to load module: ", library, ".", name);
         return nullptr;
     }
 
     // Create module
     return lib->createModule(name);
+}
+
+/* ************************************************************************ */
+
+std::tuple<std::string, std::string> Library::splitPath(const std::string& path)
+{
+    // Find dot separator
+    auto pos = path.find('.');
+
+    if (pos == std::string::npos)
+        return std::make_tuple(path, std::string{});
+    else
+        return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
 }
 
 /* ************************************************************************ */

@@ -6,13 +6,16 @@
 // C++
 #include <memory>
 #include <vector>
+#include <map>
 #include <cassert>
+#include <string>
 
 // Simulator
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
+#include "simulator/Library.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -43,7 +46,7 @@ public:
 
 
     /// Module container type.
-    using ModuleContainer = std::vector<std::unique_ptr<Module>>;
+    using ModuleContainer = std::map<std::string, std::unique_ptr<Module>>;
 
     /// Object container type.
     using ObjectContainer = std::vector<std::unique_ptr<Object>>;
@@ -103,22 +106,38 @@ public:
 
 
     /**
+     * @brief Get module by name.
+     *
+     * @param name Module name.
+     *
+     * @return Pointer to module. If module doesn't exists, nullptr is returned.
+     */
+    Module* getModule(const std::string& name) noexcept
+    {
+        auto it = m_modules.find(name);
+
+        if (it == m_modules.end())
+            return nullptr;
+
+        return it->second.get();
+    }
+
+
+    /**
      * @brief Find module by type.
      *
      * @tparam ModuleType Module type
      *
+     * @param name Module name.
+     *
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
     template<typename ModuleType>
-    ModuleType* findModule() noexcept
+    ModuleType* getModule(const std::string& name) noexcept
     {
-        for (auto& module : getModules())
-        {
-            if (auto ptr = dynamic_cast<ModuleType*>(module.get()))
-                return ptr;
-        }
-
-        return nullptr;
+        auto module = getModule(name);
+        assert(dynamic_cast<ModuleType*>(module));
+        return static_cast<ModuleType*>(module);
     }
 
 
@@ -162,30 +181,67 @@ public:
     /**
      * @brief Add new module.
      *
-     * @param mod
+     * @param name Module name.
+     * @param mod  Pointer to module.
      *
      * @return A pointer to inserted module.
      */
     template<typename T>
-    T* addModule(std::unique_ptr<T> mod)
+    T* addModule(std::string name, std::unique_ptr<T> mod)
     {
         assert(mod);
-        m_modules.push_back(std::move(mod));
-        return reinterpret_cast<T*>(m_modules.back().get());
+        auto it = m_modules.emplace(std::make_pair(std::move(name), std::move(mod)));
+        return static_cast<T*>(std::get<0>(it)->second.get());
     }
 
 
     /**
      * @brief Create module.
      *
+     * @param name Module name.
      * @param args...
      *
      * @return A pointer to created module.
      */
     template<typename T, typename... Args>
-    T* createModule(Args&&... args)
+    T* createModule(std::string name, Args&&... args)
     {
-        return addModule(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+        return addModule(std::move(name), std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+    }
+
+
+    /**
+     * @brief Load module from library and add it into simulation.
+     *
+     * @param path Path to module.
+     *
+     * @return A pointer to created module.
+     */
+    Module* useModule(const std::string& path)
+    {
+        // Load module
+        auto module = Library::createModule(Library::splitPath(path));
+
+        if (module)
+            return addModule(path, std::move(module));
+
+        return nullptr;
+    }
+
+
+    /**
+     * @brief Load module from library and add it into simulation.
+     *
+     * @tparam ModuleType
+     *
+     * @param path Path to module.
+     *
+     * @return A pointer to created module.
+     */
+    template<typename ModuleType>
+    ModuleType* useModule(const std::string& path)
+    {
+        return static_cast<ModuleType>(useModule(path));
     }
 
 

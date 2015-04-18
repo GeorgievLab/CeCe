@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="cli" InternalType="GUI">
-  <Reconciliation>
-    <Regexes/>
-    <Excludepaths/>
-    <Ignorefiles/>
-    <Extensions>
-      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp]]>
-    </Extensions>
-    <Topleveldir>../cli</Topleveldir>
-  </Reconciliation>
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -32,11 +23,26 @@
  }]]]>
     </Plugin>
   </Plugins>
+  <Reconciliation>
+    <Regexes/>
+    <Excludepaths/>
+    <Ignorefiles/>
+    <Extensions>
+      <![CDATA[cpp;c;h;hpp;xrc;wxcp;fbp]]>
+    </Extensions>
+    <Topleveldir>../cli</Topleveldir>
+  </Reconciliation>
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="main.cpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="simulator"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="DebugCLI"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -112,7 +118,7 @@
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug-cli" Command="./$(ProjectName)" CommandArguments="../../examples/simple.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug-cli/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
+        <![CDATA[LD_LIBRARY_PATH=${WorkspacePath}/build-debug-cli/modules/cell:${WorkspacePath}/build-debug-cli/modules/diffusion:${WorkspacePath}/build-debug-cli/modules/streamlines:${WorkspacePath}/build-debug-cli/modules/diffusion-streamlines]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
         <DebuggerSearchPaths/>
@@ -182,10 +188,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="simulator"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="DebugCLI"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

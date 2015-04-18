@@ -6,6 +6,7 @@
 // C++
 #include <string>
 #include <memory>
+#include <tuple>
 
 /* ************************************************************************ */
 
@@ -118,6 +119,29 @@ public:
      * @return Created module.
      */
     static std::unique_ptr<Module> createModule(const std::string& library, const std::string& name);
+
+
+    /**
+     * @brief Load library and create module.
+     *
+     * @param path
+     *
+     * @return Created module.
+     */
+    static std::unique_ptr<Module> createModule(const std::tuple<std::string, std::string>& path)
+    {
+        return createModule(std::get<0>(path), std::get<1>(path));
+    }
+
+
+    /**
+     * @brief Split path into separate values.
+     *
+     * @param path
+     *
+     * @return Split path.
+     */
+    static std::tuple<std::string, std::string> splitPath(const std::string& path);
 
 
 // Private Data Members

@@ -44,7 +44,7 @@ void Simulation::update(units::Duration dt) noexcept
 
     // Update modules
     for (auto& module : getModules())
-        module->update(dt, *this);
+        module.second->update(dt, *this);
 
     // Update simulations objects
     for (const auto& obj : getObjects())
@@ -84,7 +84,7 @@ void Simulation::drawInit(render::Context& context)
 {
     // Init modules for rendering
     for (auto& module : getModules())
-        module->drawInit(context);
+        module.second->drawInit(context);
 }
 #endif
 
@@ -97,7 +97,7 @@ void Simulation::draw(render::Context& context)
 
     // Render modules
     for (auto& module : getModules())
-        module->draw(context, *this);
+        module.second->draw(context, *this);
 
     // Prepare objects for rendering
     {
