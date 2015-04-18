@@ -3,14 +3,10 @@
 project(cli)
 
 if (ENABLE_RENDER)
-    find_package(OpenGL REQUIRED)
-    include_directories(${OPENGL_INCLUDE_DIR})
-
     find_package(GLUT REQUIRED)
     include_directories(${GLUT_INCLUDE_DIR})
 
-    set(RENDER_LIBS ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
-    set(RENDER_DEP render)
+    set(RENDER_LIBS ${GLUT_LIBRARIES})
 endif ()
 
 # Create program
@@ -27,10 +23,7 @@ target_link_libraries(cli
     module-cell
     parser
     simulator
-    core
-    ${RENDER_DEP}
     ${RENDER_LIBS}
-    ${JPEG_LIBRARIES}
     -pthread
 )
 
@@ -38,8 +31,6 @@ target_link_libraries(cli
 add_dependencies(cli
     parser
     simulator
-    core
-    ${RENDER_DEP}
 )
 
 # ######################################################################### #

@@ -1,17 +1,28 @@
 # ######################################################################### #
 
-project(render)
+cmake_minimum_required(VERSION 2.8.8)
 
+# Project name
+set(PROJECT_NAME render)
+
+# Create project
+project(${PROJECT_NAME} CXX)
+
+# OpenGL library is required
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
 
+# Include OpenGL path
 include_directories(
     ${OPENGL_INCLUDE_DIR}
-    ${GLUT_INCLUDE_DIR}
 )
 
+# Current version is unable to add object library into shared library.
+if (UNIX)
+    add_compile_options(-fPIC)
+endif ()
+
 # Create library
-add_library(render
+add_library(${PROJECT_NAME} OBJECT
     Position.hpp
     Color.hpp
     errors.hpp
@@ -32,16 +43,6 @@ add_library(render
     Shader.cpp
     Program.hpp
     Program.cpp
-)
-
-# Setup dependencies
-add_dependencies(render
-    core
-)
-
-target_link_libraries(render
-    ${OPENGL_LIBRARIES}
-    ${GLUT_LIBRARIES}
 )
 
 # ######################################################################### #

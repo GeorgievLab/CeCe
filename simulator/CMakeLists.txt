@@ -1,9 +1,13 @@
 # ######################################################################### #
 
-project(simulator)
+# Project name
+set(PROJECT_NAME simulator)
 
-# Create library
-add_library(simulator SHARED
+# Create project
+project(${PROJECT_NAME} CXX)
+
+# Sources
+set(SRCS
     Position.hpp
     Velocity.hpp
     Object.hpp
@@ -21,17 +25,27 @@ add_library(simulator SHARED
     Module.hpp
     Library.hpp
     Library.cpp
+
+    # Add core libraries
+    $<TARGET_OBJECTS:core>
+)
+
+if (ENABLE_RENDER)
+    find_package(OpenGL REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIR})
+
+    set(RENDER_LIBS ${OPENGL_LIBRARIES})
+    set(SRCS ${SRCS} $<TARGET_OBJECTS:render>)
+endif ()
+
+# Create library
+add_library(${PROJECT_NAME} SHARED
+    ${SRCS}
 )
 
 # Use different name
-#set_target_properties(simulator PROPERTIES
+#set_target_properties(${PROJECT_NAME} PROPERTIES
 #    OUTPUT_NAME "sim"
 #)
-
-# Setup dependencies
-add_dependencies(simulator
-    core
-    render
-)
 
 # ######################################################################### #
