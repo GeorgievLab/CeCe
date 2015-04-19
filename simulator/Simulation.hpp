@@ -232,6 +232,10 @@ public:
      */
     Module* useModule(const std::string& path)
     {
+        // Module exists, return the existing one
+        if (hasModule(path))
+            return getModule(path);
+
         // Load module
         auto module = Library::createModule(this, Library::splitPath(path));
 
