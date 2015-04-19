@@ -47,8 +47,9 @@ void Simulation::update(units::Duration dt) noexcept
         module.second->update(dt, *this);
 
     // Update simulations objects
-    for (const auto& obj : getObjects())
+    for (std::size_t i = 0; i < getObjects().size(); ++i)
     {
+        auto& obj = getObjects()[i];
         assert(obj);
         obj->update(dt);
     }
@@ -74,6 +75,13 @@ void Simulation::update(units::Duration dt) noexcept
                 ((pos.getY() >= -hh.getY()) && (pos.getY() <= hh.getY()))
             );
         }), m_objects.end());
+
+        // Remove objects from drawInit
+        m_drawInitList.erase(std::remove_if(m_drawInitList.begin(), m_drawInitList.end(), [this](Object* ptr) {
+            return std::find_if(m_objects.begin(), m_objects.end(), [ptr](const ObjectContainer::value_type& obj) {
+                return obj.get() == ptr;
+            }) == m_objects.end();
+        }), m_drawInitList.end());
     }
 }
 

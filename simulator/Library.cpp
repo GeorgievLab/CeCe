@@ -147,6 +147,7 @@ std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std:
 
 Library* Library::load(const std::string& name)
 {
+    // FIXME: must be deleted after simulation
     static std::map<std::string, std::unique_ptr<Library>> s_cache;
 
     // Try to find library in cache

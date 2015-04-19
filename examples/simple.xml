@@ -1,4 +1,4 @@
-<simulation world-size="5000um 5000um">
+<simulation world-size="100um 100um">
     <module name="diffusion-streamlines">
         <cell radius="1" position="0 0" />
     </module>

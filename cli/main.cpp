@@ -134,23 +134,23 @@ int main(int argc, char** argv)
         auto simulation = g_sim.getSimulation();
 
         // Load modules
+        //simulation->useModule("diffusion-streamlines");
+        //simulation->useModule("diffusion.generator");
+        //simulation->useModule("diffusion.generator-cell");
         simulation->useModule("cell.generator");
-        simulation->useModule("diffusion-streamlines");
-        simulation->useModule("diffusion.generator");
-        //g_sim.getSimulation()->useModule("diffusion.generator-cell");
 
         // Create modules
-        g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
+        //g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
 
 #ifdef __AVX__
-        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f, 1.3f, 15.f, 1.f, 0.01f}});
+        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f, 1.3f, 1.5f, 0.1f, 0.01f}});
 #else
-        g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
+        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f}});
 #endif
-        g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
-        g_streamlinesModule->setMainCellRadius(units::um3(1540));
-        g_streamlinesModule->setFlowSpeed(50);
-        g_streamlinesModule->getRenderObject().setRenderVelocity(true);
+        //g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
+        //g_streamlinesModule->setMainCellRadius(units::um3(10.5));
+        //g_streamlinesModule->setFlowSpeed(50);
+        //g_streamlinesModule->getRenderObject().setRenderVelocity(true);
 
         //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
         //g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
@@ -211,19 +211,23 @@ int main(int argc, char** argv)
         });
 
         glutKeyboardFunc([](unsigned char key, int x, int y) {
-            auto pos = g_streamlinesModule->getMainCellPosition();
-            switch (key)
+            if (g_streamlinesModule)
             {
-            case 'a': case 'A': pos.getX() -= 0.5f; break;
-            case 'd': case 'D': pos.getX() += 0.5f; break;
-            case 'w': case 'W': pos.getY() += 0.5f; break;
-            case 's': case 'S': pos.getY() -= 0.5f; break;
-            case 'i': case 'I':
-                g_diffusionModule->getDrawable().setInterpolate(!g_diffusionModule->getDrawable().isInterpolate());
-                break;
-            }
+                auto pos = g_streamlinesModule->getMainCellPosition();
+                switch (key)
+                {
+                case 'a': case 'A': pos.getX() -= 0.5f; break;
+                case 'd': case 'D': pos.getX() += 0.5f; break;
+                case 'w': case 'W': pos.getY() += 0.5f; break;
+                case 's': case 'S': pos.getY() -= 0.5f; break;
+                case 'i': case 'I':
+                    if (g_diffusionModule)
+                        g_diffusionModule->getDrawable().setInterpolate(!g_diffusionModule->getDrawable().isInterpolate());
+                    break;
+                }
 
-            g_streamlinesModule->setMainCellPosition(pos);
+                g_streamlinesModule->setMainCellPosition(pos);
+            }
         });
 
         // Init start time

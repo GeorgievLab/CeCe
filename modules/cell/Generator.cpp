@@ -27,7 +27,7 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
     std::random_device rd;
     std::default_random_engine eng(rd());
 
-    std::bernoulli_distribution d(0.02);
+    std::bernoulli_distribution d(1.f * dt);
 
     // If cell should be generated
     if (d(eng))
@@ -37,9 +37,10 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
 
         // Create cell
         module::cell::Yeast* c = simulation.createObject<module::cell::Yeast>();
-        c->setVolume(units::um3(0.01));
+        //c->setVolume(units::um3(0.01));
         c->setVelocity({10, 0});
         c->setPosition({-simulation.getWorldSize().getWidth() / 2.f + 0.1f, y});
+        c->setGfp(10000);
     }
 }
 

@@ -17,7 +17,7 @@ namespace diffusion {
 
 void Generator::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    constexpr float SOURCE_STRENGTH = 500.f;
+    constexpr float SOURCE_STRENGTH = 50.f;
 
     assert(m_diffusionModule);
     auto& grid = m_diffusionModule->getGrid();

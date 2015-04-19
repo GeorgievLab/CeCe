@@ -28,7 +28,7 @@ Yeast::~Yeast()
 
 void Yeast::update(units::Duration dt)
 {
-    const float RATIO = 0.01f;
+    const float RATIO = 10.f;
 
     Cell::update(dt);
 
@@ -80,6 +80,7 @@ Yeast* Yeast::budRelease()
 
     // Copy properties
     bud->setVolume(m_bud.volume);
+    bud->setVelocity(getVelocity());
 
     const auto theta = m_bud.theta;
     const auto radius = calcSphereRadius(getVolume());
@@ -151,7 +152,7 @@ void Yeast::draw(render::Context& context)
         pos.getY() += ((radius + radiusBud) * std::cos(theta));
 
         // Draw yeast
-        getRenderObject().draw(pos, radius, {red, green, blue, 0.5f});
+        getRenderObject().draw(pos, radiusBud, {red, green, blue, 0.5f});
     }
 }
 
