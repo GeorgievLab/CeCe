@@ -47,6 +47,7 @@ public:
         : Cell(simulation)
     {
         setFlag(OBJECT_YEAST);
+        setVolume(units::um3(37));
     }
 
 

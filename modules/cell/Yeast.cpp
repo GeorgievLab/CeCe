@@ -36,12 +36,12 @@ void Yeast::update(units::Duration dt)
     {
         m_bud.volume += dt * RATIO;
 
-        if (m_bud.volume >= units::um3(0.05f))
+        if (m_bud.volume >= units::um3(35))
         {
             budRelease();
         }
     }
-    else if (getVolume() >= units::um3(0.05f))
+    else if (getVolume() >= units::um3(42))
     {
         budCreate();
     }
@@ -63,7 +63,7 @@ void Yeast::budCreate()
     std::default_random_engine eng(rd());
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
-    m_bud.volume = units::um3(0.001f);
+    m_bud.volume = units::um3(1.0f);
     m_bud.theta = 2 * constants::PI * dist(eng);
     m_bud.exists = true;
 }

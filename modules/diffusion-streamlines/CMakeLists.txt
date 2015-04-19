@@ -12,7 +12,6 @@ add_library(module-diffusion-streamlines SHARED
 
 # Setup dependencies
 add_dependencies(module-diffusion-streamlines
-    core
     simulator
     module-streamlines
     module-diffusion

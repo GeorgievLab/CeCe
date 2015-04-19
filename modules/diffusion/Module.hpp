@@ -50,7 +50,7 @@ public:
      * @brief Constructor.
      */
     Module()
-        : Module(200)
+        : Module(300)
     {
         // Nothing to do
     }

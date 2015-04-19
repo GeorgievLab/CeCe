@@ -148,6 +148,9 @@ int main(int argc, char** argv)
         g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.01f, 10.f}});
 #endif
         g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
+        g_streamlinesModule->setMainCellRadius(units::um3(1540));
+        g_streamlinesModule->setFlowSpeed(50);
+        g_streamlinesModule->getRenderObject().setRenderVelocity(true);
 
         //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
         //g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
