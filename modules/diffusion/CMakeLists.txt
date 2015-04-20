@@ -1,9 +1,13 @@
 # ######################################################################### #
 
-project(module-diffusion)
+# Project name
+set(PROJECT_NAME module-diffusion)
 
-# Create library
-add_library(module-diffusion SHARED
+# Create project
+project(${PROJECT_NAME} CXX)
+
+# Sources
+set(SRCS
     Library.hpp
     Library.cpp
     Signal.hpp
@@ -18,15 +22,22 @@ add_library(module-diffusion SHARED
     SignalGridDrawable.cpp
 )
 
+# Create library
+if (MODULE_BUILD_STATIC)
+    add_library(${PROJECT_NAME} ${SRCS})
+else ()
+    add_library(${PROJECT_NAME} SHARED ${SRCS})
+endif ()
+
 # Setup dependencies
-add_dependencies(module-diffusion
+add_dependencies(${PROJECT_NAME}
     core
     simulator
     module-cell
 )
 
 # Link libraries
-target_link_libraries(module-diffusion
+target_link_libraries(${PROJECT_NAME}
     module-cell
     simulator
 )

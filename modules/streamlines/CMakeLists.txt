@@ -1,23 +1,34 @@
 # ######################################################################### #
 
-project(module-streamlines)
+# Project name
+set(PROJECT_NAME module-streamlines)
 
-# Create library
-add_library(module-streamlines SHARED
+# Create project
+project(${PROJECT_NAME} CXX)
+
+# Sources
+set(SRCS
     Module.hpp
     Module.cpp
     Library.hpp
     Library.cpp
 )
 
+# Create library
+if (MODULE_BUILD_STATIC)
+    add_library(${PROJECT_NAME} ${SRCS})
+else ()
+    add_library(${PROJECT_NAME} SHARED ${SRCS})
+endif ()
+
 # Setup dependencies
-add_dependencies(module-streamlines
+add_dependencies(${PROJECT_NAME}
     core
     simulator
 )
 
 # Link libraries
-target_link_libraries(module-streamlines
+target_link_libraries(${PROJECT_NAME}
     simulator
 )
 

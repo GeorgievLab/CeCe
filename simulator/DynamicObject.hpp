@@ -6,6 +6,7 @@
 // Simulator
 #include "simulator/StaticObject.hpp"
 #include "simulator/Velocity.hpp"
+#include "simulator/Acceleration.hpp"
 
 /* ************************************************************************ */
 
@@ -51,6 +52,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns current acceleration.
+     *
+     * @return
+     */
+    const Acceleration& getAcceleration() const noexcept
+    {
+        return m_acceleration;
+    }
+
+
 // Public Mutators
 public:
 
@@ -63,6 +75,28 @@ public:
     void setVelocity(Velocity vel) noexcept
     {
         m_velocity = std::move(vel);
+    }
+
+
+    /**
+     * @brief Change object acceleration.
+     *
+     * @param acc
+     */
+    void setAcceleration(Acceleration acc) noexcept
+    {
+        m_acceleration = std::move(acc);
+    }
+
+
+    /**
+     * @brief Add object acceleration.
+     *
+     * @param acc
+     */
+    void addAcceleration(const Acceleration& acc) noexcept
+    {
+        m_acceleration += acc;
     }
 
 
@@ -85,6 +119,9 @@ private:
 
     /// Object velocity.
     Velocity m_velocity;
+
+    /// Object acceleration.
+    Acceleration m_acceleration{};
 
 };
 

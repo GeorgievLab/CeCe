@@ -1,24 +1,35 @@
 # ######################################################################### #
 
-project(module-diffusion-streamlines)
+# Project name
+set(PROJECT_NAME module-diffusion-streamlines)
 
-# Create library
-add_library(module-diffusion-streamlines SHARED
+# Create project
+project(${PROJECT_NAME} CXX)
+
+# Sources
+set(SRCS
     Library.hpp
     Library.cpp
     Module.hpp
     Module.cpp
 )
 
+# Create library
+if (MODULE_BUILD_STATIC)
+    add_library(${PROJECT_NAME} ${SRCS})
+else ()
+    add_library(${PROJECT_NAME} SHARED ${SRCS})
+endif ()
+
 # Setup dependencies
-add_dependencies(module-diffusion-streamlines
+add_dependencies(${PROJECT_NAME}
     simulator
     module-streamlines
     module-diffusion
 )
 
 # Link libraries
-target_link_libraries(module-diffusion-streamlines
+target_link_libraries(${PROJECT_NAME}
     simulator
     module-streamlines
     module-diffusion

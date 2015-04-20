@@ -109,10 +109,13 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             Vector<SizeType> coord = pos / step;
 
             // Get velocity
-            const auto& velocity = grid[coord];
+            const auto velocity = grid[coord] * m_flowSpeed;
 
-            // Use velocity
-            ptr->setVelocity(velocity * m_flowSpeed);
+            // Get velocity change
+            const auto acceleration = (ptr->getVelocity() - velocity) / dt;
+
+            // Add acceleration to the object
+            ptr->addAcceleration(acceleration);
         }
     }
 }
