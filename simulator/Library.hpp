@@ -87,6 +87,14 @@ public:
     bool isLoaded() const noexcept;
 
 
+    /**
+     * @brief Returns error string.
+     *
+     * @return
+     */
+    const std::string& getError() const noexcept;
+
+
 // Public Operations
 public:
 

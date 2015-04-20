@@ -58,6 +58,10 @@ struct Library::Impl
     HMODULE* lib;
 #endif
 
+    /// Error string
+    std::string error;
+
+
     /**
      * @brief Returns if library is loaded.
      *
@@ -108,6 +112,7 @@ Library::Library(const std::string& name)
     const std::string filename = g_prefix + name + g_extension;
 #if __linux__
     m_impl->lib = dlopen(filename.c_str(), RTLD_LAZY);
+    if (!m_impl->lib) m_impl->error = dlerror();
 #elif __WIN32__
     m_impl->lib = LoadLibrary(filename.c_str());
 #endif
@@ -133,6 +138,13 @@ Library::~Library()
 bool Library::isLoaded() const noexcept
 {
     return m_impl->isLoaded();
+}
+
+/* ************************************************************************ */
+
+const std::string& Library::getError() const noexcept
+{
+    return m_impl->error;
 }
 
 /* ************************************************************************ */
@@ -179,7 +191,7 @@ std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std:
     // Unable to load library
     if (!lib->isLoaded())
     {
-        Log::warning("Unable to load module: ", library, ".", name);
+        Log::warning("Unable to load module: ", library, ".", name, "(", lib->getError(), ")");
         return nullptr;
     }
 
