@@ -3,6 +3,9 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <cassert>
+
 // Simulator
 #include "core/Units.hpp"
 
@@ -23,7 +26,8 @@ namespace simulator {
 enum ObjectFlags
 {
     OBJECT_STATIC = 0x01,
-    OBJECT_DYNAMIC = 0x02
+    OBJECT_DYNAMIC = 0x02,
+    OBJECT_PHYSICS = 0x04
 };
 
 /* ************************************************************************ */

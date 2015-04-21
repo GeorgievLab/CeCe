@@ -41,7 +41,7 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
         c->setVolume(units::um3(volume_d(eng)));
         c->setVelocity({10, 0});
         c->setPosition({-simulation.getWorldSize().getWidth() / 2.f + 0.1f, y});
-        c->setGfp(10000);
+        c->setGfp(20);
     }
 }
 

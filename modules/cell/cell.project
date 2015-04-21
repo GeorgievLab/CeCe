@@ -30,10 +30,16 @@
     <File Name="Generator.hpp"/>
     <File Name="Library.hpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="core"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
         <IncludePath Value=".."/>
+        <Preprocessor Value="ENABLE_PHYSICS=1"/>
       </Compiler>
       <Linker Options="">
         <LibraryPath Value="."/>
@@ -117,9 +123,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

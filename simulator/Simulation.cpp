@@ -17,6 +17,9 @@ namespace simulator {
 /* ************************************************************************ */
 
 Simulation::Simulation() noexcept
+#ifdef ENABLE_PHYSICS
+ : m_world{b2Vec2{0.0f, 0.0f}}
+#endif
 {
     // Nothing to do
 }
@@ -83,6 +86,10 @@ void Simulation::update(units::Duration dt) noexcept
             }) == m_objects.end();
         }), m_drawInitList.end());
     }
+
+#ifdef ENABLE_PHYSICS
+    m_world.Step(dt, 5, 10);
+#endif
 }
 
 /* ************************************************************************ */

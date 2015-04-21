@@ -33,6 +33,7 @@
 #include "modules/physics/Module.hpp"
 #include "modules/cell/Module.hpp"
 #include "modules/cell/Generator.hpp"
+#include "modules/cell/Yeast.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -139,6 +140,7 @@ int main(int argc, char** argv)
         simulation->useModule("diffusion.generator");
         simulation->useModule("diffusion.generator-cell");
         simulation->useModule("cell.generator");
+        //simulation->createObject<module::cell::Yeast>();
 
         // Create modules
         g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
@@ -221,7 +223,7 @@ int main(int argc, char** argv)
         glutKeyboardFunc([](unsigned char key, int x, int y) {
             if (g_streamlinesModule)
             {
-                auto pos = g_streamlinesModule->getMainCellPosition();
+                auto pos = g_streamlinesModule->getMainCell()->getPosition();
                 switch (key)
                 {
                 case 'a': case 'A': pos.getX() -= 0.5f; break;
@@ -234,7 +236,8 @@ int main(int argc, char** argv)
                     break;
                 }
 
-                g_streamlinesModule->setMainCellPosition(pos);
+                g_streamlinesModule->getMainCell()->setPosition(pos);
+                g_streamlinesModule->markUpdate();
             }
         });
 

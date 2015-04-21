@@ -16,6 +16,19 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
+void Module::MainCell::setRadius(units::Length radius) noexcept
+{
+    shape.m_radius = radius;
+
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &shape;
+    fixtureDef.density = 1.0f;
+    fixtureDef.friction = 0.3f;
+    getBody()->CreateFixture(&fixtureDef);
+}
+
+/* ************************************************************************ */
+
 Module::~Module()
 {
     // Nothing to do
@@ -25,9 +38,15 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    if (!m_mainCell)
+    {
+        m_mainCell = simulation.createObject<MainCell>();
+        m_mainCell->setRadius(units::um3(10.5));
+    }
+
     if (m_update)
     {
-        const auto R = getMainCellRadius();
+        const auto R = getMainCell()->shape.m_radius;
 
         // Precompute values
         const auto R2 = R * R;
@@ -44,7 +63,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 // Cell center position
                 const Vector<float> coord = Vector<float>(i, j) + 0.5f;
                 // Real position in the world
-                const Vector<float> pos = start + step * coord - getMainCellPosition();
+                const Vector<float> pos = start + step * coord - getMainCell()->getPosition();
 
                 // Calculate squared distance from main cell
                 const auto distSq = pos.getLengthSquared();
@@ -112,7 +131,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             const auto velocity = grid[coord] * m_flowSpeed;
 
             // Get velocity change
-            const auto acceleration = (ptr->getVelocity() - velocity) / dt;
+            const auto acceleration = (velocity - ptr->getVelocity()) / dt;
 
             // Add acceleration to the object
             ptr->addAcceleration(acceleration);
@@ -144,10 +163,10 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     m_renderObject.draw(simulation.getWorldSize());
 
     // Draw main cell
-    if (getMainCellRadius())
+    if (getMainCell() != nullptr)
     {
-        const auto& pos = getMainCellPosition();
-        m_renderCell.draw(pos, getMainCellRadius(), {0.5f, 0.5f, 0.5f, 0.8f});
+        const auto& pos = getMainCell()->getPosition();
+        m_renderCell.draw(pos, getMainCell()->shape.m_radius, {0.5f, 0.5f, 0.5f, 0.8f});
     }
 }
 #endif

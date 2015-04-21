@@ -15,6 +15,10 @@ set(SRCS
     StaticObject.hpp
     DynamicObject.hpp
     DynamicObject.cpp
+    PhysicsObject.hpp
+    PhysicsObject.cpp
+    PhysicsStaticObject.hpp
+    PhysicsStaticObject.cpp
     Simulation.hpp
     Simulation.cpp
     SimulationFactory.hpp
@@ -47,5 +51,12 @@ add_library(${PROJECT_NAME} SHARED
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #    OUTPUT_NAME "sim"
 #)
+
+if (USE_BUILDIN_PHYSICS)
+    # Link libraries
+    target_link_libraries(${PROJECT_NAME}
+        Box2D
+    )
+endif ()
 
 # ######################################################################### #

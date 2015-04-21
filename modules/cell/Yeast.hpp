@@ -23,7 +23,7 @@ namespace cell {
  */
 enum
 {
-    OBJECT_YEAST = 0x08
+    OBJECT_YEAST = 0x20
 };
 
 /* ************************************************************************ */
@@ -43,12 +43,18 @@ public:
      *
      * @param simulation
      */
-    explicit Yeast(simulator::Simulation& simulation) noexcept
-        : Cell(simulation)
-    {
-        setFlag(OBJECT_YEAST);
-        setVolume(units::um3(37));
-    }
+    explicit Yeast(simulator::Simulation& simulation) noexcept;
+
+
+#ifdef ENABLE_PHYSICS
+    /**
+     * @brief Constructor.
+     *
+     * @param simulation
+     * @param body
+     */
+    Yeast(simulator::Simulation& simulation, b2Body* body) noexcept;
+#endif
 
 
     /**
@@ -118,11 +124,15 @@ private:
         /// If yeast have bud.
         bool exists = false;
 
-        /// Bud position.
-        units::Angle theta;
-
         /// Cell volume.
         units::Volume volume;
+
+#ifdef ENABLE_PHYSICS
+        b2Body* body = nullptr;
+        b2CircleShape shape;
+        b2DistanceJoint* joint;
+#endif
+
     } m_bud;
 };
 

@@ -21,6 +21,10 @@
 #include "render/Context.hpp"
 #endif
 
+#ifdef ENABLE_PHYSICS
+#include "Box2D/Box2D.h"
+#endif
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -149,6 +153,9 @@ public:
     ModuleType* getModule(const std::string& name) noexcept
     {
         auto module = getModule(name);
+        if (!module)
+            return nullptr;
+
         assert(dynamic_cast<ModuleType*>(module));
         return static_cast<ModuleType*>(module);
     }
@@ -174,6 +181,32 @@ public:
     {
         return m_worldSize;
     }
+
+
+#ifdef ENABLE_PHYSICS
+    /**
+     * @brief Returns physics world.
+     *
+     * @return
+     */
+    b2World& getWorld() noexcept
+    {
+        return m_world;
+    }
+#endif
+
+
+#ifdef ENABLE_PHYSICS
+    /**
+     * @brief Returns physics world.
+     *
+     * @return
+     */
+    const b2World& getWorld() const noexcept
+    {
+        return m_world;
+    }
+#endif
 
 
 // Public Mutators
@@ -385,6 +418,10 @@ private:
 #ifdef ENABLE_RENDER
     /// List of objects that requires init.
     std::vector<Object*> m_drawInitList;
+#endif
+
+#ifdef ENABLE_PHYSICS
+    b2World m_world;
 #endif
 };
 

@@ -46,7 +46,7 @@ public:
      *
      * @return
      */
-    const Velocity& getVelocity() const noexcept
+    virtual const Velocity& getVelocity() const noexcept
     {
         return m_velocity;
     }
@@ -72,7 +72,7 @@ public:
      *
      * @param vel
      */
-    void setVelocity(Velocity vel) noexcept
+    virtual void setVelocity(Velocity vel) noexcept
     {
         m_velocity = std::move(vel);
     }
@@ -94,7 +94,7 @@ public:
      *
      * @param acc
      */
-    void addAcceleration(const Acceleration& acc) noexcept
+    virtual void addAcceleration(const Acceleration& acc) noexcept
     {
         m_acceleration += acc;
     }

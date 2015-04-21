@@ -47,7 +47,7 @@ public:
      *
      * @return
      */
-    const Position& getPosition() const noexcept
+    virtual const Position& getPosition() const noexcept
     {
         return m_position;
     }
@@ -62,7 +62,7 @@ public:
      *
      * @param pos
      */
-    void setPosition(Position pos) noexcept
+    virtual void setPosition(Position pos) noexcept
     {
         m_position = std::move(pos);
     }

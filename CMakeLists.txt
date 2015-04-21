@@ -13,6 +13,8 @@ option(ENABLE_RENDER "Enable simulation rendering" On)
 option(ENABLE_SSE "Enable SSE instructions" On)
 option(INCLUDE_SOURCE "Include source code in object files" Off)
 option(NATIVE_BUILD "If sources should be build for current CPU -march=native" Off)
+option(USE_BUILDIN_PHYSICS "Enable build-in physics engine (Box2D)" On)
+option(MODULE_BUILD_STATIC "Build modules as static libraries" Off)
 
 # Default include directories
 include_directories(
@@ -64,11 +66,26 @@ if (ENABLE_SSE)
     add_definitions(-DENABLE_SSE=1)
 endif ()
 
+if (USE_BUILDIN_PHYSICS)
+    message("-- Using build-in physics")
+    # Physics engine
+    include_directories(Box2D)
+    add_definitions(-DENABLE_PHYSICS=1)
+endif ()
+
 # Projects
 add_subdirectory(core)
 
 if (ENABLE_RENDER)
     add_subdirectory(render)
+endif ()
+
+if (USE_BUILDIN_PHYSICS)
+    # Physics engine
+    add_subdirectory(Box2D)
+
+    # Link libraries
+    link_directories(${CMAKE_BINARY_DIR}/Box2D/Box2D)
 endif ()
 
 add_subdirectory(simulator)
@@ -78,7 +95,7 @@ add_subdirectory(parser)
 add_subdirectory(modules/streamlines)
 add_subdirectory(modules/diffusion)
 add_subdirectory(modules/diffusion-streamlines)
-add_subdirectory(modules/physics)
+#add_subdirectory(modules/physics)
 add_subdirectory(modules/cell)
 
 if (ENABLE_GUI)

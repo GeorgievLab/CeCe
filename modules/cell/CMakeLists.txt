@@ -1,9 +1,13 @@
 # ######################################################################### #
 
-project(module-cell)
+# Project name
+set(PROJECT_NAME module-cell)
 
-# Create library
-add_library(module-cell SHARED
+# Create project
+project(${PROJECT_NAME} CXX)
+
+# Sources
+set(SRCS
     Library.hpp
     Library.cpp
     Module.hpp
@@ -16,14 +20,21 @@ add_library(module-cell SHARED
     Generator.cpp
 )
 
+# Create library
+if (MODULE_BUILD_STATIC)
+    add_library(${PROJECT_NAME} ${SRCS})
+else ()
+    add_library(${PROJECT_NAME} SHARED ${SRCS})
+endif ()
+
 # Setup dependencies
-add_dependencies(module-cell
+add_dependencies(${PROJECT_NAME}
     core
     simulator
 )
 
 # Link libraries
-target_link_libraries(module-cell
+target_link_libraries(${PROJECT_NAME}
     simulator
 )
 

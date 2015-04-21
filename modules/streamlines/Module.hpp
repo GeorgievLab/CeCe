@@ -4,14 +4,20 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/Units.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Velocity.hpp"
 #include "simulator/Grid.hpp"
+#include "simulator/PhysicsStaticObject.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/Circle.hpp"
 #include "render/GridVector.hpp"
+#endif
+
+#ifdef ENABLE_PHYSICS
+#include "Box2D/Box2D.h"
 #endif
 
 /* ************************************************************************ */
@@ -26,6 +32,20 @@ namespace streamlines {
  */
 class Module : public simulator::Module
 {
+
+// Public Structures
+public:
+
+
+    struct MainCell : public simulator::PhysicsStaticObject
+    {
+        using simulator::PhysicsStaticObject::PhysicsStaticObject;
+
+        void setRadius(units::Length radius) noexcept;
+
+        b2CircleShape shape;
+    };
+
 
 // Public Types
 public:
@@ -98,24 +118,13 @@ public:
 
 
     /**
-     * @brief Get radius of the main cell.
+     * @brief Get the main cell.
      *
      * @return
      */
-    units::Length getMainCellRadius() const noexcept
+    MainCell* getMainCell() const noexcept
     {
-        return m_mainCellRadius;
-    }
-
-
-    /**
-     * @brief Returns main cell position.
-     *
-     * @return
-     */
-    const Vector<units::Length>& getMainCellPosition() const noexcept
-    {
-        return m_mainCellPosition;
+        return m_mainCell;
     }
 
 
@@ -161,25 +170,10 @@ public:
 
 
     /**
-     * @brief Set radius of the main cell.
-     *
-     * @param radius
+     * @brief Mark state to be updated.
      */
-    void setMainCellRadius(units::Length radius) noexcept
+    void markUpdate() noexcept
     {
-        m_mainCellRadius = radius;
-        m_update = true;
-    }
-
-
-    /**
-     * @brief Set main cell position.
-     *
-     * @param pos
-     */
-    void setMainCellPosition(const Vector<units::Length>& pos) noexcept
-    {
-        m_mainCellPosition = pos;
         m_update = true;
     }
 
@@ -233,13 +227,10 @@ public:
 private:
 
     /// World main cell radius.
-    units::Length m_mainCellRadius = units::um(1);
-
-    /// Main cell position.
-    Vector<units::Length> m_mainCellPosition{units::um(0), units::um(0)};
+    MainCell* m_mainCell = nullptr;
 
     /// Flow speed.
-    float m_flowSpeed = 1.f;
+    float m_flowSpeed = 50.f;
 
     /// Velocity grid.
     GridType m_grid;
