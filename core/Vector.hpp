@@ -223,7 +223,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     constexpr Vector<CT<T2>> operator+(const T2& val) const noexcept
     {
         return Vector<CT<T2>>{x + val, y + val};
@@ -252,7 +252,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     Vector& operator+=(const T2& val) noexcept
     {
         x += val;
@@ -339,7 +339,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     constexpr Vector<CT<T2>> operator-(const T2& val) const noexcept
     {
         return Vector<CT<T2>>{x - val, y - val};
@@ -368,7 +368,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     Vector& operator-=(const T2& val) noexcept
     {
         x -= val;
@@ -397,7 +397,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     constexpr Vector<CT<T2>> operator*(T2 val) const noexcept
     {
         return Vector<CT<T2>>{x * val, y * val};
@@ -426,7 +426,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     Vector& operator*=(T2 val) noexcept
     {
         x *= val;
@@ -513,7 +513,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     constexpr Vector<CT<T2>> operator/(T2 val) const noexcept
     {
         return Vector<CT<T2>>{x / val, y / val};
@@ -542,7 +542,7 @@ public:
      *
      * @return
      */
-    template<typename T2>
+    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
     Vector& operator/=(T2 val) noexcept
     {
         x /= val;
@@ -721,7 +721,7 @@ public:
      *
      * @return
      */
-    constexpr T getLengthSquared() const noexcept
+    T getLengthSquared() const noexcept
     {
         return x * x + y * y;
     }

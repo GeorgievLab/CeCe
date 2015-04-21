@@ -5,9 +5,6 @@
   <Project Name="simulator" Path="simulator/simulator.project"/>
   <Project Name="render" Path="render/render.project"/>
   <Project Name="cli" Path="cli/cli.project" Active="Yes"/>
-  <Environment>
-    <![CDATA[]]>
-  </Environment>
   <Project Name="parser" Path="parser/parser.project" Active="No"/>
   <Project Name="diffusion" Path="modules/diffusion/diffusion.project" Active="No"/>
   <Project Name="streamlines" Path="modules/streamlines/streamlines.project" Active="No"/>
@@ -42,4 +39,7 @@
       <Project Name="module-cell" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
 </CodeLite_Workspace>

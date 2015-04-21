@@ -92,7 +92,7 @@ public:
      *
      * @param src
      */
-    constexpr Signal(std::array<float, COUNT> src)
+    Signal(std::array<float, COUNT> src)
         : m_values(std::move(src))
     {
         // Nothing to do

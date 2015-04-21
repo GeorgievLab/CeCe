@@ -134,23 +134,31 @@ int main(int argc, char** argv)
         auto simulation = g_sim.getSimulation();
 
         // Load modules
-        //simulation->useModule("diffusion-streamlines");
-        //simulation->useModule("diffusion.generator");
-        //simulation->useModule("diffusion.generator-cell");
+        simulation->useModule("diffusion-streamlines");
+        //simulation->useModule("streamlines");
+        simulation->useModule("diffusion.generator");
+        simulation->useModule("diffusion.generator-cell");
         simulation->useModule("cell.generator");
 
         // Create modules
-        //g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
+        g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
 
+        if (g_diffusionModule)
+        {
 #ifdef __AVX__
-        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f, 1.3f, 1.5f, 0.1f, 0.01f}});
+            g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f, 1.3f, 1.5f, 0.1f, 0.01f}});
 #else
-        //g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f}});
+            g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f}});
 #endif
-        //g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
-        //g_streamlinesModule->setMainCellRadius(units::um3(10.5));
-        //g_streamlinesModule->setFlowSpeed(50);
-        //g_streamlinesModule->getRenderObject().setRenderVelocity(true);
+        }
+
+        g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
+        if (g_streamlinesModule)
+        {
+            //g_streamlinesModule->getMainCell()->radius = units::um3(10.5);
+            g_streamlinesModule->setFlowSpeed(10);
+            //g_streamlinesModule->getRenderObject().setRenderVelocity(true);
+        }
 
         //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
         //g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
