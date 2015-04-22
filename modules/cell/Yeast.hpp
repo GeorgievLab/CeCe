@@ -113,7 +113,7 @@ private:
 
 #if ENABLE_PHYSICS
     // Bud joint
-    b2DistanceJoint* m_joint;
+    b2DistanceJoint* m_joint = nullptr;
 #endif
 };
 

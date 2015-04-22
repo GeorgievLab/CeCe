@@ -42,7 +42,26 @@ Yeast::Yeast(simulator::Simulation& simulation, Yeast* parent) noexcept
 
 Yeast::~Yeast()
 {
-    // Nothing to do
+#if ENABLE_PHYSICS
+    // Joint must be deleted if one of the cells get deleted
+    if (m_parent)
+    {
+        // Object is bud
+        assert(m_parent->m_joint);
+        getSimulation().getWorld().DestroyJoint(m_parent->m_joint);
+        m_parent->m_joint = nullptr;
+        m_parent->m_bud = nullptr;
+    }
+    else if (m_joint)
+    {
+        // Object is parent
+        getSimulation().getWorld().DestroyJoint(m_joint);
+        m_joint = nullptr;
+
+        assert(m_bud);
+        m_bud->m_parent = nullptr;
+    }
+#endif
 }
 
 /* ************************************************************************ */
@@ -143,6 +162,7 @@ void Yeast::budRelease()
 #ifdef ENABLE_PHYSICS
     // Destroy joint
     getSimulation().getWorld().DestroyJoint(m_joint);
+    m_joint = nullptr;
 #endif
 
     // Release bud into the world
