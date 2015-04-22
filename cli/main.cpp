@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 
     try
     {
-        TimeMeasurement::setOutput(&time_file);
+        setMeasureTimeOutput(&time_file);
 
         // Create javascript world factory
         parser::SimulationFactory simFactory;

@@ -30,12 +30,12 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    TimeMeasurement _{"diffusion-streamlines.update"};
+    auto _ = measure_time("diffusion-streamlines.update", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+        out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+    });
 
     assert(m_streamlines);
     assert(m_diffusion);
-
-    m_streamlines->update(dt, simulation);
 
     auto& signalGrid = m_diffusion->getGrid();
     auto& velocityGrid = m_streamlines->getGrid();
@@ -118,9 +118,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
     // Replace the old grid with the new one
     signalGrid = std::move(signalGridNew);
-
-    // Update diffusion
-    m_diffusion->update(dt, simulation);
 }
 
 /* ************************************************************************ */

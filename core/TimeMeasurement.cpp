@@ -14,7 +14,21 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-std::ostream* TimeMeasurement::s_output = &std::cout;
+std::ostream* g_output = &std::cout;
+
+/* ************************************************************************ */
+
+std::ostream* getMeasureTimeOutput() noexcept
+{
+    return g_output;
+}
+
+/* ************************************************************************ */
+
+void setMeasureTimeOutput(std::ostream* output) noexcept
+{
+    g_output = output;
+}
 
 /* ************************************************************************ */
 

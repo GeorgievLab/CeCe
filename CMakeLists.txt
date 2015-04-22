@@ -15,6 +15,7 @@ option(INCLUDE_SOURCE "Include source code in object files" Off)
 option(NATIVE_BUILD "If sources should be build for current CPU -march=native" Off)
 option(USE_BUILDIN_PHYSICS "Enable build-in physics engine (Box2D)" On)
 option(MODULE_BUILD_STATIC "Build modules as static libraries" Off)
+option(ENABLE_MEASUREMENT "Enable or disable time measurement" Off)
 
 # Default include directories
 include_directories(
@@ -71,6 +72,11 @@ if (USE_BUILDIN_PHYSICS)
     # Physics engine
     include_directories(Box2D)
     add_definitions(-DENABLE_PHYSICS=1)
+endif ()
+
+if (ENABLE_MEASUREMENT)
+    message("-- Time measurement enabled")
+    add_definitions(-DENABLE_MEASUREMENT=1)
 endif ()
 
 # Projects
