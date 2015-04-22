@@ -10,8 +10,6 @@ project(${PROJECT_NAME} CXX)
 set(SRCS
     Library.hpp
     Library.cpp
-    Module.hpp
-    Module.cpp
     Cell.hpp
     Cell.cpp
     Yeast.hpp

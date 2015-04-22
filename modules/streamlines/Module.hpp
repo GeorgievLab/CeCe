@@ -6,9 +6,8 @@
 // Simulator
 #include "core/Units.hpp"
 #include "simulator/Module.hpp"
-#include "simulator/Velocity.hpp"
 #include "simulator/Grid.hpp"
-#include "simulator/PhysicsStaticObject.hpp"
+#include "simulator/Object.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -33,26 +32,12 @@ namespace streamlines {
 class Module : public simulator::Module
 {
 
-// Public Structures
-public:
-
-
-    struct MainCell : public simulator::PhysicsStaticObject
-    {
-        using simulator::PhysicsStaticObject::PhysicsStaticObject;
-
-        void setRadius(units::Length radius) noexcept;
-
-        b2CircleShape shape;
-    };
-
-
 // Public Types
 public:
 
 
     /// Grid type.
-    using GridType = simulator::Grid<simulator::Velocity>;
+    using GridType = simulator::Grid<VelocityVector>;
 
     /// Grid size type.
     using SizeType = GridType::SizeType;
@@ -114,17 +99,6 @@ public:
     const GridType& getGrid() const noexcept
     {
         return m_grid;
-    }
-
-
-    /**
-     * @brief Get the main cell.
-     *
-     * @return
-     */
-    MainCell* getMainCell() const noexcept
-    {
-        return m_mainCell;
     }
 
 
@@ -226,9 +200,6 @@ public:
 // Private Data Members
 private:
 
-    /// World main cell radius.
-    MainCell* m_mainCell = nullptr;
-
     /// Flow speed.
     float m_flowSpeed = 50.f;
 
@@ -241,11 +212,6 @@ private:
 #ifdef ENABLE_RENDER
     /// Render grid for velocities
     render::GridVector m_renderObject;
-#endif
-
-#ifdef ENABLE_RENDER
-    /// Render main cell.
-    render::Circle m_renderCell;
 #endif
 
 #ifdef ENABLE_RENDER

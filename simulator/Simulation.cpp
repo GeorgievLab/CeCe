@@ -7,9 +7,6 @@
 // C++
 #include <algorithm>
 
-// Simulator
-#include "simulator/StaticObject.hpp"
-
 /* ************************************************************************ */
 
 namespace simulator {
@@ -63,14 +60,12 @@ void Simulation::update(units::Duration dt) noexcept
 
         // Kill objects that are outside world
         m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [&hh](const ObjectContainer::value_type& obj) {
-            if (!obj->hasFlag(OBJECT_STATIC))
+            // Ignore static objects
+            if (obj->getType() == Object::Type::Static)
                 return false;
 
-            // Cast to static object
-            auto ptr = obj->cast<StaticObject>();
-
             // Get object position
-            const Position& pos = ptr->getPosition();
+            const auto& pos = obj->getPosition();
 
             // TODO: optimize
             return not (

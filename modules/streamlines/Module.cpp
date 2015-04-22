@@ -7,25 +7,12 @@
 
 // Simulator
 #include "simulator/Simulation.hpp"
-#include "simulator/DynamicObject.hpp"
+#include "simulator/Object.hpp"
 
 /* ************************************************************************ */
 
 namespace module {
 namespace streamlines {
-
-/* ************************************************************************ */
-
-void Module::MainCell::setRadius(units::Length radius) noexcept
-{
-    shape.m_radius = radius;
-
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &shape;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
-    getBody()->CreateFixture(&fixtureDef);
-}
 
 /* ************************************************************************ */
 
@@ -38,15 +25,9 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    if (!m_mainCell)
-    {
-        m_mainCell = simulation.createObject<MainCell>();
-        m_mainCell->setRadius(units::um3(10.5));
-    }
-
     if (m_update)
     {
-        const auto R = getMainCell()->shape.m_radius;
+        const auto R = 50;
 
         // Precompute values
         const auto R2 = R * R;
@@ -63,7 +44,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 // Cell center position
                 const Vector<float> coord = Vector<float>(i, j) + 0.5f;
                 // Real position in the world
-                const Vector<float> pos = start + step * coord - getMainCell()->getPosition();
+                const Vector<float> pos = start + step * coord;// - getMainCell()->getPosition();
 
                 // Calculate squared distance from main cell
                 const auto distSq = pos.getLengthSquared();
@@ -110,14 +91,12 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
         for (auto& obj : simulation.getObjects())
         {
-            if (!obj->hasFlag(simulator::OBJECT_DYNAMIC))
+            // Ignore static objects
+            if (obj->getType() == simulator::Object::Type::Static)
                 continue;
 
-            // Cast to dynamic object
-            auto ptr = obj->cast<simulator::DynamicObject>();
-
             // Get position
-            auto pos = ptr->getPosition() - start;
+            const auto pos = obj->getPosition() - start;
 
             // TODO: improve
             if ((pos.getX() < 0 || pos.getY() < 0) ||
@@ -128,13 +107,10 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             Vector<SizeType> coord = pos / step;
 
             // Get velocity
-            const auto velocity = grid[coord] * m_flowSpeed;
-
-            // Get velocity change
-            const auto acceleration = (velocity - ptr->getVelocity()) / dt;
+            const auto force = grid[coord] * m_flowSpeed;
 
             // Add acceleration to the object
-            ptr->addAcceleration(acceleration);
+            obj->applyForce(force);
         }
     }
 }
@@ -144,7 +120,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 #ifdef ENABLE_RENDER
 void Module::drawInit(render::Context& context)
 {
-    m_renderCell.init();
     m_renderObject.init(m_grid.getSize(), m_grid.getData());
 }
 #endif
@@ -161,13 +136,6 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     }
 
     m_renderObject.draw(simulation.getWorldSize());
-
-    // Draw main cell
-    if (getMainCell() != nullptr)
-    {
-        const auto& pos = getMainCell()->getPosition();
-        m_renderCell.draw(pos, getMainCell()->shape.m_radius, {0.5f, 0.5f, 0.5f, 0.8f});
-    }
 }
 #endif
 

@@ -17,24 +17,17 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Module.cpp"/>
     <File Name="Cell.cpp"/>
     <File Name="Yeast.cpp"/>
     <File Name="Generator.cpp"/>
     <File Name="Library.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Module.hpp"/>
     <File Name="Cell.hpp"/>
     <File Name="Yeast.hpp"/>
     <File Name="Generator.hpp"/>
     <File Name="Library.hpp"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -123,4 +116,9 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="core"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

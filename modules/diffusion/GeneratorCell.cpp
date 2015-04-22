@@ -35,7 +35,7 @@ void GeneratorCell::update(units::Duration dt, simulator::Simulation& simulation
     for (auto& obj : simulation.getObjects())
     {
         // It's not cell
-        if (!obj->hasFlag(module::cell::OBJECT_CELL))
+        if (!obj->is<module::cell::Cell>())
             continue;
 
         // Cast to cell

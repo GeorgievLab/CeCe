@@ -8,17 +8,8 @@ project(${PROJECT_NAME} CXX)
 
 # Sources
 set(SRCS
-    Position.hpp
-    Velocity.hpp
     Object.hpp
     Object.cpp
-    StaticObject.hpp
-    DynamicObject.hpp
-    DynamicObject.cpp
-    PhysicsObject.hpp
-    PhysicsObject.cpp
-    PhysicsStaticObject.hpp
-    PhysicsStaticObject.cpp
     Simulation.hpp
     Simulation.cpp
     SimulationFactory.hpp

@@ -37,6 +37,7 @@
     <File Name="constants.hpp"/>
     <File Name="AlignedAllocator.hpp"/>
     <File Name="Log.hpp"/>
+    <File Name="VectorUnits.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

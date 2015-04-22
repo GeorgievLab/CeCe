@@ -11,12 +11,10 @@ namespace cell {
 
 /* ************************************************************************ */
 
-Cell::Cell(simulator::Simulation& simulation) noexcept
-    : simulator::PhysicsObject(simulation)
+Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
+    : simulator::Object(simulation, type)
 {
-    setFlag(OBJECT_CELL);
-
-#ifdef ENABLE_PHYSICS
+#if ENABLE_PHYSICS
     m_shape.m_radius = calcSphereRadius(getVolume());
 
     b2FixtureDef fixtureDef;
@@ -29,22 +27,11 @@ Cell::Cell(simulator::Simulation& simulation) noexcept
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_PHYSICS
-Cell::Cell(simulator::Simulation& simulation, b2Body* body) noexcept
-    : simulator::PhysicsObject(simulation, body)
-{
-    setFlag(OBJECT_CELL);
-}
-#endif
-
-/* ************************************************************************ */
-
 void Cell::update(units::Duration dt)
 {
-    // Just update position
-    PhysicsObject::update(dt);
+    Object::update(dt);
 
-#ifdef ENABLE_PHYSICS
+#if ENABLE_PHYSICS
     // Calculate cell radius
     m_shape.m_radius = calcSphereRadius(getVolume());
 

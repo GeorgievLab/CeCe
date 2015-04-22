@@ -8,27 +8,20 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "core/VectorUnits.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
 #include "render/Context.hpp"
 #endif
 
+#if ENABLE_PHYSICS
+#include "Box2D/Box2D.h"
+#endif
+
 /* ************************************************************************ */
 
 namespace simulator {
-
-/* ************************************************************************ */
-
-/**
- * @brief Predefined object flags.
- */
-enum ObjectFlags
-{
-    OBJECT_STATIC = 0x01,
-    OBJECT_DYNAMIC = 0x02,
-    OBJECT_PHYSICS = 0x04
-};
 
 /* ************************************************************************ */
 
@@ -42,15 +35,35 @@ class Simulation;
 class Object
 {
 
+// Public Enums
+public:
+
+
+    /**
+     * @brief Object types.
+     */
+    enum class Type
+    {
+        Static,
+        Dynamic
+    };
+
+
+    /**
+     * @brief Shape types.
+     */
+    enum class ShapeType
+    {
+        Circle
+    };
+
+
 // Public Types
 public:
 
 
     /// Object ID type.
     using IdType = unsigned long;
-
-    /// Flags type.
-    using FlagsType = unsigned long long;
 
 
 // Public Ctors & Dtors
@@ -60,9 +73,10 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param simulation
+     * @param simulation Object owner.
+     * @param type       Object type.
      */
-    explicit Object(Simulation& simulation) noexcept;
+    explicit Object(Simulation& simulation, Type type = Type::Static) noexcept;
 
 
     /**
@@ -109,27 +123,40 @@ public:
 
 
     /**
-     * @brief Returns object flags.
+     * @brief Returns object type.
      *
      * @return
      */
-    FlagsType getFlags() const noexcept
-    {
-        return m_flags;
-    }
+    Type getType() const noexcept;
 
 
     /**
-     * @brief Returns if object has given flag set.
-     *
-     * @param flag
+     * @brief Returns current position.
      *
      * @return
      */
-    bool hasFlag(FlagsType flag) const noexcept
+    PositionVector getPosition() const noexcept;
+
+
+    /**
+     * @brief Returns current velocity.
+     *
+     * @return
+     */
+    VelocityVector getVelocity() const noexcept;
+
+
+#if ENABLE_PHYSICS
+    /**
+     * @brief Returns physical body.
+     *
+     * @return
+     */
+    b2Body* getBody() const noexcept
     {
-        return m_flags & flag;
+        return m_body;
     }
+#endif
 
 
 // Public Mutators
@@ -137,46 +164,51 @@ public:
 
 
     /**
-     * @brief Set object flags.
-     *
-     * @param flags
-     *
-     * @note Use with caution.
-     */
-    void setFlags(FlagsType flags) noexcept
-    {
-        m_flags = flags;
-    }
-
-
-    /**
-     * @brief Set object flag.
-     *
-     * @param flag to set
+     * @brief Change object type.
      *
      * @return
      */
-    void setFlag(FlagsType flag) noexcept
-    {
-        m_flags |= flag;
-    }
+    void setType(Type type) noexcept;
 
 
     /**
-     * @brief Unset object flag.
+     * @brief Change object position.
      *
-     * @param flag to set
-     *
-     * @return
+     * @param pos
      */
-    void unsetFlag(FlagsType flag) noexcept
-    {
-        m_flags &= ~flag;
-    }
+    void setPosition(PositionVector pos) noexcept;
+
+
+    /**
+     * @brief Change object velocity.
+     *
+     * @param vel
+     */
+    void setVelocity(VelocityVector vel) noexcept;
+
+
+    /**
+     * @brief Push into object by given force.
+     *
+     * @param force
+     */
+    void applyForce(ForceVector force) noexcept;
 
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief If object is given type.
+     *
+     * @return
+     */
+    template<typename T>
+    bool is() const noexcept
+    {
+        return dynamic_cast<const T*>(this) != nullptr;
+    }
 
 
     /**
@@ -210,7 +242,7 @@ public:
      *
      * @param dt Simulation time step.
      */
-    virtual void update(units::Duration dt) = 0;
+    virtual void update(units::Duration dt);
 
 
 #ifdef ENABLE_RENDER
@@ -241,17 +273,25 @@ public:
 // Private Data Members
 private:
 
-    /// ID generator.
-    static IdType s_id;
-
     /// Owning simulation.
     Simulation& m_simulation;
 
     /// Object unique ID.
     IdType m_id;
 
-    /// Objects flags.
-    FlagsType m_flags = 0;
+#if ENABLE_PHYSICS
+    /// Physics body.
+    b2Body* m_body;
+#else
+    /// Object type.
+    Type m_type;
+
+    /// Object position
+    PositionVector m_position;
+
+    /// Object velocity.
+    VelocityVector m_velocity;
+#endif
 
 };
 

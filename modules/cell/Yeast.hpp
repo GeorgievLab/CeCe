@@ -19,16 +19,6 @@ namespace cell {
 /* ************************************************************************ */
 
 /**
- * @brief Predefined object flags.
- */
-enum
-{
-    OBJECT_YEAST = 0x20
-};
-
-/* ************************************************************************ */
-
-/**
  * @brief Yeast representation.
  */
 class Yeast : public Cell
@@ -42,19 +32,9 @@ public:
      * @brief Default constructor.
      *
      * @param simulation
+     * @param parent     Parent yeast.
      */
-    explicit Yeast(simulator::Simulation& simulation) noexcept;
-
-
-#ifdef ENABLE_PHYSICS
-    /**
-     * @brief Constructor.
-     *
-     * @param simulation
-     * @param body
-     */
-    Yeast(simulator::Simulation& simulation, b2Body* body) noexcept;
-#endif
+    explicit Yeast(simulator::Simulation& simulation, Yeast* parent = nullptr) noexcept;
 
 
     /**
@@ -74,7 +54,18 @@ public:
      */
     bool hasBud() const noexcept
     {
-        return m_bud.exists;
+        return m_bud != nullptr;
+    }
+
+
+    /**
+     * @brief Returns if yeast is bud.
+     *
+     * @return
+     */
+    bool isBud() const noexcept
+    {
+        return m_parent != nullptr;
     }
 
 
@@ -97,43 +88,33 @@ public:
 
 
     /**
-     * @brief Release bud cell.
-     *
-     * @return Created yeast cell.
+     * @brief Release bud yeast.
      */
-    Yeast* budRelease();
+    void budRelease();
 
 
-#ifdef ENABLE_RENDER
-
+#if ENABLE_RENDER
     /**
      * @brief Render cell.
      *
      * @param context
      */
     virtual void draw(render::Context& context);
-
 #endif
 
 // Private Data Members
 private:
 
+    /// Parent yeast.
+    Yeast* m_parent;
+
     /// Bud cell.
-    struct
-    {
-        /// If yeast have bud.
-        bool exists = false;
+    Yeast* m_bud = nullptr;
 
-        /// Cell volume.
-        units::Volume volume;
-
-#ifdef ENABLE_PHYSICS
-        b2Body* body = nullptr;
-        b2CircleShape shape;
-        b2DistanceJoint* joint;
+#if ENABLE_PHYSICS
+    // Bud joint
+    b2DistanceJoint* m_joint;
 #endif
-
-    } m_bud;
 };
 
 /* ************************************************************************ */

@@ -9,7 +9,6 @@
 #include "simulator/Simulation.hpp"
 
 // Module
-#include "Module.hpp"
 #include "Cell.hpp"
 #include "Yeast.hpp"
 

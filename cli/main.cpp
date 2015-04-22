@@ -30,8 +30,6 @@
 #include "modules/diffusion/Generator.hpp"
 #include "modules/diffusion/GeneratorCell.hpp"
 #include "modules/diffusion-streamlines/Module.hpp"
-#include "modules/physics/Module.hpp"
-#include "modules/cell/Module.hpp"
 #include "modules/cell/Generator.hpp"
 #include "modules/cell/Yeast.hpp"
 
@@ -57,6 +55,7 @@ std::mutex g_log_mutex;
 
 module::streamlines::Module* g_streamlinesModule;
 module::diffusion::Module* g_diffusionModule;
+module::cell::Cell* g_mainCell;
 
 /* ************************************************************************ */
 
@@ -140,7 +139,10 @@ int main(int argc, char** argv)
         simulation->useModule("diffusion.generator");
         simulation->useModule("diffusion.generator-cell");
         simulation->useModule("cell.generator");
-        //simulation->createObject<module::cell::Yeast>();
+
+        // Create main cell
+        g_mainCell = simulation->createObject<module::cell::Cell>();
+        g_mainCell->setVolume(units::um3(1540));
 
         // Create modules
         g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
@@ -157,7 +159,6 @@ int main(int argc, char** argv)
         g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
         if (g_streamlinesModule)
         {
-            //g_streamlinesModule->getMainCell()->radius = units::um3(10.5);
             g_streamlinesModule->setFlowSpeed(10);
             //g_streamlinesModule->getRenderObject().setRenderVelocity(true);
         }
@@ -221,23 +222,29 @@ int main(int argc, char** argv)
         });
 
         glutKeyboardFunc([](unsigned char key, int x, int y) {
-            if (g_streamlinesModule)
+            if (g_mainCell)
             {
-                auto pos = g_streamlinesModule->getMainCell()->getPosition();
+                auto pos = g_mainCell->getPosition();
                 switch (key)
                 {
                 case 'a': case 'A': pos.getX() -= 0.5f; break;
                 case 'd': case 'D': pos.getX() += 0.5f; break;
                 case 'w': case 'W': pos.getY() += 0.5f; break;
                 case 's': case 'S': pos.getY() -= 0.5f; break;
-                case 'i': case 'I':
-                    if (g_diffusionModule)
-                        g_diffusionModule->getDrawable().setInterpolate(!g_diffusionModule->getDrawable().isInterpolate());
-                    break;
                 }
 
-                g_streamlinesModule->getMainCell()->setPosition(pos);
+                g_mainCell->setPosition(pos);
                 g_streamlinesModule->markUpdate();
+            }
+
+            if (g_diffusionModule)
+            {
+                switch (key)
+                {
+                case 'i': case 'I':
+                    g_diffusionModule->getDrawable().setInterpolate(!g_diffusionModule->getDrawable().isInterpolate());
+                    break;
+                }
             }
         });
 

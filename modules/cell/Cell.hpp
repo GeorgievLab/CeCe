@@ -8,7 +8,7 @@
 
 // Simulator
 #include "core/Units.hpp"
-#include "simulator/PhysicsObject.hpp"
+#include "simulator/Object.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -34,19 +34,9 @@ using FluorescentProteinCount = unsigned int;
 /* ************************************************************************ */
 
 /**
- * @brief Predefined object flags.
- */
-enum
-{
-    OBJECT_CELL = 0x10
-};
-
-/* ************************************************************************ */
-
-/**
  * @brief Cell representation.
  */
-class Cell : public simulator::PhysicsObject
+class Cell : public simulator::Object
 {
 
 
@@ -58,19 +48,10 @@ public:
      * @brief Constructor.
      *
      * @param simulation
+     * @param type       Cell type.
      */
-    explicit Cell(simulator::Simulation& simulation) noexcept;
-
-
-#ifdef ENABLE_PHYSICS
-    /**
-     * @brief Constructor.
-     *
-     * @param simulation
-     * @param body
-     */
-    Cell(simulator::Simulation& simulation, b2Body* body) noexcept;
-#endif
+    explicit Cell(simulator::Simulation& simulation,
+                  simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
 
 
 // Public Accessors
@@ -147,7 +128,7 @@ public:
 #endif
 
 
-#ifdef ENABLE_PHYSICS
+#if ENABLE_PHYSICS
     b2CircleShape& getShape() noexcept
     {
         return m_shape;
@@ -155,7 +136,7 @@ public:
 #endif
 
 
-#ifdef ENABLE_PHYSICS
+#if ENABLE_PHYSICS
     const b2CircleShape& getShape() const noexcept
     {
         return m_shape;

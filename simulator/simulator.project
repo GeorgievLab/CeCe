@@ -19,30 +19,18 @@
   <VirtualDirectory Name="src">
     <File Name="Simulator.cpp"/>
     <File Name="Object.cpp"/>
-    <File Name="DynamicObject.cpp"/>
-    <File Name="CellGenerator.cpp"/>
     <File Name="Simulation.cpp"/>
     <File Name="SimulationFactory.cpp"/>
     <File Name="Library.cpp"/>
-    <File Name="PhysicsObject.cpp"/>
-    <File Name="PhysicsStaticObject.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
     <File Name="Object.hpp"/>
-    <File Name="Position.hpp"/>
-    <File Name="Velocity.hpp"/>
-    <File Name="StaticObject.hpp"/>
-    <File Name="DynamicObject.hpp"/>
     <File Name="Grid.hpp"/>
-    <File Name="Acceleration.hpp"/>
-    <File Name="CellGenerator.hpp"/>
     <File Name="Module.hpp"/>
     <File Name="Simulation.hpp"/>
     <File Name="SimulationFactory.hpp"/>
     <File Name="Library.hpp"/>
-    <File Name="PhysicsObject.hpp"/>
-    <File Name="PhysicsStaticObject.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
