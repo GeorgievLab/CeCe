@@ -95,7 +95,6 @@ add_subdirectory(parser)
 add_subdirectory(modules/streamlines)
 add_subdirectory(modules/diffusion)
 add_subdirectory(modules/diffusion-streamlines)
-#add_subdirectory(modules/physics)
 add_subdirectory(modules/cell)
 
 if (ENABLE_GUI)
