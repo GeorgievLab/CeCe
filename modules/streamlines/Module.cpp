@@ -27,7 +27,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     if (m_update)
     {
-        const auto R = 50;
+        const auto R = 10.5f;
 
         // Precompute values
         const auto R2 = R * R;

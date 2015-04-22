@@ -87,9 +87,9 @@ namespace parser {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::Simulation> fromStream(std::istream& source)
+std::unique_ptr<simulator::Simulation> fromStream(simulator::Simulator& simulator, std::istream& source)
 {
-    std::unique_ptr<simulator::Simulation> simulation(new simulator::Simulation());
+    std::unique_ptr<simulator::Simulation> simulation(new simulator::Simulation(simulator));
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load(source);

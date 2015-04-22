@@ -15,6 +15,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulation;
+class Simulator;
 
 /* ************************************************************************ */
 
@@ -41,25 +42,33 @@ public:
     /**
      * @brief Create empty simulation.
      *
+     * @param simulator
+     *
      * @return
      */
-    virtual std::unique_ptr<Simulation> createSimulation() const;
+    virtual std::unique_ptr<Simulation> createSimulation(Simulator& simulator) const;
 
 
     /**
      * @brief Create a new simulation from source file.
      *
+     * @param simulator
      * @param filename
+     *
+     * @return
      */
-    virtual std::unique_ptr<Simulation> fromFile(const std::string& filename) const;
+    virtual std::unique_ptr<Simulation> fromFile(Simulator& simulator, const std::string& filename) const;
 
 
     /**
      * @brief Create a new simulation from source code.
      *
+     * @param simulator
      * @param source
+     *
+     * @return
      */
-    virtual std::unique_ptr<Simulation> fromSource(const std::string& source) const = 0;
+    virtual std::unique_ptr<Simulation> fromSource(Simulator& simulator, const std::string& source) const = 0;
 
 };
 

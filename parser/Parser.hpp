@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 // Simulator
+#include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -28,7 +29,7 @@ using Exception = std::runtime_error;
  *
  * @return Simulation from stream.
  */
-std::unique_ptr<simulator::Simulation> fromStream(std::istream& source);
+std::unique_ptr<simulator::Simulation> fromStream(simulator::Simulator& simulator, std::istream& source);
 
 /* ************************************************************************ */
 

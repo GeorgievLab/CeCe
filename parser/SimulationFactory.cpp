@@ -17,20 +17,20 @@ namespace parser {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::Simulation> SimulationFactory::fromFile(const std::string& filename) const
+std::unique_ptr<simulator::Simulation> SimulationFactory::fromFile(simulator::Simulator& simulator, const std::string& filename) const
 {
     std::ifstream file(filename, std::ios::in);
 
-    return parser::fromStream(file);
+    return parser::fromStream(simulator, file);
 }
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::Simulation> SimulationFactory::fromSource(const std::string& source) const
+std::unique_ptr<simulator::Simulation> SimulationFactory::fromSource(simulator::Simulator& simulator, const std::string& source) const
 {
     std::istringstream iss(source);
 
-    return parser::fromStream(iss);
+    return parser::fromStream(simulator, iss);
 }
 
 /* ************************************************************************ */

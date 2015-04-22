@@ -6,6 +6,12 @@
 
 // C++
 #include <algorithm>
+#include <tuple>
+
+// Simulator
+#include "core/Log.hpp"
+#include "simulator/Library.hpp"
+#include "simulator/Simulator.hpp"
 
 /* ************************************************************************ */
 
@@ -13,9 +19,31 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-Simulation::Simulation() noexcept
+namespace {
+
+/* ************************************************************************ */
+
+std::tuple<std::string, std::string> splitModulePath(const std::string& path) noexcept
+{
+    // Find dot separator
+    auto pos = path.find('.');
+
+    if (pos == std::string::npos)
+        return std::make_tuple(path, std::string{});
+    else
+        return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+Simulation::Simulation(Simulator& simulator) noexcept
+    : m_simulator(simulator)
 #ifdef ENABLE_PHYSICS
- : m_world{b2Vec2{0.0f, 0.0f}}
+    , m_world{b2Vec2{0.0f, 0.0f}}
 #endif
 {
     // Nothing to do
@@ -25,7 +53,46 @@ Simulation::Simulation() noexcept
 
 Simulation::~Simulation()
 {
-    // Nothing to do
+    // Delete objects (before physics world)
+    m_objects.clear();
+}
+
+/* ************************************************************************ */
+
+Module* Simulation::useModule(const std::string& path)
+{
+    // Module exists, return the existing one
+    if (hasModule(path))
+        return getModule(path);
+
+    // Split path into parts
+    std::string library, name;
+    std::tie(library, name) = splitModulePath(path);
+
+    // Load library
+    Library* lib = m_simulator.loadLibrary(library);
+    assert(lib);
+
+    // Unable to load library
+    if (!lib->isLoaded())
+    {
+        Log::warning("Unable to load library: ", library, "(", lib->getError(), ")");
+        return nullptr;
+    }
+
+    // Create module with given name
+    auto module = lib->createModule(this, name);
+
+    // Register module
+    if (module)
+    {
+        Log::info("Using module: ", path);
+        return addModule(path, std::move(module));
+    }
+
+    Log::warning("Unable to create module: ", path, " (unsupported by library?)");
+
+    return nullptr;
 }
 
 /* ************************************************************************ */

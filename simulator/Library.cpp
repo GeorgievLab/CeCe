@@ -17,7 +17,6 @@
 #endif
 
 // Simulator
-#include "core/Log.hpp"
 #include "Module.hpp"
 
 /* ************************************************************************ */
@@ -153,63 +152,6 @@ std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std:
 {
     assert(m_createModule);
     return std::unique_ptr<Module>{m_createModule(simulation, name.c_str())};
-}
-
-/* ************************************************************************ */
-
-Library* Library::load(const std::string& name)
-{
-    // FIXME: must be deleted after simulation
-    static std::map<std::string, std::unique_ptr<Library>> s_cache;
-
-    // Try to find library in cache
-    auto it = s_cache.find(name);
-
-    // Not found
-    if (it == s_cache.end())
-    {
-        // Insert into cache
-        auto ptr = s_cache.emplace(std::make_pair(
-            name,
-            std::unique_ptr<Library>{new Library(name)}
-        ));
-        it = std::get<0>(ptr);
-    }
-
-    // Return pointer
-    return std::get<1>(*it).get();
-}
-
-/* ************************************************************************ */
-
-std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std::string& library, const std::string& name)
-{
-    // Load library
-    Library* lib = load(library);
-    assert(lib);
-
-    // Unable to load library
-    if (!lib->isLoaded())
-    {
-        Log::warning("Unable to load module: ", library, ".", name, "(", lib->getError(), ")");
-        return nullptr;
-    }
-
-    // Create module
-    return lib->createModule(simulation, name);
-}
-
-/* ************************************************************************ */
-
-std::tuple<std::string, std::string> Library::splitPath(const std::string& path)
-{
-    // Find dot separator
-    auto pos = path.find('.');
-
-    if (pos == std::string::npos)
-        return std::make_tuple(path, std::string{});
-    else
-        return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
 }
 
 /* ************************************************************************ */

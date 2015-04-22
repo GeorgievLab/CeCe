@@ -8,6 +8,7 @@
 #include <atomic>
 #include <vector>
 #include <cassert>
+#include <map>
 
 // Simulator
 #include "core/Units.hpp"
@@ -24,6 +25,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulation;
+class Library;
 
 /* ************************************************************************ */
 
@@ -148,6 +150,18 @@ public:
 #endif
 
 
+    /**
+     * @brief Load library into cache and return pointer.
+     *
+     * In case the library was loaded before, it't not loaded again.
+     *
+     * @param name
+     *
+     * @return
+     */
+    Library* loadLibrary(const std::string& name);
+
+
 // Data Members
 private:
 
@@ -156,6 +170,9 @@ private:
 
     /// Current simulation
     std::unique_ptr<Simulation> m_simulation;
+
+    /// Cache for loaded libraries.
+    std::map<std::string, std::unique_ptr<Library>> m_libraries;
 
 };
 

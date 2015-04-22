@@ -44,6 +44,11 @@ add_library(${PROJECT_NAME} SHARED
 #)
 
 if (USE_BUILDIN_PHYSICS)
+    # Add dependency
+    add_dependencies(${PROJECT_NAME}
+        Box2D
+    )
+
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         Box2D

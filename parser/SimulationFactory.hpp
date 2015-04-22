@@ -31,7 +31,7 @@ public:
      *
      * @param filename
      */
-    std::unique_ptr<simulator::Simulation> fromFile(const std::string& filename) const override;
+    std::unique_ptr<simulator::Simulation> fromFile(simulator::Simulator& simulator, const std::string& filename) const override;
 
 
     /**
@@ -39,7 +39,7 @@ public:
      *
      * @param source
      */
-    std::unique_ptr<simulator::Simulation> fromSource(const std::string& source) const override;
+    std::unique_ptr<simulator::Simulation> fromSource(simulator::Simulator& simulator, const std::string& source) const override;
 
 };
 

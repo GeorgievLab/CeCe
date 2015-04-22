@@ -31,6 +31,10 @@ namespace simulator {
 
 /* ************************************************************************ */
 
+class Simulator;
+
+/* ************************************************************************ */
+
 /**
  * @brief Type for step number.
  */
@@ -62,8 +66,10 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param simulator
      */
-    Simulation() noexcept;
+    explicit Simulation(Simulator& simulator) noexcept;
 
 
     /**
@@ -74,6 +80,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns owning simulator.
+     *
+     * @return
+     */
+    Simulator& getSimulator() const noexcept
+    {
+        return m_simulator;
+    }
 
 
     /**
@@ -263,20 +280,7 @@ public:
      *
      * @return A pointer to created module.
      */
-    Module* useModule(const std::string& path)
-    {
-        // Module exists, return the existing one
-        if (hasModule(path))
-            return getModule(path);
-
-        // Load module
-        auto module = Library::createModule(this, Library::splitPath(path));
-
-        if (module)
-            return addModule(path, std::move(module));
-
-        return nullptr;
-    }
+    Module* useModule(const std::string& path);
 
 
     /**
@@ -399,6 +403,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Owning simulator
+    Simulator& m_simulator;
 
     /// Number of simulation steps.
     StepNumber m_stepNumber = 0;

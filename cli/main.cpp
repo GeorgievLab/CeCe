@@ -128,7 +128,7 @@ int main(int argc, char** argv)
         parser::SimulationFactory simFactory;
 
         // Create world
-        g_sim.setSimulation(simFactory.fromFile(argv[1]));
+        g_sim.setSimulation(simFactory.fromFile(g_sim, argv[1]));
 
         // Get simulation
         auto simulation = g_sim.getSimulation();
