@@ -9,6 +9,7 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include <fstream>
 #ifdef ENABLE_RENDER
 #include <chrono>
 #endif
@@ -18,6 +19,7 @@
 #endif
 
 // Simulator
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
@@ -122,8 +124,12 @@ int main(int argc, char** argv)
     g_context.init();
 #endif
 
+    std::ofstream time_file("time.csv");
+
     try
     {
+        TimeMeasurement::setOutput(&time_file);
+
         // Create javascript world factory
         parser::SimulationFactory simFactory;
 

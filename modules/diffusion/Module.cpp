@@ -9,6 +9,7 @@
 // Simulator
 #include "core/Matrix.hpp"
 #include "core/constants.hpp"
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -27,6 +28,8 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    TimeMeasurement _{"diffusion.update"};
+
     // Size of mapping matrix
     constexpr unsigned OFFSET = 1;
     constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;

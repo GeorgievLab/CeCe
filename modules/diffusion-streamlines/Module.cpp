@@ -11,6 +11,7 @@
 
 // Simulator
 #include "core/Matrix.hpp"
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -29,6 +30,8 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    TimeMeasurement _{"diffusion-streamlines.update"};
+
     assert(m_streamlines);
     assert(m_diffusion);
 

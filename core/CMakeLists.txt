@@ -24,6 +24,8 @@ add_library(${PROJECT_NAME} OBJECT
     AlignedAllocator.cpp
     Log.hpp
     Log.cpp
+    TimeMeasurement.hpp
+    TimeMeasurement.cpp
 )
 
 # ######################################################################### #
