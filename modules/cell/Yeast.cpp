@@ -175,17 +175,7 @@ void Yeast::budRelease()
 #ifdef ENABLE_RENDER
 void Yeast::draw(render::Context& context)
 {
-    // TODO: Better calculation
-    float red = 1;
-    float green = 1;
-    float blue = 1;
-
-    // Yeast position
-    auto pos = getPosition();
-    const auto radius = getShape().m_radius;
-
-    // Draw yeast
-    getRenderObject().draw(pos, radius, {red, green, blue, 0.5f});
+    Cell::draw(context);
 }
 #endif
 

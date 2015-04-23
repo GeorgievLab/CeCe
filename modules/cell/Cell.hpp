@@ -12,7 +12,7 @@
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
-#include "render/Circle.hpp"
+#include "DrawableCell.hpp"
 #endif
 
 #ifdef ENABLE_PHYSICS
@@ -108,7 +108,7 @@ public:
      *
      * @return
      */
-    render::Circle& getRenderObject() noexcept
+    DrawableCell& getRenderObject() noexcept
     {
         return m_renderObject;
     }
@@ -121,7 +121,7 @@ public:
      *
      * @return
      */
-    const render::Circle& getRenderObject() const noexcept
+    const DrawableCell& getRenderObject() const noexcept
     {
         return m_renderObject;
     }
@@ -254,7 +254,7 @@ private:
     FluorescentProteinCount m_yfp = 0;
 
 #ifdef ENABLE_RENDER
-    render::Circle m_renderObject;
+    DrawableCell m_renderObject;
 #endif
 
 #ifdef ENABLE_PHYSICS

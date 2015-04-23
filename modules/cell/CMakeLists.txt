@@ -16,6 +16,8 @@ set(SRCS
     Yeast.cpp
     Generator.hpp
     Generator.cpp
+    DrawableCell.hpp
+    DrawableCell.cpp
 )
 
 # Create library

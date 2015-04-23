@@ -65,6 +65,34 @@ using Duration = float;
 /* ************************************************************************ */
 
 /**
+ * @brief Convert degrees to radians.
+ *
+ * @param value
+ *
+ * @return
+ */
+constexpr float deg2rad(float value) noexcept
+{
+    return value * 0.01745329252;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Convert radians to degrees.
+ *
+ * @param value
+ *
+ * @return
+ */
+constexpr float rad2deg(float value) noexcept
+{
+    return value * 57.2957795;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Micrometer value.
  *
  * @param value
@@ -120,6 +148,26 @@ constexpr Length m(float value) noexcept
 constexpr Volume um3(float value) noexcept
 {
     return Volume(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Radian constructor.
+ */
+constexpr Angle rad(float value)
+{
+    return Angle(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Degree constructor.
+ */
+constexpr Angle deg(float value)
+{
+    return Angle(deg2rad(value));
 }
 
 /* ************************************************************************ */
@@ -199,7 +247,7 @@ inline Volume operator"" _um3(unsigned long long int value)
  */
 inline Angle operator"" _rad(long double value)
 {
-    return Angle(value);
+    return rad(value);
 }
 
 /* ************************************************************************ */
@@ -209,7 +257,7 @@ inline Angle operator"" _rad(long double value)
  */
 inline Angle operator"" _rad(unsigned long long int value)
 {
-    return Angle(value);
+    return rad(value);
 }
 
 /* ************************************************************************ */
@@ -219,7 +267,7 @@ inline Angle operator"" _rad(unsigned long long int value)
  */
 inline Angle operator"" _deg(long double value)
 {
-    return Angle(value * 0.01745329252);
+    return deg(value);
 }
 
 /* ************************************************************************ */
@@ -229,7 +277,7 @@ inline Angle operator"" _deg(long double value)
  */
 inline Angle operator"" _deg(unsigned long long int value)
 {
-    return Angle(value * 0.01745329252);
+    return deg(value);
 }
 
 /* ************************************************************************ */

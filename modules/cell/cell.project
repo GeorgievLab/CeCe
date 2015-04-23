@@ -21,12 +21,14 @@
     <File Name="Yeast.cpp"/>
     <File Name="Generator.cpp"/>
     <File Name="Library.cpp"/>
+    <File Name="DrawableCell.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Cell.hpp"/>
     <File Name="Yeast.hpp"/>
     <File Name="Generator.hpp"/>
     <File Name="Library.hpp"/>
+    <File Name="DrawableCell.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
