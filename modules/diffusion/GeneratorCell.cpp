@@ -6,6 +6,7 @@
 #include <cassert>
 
 // Simulator
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 
 // Module
@@ -23,6 +24,10 @@ namespace diffusion {
 
 void GeneratorCell::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    auto _ = measure_time("diffusion.generator-cell", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+        out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+    });
+
     constexpr float SOURCE_STRENGTH = 100.f;
 
     assert(m_diffusionModule);

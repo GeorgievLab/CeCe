@@ -122,7 +122,7 @@ private:
  * @return
  */
 template<typename... Args>
-int measure_time(Args&&... args) noexcept
+inline int measure_time(Args&&... args) noexcept
 {
     return 0;
 }
@@ -140,7 +140,7 @@ int measure_time(Args&&... args) noexcept
  * @return
  */
 template<typename Fn>
-TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) noexcept
+inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) noexcept
 {
     return TimeMeasurementBase<Fn>{std::move(name), fn};
 }
@@ -156,7 +156,7 @@ TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) noexcept
  *
  * @return
  */
-TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) noexcept
+inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) noexcept
 {
     return TimeMeasurementBase<DefaultMeasurementOutput>{std::move(name), DefaultMeasurementOutput{}};
 }

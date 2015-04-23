@@ -6,6 +6,7 @@
 #include <random>
 
 // Simulator
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 
 // Module
@@ -21,6 +22,10 @@ namespace cell {
 
 void Generator::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    auto _ = measure_time("cell.generator", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+        out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+    });
+
     const float half = simulation.getWorldSize().getHeight() / 2.f;
 
     std::random_device rd;

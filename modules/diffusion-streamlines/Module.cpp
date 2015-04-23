@@ -30,7 +30,7 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    auto _ = measure_time("diffusion-streamlines.update", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+    auto _ = measure_time("diffusion-streamlines", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
         out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     });
 
