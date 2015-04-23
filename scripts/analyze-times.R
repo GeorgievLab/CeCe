@@ -36,10 +36,12 @@ for (name in names(data))
          main = "Simulator time measurement", 
          xlab = "Step", 
          ylab = expression(paste("Time [", mu, "s]")), 
-         col = color)
+         col = color,
+         type = "l")
   } else {
     points(values$step, values$time, 
-           col = color)
+           col = color,
+           type = "l")
   }
   
   first = FALSE
