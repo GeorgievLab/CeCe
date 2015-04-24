@@ -40,11 +40,9 @@ public:
     /**
      * @brief Render at given position with given rotation.
      *
-     * @param pos      Position where to render.
-     * @param radius   Cell radius.
-     * @param rotation Cell rotation.
+     * @param context
      */
-    void draw(render::Context& context, const PositionVector& pos, units::Length radius, units::Angle rotation) noexcept;
+    void draw(render::Context& context) noexcept;
 
 
 // Private Data Members

@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 
         // Load modules
         //simulation->useModule("diffusion-streamlines");
-        simulation->useModule("streamlines");
+        //simulation->useModule("streamlines");
         //simulation->useModule("diffusion.generator");
         //simulation->useModule("diffusion.generator-cell");
         simulation->useModule("cell.generator");

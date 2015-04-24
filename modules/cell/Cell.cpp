@@ -67,7 +67,15 @@ void Cell::draw(render::Context& context)
     const auto pos = getPosition();
     const auto radius = calcSphereRadius(getVolume());
 
-    m_renderObject.draw(context, pos, radius, getBody()->GetAngle());
+    // Transform
+    context.matrixPush();
+    context.matrixTranslate(pos);
+    context.matrixScale(radius);
+    context.matrixRotate(getBody()->GetAngle());
+
+    m_renderObject.draw(context);
+
+    context.matrixPop();
 }
 #endif
 

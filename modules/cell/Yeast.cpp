@@ -86,7 +86,7 @@ void Yeast::budCreate()
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
     m_bud.reset(new Bud{});
-    m_bud->rotation = 2 * constants::PI * dist(eng);
+    //m_bud->rotation = 2 * constants::PI * dist(eng);
 
     m_shapeForceUpdate = true;
 }
@@ -139,7 +139,15 @@ void Yeast::draw(render::Context& context)
     auto pos = getPosition();
     auto radius = calcSphereRadius(getVolume());
 
-    m_renderObject.draw(context, pos, radius, getBody()->GetAngle());
+    // Transform
+    context.matrixPush();
+    context.matrixTranslate(pos);
+    context.matrixRotate(getBody()->GetAngle());
+
+    context.matrixPush();
+    context.matrixScale(radius);
+    m_renderObject.draw(context);
+    context.matrixPop();
 
     if (m_bud)
     {
@@ -147,14 +155,16 @@ void Yeast::draw(render::Context& context)
         const auto budRadius = calcSphereRadius(m_bud->volume);
         const auto distance = radius + budRadius;
 
-        // Get current position
-        const auto budPos = getPosition() + Vector<float>(
-            distance * std::cos(angle),
-            distance * std::sin(angle)
-        );
+        context.matrixPush();
+        context.matrixTranslate({distance, 0});
+        context.matrixRotate(angle);
+        context.matrixScale(budRadius);
 
-        m_renderObject.draw(context, budPos, budRadius, getBody()->GetAngle());
+        m_renderObject.draw(context);
+        context.matrixPop();
     }
+
+    context.matrixPop();
 }
 #endif
 

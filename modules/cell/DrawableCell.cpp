@@ -61,17 +61,12 @@ void DrawableCell::init(render::Context& context)
 
 /* ************************************************************************ */
 
-void DrawableCell::draw(render::Context& context, const PositionVector& pos, units::Length radius, units::Angle rotation) noexcept
+void DrawableCell::draw(render::Context& context) noexcept
 {
     assert(m_buffer.getId() != 0);
 
     // Draw color
     gl(glColor4f(0.5, 0.5, 0.5, 0.5));
-
-    gl(glPushMatrix());
-    gl(glTranslatef(pos.getX(), pos.getY(), 0));
-    gl(glScalef(radius, radius, radius));
-    gl(glRotatef(units::rad2deg(rotation), 0, 0, 1));
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
@@ -91,8 +86,6 @@ void DrawableCell::draw(render::Context& context, const PositionVector& pos, uni
     // Disable states
     gl(glDisableClientState(GL_VERTEX_ARRAY));
     gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
-
-    gl(glPopMatrix());
 }
 
 /* ************************************************************************ */

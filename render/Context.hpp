@@ -11,7 +11,8 @@
 #include <cstdint>
 
 // Simulator
-#include "core/Vector.hpp"
+#include "core/Units.hpp"
+#include "core/VectorUnits.hpp"
 #include "render/Camera.hpp"
 #include "render/Position.hpp"
 #include "render/Color.hpp"
@@ -41,7 +42,6 @@ public:
     {
         return m_is_init;
     }
-
 
 
     /**
@@ -114,6 +114,59 @@ public:
      * @param color Color.
      */
     void drawLine(const Position& pos, const Vector<float>& dir, const Color& color) noexcept;
+
+
+    /**
+     * @brief Push transformation matrix.
+     */
+    void matrixPush() noexcept;
+
+
+    /**
+     * @brief Pop transformation matrix.
+     */
+    void matrixPop() noexcept;
+
+
+    /**
+     * @brief Set transformation matrix to identity.
+     */
+    void matrixIdentity() noexcept;
+
+
+    /**
+     * @brief Translate transformation matrix.
+     *
+     * @param pos Translation vector.
+     */
+    void matrixTranslate(const PositionVector& pos) noexcept;
+
+
+    /**
+     * @brief Scale transformation matrix.
+     *
+     * @param scale Scale vector.
+     */
+    void matrixScale(const Vector<float>& scale) noexcept;
+
+
+    /**
+     * @brief Scale transformation matrix.
+     *
+     * @param scale Scale number.
+     */
+    void matrixScale(float scale) noexcept
+    {
+        return matrixScale({scale, scale});
+    }
+
+
+    /**
+     * @brief Rotate transformation matrix.
+     *
+     * @param angle Angle of the rotation.
+     */
+    void matrixRotate(units::Angle angle) noexcept;
 
 
 // Private Data Members

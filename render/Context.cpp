@@ -18,11 +18,11 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/freeglut.h>
 
 // Simulator
 #include "render/Circle.hpp"
 #include "render/Grid.hpp"
+#include "render/errors.hpp"
 
 /* ************************************************************************ */
 
@@ -183,6 +183,48 @@ void Context::drawLine(const Position& pos, const Vector<float>& dir, const Colo
     glEnd();
 
     glPopMatrix();
+}
+
+/* ************************************************************************ */
+
+void Context::matrixPush() noexcept
+{
+    gl(glPushMatrix());
+}
+
+/* ************************************************************************ */
+
+void Context::matrixPop() noexcept
+{
+    gl(glPopMatrix());
+}
+
+/* ************************************************************************ */
+
+void Context::matrixIdentity() noexcept
+{
+    gl(glLoadIdentity());
+}
+
+/* ************************************************************************ */
+
+void Context::matrixTranslate(const PositionVector& pos) noexcept
+{
+    gl(glTranslatef(pos.getX(), pos.getY(), 0));
+}
+
+/* ************************************************************************ */
+
+void Context::matrixScale(const Vector<float>& scale) noexcept
+{
+    gl(glScalef(scale.getX(), scale.getY(), 1));
+}
+
+/* ************************************************************************ */
+
+void Context::matrixRotate(units::Angle angle) noexcept
+{
+    gl(glRotatef(units::rad2deg(angle), 0.f, 0.f, 1.f));
 }
 
 /* ************************************************************************ */
