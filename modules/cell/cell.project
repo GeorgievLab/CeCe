@@ -22,6 +22,7 @@
     <File Name="Generator.cpp"/>
     <File Name="Library.cpp"/>
     <File Name="DrawableCell.cpp"/>
+    <File Name="CellBase.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Cell.hpp"/>
@@ -29,6 +30,7 @@
     <File Name="Generator.hpp"/>
     <File Name="Library.hpp"/>
     <File Name="DrawableCell.hpp"/>
+    <File Name="CellBase.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

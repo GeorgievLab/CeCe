@@ -66,7 +66,7 @@ void DrawableCell::draw(render::Context& context, const PositionVector& pos, uni
     assert(m_buffer.getId() != 0);
 
     // Draw color
-    gl(glColor4f(1, 1, 1, 1));
+    gl(glColor4f(0.5, 0.5, 0.5, 0.5));
 
     gl(glPushMatrix());
     gl(glTranslatef(pos.getX(), pos.getY(), 0));

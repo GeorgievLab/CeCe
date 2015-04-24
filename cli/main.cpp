@@ -34,14 +34,23 @@
 #include "modules/diffusion-streamlines/Module.hpp"
 #include "modules/cell/Generator.hpp"
 #include "modules/cell/Yeast.hpp"
+#include "modules/cell/Cell.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
 #endif
 
+#if ENABLE_PHYSICS_DEBUG
+#include "Render.hpp"
+#endif
+
 /* ************************************************************************ */
 
 std::atomic_bool g_terminated{false};
+
+/* ************************************************************************ */
+
+bool g_paused{false};
 
 /* ************************************************************************ */
 
@@ -139,15 +148,21 @@ int main(int argc, char** argv)
         // Get simulation
         auto simulation = g_sim.getSimulation();
 
+#if ENABLE_PHYSICS_DEBUG
+        DebugDraw debugDraw;
+        debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
+        simulation->getWorld().SetDebugDraw(&debugDraw);
+#endif
+
         // Load modules
-        simulation->useModule("diffusion-streamlines");
-        //simulation->useModule("streamlines");
-        simulation->useModule("diffusion.generator");
-        simulation->useModule("diffusion.generator-cell");
+        //simulation->useModule("diffusion-streamlines");
+        simulation->useModule("streamlines");
+        //simulation->useModule("diffusion.generator");
+        //simulation->useModule("diffusion.generator-cell");
         simulation->useModule("cell.generator");
 
         // Create main cell
-        g_mainCell = simulation->createObject<module::cell::Cell>();
+        g_mainCell = simulation->createObject<module::cell::Cell>(simulator::Object::Type::Static);
         g_mainCell->setVolume(units::um3(1540));
 
         // Create modules
@@ -194,6 +209,9 @@ int main(int argc, char** argv)
 
         // Idle function: update scene
         glutIdleFunc([]() {
+            if (g_paused)
+                return;
+
             auto start = clock_type::now();
             auto diff = start - g_start;
             float dt = std::chrono::duration<float, std::chrono::seconds::period>(diff).count();
@@ -227,22 +245,24 @@ int main(int argc, char** argv)
             glutPostRedisplay();
         });
 
-        glutKeyboardFunc([](unsigned char key, int x, int y) {
+        glutSpecialFunc([](int key, int x, int y) {
             if (g_mainCell)
             {
                 auto pos = g_mainCell->getPosition();
                 switch (key)
                 {
-                case 'a': case 'A': pos.getX() -= 0.5f; break;
-                case 'd': case 'D': pos.getX() += 0.5f; break;
-                case 'w': case 'W': pos.getY() += 0.5f; break;
-                case 's': case 'S': pos.getY() -= 0.5f; break;
+                case GLUT_KEY_LEFT: pos.getX() -= 0.5f; break;
+                case GLUT_KEY_RIGHT: pos.getX() += 0.5f; break;
+                case GLUT_KEY_UP: pos.getY() += 0.5f; break;
+                case GLUT_KEY_DOWN: pos.getY() -= 0.5f; break;
                 }
 
                 g_mainCell->setPosition(pos);
                 g_streamlinesModule->markUpdate();
             }
+        });
 
+        glutKeyboardFunc([](unsigned char key, int x, int y) {
             if (g_diffusionModule)
             {
                 switch (key)
@@ -251,6 +271,12 @@ int main(int argc, char** argv)
                     g_diffusionModule->getDrawable().setInterpolate(!g_diffusionModule->getDrawable().isInterpolate());
                     break;
                 }
+            }
+
+            switch (key)
+            {
+            case 'p': case 'P': g_paused = !g_paused; break;
+            case 's': case 'S': if (g_paused) { g_sim.update(0.01f); glutPostRedisplay(); } break;
             }
         });
 

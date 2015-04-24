@@ -10,6 +10,7 @@
 
 // Simulator
 #include "core/Log.hpp"
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/Simulator.hpp"
 
@@ -110,19 +111,35 @@ void Simulation::update(units::Duration dt) noexcept
     m_stepNumber++;
 
     // Update modules
-    for (auto& module : getModules())
-        module.second->update(dt, *this);
-
-    // Update simulations objects
-    for (std::size_t i = 0; i < getObjects().size(); ++i)
     {
-        auto& obj = getObjects()[i];
-        assert(obj);
-        obj->update(dt);
+        auto _ = measure_time("sim.modules", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+        });
+
+        for (auto& module : getModules())
+            module.second->update(dt, *this);
+    }
+
+    {
+        auto _ = measure_time("sim.objects", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+        });
+
+        // Update simulations objects
+        for (std::size_t i = 0; i < getObjects().size(); ++i)
+        {
+            auto& obj = getObjects()[i];
+            assert(obj);
+            obj->update(dt);
+        }
     }
 
     // Remove objects that are outside world.
     {
+        auto _ = measure_time("sim.delete", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+        });
+
         const auto hh = getWorldSize() * 0.5f;
 
         // Kill objects that are outside world
@@ -150,7 +167,13 @@ void Simulation::update(units::Duration dt) noexcept
     }
 
 #ifdef ENABLE_PHYSICS
-    m_world.Step(dt, 5, 10);
+    {
+        auto _ = measure_time("sim.physics", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+        });
+
+        m_world.Step(dt, 1, 1);
+    }
 #endif
 }
 
@@ -171,6 +194,10 @@ void Simulation::drawInit(render::Context& context)
 void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(getWorldSize().getWidth(), getWorldSize().getHeight());
+
+#if ENABLE_PHYSICS_DEBUG
+    m_world.DrawDebugData();
+#endif
 
     // Render modules
     for (auto& module : getModules())
@@ -216,7 +243,6 @@ void Simulation::draw(render::Context& context)
         obj->draw(context);
     }
 }
-
 #endif
 
 /* ************************************************************************ */

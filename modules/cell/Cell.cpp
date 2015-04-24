@@ -12,13 +12,14 @@ namespace cell {
 /* ************************************************************************ */
 
 Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
-    : simulator::Object(simulation, type)
+    : CellBase(simulation, type)
 {
 #if ENABLE_PHYSICS
-    m_shape.m_radius = calcSphereRadius(getVolume());
+    b2CircleShape shape;
+    shape.m_radius = getRadius();
 
     b2FixtureDef fixtureDef;
-    fixtureDef.shape = &m_shape;
+    fixtureDef.shape = &shape;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
     getBody()->CreateFixture(&fixtureDef);
@@ -29,11 +30,12 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noex
 
 void Cell::update(units::Duration dt)
 {
-    Object::update(dt);
+    CellBase::update(dt);
 
 #if ENABLE_PHYSICS
-    // Calculate cell radius
-    m_shape.m_radius = calcSphereRadius(getVolume());
+    // Update cell shape
+    b2CircleShape shape;
+    shape.m_radius = getRadius();
 
     // Update fixture
     b2Fixture* fixture = getBody()->GetFixtureList();
@@ -41,7 +43,7 @@ void Cell::update(units::Duration dt)
     getBody()->DestroyFixture(fixture);
 
     b2FixtureDef fixtureDef;
-    fixtureDef.shape = &m_shape;
+    fixtureDef.shape = &shape;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
     getBody()->CreateFixture(&fixtureDef);

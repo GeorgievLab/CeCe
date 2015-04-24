@@ -3,13 +3,16 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <memory>
+
 #ifdef ENABLE_RENDER
-// Render
 #include "render/Context.hpp"
+#include "DrawableCell.hpp"
 #endif
 
 // Module
-#include "Cell.hpp"
+#include "CellBase.hpp"
 
 /* ************************************************************************ */
 
@@ -21,20 +24,43 @@ namespace cell {
 /**
  * @brief Yeast representation.
  */
-class Yeast : public Cell
+class Yeast : public CellBase
 {
+
+// Public Structures
+public:
+
+
+    /**
+     * @brief Yeast bud.
+     */
+    struct Bud
+    {
+        /// Angle.
+        units::Angle rotation = units::deg(0);
+
+        /// Bud volume.
+        units::Volume volume = units::um3(1);
+
+#if ENABLE_PHYSICS
+        /// Bud shape.
+        b2CircleShape shape;
+#endif
+    };
+
 
 // Public Ctors & Dtors
 public:
 
 
     /**
-     * @brief Default constructor.
+     * @brief Constructor.
      *
      * @param simulation
-     * @param parent     Parent yeast.
+     * @param type       Cell type.
      */
-    explicit Yeast(simulator::Simulation& simulation, Yeast* parent = nullptr) noexcept;
+    explicit Yeast(simulator::Simulation& simulation,
+                   simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
 
 
     /**
@@ -58,15 +84,30 @@ public:
     }
 
 
+#ifdef ENABLE_RENDER
     /**
-     * @brief Returns if yeast is bud.
+     * @brief Returns cell render object.
      *
      * @return
      */
-    bool isBud() const noexcept
+    DrawableCell& getRenderObject() noexcept
     {
-        return m_parent != nullptr;
+        return m_renderObject;
     }
+#endif
+
+
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Returns cell render object.
+     *
+     * @return
+     */
+    const DrawableCell& getRenderObject() const noexcept
+    {
+        return m_renderObject;
+    }
+#endif
 
 
 // Public Operations
@@ -93,27 +134,54 @@ public:
     void budRelease();
 
 
-#if ENABLE_RENDER
+#ifdef ENABLE_RENDER
     /**
-     * @brief Render cell.
+     * @brief Initialize object for rendering.
      *
      * @param context
      */
-    virtual void draw(render::Context& context);
+    void drawInit(render::Context& context) override;
 #endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Render yeast.
+     *
+     * @param context
+     */
+    virtual void draw(render::Context& context) override;
+#endif
+
+
+// Protected Operations
+protected:
+
+
+#if ENABLE_PHYSICS
+    /**
+     * @brief Update yeast physics shape.
+     */
+    void updateShape();
+#endif
+
 
 // Private Data Members
 private:
 
-    /// Parent yeast.
-    Yeast* m_parent;
-
     /// Bud cell.
-    Yeast* m_bud = nullptr;
+    std::unique_ptr<Bud> m_bud;
+
+#if ENABLE_RENDER
+    DrawableCell m_renderObject;
+#endif
 
 #if ENABLE_PHYSICS
-    // Bud joint
-    b2DistanceJoint* m_joint = nullptr;
+    /// Main cell shape.
+    b2CircleShape m_shape;
+
+    /// If shape must be updated.
+    bool m_shapeForceUpdate = false;
 #endif
 };
 

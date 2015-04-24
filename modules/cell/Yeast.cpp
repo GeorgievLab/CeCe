@@ -23,55 +23,27 @@ static std::random_device g_rd;
 
 /* ************************************************************************ */
 
-Yeast::Yeast(simulator::Simulation& simulation, Yeast* parent) noexcept
-    : Cell(simulation, simulator::Object::Type::Dynamic)
-    , m_parent(parent)
+Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
+    : CellBase(simulation, type)
 {
-    if (m_parent)
-    {
-        // Cell is bud
-        setVolume(units::um3(1));
-    }
-    else
-    {
-        setVolume(units::um3(37));
-    }
+    setVolume(units::um3(37));
 }
 
 /* ************************************************************************ */
 
 Yeast::~Yeast()
 {
-#if ENABLE_PHYSICS
-    // Joint must be deleted if one of the cells get deleted
-    if (m_parent)
-    {
-        // Object is bud
-        assert(m_parent->m_joint);
-        getSimulation().getWorld().DestroyJoint(m_parent->m_joint);
-        m_parent->m_joint = nullptr;
-        m_parent->m_bud = nullptr;
-    }
-    else if (m_joint)
-    {
-        // Object is parent
-        getSimulation().getWorld().DestroyJoint(m_joint);
-        m_joint = nullptr;
-
-        assert(m_bud);
-        m_bud->m_parent = nullptr;
-    }
-#endif
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
 void Yeast::update(units::Duration dt)
 {
-    const float RATIO = 1.f;
+    const float RATIO = 5.f;
 
     std::mt19937 eng(g_rd());
-    std::bernoulli_distribution dist(0.2f);
+    std::bernoulli_distribution dist(0.1f * dt);
     std::uniform_real_distribution<float> add_coeff(0.1f, 4.f);
 
     // Volume increase
@@ -79,39 +51,12 @@ void Yeast::update(units::Duration dt)
 
     if (hasBud())
     {
-        m_bud->setVolume(m_bud->getVolume() + volumeAdd);
+        m_bud->volume += volumeAdd;
 
-        if (m_bud->getVolume() >= units::um3(35))
+        if (m_bud->volume >= units::um3(35))
         {
             budRelease();
         }
-#if ENABLE_PHYSICS
-        else
-        {
-            // Calculate cell radius
-            m_bud->getShape().m_radius = calcSphereRadius(m_bud->getVolume());
-
-            // Update fixture
-            b2Fixture* fixture = m_bud->getBody()->GetFixtureList();
-            assert(fixture);
-            m_bud->getBody()->DestroyFixture(fixture);
-
-            b2FixtureDef fixtureDef;
-            fixtureDef.shape = &m_bud->getShape();
-            fixtureDef.density = 1.0f;
-            fixtureDef.friction = 0.3f;
-            m_bud->getBody()->CreateFixture(&fixtureDef);
-
-            // Update joint
-            b2DistanceJointDef jointDef;
-            jointDef.Initialize(getBody(), m_bud->getBody(), getBody()->GetWorldCenter(), m_bud->getBody()->GetWorldCenter());
-            jointDef.collideConnected = true;
-            jointDef.length = (1.01f * getShape().m_radius) + m_bud->getShape().m_radius;
-
-            getSimulation().getWorld().DestroyJoint(m_joint);
-            m_joint = static_cast<b2DistanceJoint*>(getSimulation().getWorld().CreateJoint(&jointDef));
-        }
-#endif
     }
     else if (getVolume() >= units::um3(42) && dist(eng))
     {
@@ -122,7 +67,12 @@ void Yeast::update(units::Duration dt)
         setVolume(getVolume() + volumeAdd);
     }
 
-    Cell::update(dt);
+#if ENABLE_PHYSICS
+    // Update cell shape
+    updateShape();
+#endif
+
+    CellBase::update(dt);
 }
 
 /* ************************************************************************ */
@@ -131,26 +81,14 @@ void Yeast::budCreate()
 {
     assert(!hasBud());
 
-    std::mt19937 eng(g_rd());
+    std::random_device rd;
+    std::default_random_engine eng(g_rd());
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
-    const float theta = 2 * constants::PI * dist(eng);
+    m_bud.reset(new Bud{});
+    m_bud->rotation = 2 * constants::PI * dist(eng);
 
-    const auto radius = calcSphereRadius(getVolume());
-    auto pos = getPosition();
-    pos.getX() += (radius * std::sin(theta));
-    pos.getY() += (radius * std::cos(theta));
-
-    // Create bud
-    m_bud = getSimulation().createObject<Yeast>(this);
-    m_bud->setPosition(pos);
-
-#if ENABLE_PHYSICS
-    b2DistanceJointDef jointDef;
-    jointDef.Initialize(getBody(), m_bud->getBody(), getBody()->GetWorldCenter(), m_bud->getBody()->GetWorldCenter());
-    jointDef.length = radius;
-    m_joint = static_cast<b2DistanceJoint*>(getSimulation().getWorld().CreateJoint(&jointDef));
-#endif
+    m_shapeForceUpdate = true;
 }
 
 /* ************************************************************************ */
@@ -159,23 +97,118 @@ void Yeast::budRelease()
 {
     assert(hasBud());
 
-#ifdef ENABLE_PHYSICS
-    // Destroy joint
-    getSimulation().getWorld().DestroyJoint(m_joint);
-    m_joint = nullptr;
-#endif
+    // Calculate bud position
+    const auto angle = getBody()->GetAngle() + m_bud->rotation;
+    const auto distance = m_bud->shape.m_p.Length();
+
+    // Get current position
+    const auto pos = getPosition() + Vector<float>(
+        distance * std::cos(angle),
+        distance * std::sin(angle)
+    );
 
     // Release bud into the world
-    m_bud->m_parent = nullptr;
-    m_bud = nullptr;
+    auto bud = getSimulation().createObject<Yeast>();
+    bud->setVolume(m_bud->volume);
+    bud->setPosition(pos);
+    bud->setVelocity(getVelocity());
+
+    // TODO: When yeast is rotating and bud is released it should be throw
+    // away by some force.
+
+    // Release bud
+    m_bud.release();
+
+    m_shapeForceUpdate = true;
 }
+
+/* ************************************************************************ */
+
+#ifdef ENABLE_RENDER
+void Yeast::drawInit(render::Context& context)
+{
+    m_renderObject.init(context);
+}
+#endif
 
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
 void Yeast::draw(render::Context& context)
 {
-    Cell::draw(context);
+    auto pos = getPosition();
+    auto radius = calcSphereRadius(getVolume());
+
+    m_renderObject.draw(context, pos, radius, getBody()->GetAngle());
+
+    if (m_bud)
+    {
+        const auto angle = m_bud->rotation;
+        const auto budRadius = calcSphereRadius(m_bud->volume);
+        const auto distance = radius + budRadius;
+
+        // Get current position
+        const auto budPos = getPosition() + Vector<float>(
+            distance * std::cos(angle),
+            distance * std::sin(angle)
+        );
+
+        m_renderObject.draw(context, budPos, budRadius, getBody()->GetAngle());
+    }
+}
+#endif
+
+/* ************************************************************************ */
+
+#if ENABLE_PHYSICS
+void Yeast::updateShape()
+{
+    static constexpr float MIN_CHANGE = 0.2f;
+
+    // Calculate new radius
+    const units::Length newRadius = calcSphereRadius(getVolume());
+    const units::Length oldRadius = m_shape.m_radius;
+    const units::Length newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : 0;
+    const units::Length oldBudRadius = m_bud ? m_bud->shape.m_radius : 0;
+
+    const bool needs_update = m_shapeForceUpdate ||
+        ((newRadius - oldRadius) > MIN_CHANGE) ||
+        ((newBudRadius - oldBudRadius) > MIN_CHANGE)
+    ;
+
+    if (!needs_update)
+        return;
+
+    // Delete old fixtures
+    for (b2Fixture* fixture = getBody()->GetFixtureList();
+         fixture != nullptr;
+         fixture = fixture->GetNext())
+    {
+        getBody()->DestroyFixture(fixture);
+    }
+
+    // Update main yeast shape
+    {
+        m_shape.m_radius = newRadius;
+        getBody()->CreateFixture(&m_shape, 1.0f);
+    }
+
+    // Update bud shape
+    if (m_bud)
+    {
+        m_bud->shape.m_radius = newBudRadius;
+
+        // Distance between yeast and bud
+        const float distance = m_shape.m_radius + m_bud->shape.m_radius;
+
+        m_bud->shape.m_p = b2Vec2(
+            distance * std::sin(m_bud->rotation),
+            distance * std::cos(m_bud->rotation)
+        );
+        getBody()->CreateFixture(&m_bud->shape, 1.0f);
+    }
+
+    m_shapeForceUpdate = false;
 }
 #endif
 

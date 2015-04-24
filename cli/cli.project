@@ -36,6 +36,8 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="main.cpp"/>
+    <File Name="Render.cpp"/>
+    <File Name="Render.hpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

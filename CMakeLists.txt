@@ -16,6 +16,7 @@ option(NATIVE_BUILD "If sources should be build for current CPU -march=native" O
 option(USE_BUILDIN_PHYSICS "Enable build-in physics engine (Box2D)" On)
 option(MODULE_BUILD_STATIC "Build modules as static libraries" Off)
 option(ENABLE_MEASUREMENT "Enable or disable time measurement" Off)
+option(ENABLE_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
 
 # Default include directories
 include_directories(
@@ -72,6 +73,11 @@ if (USE_BUILDIN_PHYSICS)
     # Physics engine
     include_directories(Box2D)
     add_definitions(-DENABLE_PHYSICS=1)
+
+    if (ENABLE_PHYSICS_DEBUG)
+        message("-- Physics engine debugging enabled")
+        add_definitions(-DENABLE_PHYSICS_DEBUG=1)
+    endif ()
 endif ()
 
 if (ENABLE_MEASUREMENT)
