@@ -18,6 +18,8 @@ set(SRCS
     Generator.cpp
     DrawableCell.hpp
     DrawableCell.cpp
+    DrawableYeast.hpp
+    DrawableYeast.cpp
 )
 
 # Create library

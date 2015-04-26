@@ -277,6 +277,7 @@ int main(int argc, char** argv)
             {
             case 'p': case 'P': g_paused = !g_paused; break;
             case 's': case 'S': if (g_paused) { g_sim.update(0.01f); glutPostRedisplay(); } break;
+            case 'w': case 'W': g_context.setWireframe(!g_context.isWireframe()); break;
             }
         });
 

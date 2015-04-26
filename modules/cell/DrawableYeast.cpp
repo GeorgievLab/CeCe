@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "DrawableCell.hpp"
+#include "DrawableYeast.hpp"
 
 // C++
 #include <cmath>
@@ -33,24 +33,39 @@ static const char g_vertexShaderSrc[] =
 /* ************************************************************************ */
 
 static const char g_fragmentShaderSrc[] =
-#if 1
     "#version 120\n"
     "\n"
-    "uniform vec2 g_center = vec2(0.5, 0.5);\n"
-    "uniform float g_size = 0.49;\n"
+    "uniform bool g_hasBud = true;\n"
+    "uniform vec2 g_centerMain = vec2(0.5, 0.25);\n"
+    "uniform float g_sizeMain = 0.5;\n"
+    "uniform float g_sizeBud = 0.1;\n"
     "\n"
     "const vec4 g_color = vec4(0.5, 0.5, 0.5, 0.5);\n"
     "const vec4 g_borderColor = vec4(0, 0, 0, 1);\n"
     "const vec4 g_backgroundColor = vec4(0, 0, 0, 0);\n"
     "\n"
     "void main() {\n"
-    "    vec4 color = g_backgroundColor;\n"
+    "    vec2 centerBud = g_centerMain + vec2(0, (g_sizeBud + g_sizeMain) * 0.5);\n"
     "\n"
-    "    vec2 diff = gl_TexCoord[0].xy - g_center;\n"
-    "    float dist = distance(gl_TexCoord[0].xy, g_center);\n"
+    "    vec2 diffMain = gl_TexCoord[0].xy - g_centerMain;\n"
+    "    vec2 diffBud = gl_TexCoord[0].xy - centerBud;\n"
     "\n"
-    "    if (dist <= g_size) {\n"
-    "        if (dist <= g_size - 0.01)\n"
+    "    float a = 0.7;\n"
+    "    float b = 0.55;\n"
+    "\n"
+    "    vec2 ellipseMain = pow(diffMain, vec2(2)) / pow(vec2(a, a / 2), vec2(2));\n"
+    "    float distanceMain = ellipseMain.x + ellipseMain.y;\n"
+    "\n"
+    "    vec2 ellipseBud = pow(diffBud, vec2(2)) / pow(vec2(b, b / 2), vec2(2));\n"
+    "    float distanceBud = ellipseBud.x + ellipseBud.y;\n"
+    "\n"
+    "    if (distanceMain <= g_sizeMain) {\n"
+    "        if (distanceMain <= g_sizeMain - 0.01)\n"
+    "            gl_FragColor = g_color;\n"
+    "        else\n"
+    "            gl_FragColor = g_borderColor;\n"
+    "    } else if (g_hasBud && distanceBud <= g_sizeBud) {\n"
+    "        if (distanceBud <= g_sizeBud - 0.01)\n"
     "            gl_FragColor = g_color;\n"
     "        else\n"
     "            gl_FragColor = g_borderColor;\n"
@@ -58,56 +73,6 @@ static const char g_fragmentShaderSrc[] =
     "        gl_FragColor = g_backgroundColor;\n"
     "    }\n"
     "}\n"
-#else
-    "#version 120\n"
-    "\n"
-    "uniform vec2 membraneCenter = vec2(0.5, 0.5);\n"
-    "uniform vec2 nucleusCenter = vec2(0.55, 0.43);\n"
-    "uniform float membraneSize = 0.48;\n"
-    "uniform float nucleusSize = 0.2;\n"
-    "\n"
-    "const vec4 membraneColor = vec4(0.5, 0.5, 0.5, 0.5);\n"
-    "const vec4 nucleusColor = vec4(0.5, 0.5, 0.5, 0.5);\n"
-    "const vec4 backgroundColor = vec4(0, 0, 0, 0);\n"
-    "\n"
-    "float get_offset(float angle) {\n"
-    "    return\n"
-    "        0.3 * sin(angle * 2) +\n"
-    "        0.2 * cos(angle * 6) +\n"
-    "        0.5 * sin(angle * 3)\n"
-    "    ;\n"
-    "}\n"
-    "\n"
-    "float get_offset(vec2 pos) {\n"
-    "    return sin(pos.x);\n"
-    "}\n"
-    "\n"
-    "vec4 draw_circle(vec4 curColor, vec4 color, vec2 center, float size, float offsetCoeff, float angleCoeff, float base) {\n"
-    "    vec2 diff = gl_TexCoord[0].xy - center;\n"
-    "    float dist = distance(gl_TexCoord[0].xy, center);\n"
-    "    float angle = atan(diff.y, diff.x);\n"
-    "    float offset = offsetCoeff * get_offset(angle * angleCoeff);\n"
-    "    float sizeMax = size + offset;\n"
-    "\n"
-    "    if (dist <= sizeMax) {\n"
-    "        float alpha = smoothstep(sizeMax - 0.08, sizeMax, dist);\n"
-    "        curColor = mix(curColor, color, base + alpha * alpha);\n"
-    "    } else {\n"
-    "        float alpha = 1 - smoothstep(sizeMax, sizeMax + 0.01, dist);\n"
-    "        curColor = mix(curColor, color * (1.0 + base), alpha);\n"
-    "    }\n"
-    "\n"
-    "    return curColor;\n"
-    "}\n"
-    "\n"
-    "void main() {\n"
-    "    vec4 color = backgroundColor;\n"
-    "    color = draw_circle(color, membraneColor, membraneCenter, membraneSize, 0.008, 2, 0.5);\n"
-    "    color = draw_circle(color, nucleusColor, nucleusCenter, nucleusSize, 0.01, 1, 0.2);\n"
-    "\n"
-    "    gl_FragColor = color;\n"
-    "}\n"
-#endif
 ;
 
 /* ************************************************************************ */
@@ -120,7 +85,7 @@ struct Vertex
 
 /* ************************************************************************ */
 
-void DrawableCell::init(render::Context& context)
+void DrawableYeast::init(render::Context& context)
 {
     m_buffer.init();
 
@@ -128,14 +93,16 @@ void DrawableCell::init(render::Context& context)
     m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
     m_program.init(m_vertexShader, m_fragmentShader);
 
-    // Get size variable
-    m_uniformSize = m_program.getUniformId("g_size");
+    // Get variables
+    m_uniformHasBud = m_program.getUniformId("g_hasBud");
+    m_uniformSizeMain = m_program.getUniformId("g_sizeMain");
+    m_uniformSizeBud = m_program.getUniformId("g_sizeBud");
 
     const std::array<Vertex, 4> vertices = {{
-        { 0.5f,  0.5f, 1.0f, 1.0f},
+        { 0.5f,  1.5f, 1.0f, 1.0f},
         { 0.5f, -0.5f, 1.0f, 0.0f},
         {-0.5f, -0.5f, 0.0f, 0.0f},
-        {-0.5f,  0.5f, 0.0f, 1.0f}
+        {-0.5f,  1.5f, 0.0f, 1.0f}
     }};
 
     assert(m_buffer.getId() != 0);
@@ -151,12 +118,14 @@ void DrawableCell::init(render::Context& context)
 
 /* ************************************************************************ */
 
-void DrawableCell::draw(render::Context& context, float scale) noexcept
+void DrawableYeast::draw(render::Context& context, float size, float budSize) noexcept
 {
     gl(glUseProgram(m_program.getId()));
 
     // Set interpolate flag
-    //gl(glUniform1f(m_uniformSize, scale));
+    gl(glUniform1i(m_uniformHasBud, budSize != 0.0f));
+    gl(glUniform1f(m_uniformSizeMain, size));
+    gl(glUniform1f(m_uniformSizeBud, budSize));
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));

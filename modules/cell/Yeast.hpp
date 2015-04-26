@@ -8,7 +8,7 @@
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
-#include "DrawableCell.hpp"
+#include "DrawableYeast.hpp"
 #endif
 
 // Module
@@ -90,7 +90,7 @@ public:
      *
      * @return
      */
-    DrawableCell& getRenderObject() noexcept
+    DrawableYeast& getRenderObject() noexcept
     {
         return m_renderObject;
     }
@@ -103,7 +103,7 @@ public:
      *
      * @return
      */
-    const DrawableCell& getRenderObject() const noexcept
+    const DrawableYeast& getRenderObject() const noexcept
     {
         return m_renderObject;
     }
@@ -173,7 +173,7 @@ private:
     std::unique_ptr<Bud> m_bud;
 
 #if ENABLE_RENDER
-    DrawableCell m_renderObject;
+    DrawableYeast m_renderObject;
 #endif
 
 #if ENABLE_PHYSICS

@@ -63,6 +63,26 @@ public:
     std::pair<std::vector<std::uint8_t>, Vector<unsigned>> getData() const noexcept;
 
 
+    /**
+     * @brief Returns if wireframe mode is enabled.
+     *
+     * @return
+     */
+    bool isWireframe() const noexcept;
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Enable or disable wireframe mode.
+     *
+     * @param flag
+     */
+    void setWireframe(bool flag) noexcept;
+
+
 // Public Operations
 public:
 

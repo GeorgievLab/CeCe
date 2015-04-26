@@ -34,7 +34,9 @@ Program::~Program()
 Program::UniformId Program::getUniformId(const char* name) const noexcept
 {
     assert(getId());
-    return glGetUniformLocation(getId(), name);
+    Program::UniformId id;
+    gl(id = glGetUniformLocation(getId(), name));
+    return id;
 }
 
 /* ************************************************************************ */

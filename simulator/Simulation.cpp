@@ -195,10 +195,6 @@ void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(getWorldSize().getWidth(), getWorldSize().getHeight());
 
-#if ENABLE_PHYSICS_DEBUG
-    m_world.DrawDebugData();
-#endif
-
     // Render modules
     for (auto& module : getModules())
         module.second->draw(context, *this);
@@ -242,6 +238,11 @@ void Simulation::draw(render::Context& context)
         assert(obj);
         obj->draw(context);
     }
+
+#if ENABLE_PHYSICS_DEBUG
+    m_world.DrawDebugData();
+#endif
+
 }
 #endif
 

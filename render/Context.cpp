@@ -53,6 +53,29 @@ std::pair<std::vector<std::uint8_t>, Vector<unsigned>> Context::getData() const 
 
 /* ************************************************************************ */
 
+bool Context::isWireframe() const noexcept
+{
+    GLint val;
+    glGetIntegerv(GL_POLYGON_MODE, &val);
+    return val == GL_LINE;
+}
+
+/* ************************************************************************ */
+
+void Context::setWireframe(bool flag) noexcept
+{
+    if (flag)
+    {
+        gl(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+    }
+    else
+    {
+        gl(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+    }
+}
+
+/* ************************************************************************ */
+
 void Context::init() noexcept
 {
     assert(!isInit());

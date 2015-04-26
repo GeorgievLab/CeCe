@@ -31,7 +31,7 @@ public:
     /**
      * @brief Uniform variable ID type.
      */
-    using UniformId = unsigned int;
+    using UniformId = int;
 
 
 // Public Ctors & Dtors
