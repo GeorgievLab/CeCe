@@ -7,6 +7,8 @@
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
 #include "render/Buffer.hpp"
+#include "render/Shader.hpp"
+#include "render/Program.hpp"
 
 /* ************************************************************************ */
 
@@ -42,7 +44,7 @@ public:
      *
      * @param context
      */
-    void draw(render::Context& context) noexcept;
+    void draw(render::Context& context, float scale) noexcept;
 
 
 // Private Data Members
@@ -51,6 +53,17 @@ private:
     /// Buffer object.
     render::Buffer m_buffer;
 
+    /// Vertex shader.
+    render::Shader m_vertexShader;
+
+    /// Fragment shader.
+    render::Shader m_fragmentShader;
+
+    /// Shader program.
+    render::Program m_program;
+
+    /// Cell size variable.
+    render::Program::UniformId m_uniformSize;
 };
 
 /* ************************************************************************ */

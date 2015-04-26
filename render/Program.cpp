@@ -31,6 +31,14 @@ Program::~Program()
 
 /* ************************************************************************ */
 
+Program::UniformId Program::getUniformId(const char* name) const noexcept
+{
+    assert(getId());
+    return glGetUniformLocation(getId(), name);
+}
+
+/* ************************************************************************ */
+
 void Program::init(const Shader& vs, const Shader& fs)
 {
     m_id = glCreateProgram();

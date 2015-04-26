@@ -70,10 +70,10 @@ void Cell::draw(render::Context& context)
     // Transform
     context.matrixPush();
     context.matrixTranslate(pos);
-    context.matrixScale(radius);
+    context.matrixScale(2 * radius);
     context.matrixRotate(getBody()->GetAngle());
 
-    m_renderObject.draw(context);
+    m_renderObject.draw(context, radius);
 
     context.matrixPop();
 }

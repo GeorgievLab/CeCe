@@ -28,6 +28,12 @@ public:
     using Id = unsigned int;
 
 
+    /**
+     * @brief Uniform variable ID type.
+     */
+    using UniformId = unsigned int;
+
+
 // Public Ctors & Dtors
 public:
 
@@ -51,6 +57,16 @@ public:
     {
         return m_id;
     }
+
+
+    /**
+     * @brief Return uniform variable ID.
+     *
+     * @param name
+     *
+     * @return
+     */
+    UniformId getUniformId(const char* name) const noexcept;
 
 
 // Public Operators

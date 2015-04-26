@@ -145,8 +145,8 @@ void Yeast::draw(render::Context& context)
     context.matrixRotate(getBody()->GetAngle());
 
     context.matrixPush();
-    context.matrixScale(radius);
-    m_renderObject.draw(context);
+    context.matrixScale(2 * radius);
+    m_renderObject.draw(context, radius);
     context.matrixPop();
 
     if (m_bud)
@@ -158,9 +158,9 @@ void Yeast::draw(render::Context& context)
         context.matrixPush();
         context.matrixTranslate({distance, 0});
         context.matrixRotate(angle);
-        context.matrixScale(budRadius);
+        context.matrixScale(2 * budRadius);
 
-        m_renderObject.draw(context);
+        m_renderObject.draw(context, budRadius);
         context.matrixPop();
     }
 
