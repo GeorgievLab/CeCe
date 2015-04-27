@@ -41,7 +41,16 @@ public:
     /**
      * @brief Default constructor.
      */
-    constexpr Vector()
+    constexpr Vector() = default;
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param val
+     */
+    constexpr Vector(T val) noexcept
+        : x(val), y(val)
     {
         // Nothing to do
     }
@@ -204,64 +213,6 @@ public:
 
 
     /**
-     * @brief Add operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator+(const T& val) const noexcept
-    {
-        return Vector{x + val, y + val};
-    }
-
-
-    /**
-     * @brief Add operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    constexpr Vector<CT<T2>> operator+(const T2& val) const noexcept
-    {
-        return Vector<CT<T2>>{x + val, y + val};
-    }
-
-
-    /**
-     * @brief Add operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator+=(const T& val) noexcept
-    {
-        x += val;
-        y += val;
-        return *this;
-    }
-
-
-    /**
-     * @brief Add operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    Vector& operator+=(const T2& val) noexcept
-    {
-        x += val;
-        y += val;
-        return *this;
-    }
-
-
-    /**
      * @brief Substract operator.
      *
      * @param v
@@ -320,122 +271,6 @@ public:
 
 
     /**
-     * @brief Substract operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator-(const T& val) const noexcept
-    {
-        return Vector{x - val, y - val};
-    }
-
-
-    /**
-     * @brief Substract operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    constexpr Vector<CT<T2>> operator-(const T2& val) const noexcept
-    {
-        return Vector<CT<T2>>{x - val, y - val};
-    }
-
-
-    /**
-     * @brief Substract operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator-=(const T& val) noexcept
-    {
-        x -= val;
-        y -= val;
-        return *this;
-    }
-
-
-    /**
-     * @brief Substract operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    Vector& operator-=(const T2& val) noexcept
-    {
-        x -= val;
-        y -= val;
-        return *this;
-    }
-
-
-    /**
-     * @brief Multiple operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator*(T val) const noexcept
-    {
-        return Vector{x * val, y * val};
-    }
-
-
-    /**
-     * @brief Multiple operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    constexpr Vector<CT<T2>> operator*(T2 val) const noexcept
-    {
-        return Vector<CT<T2>>{x * val, y * val};
-    }
-
-
-    /**
-     * @brief Multiple operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator*=(T val) noexcept
-    {
-        x *= val;
-        y *= val;
-        return *this;
-    }
-
-
-    /**
-     * @brief Multiple operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    Vector& operator*=(T2 val) noexcept
-    {
-        x *= val;
-        y *= val;
-        return *this;
-    }
-
-
-    /**
      * @brief Multiple operator.
      *
      * @param v
@@ -489,64 +324,6 @@ public:
     {
         x *= val.getX();
         y *= val.getY();
-        return *this;
-    }
-
-
-    /**
-     * @brief Divide operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator/(T val) const noexcept
-    {
-        return Vector{x / val, y / val};
-    }
-
-
-    /**
-     * @brief Divide operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    constexpr Vector<CT<T2>> operator/(T2 val) const noexcept
-    {
-        return Vector<CT<T2>>{x / val, y / val};
-    }
-
-
-    /**
-     * @brief Divide operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator/=(T val) noexcept
-    {
-        x /= val;
-        y /= val;
-        return *this;
-    }
-
-
-    /**
-     * @brief Divide operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    template<typename T2, typename std::enable_if<std::is_arithmetic<T2>::value>::type* = 0>
-    Vector& operator/=(T2 val) noexcept
-    {
-        x /= val;
-        y /= val;
         return *this;
     }
 
@@ -754,6 +531,134 @@ private:
     T y;
 
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Add single value to vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector.
+ */
+template<typename T>
+inline Vector<T> operator+(const Vector<T>& lhs, T rhs) noexcept
+{
+    return lhs + Vector<T>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Add single value to vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T>
+inline Vector<T> operator+(T lhs, const Vector<T>& rhs) noexcept
+{
+    return Vector<T>{lhs} + rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T>
+inline Vector<T> operator-(const Vector<T>& lhs, T rhs) noexcept
+{
+    return lhs - Vector<T>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T>
+inline Vector<T> operator-(T lhs, const Vector<T>& rhs) noexcept
+{
+    return Vector<T>{lhs} - rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiple single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T>
+inline Vector<T> operator*(const Vector<T>& lhs, T rhs) noexcept
+{
+    return lhs * Vector<T>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiple single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T>
+inline Vector<T> operator*(T lhs, const Vector<T>& rhs) noexcept
+{
+    return Vector<T>{lhs} * rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Divide vector by one value.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T>
+inline Vector<T> operator/(const Vector<T>& lhs, T rhs) noexcept
+{
+    return lhs / Vector<T>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Divide single value by vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector.
+ */
+template<typename T>
+inline Vector<T> operator/(T lhs, const Vector<T>& rhs) noexcept
+{
+    return Vector<T>{lhs} / rhs;
+}
 
 /* ************************************************************************ */
 
