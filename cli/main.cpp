@@ -148,7 +148,7 @@ int main(int argc, char** argv)
         // Get simulation
         auto simulation = g_sim.getSimulation();
 
-#if ENABLE_PHYSICS_DEBUG
+#if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
         DebugDraw debugDraw;
         debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
         simulation->getWorld().SetDebugDraw(&debugDraw);
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 
         // Load modules
         //simulation->useModule("diffusion-streamlines");
-        //simulation->useModule("streamlines");
+        simulation->useModule("streamlines");
         //simulation->useModule("diffusion.generator");
         //simulation->useModule("diffusion.generator-cell");
         simulation->useModule("cell.generator");
@@ -180,7 +180,7 @@ int main(int argc, char** argv)
         g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
         if (g_streamlinesModule)
         {
-            g_streamlinesModule->setFlowSpeed(10);
+            g_streamlinesModule->setFlowSpeed(50);
             //g_streamlinesModule->getRenderObject().setRenderVelocity(true);
         }
 
@@ -278,6 +278,7 @@ int main(int argc, char** argv)
             case 'p': case 'P': g_paused = !g_paused; break;
             case 's': case 'S': if (g_paused) { g_sim.update(0.01f); glutPostRedisplay(); } break;
             case 'w': case 'W': g_context.setWireframe(!g_context.isWireframe()); break;
+            case 'd': case 'D': g_sim.getSimulation()->setDrawPhysics(!g_sim.getSimulation()->isDrawPhysics()); break;
             }
         });
 

@@ -226,6 +226,19 @@ public:
 #endif
 
 
+#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+    /**
+     * @brief Returns if physics debug data is shown.
+     *
+     * @return
+     */
+    bool isDrawPhysics() const noexcept
+    {
+        return m_drawPhysics;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -354,6 +367,17 @@ public:
     }
 
 
+#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+    /**
+     * @brief If physics debug data should be shown.
+     */
+    void setDrawPhysics(bool flag) noexcept
+    {
+        m_drawPhysics = flag;
+    }
+#endif
+
+
 // Public Operations
 public:
 
@@ -429,6 +453,10 @@ private:
 
 #ifdef ENABLE_PHYSICS
     b2World m_world;
+#endif
+
+#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+    bool m_drawPhysics = true;
 #endif
 };
 

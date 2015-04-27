@@ -239,8 +239,9 @@ void Simulation::draw(render::Context& context)
         obj->draw(context);
     }
 
-#if ENABLE_PHYSICS_DEBUG
-    m_world.DrawDebugData();
+#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+    if (isDrawPhysics())
+        m_world.DrawDebugData();
 #endif
 
 }
