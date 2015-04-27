@@ -172,13 +172,25 @@ void Object::setVelocity(VelocityVector vel) noexcept
 
 /* ************************************************************************ */
 
-void Object::applyForce(ForceVector force) noexcept
+void Object::applyForce(const ForceVector& force) noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
     m_body->ApplyForceToCenter({force.getX(), force.getY()}, true);
 #else
     // NOTE: This is a little bit weird
+    m_velocity = force;
+#endif
+}
+
+/* ************************************************************************ */
+
+void Object::applyForce(const ForceVector& force, const PositionVector& pos) noexcept
+{
+#if ENABLE_PHYSICS
+    assert(m_body);
+    m_body->ApplyForce({force.getX(), force.getY()}, {pos.getX(), pos.getY()}, true);
+#else
     m_velocity = force;
 #endif
 }

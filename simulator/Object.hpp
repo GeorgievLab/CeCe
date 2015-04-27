@@ -5,6 +5,7 @@
 
 // C++
 #include <cassert>
+#include <vector>
 
 // Simulator
 #include "core/Units.hpp"
@@ -55,6 +56,52 @@ public:
     enum class ShapeType
     {
         Circle
+    };
+
+
+// Public Structures
+public:
+
+
+    /**
+     * @brief Structure for circle shape.
+     */
+    struct ShapeCircle
+    {
+        /// Shape center.
+        PositionVector center;
+
+        /// Circle radius.
+        units::Length radius;
+    };
+
+
+    /**
+     * @brief Structure for storing shape.
+     */
+    struct Shape
+    {
+        /// Type of the shape.
+        ShapeType type;
+
+        union
+        {
+            ShapeCircle circle;
+        };
+
+
+        /**
+         * @brief Create circle shape.
+         *
+         * @param radius Circle radius.
+         * @param center Circle center (position offset).
+         *
+         * @return
+         */
+        static Shape makeCircle(units::Length radius, PositionVector center = {0, 0}) noexcept
+        {
+            return Shape{ShapeType::Circle, ShapeCircle{center, radius}};
+        }
     };
 
 
@@ -159,6 +206,17 @@ public:
 #endif
 
 
+    /**
+     * @brief Returns object shapes.
+     *
+     * @return
+     */
+    const std::vector<Shape>& getShapes() const noexcept
+    {
+        return m_shapes;
+    }
+
+
 // Public Mutators
 public:
 
@@ -192,7 +250,27 @@ public:
      *
      * @param force
      */
-    void applyForce(ForceVector force) noexcept;
+    void applyForce(const ForceVector& force) noexcept;
+
+
+    /**
+     * @brief Push into object by given force.
+     *
+     * @param force
+     * @param pos
+     */
+    void applyForce(const ForceVector& force, const PositionVector& pos) noexcept;
+
+
+    /**
+     * @brief Set object shapes.
+     *
+     * @param shapes
+     */
+    void setShapes(std::vector<Shape> shapes) noexcept
+    {
+        m_shapes = std::move(shapes);
+    }
 
 
 // Public Operations
@@ -270,6 +348,26 @@ public:
     }
 #endif
 
+
+// Protected Accessors
+protected:
+
+
+    /**
+     * @brief Returns mutable object shapes.
+     *
+     * This version allows to update shapes regulary without allocating new
+     * memory for shapes vector and then replace the old one with the new one.
+     * Updating in place saves allocations and it's faster.
+     *
+     * @return
+     */
+    std::vector<Shape>& getShapes() noexcept
+    {
+        return m_shapes;
+    }
+
+
 // Private Data Members
 private:
 
@@ -278,6 +376,9 @@ private:
 
     /// Object unique ID.
     IdType m_id;
+
+    /// A list of object shapes.
+    std::vector<Shape> m_shapes;
 
 #if ENABLE_PHYSICS
     /// Physics body.

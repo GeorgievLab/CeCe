@@ -27,6 +27,10 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) no
     : CellBase(simulation, type)
 {
     setVolume(units::um3(37));
+
+    // Max 2 shapes
+    getShapes().reserve(2);
+    getShapes().push_back(Shape::makeCircle(calcSphereRadius(getVolume())));
 }
 
 /* ************************************************************************ */
@@ -158,6 +162,9 @@ void Yeast::updateShape()
 {
     static constexpr float MIN_CHANGE = 0.2f;
 
+    // Alias for yeast shapes
+    auto& shapes = getShapes();
+
     // Calculate new radius
     const units::Length newRadius = calcSphereRadius(getVolume());
     const units::Length oldRadius = m_shape.m_radius;
@@ -168,6 +175,28 @@ void Yeast::updateShape()
         ((newRadius - oldRadius) > MIN_CHANGE) ||
         ((newBudRadius - oldBudRadius) > MIN_CHANGE)
     ;
+
+    // Update main shape
+    assert(shapes.size() >= 1);
+    shapes[0].circle.radius = newRadius;
+
+    // If bud shape is missing, create one.
+    if (hasBud())
+    {
+        if (shapes.size() != 2)
+        {
+            shapes.push_back(Shape::makeCircle(newBudRadius, PositionVector{0, newRadius + newBudRadius}));
+        }
+        else
+        {
+            shapes[1].circle.radius = newBudRadius;
+            shapes[1].circle.center.getY() = newRadius + newBudRadius;
+        }
+    }
+    else
+    {
+        shapes.resize(1);
+    }
 
     if (!needs_update)
         return;
