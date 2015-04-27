@@ -153,7 +153,7 @@ void Module::drawInit(render::Context& context)
     std::lock_guard<std::mutex> lock(m_mutex);
 #endif
 
-    getDrawable().init(m_grid.getSize(), m_grid.getData());
+    getDrawable().init(context, m_grid.getSize(), m_grid.getData());
 }
 #endif
 

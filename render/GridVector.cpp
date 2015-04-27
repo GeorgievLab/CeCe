@@ -30,9 +30,9 @@ namespace render {
 
 /* ************************************************************************ */
 
-void GridVector::init(Vector<unsigned int> size, const Vector<float>* data)
+void GridVector::init(Context& context, Vector<unsigned int> size, const Vector<float>* data)
 {
-    m_buffer.init();
+    m_buffer.init(context);
 
     resize(size, data);
 }
@@ -126,14 +126,10 @@ void GridVector::update(const Vector<float>* data) noexcept
         }
     }
 
-    assert(m_buffer.getId() != 0);
-
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
-    gl(glBufferData(GL_ARRAY_BUFFER,
+    m_buffer.resize(
         vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data(),
-        GL_STATIC_DRAW
-    ));
+        vertices.data()
+    );
 }
 
 /* ************************************************************************ */

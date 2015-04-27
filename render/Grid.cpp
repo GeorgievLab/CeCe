@@ -21,9 +21,9 @@ namespace render {
 
 /* ************************************************************************ */
 
-void Grid::init()
+void Grid::init(Context& context)
 {
-    m_buffer.init();
+    m_buffer.init(context);
 }
 
 /* ************************************************************************ */
@@ -88,14 +88,10 @@ void Grid::resize(Vector<unsigned int> size) noexcept
         vertices.push_back(Vertex{start.getX() + 1.f, start.getY() + i * step.getY()});
     }
 
-    assert(m_buffer.getId() != 0);
-
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
-    gl(glBufferData(GL_ARRAY_BUFFER,
+    m_buffer.resize(
         vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data(),
-        GL_STATIC_DRAW
-    ));
+        vertices.data()
+    );
 }
 
 /* ************************************************************************ */

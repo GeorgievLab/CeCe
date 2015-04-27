@@ -33,8 +33,6 @@ add_library(${PROJECT_NAME} OBJECT
     Camera.cpp
     Buffer.hpp
     Buffer.cpp
-    Circle.hpp
-    Circle.cpp
     Grid.hpp
     Grid.cpp
     GridVector.hpp

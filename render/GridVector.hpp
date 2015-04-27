@@ -15,6 +15,10 @@ namespace render {
 
 /* ************************************************************************ */
 
+class Context;
+
+/* ************************************************************************ */
+
 /**
  * @brief OpenGL grid for vectors object.
  */
@@ -69,7 +73,7 @@ public:
     /**
      * @brief Initialize.
      */
-    void init(Vector<unsigned int> size, const Vector<float>* data);
+    void init(Context& context, Vector<unsigned int> size, const Vector<float>* data);
 
 
     /**

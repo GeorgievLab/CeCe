@@ -14,6 +14,10 @@ namespace render {
 
 /* ************************************************************************ */
 
+class Context;
+
+/* ************************************************************************ */
+
 /**
  * @brief OpenGL grid object.
  */
@@ -89,8 +93,10 @@ public:
 
     /**
      * @brief Initialize.
+     *
+     * @param context Rendering context.
      */
-    void init();
+    void init(Context& context);
 
 
     /**

@@ -92,11 +92,9 @@ SignalGridDrawable::~SignalGridDrawable()
 
 /* ************************************************************************ */
 
-void SignalGridDrawable::init(Vector<unsigned int> size, const Signal* data)
+void SignalGridDrawable::init(render::Context& context, Vector<unsigned int> size, const Signal* data)
 {
-    render::Grid::init();
-
-    m_buffer.init();
+    render::Grid::init(context);
 
     // Generate texture
     gl(glGenTextures(1, &m_texture));
@@ -122,14 +120,10 @@ void SignalGridDrawable::init(Vector<unsigned int> size, const Signal* data)
         {-0.5f,  0.5f, 0.0f, 1.0f}
     }};
 
-    assert(m_buffer.getId() != 0);
-
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
-    gl(glBufferData(GL_ARRAY_BUFFER,
+    m_buffer.init(context,
         vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data(),
-        GL_STATIC_DRAW
-    ));
+        vertices.data()
+    );
 
     resize(size, data);
 }

@@ -13,6 +13,7 @@
 
 // Simulator
 #include "core/Vector.hpp"
+#include "render/Context.hpp"
 #include "render/Shader.hpp"
 #include "render/Program.hpp"
 #include "render/Grid.hpp"
@@ -107,7 +108,7 @@ public:
     /**
      * @brief Initialize.
      */
-    void init(Vector<unsigned int> size, const Signal* data);
+    void init(render::Context& context, Vector<unsigned int> size, const Signal* data);
 
 
     /**

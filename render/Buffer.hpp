@@ -7,8 +7,12 @@ namespace render {
 
 /* ************************************************************************ */
 
+class Context;
+
+/* ************************************************************************ */
+
 /**
- * @brief OpenGL buffer.
+ * @brief GPU buffer.
  */
 class Buffer
 {
@@ -21,6 +25,12 @@ public:
      * @brief Buffer ID type.
      */
     using Id = unsigned int;
+
+
+    /**
+     * @brief Buffer size type.
+     */
+    using SizeType = unsigned int;
 
 
 // Public Ctors & Dtors
@@ -48,14 +58,53 @@ public:
     }
 
 
+    /**
+     * @brief Return if buffer is initialized.
+     *
+     * @return
+     */
+    bool isInitialized() const noexcept
+    {
+        return m_id != 0;
+    }
+
+
 // Public Operators
 public:
 
 
     /**
      * @brief Initialize buffer object.
+     *
+     * @param context Rendering context.
      */
-    void init();
+    void init(Context& context);
+
+
+    /**
+     * @brief Initialize and create buffer object.
+     *
+     * @param context Rendering context.
+     * @param size    Buffer size.
+     * @param data    Optional buffer data.
+     */
+    void init(Context& context, SizeType size, const void* data = nullptr);
+
+
+    /**
+     * @brief Terminate buffer.
+     */
+    void terminate();
+
+
+    /**
+     * @brief Resize buffer object.
+     *
+     * @param context Rendering context.
+     * @param size    Buffer size.
+     * @param data    Optional buffer data.
+     */
+    void resize(SizeType size, const void* data = nullptr);
 
 
 // Private Data Members

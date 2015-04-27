@@ -87,8 +87,6 @@ struct Vertex
 
 void DrawableYeast::init(render::Context& context)
 {
-    m_buffer.init();
-
     m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
     m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
     m_program.init(m_vertexShader, m_fragmentShader);
@@ -105,15 +103,11 @@ void DrawableYeast::init(render::Context& context)
         {-0.5f,  1.5f, 0.0f, 1.0f}
     }};
 
-    assert(m_buffer.getId() != 0);
-
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
-    gl(glBufferData(GL_ARRAY_BUFFER,
+    // Init buffer
+    m_buffer.init(context,
         vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data(),
-        GL_STATIC_DRAW
-    ));
-
+        vertices.data()
+    );
 }
 
 /* ************************************************************************ */

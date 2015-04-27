@@ -11,7 +11,6 @@
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
-#include "render/Circle.hpp"
 #include "render/GridVector.hpp"
 #endif
 

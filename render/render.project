@@ -19,7 +19,6 @@
   <VirtualDirectory Name="src">
     <File Name="Context.cpp"/>
     <File Name="Camera.cpp"/>
-    <File Name="Circle.cpp"/>
     <File Name="Grid.cpp"/>
     <File Name="errors.cpp"/>
     <File Name="GridVector.cpp"/>
@@ -32,7 +31,6 @@
     <File Name="Color.hpp"/>
     <File Name="Position.hpp"/>
     <File Name="Context.hpp"/>
-    <File Name="Circle.hpp"/>
     <File Name="Grid.hpp"/>
     <File Name="errors.hpp"/>
     <File Name="GridVector.hpp"/>

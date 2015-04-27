@@ -20,7 +20,6 @@
 #include <GL/glu.h>
 
 // Simulator
-#include "render/Circle.hpp"
 #include "render/Grid.hpp"
 #include "render/errors.hpp"
 

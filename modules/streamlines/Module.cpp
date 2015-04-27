@@ -120,7 +120,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 #ifdef ENABLE_RENDER
 void Module::drawInit(render::Context& context)
 {
-    m_renderObject.init(m_grid.getSize(), m_grid.getData());
+    m_renderObject.init(context, m_grid.getSize(), m_grid.getData());
 }
 #endif
 
