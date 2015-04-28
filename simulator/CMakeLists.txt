@@ -16,13 +16,13 @@ set(SRCS
     SimulationFactory.cpp
     Simulator.hpp
     Simulator.cpp
-    Grid.hpp
     Module.hpp
     Library.hpp
     Library.cpp
 
-    # Add core libraries
+    # Add object libraries
     $<TARGET_OBJECTS:core>
+    $<TARGET_OBJECTS:parser>
 )
 
 if (ENABLE_RENDER)

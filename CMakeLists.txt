@@ -87,6 +87,8 @@ endif ()
 
 # Projects
 add_subdirectory(core)
+add_subdirectory(parser)
+add_subdirectory(parser-xml)
 
 if (ENABLE_RENDER)
     add_subdirectory(render)
@@ -101,7 +103,6 @@ if (USE_BUILDIN_PHYSICS)
 endif ()
 
 add_subdirectory(simulator)
-add_subdirectory(parser)
 
 # Modules
 add_subdirectory(modules/streamlines)

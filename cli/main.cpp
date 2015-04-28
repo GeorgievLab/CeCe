@@ -24,8 +24,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/Module.hpp"
-#include "parser/Parser.hpp"
-#include "parser/SimulationFactory.hpp"
+#include "parser-xml/SimulationFactory.hpp"
 
 #include "modules/streamlines/Module.hpp"
 #include "modules/diffusion/Module.hpp"
@@ -140,7 +139,7 @@ int main(int argc, char** argv)
         setMeasureTimeOutput(&time_file);
 
         // Create javascript world factory
-        parser::SimulationFactory simFactory;
+        parser::xml::SimulationFactory simFactory;
 
         // Create world
         g_sim.setSimulation(simFactory.fromFile(g_sim, argv[1]));

@@ -37,15 +37,14 @@ target_link_libraries(cli
     module-streamlines
     #module-physics
     module-cell
-    parser
     simulator
+    parser-xml
     ${RENDER_LIBS}
     -pthread
 )
 
 # Setup dependencies
 add_dependencies(cli
-    parser
     simulator
 )
 

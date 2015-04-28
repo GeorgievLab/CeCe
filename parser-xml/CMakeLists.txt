@@ -1,22 +1,25 @@
 # ######################################################################### #
 
 # Project name
-set(PROJECT_NAME parser)
+set(PROJECT_NAME parser-xml)
 
 # Create project
 project(${PROJECT_NAME} CXX)
 
-# Current version is unable to add object library into shared library.
-if (UNIX)
-    add_compile_options(-fPIC)
-endif ()
-
 # Create library
-add_library(${PROJECT_NAME} OBJECT
-    Parser.hpp
-    Parser.cpp
+add_library(${PROJECT_NAME}
     SimulationFactory.hpp
     SimulationFactory.cpp
+
+    # PugiXML library
+    pugixml/pugixml.hpp
+    pugixml/pugixml.cpp
+)
+
+# Setup dependencies
+add_dependencies(${PROJECT_NAME}
+    core
+    parser
 )
 
 # ######################################################################### #
