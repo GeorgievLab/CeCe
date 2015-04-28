@@ -204,10 +204,13 @@ void Yeast::updateShape()
     // Delete old fixtures
     for (b2Fixture* fixture = getBody()->GetFixtureList();
          fixture != nullptr;
-         fixture = fixture->GetNext())
+         //fixture = fixture->GetNext())
+         fixture = getBody()->GetFixtureList())
     {
         getBody()->DestroyFixture(fixture);
     }
+
+    assert(getBody()->GetFixtureList() == nullptr);
 
     // Update main yeast shape
     {
