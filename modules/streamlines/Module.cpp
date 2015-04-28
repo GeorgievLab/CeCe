@@ -32,13 +32,14 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         // Precompute values
         const auto R2 = R * R;
         const Vector<float> start = simulation.getWorldSize() * -0.5f;
-        const Vector<float> step = simulation.getWorldSize() / m_grid.getSize();
+        const auto gridSize = m_grid.getSize();
+        const Vector<float> step = simulation.getWorldSize() / gridSize;
 
-        for (decltype(m_grid.getHeight()) j = 0; j < m_grid.getHeight(); ++j)
+        for (decltype(gridSize.getHeight()) j = 0; j < gridSize.getHeight(); ++j)
         {
-            for (decltype(m_grid.getWidth()) i = 0; i < m_grid.getWidth(); ++i)
+            for (decltype(gridSize.getWidth()) i = 0; i < gridSize.getWidth(); ++i)
             {
-                auto& velocity = m_grid(i, j);
+                auto& velocity = m_grid[Vector<SizeType>(i, j)];
 
                 // Transform i, j coordinates to position
                 // Cell center position

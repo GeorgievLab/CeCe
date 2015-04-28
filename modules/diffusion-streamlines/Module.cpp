@@ -45,7 +45,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const auto step = simulation.getWorldSize() / signalGrid.getSize();
 
     // Grid for changes
-    diffusion::SignalGrid signalGridNew(signalGrid.getWidth(), signalGrid.getHeight());
+    diffusion::SignalGrid signalGridNew(signalGrid.getSize());
 
     // Sizes must match
     assert(std::distance(signalGrid.begin(), signalGrid.end()) == std::distance(signalGridNew.begin(), signalGridNew.end()));
@@ -58,9 +58,9 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         return start + step * coord;
     };
 
-    for (decltype(signalGrid.getHeight()) j = 0; j < signalGrid.getHeight(); ++j)
+    for (decltype(signalGrid.getSize().getHeight()) j = 0; j < signalGrid.getSize().getHeight(); ++j)
     {
-        for (decltype(signalGrid.getWidth()) i = 0; i < signalGrid.getWidth(); ++i)
+        for (decltype(signalGrid.getSize().getWidth()) i = 0; i < signalGrid.getSize().getWidth(); ++i)
         {
             const Vector<unsigned> ij(i, j);
 

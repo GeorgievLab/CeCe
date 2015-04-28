@@ -82,8 +82,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
      * [0, width * height), only one range check is required.
      */
 
-    const int width = m_grid.getWidth();
-    const int height = m_grid.getHeight();
+    const int width = m_grid.getSize().getWidth();
+    const int height = m_grid.getSize().getHeight();
 
     const Matrix<int, 3> MAPPING_MATRIX{{
         {-width - 1, -width, -width + 1},

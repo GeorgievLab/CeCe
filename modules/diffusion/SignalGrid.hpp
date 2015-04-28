@@ -4,7 +4,7 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "simulator/Grid.hpp"
+#include "core/Grid.hpp"
 
 // Module
 #include "Signal.hpp"
@@ -19,7 +19,7 @@ namespace diffusion {
 /**
  * @brief Signal grid.
  */
-using SignalGrid = simulator::Grid<Signal>;
+using SignalGrid = core::Grid<Signal>;
 
 /* ************************************************************************ */
 

@@ -26,7 +26,6 @@
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
     <File Name="Object.hpp"/>
-    <File Name="Grid.hpp"/>
     <File Name="Module.hpp"/>
     <File Name="Simulation.hpp"/>
     <File Name="SimulationFactory.hpp"/>

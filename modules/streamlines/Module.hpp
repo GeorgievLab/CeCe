@@ -5,8 +5,8 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "core/Grid.hpp"
 #include "simulator/Module.hpp"
-#include "simulator/Grid.hpp"
 #include "simulator/Object.hpp"
 
 #ifdef ENABLE_RENDER
@@ -36,7 +36,7 @@ public:
 
 
     /// Grid type.
-    using GridType = simulator::Grid<VelocityVector>;
+    using GridType = core::Grid<VelocityVector>;
 
     /// Grid size type.
     using SizeType = GridType::SizeType;

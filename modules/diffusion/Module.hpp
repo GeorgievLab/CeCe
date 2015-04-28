@@ -8,8 +8,8 @@
 #endif
 
 // Simulator
+#include "core/Grid.hpp"
 #include "simulator/Module.hpp"
-#include "simulator/Grid.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"

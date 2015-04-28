@@ -30,11 +30,11 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
     assert(m_diffusionModule);
     auto& grid = m_diffusionModule->getGrid();
 
-    const float grid_half = grid.getHeight() / 2;
-    const int off = grid.getHeight() * 0.05f;
+    const float grid_half = grid.getSize().getHeight() / 2;
+    const int off = grid.getSize().getHeight() * 0.05f;
 
     for (int i = -6; i <= 6; ++i)
-        grid(0, grid_half + i * off)[(i + 6) % Signal::COUNT] += SOURCE_STRENGTH * dt;
+        grid[Vector<int>{0, (int) grid_half + i * off}][(i + 6) % Signal::COUNT] += SOURCE_STRENGTH * dt;
 }
 
 /* ************************************************************************ */

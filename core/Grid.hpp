@@ -79,7 +79,7 @@ public:
      * @param size
      */
     explicit Grid(SizeType size)
-        : Grid({size})
+        : Grid(Vector<SizeType>{size})
     {
         // Nothing to do
     }
