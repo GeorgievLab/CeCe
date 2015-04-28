@@ -171,6 +171,8 @@ void Context::frameBegin(int width, int height) noexcept
     // Clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glEnable(GL_BLEND);
+
     setView(width, height);
 }
 
@@ -179,6 +181,8 @@ void Context::frameBegin(int width, int height) noexcept
 void Context::frameEnd() noexcept
 {
     assert(isInit());
+
+    glDisable(GL_BLEND);
 
     glFlush();
 }

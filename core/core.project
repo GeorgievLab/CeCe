@@ -30,6 +30,7 @@
     <File Name="AlignedAllocator.cpp"/>
     <File Name="Log.cpp"/>
     <File Name="TimeMeasurement.cpp"/>
+    <File Name="Grid.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
@@ -40,6 +41,7 @@
     <File Name="Log.hpp"/>
     <File Name="VectorUnits.hpp"/>
     <File Name="TimeMeasurement.hpp"/>
+    <File Name="Grid.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

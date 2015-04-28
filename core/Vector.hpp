@@ -47,9 +47,9 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param val
+     * @param val Value for all vector coordinates.
      */
-    constexpr Vector(T val) noexcept
+    explicit constexpr Vector(T val) noexcept
         : x(val), y(val)
     {
         // Nothing to do
@@ -567,6 +567,38 @@ inline Vector<T> operator+(T lhs, const Vector<T>& rhs) noexcept
 /* ************************************************************************ */
 
 /**
+ * @brief Add single value to vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector.
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator+(const Vector<T1>& lhs, T2 rhs) noexcept
+{
+    return lhs + Vector<T2>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Add single value to vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator+(T1 lhs, const Vector<T2>& rhs) noexcept
+{
+    return Vector<T1>{lhs} + rhs;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Substract single value from vector.
  *
  * @param lhs
@@ -594,6 +626,38 @@ template<typename T>
 inline Vector<T> operator-(T lhs, const Vector<T>& rhs) noexcept
 {
     return Vector<T>{lhs} - rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator-(const Vector<T1>& lhs, T2 rhs) noexcept
+{
+    return lhs - Vector<T2>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator-(T1 lhs, const Vector<T2>& rhs) noexcept
+{
+    return Vector<T1>{lhs} - rhs;
 }
 
 /* ************************************************************************ */
@@ -631,6 +695,38 @@ inline Vector<T> operator*(T lhs, const Vector<T>& rhs) noexcept
 /* ************************************************************************ */
 
 /**
+ * @brief Multiple single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator*(const Vector<T1>& lhs, T2 rhs) noexcept
+{
+    return lhs * Vector<T2>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiple single value from vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator*(T1 lhs, const Vector<T2>& rhs) noexcept
+{
+    return Vector<T1>{lhs} * rhs;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Divide vector by one value.
  *
  * @param lhs
@@ -658,6 +754,38 @@ template<typename T>
 inline Vector<T> operator/(T lhs, const Vector<T>& rhs) noexcept
 {
     return Vector<T>{lhs} / rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Divide vector by one value.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator/(const Vector<T1>& lhs, T2 rhs) noexcept
+{
+    return lhs / Vector<T2>{rhs};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Divide single value by vector.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return New vector.
+ */
+template<typename T1, typename T2>
+inline Vector<typename std::common_type<T1, T2>::type> operator/(T1 lhs, const Vector<T2>& rhs) noexcept
+{
+    return Vector<T1>{lhs} / rhs;
 }
 
 /* ************************************************************************ */

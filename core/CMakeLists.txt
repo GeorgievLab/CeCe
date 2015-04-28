@@ -20,6 +20,8 @@ add_library(${PROJECT_NAME} OBJECT
     Units.hpp
     Vector.hpp
     Vector.cpp
+    Grid.hpp
+    Grid.cpp
     AlignedAllocator.hpp
     AlignedAllocator.cpp
     Log.hpp
