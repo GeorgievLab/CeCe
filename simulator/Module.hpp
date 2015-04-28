@@ -3,6 +3,10 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <map>
+#include <string>
+
 // Simulator
 #include "core/Units.hpp"
 
@@ -25,6 +29,15 @@ class Simulation;
  */
 class Module
 {
+
+// Public Types
+public:
+
+
+    /**
+     * @brief Module configuration.
+     */
+    using Configuration = std::map<std::string, std::string>;
 
 
 // Public Ctors & Dtors
@@ -51,6 +64,17 @@ public:
      * @param simulation Simulation object.
      */
     virtual void update(units::Duration dt, Simulation& simulation) = 0;
+
+
+    /**
+     * @brief Configure module.
+     *
+     * @param config
+     */
+    virtual void configure(const Configuration& config)
+    {
+        // Nothing to do
+    }
 
 
 #ifdef ENABLE_RENDER

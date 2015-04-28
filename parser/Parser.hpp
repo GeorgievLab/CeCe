@@ -25,7 +25,13 @@ using Exception = std::runtime_error;
  * @brief Structure for constructing values from number and suffix.
  */
 template<typename T>
-struct value_constructor;
+struct value_constructor
+{
+    static T construct(float val, const std::string& suffix)
+    {
+        return static_cast<T>(val);
+    }
+};
 
 /* ************************************************************************ */
 
@@ -70,6 +76,18 @@ float parse_number(const char* str, const char** end = nullptr);
  * @return
  */
 std::string parse_suffix(const char* str, const char** end = nullptr);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse bool value.
+ *
+ * @param str
+ * @param end Optional pointer to following sequence.
+ *
+ * @return
+ */
+bool parse_bool(const char* str, const char** end = nullptr);
 
 /* ************************************************************************ */
 

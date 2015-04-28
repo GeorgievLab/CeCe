@@ -6,6 +6,7 @@
 
 // C++
 #include <cstdlib>
+#include <cstring>
 
 /* ************************************************************************ */
 
@@ -32,6 +33,13 @@ std::string parse_suffix(const char* str, const char** end)
     if (end) *end = str;
 
     return res;
+}
+
+/* ************************************************************************ */
+
+bool parse_bool(const char* str, const char** end)
+{
+    return !strcmp(str, "true");
 }
 
 /* ************************************************************************ */

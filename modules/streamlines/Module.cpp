@@ -8,6 +8,7 @@
 // Simulator
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
+#include "parser/Parser.hpp"
 
 /* ************************************************************************ */
 
@@ -114,6 +115,34 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             obj->applyForce(force);
         }
     }
+}
+
+/* ************************************************************************ */
+
+void Module::configure(const Configuration& config)
+{
+    // Grid size
+    {
+        auto it = config.find("grid");
+        if (it != config.end())
+            m_grid.resize(parser::parse_vector<SizeType>(it->second.c_str()));
+    }
+
+    // Flow speed
+    {
+        auto it = config.find("flow-speed");
+        if (it != config.end())
+            setFlowSpeed(parser::parse_value<float>(it->second.c_str()));
+    }
+
+#ifdef ENABLE_RENDER
+    // Draw flags
+    {
+        auto it = config.find("draw-velocity");
+        if (it != config.end())
+            m_renderObject.setRenderVelocity(parser::parse_bool(it->second.c_str()));
+    }
+#endif
 }
 
 /* ************************************************************************ */
