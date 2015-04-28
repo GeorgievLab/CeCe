@@ -266,7 +266,7 @@ public:
      */
     void resize(SizeType size)
     {
-        resize({size});
+        resize(Vector<SizeType>{size});
     }
 
 
