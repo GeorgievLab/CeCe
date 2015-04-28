@@ -1,5 +1,5 @@
 <simulation world-size="100um 100um">
-    <module name="diffusion-streamlines">
-        <cell radius="1" position="0 0" />
-    </module>
+    <object class="Cell" type="static" position="0 0" volume="1540um3" />
+    <module name="cell.generator" />
+    <module name="streamlines" grid="100 100" flow-speed="10um/s" draw-velocity="true" />
 </simulation>

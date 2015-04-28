@@ -26,7 +26,6 @@
 #include "simulator/Module.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 
-#include "modules/streamlines/Module.hpp"
 #include "modules/diffusion/Module.hpp"
 #include "modules/diffusion/Generator.hpp"
 #include "modules/diffusion/GeneratorCell.hpp"
@@ -63,7 +62,6 @@ std::mutex g_log_mutex;
 
 /* ************************************************************************ */
 
-module::streamlines::Module* g_streamlinesModule;
 module::diffusion::Module* g_diffusionModule;
 module::cell::Cell* g_mainCell;
 
@@ -155,10 +153,10 @@ int main(int argc, char** argv)
 
         // Load modules
         //simulation->useModule("diffusion-streamlines");
-        simulation->useModule("streamlines");
+        //simulation->useModule("streamlines");
         //simulation->useModule("diffusion.generator");
         //simulation->useModule("diffusion.generator-cell");
-        simulation->useModule("cell.generator");
+        //simulation->useModule("cell.generator");
 
         // Create main cell
         g_mainCell = simulation->createObject<module::cell::Cell>(simulator::Object::Type::Static);
@@ -174,13 +172,6 @@ int main(int argc, char** argv)
 #else
             g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f}});
 #endif
-        }
-
-        g_streamlinesModule = simulation->getModule<module::streamlines::Module>("streamlines");
-        if (g_streamlinesModule)
-        {
-            g_streamlinesModule->setFlowSpeed(50);
-            //g_streamlinesModule->getRenderObject().setRenderVelocity(true);
         }
 
         //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
@@ -257,7 +248,6 @@ int main(int argc, char** argv)
                 }
 
                 g_mainCell->setPosition(pos);
-                g_streamlinesModule->markUpdate();
             }
         });
 
