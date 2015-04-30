@@ -92,6 +92,21 @@ bool parse_bool(const char* str, const char** end = nullptr);
 /* ************************************************************************ */
 
 /**
+ * @brief Parse bool value.
+ *
+ * @param str
+ * @param end Optional pointer to following sequence.
+ *
+ * @return
+ */
+inline bool parse_bool(const std::string& str, const char** end = nullptr)
+{
+    return parse_bool(str.c_str(), end);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Parse simple float value with optional suffix.
  *
  * @param str
@@ -114,6 +129,22 @@ T parse_value(const char* str, const char** end = nullptr)
 /* ************************************************************************ */
 
 /**
+ * @brief Parse simple float value with optional suffix.
+ *
+ * @param str
+ * @param end
+ *
+ * @return
+ */
+template<typename T>
+inline T parse_value(const std::string& str, const char** end = nullptr)
+{
+    return parse_value<T>(str.c_str(), end);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Parse vector values with optional suffixes separated by space.
  *
  * @param str
@@ -129,6 +160,22 @@ Vector<T> parse_vector(const char* str, const char** end = nullptr)
     T y = parse_value<T>(in_end, &in_end);
 
     return Vector<T>{x, y};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse vector values with optional suffixes separated by space.
+ *
+ * @param str
+ * @param end
+ *
+ * @return
+ */
+template<typename T>
+inline Vector<T> parse_vector(const std::string& str, const char** end = nullptr)
+{
+    return parse_vector<T>(str.c_str(), end);
 }
 
 /* ************************************************************************ */

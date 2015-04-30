@@ -126,7 +126,7 @@ void Module::configure(const simulator::ConfigurationBase& config)
         auto grid = config.getString("grid");
 
         if (!grid.empty())
-            m_grid.resize(parser::parse_vector<SizeType>(grid.c_str()));
+            m_grid.resize(parser::parse_vector<SizeType>(grid));
     }
 
     // Flow speed
@@ -134,7 +134,7 @@ void Module::configure(const simulator::ConfigurationBase& config)
         auto flowSpeed = config.getString("flow-speed");
 
         if (!flowSpeed.empty())
-            setFlowSpeed(parser::parse_value<float>(flowSpeed.c_str()));
+            setFlowSpeed(parser::parse_value<float>(flowSpeed));
     }
 
 #ifdef ENABLE_RENDER
@@ -143,7 +143,7 @@ void Module::configure(const simulator::ConfigurationBase& config)
         auto drawVelocity = config.getString("draw-velocity");
 
         if (!drawVelocity.empty())
-            m_renderObject.setRenderVelocity(parser::parse_bool(drawVelocity.c_str()));
+            m_renderObject.setRenderVelocity(parser::parse_bool(drawVelocity));
     }
 #endif
 }
