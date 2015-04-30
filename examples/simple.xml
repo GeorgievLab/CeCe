@@ -1,5 +1,6 @@
 <simulation world-size="100um 100um">
-    <object class="Cell" type="static" position="0 0" volume="1540um3" />
     <module name="cell.generator" />
+    <module name="cell.cells" />
     <module name="streamlines" grid="100 100" flow-speed="10um/s" draw-velocity="true" />
+    <object class="Cell" type="static" position="0 0" volume="1540um3" />
 </simulation>
