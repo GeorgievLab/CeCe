@@ -118,7 +118,11 @@ Library::Library(const std::string& name)
 
     // Set create function
     if (m_impl->isLoaded())
+    {
+        m_setupSimulation = m_impl->getAddr<SetupSimulation>("setup");
+        m_cleanupSimulation = m_impl->getAddr<CleanupSimulation>("cleanup");
         m_createModule = m_impl->getAddr<CreateModule>("create_module");
+    }
 }
 
 /* ************************************************************************ */
@@ -144,6 +148,22 @@ bool Library::isLoaded() const noexcept
 const std::string& Library::getError() const noexcept
 {
     return m_impl->error;
+}
+
+/* ************************************************************************ */
+
+void Library::setupSimulation(Simulation* simulation)
+{
+    if (m_setupSimulation)
+        m_setupSimulation(simulation);
+}
+
+/* ************************************************************************ */
+
+void Library::cleanupSimulation(Simulation* simulation)
+{
+    if (m_cleanupSimulation)
+        m_cleanupSimulation(simulation);
 }
 
 /* ************************************************************************ */

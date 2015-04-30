@@ -10,6 +10,38 @@
 /* ************************************************************************ */
 
 /**
+ * @brief Declare function for setup simulation.
+ */
+#define DECLARE_LIBRARY_SETUP \
+    extern "C" void setup(simulator::Simulation*)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define function for setup simulation.
+ */
+#define DEFINE_LIBRARY_SETUP(sim) \
+    void setup(simulator::Simulation* sim)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Declare function for cleanup simulation.
+ */
+#define DECLARE_LIBRARY_CLEANUP \
+    extern "C" void cleanup(simulator::Simulation*)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define function for cleanup simulation.
+ */
+#define DEFINE_LIBRARY_CLEANUP(sim) \
+    void cleanup(simulator::Simulation* sim)
+
+/* ************************************************************************ */
+
+/**
  * @brief Declare function for creating library class.
  */
 #define DECLARE_LIBRARY_CREATE \
@@ -39,6 +71,20 @@ namespace simulator {
 
 class Module;
 class Simulation;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Setup simulation function pointer.
+ */
+using SetupSimulation = void (*)(Simulation*);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Cleanup simulation function pointer.
+ */
+using CleanupSimulation = void (*)(Simulation*);
 
 /* ************************************************************************ */
 
@@ -99,6 +145,22 @@ public:
 
 
     /**
+     * @brief Setup simulation.
+     *
+     * @param simulation Pointer to simulation.
+     */
+    void setupSimulation(Simulation* simulation);
+
+
+    /**
+     * @brief Cleaup simulation.
+     *
+     * @param simulation Pointer to simulation.
+     */
+    void cleanupSimulation(Simulation* simulation);
+
+
+    /**
      * @brief Create module from current library.
      *
      * @param simulation Pointer to simulation for that module is created.
@@ -115,6 +177,12 @@ private:
     /// Implementation
     struct Impl;
     std::unique_ptr<Impl> m_impl;
+
+    /// Function pointer to setup simulation.
+    SetupSimulation m_setupSimulation;
+
+    /// Function pointer to cleanup simulation.
+    CleanupSimulation m_cleanupSimulation;
 
     /// Function pointer to create module.
     CreateModule m_createModule;
