@@ -15,32 +15,12 @@
 #include "core/Log.hpp"
 #include "parser/Parser.hpp"
 
+// Parser
+#include "parser-xml/ImmutableConfiguration.hpp"
+
 /* ************************************************************************ */
 
 namespace {
-
-/* ************************************************************************ */
-
-/**
- * @brief Read attributes from XML node.
- *
- * @param node
- *
- * @return
- */
-std::map<std::string, std::string> get_attributes(const pugi::xml_node& node)
-{
-    // Get attributes
-    std::map<std::string, std::string> res;
-
-    // Store node attributes
-    for (auto attr : node.attributes())
-    {
-        res.insert(std::make_pair(attr.name(), attr.value()));
-    }
-
-    return res;
-}
 
 /* ************************************************************************ */
 
@@ -53,9 +33,6 @@ std::map<std::string, std::string> get_attributes(const pugi::xml_node& node)
 void process_object_node(const pugi::xml_node& node, simulator::Simulation& simulation)
 {
     assert(!strcmp(node.name(), "object"));
-
-    // Get attributes
-    auto attributes = get_attributes(node);
 
     // TODO: finish
 }
@@ -72,21 +49,20 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
 {
     assert(!strcmp(node.name(), "module"));
 
-    // Get attributes
-    auto attributes = get_attributes(node);
+    // Create configuration
+    const parser::xml::ImmutableConfiguration configuration(node);
 
     // Module name
     {
-        auto it = attributes.find("name");
-        if (it == attributes.end())
+        if (!configuration.hasValue("name"))
             throw parser::Exception("Missing attribute 'name' in 'module' element");
 
         // Create module by given name
-        simulator::Module* module = simulation.useModule(it->second);
+        simulator::Module* module = simulation.useModule(configuration.getString("name"));
 
         // Configure module
         if (module)
-            module->configure(attributes);
+            module->configure(configuration);
     }
 }
 

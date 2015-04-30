@@ -30,6 +30,8 @@
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="SimulationFactory.hpp"/>
+    <File Name="MutableConfiguration.hpp"/>
+    <File Name="ImmutableConfiguration.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

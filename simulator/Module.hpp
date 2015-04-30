@@ -9,6 +9,7 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "simulator/Configuration.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -29,15 +30,6 @@ class Simulation;
  */
 class Module
 {
-
-// Public Types
-public:
-
-
-    /**
-     * @brief Module configuration.
-     */
-    using Configuration = std::map<std::string, std::string>;
 
 
 // Public Ctors & Dtors
@@ -71,7 +63,7 @@ public:
      *
      * @param config
      */
-    virtual void configure(const Configuration& config)
+    virtual void configure(const ConfigurationBase& config)
     {
         // Nothing to do
     }

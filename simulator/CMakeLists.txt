@@ -19,6 +19,7 @@ set(SRCS
     Module.hpp
     Library.hpp
     Library.cpp
+    Configuration.hpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>

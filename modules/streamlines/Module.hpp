@@ -180,7 +180,7 @@ public:
      *
      * @param config
      */
-    void configure(const Configuration& config) override;
+    void configure(const simulator::ConfigurationBase& config) override;
 
 
 #ifdef ENABLE_RENDER

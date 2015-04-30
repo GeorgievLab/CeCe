@@ -30,6 +30,7 @@
     <File Name="Simulation.hpp"/>
     <File Name="SimulationFactory.hpp"/>
     <File Name="Library.hpp"/>
+    <File Name="Configuration.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

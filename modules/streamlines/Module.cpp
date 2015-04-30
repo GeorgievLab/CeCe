@@ -119,28 +119,31 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::configure(const Configuration& config)
+void Module::configure(const simulator::ConfigurationBase& config)
 {
     // Grid size
     {
-        auto it = config.find("grid");
-        if (it != config.end())
-            m_grid.resize(parser::parse_vector<SizeType>(it->second.c_str()));
+        auto grid = config.getString("grid");
+
+        if (!grid.empty())
+            m_grid.resize(parser::parse_vector<SizeType>(grid.c_str()));
     }
 
     // Flow speed
     {
-        auto it = config.find("flow-speed");
-        if (it != config.end())
-            setFlowSpeed(parser::parse_value<float>(it->second.c_str()));
+        auto flowSpeed = config.getString("flow-speed");
+
+        if (!flowSpeed.empty())
+            setFlowSpeed(parser::parse_value<float>(flowSpeed.c_str()));
     }
 
 #ifdef ENABLE_RENDER
     // Draw flags
     {
-        auto it = config.find("draw-velocity");
-        if (it != config.end())
-            m_renderObject.setRenderVelocity(parser::parse_bool(it->second.c_str()));
+        auto drawVelocity = config.getString("draw-velocity");
+
+        if (!drawVelocity.empty())
+            m_renderObject.setRenderVelocity(parser::parse_bool(drawVelocity.c_str()));
     }
 #endif
 }
