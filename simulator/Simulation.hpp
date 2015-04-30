@@ -9,10 +9,12 @@
 #include <map>
 #include <cassert>
 #include <string>
+#include <functional>
 
 // Simulator
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
+#include "core/Log.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Library.hpp"
@@ -32,6 +34,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulator;
+class ConfigurationBase;
 
 /* ************************************************************************ */
 
@@ -53,11 +56,17 @@ class Simulation
 public:
 
 
+    /// Object builder type.
+    using ObjectBuilder = std::function<std::unique_ptr<Object>(Simulation&, const ConfigurationBase&)>;
+
     /// Module container type.
     using ModuleContainer = std::map<std::string, std::unique_ptr<Module>>;
 
     /// Object container type.
     using ObjectContainer = std::vector<std::unique_ptr<Object>>;
+
+    /// Object builders container type.
+    using ObjectBuilderContainer = std::map<std::string, ObjectBuilder>;
 
 
 // Public Ctors
@@ -336,6 +345,21 @@ public:
 
 
     /**
+     * @brief Register object builder.
+     *
+     * @param name    Object name.
+     * @param builder Builder.
+     */
+    void registerObjectBuilder(std::string name, ObjectBuilder builder)
+    {
+        if (m_objectBuilders.find(name) != m_objectBuilders.end())
+            Log::warning("Replacing builder: ", name);
+
+        m_objectBuilders.emplace(std::move(name), std::move(builder));
+    }
+
+
+    /**
      * @brief Add a new object to the world.
      *
      * @param obj
@@ -364,6 +388,24 @@ public:
     T* createObject(Args&&... args)
     {
         return addObject(std::unique_ptr<T>(new T(*this, std::forward<Args>(args)...)));
+    }
+
+
+    /**
+     * @brief Build object by name.
+     *
+     * @param name   Object name.
+     * @param config Object configuration.
+     *
+     * @return
+     */
+    Object* buildObject(const std::string& name, const ConfigurationBase& config)
+    {
+        auto it = m_objectBuilders.find(name);
+        if (it == m_objectBuilders.end())
+            throw std::runtime_error("Unable to create object: " + name);
+
+        return addObject(it->second(*this, config));
     }
 
 
@@ -445,6 +487,9 @@ private:
 
     /// Simulation objects.
     ObjectContainer m_objects;
+
+    /// Registered object builders.
+    ObjectBuilderContainer m_objectBuilders;
 
 #ifdef ENABLE_RENDER
     /// List of objects that requires init.

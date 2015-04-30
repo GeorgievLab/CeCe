@@ -34,7 +34,14 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
 {
     assert(!strcmp(node.name(), "object"));
 
-    // TODO: finish
+    // Create configuration
+    const parser::xml::ImmutableConfiguration configuration(node);
+
+    if (!configuration.hasValue("class"))
+        throw parser::Exception("Missing attribute 'class' in 'object' element");
+
+    // Create object
+    simulation.buildObject(configuration.getString("class"), configuration);
 }
 
 /* ************************************************************************ */
@@ -88,17 +95,18 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         simulation.setWorldSize(size);
     }
 
+    // Parse modules
+    for (const auto& module : node.children("module"))
+    {
+        process_module_node(module, simulation);
+    }
+
     // Parse objects
     for (const auto& object : node.children("object"))
     {
         process_object_node(object, simulation);
     }
 
-    // Parse modules
-    for (const auto& module : node.children("module"))
-    {
-        process_module_node(module, simulation);
-    }
 }
 
 /* ************************************************************************ */
