@@ -30,9 +30,6 @@
 #include "modules/diffusion/Generator.hpp"
 #include "modules/diffusion/GeneratorCell.hpp"
 #include "modules/diffusion-streamlines/Module.hpp"
-#include "modules/cell/Generator.hpp"
-#include "modules/cell/Yeast.hpp"
-#include "modules/cell/Cell.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -63,7 +60,6 @@ std::mutex g_log_mutex;
 /* ************************************************************************ */
 
 module::diffusion::Module* g_diffusionModule;
-module::cell::Cell* g_mainCell;
 
 /* ************************************************************************ */
 
@@ -151,17 +147,6 @@ int main(int argc, char** argv)
         simulation->getWorld().SetDebugDraw(&debugDraw);
 #endif
 
-        // Load modules
-        //simulation->useModule("diffusion-streamlines");
-        //simulation->useModule("streamlines");
-        //simulation->useModule("diffusion.generator");
-        //simulation->useModule("diffusion.generator-cell");
-        //simulation->useModule("cell.generator");
-
-        // Create main cell
-        g_mainCell = simulation->createObject<module::cell::Cell>(simulator::Object::Type::Static);
-        g_mainCell->setVolume(units::um3(1540));
-
         // Create modules
         g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
 
@@ -233,22 +218,6 @@ int main(int argc, char** argv)
 
             // Force redraw
             glutPostRedisplay();
-        });
-
-        glutSpecialFunc([](int key, int x, int y) {
-            if (g_mainCell)
-            {
-                auto pos = g_mainCell->getPosition();
-                switch (key)
-                {
-                case GLUT_KEY_LEFT: pos.getX() -= 0.5f; break;
-                case GLUT_KEY_RIGHT: pos.getX() += 0.5f; break;
-                case GLUT_KEY_UP: pos.getY() += 0.5f; break;
-                case GLUT_KEY_DOWN: pos.getY() -= 0.5f; break;
-                }
-
-                g_mainCell->setPosition(pos);
-            }
         });
 
         glutKeyboardFunc([](unsigned char key, int x, int y) {
