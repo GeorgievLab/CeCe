@@ -35,8 +35,8 @@ target_link_libraries(cli
     module-diffusion-streamlines
     module-diffusion
     module-streamlines
-    #module-physics
     module-cell
+    module-picture
     simulator
     parser-xml
     ${RENDER_LIBS}

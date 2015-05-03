@@ -2,5 +2,6 @@
     <module name="cell.generator" />
     <module name="cell.cells" />
     <module name="streamlines" grid="100 100" flow-speed="10um/s" draw-velocity="true" />
+    <module name="picture" />
     <object class="Cell" type="static" position="0 0" volume="1540um3" />
 </simulation>

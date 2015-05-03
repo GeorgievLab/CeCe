@@ -2,6 +2,10 @@
 
 cmake_minimum_required(VERSION 2.8.8)
 
+if (!ENABLE_RENDER)
+    message(FATAL_ERROR "Cannot build 'render' without ENABLE_RENDER")
+endif ()
+
 # Project name
 set(PROJECT_NAME render)
 
