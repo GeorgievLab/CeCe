@@ -120,14 +120,18 @@ public:
      * @brief Update simulation by time step.
      *
      * @param dt Time step.
+     *
+     * @return If next step can be calculated.
      */
-    void update(units::Duration dt);
+    bool update(units::Duration dt);
 
 
     /**
      * @brief Update simulation by time step.
+     *
+     * @return If next step can be calculated.
      */
-    void update();
+    bool update();
 
 
 #ifdef ENABLE_RENDER

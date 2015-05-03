@@ -7,6 +7,7 @@
 // C++
 #include <algorithm>
 #include <tuple>
+#include <chrono>
 
 // Simulator
 #include "core/Log.hpp"
@@ -105,7 +106,7 @@ void Simulation::reset()
 
 /* ************************************************************************ */
 
-void Simulation::update(units::Duration dt) noexcept
+bool Simulation::update(units::Duration dt) noexcept
 {
     // Increase step number
     m_stepNumber++;
@@ -175,6 +176,37 @@ void Simulation::update(units::Duration dt) noexcept
         m_world.Step(dt, 1, 1);
     }
 #endif
+
+    return (hasUnlimitedIterations() || getStepNumber() <= getIterations());
+}
+
+/* ************************************************************************ */
+
+bool Simulation::update()
+{
+    if (isTimeStepRealTime())
+    {
+        using clock_type = std::chrono::high_resolution_clock;
+        using duration_type = std::chrono::duration<float, std::chrono::seconds::period>;
+
+        // Last update duration
+        static clock_type::duration diff{1};
+
+        // Get start time
+        auto start = clock_type::now();
+
+        static_assert(std::chrono::treat_as_floating_point<duration_type::rep>::value, "ehm...");
+        bool res = update(std::chrono::duration_cast<duration_type>(diff).count());
+
+        // Calculate time that takes to update simulation (then use it in next step)
+        diff = clock_type::now() - start;
+
+        return res;
+    }
+    else
+    {
+        return update(getTimeStep());
+    }
 }
 
 /* ************************************************************************ */

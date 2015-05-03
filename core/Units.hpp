@@ -173,6 +173,42 @@ constexpr Angle deg(float value)
 /* ************************************************************************ */
 
 /**
+ * @brief Seconds value.
+ *
+ * @param value
+ */
+constexpr Duration s(float value) noexcept
+{
+    return Duration(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Milliseconds value.
+ *
+ * @param value
+ */
+constexpr Duration ms(float value) noexcept
+{
+    return Duration(value / 1000.f);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Microseconds value.
+ *
+ * @param value
+ */
+constexpr Duration us(float value) noexcept
+{
+    return Duration(value / 1000000.f);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Micrometers literal.
  */
 inline Length operator"" _um(long double value)

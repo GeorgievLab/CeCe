@@ -95,6 +95,32 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         simulation.setWorldSize(size);
     }
 
+    // Time step
+    {
+        std::string dtStr = node.attribute("dt").value();
+
+        // Real-time time step
+        if (dtStr.empty() || dtStr == "auto")
+        {
+            simulation.setTimeStepRealTime(true);
+        }
+        else
+        {
+            // Parse time step
+            auto dt = parser::parse_value<units::Duration>(dtStr);
+            simulation.setTimeStep(dt);
+            simulation.setTimeStepRealTime(false);
+        }
+    }
+
+    // Number of iterations
+    {
+        auto attr = node.attribute("iterations");
+
+        if (!attr.empty())
+            simulation.setIterations(attr.as_ullong());
+    }
+
     // Parse modules
     for (const auto& module : node.children("module"))
     {

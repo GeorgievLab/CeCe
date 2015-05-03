@@ -114,6 +114,28 @@ public:
 
 
     /**
+     * @brief Returns a number of total iterations.
+     *
+     * @return
+     */
+    StepNumber getIterations() const noexcept
+    {
+        return m_iterations;
+    }
+
+
+    /**
+     * @brief Returns if there is unlimited iterations.
+     *
+     * @return
+     */
+    bool hasUnlimitedIterations() const noexcept
+    {
+        return getIterations() == 0;
+    }
+
+
+    /**
      * @brief Return a list of modules.
      *
      * @return
@@ -132,6 +154,17 @@ public:
     units::Duration getTimeStep() const noexcept
     {
         return m_timeStep;
+    }
+
+
+    /**
+     * @brief If real-time step is enabled.
+     *
+     * @return
+     */
+    bool isTimeStepRealTime() const noexcept
+    {
+        return m_timeStepRealTime;
     }
 
 
@@ -253,6 +286,18 @@ public:
 
 
     /**
+     * @brief Set total number of simulation iterations.
+     *
+     * @param iterations Number of iterations. If value is 0, there is
+     *                   unlimited number of iterations.
+     */
+    void setIterations(StepNumber iterations) noexcept
+    {
+        m_iterations = iterations;
+    }
+
+
+    /**
      * @brief Set simulation time step.
      *
      * @param dt
@@ -260,6 +305,17 @@ public:
     void setTimeStep(units::Duration dt) noexcept
     {
         m_timeStep = dt;
+    }
+
+
+    /**
+     * @brief Enable or disable real-time time step.
+     *
+     * @param flag
+     */
+    void setTimeStepRealTime(bool flag) noexcept
+    {
+        m_timeStepRealTime = flag;
     }
 
 
@@ -434,17 +490,18 @@ public:
      * @brief Update simulation.
      *
      * @param dt
+     *
+     * @return If next step can be calculated.
      */
-    void update(units::Duration dt) noexcept;
+    bool update(units::Duration dt) noexcept;
 
 
     /**
      * @brief Update simulation by time step.
+     *
+     * @return If next step can be calculated.
      */
-    void update()
-    {
-        update(getTimeStep());
-    }
+    bool update();
 
 
 #ifdef ENABLE_RENDER
@@ -476,8 +533,14 @@ private:
     /// Number of simulation steps.
     StepNumber m_stepNumber = 0;
 
+    /// Number of iterations.
+    StepNumber m_iterations = 0;
+
     /// Simulation step.
     units::Duration m_timeStep;
+
+    /// Real-time time step
+    bool m_timeStepRealTime = true;
 
     /// Simulation modules.
     ModuleContainer m_modules;

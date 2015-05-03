@@ -68,18 +68,18 @@ void Simulator::reset()
 
 /* ************************************************************************ */
 
-void Simulator::update(units::Duration dt)
+bool Simulator::update(units::Duration dt)
 {
     assert(m_simulation);
-    m_simulation->update(dt);
+    return m_simulation->update(dt);
 }
 
 /* ************************************************************************ */
 
-void Simulator::update()
+bool Simulator::update()
 {
     assert(m_simulation);
-    update(m_simulation->getTimeStep());
+    return m_simulation->update();
 }
 
 /* ************************************************************************ */

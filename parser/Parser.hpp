@@ -49,6 +49,15 @@ struct value_constructor<float>
         if (suffix == "um3")
             return units::um3(val);
 
+        if (suffix == "s")
+            return units::s(val);
+
+        if (suffix == "ms")
+            return units::ms(val);
+
+        if (suffix == "us")
+            return units::us(val);
+
         throw Exception("Unsupported suffix: " + suffix);
     }
 };

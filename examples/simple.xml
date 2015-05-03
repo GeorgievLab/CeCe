@@ -1,4 +1,4 @@
-<simulation world-size="100um 100um">
+<simulation world-size="100um 100um" dt="10ms" iterations="10000">
     <module name="cell.generator" />
     <module name="cell.cells" />
     <module name="streamlines" grid="100 100" flow-speed="10um/s" draw-velocity="true" />

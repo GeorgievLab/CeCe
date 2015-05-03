@@ -197,7 +197,8 @@ int main(int argc, char** argv)
             //g_sim.update(dt);
             //g_sim.update(1.f);
             //for (int i = 0; i < 10; ++i)
-            g_sim.update(0.01f);
+            if (!g_sim.update())
+                exit(0);
 
             // Reset clock
             g_start = clock_type::now();
