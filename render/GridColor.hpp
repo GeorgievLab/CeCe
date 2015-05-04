@@ -6,6 +6,7 @@
 // Simulator
 #include "core/Vector.hpp"
 #include "render/Buffer.hpp"
+#include "render/Color.hpp"
 #include "render/GridBase.hpp"
 
 /* ************************************************************************ */
@@ -19,10 +20,24 @@ class Context;
 /* ************************************************************************ */
 
 /**
- * @brief Rendering grid object.
+ * @brief Texture-like grid.
  */
-class Grid : public GridBase
+class GridColor : public GridBase
 {
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set cell color.
+     *
+     * @param coord Coordinates.
+     * @param color Cell color.
+     */
+    void set(const Vector<PositionType>& coord, const Color& color) noexcept;
+
 
 // Public Operators
 public:
@@ -44,18 +59,13 @@ public:
     void draw(Context& context) noexcept;
 
 
-    /**
-     * @brief Resize grid.
-     *
-     * @param size
-     */
-    void resize(Vector<PositionType> size) noexcept;
-
-
 // Private Data Members
 private:
 
-    /// Buffer object.
+    /// Texture.
+    unsigned int m_texture;
+
+    /// Buffer for texture rendering.
     Buffer m_buffer;
 
 };

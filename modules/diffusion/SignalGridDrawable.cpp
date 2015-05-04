@@ -94,8 +94,6 @@ SignalGridDrawable::~SignalGridDrawable()
 
 void SignalGridDrawable::init(render::Context& context, Vector<unsigned int> size, const Signal* data)
 {
-    render::Grid::init(context);
-
     // Generate texture
     gl(glGenTextures(1, &m_texture));
 
@@ -143,7 +141,7 @@ void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
     gl(glActiveTexture(GL_TEXTURE0));
 
     // Set size
-    gl(glUniform2i(m_sizePtr, getWidth(), getHeight()));
+    gl(glUniform2i(m_sizePtr, getSize().getWidth(), getSize().getHeight()));
 
     // Set interpolate flag
     gl(glUniform1i(m_interpolatePtr, m_interpolate));
@@ -169,22 +167,19 @@ void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
     gl(glUseProgram(0));
 
     gl(glPopMatrix());
-
-    // Render grid
-    render::Grid::draw(scale, {1, 0, 0, 1});
 }
 
 /* ************************************************************************ */
 
 void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 {
-    render::Grid::resize(std::move(size));
+    m_size = std::move(size);
 
     // Resize texture buffer
-    m_textureData.resize(getWidth() * getHeight());
+    m_textureData.resize(getSize().getWidth() * getSize().getHeight());
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getWidth(), getHeight(), 0, GL_RGBA, GL_FLOAT, updateTextureData(data)));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getSize().getWidth(), getSize().getHeight(), 0, GL_RGBA, GL_FLOAT, updateTextureData(data)));
     //gl(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
@@ -193,7 +188,7 @@ void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 void SignalGridDrawable::update(const Signal* data) noexcept
 {
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getWidth(), getHeight(), GL_RGBA, GL_FLOAT, updateTextureData(data)));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getSize().getWidth(), getSize().getHeight(), GL_RGBA, GL_FLOAT, updateTextureData(data)));
 }
 
 /* ************************************************************************ */

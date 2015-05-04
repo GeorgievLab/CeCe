@@ -13,7 +13,8 @@
 #include <GL/gl.h>
 
 // Simulator
-#include "render/errors.hpp"
+#include "render/Context.hpp"
+#include "render/errors.hpp" // TODO: remove
 
 /* ************************************************************************ */
 
@@ -28,46 +29,39 @@ void Grid::init(Context& context)
 
 /* ************************************************************************ */
 
-void Grid::draw(const Vector<float>& scale, const Color& color) noexcept
+void Grid::draw(Context& context) noexcept
 {
-    if (!isRenderGrid())
-        return;
+    // Set vertex buffer
+    context.setVertexBuffer(&m_buffer);
 
-    // Draw color
-    gl(glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
-
-    gl(glPushMatrix());
-    gl(glScalef(scale.getX(), scale.getY(), 1));
-
-    // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, 0, 0));
 
-    auto width = m_size.getWidth();
-    auto height = m_size.getHeight();
+    auto width = getSize().getWidth();
+    auto height = getSize().getHeight();
 
-    // Draw circle
-    gl(glDrawArrays(GL_LINES, 0, 2 * ((width + 1) + (height + 1))));
+    // Draw grid
+    context.draw(PrimitiveType::Lines, 2 * ((width + 1) + (height + 1)));
 
     // Disable states
     gl(glDisableClientState(GL_VERTEX_ARRAY));
-    gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
-    gl(glPopMatrix());
+    // Unbind vertex buffer
+    //context.setVertexBuffer(nullptr);
 }
 
 /* ************************************************************************ */
 
-void Grid::resize(Vector<unsigned int> size) noexcept
+void Grid::resize(Vector<PositionType> size) noexcept
 {
-    m_size = std::move(size);
+    GridBase::resize(std::move(size));
 
-    auto width = m_size.getWidth();
-    auto height = m_size.getHeight();
+    // Get grid size
+    const auto width = getSize().getWidth();
+    const auto height = getSize().getHeight();
 
-    constexpr Vector<float> start{-0.5f, -0.5f};
-    const Vector<float> step{1.f / width, 1.f / height};
+    constexpr Vector<float> start{-0.5f};
+    const Vector<float> step = 1.f / getSize();
 
     struct Vertex { GLfloat x, y; };
 
@@ -75,19 +69,20 @@ void Grid::resize(Vector<unsigned int> size) noexcept
     vertices.reserve((width + 1) * (height + 1));
 
     // X lines
-    for (unsigned i = 0; i <= width; ++i)
+    for (PositionType i = 0; i <= width; ++i)
     {
         vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY()});
         vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY() + 1.f});
     }
 
     // Y lines
-    for (unsigned i = 0; i <= height; ++i)
+    for (PositionType i = 0; i <= height; ++i)
     {
         vertices.push_back(Vertex{start.getX(), start.getY() + i * step.getY()});
         vertices.push_back(Vertex{start.getX() + 1.f, start.getY() + i * step.getY()});
     }
 
+    // Initialize buffer
     m_buffer.resize(
         vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data()

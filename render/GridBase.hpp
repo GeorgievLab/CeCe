@@ -3,10 +3,11 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <utility>
+
 // Simulator
 #include "core/Vector.hpp"
-#include "render/Buffer.hpp"
-#include "render/GridBase.hpp"
 
 /* ************************************************************************ */
 
@@ -19,29 +20,37 @@ class Context;
 /* ************************************************************************ */
 
 /**
- * @brief Rendering grid object.
+ * @brief Rendering grid object - base class.
  */
-class Grid : public GridBase
+class GridBase
 {
 
-// Public Operators
+// Public Types
+public:
+
+
+    /// Position type.
+    using PositionType = unsigned int;
+
+
+// Public Accessors
 public:
 
 
     /**
-     * @brief Initialize.
+     * @brief Returns current grid size.
      *
-     * @param context Rendering context.
+     * @return
      */
-    void init(Context& context);
+    const Vector<PositionType>& getSize() const noexcept
+    {
+        return m_size;
+    }
 
 
-    /**
-     * @brief Render at current position.
-     *
-     * @param context Rendering context.
-     */
-    void draw(Context& context) noexcept;
+// Public Operators
+public:
+
 
 
     /**
@@ -49,14 +58,18 @@ public:
      *
      * @param size
      */
-    void resize(Vector<PositionType> size) noexcept;
+    void resize(Vector<PositionType> size) noexcept
+    {
+        m_size = std::move(size);
+    }
 
 
 // Private Data Members
 private:
 
-    /// Buffer object.
-    Buffer m_buffer;
+
+    /// Grid size.
+    Vector<PositionType> m_size;
 
 };
 

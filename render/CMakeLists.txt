@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME} OBJECT
     Camera.cpp
     Buffer.hpp
     Buffer.cpp
+    GridBase.hpp
     Grid.hpp
     Grid.cpp
     GridVector.hpp

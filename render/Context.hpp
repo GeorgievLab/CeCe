@@ -1,7 +1,9 @@
 
 #pragma once
 
-#ifdef ENABLE_RENDER
+#if !ENABLE_RENDER
+#error ENABLE_RENDER required
+#endif
 
 /* ************************************************************************ */
 
@@ -15,11 +17,27 @@
 #include "core/VectorUnits.hpp"
 #include "render/Camera.hpp"
 #include "render/Position.hpp"
-#include "render/Color.hpp"
 
 /* ************************************************************************ */
 
 namespace render {
+
+/* ************************************************************************ */
+
+class Buffer;
+class Color;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Primitive types for rendering.
+ */
+enum class PrimitiveType
+{
+    Lines,
+    Triangles,
+    Quads
+};
 
 /* ************************************************************************ */
 
@@ -177,7 +195,7 @@ public:
      */
     void matrixScale(float scale) noexcept
     {
-        return matrixScale({scale, scale});
+        return matrixScale(Vector<float>{scale});
     }
 
 
@@ -187,6 +205,32 @@ public:
      * @param angle Angle of the rotation.
      */
     void matrixRotate(units::Angle angle) noexcept;
+
+
+    /**
+     * @brief Set current color.
+     *
+     * @param color
+     */
+    void setColor(const Color& color) noexcept;
+
+
+    /**
+     * @brief Set vertex buffer.
+     *
+     * @param buffer A pointer to used buffer. Can be nullptr to unbind buffer.
+     */
+    void setVertexBuffer(Buffer* buffer) noexcept;
+
+
+    /**
+     * @brief Draw primitives from current buffer.
+     *
+     * @param type   Primitive type.
+     * @param count  Number of drawn primitives
+     * @param offset Offset from vertex buffer.
+     */
+    void draw(PrimitiveType type, unsigned int count, unsigned int offset = 0u);
 
 
 // Private Data Members
@@ -203,9 +247,5 @@ private:
 /* ************************************************************************ */
 
 }
-
-/* ************************************************************************ */
-
-#endif
 
 /* ************************************************************************ */

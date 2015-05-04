@@ -20,12 +20,34 @@
 #include <GL/glu.h>
 
 // Simulator
-#include "render/Grid.hpp"
+#include "render/Color.hpp"
+#include "render/Buffer.hpp"
 #include "render/errors.hpp"
 
 /* ************************************************************************ */
 
 namespace render {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Convert primitive type to OpenGL.
+ *
+ * @param type
+ *
+ * @return
+ */
+static GLenum convert(PrimitiveType type) noexcept
+{
+    switch (type)
+    {
+    case PrimitiveType::Lines:      return GL_LINES;
+    case PrimitiveType::Triangles:  return GL_TRIANGLES;
+    case PrimitiveType::Quads:      return GL_QUADS;
+    }
+
+    return 0;
+}
 
 /* ************************************************************************ */
 
@@ -251,6 +273,28 @@ void Context::matrixScale(const Vector<float>& scale) noexcept
 void Context::matrixRotate(units::Angle angle) noexcept
 {
     gl(glRotatef(units::rad2deg(angle), 0.f, 0.f, 1.f));
+}
+
+/* ************************************************************************ */
+
+void Context::setColor(const Color& color) noexcept
+{
+    gl(glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+}
+
+/* ************************************************************************ */
+
+void Context::setVertexBuffer(Buffer* buffer) noexcept
+{
+    // Bind buffer
+    gl(glBindBuffer(GL_ARRAY_BUFFER, buffer ? buffer->getId() : 0));
+}
+
+/* ************************************************************************ */
+
+void Context::draw(PrimitiveType type, unsigned int count, unsigned int offset)
+{
+    gl(glDrawArrays(convert(type), offset, count));
 }
 
 /* ************************************************************************ */

@@ -34,7 +34,7 @@ namespace diffusion {
 /**
  * @brief Signal grid renderer.
  */
-class SignalGridDrawable : public render::Grid
+class SignalGridDrawable
 {
 
 // Public Ctors & Dtors
@@ -49,6 +49,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns current grid size.
+     *
+     * @return
+     */
+    const Vector<unsigned int>& getSize() const noexcept
+    {
+        return m_size;
+    }
 
 
     /**
@@ -154,6 +165,9 @@ private:
 
     /// Draw buffer
     render::Buffer m_buffer;
+
+    /// Grid size.
+    Vector<unsigned int> m_size;
 
     /// Texture.
     GLuint m_texture = 0;

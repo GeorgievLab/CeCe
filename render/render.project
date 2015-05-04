@@ -25,6 +25,7 @@
     <File Name="Shader.cpp"/>
     <File Name="Program.cpp"/>
     <File Name="Buffer.cpp"/>
+    <File Name="GridColor.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
@@ -37,6 +38,8 @@
     <File Name="Shader.hpp"/>
     <File Name="Program.hpp"/>
     <File Name="Buffer.hpp"/>
+    <File Name="GridColor.hpp"/>
+    <File Name="GridBase.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
