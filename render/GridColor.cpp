@@ -21,12 +21,21 @@ namespace render {
 
 /* ************************************************************************ */
 
+// Vertex structure
+struct Vertex
+{
+    GLfloat x, y;
+    GLfloat u, v;
+};
+
+/* ************************************************************************ */
+
 void GridColor::set(const Vector<PositionType>& coord, const Color& color) noexcept
 {
     const GLfloat pixels[4] = {color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, coord.getX(), coord.getY(), 1, 1, GL_RGBA, GL_FLOAT, pixels);
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, coord.getX(), coord.getY(), 1, 1, GL_RGBA, GL_FLOAT, pixels));
 }
 
 /* ************************************************************************ */
@@ -42,9 +51,6 @@ void GridColor::init(Context& context)
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-    // Vertex structure
-    struct Vertex { GLfloat x, y; GLfloat u, v; };
-
     const std::array<Vertex, 4> vertices = {{
         { 0.5f,  0.5f, 1.0f, 1.0f},
         { 0.5f, -0.5f, 1.0f, 0.0f},
@@ -56,6 +62,14 @@ void GridColor::init(Context& context)
         vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data()
     );
+}
+
+/* ************************************************************************ */
+
+void GridColor::init(Context& context, Vector<PositionType> size)
+{
+    init(context);
+    resize(std::move(size));
 }
 
 /* ************************************************************************ */
@@ -87,12 +101,30 @@ void GridColor::draw(Context& context) noexcept
 
 /* ************************************************************************ */
 
-void GridColor::resize(Vector<PositionType> size) noexcept
+void GridColor::resize(Vector<PositionType> size)
 {
     GridBase::resize(std::move(size));
 
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getSize().getWidth(), getSize().getHeight(), 0, GL_RGBA, GL_FLOAT, nullptr));
+}
+
+/* ************************************************************************ */
+
+void GridColor::clear(const Color& color)
+{
+    const auto width = getSize().getWidth();
+    const auto height = getSize().getHeight();
+
+    struct ColorStruct { GLfloat r, g, b, a; };
+
+    const std::vector<ColorStruct> pixels(
+        width * height,
+        ColorStruct{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()}
+    );
+
+    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, pixels.data()));
 }
 
 /* ************************************************************************ */

@@ -42,6 +42,8 @@ add_library(${PROJECT_NAME} OBJECT
     Grid.cpp
     GridVector.hpp
     GridVector.cpp
+    GridColor.hpp
+    GridColor.cpp
     Shader.hpp
     Shader.cpp
     Program.hpp

@@ -52,11 +52,36 @@ public:
 
 
     /**
+     * @brief Initialize.
+     *
+     * @param context Rendering context.
+     * @param size
+     */
+    void init(Context& context, Vector<PositionType> size);
+
+
+    /**
      * @brief Render at current position.
      *
      * @param context Rendering context.
      */
     void draw(Context& context) noexcept;
+
+
+    /**
+     * @brief Resize grid.
+     *
+     * @param size
+     */
+    void resize(Vector<PositionType> size);
+
+
+    /**
+     * @brief Clear grid to default color.
+     *
+     * @param color Clear color.
+     */
+    void clear(const Color& color);
 
 
 // Private Data Members
