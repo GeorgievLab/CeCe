@@ -83,6 +83,10 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         m_renderUpdate = true;
     }
 
+#ifdef ENABLE_RENDER
+    m_renderObjectColor.clear(render::Color{0, 0, 0, 0});
+#endif
+
     // Apply streamlines to world objects
     {
         // Get grid
@@ -113,6 +117,10 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
             // Add acceleration to the object
             obj->applyForce(force);
+
+#ifdef ENABLE_RENDER
+            m_renderObjectColor.set(coord, {1, 1, 1, 1});
+#endif
         }
     }
 }
@@ -154,6 +162,7 @@ void Module::configure(const simulator::ConfigurationBase& config)
 void Module::drawInit(render::Context& context)
 {
     m_renderObject.init(context, m_grid.getSize(), m_grid.getData());
+    m_renderObjectColor.init(context, m_grid.getSize());
 }
 #endif
 
@@ -169,6 +178,11 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     }
 
     m_renderObject.draw(simulation.getWorldSize());
+
+    context.matrixPush();
+    context.matrixScale(simulation.getWorldSize());
+    m_renderObjectColor.draw(context);
+    context.matrixPop();
 }
 #endif
 

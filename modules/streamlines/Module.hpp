@@ -12,6 +12,7 @@
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/GridVector.hpp"
+#include "render/GridColor.hpp"
 #endif
 
 #ifdef ENABLE_PHYSICS
@@ -219,6 +220,9 @@ private:
 #ifdef ENABLE_RENDER
     /// Render grid for velocities
     render::GridVector m_renderObject;
+
+    /// Rendering grid with filled cells.
+    render::GridColor m_renderObjectColor;
 #endif
 
 #ifdef ENABLE_RENDER
