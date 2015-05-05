@@ -11,6 +11,7 @@
 // Simulator
 #include "core/constants.hpp"
 #include "simulator/Simulation.hpp"
+#include "simulator/Shape.hpp"
 
 /* ************************************************************************ */
 
@@ -30,7 +31,7 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) no
 
     // Max 2 shapes
     getShapes().reserve(2);
-    getShapes().push_back(Shape::makeCircle(calcSphereRadius(getVolume())));
+    getShapes().push_back(simulator::Shape::makeCircle(calcSphereRadius(getVolume())));
 }
 
 /* ************************************************************************ */
@@ -185,7 +186,7 @@ void Yeast::updateShape()
     {
         if (shapes.size() != 2)
         {
-            shapes.push_back(Shape::makeCircle(newBudRadius, PositionVector{0, newRadius + newBudRadius}));
+            shapes.push_back(simulator::Shape::makeCircle(newBudRadius, PositionVector{0, newRadius + newBudRadius}));
         }
         else
         {

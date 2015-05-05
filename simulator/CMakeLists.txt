@@ -20,6 +20,7 @@ set(SRCS
     Library.hpp
     Library.cpp
     Configuration.hpp
+    Shape.hpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>

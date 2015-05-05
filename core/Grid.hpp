@@ -58,6 +58,12 @@ public:
     using ContainerType = std::vector<ValueType, AllocatorType>;
 
 
+    /**
+     * @brief Coordinates type.
+     */
+    using CoordinateType = Vector<SizeType>;
+
+
 // Public Ctors & Dtors
 public:
 
@@ -122,7 +128,7 @@ public:
      *
      * @return
      */
-    ValueType& operator[](const Vector<SizeType>& coord) noexcept
+    ValueType& operator[](const CoordinateType& coord) noexcept
     {
         return m_data[calcOffset(coord)];
     }
@@ -135,7 +141,7 @@ public:
      *
      * @return
      */
-    const ValueType& operator[](const Vector<SizeType>& coord) const noexcept
+    const ValueType& operator[](const CoordinateType& coord) const noexcept
     {
         return m_data[calcOffset(coord)];
     }
@@ -289,7 +295,7 @@ public:
      *
      * @return
      */
-    bool inRange(const Vector<SizeType>& coord) const noexcept
+    bool inRange(const CoordinateType& coord) const noexcept
     {
         // Unsigned type for SizeType is allways greater than or equal to zero,
         // the optimizer should remove that checks
@@ -309,7 +315,7 @@ public:
      *
      * @return
      */
-    SizeType calcOffset(const Vector<SizeType>& coord) const noexcept
+    SizeType calcOffset(const CoordinateType& coord) const noexcept
     {
         return coord.getX() + coord.getY() * getSize().getWidth();
     }
