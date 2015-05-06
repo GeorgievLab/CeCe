@@ -1,8 +1,10 @@
 
 #pragma once
 
+/* ************************************************************************ */
+
 #if !ENABLE_RENDER
-#error ENABLE_RENDER required
+#error ENABLE_RENDER must be 1
 #endif
 
 /* ************************************************************************ */
@@ -142,16 +144,6 @@ public:
      * @brief End frame rendering.
      */
     void frameEnd() noexcept;
-
-
-    /**
-     * @brief Draw line.
-     *
-     * @param pos   Origin.
-     * @param dir   Direction.
-     * @param color Color.
-     */
-    void drawLine(const Position& pos, const Vector<float>& dir, const Color& color) noexcept;
 
 
     /**

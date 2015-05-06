@@ -242,7 +242,7 @@ void Simulation::draw(render::Context& context)
 
         m_drawInitList.clear();
     }
-
+/*
     // Draw lines around world
     {
         const auto hw = getWorldSize().getWidth() * 0.5f;
@@ -264,7 +264,7 @@ void Simulation::draw(render::Context& context)
         context.drawLine({hw, hh}, {0, -sh}, color);
         context.drawLine({hw, hh}, {-sw, 0}, color);
     }
-
+*/
     // Draw objects
     for (const auto& obj : getObjects())
     {

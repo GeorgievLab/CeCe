@@ -1,8 +1,8 @@
 
 /* ************************************************************************ */
 
-#ifndef ENABLE_RENDER
-#error ENABLE_RENDER must be 1 to compile render context.
+#if !ENABLE_RENDER
+#error ENABLE_RENDER must be 1
 #endif
 
 /* ************************************************************************ */
@@ -207,30 +207,6 @@ void Context::frameEnd() noexcept
     glDisable(GL_BLEND);
 
     glFlush();
-}
-
-/* ************************************************************************ */
-
-void Context::drawLine(const Position& pos, const Vector<float>& dir, const Color& color) noexcept
-{
-    assert(isInit());
-
-    // Setup transformation matrix
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glTranslatef(pos.getX(), pos.getY(), 0);
-
-    // Draw color
-    glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-
-    glBegin(GL_LINES);
-
-    glVertex2f(0, 0);
-    glVertex2f(dir.getX(), dir.getY());
-
-    glEnd();
-
-    glPopMatrix();
 }
 
 /* ************************************************************************ */
