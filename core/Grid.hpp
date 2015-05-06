@@ -69,6 +69,12 @@ public:
 
 
     /**
+     * @brief Default constructor.
+     */
+    Grid() = default;
+
+
+    /**
      * @brief Constructor.
      *
      * @param size
