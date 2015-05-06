@@ -505,6 +505,33 @@ public:
 
 
     /**
+     * @brief Calculate dot of two vectors.
+     *
+     * @param rhs Second vector.
+     *
+     * @return
+     */
+    T dot(const Vector<T> rhs) const noexcept
+    {
+        return x * rhs.x + y * rhs.y;
+    }
+
+
+    /**
+     * @brief Calculate dot of two vectors.
+     *
+     * @param rhs Second vector.
+     *
+     * @return
+     */
+    template<typename T2>
+    CT<T2> dot(const Vector<T2>& rhs) const noexcept
+    {
+        return x * rhs.getX() + y * rhs.getY();
+    }
+
+
+    /**
      * @brief Rotate current vector and return rotated version.
      *
      * @param angle
