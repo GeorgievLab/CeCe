@@ -32,10 +32,10 @@ struct Vertex
 
 void GridColor::set(const Vector<PositionType>& coord, const Color& color) noexcept
 {
-    const GLfloat pixels[4] = {color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
+    // Set color
+    m_colors[coord] = color;
 
-    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, coord.getX(), coord.getY(), 1, 1, GL_RGBA, GL_FLOAT, pixels));
+    m_colorsUpdated = true;
 }
 
 /* ************************************************************************ */
@@ -76,6 +76,9 @@ void GridColor::init(Context& context, Vector<PositionType> size)
 
 void GridColor::draw(Context& context) noexcept
 {
+    if (m_colorsUpdated)
+        sync();
+
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
@@ -105,26 +108,37 @@ void GridColor::resize(Vector<PositionType> size)
 {
     GridBase::resize(std::move(size));
 
+    const auto width = getSize().getWidth();
+    const auto height = getSize().getHeight();
+
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, getSize().getWidth(), getSize().getHeight(), 0, GL_RGBA, GL_FLOAT, nullptr));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_FLOAT, nullptr));
+
+    // Resize color grid
+    m_colors.resize(getSize());
 }
 
 /* ************************************************************************ */
 
 void GridColor::clear(const Color& color)
 {
+    for (auto& c : m_colors)
+        c = color;
+
+    sync();
+}
+
+/* ************************************************************************ */
+
+void GridColor::sync()
+{
     const auto width = getSize().getWidth();
     const auto height = getSize().getHeight();
 
-    struct ColorStruct { GLfloat r, g, b, a; };
-
-    const std::vector<ColorStruct> pixels(
-        width * height,
-        ColorStruct{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()}
-    );
-
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, pixels.data()));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, m_colors.getData()));
+
+    m_colorsUpdated = false;
 }
 
 /* ************************************************************************ */

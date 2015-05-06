@@ -5,6 +5,7 @@
 
 // Simulator
 #include "core/Vector.hpp"
+#include "core/Grid.hpp"
 #include "render/Buffer.hpp"
 #include "render/Color.hpp"
 #include "render/GridBase.hpp"
@@ -84,6 +85,12 @@ public:
     void clear(const Color& color);
 
 
+    /**
+     * @brief Synchronize local buffer with GPU texture.
+     */
+    void sync();
+
+
 // Private Data Members
 private:
 
@@ -93,6 +100,11 @@ private:
     /// Buffer for texture rendering.
     Buffer m_buffer;
 
+    /// Buffer for storing texture data.
+    core::Grid<Color> m_colors;
+
+    /// If colors were updated.
+    bool m_colorsUpdated = false;
 };
 
 /* ************************************************************************ */
