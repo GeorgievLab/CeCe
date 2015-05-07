@@ -20,6 +20,7 @@ set(SRCS
     Library.hpp
     Library.cpp
     Configuration.hpp
+    Configuration.cpp
     Shape.hpp
 
     # Add object libraries

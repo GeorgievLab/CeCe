@@ -13,7 +13,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-std::string ConfigurationBase::getFilePath(const std::string& filename) const noexcept
+std::string ConfigurationBase::buildFilePath(const std::string& filename) const noexcept
 {
     // Remove filename
     auto sourceFile = getSourcePath();

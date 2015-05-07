@@ -126,7 +126,7 @@ public:
      *
      * @return
      */
-    std::string getFilePath(const std::string& filename) const noexcept;
+    std::string buildFilePath(const std::string& filename) const noexcept;
 
 };
 
