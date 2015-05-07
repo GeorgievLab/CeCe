@@ -68,7 +68,7 @@ public:
      *
      * @return
      */
-    virtual std::unique_ptr<Simulation> fromSource(Simulator& simulator, const std::string& source) const = 0;
+    virtual std::unique_ptr<Simulation> fromSource(Simulator& simulator, const std::string& source, const std::string& filename = "<source>") const = 0;
 
 };
 

@@ -22,6 +22,7 @@
     <File Name="Simulation.cpp"/>
     <File Name="SimulationFactory.cpp"/>
     <File Name="Library.cpp"/>
+    <File Name="Configuration.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>

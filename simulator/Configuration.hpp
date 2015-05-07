@@ -36,6 +36,14 @@ public:
 
 
     /**
+     * @brief Returns of the source file.
+     *
+     * @return
+     */
+    virtual const std::string& getSourcePath() const noexcept = 0;
+
+
+    /**
      * @brief Returns if value exists under given name.
      *
      * @param name
@@ -104,6 +112,21 @@ public:
      * @param value
      */
     virtual void setFloat(const std::string& name, float value) = 0;
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create usable path for filename in directory where the source
+     * come from.
+     *
+     * @param filename
+     *
+     * @return
+     */
+    std::string getFilePath(const std::string& filename) const noexcept;
 
 };
 

@@ -30,12 +30,12 @@ namespace {
  * @param node
  * @param simulation
  */
-void process_object_node(const pugi::xml_node& node, simulator::Simulation& simulation)
+void process_object_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
 {
     assert(!strcmp(node.name(), "object"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node);
+    const parser::xml::ImmutableConfiguration configuration(node, filename);
 
     if (!configuration.hasValue("class"))
         throw parser::Exception("Missing attribute 'class' in 'object' element");
@@ -52,12 +52,12 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
  * @param node
  * @param simulation
  */
-void process_module_node(const pugi::xml_node& node, simulator::Simulation& simulation)
+void process_module_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
 {
     assert(!strcmp(node.name(), "module"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node);
+    const parser::xml::ImmutableConfiguration configuration(node, filename);
 
     // Module name
     {
@@ -81,7 +81,7 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
  * @param node
  * @param simulation
  */
-void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& simulation)
+void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
 {
     assert(!strcmp(node.name(), "simulation"));
 
@@ -124,13 +124,13 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
     // Parse modules
     for (const auto& module : node.children("module"))
     {
-        process_module_node(module, simulation);
+        process_module_node(module, simulation, filename);
     }
 
     // Parse objects
     for (const auto& object : node.children("object"))
     {
-        process_object_node(object, simulation);
+        process_object_node(object, simulation, filename);
     }
 
 }
@@ -146,7 +146,8 @@ namespace xml {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::Simulation> SimulationFactory::fromStream(simulator::Simulator& simulator, std::istream& source) const
+std::unique_ptr<simulator::Simulation> SimulationFactory::fromStream(
+    simulator::Simulator& simulator, std::istream& source, const std::string& filename) const
 {
     std::unique_ptr<simulator::Simulation> simulation(new simulator::Simulation(simulator));
 
@@ -157,7 +158,7 @@ std::unique_ptr<simulator::Simulation> SimulationFactory::fromStream(simulator::
         throw Exception("XML parse error: " + std::string(result.description()));
 
     // Parse DOM
-    process_simulation_node(doc.document_element(), *simulation);
+    process_simulation_node(doc.document_element(), *simulation, filename);
 
     return simulation;
 }

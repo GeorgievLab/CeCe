@@ -32,6 +32,7 @@ public:
     /**
      * @brief Create a new world from source file.
      *
+     * @param simulator
      * @param filename
      */
     std::unique_ptr<simulator::Simulation> fromFile(simulator::Simulator& simulator, const std::string& filename) const override;
@@ -40,9 +41,12 @@ public:
     /**
      * @brief Create a new world from source code.
      *
+     * @param simulator
      * @param source
+     * @param filename
      */
-    std::unique_ptr<simulator::Simulation> fromSource(simulator::Simulator& simulator, const std::string& source) const override;
+    std::unique_ptr<simulator::Simulation> fromSource(simulator::Simulator& simulator,
+        const std::string& source, const std::string& filename = "<source>") const override;
 
 
 // Protected Operations
@@ -54,10 +58,13 @@ protected:
      *
      * @param simulator
      * @param source
+     * @param filename
      *
      * @return
      */
-    virtual std::unique_ptr<simulator::Simulation> fromStream(simulator::Simulator& simulator, std::istream& source) const = 0;
+    virtual std::unique_ptr<simulator::Simulation> fromStream(
+        simulator::Simulator& simulator, std::istream& source,
+        const std::string& filename) const = 0;
 
 };
 

@@ -33,10 +33,12 @@ protected:
      *
      * @param simulator
      * @param source
+     * @param filename
      *
      * @return
      */
-    std::unique_ptr<simulator::Simulation> fromStream(simulator::Simulator& simulator, std::istream& source) const override;
+    std::unique_ptr<simulator::Simulation> fromStream(
+        simulator::Simulator& simulator, std::istream& source, const std::string& filename) const override;
 
 };
 

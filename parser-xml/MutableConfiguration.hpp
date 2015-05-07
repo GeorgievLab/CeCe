@@ -33,9 +33,11 @@ public:
      * @brief Constructor.
      *
      * @param node
+     * @param filename
      */
-    explicit MutableConfiguration(pugi::xml_node& node) noexcept
+    explicit MutableConfiguration(pugi::xml_node& node, std::string filename = {}) noexcept
         : m_node(node)
+        , m_sourcePath(std::move(filename))
     {
         // Nothing to do
     }
@@ -43,6 +45,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns of the source file.
+     *
+     * @return
+     */
+    const std::string& getSourcePath() const noexcept override
+    {
+        return m_sourcePath;
+    }
 
 
     /**
@@ -140,9 +153,11 @@ public:
 // Private Data Members
 private:
 
-
     /// Managed node.
     pugi::xml_node& m_node;
+
+    /// Path to source file
+    std::string m_sourcePath;
 
 };
 
