@@ -79,6 +79,9 @@ void GridColor::draw(Context& context) noexcept
     if (m_colorsUpdated)
         sync();
 
+    // Set color
+    glColor4f(1.f, 1.f, 1.f, 1.f);
+
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
