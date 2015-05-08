@@ -11,6 +11,7 @@
 #include "core/constants.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
+#include "parser/Parser.hpp"
 
 /* ************************************************************************ */
 
@@ -141,6 +142,23 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
         // Swap grids
         std::swap(m_grid, m_gridBack);
+    }
+}
+
+/* ************************************************************************ */
+
+void Module::configure(const simulator::ConfigurationBase& config)
+{
+    // Grid size
+    {
+        auto grid = config.getString("grid");
+
+        if (!grid.empty())
+        {
+            auto size = parser::parse_vector<unsigned int>(grid);
+            m_grid.resize(size);
+            m_gridBack.resize(size);
+        }
     }
 }
 

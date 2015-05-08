@@ -167,6 +167,14 @@ public:
     void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
+    /**
+     * @brief Configure module.
+     *
+     * @param config
+     */
+    void configure(const simulator::ConfigurationBase& config) override;
+
+
 #ifdef ENABLE_RENDER
     /**
      * @brief Initialize module for rendering.
