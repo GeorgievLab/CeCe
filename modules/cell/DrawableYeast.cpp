@@ -16,64 +16,14 @@
 // Simulator
 #include "render/errors.hpp"
 
+// Shaders
+#include "vs.yeast.hpp"
+#include "fs.yeast.hpp"
+
 /* ************************************************************************ */
 
 namespace module {
 namespace cell {
-
-/* ************************************************************************ */
-
-static const char g_vertexShaderSrc[] =
-    "void main() {\n"
-    "    gl_Position = ftransform();\n"
-    "    gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-    "}\n"
-;
-
-/* ************************************************************************ */
-
-static const char g_fragmentShaderSrc[] =
-    "#version 120\n"
-    "\n"
-    "uniform bool g_hasBud = true;\n"
-    "uniform vec2 g_centerMain = vec2(0.5, 0.25);\n"
-    "uniform float g_sizeMain = 0.5;\n"
-    "uniform float g_sizeBud = 0.1;\n"
-    "\n"
-    "const vec4 g_color = vec4(0.5, 0.5, 0.5, 0.5);\n"
-    "const vec4 g_borderColor = vec4(0, 0, 0, 1);\n"
-    "const vec4 g_backgroundColor = vec4(0, 0, 0, 0);\n"
-    "\n"
-    "void main() {\n"
-    "    vec2 centerBud = g_centerMain + vec2(0, (g_sizeBud + g_sizeMain) * 0.5);\n"
-    "\n"
-    "    vec2 diffMain = gl_TexCoord[0].xy - g_centerMain;\n"
-    "    vec2 diffBud = gl_TexCoord[0].xy - centerBud;\n"
-    "\n"
-    "    float a = 0.7;\n"
-    "    float b = 0.55;\n"
-    "\n"
-    "    vec2 ellipseMain = pow(diffMain, vec2(2)) / pow(vec2(a, a / 2), vec2(2));\n"
-    "    float distanceMain = ellipseMain.x + ellipseMain.y;\n"
-    "\n"
-    "    vec2 ellipseBud = pow(diffBud, vec2(2)) / pow(vec2(b, b / 2), vec2(2));\n"
-    "    float distanceBud = ellipseBud.x + ellipseBud.y;\n"
-    "\n"
-    "    if (distanceMain <= g_sizeMain) {\n"
-    "        if (distanceMain <= g_sizeMain - 0.01)\n"
-    "            gl_FragColor = g_color;\n"
-    "        else\n"
-    "            gl_FragColor = g_borderColor;\n"
-    "    } else if (g_hasBud && distanceBud <= g_sizeBud) {\n"
-    "        if (distanceBud <= g_sizeBud - 0.01)\n"
-    "            gl_FragColor = g_color;\n"
-    "        else\n"
-    "            gl_FragColor = g_borderColor;\n"
-    "    } else {\n"
-    "        gl_FragColor = g_backgroundColor;\n"
-    "    }\n"
-    "}\n"
-;
 
 /* ************************************************************************ */
 
@@ -87,8 +37,8 @@ struct Vertex
 
 void DrawableYeast::init(render::Context& context)
 {
-    m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShaderSrc, sizeof(g_vertexShaderSrc));
-    m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShaderSrc, sizeof(g_fragmentShaderSrc));
+    m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShader);
+    m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShader);
     m_program.init(m_vertexShader, m_fragmentShader);
 
     // Get variables
@@ -116,6 +66,10 @@ void DrawableYeast::draw(render::Context& context, float size, float budSize) no
 {
     gl(glUseProgram(m_program.getId()));
 
+    //gl(glMatrixMode(GL_TEXTURE));
+    //glPushMatrix();
+    //gl(glScalef(1.f, 2.f, 1.f));
+
     // Set interpolate flag
     gl(glUniform1i(m_uniformHasBud, budSize != 0.0f));
     gl(glUniform1f(m_uniformSizeMain, size));
@@ -137,6 +91,8 @@ void DrawableYeast::draw(render::Context& context, float size, float budSize) no
     gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
     gl(glUseProgram(0));
+
+    //glPopMatrix();
 }
 
 /* ************************************************************************ */

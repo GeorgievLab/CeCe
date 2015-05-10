@@ -22,6 +22,12 @@ set(SRCS
     DrawableCell.cpp
     DrawableYeast.hpp
     DrawableYeast.cpp
+
+    # Shaders
+    vs.cell.hpp
+    fs.cell.hpp
+    vs.yeast.hpp
+    fs.yeast.hpp
 )
 
 # Create library

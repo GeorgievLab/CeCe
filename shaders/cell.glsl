@@ -11,7 +11,7 @@ uniform vec2 nucleusCenter = vec2(0.55, 0.43);
 uniform float membraneSize = 0.48;
 uniform float nucleusSize = 0.2;
 
-const vec4 membraneColor = vec4(0.5, 0.5, 0.5, 0.5);
+const vec4 membraneColor = vec4(0.5, 0.5, 0.5, 0.7);
 const vec4 nucleusColor = vec4(0.5, 0.5, 0.5, 0.5);
 const vec4 backgroundColor = vec4(0, 0, 0, 0);
 

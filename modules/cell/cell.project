@@ -35,6 +35,10 @@
     <File Name="CellBase.hpp"/>
     <File Name="DrawableYeast.hpp"/>
     <File Name="ModuleCells.hpp"/>
+    <File Name="fs.cell.hpp"/>
+    <File Name="vs.cell.hpp"/>
+    <File Name="fs.yeast.hpp"/>
+    <File Name="vs.yeast.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

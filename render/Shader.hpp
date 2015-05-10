@@ -3,6 +3,11 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <array>
+
+/* ************************************************************************ */
+
 namespace render {
 
 /* ************************************************************************ */
@@ -74,6 +79,19 @@ public:
      * @param length Length of the shader source.
      */
     void init(Type type, const char* source, unsigned length);
+
+
+    /**
+     * @brief Init shader.
+     *
+     * @param type   Type of the shader.
+     * @param source Shader source.
+     */
+    template<std::size_t N>
+    void init(Type type, const std::array<char, N>& source)
+    {
+        init(type, source.data(), N);
+    }
 
 
 // Private Data Members
