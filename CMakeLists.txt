@@ -17,6 +17,7 @@ option(USE_BUILDIN_PHYSICS "Enable build-in physics engine (Box2D)" On)
 option(MODULE_BUILD_STATIC "Build modules as static libraries" Off)
 option(ENABLE_MEASUREMENT "Enable or disable time measurement" Off)
 option(ENABLE_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
+option(BUILD_TOOLS "Build support tools" Off)
 
 # Default include directories
 include_directories(
@@ -116,5 +117,9 @@ if (ENABLE_GUI)
 else ()
     add_subdirectory(cli)
 endif ()
+
+if (BUILD_TOOLS)
+    add_subdirectory(tools/shader-convert)
+endif()
 
 # ######################################################################### #
