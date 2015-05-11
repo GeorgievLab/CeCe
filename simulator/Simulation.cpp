@@ -56,8 +56,7 @@ Simulation::Simulation(Simulator& simulator) noexcept
 
 Simulation::~Simulation()
 {
-    // Delete objects (before physics world)
-    m_objects.clear();
+    // Nothing to do
 }
 
 /* ************************************************************************ */

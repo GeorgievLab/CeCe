@@ -542,11 +542,15 @@ private:
     /// Real-time time step
     bool m_timeStepRealTime = true;
 
+    /// World size.
+    Vector<units::Length> m_worldSize{units::um(400), units::um(400)};
+
     /// Simulation modules.
     ModuleContainer m_modules;
 
-    /// World size.
-    Vector<units::Length> m_worldSize{units::um(400), units::um(400)};
+#ifdef ENABLE_PHYSICS
+    b2World m_world;
+#endif
 
     /// Simulation objects.
     ObjectContainer m_objects;
@@ -557,10 +561,6 @@ private:
 #ifdef ENABLE_RENDER
     /// List of objects that requires init.
     std::vector<Object*> m_drawInitList;
-#endif
-
-#ifdef ENABLE_PHYSICS
-    b2World m_world;
 #endif
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG

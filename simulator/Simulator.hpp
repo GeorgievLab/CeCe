@@ -169,14 +169,14 @@ public:
 // Data Members
 private:
 
+    /// Cache for loaded libraries.
+    std::map<std::string, std::unique_ptr<Library>> m_libraries;
+
     /// Flag if thread is running
     std::atomic<bool> m_isRunning{false};
 
     /// Current simulation
     std::unique_ptr<Simulation> m_simulation;
-
-    /// Cache for loaded libraries.
-    std::map<std::string, std::unique_ptr<Library>> m_libraries;
 
 };
 
