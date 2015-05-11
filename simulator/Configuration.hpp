@@ -128,6 +128,53 @@ public:
      */
     std::string buildFilePath(const std::string& filename) const noexcept;
 
+
+    /**
+     * @brief Call given function when configuration under name is set (not empty).
+     *
+     * @tparam Fn Function type.
+     *
+     * @param name
+     * @param fn
+     */
+    template<typename Fn>
+    void callIfSetString(const std::string& name, Fn fn) const
+    {
+        if (hasValue(name))
+            fn(getString(name));
+    }
+
+
+    /**
+     * @brief Call given function when configuration under name is set (not empty).
+     *
+     * @tparam Fn Function type.
+     *
+     * @param name
+     * @param fn
+     */
+    template<typename Fn>
+    void callIfSetInteger(const std::string& name, Fn fn) const
+    {
+        if (hasValue(name))
+            fn(getInteger(name));
+    }
+
+
+    /**
+     * @brief Call given function when configuration under name is set (not empty).
+     *
+     * @tparam Fn Function type.
+     *
+     * @param name
+     * @param fn
+     */
+    template<typename Fn>
+    void callIfSetFloat(const std::string& name, Fn fn) const
+    {
+        if (hasValue(name))
+            fn(getFloat(name));
+    }
 };
 
 /* ************************************************************************ */
