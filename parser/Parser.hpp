@@ -11,6 +11,10 @@
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 
+#if ENABLE_RENDER
+#include "render/Color.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace parser {
@@ -185,6 +189,132 @@ template<typename T>
 inline Vector<T> parse_vector(const std::string& str, const char** end = nullptr)
 {
     return parse_vector<T>(str.c_str(), end);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse vector values with optional suffixes separated by space.
+ *
+ * This is alternative version that doesn't require to have all values.
+ *
+ * @param str
+ * @param end
+ *
+ * @return
+ */
+template<typename T>
+Vector<T> parse_vector_single(const char* str, const char** end = nullptr)
+{
+    const char* in_end = str;
+    T x = parse_value<T>(in_end, &in_end);
+    T y;
+
+    if (*in_end != '\0')
+        y = parse_value<T>(in_end, &in_end);
+    else
+        y = x;
+
+    return Vector<T>{x, y};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse vector values with optional suffixes separated by space.
+ *
+ * @param str
+ * @param end
+ *
+ * @return
+ */
+template<typename T>
+inline Vector<T> parse_vector_single(const std::string& str, const char** end = nullptr)
+{
+    return parse_vector_single<T>(str.c_str(), end);
+}
+
+/* ************************************************************************ */
+
+#if ENABLE_RENDER
+/**
+ * @brief Parse color value in format #RRGGBB(AA).
+ *
+ * @param str
+ * @param end
+ *
+ * @return
+ */
+render::Color parse_color(const char* str, const char** end = nullptr);
+#endif
+
+/* ************************************************************************ */
+
+#if ENABLE_RENDER
+/**
+ * @brief Parse color value in format #RRGGBB(AA).
+ *
+ * @param str
+ * @param end
+ *
+ * @return
+ */
+inline render::Color parse_color(const std::string& str, const char** end = nullptr)
+{
+    return parse_color(str.c_str(), end);
+}
+#endif
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse N values.
+ *
+ * @tparam T
+ * @tparam N
+ *
+ * @param str
+ * @param fn
+ * @param end
+ */
+template<typename T, size_t N>
+std::array<T, N> parse_array(const char* str, T (*fn)(const char*, const char**), const char** end = nullptr)
+{
+    std::array<T, N> res;
+    const char* in_end = str;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        // Skip spaces
+        while (*in_end == ' ')
+            ++in_end;
+
+        if (*in_end == '\0')
+            break;
+
+        // Parse value
+        res[i] = fn(in_end, &in_end);
+    }
+
+    return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse N values.
+ *
+ * @tparam T
+ * @tparam N
+ *
+ * @param str
+ * @param fn
+ * @param end
+ */
+template<typename T, size_t N>
+inline std::array<T, N> parse_array(const std::string& str, T (*fn)(const char*, const char**), const char** end = nullptr)
+{
+    return parse_array<T, N>(str.c_str(), fn, end);
 }
 
 /* ************************************************************************ */
