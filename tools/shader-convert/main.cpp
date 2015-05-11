@@ -12,6 +12,7 @@
 #include <iterator>
 #include <ctime>
 #include <iomanip>
+#include <locale>
 
 /* ************************************************************************ */
 
@@ -24,6 +25,28 @@
 {
     std::cerr << err << std::endl;
     exit(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Put time.
+ *
+ * @param out
+ * @param tmb
+ * @param fmt
+ *
+ * @return
+ */
+template<typename CharT, typename Traits>
+void put_time(std::basic_ostream<CharT, Traits>& out, const std::tm* tmb, const CharT* fmt)
+{
+    typedef std::ostreambuf_iterator<CharT, Traits> Iter;
+    typedef std::time_put<CharT> TimePut;
+    const TimePut& tp = std::use_facet<TimePut>(out.getloc());
+    const Iter end = tp.put(Iter(out.rdbuf()), out, out.fill(), tmb, fmt, fmt + Traits::length(fmt));
+    if (end.failed())
+        out.setstate(std::ios_base::badbit);
 }
 
 /* ************************************************************************ */
@@ -48,7 +71,9 @@ static void convert(std::ostream& out, const std::string& symbol, std::istream& 
 
     out << "#include <array>\n";
     out << "\n";
-    out << "// " << std::put_time(&tm, "%F %T %Z") << "\n";
+    out << "// ";
+    put_time(out, &tm, "%F %T %Z");
+    out << "\n";
     out << "// #" << hasher(code) << "\n";
     out << "static const std::array<char, " << code.length() + 1 << "> " << symbol << " = {\n  ";
 
