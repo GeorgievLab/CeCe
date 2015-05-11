@@ -150,16 +150,30 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 void Module::configure(const simulator::ConfigurationBase& config)
 {
     // Grid size
-    {
-        auto grid = config.getString("grid");
+    config.callIfSetString("grid", [this](const std::string& value) {
+        setSize(parser::parse_vector_single<unsigned int>(value));
+    });
 
-        if (!grid.empty())
-        {
-            auto size = parser::parse_vector<unsigned int>(grid);
-            m_grid.resize(size);
-            m_gridBack.resize(size);
-        }
-    }
+    // Diffusion coefficients
+    config.callIfSetString("coefficients", [this](const std::string& value) {
+        const auto coefficients = parser::parse_array<float, Signal::COUNT>(value, parser::parse_number);
+
+        for (unsigned int i = 0; i < Signal::COUNT; ++i)
+            setCoefficient(i, coefficients[i]);
+    });
+
+#ifdef ENABLE_RENDER
+    config.callIfSetString("background", [this](const std::string& value) {
+        getDrawable().setBackground(parser::parse_color(value));
+    });
+
+    config.callIfSetString("colors", [this](const std::string& value) {
+        const auto colors = parser::parse_array<render::Color, Signal::COUNT>(value, parser::parse_color);
+
+        for (unsigned int i = 0; i < Signal::COUNT; ++i)
+            getDrawable().setColor(i, colors[i]);
+    });
+#endif
 }
 
 /* ************************************************************************ */

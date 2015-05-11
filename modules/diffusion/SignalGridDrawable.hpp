@@ -101,6 +101,17 @@ public:
 
 
     /**
+     * @brief Set background color.
+     *
+     * @param color
+     */
+    void setBackground(render::Color color) noexcept
+    {
+        m_background = color;
+    }
+
+
+    /**
      * @brief Set signal color.
      *
      * @param pos

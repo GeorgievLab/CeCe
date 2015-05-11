@@ -47,30 +47,6 @@ public:
 
 
     /**
-     * @brief Constructor.
-     */
-    Module()
-        : Module(300)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param size Signal grid size.
-     */
-    template<typename... Args>
-    Module(Args&&... args)
-        : m_grid(std::forward<Args>(args)...)
-        , m_gridBack(std::forward<Args>(args)...)
-    {
-        // Nothing to do
-    }
-
-
-    /**
      * @brief Destructor.
      */
     virtual ~Module();
@@ -144,6 +120,18 @@ public:
 
 
     /**
+     * @brief Resize signal grid.
+     *
+     * @param size New grid size.
+     */
+    void setSize(const Vector<SignalGrid::SizeType>& size)
+    {
+        m_grid.resize(size);
+        m_gridBack.resize(size);
+    }
+
+
+    /**
      * @brief Change diffussion coefficients.
      *
      * @param coefficients
@@ -151,6 +139,18 @@ public:
     void setCoefficients(Coefficients coefficients) noexcept
     {
         m_coefficients = coefficients;
+    }
+
+
+    /**
+     * @brief Change diffussion coefficient.
+     *
+     * @param pos
+     * @param value
+     */
+    void setCoefficient(unsigned int pos, float value) noexcept
+    {
+        m_coefficients[pos] = value;
     }
 
 
