@@ -150,15 +150,6 @@ int main(int argc, char** argv)
         // Create modules
         g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
 
-        if (g_diffusionModule)
-        {
-#ifdef __AVX__
-            g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f, 1.3f, 1.5f, 0.1f, 0.01f}});
-#else
-            g_diffusionModule->setCoefficients({{1.f, 0.005f, 0.001f, 10.f}});
-#endif
-        }
-
         //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
         //g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
         //g_sim.getSimulation()->createModule<module::cell::Generator>();
