@@ -18,6 +18,7 @@ option(MODULE_BUILD_STATIC "Build modules as static libraries" Off)
 option(ENABLE_MEASUREMENT "Enable or disable time measurement" Off)
 option(ENABLE_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
 option(BUILD_TOOLS "Build support tools" Off)
+set(MODULES "streamlines;diffusion;diffusion-streamlines;cell;picture" CACHE STRING "A list of build modules")
 
 # Default include directories
 include_directories(
@@ -106,11 +107,10 @@ endif ()
 add_subdirectory(simulator)
 
 # Modules
-add_subdirectory(modules/streamlines)
-add_subdirectory(modules/diffusion)
-add_subdirectory(modules/diffusion-streamlines)
-add_subdirectory(modules/cell)
-add_subdirectory(modules/picture)
+foreach (MODULE ${MODULES})
+    message("-- Module: ${MODULE}")
+    add_subdirectory(modules/${MODULE})
+endforeach ()
 
 if (ENABLE_GUI)
     add_subdirectory(gui)
