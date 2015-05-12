@@ -6,6 +6,7 @@
 // C++
 #include <string>
 #include <memory>
+#include <vector>
 
 /* ************************************************************************ */
 
@@ -140,6 +141,29 @@ public:
     const std::string& getError() const noexcept;
 
 
+    /**
+     * @brief Returns library paths.
+     *
+     * @return
+     */
+    static const std::vector<std::string>& getLibraryPaths() noexcept
+    {
+        return s_libraryPaths;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Add path where are libraries stored.
+     *
+     * @param path
+     */
+    static void addLibraryPath(std::string path);
+
+
 // Public Operations
 public:
 
@@ -186,6 +210,9 @@ private:
 
     /// Function pointer to create module.
     CreateModule m_createModule;
+
+    /// Library paths.
+    static std::vector<std::string> s_libraryPaths;
 };
 
 /* ************************************************************************ */

@@ -6,6 +6,7 @@
 #include <map>
 #include <cstdint>
 #include <cassert>
+#include <cstdlib>
 
 #if __linux__
 // Linux
@@ -46,6 +47,10 @@ const std::string g_extension = ".dll";
 /* ************************************************************************ */
 
 namespace simulator {
+
+/* ************************************************************************ */
+
+std::vector<std::string> Library::s_libraryPaths;
 
 /* ************************************************************************ */
 
@@ -111,7 +116,8 @@ Library::Library(const std::string& name)
     const std::string filename = g_prefix + name + g_extension;
 #if __linux__
     m_impl->lib = dlopen(filename.c_str(), RTLD_LAZY);
-    if (!m_impl->lib) m_impl->error = dlerror();
+    if (!m_impl->lib)
+        m_impl->error = dlerror();
 #elif __WIN32__
     m_impl->lib = LoadLibrary(filename.c_str());
 #endif
@@ -130,7 +136,8 @@ Library::Library(const std::string& name)
 Library::~Library()
 {
 #if __linux__
-    dlclose(m_impl->lib);
+    if (m_impl->lib)
+        dlclose(m_impl->lib);
 #elif __WIN32__
     FreeLibrary(m_impl->lib);
 #endif
@@ -148,6 +155,25 @@ bool Library::isLoaded() const noexcept
 const std::string& Library::getError() const noexcept
 {
     return m_impl->error;
+}
+
+/* ************************************************************************ */
+
+void Library::addLibraryPath(std::string path)
+{
+#if __linux__
+    // Get previous paths
+    std::string paths = getenv("LD_LIBRARY_PATH");
+
+    // Append new path
+    paths.push_back(':');
+    paths.append(path);
+
+    // Update environment value
+    setenv("LD_LIBRARY_PATH", paths.c_str(), 1);
+#endif
+
+    s_libraryPaths.push_back(std::move(path));
 }
 
 /* ************************************************************************ */
