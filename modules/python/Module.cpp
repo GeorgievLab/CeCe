@@ -3,12 +3,15 @@
 #include "Module.hpp"
 
 // C++
+#include <cassert>
 #include <stdexcept>
 
 // Simulation
+#include "simulator/Library.hpp"
 #include "simulator/Simulation.hpp"
 
 // Boost
+#include <boost/filesystem.hpp>
 #include <boost/python.hpp>
 
 /* ************************************************************************ */
@@ -23,10 +26,23 @@ Module::Module(simulator::Simulation& simulation, const boost::filesystem::path&
     // Initialize python
     Py_Initialize();
 
-    FILE* fp = fopen(filename.c_str(), "r");
+    boost::filesystem::path foundPath;
 
-    if (fp == NULL)
-        throw std::invalid_argument("Unable to open: " + filename.string());
+    // Foreach possible paths
+    for (auto p : simulator::Library::getLibraryPaths())
+    {
+        if (boost::filesystem::exists(p / filename))
+        {
+            foundPath = p / filename;
+            break;
+        }
+    }
+
+    if (foundPath.empty())
+        throw std::invalid_argument("Unable to find: " + filename.string());
+
+    FILE* fp = fopen(foundPath.c_str(), "r");
+    assert(fp != NULL);
 
     // Compile source code
     m_compiledCode = PyNode_Compile(
@@ -60,6 +76,13 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
     Py_XDECREF(locals);
     Py_XDECREF(globals);
+}
+
+/* ************************************************************************ */
+
+void Module::configure(const simulator::ConfigurationBase& config)
+{
+
 }
 
 /* ************************************************************************ */
