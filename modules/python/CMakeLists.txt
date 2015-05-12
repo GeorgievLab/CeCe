@@ -6,11 +6,17 @@ set(PROJECT_NAME module-python)
 # Create project
 project(${PROJECT_NAME} CXX)
 
-# Include python support
+# Include Python API
 find_package(PythonLibs REQUIRED)
 
+# Include Boost filesystem and Python
+find_package(Boost REQUIRED COMPONENTS filesystem system python)
+
 # Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories(
+    ${PYTHON_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+)
 
 # Sources
 set(SRCS
@@ -36,6 +42,7 @@ add_dependencies(${PROJECT_NAME}
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     simulator
+    ${Boost_LIBRARIES}
     ${PYTHON_LIBRARIES}
 )
 
