@@ -163,10 +163,17 @@ void Library::addLibraryPath(std::string path)
 {
 #if __linux__
     // Get previous paths
-    std::string paths = getenv("LD_LIBRARY_PATH");
+    std::string paths;
+    char* p = getenv("LD_LIBRARY_PATH");
+
+    // Previously set
+    if (p)
+    {
+        paths = p;
+        paths.push_back(':');
+    }
 
     // Append new path
-    paths.push_back(':');
     paths.append(path);
 
     // Update environment value
