@@ -26,15 +26,26 @@ namespace {
 
 /* ************************************************************************ */
 
-std::tuple<std::string, std::string> splitModulePath(const std::string& path) noexcept
+std::tuple<std::string, std::string, std::string> splitModulePath(const std::string& path) noexcept
 {
-    // Find dot separator
-    auto pos = path.find('.');
+    auto pos = path.find(':');
 
+    // Using wrapper
     if (pos == std::string::npos)
-        return std::make_tuple(path, std::string{});
+    {
+        // Create wrapper version
+        return std::make_tuple(path.substr(0, pos), path.substr(pos + 1), std::string{});
+    }
     else
-        return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
+    {
+        // Find dot separator
+        auto pos = path.find('.');
+
+        if (pos == std::string::npos)
+            return std::make_tuple(std::string{}, path, std::string{});
+        else
+            return std::make_tuple(std::string{}, path.substr(0, pos), path.substr(pos + 1));
+    }
 }
 
 /* ************************************************************************ */
@@ -68,11 +79,21 @@ Module* Simulation::useModule(const std::string& path)
         return getModule(path);
 
     // Split path into parts
-    std::string library, name;
-    std::tie(library, name) = splitModulePath(path);
+    std::string wrapper, library, name;
+    std::tie(wrapper, library, name) = splitModulePath(path);
 
-    // Load library
-    Library* lib = m_simulator.loadLibrary(library);
+    Library* lib;
+
+    // Load wrapper module
+    if (!wrapper.empty())
+    {
+        lib = m_simulator.loadLibrary(wrapper);
+    }
+    else
+    {
+        lib = m_simulator.loadLibrary(library);
+    }
+
     assert(lib);
 
     // Unable to load library
