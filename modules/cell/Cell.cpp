@@ -4,6 +4,9 @@
 // Declaration
 #include "Cell.hpp"
 
+// C++
+#include <cassert>
+
 /* ************************************************************************ */
 
 namespace module {
@@ -24,6 +27,9 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noex
     fixtureDef.friction = 0.3f;
     getBody()->CreateFixture(&fixtureDef);
 #endif
+
+    // Create initial shape
+    getShapes().push_back(simulator::Shape::makeCircle(getRadius()));
 }
 
 /* ************************************************************************ */
@@ -48,6 +54,10 @@ void Cell::update(units::Duration dt)
     fixtureDef.friction = 0.3f;
     getBody()->CreateFixture(&fixtureDef);
 #endif
+
+    // Update shape
+    assert(getShapes().size() == 1);
+    getShapes()[0].circle.radius = getRadius();
 }
 
 /* ************************************************************************ */
