@@ -31,7 +31,7 @@ std::tuple<std::string, std::string, std::string> splitModulePath(const std::str
     auto pos = path.find(':');
 
     // Using wrapper
-    if (pos == std::string::npos)
+    if (pos != std::string::npos)
     {
         // Create wrapper version
         return std::make_tuple(path.substr(0, pos), path.substr(pos + 1), std::string{});
