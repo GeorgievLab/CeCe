@@ -6,7 +6,11 @@
 
 // C++
 #include <cassert>
+#include <cstring>
 #include <map>
+
+// Linux
+#include <libgen.h>
 
 // pugixml
 #include "pugixml/pugixml.hpp"
@@ -14,6 +18,7 @@
 // Simulator
 #include "core/Log.hpp"
 #include "parser/Parser.hpp"
+#include "simulator/Library.hpp"
 
 // Parser
 #include "parser-xml/ImmutableConfiguration.hpp"
@@ -156,6 +161,14 @@ std::unique_ptr<simulator::Simulation> SimulationFactory::fromStream(
 
     if (!result)
         throw Exception("XML parse error: " + std::string(result.description()));
+
+    {
+        char buffer[1024];
+        strcpy(buffer, filename.c_str());
+
+        // Register file path as module library
+        simulator::Library::addLibraryPath(dirname(buffer));
+    }
 
     // Parse DOM
     process_simulation_node(doc.document_element(), *simulation, filename);
