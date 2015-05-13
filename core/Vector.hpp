@@ -5,6 +5,7 @@
 
 // C++
 #include <cmath>
+#include <tuple>
 #include <type_traits>
 
 // Simulator
@@ -22,6 +23,7 @@ inline namespace core {
 template<typename T>
 class Vector
 {
+
 
 // Public Types
 public:
@@ -813,6 +815,117 @@ template<typename T1, typename T2>
 inline Vector<typename std::common_type<T1, T2>::type> operator/(T1 lhs, const Vector<T2>& rhs) noexcept
 {
     return Vector<T1>{lhs} / rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T>
+static bool operator==(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+{
+    auto x1 = lhs.getX();
+    auto y1 = lhs.getY();
+    auto x2 = rhs.getX();
+    auto y2 = rhs.getY();
+
+    return std::tie(x1, y1) == std::tie(x2, y2);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T>
+static bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T>
+static bool operator<(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+{
+    auto x1 = lhs.getX();
+    auto y1 = lhs.getY();
+    auto x2 = rhs.getX();
+    auto y2 = rhs.getY();
+
+    return std::tie(x1, y1) < std::tie(x2, y2);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T>
+static bool operator<=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+{
+    auto x1 = lhs.getX();
+    auto y1 = lhs.getY();
+    auto x2 = rhs.getX();
+    auto y2 = rhs.getY();
+
+    return std::tie(x1, y1) <= std::tie(x2, y2);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T>
+static bool operator>(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+{
+    return !operator<=(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T>
+static bool operator>=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+{
+    return !operator<(lhs, rhs);
 }
 
 /* ************************************************************************ */
