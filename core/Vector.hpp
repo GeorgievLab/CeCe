@@ -827,8 +827,8 @@ inline Vector<typename std::common_type<T1, T2>::type> operator/(T1 lhs, const V
  *
  * @return
  */
-template<typename T>
-static bool operator==(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+template<typename T1, typename T2>
+static bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     auto x1 = lhs.getX();
     auto y1 = lhs.getY();
@@ -848,8 +848,8 @@ static bool operator==(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
  *
  * @return
  */
-template<typename T>
-static bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+template<typename T1, typename T2>
+static bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return !operator==(lhs, rhs);
 }
@@ -864,13 +864,23 @@ static bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
  *
  * @return
  */
-template<typename T>
-static bool operator<(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+template<typename T1, typename T2>
+static bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
-    auto x1 = lhs.getX();
-    auto y1 = lhs.getY();
-    auto x2 = rhs.getX();
-    auto y2 = rhs.getY();
+    using T1s = typename std::conditional<
+        std::is_integral<T1>::value, typename std::make_signed<T1>::type, T1
+    >::type;
+
+    using T2s = typename std::conditional<
+        std::is_integral<T2>::value, typename std::make_signed<T2>::type, T2
+    >::type;
+
+    using T = typename std::common_type<T1s, T2s>::type;
+
+    T x1 = lhs.getX();
+    T y1 = lhs.getY();
+    T x2 = rhs.getX();
+    T y2 = rhs.getY();
 
     return std::tie(x1, y1) < std::tie(x2, y2);
 }
@@ -885,15 +895,10 @@ static bool operator<(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
  *
  * @return
  */
-template<typename T>
-static bool operator<=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+template<typename T1, typename T2>
+static bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
-    auto x1 = lhs.getX();
-    auto y1 = lhs.getY();
-    auto x2 = rhs.getX();
-    auto y2 = rhs.getY();
-
-    return std::tie(x1, y1) <= std::tie(x2, y2);
+    return !operator>(lhs, rhs);
 }
 
 /* ************************************************************************ */
@@ -906,10 +911,10 @@ static bool operator<=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
  *
  * @return
  */
-template<typename T>
-static bool operator>(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+template<typename T1, typename T2>
+static bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
-    return !operator<=(lhs, rhs);
+    return operator<(rhs, lhs);
 }
 
 /* ************************************************************************ */
@@ -922,8 +927,8 @@ static bool operator>(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
  *
  * @return
  */
-template<typename T>
-static bool operator>=(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
+template<typename T1, typename T2>
+static bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return !operator<(lhs, rhs);
 }
