@@ -6,6 +6,7 @@
 // C++
 #include <cassert>
 #include <vector>
+#include <type_traits>
 
 // Simulator
 #include "core/Units.hpp"
@@ -128,20 +129,23 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
                      const Vector<T>& center,
                      const Vector<T>& max, const Vector<T>& min = {})
 {
+    // Get signed type
+    using Ts = typename std::make_signed<T>::type;
+
     // Radius steps in grid
-    const Vector<T> radiusSteps = shape.radius / steps;
-    const Vector<T> shapeCenter = center + shape.center / steps;
+    const Vector<Ts> radiusSteps = shape.radius / steps;
+    const Vector<Ts> shapeCenter = center + shape.center / steps;
 
     // Foreach grid given by radius steps
-    for (T x = -radiusSteps.getX(); x < radiusSteps.getX(); ++x)
+    for (auto x = -radiusSteps.getX(); x < radiusSteps.getX(); ++x)
     {
-        for (T y = -radiusSteps.getY(); y < radiusSteps.getY(); ++y)
+        for (auto y = -radiusSteps.getY(); y < radiusSteps.getY(); ++y)
         {
             // Calculate normalized length
-            const Vector<T> xy{x, y};
-            const auto len = (xy / radiusSteps).getLength();
+            const Vector<Ts> xy{x, y};
+            const auto len = (xy / radiusSteps).getLengthSquared();
 
-            if (len > 1.f)
+            if (len > 1)
                 continue;
 
             // Calculate grid coordinates
