@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 // Simulation
+#include "core/Log.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/Simulation.hpp"
 
@@ -25,7 +26,7 @@ Module::Module(simulator::Simulation& simulation, const boost::filesystem::path&
 {
     // Initialize python
     Py_Initialize();
-
+/*
     boost::filesystem::path foundPath;
 
     // Foreach possible paths
@@ -43,21 +44,52 @@ Module::Module(simulator::Simulation& simulation, const boost::filesystem::path&
 
     FILE* fp = fopen(foundPath.c_str(), "r");
     assert(fp != NULL);
+*/
+    if (filename.empty())
+    {
+        Log::warning("Python wrapper module filename is empty!");
+        return;
+    }
 
-    // Compile source code
-    m_compiledCode = PyNode_Compile(
-        PyParser_SimpleParseFile(fp, filename.c_str(), Py_file_input), filename.c_str()
-    );
+    // Build the name object
+    PyObject* name = PyString_FromString(filename.stem().c_str());
 
-    fclose(fp);
+    // Load the module object
+    m_module = PyImport_Import(name);
+
+    // Don't need name anymore
+    Py_DECREF(name);
+
+    if (!m_module)
+    {
+        PyErr_Print();
+        return;
+    }
+
+    // Get dictionary with list of objects
+    PyObject* dict = PyModule_GetDict(m_module);
+
+    // Get function pointers
+    m_configureFn = PyDict_GetItemString(dict, "configure");
+
+    // Check if is a function
+    if (m_configureFn && !PyCallable_Check(m_configureFn))
+        PyErr_Print();
+
+    m_updateFn = PyDict_GetItemString(dict, "update");
+
+    // Check if is a function
+    if (m_updateFn && !PyCallable_Check(m_updateFn))
+        PyErr_Print();
+
 }
 
 /* ************************************************************************ */
 
 Module::~Module()
 {
-    // Free code
-    Py_XDECREF(m_compiledCode);
+    // Free module
+    Py_XDECREF(m_module);
 
     // Finalize python
     Py_Finalize();
@@ -67,22 +99,20 @@ Module::~Module()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    PyObject* globals = PyDict_New();
-    PyObject* locals = PyDict_New();
+    if (!m_updateFn)
+        return;
 
-    // Call update function
-    PyObject* res = PyEval_EvalCode(m_compiledCode, globals, locals);
-    Py_XDECREF(res);
-
-    Py_XDECREF(locals);
-    Py_XDECREF(globals);
+    PyObject_CallObject(m_updateFn, NULL);
 }
 
 /* ************************************************************************ */
 
 void Module::configure(const simulator::ConfigurationBase& config)
 {
+    if (!m_configureFn)
+        return;
 
+    PyObject_CallObject(m_configureFn, NULL);
 }
 
 /* ************************************************************************ */

@@ -80,8 +80,15 @@ public:
 private:
 
 
-    /// Precompiled python code.
-    PyCodeObject* m_compiledCode = nullptr;
+    /// Code module.
+    PyObject* m_module = nullptr;
+
+    /// Configure function.
+    PyObject* m_configureFn = nullptr;
+
+    /// Update function.
+    PyObject* m_updateFn = nullptr;
+
 };
 
 /* ************************************************************************ */
