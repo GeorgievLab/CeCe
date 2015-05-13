@@ -20,14 +20,6 @@ namespace render {
 
 /* ************************************************************************ */
 
-Buffer::~Buffer()
-{
-    if (isInitialized())
-        terminate();
-}
-
-/* ************************************************************************ */
-
 void Buffer::init(Context& context)
 {
     // Generate buffer
@@ -48,7 +40,7 @@ void Buffer::init(Context& context, SizeType size, const void* data)
 
 /* ************************************************************************ */
 
-void Buffer::terminate()
+void Buffer::finalize(Context& context)
 {
     assert(isInitialized());
     gl(glDeleteBuffers(1, &m_id));

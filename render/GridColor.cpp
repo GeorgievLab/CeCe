@@ -5,7 +5,7 @@
 #include "render/GridColor.hpp"
 
 // C++
-#include <vector>
+#include <array>
 #include <cassert>
 
 // OpenGL
@@ -27,16 +27,6 @@ struct Vertex
     GLfloat x, y;
     GLfloat u, v;
 };
-
-/* ************************************************************************ */
-
-void GridColor::set(const Vector<PositionType>& coord, const Color& color) noexcept
-{
-    // Set color
-    m_colors[coord] = color;
-
-    m_colorsUpdated = true;
-}
 
 /* ************************************************************************ */
 

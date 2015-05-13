@@ -3,6 +3,11 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <cassert>
+
+/* ************************************************************************ */
+
 namespace render {
 
 /* ************************************************************************ */
@@ -40,7 +45,10 @@ public:
     /**
      * @brief Destructor.
      */
-    ~Buffer();
+    ~Buffer()
+    {
+        assert(!isInitialized());
+    }
 
 
 // Public Accessors
@@ -92,9 +100,11 @@ public:
 
 
     /**
-     * @brief Terminate buffer.
+     * @brief Finalize buffer.
+     *
+     * @param context Rendering context.
      */
-    void terminate();
+    void finalize(Context& context);
 
 
     /**

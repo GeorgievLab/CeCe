@@ -3,6 +3,9 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <cassert>
+
 // Simulator
 #include "core/Vector.hpp"
 #include "core/Grid.hpp"
@@ -27,17 +30,109 @@ class GridColor : public GridBase
 {
 
 
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~GridColor()
+    {
+        assert(!isInitialized());
+    }
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Get mutable pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    Color& operator[](const Vector<PositionType>& coord) noexcept
+    {
+        return get(coord);
+    }
+
+
+    /**
+     * @brief Get pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    const Color& operator[](const Vector<PositionType>& coord) const noexcept
+    {
+        return get(coord);
+    }
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns if object is initialized.
+     */
+    bool isInitialized() const noexcept
+    {
+        return m_buffer.isInitialized()/* && m_texture.isInitialized() */;
+    }
+
+
+    /**
+     * @brief Get mutable pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    Color& get(const Vector<PositionType>& coord) noexcept
+    {
+        return m_colors[coord];
+    }
+
+
+    /**
+     * @brief Get pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    const Color& get(const Vector<PositionType>& coord) const noexcept
+    {
+        return m_colors[coord];
+    }
+
+
 // Public Mutators
 public:
 
 
     /**
-     * @brief Set cell color.
+     * @brief Set pixel color.
      *
-     * @param coord Coordinates.
-     * @param color Cell color.
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
      */
-    void set(const Vector<PositionType>& coord, const Color& color) noexcept;
+    void set(const Vector<PositionType>& coord, const Color& color) noexcept
+    {
+        // Set color
+        m_colors[coord] = color;
+        m_colorsUpdated = true;
+    }
+
+
+    /**
+     * @brief Set flag that indicates the texture on GPU should be updated.
+     */
+    void colorsUpdated() noexcept
+    {
+        m_colorsUpdated = true;
+    }
 
 
 // Public Operators
@@ -89,6 +184,18 @@ public:
      * @brief Synchronize local buffer with GPU texture.
      */
     void sync();
+
+
+    /**
+     * @brief Finalize.
+     *
+     * @param context Rendering context.
+     */
+    void finalize(Context& context)
+    {
+        //m_texture.finalize(context);
+        m_buffer.finalize(context);
+    }
 
 
 // Private Data Members
