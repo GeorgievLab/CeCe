@@ -9,25 +9,13 @@
 // Simulator
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
+#include "simulator/Shape.hpp"
 
 // Module
 #include "Module.hpp"
 
 // Module "cell"
 #include "../cell/Yeast.hpp"
-
-/* ************************************************************************ */
-
-template<typename T>
-static bool operator<(const core::Vector<T>& lhs, const core::Vector<T>& rhs) noexcept
-{
-    auto x1 = lhs.getX();
-    auto y1 = lhs.getY();
-    auto x2 = rhs.getX();
-    auto y2 = rhs.getY();
-
-    return std::tie(x1, y1) < std::tie(x2, y2);
-}
 
 /* ************************************************************************ */
 
@@ -105,14 +93,16 @@ void GeneratorCell::update(units::Duration dt, simulator::Simulation& simulation
             continue;
 
         // Get grid position
-        Vector<int> coord = pos / step;
+        Vector<unsigned int> coord = pos / step;
 
+        // TODO: use vector + unique (faster?)
         std::set<decltype(coord)> coords;
         auto shapes = static_cast<const simulator::Object*>(obj.get())->getShapes();
+        auto coordIt = std::inserter(coords, coords.end());
 
         for (const auto& shape : shapes)
         {
-            shapeCoordinates(coord, shape, step, coords);
+            coordIt = simulator::mapShapeToGrid(coordIt, shape, step, coord, grid.getSize());
         }
 
         for (const auto& c : coords)
