@@ -30,13 +30,15 @@ endif ()
 # Create program
 add_executable(cli ${SRCS})
 
+set(MODULES_LIBS "")
+
+foreach (MODULE ${MODULES})
+    set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
+endforeach ()
+
 # Link libraries
 target_link_libraries(cli
-    module-diffusion-streamlines
-    module-diffusion
-    module-streamlines
-    module-cell
-    module-picture
+    ${MODULES_LIBS}
     simulator
     parser-xml
     ${RENDER_LIBS}
