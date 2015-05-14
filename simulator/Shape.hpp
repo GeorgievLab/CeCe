@@ -133,26 +133,30 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-    const Vector<Ts> radiusSteps = shape.radius / steps;
+    const Vector<float> radiusSteps = shape.radius / steps;
     const Vector<Ts> shapeCenter = center + shape.center / steps;
+    const Vector<Ts> maxS = max;
+    const Vector<Ts> minS = min;
 
     // Foreach grid given by radius steps
     for (auto x = -radiusSteps.getX(); x < radiusSteps.getX(); ++x)
     {
         for (auto y = -radiusSteps.getY(); y < radiusSteps.getY(); ++y)
         {
-            // Calculate normalized length
-            const Vector<Ts> xy{x, y};
+            // Calculate normalized length for ellipse
+            const Vector<float> xy(x, y);
             const auto len = (xy / radiusSteps).getLengthSquared();
 
-            if (len > 1)
+            if (len > 1.f)
                 continue;
 
             // Calculate grid coordinates
             auto coord = shapeCenter + xy;
 
             // Check if coordinates are in range
-            if (coord < min || coord >= max)
+            // TODO: use Vector operators?
+            if ((coord.getX() < minS.getX() || coord.getY() < minS.getY()) ||
+                (coord.getX() >= maxS.getX() || coord.getY() >= maxS.getY()))
                 continue;
 
             // Insert coordinates into output iterator
