@@ -867,15 +867,7 @@ static bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 template<typename T1, typename T2>
 static bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
-    using T1s = typename std::conditional<
-        std::is_integral<T1>::value, typename std::make_signed<T1>::type, T1
-    >::type;
-
-    using T2s = typename std::conditional<
-        std::is_integral<T2>::value, typename std::make_signed<T2>::type, T2
-    >::type;
-
-    using T = typename std::common_type<T1s, T2s>::type;
+    using T = typename std::common_type<T1, T2>::type;
 
     T x1 = lhs.getX();
     T y1 = lhs.getY();
@@ -914,6 +906,7 @@ static bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 template<typename T1, typename T2>
 static bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
+    // Reversed operands
     return operator<(rhs, lhs);
 }
 
