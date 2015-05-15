@@ -480,6 +480,40 @@ public:
     }
 
 
+    /**
+     * @brief Check if given value is in given range.
+     *
+     * @param value Given value.
+     * @param low   Minimum value (>=).
+     * @param high  Maximum value (<).
+     *
+     * @return
+     */
+    template<typename T1, typename T2>
+    static bool inRange(T value, T1 low, T2 high) noexcept
+    {
+        return value >= low && value < high;
+    }
+
+
+    /**
+     * @brief Check if current vector is in given range.
+     *
+     * @param low  Minimum coordinates (>=).
+     * @param high Maximum coordinates (<).
+     *
+     * @return
+     */
+    template<typename T1, typename T2>
+    bool inRange(const Vector<T1>& low, const Vector<T2>& high) const noexcept
+    {
+        return (
+            inRange(getX(), low.getX(), high.getX()) &&
+            inRange(getY(), low.getY(), high.getY())
+        );
+    }
+
+
 // Public Operations
 public:
 
