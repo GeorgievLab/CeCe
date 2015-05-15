@@ -5,13 +5,10 @@
 
 // C++
 #include <cassert>
-#include <vector>
-#include <type_traits>
 
 // Simulator
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
-#include "core/Grid.hpp"
 
 /* ************************************************************************ */
 
@@ -76,96 +73,6 @@ struct Shape
     }
 
 };
-
-/* ************************************************************************ */
-
-/**
- * @brief Map shape to grid.
- *
- * @tparam OutIt Output iterator type.
- * @tparam T     Coordinate value type.
- * @tparam StepT Step type.
- *
- * @param out    Output iterator. It's required to be valid for all incrementations.
- * @param shape  Circle shape
- * @param center Circle center in grid coordinates.
- * @param max    Maximum coordinates.
- * @param mim    Minimum coordinates (default is {0, 0}).
- */
-template<typename OutIt, typename T, typename StepT>
-OutIt mapShapeToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
-                     const Vector<T>& center,
-                     const Vector<T>& max, const Vector<T>& min = {})
-{
-    switch (shape.type)
-    {
-    default:
-        break;
-
-    case ShapeType::Circle:
-        return mapShapeToGrid(out, shape.circle, steps, center, max, min);
-    }
-
-    return out;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Map circle shape to grid.
- *
- * @tparam OutIt Output iterator type.
- * @tparam T     Coordinate value type.
- * @tparam StepT Step type.
- *
- * @param out    Output iterator. It's required to be valid for all incrementations.
- * @param shape  Circle shape
- * @param center Circle center in grid coordinates.
- * @param max    Maximum coordinates.
- * @param mim    Minimum coordinates (default is {0, 0}).
- */
-template<typename OutIt, typename T, typename StepT>
-OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& steps,
-                     const Vector<T>& center,
-                     const Vector<T>& max, const Vector<T>& min = {})
-{
-    // Get signed type
-    using Ts = typename std::make_signed<T>::type;
-
-    // Radius steps in grid
-    const Vector<float> radiusSteps = shape.radius / steps;
-    const Vector<Ts> shapeCenter = center + shape.center / steps;
-    const Vector<Ts> maxS = max;
-    const Vector<Ts> minS = min;
-
-    // Foreach grid given by radius steps
-    for (auto x = -radiusSteps.getX(); x < radiusSteps.getX(); ++x)
-    {
-        for (auto y = -radiusSteps.getY(); y < radiusSteps.getY(); ++y)
-        {
-            // Calculate normalized length for ellipse
-            const Vector<float> xy(x, y);
-            const auto len = (xy / radiusSteps).getLengthSquared();
-
-            if (len > 1.f)
-                continue;
-
-            // Calculate grid coordinates
-            auto coord = shapeCenter + xy;
-
-            // Check if coordinates are in range
-            // TODO: use Vector operators?
-            if ((coord.getX() < minS.getX() || coord.getY() < minS.getY()) ||
-                (coord.getX() >= maxS.getX() || coord.getY() >= maxS.getY()))
-                continue;
-
-            // Insert coordinates into output iterator
-            *out++ = coord;
-        }
-    }
-
-    return out;
-}
 
 /* ************************************************************************ */
 

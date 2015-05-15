@@ -10,6 +10,7 @@
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Shape.hpp"
+#include "simulator/ShapeToGrid.hpp"
 
 // Module
 #include "Module.hpp"

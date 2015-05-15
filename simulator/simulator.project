@@ -33,6 +33,7 @@
     <File Name="Library.hpp"/>
     <File Name="Configuration.hpp"/>
     <File Name="Shape.hpp"/>
+    <File Name="ShapeToGrid.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

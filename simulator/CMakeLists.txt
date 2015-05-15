@@ -22,6 +22,7 @@ set(SRCS
     Configuration.hpp
     Configuration.cpp
     Shape.hpp
+    ShapeToGrid.hpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>
