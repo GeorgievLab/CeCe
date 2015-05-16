@@ -191,7 +191,7 @@ void Yeast::updateShape()
         else
         {
             shapes[1].circle.radius = newBudRadius;
-            shapes[1].circle.center.getY() = newRadius + newBudRadius;
+            shapes[1].circle.center.y() = newRadius + newBudRadius;
         }
     }
     else

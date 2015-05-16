@@ -76,8 +76,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
             // Calculate coordinate change
             Vector<float> dij = velocity * dt * m_streamlines->getFlowSpeed() / step;
-            dij.getX() = std::abs(dij.getX());
-            dij.getY() = std::abs(dij.getY());
+            dij.x() = std::abs(dij.getX());
+            dij.y() = std::abs(dij.getY());
 
             Matrix<float, 2> tmp;
             int offset = 0;

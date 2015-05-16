@@ -261,7 +261,7 @@ public:
      *
      * @return
      */
-    ComponentType& getRed() noexcept
+    ComponentType& red() noexcept
     {
         return m_components[0];
     }
@@ -283,7 +283,7 @@ public:
      *
      * @return
      */
-    ComponentType& getGreen() noexcept
+    ComponentType& green() noexcept
     {
         return m_components[1];
     }
@@ -305,7 +305,7 @@ public:
      *
      * @return
      */
-    ComponentType& getBlue() noexcept
+    ComponentType& blue() noexcept
     {
         return m_components[2];
     }
@@ -327,7 +327,7 @@ public:
      *
      * @return
      */
-    ComponentType& getAlpha() noexcept
+    ComponentType& alpha() noexcept
     {
         return m_components[3];
     }
@@ -341,6 +341,54 @@ public:
     constexpr ComponentType getAlpha() const noexcept
     {
         return m_components[3];
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set red component.
+     *
+     * @param red
+     */
+    void setRed(ComponentType red) noexcept
+    {
+        m_components[0] = red;
+    }
+
+
+    /**
+     * @brief Set green component.
+     *
+     * @param green
+     */
+    void setGreen(ComponentType green) noexcept
+    {
+        m_components[1] = green;
+    }
+
+
+    /**
+     * @brief Set blue component.
+     *
+     * @param blue
+     */
+    void setBlue(ComponentType blue) noexcept
+    {
+        m_components[2] = blue;
+    }
+
+
+    /**
+     * @brief Set alpha component.
+     *
+     * @param alpha
+     */
+    void setAlpha(ComponentType alpha) noexcept
+    {
+        m_components[3] = alpha;
     }
 
 

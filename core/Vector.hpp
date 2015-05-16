@@ -52,7 +52,7 @@ public:
      * @param val Value for all vector coordinates.
      */
     explicit constexpr Vector(T val) noexcept
-        : x(val), y(val)
+        : m_x(val), m_y(val)
     {
         // Nothing to do
     }
@@ -65,7 +65,7 @@ public:
      * @param y
      */
     constexpr Vector(T x, T y) noexcept
-        : x(x), y(y)
+        : m_x(x), m_y(y)
     {
         // Nothing to do
     }
@@ -78,7 +78,7 @@ public:
      */
     template<typename T2>
     constexpr Vector(const Vector<T2>& v) noexcept
-        : x(v.getX()), y(v.getY())
+        : m_x(v.getX()), m_y(v.getY())
     {
         // Nothing to do
     }
@@ -95,53 +95,12 @@ public:
      *
      * @return
      */
-    Vector& operator=(const Vector& v) noexcept
-    {
-        x = v.x;
-        y = v.y;
-        return *this;
-    }
-
-
-    /**
-     * @brief Assignment operator.
-     *
-     * @param v
-     *
-     * @return
-     */
     template<typename T2>
     Vector& operator=(const Vector<T2>& v) noexcept
     {
-        x = v.x;
-        y = v.y;
+        m_x = v.getX();
+        m_y = v.getY();
         return *this;
-    }
-
-
-    /**
-     * @brief Compare operator.
-     *
-     * @param rhs
-     *
-     * @return
-     */
-    constexpr bool operator==(const Vector& rhs) const noexcept
-    {
-        return x == rhs.x && y == rhs.y;
-    }
-
-
-    /**
-     * @brief Compare operator.
-     *
-     * @param rhs
-     *
-     * @return
-     */
-    constexpr bool operator!=(const Vector& rhs) const noexcept
-    {
-        return !operator==(rhs);
     }
 
 
@@ -152,20 +111,7 @@ public:
      */
     constexpr Vector operator-() const noexcept
     {
-        return Vector{-x, -y};
-    }
-
-
-    /**
-     * @brief Add operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator+(const Vector& v) const noexcept
-    {
-        return Vector{x + v.x, y + v.y};
+        return Vector{-getX(), -getY()};
     }
 
 
@@ -179,22 +125,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator+(const Vector<T2>& v) const noexcept
     {
-        return Vector<CT<T2>>{x + v.getX(), y + v.getY()};
-    }
-
-
-    /**
-     * @brief Add operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator+=(const Vector& v) noexcept
-    {
-        x += v.x;
-        y += v.y;
-        return *this;
+        return Vector<CT<T2>>{getX() + v.getX(), getY() + v.getY()};
     }
 
 
@@ -208,22 +139,9 @@ public:
     template<typename T2>
     Vector& operator+=(const Vector<T2>& v) noexcept
     {
-        x += v.getX();
-        y += v.getY();
+        m_x += v.getX();
+        m_y += v.getY();
         return *this;
-    }
-
-
-    /**
-     * @brief Substract operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator-(const Vector& v) const noexcept
-    {
-        return Vector{x - v.x, y - v.y};
     }
 
 
@@ -237,22 +155,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator-(const Vector<T2>& v) const noexcept
     {
-        return Vector<CT<T2>>{x - v.getX(), y - v.getY()};
-    }
-
-
-    /**
-     * @brief Substract operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator-=(const Vector& v) noexcept
-    {
-        x -= v.x;
-        y -= v.y;
-        return *this;
+        return Vector<CT<T2>>{getX() - v.getX(), getY() - v.getY()};
     }
 
 
@@ -266,22 +169,9 @@ public:
     template<typename T2>
     Vector& operator-=(const Vector<T2>& v) noexcept
     {
-        x -= v.getX();
-        y -= v.getY();
+        m_x -= v.getX();
+        m_y -= v.getY();
         return *this;
-    }
-
-
-    /**
-     * @brief Multiple operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator*(const Vector& val) const noexcept
-    {
-        return Vector{x * val.x, y * val.y};
     }
 
 
@@ -295,22 +185,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator*(const Vector<T2>& val) const noexcept
     {
-        return Vector<CT<T2>>{x * val.getX(), y * val.getY()};
-    }
-
-
-    /**
-     * @brief Multiple operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator*=(const Vector& val) noexcept
-    {
-        x *= val.x;
-        y *= val.y;
-        return *this;
+        return Vector<CT<T2>>{getX() * val.getX(), getY() * val.getY()};
     }
 
 
@@ -324,22 +199,9 @@ public:
     template<typename T2>
     Vector& operator*=(const Vector<T2>& val) noexcept
     {
-        x *= val.getX();
-        y *= val.getY();
+        m_x *= val.getX();
+        m_y *= val.getY();
         return *this;
-    }
-
-
-    /**
-     * @brief Divide operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    constexpr Vector operator/(const Vector& val) const noexcept
-    {
-        return Vector{x / val.x, y / val.y};
     }
 
 
@@ -353,22 +215,7 @@ public:
     template<typename T2>
     constexpr Vector<CT<T2>> operator/(const Vector<T2>& val) const noexcept
     {
-        return Vector<CT<T2>>{x / val.getX(), y / val.getY()};
-    }
-
-
-    /**
-     * @brief Divide operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator/=(const Vector& val) noexcept
-    {
-        x /= val.x;
-        y /= val.y;
-        return *this;
+        return Vector<CT<T2>>{getX() / val.getX(), getY() / val.getY()};
     }
 
 
@@ -382,8 +229,8 @@ public:
     template<typename T2>
     Vector& operator/=(const Vector<T2>& val) noexcept
     {
-        x /= val.x;
-        y /= val.y;
+        m_x /= val.getX();
+        m_y /= val.getY();
         return *this;
     }
 
@@ -397,9 +244,9 @@ public:
      *
      * @return
      */
-    T& getX() noexcept
+    T& x() noexcept
     {
-        return x;
+        return m_x;
     }
 
 
@@ -410,7 +257,7 @@ public:
      */
     T getX() const noexcept
     {
-        return x;
+        return m_x;
     }
 
 
@@ -419,9 +266,9 @@ public:
      *
      * @return
      */
-    T& getY() noexcept
+    T& y() noexcept
     {
-        return y;
+        return m_y;
     }
 
 
@@ -432,7 +279,7 @@ public:
      */
     T getY() const noexcept
     {
-        return y;
+        return m_y;
     }
 
 
@@ -441,9 +288,9 @@ public:
      *
      * @return
      */
-    T& getWidth() noexcept
+    T& width() noexcept
     {
-        return x;
+        return m_x;
     }
 
 
@@ -454,7 +301,7 @@ public:
      */
     T getWidth() const noexcept
     {
-        return x;
+        return m_x;
     }
 
 
@@ -463,9 +310,9 @@ public:
      *
      * @return
      */
-    T& getHeight() noexcept
+    T& height() noexcept
     {
-        return y;
+        return m_y;
     }
 
 
@@ -476,7 +323,7 @@ public:
      */
     T getHeight() const noexcept
     {
-        return y;
+        return m_y;
     }
 
 
@@ -514,6 +361,32 @@ public:
     }
 
 
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set X coordinate.
+     *
+     * @param x
+     */
+    void setX(T x) noexcept
+    {
+        m_x = x;
+    }
+
+
+    /**
+     * @brief Set Y coordinate.
+     *
+     * @param y
+     */
+    void setY(T y) noexcept
+    {
+        m_y = y;
+    }
+
+
 // Public Operations
 public:
 
@@ -536,20 +409,7 @@ public:
      */
     T getLengthSquared() const noexcept
     {
-        return x * x + y * y;
-    }
-
-
-    /**
-     * @brief Calculate dot of two vectors.
-     *
-     * @param rhs Second vector.
-     *
-     * @return
-     */
-    T dot(const Vector<T> rhs) const noexcept
-    {
-        return x * rhs.x + y * rhs.y;
+        return dot(*this);
     }
 
 
@@ -563,7 +423,7 @@ public:
     template<typename T2>
     CT<T2> dot(const Vector<T2>& rhs) const noexcept
     {
-        return x * rhs.getX() + y * rhs.getY();
+        return getX() * rhs.getX() + getY() * rhs.getY();
     }
 
 
@@ -577,8 +437,8 @@ public:
     Vector rotated(units::Angle angle) const noexcept
     {
         return Vector(
-            x * cos(angle) - y * sin(angle),
-            x * sin(angle) + y * cos(angle)
+            getX() * cos(angle) - getY() * sin(angle),
+            getX() * sin(angle) + getY() * cos(angle)
         );
     }
 
@@ -588,10 +448,10 @@ private:
 
 
     /// X coordinate.
-    T x;
+    T m_x;
 
     /// Y coordinate.
-    T y;
+    T m_y;
 
 };
 
@@ -963,6 +823,10 @@ static bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 /* ************************************************************************ */
 
 extern template class Vector<float>;
+
+/* ************************************************************************ */
+
+//extern template class Vector<unsigned>;
 
 /* ************************************************************************ */
 
