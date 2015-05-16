@@ -1,3 +1,3 @@
 <simulation world-size="100um 100um" dt="10ms" iterations="10000">
-    <module name="python:test.py" />
+    <module name="python:test.py" background="#ff0000" />
 </simulation>

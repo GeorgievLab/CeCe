@@ -4,6 +4,9 @@
 // Declaration
 #include "Library.hpp"
 
+// Simulator
+#include "core/Log.hpp"
+
 // Module
 #include "Module.hpp"
 
@@ -14,7 +17,16 @@
 
 DEFINE_LIBRARY_CREATE(simulation, name)
 {
-    return new module::python::Module{*simulation, boost::filesystem::path(name)};
+    try
+    {
+        return new module::python::Module{*simulation, boost::filesystem::path(name)};
+    }
+    catch (const std::exception& e)
+    {
+        Log::warning(e.what());
+    }
+
+    return nullptr;
 }
 
 /* ************************************************************************ */

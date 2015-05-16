@@ -11,7 +11,7 @@
 #include <boost/filesystem/path.hpp>
 
 // Python
-#include <Python.h>
+#include <boost/python.hpp>
 
 /* ************************************************************************ */
 
@@ -76,19 +76,49 @@ public:
     void configure(const simulator::ConfigurationBase& config) override;
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Initialize module for rendering.
+     *
+     * @param context
+     */
+    void drawInit(render::Context& context) override;
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Render module.
+     *
+     * @param context
+     * @param world
+     */
+    void draw(render::Context& context, const simulator::Simulation& simulation) override;
+#endif
+
+
 // Private Data Members
 private:
 
 
     /// Code module.
-    PyObject* m_module = nullptr;
+    boost::python::object m_module;
 
     /// Configure function.
-    PyObject* m_configureFn = nullptr;
+    boost::python::object m_configureFn;
 
     /// Update function.
-    PyObject* m_updateFn = nullptr;
+    boost::python::object m_updateFn;
 
+#if ENABLE_RENDER
+    /// Draw init function.
+    boost::python::object m_drawInitFn;
+#endif
+
+#if ENABLE_RENDER
+    /// Draw function.
+    boost::python::object m_drawFn;
+#endif
 };
 
 /* ************************************************************************ */
