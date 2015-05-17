@@ -24,6 +24,14 @@ set(SRCS
     Module.cpp
     Library.hpp
     Library.cpp
+    wrapper_core.hpp
+    wrapper_core.cpp
+    wrapper_render.hpp
+    wrapper_render.cpp
+    wrapper_parser.hpp
+    wrapper_parser.cpp
+    wrapper_simulator.hpp
+    wrapper_simulator.cpp
 )
 
 # Create library

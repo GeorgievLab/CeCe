@@ -8,103 +8,42 @@
 
 // Simulation
 #include "core/Log.hpp"
-#include "simulator/Library.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Configuration.hpp"
-
-#if ENABLE_RENDER
-// Render
-#include "render/Color.hpp"
-#include "render/Context.hpp"
-#include "render/GridColor.hpp"
-#endif
+#include "simulator/Library.hpp"
 
 // Boost
 #include <boost/filesystem.hpp>
 
+// Wrappers
+#include "wrapper_core.hpp"
+#include "wrapper_render.hpp"
+#include "wrapper_parser.hpp"
+#include "wrapper_simulator.hpp"
+
 /* ************************************************************************ */
 
 BOOST_PYTHON_MODULE(core) {
-    namespace py = boost::python;
-
-    // Vector<float>
-    py::class_<core::Vector<float>>("VectorFloat")
-        .def(py::init<float, float>())
-        .def(py::init<float>())
-        .def("getX", &core::Vector<float>::getX)
-        .def("getY", &core::Vector<float>::getY)
-        .def("setX", &core::Vector<float>::setX)
-        .def("setY", &core::Vector<float>::setY)
-    ;
-
-    // Vector<unsigned>
-    py::class_<core::Vector<unsigned>>("VectorUint")
-        .def(py::init<unsigned, unsigned>())
-        .def(py::init<unsigned>())
-        .def("getX", &core::Vector<unsigned>::getX)
-        .def("getY", &core::Vector<unsigned>::getY)
-        .def("setX", &core::Vector<unsigned>::setX)
-        .def("setY", &core::Vector<unsigned>::setY)
-    ;
+    python_wrapper_core();
 }
 
 /* ************************************************************************ */
 
 BOOST_PYTHON_MODULE(simulator) {
-    namespace py = boost::python;
-
-    // Configuration
-    py::class_<simulator::ConfigurationBase, boost::noncopyable>("Configuration", py::no_init)
-        .def("getString", &simulator::ConfigurationBase::getString)
-        .def("getFloat", &simulator::ConfigurationBase::getFloat)
-        .def("getInteger", &simulator::ConfigurationBase::getInteger)
-    ;
-
-    // Simulation
-    py::class_<simulator::Simulation, boost::noncopyable>("Simulation", py::no_init)
-        //.add_property("worldSize", &simulator::Simulation::getWorldSize, py::return_internal_reference<>())
-    ;
+    python_wrapper_simulator();
 }
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
-BOOST_PYTHON_MODULE(render) {
-    namespace py = boost::python;
-
-    py::class_<render::Color>("Color")
-        .def(py::init<render::Color::ComponentType>())
-        .def(py::init<render::Color::ComponentType, render::Color::ComponentType, render::Color::ComponentType, render::Color::ComponentType>())
-        .add_property("red", &render::Color::getRed, &render::Color::setRed)
-        .add_property("green", &render::Color::getGreen, &render::Color::setGreen)
-        .add_property("blue", &render::Color::getBlue, &render::Color::setBlue)
-        .add_property("alpha", &render::Color::getAlpha, &render::Color::setAlpha)
-    ;
-
-    void (render::Context::*matrixScale1)(float) = &render::Context::matrixScale;
-    void (render::Context::*matrixScale2)(const Vector<float>&) = &render::Context::matrixScale;
-
-    // render::Context
-    py::class_<render::Context, boost::noncopyable>("Context", py::no_init)
-        .def("matrixPush", &render::Context::matrixPush)
-        .def("matrixPop", &render::Context::matrixPop)
-        .def("matrixIdentity", &render::Context::matrixIdentity)
-        .def("matrixScale", matrixScale1)
-        .def("matrixScale", matrixScale2)
-    ;
-
-    void (render::GridColor::*init_1)(render::Context&) = &render::GridColor::init;
-    void (render::GridColor::*init_2)(render::Context&, Vector<render::GridColor::PositionType>) = &render::GridColor::init;
-
-    py::class_<render::GridColor, boost::noncopyable>("GridColor")
-        .def("init", init_1)
-        .def("init", init_2)
-        .def("draw", &render::GridColor::draw)
-        //.def("set", &render::GridColor::set)
-        //.def("get", &render::GridColor::get)
-    ;
+BOOST_PYTHON_MODULE(parser) {
+    python_wrapper_parser();
 }
-#endif
+
+/* ************************************************************************ */
+
+BOOST_PYTHON_MODULE(render) {
+    python_wrapper_render();
+}
 
 /* ************************************************************************ */
 
@@ -158,6 +97,7 @@ Module::Module(simulator::Simulation& simulation, const boost::filesystem::path&
     PyImport_AppendInittab("core", &initcore);
     PyImport_AppendInittab("simulator", &initsimulator);
     PyImport_AppendInittab("render", &initrender);
+    PyImport_AppendInittab("parser", &initparser);
 
     // Initialize python
     Py_Initialize();

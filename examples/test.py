@@ -20,19 +20,25 @@ def configure(config):
 # Update module
 #
 def update(dt, simulator):
-    print dt
+    for i in xrange(1, 201):
+        for j in xrange(1, 201):
+            if i == j:
+                drawable.set(core.VectorUint(i, j), render.Color(1, 0, 0, 0))
+            else:
+                drawable.set(core.VectorUint(i, j), render.Color(0, 0, 0, 0))
 
 #
 # Prepare module for rendering
 #
 def drawInit(context):
     drawable.init(context, core.VectorUint(200))
+    drawable.clear(render.Color(0))
 
 #
 # Draw module
 #
 def draw(context, simulation):
     context.matrixPush()
-    context.matrixScale(simulation.getWorldSize())
+    context.matrixScale(simulation.worldSize)
     drawable.draw(context)
     context.matrixPop()
