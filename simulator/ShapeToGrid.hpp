@@ -194,17 +194,17 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const Vector<Ste
         putCoord(xy * Vector<Ts>(-1, -1));
         putCoord(xy * Vector<Ts>( 1, -1));
 
-        ++xy.getY();
-        stopping.getY() += twoSquare.getX();
+        ++xy.y();
+        stopping.y() += twoSquare.getX();
         error += change.getY();
-        change.getY() += twoSquare.getX();
+        change.y() += twoSquare.getX();
 
         if ((2 * error + change.getX()) > 0)
         {
-            --xy.getX();
-            stopping.getX() -= twoSquare.getY();
+            --xy.x();
+            stopping.x() -= twoSquare.getY();
             error += change.getX();
-            change.getX() += twoSquare.getY();
+            change.x() += twoSquare.getY();
         }
     }
 
@@ -224,17 +224,17 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const Vector<Ste
         putCoord(xy * Vector<Ts>(-1, -1));
         putCoord(xy * Vector<Ts>( 1, -1));
 
-        ++xy.getX();
-        stopping.getX() += twoSquare.getY();
+        ++xy.x();
+        stopping.x() += twoSquare.getY();
         error += change.getX();
-        change.getX() += twoSquare.getY();
+        change.x() += twoSquare.getY();
 
         if ((2 * error + change.getY()) > 0)
         {
-            --xy.getY();
-            stopping.getY() -= twoSquare.getX();
+            --xy.y();
+            stopping.y() -= twoSquare.getX();
             error += change.getY();
-            change.getY() += twoSquare.getX();
+            change.y() += twoSquare.getX();
         }
     }
 
