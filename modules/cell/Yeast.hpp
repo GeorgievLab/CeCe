@@ -3,8 +3,8 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <memory>
+// Boost
+#include <boost/optional.hpp>
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -80,7 +80,7 @@ public:
      */
     bool hasBud() const noexcept
     {
-        return m_bud != nullptr;
+        return m_bud;
     }
 
 
@@ -134,7 +134,7 @@ public:
     void budRelease();
 
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Initialize object for rendering.
      *
@@ -170,7 +170,7 @@ protected:
 private:
 
     /// Bud cell.
-    std::unique_ptr<Bud> m_bud;
+    boost::optional<Bud> m_bud;
 
 #if ENABLE_RENDER
     DrawableYeast m_renderObject;

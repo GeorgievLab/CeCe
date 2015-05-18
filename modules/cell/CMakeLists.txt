@@ -6,6 +6,12 @@ set(PROJECT_NAME module-cell)
 # Create project
 project(${PROJECT_NAME} CXX)
 
+# Find Boost
+find_package(Boost REQUIRED)
+
+# Include directories
+include_directories(${Boost_INCLUDE_DIRS})
+
 # Sources
 set(SRCS
     Library.hpp
@@ -46,6 +52,7 @@ add_dependencies(${PROJECT_NAME}
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     simulator
+    ${Boost_LIBRARIES}
 )
 
 # ######################################################################### #

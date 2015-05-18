@@ -90,7 +90,7 @@ void Yeast::budCreate()
     std::default_random_engine eng(g_rd());
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
-    m_bud.reset(new Bud{});
+    m_bud = Bud{};
     m_bud->rotation = 2 * constants::PI * dist(eng);
 
     m_shapeForceUpdate = true;
@@ -103,14 +103,11 @@ void Yeast::budRelease()
     assert(hasBud());
 
     // Calculate bud position
-    const auto angle = getBody()->GetAngle() + m_bud->rotation;
-    const auto distance = m_bud->shape.m_p.Length();
+    const auto angle = getBody()->GetAngle();
+    const auto offset = Vector<float>(m_bud->shape.m_p.x, m_bud->shape.m_p.y);
 
     // Get current position
-    const auto pos = getPosition() + Vector<float>(
-        distance * std::cos(angle),
-        distance * std::sin(angle)
-    );
+    const auto pos = getPosition() + offset.rotated(angle);
 
     // Release bud into the world
     auto bud = getSimulation().createObject<Yeast>();
@@ -122,14 +119,14 @@ void Yeast::budRelease()
     // away by some force.
 
     // Release bud
-    m_bud.release();
+    m_bud.reset();
 
     m_shapeForceUpdate = true;
 }
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 void Yeast::drawInit(render::Context& context)
 {
     m_renderObject.init(context);
@@ -138,7 +135,7 @@ void Yeast::drawInit(render::Context& context)
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 void Yeast::draw(render::Context& context)
 {
     auto pos = getPosition();
@@ -186,7 +183,9 @@ void Yeast::updateShape()
     {
         if (shapes.size() != 2)
         {
-            shapes.push_back(simulator::Shape::makeCircle(newBudRadius, PositionVector{0, newRadius + newBudRadius}));
+            shapes.push_back(simulator::Shape::makeCircle(
+                newBudRadius, PositionVector{0, newRadius + newBudRadius})
+            );
         }
         else
         {
