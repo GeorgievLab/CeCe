@@ -25,38 +25,6 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-template<typename T>
-static void shapeCoordinates(const Vector<T>& center, const simulator::Shape& shape,
-    const Vector<float>& step, std::set<Vector<T>>& coords)
-{
-    if (shape.type != simulator::ShapeType::Circle)
-        return;
-
-    const Vector<T> radius = shape.circle.radius / step;
-
-    for (T x = -radius.getX(); x < radius.getX(); ++x)
-    {
-        for (T y = -radius.getY(); y < radius.getY(); ++y)
-        {
-            const Vector<T> xy{x, y};
-            auto len = xy.getLength();
-
-            if (len > radius.getX() || (len < radius.getX() - 2))
-                continue;
-
-            // New coordinate
-            auto coord = center + shape.circle.center + xy;
-
-            if (coord.getX() < 0 || coord.getY() < 0)
-                continue;
-
-            coords.insert(coord);
-        }
-    }
-}
-
-/* ************************************************************************ */
-
 void GeneratorCell::update(units::Duration dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("diffusion.generator-cell", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
@@ -88,9 +56,8 @@ void GeneratorCell::update(units::Duration dt, simulator::Simulation& simulation
         const auto pos = ptr->getPosition() - start;
         const unsigned int signal = ptr->getId() % Signal::COUNT;
 
-        // TODO: improve
-        if ((pos.getX() < 0 || pos.getY() < 0) ||
-            (pos.getX() >= simulation.getWorldSize().getWidth() || pos.getY() >= simulation.getWorldSize().getHeight()))
+        // Check if position is in range
+        if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
             continue;
 
         // Get grid position
