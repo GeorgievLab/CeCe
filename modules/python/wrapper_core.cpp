@@ -6,35 +6,72 @@
 
 // Boost
 #include <boost/python/class.hpp>
+#include <boost/python/operators.hpp>
 
 // Core
 #include "core/Vector.hpp"
 
 /* ************************************************************************ */
 
+/**
+ * @brief Define Vector for different type.
+ *
+ * @param name Class name.
+ */
+template<typename T>
+static void define_vector(const char* name) noexcept
+{
+    using namespace boost::python;
+
+    class_<core::Vector<T>>(name)
+        .def(init<T, T>())
+        .def(init<T>())
+        .add_property("x", &core::Vector<T>::getX, &core::Vector<T>::setX)
+        .add_property("y", &core::Vector<T>::getY, &core::Vector<T>::setY)
+        // Add
+        .def(self + self)
+        .def(self + T())
+        .def(T() + self)
+        .def(self += self)
+        // Substract
+        .def(self - self)
+        .def(self - T())
+        .def(T() - self)
+        .def(self -= self)
+        // Multiple
+        .def(self * self)
+        .def(self * T())
+        .def(T() * self)
+        .def(self *= self)
+        // Divide
+        .def(self / self)
+        .def(self / T())
+        .def(T() / self)
+        .def(self /= self)
+        // Relation
+        .def(self == self)
+        .def(self != self)
+        .def(self < self)
+        .def(self <= self)
+        .def(self > self)
+        .def(self >= self)
+
+        //.def("inRange", &core::Vector<T>::template inRange<T, T>)
+        .def("length", &core::Vector<T>::getLength)
+        .def("lengthSquared", &core::Vector<T>::getLengthSquared)
+        //.def("dot", &core::Vector<T>::dot)
+        .def("rotated", &core::Vector<T>::rotated)
+    ;
+}
+
+/* ************************************************************************ */
+
 void python_wrapper_core()
 {
-    namespace py = boost::python;
-
-    // Vector<float>
-    py::class_<core::Vector<float>>("VectorFloat")
-        .def(py::init<float, float>())
-        .def(py::init<float>())
-        .def("getX", &core::Vector<float>::getX)
-        .def("getY", &core::Vector<float>::getY)
-        .def("setX", &core::Vector<float>::setX)
-        .def("setY", &core::Vector<float>::setY)
-    ;
-
-    // Vector<unsigned>
-    py::class_<core::Vector<unsigned>>("VectorUint")
-        .def(py::init<unsigned, unsigned>())
-        .def(py::init<unsigned>())
-        .def("getX", &core::Vector<unsigned>::getX)
-        .def("getY", &core::Vector<unsigned>::getY)
-        .def("setX", &core::Vector<unsigned>::setX)
-        .def("setY", &core::Vector<unsigned>::setY)
-    ;
+    // Predefined types
+    define_vector<float>("VectorFloat");
+    define_vector<int>("VectorInt");
+    define_vector<unsigned int>("VectorUint");
 }
 
 /* ************************************************************************ */
