@@ -47,7 +47,8 @@ public:
      */
     ~Buffer()
     {
-        assert(!isInitialized());
+        if (isInitialized())
+            release();
     }
 
 
@@ -100,11 +101,9 @@ public:
 
 
     /**
-     * @brief Finalize buffer.
-     *
-     * @param context Rendering context.
+     * @brief Release buffer.
      */
-    void finalize(Context& context);
+    void release();
 
 
     /**

@@ -40,7 +40,7 @@ void Buffer::init(Context& context, SizeType size, const void* data)
 
 /* ************************************************************************ */
 
-void Buffer::finalize(Context& context)
+void Buffer::release()
 {
     assert(isInitialized());
     gl(glDeleteBuffers(1, &m_id));
