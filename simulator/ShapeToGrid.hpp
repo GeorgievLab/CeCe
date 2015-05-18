@@ -118,10 +118,10 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
  * @param max    Maximum coordinates.
  * @param mim    Minimum coordinates (default is {0, 0}).
  */
-template<typename OutIt, typename T, typename StepT>
+template<typename OutIt, typename T, typename StepT, typename OffT = int>
 OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
-                           const Vector<T>& center,
-                           const Vector<T>& max, const Vector<T>& min = {})
+                           const Vector<T>& center, const Vector<T>& max,
+                           const Vector<T>& min = {}, OffT off = OffT{})
 {
     switch (shape.type)
     {
@@ -129,7 +129,7 @@ OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const Vector<StepT>& s
         break;
 
     case ShapeType::Circle:
-        return mapShapeBorderToGrid(out, shape.circle, steps, center, max, min);
+        return mapShapeBorderToGrid(out, shape.circle, steps, center, max, min, off);
     }
 
     return out;
@@ -143,25 +143,27 @@ OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const Vector<StepT>& s
  * @tparam OutIt Output iterator type.
  * @tparam T     Coordinate value type.
  * @tparam StepT Step type.
+ * @tparam OffT  Radius offset type.
  *
  * @param out    Output iterator. It's required to be valid for all incrementations.
  * @param shape  Circle shape
  * @param center Circle center in grid coordinates.
  * @param max    Maximum coordinates.
  * @param mim    Minimum coordinates (default is {0, 0}).
+ * @param off    Radius offset.
  *
  * @see https://web.archive.org/web/20120225095359/http://homepage.smc.edu/kennedy_john/belipse.pdf
  */
-template<typename OutIt, typename T, typename StepT>
+template<typename OutIt, typename T, typename StepT, typename OffT = int>
 OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& steps,
-                           const Vector<T>& center,
-                           const Vector<T>& max, const Vector<T>& min = {})
+                           const Vector<T>& center, const Vector<T>& max,
+                           const Vector<T>& min = {}, OffT off = OffT{})
 {
     // Get signed type
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-    const Vector<T> radius = shape.radius / steps;
+    const Vector<T> radius = shape.radius / steps + off;
     const Vector<Ts> shapeCenter = center + shape.center / steps;
     const Vector<Ts> maxS = max;
     const Vector<Ts> minS = min;
