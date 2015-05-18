@@ -123,6 +123,18 @@ PositionVector Object::getPosition() const noexcept
 
 /* ************************************************************************ */
 
+units::Angle Object::getRotation() const noexcept
+{
+#if ENABLE_PHYSICS
+    assert(m_body);
+    return m_body->GetAngle();
+#else
+    return m_rotation;
+#endif
+}
+
+/* ************************************************************************ */
+
 VelocityVector Object::getVelocity() const noexcept
 {
 #if ENABLE_PHYSICS
@@ -152,9 +164,21 @@ void Object::setPosition(PositionVector pos) noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
-    m_body->SetTransform({pos.getX(), pos.getY()}, 0);
+    m_body->SetTransform({pos.getX(), pos.getY()}, m_body->GetAngle());
 #else
     m_position = std::move(pos);
+#endif
+}
+
+/* ************************************************************************ */
+
+void Object::setRotation(units::Angle angle) noexcept
+{
+#if ENABLE_PHYSICS
+    assert(m_body);
+    m_body->SetTransform(m_body->GetPosition(), angle);
+#else
+    m_rotation = angle;
 #endif
 }
 

@@ -132,6 +132,14 @@ public:
 
 
     /**
+     * @brief Returns current rotation.
+     *
+     * @return
+     */
+    units::Angle getRotation() const noexcept;
+
+
+    /**
      * @brief Returns current velocity.
      *
      * @return
@@ -181,6 +189,14 @@ public:
      * @param pos
      */
     void setPosition(PositionVector pos) noexcept;
+
+
+    /**
+     * @brief Change object rotation.
+     *
+     * @param angle
+     */
+    void setRotation(units::Angle angle) noexcept;
 
 
     /**
@@ -335,6 +351,9 @@ private:
 
     /// Object position
     PositionVector m_position;
+
+    /// Object rotation.
+    units::Angle m_rotation;
 
     /// Object velocity.
     VelocityVector m_velocity;
