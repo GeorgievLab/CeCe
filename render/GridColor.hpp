@@ -187,14 +187,12 @@ public:
 
 
     /**
-     * @brief Finalize.
-     *
-     * @param context Rendering context.
+     * @brief Release.
      */
-    void finalize(Context& context)
+    void release()
     {
-        //m_texture.finalize(context);
-        m_buffer.finalize(context);
+        //m_texture.release();
+        m_buffer.release();
     }
 
 
