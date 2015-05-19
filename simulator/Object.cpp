@@ -242,6 +242,13 @@ void Object::configure(const ConfigurationBase& config, Simulation& simulation)
     config.callIfSetString("position", [this](const std::string& value) {
         setPosition(parser::parse_vector<units::Length>(value));
     });
+
+    config.callIfSetString("program", [this, &simulation](const std::string& value) {
+        const auto& program = simulation.getProgram(value);
+
+        if (program)
+            addProgram(program);
+    });
 }
 
 /* ************************************************************************ */

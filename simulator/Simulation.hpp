@@ -18,6 +18,7 @@
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Library.hpp"
+#include "simulator/Program.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -288,6 +289,51 @@ public:
 #endif
 
 
+    /**
+     * @brief Returns a map of preddefined programs.
+     *
+     * @return
+     */
+    const std::map<std::string, Program>& getPrograms() const noexcept
+    {
+        return m_programs;
+    }
+
+
+    /**
+     * @brief Check if program with given name exists.
+     *
+     * @param name Program name.
+     *
+     * @return
+     */
+    bool hasProgram(const std::string& name) const noexcept
+    {
+        return m_programs.find(name) != m_programs.end();
+    }
+
+
+    /**
+     * @brief Returns program.
+     *
+     * @param name Program name.
+     *
+     * @return Pointer to program.
+     */
+    const Program& getProgram(const std::string& name) const noexcept
+    {
+        static Program null_program;
+
+        auto it = m_programs.find(name);
+
+        // Return empty program
+        if (it == m_programs.end())
+            return null_program;
+
+        return it->second;
+    }
+
+
 // Public Mutators
 public:
 
@@ -461,6 +507,18 @@ public:
 #endif
 
 
+    /**
+     * @brief Register new program.
+     *
+     * @param name    Program name.
+     * @param program Added program.
+     */
+    void addProgram(std::string name, Program program)
+    {
+        m_programs.emplace(std::move(name), std::move(program));
+    }
+
+
 // Public Operations
 public:
 
@@ -554,6 +612,9 @@ private:
 
     /// Simulation objects.
     ObjectContainer m_objects;
+
+    /// A map of preddefined programs.
+    std::map<std::string, Program> m_programs;
 
 #ifdef ENABLE_RENDER
     /// List of objects that requires init.
