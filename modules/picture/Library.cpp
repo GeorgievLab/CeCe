@@ -9,9 +9,30 @@
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE(simulation, name)
+DEFINE_LIBRARY_INIT(simulation)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_FINALIZE(simulation)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_CREATE_MODULE(simulation, name)
 {
     return new module::picture::Module{};
+}
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_CREATE_OBJECT(simulation, name, flags)
+{
+    return nullptr;
 }
 
 /* ************************************************************************ */

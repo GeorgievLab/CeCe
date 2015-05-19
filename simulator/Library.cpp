@@ -18,7 +18,8 @@
 #endif
 
 // Simulator
-#include "Module.hpp"
+#include "simulator/Module.hpp"
+#include "simulator/Object.hpp"
 
 /* ************************************************************************ */
 
@@ -128,6 +129,7 @@ Library::Library(const std::string& name)
         m_initSimulation = m_impl->getAddr<InitSimulationFn>("init_simulation");
         m_finalizeSimulation = m_impl->getAddr<FinalizeSimulationFn>("finalize_simulation");
         m_createModule = m_impl->getAddr<CreateModuleFn>("create_module");
+        m_createObject = m_impl->getAddr<CreateObjectFn>("create_object");
     }
 }
 
@@ -187,16 +189,16 @@ void Library::addLibraryPath(std::string path)
 
 void Library::initSimulation(Simulation* simulation)
 {
-    if (m_initSimulation)
-        m_initSimulation(simulation);
+    assert(m_initSimulation);
+    m_initSimulation(simulation);
 }
 
 /* ************************************************************************ */
 
 void Library::finalizeSimulation(Simulation* simulation)
 {
-    if (m_finalizeSimulation)
-        m_finalizeSimulation(simulation);
+    assert(m_finalizeSimulation);
+    m_finalizeSimulation(simulation);
 }
 
 /* ************************************************************************ */
@@ -205,6 +207,14 @@ std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std:
 {
     assert(m_createModule);
     return std::unique_ptr<Module>{m_createModule(simulation, name.c_str())};
+}
+
+/* ************************************************************************ */
+
+std::unique_ptr<Object> Library::createObject(Simulation* simulation, const std::string& name, bool dynamic)
+{
+    assert(m_createObject);
+    return std::unique_ptr<Object>{m_createObject(simulation, name.c_str(), int(dynamic))};
 }
 
 /* ************************************************************************ */

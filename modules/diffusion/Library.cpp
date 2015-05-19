@@ -17,7 +17,21 @@
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE(simulation, name)
+DEFINE_LIBRARY_INIT(simulation)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_FINALIZE(simulation)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_CREATE_MODULE(simulation, name)
 {
     if (!strcmp(name, "generator"))
         return new module::diffusion::Generator{simulation->useModule<module::diffusion::Module>("diffusion")};
@@ -26,6 +40,13 @@ DEFINE_LIBRARY_CREATE(simulation, name)
         return new module::diffusion::GeneratorCell{simulation->useModule<module::diffusion::Module>("diffusion")};
 
     return new module::diffusion::Module{};
+}
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_CREATE_OBJECT(simulation, name, flags)
+{
+    return nullptr;
 }
 
 /* ************************************************************************ */
