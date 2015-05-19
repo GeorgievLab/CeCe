@@ -361,7 +361,7 @@ protected:
      *
      * @return
      */
-    std::vector<Shape>& getShapes() noexcept
+    std::vector<Shape>& getMutableShapes() noexcept
     {
         return m_shapes;
     }

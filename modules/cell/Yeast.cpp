@@ -30,8 +30,9 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) no
     setVolume(units::um3(37));
 
     // Max 2 shapes
-    getShapes().reserve(2);
-    getShapes().push_back(simulator::Shape::makeCircle(calcSphereRadius(getVolume())));
+    auto& shapes = getMutableShapes();
+    shapes.reserve(2);
+    shapes.push_back(simulator::Shape::makeCircle(calcSphereRadius(getVolume())));
 }
 
 /* ************************************************************************ */
@@ -161,7 +162,7 @@ void Yeast::updateShape()
     static constexpr float MIN_CHANGE = 0.2f;
 
     // Alias for yeast shapes
-    auto& shapes = getShapes();
+    auto& shapes = getMutableShapes();
 
     // Calculate new radius
     const units::Length newRadius = calcSphereRadius(getVolume());

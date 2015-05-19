@@ -29,7 +29,8 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noex
 #endif
 
     // Create initial shape
-    getShapes().push_back(simulator::Shape::makeCircle(getRadius()));
+    auto& shapes = getMutableShapes();
+    shapes.push_back(simulator::Shape::makeCircle(getRadius()));
 }
 
 /* ************************************************************************ */
@@ -56,8 +57,9 @@ void Cell::update(units::Duration dt)
 #endif
 
     // Update shape
-    assert(getShapes().size() == 1);
-    getShapes()[0].circle.radius = getRadius();
+    auto& shapes = getMutableShapes();
+    assert(shapes.size() == 1);
+    shapes[0].circle.radius = getRadius();
 }
 
 /* ************************************************************************ */
