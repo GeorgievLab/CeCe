@@ -169,6 +169,19 @@ public:
 
 
     /**
+     * @brief Returns if library with given name is loaded.
+     *
+     * @param name
+     *
+     * @return
+     */
+    bool hasLibrary(const std::string& name) const noexcept
+    {
+        return m_libraries.find(name) != m_libraries.end();
+    }
+
+
+    /**
      * @brief If simulation uses given module.
      *
      * @param name Module name.
@@ -524,6 +537,18 @@ public:
 #endif
 
 
+    /**
+     * @brief Load library into cache and return pointer.
+     *
+     * In case the library was loaded before, it't not loaded again.
+     *
+     * @param name
+     *
+     * @return
+     */
+    Library* loadLibrary(const std::string& name);
+
+
 // Private Data Members
 private:
 
@@ -544,6 +569,9 @@ private:
 
     /// World size.
     Vector<units::Length> m_worldSize{units::um(400), units::um(400)};
+
+    /// Cache for loaded libraries.
+    std::map<std::string, std::unique_ptr<Library>> m_libraries;
 
     /// Simulation modules.
     ModuleContainer m_modules;

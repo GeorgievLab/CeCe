@@ -82,8 +82,11 @@ Module* Simulation::useModule(const std::string& path)
     std::string library, name;
     std::tie(library, name) = splitModulePath(path);
 
+    // Get if library is yet loaded
+    const bool init = !hasLibrary(library);
+
     // Load library
-    Library* lib = m_simulator.loadLibrary(library);
+    Library* lib = loadLibrary(library);
     assert(lib);
 
     // Unable to load library
@@ -92,6 +95,9 @@ Module* Simulation::useModule(const std::string& path)
         Log::warning("Unable to load library: ", library, "(", lib->getError(), ")");
         return nullptr;
     }
+
+    // Initialize library
+    lib->initSimulation(this);
 
     // Create module with given name
     auto module = lib->createModule(this, name);
@@ -289,6 +295,28 @@ void Simulation::draw(render::Context& context)
 
 }
 #endif
+
+/* ************************************************************************ */
+
+Library* Simulation::loadLibrary(const std::string& name)
+{
+    // Try to find library in cache
+    auto it = m_libraries.find(name);
+
+    // Not found
+    if (it == m_libraries.end())
+    {
+        // Insert into cache
+        auto ptr = m_libraries.emplace(std::make_pair(
+            name,
+            std::unique_ptr<Library>{new Library(name)}
+        ));
+        it = std::get<0>(ptr);
+    }
+
+    // Return pointer
+    return std::get<1>(*it).get();
+}
 
 /* ************************************************************************ */
 

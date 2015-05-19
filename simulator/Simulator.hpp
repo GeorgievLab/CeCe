@@ -6,15 +6,12 @@
 // C++
 #include <memory>
 #include <atomic>
-#include <vector>
 #include <cassert>
-#include <map>
 
 // Simulator
 #include "core/Units.hpp"
-#include "simulator/Module.hpp"
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 #include "render/Context.hpp"
 #endif
 
@@ -25,7 +22,6 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulation;
-class Library;
 
 /* ************************************************************************ */
 
@@ -154,23 +150,8 @@ public:
 #endif
 
 
-    /**
-     * @brief Load library into cache and return pointer.
-     *
-     * In case the library was loaded before, it't not loaded again.
-     *
-     * @param name
-     *
-     * @return
-     */
-    Library* loadLibrary(const std::string& name);
-
-
 // Data Members
 private:
-
-    /// Cache for loaded libraries.
-    std::map<std::string, std::unique_ptr<Library>> m_libraries;
 
     /// Flag if thread is running
     std::atomic<bool> m_isRunning{false};

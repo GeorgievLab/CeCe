@@ -11,7 +11,6 @@
 
 // Simulator
 #include "simulator/Simulation.hpp"
-#include "simulator/Library.hpp"
 
 /* ************************************************************************ */
 
@@ -101,28 +100,6 @@ void Simulator::draw(render::Context& context)
     m_simulation->draw(context);
 }
 #endif
-
-/* ************************************************************************ */
-
-Library* Simulator::loadLibrary(const std::string& name)
-{
-    // Try to find library in cache
-    auto it = m_libraries.find(name);
-
-    // Not found
-    if (it == m_libraries.end())
-    {
-        // Insert into cache
-        auto ptr = m_libraries.emplace(std::make_pair(
-            name,
-            std::unique_ptr<Library>{new Library(name)}
-        ));
-        it = std::get<0>(ptr);
-    }
-
-    // Return pointer
-    return std::get<1>(*it).get();
-}
 
 /* ************************************************************************ */
 

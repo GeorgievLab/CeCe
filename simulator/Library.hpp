@@ -11,34 +11,34 @@
 /* ************************************************************************ */
 
 /**
- * @brief Declare function for setup simulation.
+ * @brief Declare function for init simulation.
  */
-#define DECLARE_LIBRARY_SETUP \
-    extern "C" void setup(simulator::Simulation*)
+#define DECLARE_LIBRARY_INIT \
+    extern "C" void init_simulation(simulator::Simulation*)
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function for setup simulation.
+ * @brief Define function for init simulation.
  */
-#define DEFINE_LIBRARY_SETUP(sim) \
-    void setup(simulator::Simulation* sim)
+#define DEFINE_LIBRARY_INIT(sim) \
+    void init_simulation(simulator::Simulation* sim)
 
 /* ************************************************************************ */
 
 /**
- * @brief Declare function for cleanup simulation.
+ * @brief Declare function for finalize simulation.
  */
-#define DECLARE_LIBRARY_CLEANUP \
-    extern "C" void cleanup(simulator::Simulation*)
+#define DECLARE_LIBRARY_FINALIZE \
+    extern "C" void finalize_simulation(simulator::Simulation*)
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function for cleanup simulation.
+ * @brief Define function for finalize simulation.
  */
-#define DEFINE_LIBRARY_CLEANUP(sim) \
-    void cleanup(simulator::Simulation* sim)
+#define DEFINE_LIBRARY_FINALIZE(sim) \
+    void finalize_simulation(simulator::Simulation* sim)
 
 /* ************************************************************************ */
 
@@ -76,23 +76,23 @@ class Simulation;
 /* ************************************************************************ */
 
 /**
- * @brief Setup simulation function pointer.
+ * @brief Init simulation function pointer.
  */
-using SetupSimulation = void (*)(Simulation*);
+using InitSimulationFn = void (*)(Simulation*);
 
 /* ************************************************************************ */
 
 /**
- * @brief Cleanup simulation function pointer.
+ * @brief Finalize simulation function pointer.
  */
-using CleanupSimulation = void (*)(Simulation*);
+using FinalizeSimulationFn = void (*)(Simulation*);
 
 /* ************************************************************************ */
 
 /**
  * @brief Create module function.
  */
-using CreateModule = Module* (*)(Simulation*, const char*);
+using CreateModuleFn = Module* (*)(Simulation*, const char*);
 
 /* ************************************************************************ */
 
@@ -169,19 +169,19 @@ public:
 
 
     /**
-     * @brief Setup simulation.
+     * @brief Init simulation.
      *
      * @param simulation Pointer to simulation.
      */
-    void setupSimulation(Simulation* simulation);
+    void initSimulation(Simulation* simulation);
 
 
     /**
-     * @brief Cleaup simulation.
+     * @brief Finalize simulation.
      *
      * @param simulation Pointer to simulation.
      */
-    void cleanupSimulation(Simulation* simulation);
+    void finalizeSimulation(Simulation* simulation);
 
 
     /**
@@ -202,14 +202,14 @@ private:
     struct Impl;
     std::unique_ptr<Impl> m_impl;
 
-    /// Function pointer to setup simulation.
-    SetupSimulation m_setupSimulation;
+    /// Function pointer to init simulation.
+    InitSimulationFn m_initSimulation;
 
-    /// Function pointer to cleanup simulation.
-    CleanupSimulation m_cleanupSimulation;
+    /// Function pointer to finalize simulation.
+    FinalizeSimulationFn m_finalizeSimulation;
 
     /// Function pointer to create module.
-    CreateModule m_createModule;
+    CreateModuleFn m_createModule;
 
     /// Library paths.
     static std::vector<std::string> s_libraryPaths;

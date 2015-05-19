@@ -125,9 +125,9 @@ Library::Library(const std::string& name)
     // Set create function
     if (m_impl->isLoaded())
     {
-        m_setupSimulation = m_impl->getAddr<SetupSimulation>("setup");
-        m_cleanupSimulation = m_impl->getAddr<CleanupSimulation>("cleanup");
-        m_createModule = m_impl->getAddr<CreateModule>("create_module");
+        m_initSimulation = m_impl->getAddr<InitSimulationFn>("init_simulation");
+        m_finalizeSimulation = m_impl->getAddr<FinalizeSimulationFn>("finalize_simulation");
+        m_createModule = m_impl->getAddr<CreateModuleFn>("create_module");
     }
 }
 
@@ -185,18 +185,18 @@ void Library::addLibraryPath(std::string path)
 
 /* ************************************************************************ */
 
-void Library::setupSimulation(Simulation* simulation)
+void Library::initSimulation(Simulation* simulation)
 {
-    if (m_setupSimulation)
-        m_setupSimulation(simulation);
+    if (m_initSimulation)
+        m_initSimulation(simulation);
 }
 
 /* ************************************************************************ */
 
-void Library::cleanupSimulation(Simulation* simulation)
+void Library::finalizeSimulation(Simulation* simulation)
 {
-    if (m_cleanupSimulation)
-        m_cleanupSimulation(simulation);
+    if (m_finalizeSimulation)
+        m_finalizeSimulation(simulation);
 }
 
 /* ************************************************************************ */
