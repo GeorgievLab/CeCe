@@ -6,6 +6,7 @@
 // C++
 #include <cassert>
 #include <vector>
+#include <functional>
 
 // Simulator
 #include "core/Units.hpp"
@@ -57,6 +58,9 @@ public:
 
     /// Object ID type.
     using IdType = unsigned long;
+
+    /// Object update program type.
+    using Program = std::function<void(Object&, units::Duration)>;
 
 
 // Public Ctors & Dtors
@@ -171,6 +175,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns object programs.
+     *
+     * @return
+     */
+    const std::vector<Program>& getPrograms() const noexcept
+    {
+        return m_programs;
+    }
+
+
 // Public Mutators
 public:
 
@@ -232,6 +247,28 @@ public:
     void setShapes(std::vector<Shape> shapes) noexcept
     {
         m_shapes = std::move(shapes);
+    }
+
+
+    /**
+     * @brief Set object programs.
+     *
+     * @param programs
+     */
+    void setPrograms(std::vector<Program> programs) noexcept
+    {
+        m_programs = std::move(programs);
+    }
+
+
+    /**
+     * @brief Add a new program.
+     *
+     * @param program
+     */
+    void addProgram(Program program) noexcept
+    {
+        m_programs.push_back(std::move(program));
     }
 
 
@@ -341,6 +378,9 @@ private:
 
     /// A list of object shapes.
     std::vector<Shape> m_shapes;
+
+    /// Registered object programs.
+    std::vector<Program> m_programs;
 
 #if ENABLE_PHYSICS
     /// Physics body.

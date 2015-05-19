@@ -227,6 +227,10 @@ void Object::update(units::Duration dt)
     // Calculate new object position
     setPosition(getPosition() + getVelocity() * dt);
 #endif
+
+    // Call object programs
+    for (auto& program : getPrograms())
+        program(*this, dt);
 }
 
 /* ************************************************************************ */
