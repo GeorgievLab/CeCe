@@ -78,6 +78,8 @@ Module* Simulation::useModule(const std::string& path)
     if (hasModule(path))
         return getModule(path);
 
+    Log::debug("Loading library: ", path);
+
     // Split path into parts
     std::string library, name;
     std::tie(library, name) = splitModulePath(path);
@@ -97,7 +99,17 @@ Module* Simulation::useModule(const std::string& path)
     }
 
     // Initialize library
-    lib->initSimulation(this);
+    if (init)
+    {
+        Log::debug("Initialize library '", library, "'");
+        lib->initSimulation(this);
+    }
+
+    // Load only library
+    if (name.empty())
+        Log::debug("Create module '", library, "'");
+    else
+        Log::debug("Create module '", library, ".", name, "'");
 
     // Create module with given name
     auto module = lib->createModule(this, name);
@@ -110,6 +122,52 @@ Module* Simulation::useModule(const std::string& path)
     }
 
     Log::warning("Unable to create module: ", path, " (unsupported by library?)");
+
+    return nullptr;
+}
+
+/* ************************************************************************ */
+
+Object* Simulation::buildObject(const std::string& name, bool dynamic)
+{
+    // Split path into parts
+    std::string library, type;
+    std::tie(library, type) = splitModulePath(name);
+
+    if (type.empty())
+        throw std::invalid_argument("Missing object type");
+
+    // Get if library is yet loaded
+    const bool init = !hasLibrary(library);
+
+    // Load library
+    Library* lib = loadLibrary(library);
+    assert(lib);
+
+    // Unable to load library
+    if (!lib->isLoaded())
+    {
+        Log::warning("Unable to load library: ", library, "(", lib->getError(), ")");
+        return nullptr;
+    }
+
+    // Initialize library
+    if (init)
+    {
+        Log::debug("Initialize library '", library, "'");
+        lib->initSimulation(this);
+    }
+
+    Log::debug("Create object '", library, ".", type, "'");
+
+    // Create object with given name
+    auto object = lib->createObject(this, type, dynamic);
+
+    // Register module
+    if (object)
+        return addObject(std::move(object));
+
+    Log::warning("Unable to create object: ", name, " (unsupported by library?)");
 
     return nullptr;
 }

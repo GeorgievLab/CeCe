@@ -56,17 +56,11 @@ class Simulation
 public:
 
 
-    /// Object builder type.
-    using ObjectBuilder = std::function<std::unique_ptr<Object>(Simulation&, const ConfigurationBase&)>;
-
     /// Module container type.
     using ModuleContainer = std::map<std::string, std::unique_ptr<Module>>;
 
     /// Object container type.
     using ObjectContainer = std::vector<std::unique_ptr<Object>>;
-
-    /// Object builders container type.
-    using ObjectBuilderContainer = std::map<std::string, ObjectBuilder>;
 
 
 // Public Ctors
@@ -414,21 +408,6 @@ public:
 
 
     /**
-     * @brief Register object builder.
-     *
-     * @param name    Object name.
-     * @param builder Builder.
-     */
-    void registerObjectBuilder(std::string name, ObjectBuilder builder)
-    {
-        if (m_objectBuilders.find(name) != m_objectBuilders.end())
-            Log::warning("Replacing builder: ", name);
-
-        m_objectBuilders.emplace(std::move(name), std::move(builder));
-    }
-
-
-    /**
      * @brief Add a new object to the world.
      *
      * @param obj
@@ -463,19 +442,12 @@ public:
     /**
      * @brief Build object by name.
      *
-     * @param name   Object name.
-     * @param config Object configuration.
+     * @param name    Object name.
+     * @param dynamic Object is dynamic.
      *
      * @return
      */
-    Object* buildObject(const std::string& name, const ConfigurationBase& config)
-    {
-        auto it = m_objectBuilders.find(name);
-        if (it == m_objectBuilders.end())
-            throw std::runtime_error("Unable to create object: " + name);
-
-        return addObject(it->second(*this, config));
-    }
+    Object* buildObject(const std::string& name, bool dynamic = true);
 
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
@@ -582,9 +554,6 @@ private:
 
     /// Simulation objects.
     ObjectContainer m_objects;
-
-    /// Registered object builders.
-    ObjectBuilderContainer m_objectBuilders;
 
 #ifdef ENABLE_RENDER
     /// List of objects that requires init.
