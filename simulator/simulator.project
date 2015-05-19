@@ -34,7 +34,13 @@
     <File Name="Configuration.hpp"/>
     <File Name="Shape.hpp"/>
     <File Name="ShapeToGrid.hpp"/>
+    <File Name="Program.hpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="core"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -48,6 +54,8 @@
     <Configuration Name="Debug" CompilerType="clang++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <Preprocessor Value="ENABLE_RENDER=1"/>
+        <Preprocessor Value="ENABLE_PHYSICS=1"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
@@ -76,7 +84,7 @@
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -114,7 +122,7 @@
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -122,9 +130,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

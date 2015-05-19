@@ -12,6 +12,8 @@
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
 #include "simulator/Shape.hpp"
+#include "simulator/Configuration.hpp"
+#include "simulator/Program.hpp"
 
 #ifdef ENABLE_RENDER
 // Render
@@ -58,9 +60,6 @@ public:
 
     /// Object ID type.
     using IdType = unsigned long;
-
-    /// Object update program type.
-    using Program = std::function<void(Object&, units::Duration)>;
 
 
 // Public Ctors & Dtors
@@ -320,6 +319,18 @@ public:
      * @param dt Simulation time step.
      */
     virtual void update(units::Duration dt);
+
+
+    /**
+     * @brief Configure object.
+     *
+     * @param config
+     * @param simulation
+     */
+    virtual void configure(const ConfigurationBase& config, Simulation& simulation)
+    {
+        // Nothing to do
+    }
 
 
 #ifdef ENABLE_RENDER
