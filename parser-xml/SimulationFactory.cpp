@@ -45,8 +45,13 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
     if (!configuration.hasValue("class"))
         throw parser::Exception("Missing attribute 'class' in 'object' element");
 
+    bool isStatic = configuration.getString("type") == "static";
+
     // Create object
-    simulation.buildObject(configuration.getString("class"), configuration);
+    simulator::Object* object = simulation.buildObject(configuration.getString("class"), !isStatic);
+
+    if (object)
+        object->configure(configuration, simulation);
 }
 
 /* ************************************************************************ */
