@@ -8,6 +8,8 @@
 #include <cassert>
 
 // Simulator
+#include "core/Units.hpp"
+#include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -231,6 +233,15 @@ void Object::update(units::Duration dt)
     // Call object programs
     for (auto& program : getPrograms())
         program(*this, dt);
+}
+
+/* ************************************************************************ */
+
+void Object::configure(const ConfigurationBase& config, Simulation& simulation)
+{
+    config.callIfSetString("position", [this](const std::string& value) {
+        setPosition(parser::parse_vector<units::Length>(value));
+    });
 }
 
 /* ************************************************************************ */

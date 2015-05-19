@@ -327,10 +327,7 @@ public:
      * @param config
      * @param simulation
      */
-    virtual void configure(const ConfigurationBase& config, Simulation& simulation)
-    {
-        // Nothing to do
-    }
+    virtual void configure(const ConfigurationBase& config, Simulation& simulation);
 
 
 #ifdef ENABLE_RENDER
