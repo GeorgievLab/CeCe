@@ -146,6 +146,16 @@ public:
 
 
     /**
+     * @brief Configure object.
+     *
+     * @param config
+     * @param simulation
+     */
+    void configure(const simulator::ConfigurationBase& config,
+                   simulator::Simulation& simulation) override;
+
+
+    /**
      * @brief Calculate radius for sphere shapes - from cell volume.
      *
      * @param volume Cell volume.

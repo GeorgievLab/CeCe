@@ -16,8 +16,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 set(SRCS
     Library.hpp
     Library.cpp
-    ModuleCells.hpp
-    ModuleCells.cpp
+    CellBase.hpp
+    CellBase.cpp
     Cell.hpp
     Cell.cpp
     Yeast.hpp

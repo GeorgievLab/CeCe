@@ -123,6 +123,16 @@ public:
 
 
     /**
+     * @brief Configure object.
+     *
+     * @param config
+     * @param simulation
+     */
+    void configure(const simulator::ConfigurationBase& config,
+                   simulator::Simulation& simulation) override;
+
+
+    /**
      * @brief Create new yeast bud.
      */
     void budCreate();

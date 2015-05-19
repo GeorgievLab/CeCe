@@ -83,6 +83,14 @@ void Yeast::update(units::Duration dt)
 
 /* ************************************************************************ */
 
+void Yeast::configure(const simulator::ConfigurationBase& config,
+                      simulator::Simulation& simulation)
+{
+    CellBase::configure(config, simulation);
+}
+
+/* ************************************************************************ */
+
 void Yeast::budCreate()
 {
     assert(!hasBud());
@@ -115,6 +123,7 @@ void Yeast::budRelease()
     bud->setVolume(m_bud->volume);
     bud->setPosition(pos);
     bud->setVelocity(getVelocity());
+    bud->setPrograms(getPrograms());
 
     // TODO: When yeast is rotating and bud is released it should be throw
     // away by some force.

@@ -64,6 +64,14 @@ void Cell::update(units::Duration dt)
 
 /* ************************************************************************ */
 
+void Cell::configure(const simulator::ConfigurationBase& config,
+                     simulator::Simulation& simulation)
+{
+    CellBase::configure(config, simulation);
+}
+
+/* ************************************************************************ */
+
 #ifdef ENABLE_RENDER
 void Cell::drawInit(render::Context& context)
 {

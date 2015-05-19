@@ -100,6 +100,16 @@ public:
     void update(units::Duration dt) override;
 
 
+    /**
+     * @brief Configure object.
+     *
+     * @param config
+     * @param simulation
+     */
+    void configure(const simulator::ConfigurationBase& config,
+                   simulator::Simulation& simulation) override;
+
+
 #ifdef ENABLE_RENDER
     /**
      * @brief Initialize object for rendering.
