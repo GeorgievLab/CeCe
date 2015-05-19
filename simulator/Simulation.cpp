@@ -248,7 +248,7 @@ bool Simulation::update(units::Duration dt) noexcept
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
-        m_world.Step(dt, 1, 1);
+        m_world.Step(dt, 5, 5);
     }
 #endif
 
