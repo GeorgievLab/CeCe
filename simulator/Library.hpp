@@ -8,69 +8,43 @@
 #include <memory>
 #include <vector>
 
-/* ************************************************************************ */
-
-/**
- * @brief Declare function for init simulation.
- */
-#define DECLARE_LIBRARY_INIT \
-    extern "C" void init_simulation(simulator::Simulation*)
+// Simulator
+#include "simulator/Program.hpp"
+#include "simulator/Module.hpp"
+#include "simulator/Object.hpp"
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function for init simulation.
+ * @brief Prototype of function for creating library object.
  */
-#define DEFINE_LIBRARY_INIT(sim) \
-    void init_simulation(simulator::Simulation* sim)
+#define LIBRARY_CREATE_PROTOTYPE \
+    extern "C" simulator::LibraryApi* create()
 
 /* ************************************************************************ */
 
 /**
- * @brief Declare function for finalize simulation.
+ * @brief Declare function for creating library object.
  */
-#define DECLARE_LIBRARY_FINALIZE \
-    extern "C" void finalize_simulation(simulator::Simulation*)
+#define DECLARE_LIBRARY_CREATE LIBRARY_CREATE_PROTOTYPE
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function for finalize simulation.
+ * @brief Define function for creating library object.
  */
-#define DEFINE_LIBRARY_FINALIZE(sim) \
-    void finalize_simulation(simulator::Simulation* sim)
+#define DEFINE_LIBRARY_CREATE LIBRARY_CREATE_PROTOTYPE
 
 /* ************************************************************************ */
 
 /**
- * @brief Declare function for creating module.
+ * @brief Define function for creating library object.
  */
-#define DECLARE_LIBRARY_CREATE_MODULE \
-    extern "C" simulator::Module* create_module(simulator::Simulation*, const char*)
-
-/* ************************************************************************ */
-
-/**
- * @brief Define function for creating module.
- */
-#define DEFINE_LIBRARY_CREATE_MODULE(sim, name) \
-    simulator::Module* create_module(simulator::Simulation* sim, const char* name)
-
-/* ************************************************************************ */
-
-/**
- * @brief Declare function for creating object.
- */
-#define DECLARE_LIBRARY_CREATE_OBJECT \
-    extern "C" simulator::Object* create_object(simulator::Simulation*, const char*, int)
-
-/* ************************************************************************ */
-
-/**
- * @brief Define function for creating object.
- */
-#define DEFINE_LIBRARY_CREATE_OBJECT(sim, name, flags) \
-    simulator::Object* create_object(simulator::Simulation* sim, const char* name, int flags)
+#define DEFINE_LIBRARY_CREATE_IMPL(name) \
+    LIBRARY_CREATE_PROTOTYPE \
+    { \
+        return new name{}; \
+    }
 
 /* ************************************************************************ */
 
@@ -78,10 +52,7 @@
  * @brief Declare library functions.
  */
 #define DECLARE_LIBRARY \
-    DECLARE_LIBRARY_INIT; \
-    DECLARE_LIBRARY_CREATE_MODULE; \
-    DECLARE_LIBRARY_CREATE_OBJECT; \
-    DECLARE_LIBRARY_FINALIZE
+    DECLARE_LIBRARY_CREATE
 
 /* ************************************************************************ */
 
@@ -89,38 +60,8 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Module;
-class Object;
+class LibraryApi;
 class Simulation;
-class ConfigurationBase;
-
-/* ************************************************************************ */
-
-/**
- * @brief Init simulation function pointer.
- */
-using InitSimulationFn = void (*)(Simulation*);
-
-/* ************************************************************************ */
-
-/**
- * @brief Finalize simulation function pointer.
- */
-using FinalizeSimulationFn = void (*)(Simulation*);
-
-/* ************************************************************************ */
-
-/**
- * @brief Create module function.
- */
-using CreateModuleFn = Module* (*)(Simulation*, const char*);
-
-/* ************************************************************************ */
-
-/**
- * @brief Create module object.
- */
-using CreateObjectFn = Object* (*)(Simulation*, const char*, int);
 
 /* ************************************************************************ */
 
@@ -130,7 +71,6 @@ using CreateObjectFn = Object* (*)(Simulation*, const char*, int);
 class Library final
 {
 
-
 // Public Ctors & Dtors
 public:
 
@@ -138,7 +78,7 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param name Library name.
+     * @param name
      */
     explicit Library(const std::string& name);
 
@@ -154,7 +94,7 @@ public:
 
 
     /**
-     * @brief Returns if library is successfully loaded.
+     * @brief Returns if library is loaded.
      *
      * @return
      */
@@ -162,11 +102,22 @@ public:
 
 
     /**
-     * @brief Returns error string.
+     * @brief Returns loading library error.
      *
      * @return
      */
-    const std::string& getError() const noexcept;
+    std::string getError() const noexcept;
+
+
+    /**
+     * @brief Returns API object.
+     *
+     * @return
+     */
+    LibraryApi* getApi() const noexcept
+    {
+        return m_api.get();
+    }
 
 
     /**
@@ -192,49 +143,6 @@ public:
     static void addLibraryPath(std::string path);
 
 
-// Public Operations
-public:
-
-
-    /**
-     * @brief Init simulation.
-     *
-     * @param simulation Pointer to simulation.
-     */
-    void initSimulation(Simulation* simulation);
-
-
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Pointer to simulation.
-     */
-    void finalizeSimulation(Simulation* simulation);
-
-
-    /**
-     * @brief Create module from current library.
-     *
-     * @param simulation Pointer to simulation for that module is created.
-     * @param name       Module name.
-     *
-     * @return Created module.
-     */
-    std::unique_ptr<Module> createModule(Simulation* simulation, const std::string& name);
-
-
-    /**
-     * @brief Create object from current library.
-     *
-     * @param simulation Pointer to simulation for that module is created.
-     * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
-     *
-     * @return Created object.
-     */
-    std::unique_ptr<Object> createObject(Simulation* simulation, const std::string& name, bool dynamic = true);
-
-
 // Private Data Members
 private:
 
@@ -242,20 +150,103 @@ private:
     struct Impl;
     std::unique_ptr<Impl> m_impl;
 
-    /// Function pointer to init simulation.
-    InitSimulationFn m_initSimulation = nullptr;
-
-    /// Function pointer to finalize simulation.
-    FinalizeSimulationFn m_finalizeSimulation = nullptr;
-
-    /// Function pointer to create module.
-    CreateModuleFn m_createModule = nullptr;
-
-    /// Function pointer to create object.
-    CreateObjectFn m_createObject = nullptr;
+    /// Object for library API.
+    std::unique_ptr<LibraryApi> m_api;
 
     /// Library paths.
     static std::vector<std::string> s_libraryPaths;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Library API type.
+ */
+class LibraryApi
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Destructor.
+     */
+    virtual ~LibraryApi()
+    {
+        // Nothing to do
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Init simulation.
+     *
+     * @param simulation Simulation.
+     */
+    virtual void initSimulation(Simulation& simulation) noexcept
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Finalize simulation.
+     *
+     * @param simulation Simulation.
+     */
+    virtual void finalizeSimulation(Simulation& simulation) noexcept
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Create module from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Module name.
+     *
+     * @return Created module.
+     */
+    virtual std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) noexcept
+    {
+        return nullptr;
+    }
+
+
+    /**
+     * @brief Create object from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Object name.
+     * @param dynamic    If object should be dynamic.
+     *
+     * @return Created object.
+     */
+    virtual std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) noexcept
+    {
+        return nullptr;
+    }
+
+
+    /**
+     * @brief Create program from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Object name.
+     * @param dynamic    If object should be dynamic.
+     *
+     * @return Created object.
+     */
+    virtual Program createProgram(Simulation& simulation, const std::string& name) noexcept
+    {
+        return {};
+    }
+
 };
 
 /* ************************************************************************ */

@@ -5,6 +5,7 @@
 #include "Library.hpp"
 
 // Simulator
+#include "simulator/Library.hpp"
 #include "simulator/Simulation.hpp"
 
 // Module
@@ -16,33 +17,19 @@
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_INIT(simulation)
+class DiffusionStreamlinesApi : public simulator::LibraryApi
 {
-    // Nothing to do
-}
+    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
+    {
+        return std::unique_ptr<simulator::Module>(new module::diffusion_streamlines::Module{
+            simulation.useModule<module::diffusion::Module>("diffusion"),
+            simulation.useModule<module::streamlines::Module>("streamlines")
+        });
+    }
+};
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_FINALIZE(simulation)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_MODULE(simulation, name)
-{
-    return new module::diffusion_streamlines::Module{
-        simulation->useModule<module::diffusion::Module>("diffusion"),
-        simulation->useModule<module::streamlines::Module>("streamlines")
-    };
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_OBJECT(simulation, name, flags)
-{
-    return nullptr;
-}
+DEFINE_LIBRARY_CREATE_IMPL(DiffusionStreamlinesApi)
 
 /* ************************************************************************ */

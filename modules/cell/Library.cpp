@@ -11,6 +11,7 @@
 // Simulator
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
+#include "simulator/Library.hpp"
 
 // Module
 #include "Generator.hpp"
@@ -19,45 +20,36 @@
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_INIT(simulation)
+class CellApi : public simulator::LibraryApi
 {
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_FINALIZE(simulation)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_MODULE(simulation, name)
-{
-    if (!strcmp(name, "generator"))
-        return new module::cell::Generator{};
-
-    return nullptr;
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_OBJECT(simulation, name, flags)
-{
-    std::string name_str(name);
-    auto type = (flags == 0) ? simulator::Object::Type::Static : simulator::Object::Type::Dynamic;
-
-    if (name_str == "Yeast")
+    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
     {
-        return new module::cell::Yeast{*simulation, type};
-    }
-    else if (name_str == "Cell")
-    {
-        return new module::cell::Cell{*simulation, type};
+        if (name == "generator")
+            return std::unique_ptr<simulator::Module>(new module::cell::Generator{});
+
+        return nullptr;
     }
 
-    return nullptr;
-}
+    std::unique_ptr<simulator::Object> createObject(simulator::Simulation& simulation, const std::string& name, bool dynamic = true) noexcept override
+    {
+        auto type = dynamic ? simulator::Object::Type::Dynamic : simulator::Object::Type::Static;
+
+        if (name == "Yeast")
+        {
+            return std::unique_ptr<simulator::Object>(new module::cell::Yeast{simulation, type});
+        }
+        else if (name == "Cell")
+        {
+            return std::unique_ptr<simulator::Object>(new module::cell::Cell{simulation, type});
+        }
+
+        return nullptr;
+    }
+
+};
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_CREATE_IMPL(CellApi)
 
 /* ************************************************************************ */

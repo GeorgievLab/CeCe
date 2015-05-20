@@ -101,68 +101,66 @@ static void remove_signal(simulator::Simulation& simulation, simulator::Object& 
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_INIT(simulation)
+class DiffusionApi : public simulator::LibraryApi
 {
-    assert(simulation);
+    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
+    {
+        if (name == "generator")
+            return std::unique_ptr<simulator::Module>(new module::diffusion::Generator{simulation.useModule<module::diffusion::Module>("diffusion")});
 
-    simulation->addProgram("diffusion.gen1", [simulation](simulator::Object& obj, units::Duration dt) {
-        generate_signal(*simulation, obj, dt, 0);
-    });
+        if (name == "generator-cell")
+            return std::unique_ptr<simulator::Module>(new module::diffusion::GeneratorCell{simulation.useModule<module::diffusion::Module>("diffusion")});
 
-    simulation->addProgram("diffusion.gen2", [simulation](simulator::Object& obj, units::Duration dt) {
-        generate_signal(*simulation, obj, dt, 1);
-    });
+        return std::unique_ptr<simulator::Module>(new module::diffusion::Module{});
+    }
 
-    simulation->addProgram("diffusion.gen3", [simulation](simulator::Object& obj, units::Duration dt) {
-        generate_signal(*simulation, obj, dt, 2);
-    });
+    simulator::Program createProgram(simulator::Simulation& simulation, const std::string& name) noexcept override
+    {
+        if (name == "diffusion.gen1")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                generate_signal(simulation, obj, dt, 0);
+            };
 
-    simulation->addProgram("diffusion.gen4", [simulation](simulator::Object& obj, units::Duration dt) {
-        generate_signal(*simulation, obj, dt, 3);
-    });
+        if (name == "diffusion.gen2")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                generate_signal(simulation, obj, dt, 1);
+            };
 
-    simulation->addProgram("diffusion.rem1", [simulation](simulator::Object& obj, units::Duration dt) {
-        remove_signal(*simulation, obj, dt, 0);
-    });
+        if (name == "diffusion.gen3")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                generate_signal(simulation, obj, dt, 2);
+            };
 
-    simulation->addProgram("diffusion.rem2", [simulation](simulator::Object& obj, units::Duration dt) {
-        remove_signal(*simulation, obj, dt, 1);
-    });
+        if (name == "diffusion.gen4")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                generate_signal(simulation, obj, dt, 3);
+            };
 
-    simulation->addProgram("diffusion.rem3", [simulation](simulator::Object& obj, units::Duration dt) {
-        remove_signal(*simulation, obj, dt, 2);
-    });
+        if (name == "diffusion.rem1")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                remove_signal(simulation, obj, dt, 0);
+            };
 
-    simulation->addProgram("diffusion.rem4", [simulation](simulator::Object& obj, units::Duration dt) {
-        remove_signal(*simulation, obj, dt, 3);
-    });
-}
+        if (name == "diffusion.rem2")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                remove_signal(simulation, obj, dt, 1);
+            };
+
+        if (name == "diffusion.rem3")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                remove_signal(simulation, obj, dt, 2);
+            };
+
+        if (name == "diffusion.rem4")
+            return [&simulation](simulator::Object& obj, units::Duration dt) {
+                remove_signal(simulation, obj, dt, 3);
+            };
+    }
+
+};
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_FINALIZE(simulation)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_MODULE(simulation, name)
-{
-    if (!strcmp(name, "generator"))
-        return new module::diffusion::Generator{simulation->useModule<module::diffusion::Module>("diffusion")};
-
-    if (!strcmp(name, "generator-cell"))
-        return new module::diffusion::GeneratorCell{simulation->useModule<module::diffusion::Module>("diffusion")};
-
-    return new module::diffusion::Module{};
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_OBJECT(simulation, name, flags)
-{
-    return nullptr;
-}
+DEFINE_LIBRARY_CREATE_IMPL(DiffusionApi)
 
 /* ************************************************************************ */

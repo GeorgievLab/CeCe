@@ -244,10 +244,10 @@ void Object::configure(const ConfigurationBase& config, Simulation& simulation)
     });
 
     config.callIfSetString("program", [this, &simulation](const std::string& value) {
-        const auto& program = simulation.getProgram(value);
+        auto program = simulation.getProgram(value);
 
         if (program)
-            addProgram(program);
+            addProgram(std::move(program));
     });
 }
 

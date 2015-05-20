@@ -320,15 +320,13 @@ public:
      *
      * @return Pointer to program.
      */
-    const Program& getProgram(const std::string& name) const noexcept
+    Program getProgram(const std::string& name) noexcept
     {
-        static Program null_program;
-
         auto it = m_programs.find(name);
 
-        // Return empty program
+        // Try to build program from module
         if (it == m_programs.end())
-            return null_program;
+            return buildProgram(name);
 
         return it->second;
     }
@@ -519,6 +517,16 @@ public:
     }
 
 
+    /**
+     * @brief Create a program from module.
+     *
+     * @param name Program name.
+     *
+     * @return Created program.
+     */
+    Program buildProgram(const std::string& path);
+
+
 // Public Operations
 public:
 
@@ -572,11 +580,21 @@ public:
      *
      * In case the library was loaded before, it't not loaded again.
      *
-     * @param name
+     * @param name Library name.
      *
      * @return
      */
     Library* loadLibrary(const std::string& name);
+
+
+    /**
+     * @brief Returns library API for required library.
+     *
+     * @param name  Library name.
+     *
+     * @return
+     */
+    LibraryApi* getLibraryApi(const std::string& name);
 
 
 // Private Data Members

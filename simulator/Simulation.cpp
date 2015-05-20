@@ -84,26 +84,8 @@ Module* Simulation::useModule(const std::string& path)
     std::string library, name;
     std::tie(library, name) = splitModulePath(path);
 
-    // Get if library is yet loaded
-    const bool init = !hasLibrary(library);
-
-    // Load library
-    Library* lib = loadLibrary(library);
-    assert(lib);
-
-    // Unable to load library
-    if (!lib->isLoaded())
-    {
-        Log::warning("Unable to load library: ", library, "(", lib->getError(), ")");
-        return nullptr;
-    }
-
-    // Initialize library
-    if (init)
-    {
-        Log::debug("Initialize library '", library, "'");
-        lib->initSimulation(this);
-    }
+    // Get API
+    LibraryApi* api = getLibraryApi(library);
 
     // Load only library
     if (name.empty())
@@ -112,7 +94,7 @@ Module* Simulation::useModule(const std::string& path)
         Log::debug("Create module '", library, ".", name, "'");
 
     // Create module with given name
-    auto module = lib->createModule(this, name);
+    auto module = api->createModule(*this, name);
 
     // Register module
     if (module)
@@ -137,31 +119,13 @@ Object* Simulation::buildObject(const std::string& name, bool dynamic)
     if (type.empty())
         throw std::invalid_argument("Missing object type");
 
-    // Get if library is yet loaded
-    const bool init = !hasLibrary(library);
-
-    // Load library
-    Library* lib = loadLibrary(library);
-    assert(lib);
-
-    // Unable to load library
-    if (!lib->isLoaded())
-    {
-        Log::warning("Unable to load library: ", library, "(", lib->getError(), ")");
-        return nullptr;
-    }
-
-    // Initialize library
-    if (init)
-    {
-        Log::debug("Initialize library '", library, "'");
-        lib->initSimulation(this);
-    }
+    // Get API
+    LibraryApi* api = getLibraryApi(library);
 
     Log::debug("Create object '", library, ".", type, "'");
 
     // Create object with given name
-    auto object = lib->createObject(this, type, dynamic);
+    auto object = api->createObject(*this, type, dynamic);
 
     // Register module
     if (object)
@@ -170,6 +134,26 @@ Object* Simulation::buildObject(const std::string& name, bool dynamic)
     Log::warning("Unable to create object: ", name, " (unsupported by library?)");
 
     return nullptr;
+}
+
+/* ************************************************************************ */
+
+Program Simulation::buildProgram(const std::string& path)
+{
+    // Split path into parts
+    std::string library, type;
+    std::tie(library, type) = splitModulePath(path);
+
+    if (type.empty())
+        throw std::invalid_argument("Missing program type");
+
+    // Get API
+    LibraryApi* api = getLibraryApi(library);
+
+    Log::debug("Create program '", library, ".", type, "'");
+
+    // Create object with given name
+    return api->createProgram(*this, type);
 }
 
 /* ************************************************************************ */
@@ -374,6 +358,38 @@ Library* Simulation::loadLibrary(const std::string& name)
 
     // Return pointer
     return std::get<1>(*it).get();
+}
+
+/* ************************************************************************ */
+
+LibraryApi* Simulation::getLibraryApi(const std::string& name)
+{
+    // Get if library is already loaded
+    const bool init = !hasLibrary(name);
+
+    // Load library
+    Library* lib = loadLibrary(name);
+    assert(lib);
+
+    // Unable to load library
+    if (!lib->isLoaded())
+    {
+        Log::warning("Unable to load library: ", name, "(", lib->getError(), ")");
+        return nullptr;
+    }
+
+    // Get API
+    LibraryApi* api = lib->getApi();
+    assert(api);
+
+    // Initialize simulation
+    if (init)
+    {
+        Log::debug("Initialize simulation '", name, "'");
+        api->initSimulation(*this);
+    }
+
+    return api;
 }
 
 /* ************************************************************************ */

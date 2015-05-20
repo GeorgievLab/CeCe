@@ -18,8 +18,7 @@
 #endif
 
 // Simulator
-#include "simulator/Module.hpp"
-#include "simulator/Object.hpp"
+#include "core/Log.hpp"
 
 /* ************************************************************************ */
 
@@ -55,16 +54,50 @@ std::vector<std::string> Library::s_libraryPaths;
 
 /* ************************************************************************ */
 
-struct Library::Impl
+/**
+ * @brief OS dependent library implementation.
+ */
+class Library::Impl
 {
-#if __linux__
-    void* lib;
-#elif __WIN32__
-    HMODULE* lib;
-#endif
 
-    /// Error string
-    std::string error;
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param name
+     */
+    explicit Impl(const std::string& name)
+        : m_filename(g_prefix + name + g_extension)
+    {
+        Log::debug("Loading shared library: ", m_filename);
+#if __linux__
+        m_ptr = dlopen(m_filename.c_str(), RTLD_LAZY);
+#elif __WIN32__
+        m_ptr = LoadLibrary(m_filename.c_str());
+#endif
+    }
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~Impl()
+    {
+        Log::debug("Closing shared library: ", m_filename);
+#if __linux__
+        if (m_ptr)
+            dlclose(m_ptr);
+#elif __WIN32__
+        FreeLibrary(m_impl->lib);
+#endif
+    }
+
+
+// Public Accessors
+public:
 
 
     /**
@@ -74,12 +107,22 @@ struct Library::Impl
      */
     bool isLoaded() const noexcept
     {
+        return m_ptr != nullptr;
+    }
+
+
+    /**
+     * @brief Returns error string.
+     *
+     * @return
+     */
+    std::string getError() const noexcept
+    {
 #if __linux__
-        return lib != nullptr;
-#elif __WIN32__
-        return lib != nullptr;
+        return dlerror();
 #endif
     }
+
 
     /**
      * @brief Returns address of required symbol.
@@ -89,9 +132,9 @@ struct Library::Impl
     void* getAddr(const char* name) const noexcept
     {
 #if __linux__
-        return dlsym(lib, name);
+        return dlsym(m_ptr, name);
 #elif __WIN32__
-        return GetProcAddress(lib, name);
+        return GetProcAddress(m_ptr, name);
 #endif
     }
 
@@ -106,57 +149,59 @@ struct Library::Impl
     {
         return reinterpret_cast<T>(reinterpret_cast<std::intptr_t>(getAddr(name)));
     }
+
+
+// Private Data Members
+private:
+
+    /// Source file name.
+    std::string m_filename;
+
+#if __linux__
+    void* m_ptr;
+#elif __WIN32__
+    HMODULE* m_ptr;
+#endif
 };
 
 /* ************************************************************************ */
 
 Library::Library(const std::string& name)
-    : m_impl{new Impl{nullptr}}
-    , m_createModule(nullptr)
+    : m_impl{new Impl{name}}
 {
-    const std::string filename = g_prefix + name + g_extension;
-#if __linux__
-    m_impl->lib = dlopen(filename.c_str(), RTLD_LAZY);
-    if (!m_impl->lib)
-        m_impl->error = dlerror();
-#elif __WIN32__
-    m_impl->lib = LoadLibrary(filename.c_str());
-#endif
+    if (!m_impl->isLoaded())
+        throw std::runtime_error("Library is not loaded");
 
-    // Set create function
-    if (m_impl->isLoaded())
-    {
-        m_initSimulation = m_impl->getAddr<InitSimulationFn>("init_simulation");
-        m_finalizeSimulation = m_impl->getAddr<FinalizeSimulationFn>("finalize_simulation");
-        m_createModule = m_impl->getAddr<CreateModuleFn>("create_module");
-        m_createObject = m_impl->getAddr<CreateObjectFn>("create_object");
-    }
+    using CreateFn = LibraryApi* (*)();
+    auto fn = m_impl->getAddr<CreateFn>("create");
+
+    if (!fn)
+        throw std::runtime_error("Library doesn't contains pointer to create function");
+
+    // Create extension object
+    m_api.reset(fn());
 }
 
 /* ************************************************************************ */
 
 Library::~Library()
 {
-#if __linux__
-    if (m_impl->lib)
-        dlclose(m_impl->lib);
-#elif __WIN32__
-    FreeLibrary(m_impl->lib);
-#endif
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
 bool Library::isLoaded() const noexcept
 {
+    assert(m_impl);
     return m_impl->isLoaded();
 }
-
 /* ************************************************************************ */
 
-const std::string& Library::getError() const noexcept
+std::string Library::getError() const noexcept
 {
-    return m_impl->error;
+    assert(m_impl);
+    return m_impl->getError();
 }
 
 /* ************************************************************************ */
@@ -183,38 +228,6 @@ void Library::addLibraryPath(std::string path)
 #endif
 
     s_libraryPaths.push_back(std::move(path));
-}
-
-/* ************************************************************************ */
-
-void Library::initSimulation(Simulation* simulation)
-{
-    assert(m_initSimulation);
-    m_initSimulation(simulation);
-}
-
-/* ************************************************************************ */
-
-void Library::finalizeSimulation(Simulation* simulation)
-{
-    assert(m_finalizeSimulation);
-    m_finalizeSimulation(simulation);
-}
-
-/* ************************************************************************ */
-
-std::unique_ptr<Module> Library::createModule(Simulation* simulation, const std::string& name)
-{
-    assert(m_createModule);
-    return std::unique_ptr<Module>{m_createModule(simulation, name.c_str())};
-}
-
-/* ************************************************************************ */
-
-std::unique_ptr<Object> Library::createObject(Simulation* simulation, const std::string& name, bool dynamic)
-{
-    assert(m_createObject);
-    return std::unique_ptr<Object>{m_createObject(simulation, name.c_str(), int(dynamic))};
 }
 
 /* ************************************************************************ */

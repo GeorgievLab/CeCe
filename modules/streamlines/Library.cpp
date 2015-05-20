@@ -4,35 +4,24 @@
 // Declaration
 #include "Library.hpp"
 
+// Simulator
+#include "simulator/Library.hpp"
+
 // Module
 #include "Module.hpp"
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_INIT(simulation)
+class StreamlinesApi : public simulator::LibraryApi
 {
-    // Nothing to do
-}
+    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
+    {
+        return std::unique_ptr<simulator::Module>(new module::streamlines::Module{});
+    }
+};
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_FINALIZE(simulation)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_MODULE(simulation, name)
-{
-    return new module::streamlines::Module{};
-}
-
-/* ************************************************************************ */
-
-DEFINE_LIBRARY_CREATE_OBJECT(simulation, name, flags)
-{
-    return nullptr;
-}
+DEFINE_LIBRARY_CREATE_IMPL(StreamlinesApi)
 
 /* ************************************************************************ */
