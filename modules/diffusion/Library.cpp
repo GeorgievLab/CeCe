@@ -155,6 +155,8 @@ class DiffusionApi : public simulator::LibraryApi
             return [&simulation](simulator::Object& obj, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 3);
             };
+
+        return nullptr;
     }
 
 };
