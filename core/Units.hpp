@@ -65,6 +65,13 @@ using Duration = float;
 /* ************************************************************************ */
 
 /**
+ * @brief Class for representing probability.
+ */
+using Probability = float;
+
+/* ************************************************************************ */
+
+/**
  * @brief Convert degrees to radians.
  *
  * @param value
