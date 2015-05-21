@@ -25,6 +25,22 @@ class Module : public simulator::Module
 {
 
 
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    Module();
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~Module();
+
+
 // Public Accessors
 public:
 

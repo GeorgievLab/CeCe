@@ -2,18 +2,32 @@
 // Declaration
 #include "Module.hpp"
 
+// Magick++
+#include <Magick++.h>
+
 // Simulation
 #include "core/Log.hpp"
 #include "simulator/Simulation.hpp"
 #include "parser/Parser.hpp"
 
-// Module
-#include "formats.hpp"
-
 /* ************************************************************************ */
 
 namespace module {
 namespace picture {
+
+/* ************************************************************************ */
+
+Module::Module()
+{
+    //InitializeMagick(*argv);
+}
+
+/* ************************************************************************ */
+
+Module::~Module()
+{
+
+}
 
 /* ************************************************************************ */
 
@@ -55,11 +69,28 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     if (pos != std::string::npos)
         filename.replace(pos, 2, std::to_string(stepNumber));
 
-    // Store current image (front buffer)
-    if (!save_image(context, filename))
+    // Get pixel data
+    auto data = context.getData();
+    const auto& imageData = data.first;
+    auto imageSize = data.second;
+
+    Magick::Image img(Magick::Geometry(imageSize.getWidth(), imageSize.getHeight()));
+
+    for (unsigned i = 0; i < imageSize.getWidth(); ++i)
     {
-        Log::warning("Unable to write image as: ", filename);
+        for (unsigned j = 0; j < imageSize.getHeight(); ++j)
+        {
+            auto base = 3 * (i + imageSize.getWidth() * j);
+            img.pixelColor(i, j, Magick::ColorRGB(
+                imageData[base] / 255.f,
+                imageData[base + 1] / 255.f,
+                imageData[base + 2] / 255.f
+            ));
+        }
     }
+
+    // Write image
+    img.write(filename);
 }
 
 /* ************************************************************************ */
