@@ -7,6 +7,9 @@
 // Simulator
 #include "core/Log.hpp"
 
+// Simulator
+#include "simulator/Library.hpp"
+
 // Module
 #include "Module.hpp"
 
@@ -15,18 +18,25 @@
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE(simulation, name)
+class PythonApi : public simulator::LibraryApi
 {
-    try
+    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
     {
-        return new module::python::Module{*simulation, boost::filesystem::path(name)};
-    }
-    catch (const std::exception& e)
-    {
-        Log::warning(e.what());
-    }
+        try
+        {
+            return std::unique_ptr<simulator::Module>(new module::python::Module{simulation, boost::filesystem::path(name)});
+        }
+        catch (const std::exception& e)
+        {
+            Log::warning(e.what());
+        }
 
-    return nullptr;
-}
+        return nullptr;
+    }
+};
+
+/* ************************************************************************ */
+
+DEFINE_LIBRARY_CREATE_IMPL(PythonApi)
 
 /* ************************************************************************ */

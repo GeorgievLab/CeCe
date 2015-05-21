@@ -23,6 +23,8 @@ static void define_vector(const char* name) noexcept
 {
     using namespace boost::python;
 
+    bool (Vector<T>::*inRange)(const Vector<T>&, const Vector<T>&) const = &core::Vector<T>::inRange;
+
     class_<core::Vector<T>>(name)
         .def(init<T, T>())
         .def(init<T>())
@@ -56,10 +58,10 @@ static void define_vector(const char* name) noexcept
         .def(self > self)
         .def(self >= self)
 
-        //.def("inRange", &core::Vector<T>::template inRange<T, T>)
+        .def("inRange", inRange)
         .def("length", &core::Vector<T>::getLength)
         .def("lengthSquared", &core::Vector<T>::getLengthSquared)
-        //.def("dot", &core::Vector<T>::dot)
+        .def("dot", &core::Vector<T>::dot)
         .def("rotated", &core::Vector<T>::rotated)
     ;
 }
