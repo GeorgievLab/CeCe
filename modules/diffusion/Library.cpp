@@ -13,6 +13,8 @@
 #include "core/Units.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/ShapeToGrid.hpp"
+#include "simulator/Library.hpp"
+#include "simulator/LibraryApi.hpp"
 
 // Module
 #include "Module.hpp"

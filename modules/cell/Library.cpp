@@ -12,6 +12,7 @@
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
+#include "simulator/LibraryApi.hpp"
 
 // Module
 #include "Generator.hpp"

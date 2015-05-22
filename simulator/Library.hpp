@@ -71,6 +71,14 @@ class Simulation;
 class Library final
 {
 
+// Public Types
+public:
+
+
+    /// Create API function pointer type.
+    using CreateFn = LibraryApi* (*)();
+
+
 // Public Ctors & Dtors
 public:
 
@@ -131,6 +139,19 @@ public:
     }
 
 
+    /**
+     * @brief Check if given library name is build-in.
+     *
+     * @param name Library name.
+     *
+     * @return
+     */
+    static bool isBuildin(const std::string& name) noexcept
+    {
+        return s_buildinLibraries.find(name) != s_buildinLibraries.end();
+    }
+
+
 // Public Mutators
 public:
 
@@ -155,97 +176,9 @@ private:
 
     /// Library paths.
     static std::vector<std::string> s_libraryPaths;
-};
 
-/* ************************************************************************ */
-
-/**
- * @brief Library API type.
- */
-class LibraryApi
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~LibraryApi()
-    {
-        // Nothing to do
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Init simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void initSimulation(Simulation& simulation) noexcept
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void finalizeSimulation(Simulation& simulation) noexcept
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Create module from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Module name.
-     *
-     * @return Created module.
-     */
-    virtual std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) noexcept
-    {
-        return nullptr;
-    }
-
-
-    /**
-     * @brief Create object from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
-     *
-     * @return Created object.
-     */
-    virtual std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) noexcept
-    {
-        return nullptr;
-    }
-
-
-    /**
-     * @brief Create program from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
-     *
-     * @return Created object.
-     */
-    virtual Program createProgram(Simulation& simulation, const std::string& name) noexcept
-    {
-        return {};
-    }
+    /// Build-in static library builders.
+    static const std::map<std::string, CreateFn> s_buildinLibraries;
 
 };
 

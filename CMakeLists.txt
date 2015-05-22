@@ -16,7 +16,7 @@ option(ENABLE_BUILDIN_PHYSICS_DEBUG "Enable or disable physics engine debugging"
 
 option(BUILD_TOOLS                  "Build support tools" Off)
 set(MODULES                         "streamlines;diffusion;diffusion-streamlines;cell;picture" CACHE STRING "A list of build modules")
-option(MODULE_BUILD_STATIC          "Build modules as static libraries" Off)
+set(MODULES_BUILDIN                 "streamlines;diffusion;diffusion-streamlines;cell;picture" CACHE STRING "A list of build-in modules")
 
 # Options specific for different compilers
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

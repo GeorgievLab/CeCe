@@ -6,6 +6,7 @@
 
 // Simulator
 #include "simulator/Library.hpp"
+#include "simulator/LibraryApi.hpp"
 #include "simulator/Simulation.hpp"
 
 // Module

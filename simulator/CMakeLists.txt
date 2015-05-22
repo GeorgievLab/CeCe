@@ -19,6 +19,7 @@ set(SRCS
     Module.hpp
     Library.hpp
     Library.cpp
+    LibraryApi.hpp
     Configuration.hpp
     Configuration.cpp
     Shape.hpp
@@ -43,12 +44,24 @@ add_library(${PROJECT_NAME} SHARED
     ${SRCS}
 )
 
+# Include build-in libraries
+set(MODULES_LIBS "")
+
+foreach (MODULE ${MODULES_BUILDIN})
+    set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
+endforeach ()
+
+# Link libraries
+target_link_libraries(${PROJECT_NAME}
+    ${MODULES_LIBS}
+)
+
 # Use different name
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #    OUTPUT_NAME "sim"
 #)
 
-if (USE_BUILDIN_PHYSICS)
+if (ENABLE_BUILDIN_PHYSICS)
     # Add dependency
     add_dependencies(${PROJECT_NAME}
         Box2D

@@ -35,6 +35,7 @@
     <File Name="Shape.hpp"/>
     <File Name="ShapeToGrid.hpp"/>
     <File Name="Program.hpp"/>
+    <File Name="LibraryApi.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="core"/>

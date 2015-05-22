@@ -19,6 +19,7 @@
 
 // Simulator
 #include "core/Log.hpp"
+#include "simulator/LibraryApi.hpp"
 
 /* ************************************************************************ */
 
@@ -51,6 +52,12 @@ namespace simulator {
 /* ************************************************************************ */
 
 std::vector<std::string> Library::s_libraryPaths;
+
+/* ************************************************************************ */
+
+const std::map<std::string, Library::CreateFn> Library::s_buildinLibraries{
+
+};
 
 /* ************************************************************************ */
 
@@ -167,19 +174,32 @@ private:
 /* ************************************************************************ */
 
 Library::Library(const std::string& name)
-    : m_impl{new Impl{name}}
 {
-    if (!m_impl->isLoaded())
-        throw std::runtime_error("Library is not loaded");
+    // Try to find in build-in libraries
+    auto it = s_buildinLibraries.find(name);
 
-    using CreateFn = LibraryApi* (*)();
-    auto fn = m_impl->getAddr<CreateFn>("create");
+    // Required library is build-in
+    if (it != s_buildinLibraries.end())
+    {
+        // Create library API
+        m_api.reset(it->second());
+    }
+    else
+    {
+        // Create dynamic implementation
+        m_impl.reset(new Impl{name});
 
-    if (!fn)
-        throw std::runtime_error("Library doesn't contains pointer to create function");
+        if (!m_impl->isLoaded())
+            throw std::runtime_error("Library is not loaded");
 
-    // Create extension object
-    m_api.reset(fn());
+        auto fn = m_impl->getAddr<CreateFn>("create");
+
+        if (!fn)
+            throw std::runtime_error("Library doesn't contains pointer to create function");
+
+        // Create extension object
+        m_api.reset(fn());
+    }
 }
 
 /* ************************************************************************ */
@@ -193,14 +213,18 @@ Library::~Library()
 
 bool Library::isLoaded() const noexcept
 {
-    assert(m_impl);
+    if (!m_impl)
+        return true;
+
     return m_impl->isLoaded();
 }
 /* ************************************************************************ */
 
 std::string Library::getError() const noexcept
 {
-    assert(m_impl);
+    if (!m_impl)
+        return {};
+
     return m_impl->getError();
 }
 

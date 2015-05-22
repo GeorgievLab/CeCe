@@ -14,6 +14,7 @@
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/Simulator.hpp"
+#include "simulator/LibraryApi.hpp"
 #include "render/Color.hpp"
 
 /* ************************************************************************ */
