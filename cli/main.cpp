@@ -64,12 +64,6 @@ module::diffusion::Module* g_diffusionModule;
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-render::Context g_context;
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
 GLuint g_width = 800;
 GLuint g_height = 600;
 #endif
@@ -117,13 +111,13 @@ int main(int argc, char** argv)
         error("not enough arguments: <desc.xml>");
     }
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     glutInit(&argc, argv);
     glutInitWindowSize(g_width, g_height);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_STENCIL);
     glutCreateWindow("Cell Simulator");
 
-    g_context.init();
+    g_sim.drawInit();
 #endif
 
     std::ofstream time_file("time.csv");
@@ -136,7 +130,7 @@ int main(int argc, char** argv)
         parser::xml::SimulationFactory simFactory;
 
         // Create world
-        g_sim.setSimulation(simFactory.fromFile(g_sim, argv[1]));
+        g_sim.setSimulation(simFactory.fromFile(argv[1]));
 
         // Get simulation
         auto simulation = g_sim.getSimulation();
@@ -157,9 +151,7 @@ int main(int argc, char** argv)
 #ifdef ENABLE_RENDER
         // Register callbacks:
         glutDisplayFunc([]() {
-            g_context.frameBegin(g_width, g_height);
-            g_sim.draw(g_context);
-            g_context.frameEnd();
+            g_sim.draw(g_width, g_height);
             glutSwapBuffers();
         });
 
@@ -168,7 +160,7 @@ int main(int argc, char** argv)
             g_height = height;
             auto size = g_sim.getSimulation()->getWorldSize();
 
-            g_context.getCamera().setZoom(
+            g_sim.getRenderContext().getCamera().setZoom(
                 std::max(size.getWidth() / g_width, size.getHeight() / g_height)
             );
         });
@@ -227,7 +219,7 @@ int main(int argc, char** argv)
             {
             case 'p': case 'P': g_paused = !g_paused; break;
             case 's': case 'S': if (g_paused) { g_sim.update(0.01f); glutPostRedisplay(); } break;
-            case 'w': case 'W': g_context.setWireframe(!g_context.isWireframe()); break;
+            case 'w': case 'W': g_sim.getRenderContext().setWireframe(!g_sim.getRenderContext().isWireframe()); break;
 #if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
             case 'd': case 'D': g_sim.getSimulation()->setDrawPhysics(!g_sim.getSimulation()->isDrawPhysics()); break;
 #endif
@@ -236,9 +228,6 @@ int main(int argc, char** argv)
 
         // Init start time
         g_start = clock_type::now();
-
-        // Initialize objects for rendering
-        g_sim.drawInit(g_context);
 
         glutMainLoop();
 #else
