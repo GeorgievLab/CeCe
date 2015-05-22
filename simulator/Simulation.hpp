@@ -20,11 +20,11 @@
 #include "simulator/Library.hpp"
 #include "simulator/Program.hpp"
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 #include "render/Context.hpp"
 #endif
 
-#ifdef ENABLE_PHYSICS
+#if ENABLE_PHYSICS
 #include "Box2D/Box2D.h"
 #endif
 
@@ -70,10 +70,8 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param simulator
      */
-    explicit Simulation(Simulator& simulator) noexcept;
+    Simulation() noexcept;
 
 
     /**
@@ -84,17 +82,6 @@ public:
 
 // Public Accessors
 public:
-
-
-    /**
-     * @brief Returns owning simulator.
-     *
-     * @return
-     */
-    Simulator& getSimulator() const noexcept
-    {
-        return m_simulator;
-    }
 
 
     /**
@@ -250,7 +237,7 @@ public:
     }
 
 
-#ifdef ENABLE_PHYSICS
+#if ENABLE_PHYSICS
     /**
      * @brief Returns physics world.
      *
@@ -263,7 +250,7 @@ public:
 #endif
 
 
-#ifdef ENABLE_PHYSICS
+#if ENABLE_PHYSICS
     /**
      * @brief Returns physics world.
      *
@@ -383,7 +370,11 @@ public:
     {
         assert(mod);
         auto it = m_modules.emplace(std::make_pair(std::move(name), std::move(mod)));
-        return static_cast<T*>(std::get<0>(it)->second.get());
+        T* ptr = static_cast<T*>(std::get<0>(it)->second.get());
+#if ENABLE_RENDER
+        m_drawInitModuleList.push_back(ptr);
+#endif
+        return ptr;
     }
 
 
@@ -462,8 +453,8 @@ public:
         assert(obj);
         m_objects.push_back(std::move(obj));
         T* ptr = static_cast<T*>(m_objects.back().get());
-#ifdef ENABLE_RENDER
-        m_drawInitList.push_back(ptr);
+#if ENABLE_RENDER
+        m_drawInitObjectList.push_back(ptr);
 #endif
         return ptr;
     }
@@ -555,17 +546,7 @@ public:
     bool update();
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Initialize simulation for rendering.
-     *
-     * @param context
-     */
-    void drawInit(render::Context& context);
-#endif
-
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render simulation.
      *
@@ -600,9 +581,6 @@ public:
 // Private Data Members
 private:
 
-    /// Owning simulator
-    Simulator& m_simulator;
-
     /// Number of simulation steps.
     StepNumber m_stepNumber = 0;
 
@@ -634,9 +612,14 @@ private:
     /// A map of preddefined programs.
     std::map<std::string, Program> m_programs;
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
+    /// List of modules that requires init.
+    std::vector<Module*> m_drawInitModuleList;
+#endif
+
+#if ENABLE_RENDER
     /// List of objects that requires init.
-    std::vector<Object*> m_drawInitList;
+    std::vector<Object*> m_drawInitObjectList;
 #endif
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG

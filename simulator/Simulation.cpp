@@ -50,14 +50,53 @@ std::tuple<std::string, std::string> splitModulePath(const std::string& path) no
 
 /* ************************************************************************ */
 
+/**
+ * @brief Remove objects from second list that are not in the first list.
+ *
+ * @param
+ */
+template<typename Container1, typename Container2>
+void erase_mismatch(const Container1& con1, Container2& con2) noexcept
+{
+    using std::begin;
+    using std::end;
+
+    // Remove objects from drawInit
+    con2.erase(std::remove_if(begin(con2), end(con2), [&con1](typename Container2::value_type ptr) {
+        return std::find_if(begin(con1), end(con1), [ptr](const typename Container1::value_type& obj) {
+            return obj.get() == ptr;
+        }) == end(con1);
+    }), end(con2));
 }
 
 /* ************************************************************************ */
 
-Simulation::Simulation(Simulator& simulator) noexcept
-    : m_simulator(simulator)
-#ifdef ENABLE_PHYSICS
-    , m_world{b2Vec2{0.0f, 0.0f}}
+/**
+ * @brief Initialize all objects in container and after that remove all.
+ *
+ * @param con
+ */
+template<typename Container, typename Context>
+void draw_init(Container& con, Context& context)
+{
+    for (auto ptr : con)
+    {
+        assert(ptr);
+        ptr->drawInit(context);
+    }
+
+    con.clear();
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+Simulation::Simulation() noexcept
+#if ENABLE_PHYSICS
+    : m_world{b2Vec2{0.0f, 0.0f}}
 #endif
 {
     // Nothing to do
@@ -219,11 +258,7 @@ bool Simulation::update(units::Duration dt) noexcept
         }), m_objects.end());
 
         // Remove objects from drawInit
-        m_drawInitList.erase(std::remove_if(m_drawInitList.begin(), m_drawInitList.end(), [this](Object* ptr) {
-            return std::find_if(m_objects.begin(), m_objects.end(), [ptr](const ObjectContainer::value_type& obj) {
-                return obj.get() == ptr;
-            }) == m_objects.end();
-        }), m_drawInitList.end());
+        erase_mismatch(m_objects, m_drawInitObjectList);
     }
 
 #ifdef ENABLE_PHYSICS
@@ -271,35 +306,20 @@ bool Simulation::update()
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Simulation::drawInit(render::Context& context)
-{
-    // Init modules for rendering
-    for (auto& module : getModules())
-        module.second->drawInit(context);
-}
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
 void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(getWorldSize().getWidth(), getWorldSize().getHeight());
+
+    // Prepare modules for rendering
+    draw_init(m_drawInitModuleList, context);
+
+    // Prepare objects for rendering
+    draw_init(m_drawInitObjectList, context);
 
     // Render modules
     for (auto& module : getModules())
         module.second->draw(context, *this);
 
-    // Prepare objects for rendering
-    {
-        for (auto ptr : m_drawInitList)
-        {
-            assert(ptr);
-            ptr->drawInit(context);
-        }
-
-        m_drawInitList.clear();
-    }
 /*
     // Draw lines around world
     {
