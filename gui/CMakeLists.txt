@@ -27,7 +27,7 @@ add_executable(gui
     wxcrafter.h
     wxcrafter.cpp
     wxcrafter_bitmaps.cpp
-    CanvasWidget.h
+    CanvasWidget.hpp
     CanvasWidget.cpp
     SimulatorThread.hpp
     SimulatorThread.cpp

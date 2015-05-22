@@ -23,7 +23,7 @@ wxDEFINE_EVENT(REPORT_FPS, wxCommandEvent);
 
 /* ************************************************************************ */
 
-const int g_attribList[] = {
+static const int g_attribList[] = {
     WX_GL_RGBA,
     WX_GL_DOUBLEBUFFER,
     WX_GL_SAMPLE_BUFFERS, GL_TRUE, // Multi-sampling
@@ -184,50 +184,35 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 
 /* ************************************************************************ */
 
-void CanvasWidget::Init()
-{
-    auto& renderer = m_simulator->getRenderContext();
-
-    if (renderer.isInit())
-        return;
-
-    wxASSERT(m_simulator);
-    m_simulator->drawInit();
-}
-
-/* ************************************************************************ */
-
 void CanvasWidget::Render() noexcept
 {
     if (!IsShown())
         return;
 
     wxASSERT(m_simulator);
-
-    auto& renderer = m_simulator->getRenderContext();
-    auto simulation = m_simulator->getSimulation();
+    wxASSERT(m_mutex);
 
     // Set current context
     SetCurrent(*m_context);
 
-    Init();
+    // Initialize drawing
+    if (!m_simulator->isDrawInitialized())
+        m_simulator->drawInit();
 
     wxPaintDC dc(this);
 
-    renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
-
-    if (simulation)
+    if (m_simulator->getSimulation())
     {
-        wxASSERT(m_mutex);
         wxMutexLocker lock(*m_mutex);
 
         // Draw simulation
-        simulation->draw(renderer);
+        m_simulator->draw(GetSize().GetWidth(), GetSize().GetHeight());
     }
 
-    renderer.frameEnd();
+    // Swap front and back buffer
     SwapBuffers();
 
+    // Calculate FPS
     UpdateFps();
 }
 
@@ -241,7 +226,7 @@ void CanvasWidget::UpdateFps() noexcept
     m_renderFrames++;
 
     // Calculate time that takes to render time
-    // Even call to render function.
+    // Even render function call
     m_renderFpsRecalc += duration_cast<milliseconds>(high_resolution_clock::now() - m_renderTime);
 
     if (m_renderFpsRecalc > milliseconds(1000))
@@ -255,6 +240,8 @@ void CanvasWidget::UpdateFps() noexcept
 
         m_renderFpsRecalc = milliseconds(0);
     }
+
+    m_renderTime = high_resolution_clock::now();
 }
 
 /* ************************************************************************ */

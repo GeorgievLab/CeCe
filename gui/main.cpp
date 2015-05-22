@@ -52,9 +52,12 @@ public:
         return true;
     }
 
+
 // Private Data Members
 private:
 
+
+    /// Startup file name.
     wxFileName m_initFileName;
 
 };

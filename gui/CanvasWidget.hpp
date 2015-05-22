@@ -213,12 +213,6 @@ protected:
 
 
     /**
-     * @brief Initialize OpenGL.
-     */
-    void Init();
-
-
-    /**
      * @brief Render content.
      */
     void Render() noexcept;

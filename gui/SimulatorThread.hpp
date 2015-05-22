@@ -9,6 +9,7 @@
 #include <wx/msgqueue.h>
 #include <wx/scopedptr.h>
 #include <wx/event.h>
+#include <wx/atomic.h>
 
 // Simulator
 #include "simulator/Simulation.hpp"
@@ -17,9 +18,7 @@
 
 /* ************************************************************************ */
 
-wxDECLARE_EVENT(EVT_UPDATED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_ERROR, wxCommandEvent);
-wxDECLARE_EVENT(EVT_LOG, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -38,7 +37,7 @@ public:
      */
     struct Message
     {
-        enum Code { NONE, LOAD, START, STEP, STOP, RESTART };
+        enum Code { NONE, LOAD, START, STEP, STOP };
 
         Message() = default;
         Message(Code code) : code(code) {}
@@ -59,7 +58,7 @@ public:
      * @param handler Event handler.
      * @param factory Simulation factory.
      */
-    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory);
+    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory) noexcept;
 
 
     /**
@@ -79,7 +78,7 @@ public:
      */
     bool isRunning() const noexcept
     {
-        return m_running;
+        return m_running != 0;
     }
 
 
@@ -122,38 +121,36 @@ public:
 
     /**
      * @brief Entry function.
+     *
+     * @return Thread return value.
      */
-    wxThread::ExitCode Entry() override;
+    wxThread::ExitCode Entry() noexcept override;
 
 
     /**
      * @brief Send start message.
      */
-    void SendStart();
+    void SendStart() noexcept;
 
 
     /**
      * @brief Send step message.
      */
-    void SendStep();
+    void SendStep() noexcept;
 
 
     /**
      * @brief Send stop message.
      */
-    void SendStop();
-
-
-    /**
-     * @brief Send re-start message.
-     */
-    void SendRestart();
+    void SendStop() noexcept;
 
 
     /**
      * @brief Send load message.
+     *
+     * @param code Source code.
      */
-    void SendLoad(const wxString& code);
+    void SendLoad(const wxString& code) noexcept;
 
 
 // Protected Operations
@@ -162,36 +159,34 @@ protected:
 
     /**
      * @brief Handle incomming messages.
-     *
-     * @return If repaint is needed.
      */
-    bool HandleMessages();
+    void HandleMessages() noexcept;
 
 
     /**
      * @brief Perform simulation start.
      */
-    void DoStart();
+    void DoStart() noexcept;
 
 
     /**
      * @brief Perform simulation step.
      */
-    void DoStep();
+    void DoStep() noexcept;
 
 
     /**
      * @brief Perform simulation stop.
      */
-    void DoStop();
+    void DoStop() noexcept;
 
 
     /**
      * @brief Do load.
      *
-     * @param code
+     * @param code Source code.
      */
-    void DoLoad(const wxString& code);
+    void DoLoad(const wxString& code) noexcept;
 
 
 // Private Data Members
@@ -210,7 +205,7 @@ private:
     simulator::Simulator m_simulator;
 
     /// If simulator should run.
-    bool m_running = false;
+    wxAtomicInt m_running = 0;
 
     /// World factory
     wxScopedPtr<simulator::SimulationFactory> m_simulationFactory;

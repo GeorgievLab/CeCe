@@ -25,10 +25,10 @@
     <File Name="SimulatorThread.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="MainFrame.h"/>
-    <File Name="wxcrafter.h"/>
     <File Name="SimulatorThread.hpp"/>
     <File Name="CanvasWidget.hpp"/>
+    <File Name="MainFrame.h"/>
+    <File Name="wxcrafter.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>

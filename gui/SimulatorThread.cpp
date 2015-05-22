@@ -8,13 +8,11 @@
 
 /* ************************************************************************ */
 
-wxDEFINE_EVENT(EVT_UPDATED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_ERROR, wxCommandEvent);
-wxDEFINE_EVENT(EVT_LOG, wxCommandEvent);
 
 /* ************************************************************************ */
 
-SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory)
+SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory) noexcept
     : m_handler(handler)
     , m_simulationFactory(factory)
 {
@@ -44,22 +42,15 @@ SimulatorThread::~SimulatorThread()
 
 /* ************************************************************************ */
 
-wxThread::ExitCode SimulatorThread::Entry()
+wxThread::ExitCode SimulatorThread::Entry() noexcept
 {
     // Check if thread is still alive
     while (!GetThread()->TestDestroy())
     {
-        bool update = HandleMessages();
+        HandleMessages();
 
-        if (m_running)
-        {
+        if (isRunning())
             DoStep();
-            //update = true;
-        }
-
-        // Send repaint event
-        //if (update)
-        //    wxQueueEvent(m_handler, new wxCommandEvent(EVT_UPDATED));
     }
 
     return (wxThread::ExitCode) 0;
@@ -67,45 +58,37 @@ wxThread::ExitCode SimulatorThread::Entry()
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendStart()
+void SimulatorThread::SendStart() noexcept
 {
     m_queue.Post({Message::START});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendStep()
+void SimulatorThread::SendStep() noexcept
 {
     m_queue.Post({Message::STEP});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendStop()
+void SimulatorThread::SendStop() noexcept
 {
     m_queue.Post({Message::STOP});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendRestart()
-{
-    m_queue.Post({Message::RESTART});
-}
-
-/* ************************************************************************ */
-
-void SimulatorThread::SendLoad(const wxString& code)
+void SimulatorThread::SendLoad(const wxString& code) noexcept
 {
     m_queue.Post({Message::LOAD, code});
 }
 
 /* ************************************************************************ */
 
-bool SimulatorThread::HandleMessages()
+void SimulatorThread::HandleMessages() noexcept
 {
     Message msg;
-    bool result = false;
 
     while (true)
     {
@@ -117,69 +100,67 @@ bool SimulatorThread::HandleMessages()
         {
         case Message::LOAD:
             DoLoad(msg.string);
-            result = true;
             break;
 
         case Message::START:
             DoStart();
-            result = true;
             break;
 
         case Message::STEP:
             DoStep();
-            result = true;
             break;
 
         case Message::STOP:
             DoStop();
-            result = true;
-            break;
-
-        case Message::RESTART:
-            m_running = false;
-            m_simulator.reset();
-            result = true;
             break;
 
         default:
             break;
         }
     }
-
-    return result;
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::DoStart()
+void SimulatorThread::DoStart() noexcept
 {
-    m_running = true;
+    wxAtomicInc(m_running);
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::DoStep()
+void SimulatorThread::DoStep() noexcept
 {
-    wxMutexLocker lock(m_mutex);
-
-    m_simulator.step();
-}
-
-/* ************************************************************************ */
-
-void SimulatorThread::DoStop()
-{
-    m_running = false;
-}
-
-/* ************************************************************************ */
-
-void SimulatorThread::DoLoad(const wxString& code)
-{
-    wxMutexLocker lock(m_mutex);
-
     try
     {
+        wxMutexLocker lock(m_mutex);
+
+        // Simulator step
+        m_simulator.step();
+    }
+    catch (const std::exception& e)
+    {
+        wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
+        event->SetString(e.what());
+        wxQueueEvent(m_handler, event.release());
+    }
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::DoStop() noexcept
+{
+    wxAtomicDec(m_running);
+}
+
+/* ************************************************************************ */
+
+void SimulatorThread::DoLoad(const wxString& code) noexcept
+{
+    try
+    {
+        wxMutexLocker lock(m_mutex);
+
         // Create new world from source
         m_simulator.setSimulation(m_simulationFactory->fromSource(code.To8BitData().data()));
     }

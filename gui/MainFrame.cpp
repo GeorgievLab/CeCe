@@ -89,12 +89,15 @@ MainFrame::MainFrame(wxWindow* parent)
     m_fileHistory.UseMenu(m_menuFileRecent);
 
     // Set simulator
+    wxASSERT(m_glCanvasView);
     m_glCanvasView->SetSimulator(m_simulatorThread.GetSimulator(), m_simulatorThread.GetMutex());
 
+    // Bind events
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
     Bind(EVT_ERROR, &MainFrame::OnSimulationError, this);
     Bind(REPORT_FPS, &MainFrame::OnRenderTime, this);
 
+    // Load configuration
     LoadConfig();
 
     {
@@ -110,55 +113,8 @@ MainFrame::~MainFrame()
     // Store current file
     StoreCurrentFileToHistory();
 
+    // Store configuration
     StoreConfig();
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnExit(wxCommandEvent& event)
-{
-    wxUnusedVar(event);
-    Close();
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnAbout(wxCommandEvent& event)
-{
-    wxUnusedVar(event);
-    wxAboutDialogInfo info;
-    info.SetCopyright(_("2015"));
-    info.SetLicence(_("TBA"));
-    info.SetDescription(_("Cell Simulator"));
-    info.AddDeveloper(wxT("Jiří Fatka"));
-    info.AddDeveloper(wxT("Hynek Kasl"));
-    ::wxAboutBox(info);
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnSimulationUpdate(wxThreadEvent& evt)
-{
-    m_glCanvasView->Update();
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnSimulationError(wxCommandEvent& evt)
-{
-    wxMessageBox(evt.GetString(), wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnRenderTime(wxCommandEvent& evt)
-{
-    int fps = evt.GetInt();
-
-    m_statusBar->SetStatusText(
-        wxString::Format("%d FPS", fps),
-        1
-    );
 }
 
 /* ************************************************************************ */
@@ -175,7 +131,7 @@ void MainFrame::OnFileNew(wxCommandEvent& event)
 
 void MainFrame::OnFileOpen(wxCommandEvent& event)
 {
-    wxString selection = wxFileSelector(
+    const wxString selection = wxFileSelector(
         wxFileSelectorPromptStr,
         wxEmptyString,
         wxEmptyString,
@@ -232,8 +188,6 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
         return;
 
     // TODO: save file
-
-    LoadFile(selection);
 }
 
 /* ************************************************************************ */
@@ -245,9 +199,78 @@ void MainFrame::OnFileOpenRecent(wxCommandEvent& event)
 
 /* ************************************************************************ */
 
+void MainFrame::OnFileExit(wxCommandEvent& event)
+{
+    wxUnusedVar(event);
+    Close();
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewReset(wxCommandEvent& event)
+{
+    m_glCanvasView->ViewReset();
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewCodeCheck(wxCommandEvent& event)
+{
+    static int last_pos = 0;
+
+    if (!event.IsChecked())
+    {
+        last_pos = UnsplitCode();
+    }
+    else
+    {
+        SplitCode(last_pos);
+    }
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewCodeChecked(wxUpdateUIEvent& event)
+{
+    event.Check(m_splitterTop->IsSplit());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewLogCheck(wxCommandEvent& event)
+{
+    static int last_pos = 0;
+
+    if (!event.IsChecked())
+    {
+        last_pos = UnsplitLog();
+    }
+    else
+    {
+        SplitLog(last_pos);
+    }
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewLogChecked(wxUpdateUIEvent& event)
+{
+    event.Check(m_splitterMain->IsSplit());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
+{
+    event.Enable(!m_simulatorThread.isRunning());
+}
+
+/* ************************************************************************ */
+
 void MainFrame::OnSimulationStart(wxCommandEvent& event)
 {
     // Use current simulation code
+    wxASSERT(m_stcCode);
     if (m_stcCode->IsModified())
     {
         m_simulatorThread.SendLoad(m_stcCode->GetText());
@@ -267,16 +290,57 @@ void MainFrame::OnSimulationStop(wxCommandEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnSimulationRestart(wxCommandEvent& event)
+void MainFrame::OnSimulationStep(wxCommandEvent& event)
 {
-    m_simulatorThread.SendRestart();
+    m_simulatorThread.SendStep();
 }
 
 /* ************************************************************************ */
 
-void MainFrame::OnSimulationStep(wxCommandEvent& event)
+void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 {
-    m_simulatorThread.SendStep();
+    // TODO: restart
+}
+
+/* ************************************************************************ */
+
+#if ENABLE_SCREENSHOOT
+void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
+{
+    const wxString selection = wxFileSelector(
+        wxFileSelectorPromptStr,
+        wxEmptyString,
+        "screenshot.png",
+        wxEmptyString,
+        "PNG (*.png)|*.png",
+        wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+    );
+
+    if (selection.IsEmpty())
+        return;
+
+}
+#endif
+
+/* ************************************************************************ */
+
+void MainFrame::OnHelpAbout(wxCommandEvent& event)
+{
+    wxUnusedVar(event);
+    wxAboutDialogInfo info;
+    info.SetCopyright(_("2015"));
+    info.SetLicence(_("TBA"));
+    info.SetDescription(_("Cell Simulator"));
+    info.AddDeveloper(wxT("Jiří Fatka"));
+    info.AddDeveloper(wxT("Hynek Kasl"));
+    ::wxAboutBox(info);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
+{
+    event.Enable(m_simulatorThread.isRunning());
 }
 
 /* ************************************************************************ */
@@ -288,9 +352,17 @@ void MainFrame::OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
+void MainFrame::OnSimulationError(wxCommandEvent& event)
 {
-    event.Enable(m_simulatorThread.isRunning());
+    wxMessageBox(event.GetString(), wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnRenderTime(wxCommandEvent& event)
+{
+    wxASSERT(m_statusBar);
+    m_statusBar->SetStatusText(wxString::Format("%d FPS", event.GetInt()), 1);
 }
 
 /* ************************************************************************ */
@@ -322,6 +394,7 @@ void MainFrame::LoadFile(const wxFileName& path)
         code += "\n";
     }
 
+    // Load source code to simulator
     LoadText(code);
 
     // Load text to editor
@@ -406,86 +479,6 @@ void MainFrame::StoreCurrentFileToHistory()
 {
     if (m_fileName.IsOk())
         m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewReset(wxCommandEvent& event)
-{
-    m_glCanvasView->ViewReset();
-}
-
-/* ************************************************************************ */
-
-#if ENABLE_IMAGES
-void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
-{
-    wxString selection = wxFileSelector(
-        wxFileSelectorPromptStr,
-        wxEmptyString,
-        "screenshot.png",
-        wxEmptyString,
-        "PNG (*.png)|*.png",
-        wxFD_SAVE | wxFD_OVERWRITE_PROMPT
-    );
-
-    if (selection.IsEmpty())
-        return;
-
-}
-#endif
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewCodeCheck(wxCommandEvent& event)
-{
-    static int last_pos = 0;
-
-    if (!event.IsChecked())
-    {
-        last_pos = UnsplitCode();
-    }
-    else
-    {
-        SplitCode(last_pos);
-    }
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewCodeChecked(wxUpdateUIEvent& event)
-{
-    event.Check(m_splitterTop->IsSplit());
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewLogCheck(wxCommandEvent& event)
-{
-    static int last_pos = 0;
-
-    if (!event.IsChecked())
-    {
-        last_pos = UnsplitLog();
-    }
-    else
-    {
-        SplitLog(last_pos);
-    }
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewLogChecked(wxUpdateUIEvent& event)
-{
-    event.Check(m_splitterMain->IsSplit());
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
-{
-    event.Enable(!m_simulatorThread.isRunning());
 }
 
 /* ************************************************************************ */

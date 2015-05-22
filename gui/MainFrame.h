@@ -33,7 +33,7 @@ public:
     /**
      * @brief Constructor.
      *
-     * @return
+     * @param parent
      */
     MainFrame(wxWindow* parent = nullptr);
 
@@ -59,8 +59,48 @@ public:
     }
 
 
-// Public Operations
-public:
+// Protected Event Handlers
+protected:
+
+
+    /**
+     * @brief Create new simulation.
+     *
+     * @param event
+     */
+    void OnFileNew(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Open existing simulation file.
+     *
+     * @param event
+     */
+    void OnFileOpen(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Save currently open simulation file.
+     *
+     * @param event
+     */
+    void OnFileSave(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Save currently open simulation file as.
+     *
+     * @param event
+     */
+    void OnFileSaveAs(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Open recently open simulation file.
+     *
+     * @param event
+     */
+    void OnFileOpenRecent(wxCommandEvent& event);
 
 
     /**
@@ -68,7 +108,88 @@ public:
      *
      * @param event
      */
-    void OnExit(wxCommandEvent& event);
+    void OnFileExit(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Reset current view.
+     *
+     * @param event
+     */
+    void OnViewReset(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Check or uncheck display code widget.
+     *
+     * @param event
+     */
+    void OnViewCodeCheck(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief If menu item for display code widget should be checked.
+     *
+     * @param event
+     */
+    void OnViewCodeChecked(wxUpdateUIEvent& event) override;
+
+    /**
+     * @brief Check or uncheck display log widget.
+     *
+     * @param event
+     */
+    void OnViewLogCheck(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief If menu item for display log widget should be checked.
+     *
+     * @param event
+     */
+    void OnViewLogChecked(wxUpdateUIEvent& event) override;
+
+
+    /**
+     * @brief Start simulation.
+     *
+     * @param event
+     */
+    void OnSimulationStart(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Stop simulation.
+     *
+     * @param event
+     */
+    void OnSimulationStop(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Perform simulation step.
+     *
+     * @param event
+     */
+    void OnSimulationStep(wxCommandEvent& event) override;
+
+
+    /**
+     * @brief Restart simulation.
+     *
+     * @param event
+     */
+    void OnSimulationRestart(wxCommandEvent& event) override;
+
+
+#if ENABLE_SCREENSHOOT
+    /**
+     * @brief Save screenshoot of current simulation step.
+     *
+     * @param event
+     */
+    void OnSimulationScreenshot(wxCommandEvent& event) override;
+#endif
 
 
     /**
@@ -76,23 +197,31 @@ public:
      *
      * @param event
      */
-    void OnAbout(wxCommandEvent& event);
+    void OnHelpAbout(wxCommandEvent& event) override;
 
 
     /**
-     * @brief Simulation step event.
+     * @brief Get information if simulation is running.
      *
-     * @param evt
+     * @param event
      */
-    void OnSimulationUpdate(wxThreadEvent& evt);
+    void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event) override;
 
 
     /**
-     * @brief Event when source code is not able compile.
+     * @brief Get information if simulation is not running.
      *
-     * @param evt
+     * @param event
      */
-    void OnSimulationError(wxCommandEvent& evt);
+    void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) override;
+
+
+    /**
+     * @brief Error handler.
+     *
+     * @param event
+     */
+    void OnSimulationError(wxCommandEvent& event);
 
 
     /**
@@ -103,30 +232,12 @@ public:
     void OnRenderTime(wxCommandEvent& evt);
 
 
-protected:
+    /**
+     * @brief Update UI of source code witget.
+     *
+     * @param event
+     */
     void OnCodeUpdateUi(wxUpdateUIEvent& event) override;
-    void OnViewCodeCheck(wxCommandEvent& event) override;
-    void OnViewCodeChecked(wxUpdateUIEvent& event) override;
-    void OnViewLogCheck(wxCommandEvent& event) override;
-    void OnViewLogChecked(wxUpdateUIEvent& event) override;
-
-#if ENABLE_IMAGES
-    void OnSimulationScreenshot(wxCommandEvent& event) override;
-#endif
-
-    void OnViewReset(wxCommandEvent& event) override;
-
-    void OnSimulationStart(wxCommandEvent& event) override;
-    void OnSimulationStop(wxCommandEvent& event) override;
-    void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) override;
-    void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event) override;
-    void OnFileNew(wxCommandEvent& event) override;
-    void OnFileOpen(wxCommandEvent& event) override;
-    void OnFileSave(wxCommandEvent& event) override;
-    void OnFileSaveAs(wxCommandEvent& event) override;
-    void OnFileOpenRecent(wxCommandEvent& event);
-    void OnSimulationRestart(wxCommandEvent& event) override;
-    void OnSimulationStep(wxCommandEvent& event) override;
 
 
 // Public Operations
