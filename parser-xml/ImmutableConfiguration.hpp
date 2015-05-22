@@ -110,6 +110,28 @@ public:
     }
 
 
+    /**
+     * @brief Returns if there is content text.
+     *
+     * @return
+     */
+    bool hasText() const override
+    {
+        return !m_node.text().empty();
+    }
+
+
+    /**
+     * @brief Returns text string.
+     *
+     * @return
+     */
+    std::string getText() const override
+    {
+        return m_node.text().get();
+    }
+
+
 // Public Mutators
 public:
 
@@ -145,6 +167,17 @@ public:
      * @param value
      */
     void setFloat(const std::string& name, float value) override
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Set text.
+     *
+     * @param text
+     */
+    void setText(std::string text) override
     {
         // Nothing to do
     }

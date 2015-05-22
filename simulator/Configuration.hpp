@@ -83,6 +83,22 @@ public:
     virtual float getFloat(const std::string& name) const = 0;
 
 
+    /**
+     * @brief Returns if there is content text.
+     *
+     * @return
+     */
+    virtual bool hasText() const = 0;
+
+
+    /**
+     * @brief Returns text string.
+     *
+     * @return
+     */
+    virtual std::string getText() const = 0;
+
+
 // Public Mutators
 public:
 
@@ -112,6 +128,14 @@ public:
      * @param value
      */
     virtual void setFloat(const std::string& name, float value) = 0;
+
+
+    /**
+     * @brief Set text.
+     *
+     * @param text
+     */
+    virtual void setText(std::string text) = 0;
 
 
 // Public Operations
