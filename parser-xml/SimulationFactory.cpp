@@ -157,9 +157,9 @@ namespace xml {
 /* ************************************************************************ */
 
 std::unique_ptr<simulator::Simulation> SimulationFactory::fromStream(
-    simulator::Simulator& simulator, std::istream& source, const std::string& filename) const
+    std::istream& source, const std::string& filename) const
 {
-    std::unique_ptr<simulator::Simulation> simulation(new simulator::Simulation(simulator));
+    std::unique_ptr<simulator::Simulation> simulation(new simulator::Simulation());
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load(source);

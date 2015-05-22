@@ -1,6 +1,5 @@
 
-#ifndef _SIMULATOR_WORLD_FACTORY_H_
-#define _SIMULATOR_WORLD_FACTORY_H_
+#pragma once
 
 /* ************************************************************************ */
 
@@ -15,7 +14,6 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulation;
-class Simulator;
 
 /* ************************************************************************ */
 
@@ -42,33 +40,29 @@ public:
     /**
      * @brief Create empty simulation.
      *
-     * @param simulator
-     *
      * @return
      */
-    virtual std::unique_ptr<Simulation> createSimulation(Simulator& simulator) const;
+    virtual std::unique_ptr<Simulation> createSimulation() const;
 
 
     /**
      * @brief Create a new simulation from source file.
      *
-     * @param simulator
      * @param filename
      *
      * @return
      */
-    virtual std::unique_ptr<Simulation> fromFile(Simulator& simulator, const std::string& filename) const;
+    virtual std::unique_ptr<Simulation> fromFile(const std::string& filename) const;
 
 
     /**
      * @brief Create a new simulation from source code.
      *
-     * @param simulator
      * @param source
      *
      * @return
      */
-    virtual std::unique_ptr<Simulation> fromSource(Simulator& simulator, const std::string& source, const std::string& filename = "<source>") const = 0;
+    virtual std::unique_ptr<Simulation> fromSource(const std::string& source, const std::string& filename = "<source>") const = 0;
 
 };
 
@@ -77,5 +71,3 @@ public:
 }
 
 /* ************************************************************************ */
-
-#endif // _SIMULATOR_WORLD_FACTORY_H_

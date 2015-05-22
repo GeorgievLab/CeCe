@@ -16,14 +16,14 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-std::unique_ptr<Simulation> SimulationFactory::createSimulation(Simulator& simulator) const
+std::unique_ptr<Simulation> SimulationFactory::createSimulation() const
 {
-    return std::unique_ptr<Simulation>(new Simulation(simulator));
+    return std::unique_ptr<Simulation>(new Simulation());
 }
 
 /* ************************************************************************ */
 
-std::unique_ptr<Simulation> SimulationFactory::fromFile(Simulator& simulator, const std::string& filename) const
+std::unique_ptr<Simulation> SimulationFactory::fromFile(const std::string& filename) const
 {
     std::string source;
 
@@ -38,7 +38,7 @@ std::unique_ptr<Simulation> SimulationFactory::fromFile(Simulator& simulator, co
         }
     }
 
-    return fromSource(simulator, source);
+    return fromSource(source);
 }
 
 /* ************************************************************************ */
