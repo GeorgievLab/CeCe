@@ -6,5 +6,5 @@
     <module name="diffusion.generator" />
     <module name="diffusion-streamlines" />
     <!--module name="picture" filename="image_$1.png" each="100" /-->
-    <object class="Cell" type="static" position="0 0" volume="1540um3" />
+    <object class="cell.Cell" type="static" position="0 0" volume="1540um3" />
 </simulation>
