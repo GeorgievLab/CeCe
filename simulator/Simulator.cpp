@@ -83,21 +83,29 @@ bool Simulator::update()
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
-void Simulator::drawInit(render::Context& context)
+#if ENABLE_RENDER
+void Simulator::drawInit()
 {
-    assert(m_simulation);
-    m_simulation->drawInit(context);
+    m_renderContext.init();
 }
 #endif
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
-void Simulator::draw(render::Context& context)
+#if ENABLE_RENDER
+void Simulator::draw()
 {
     assert(m_simulation);
-    m_simulation->draw(context);
+    m_simulation->draw(m_renderContext);
+}
+#endif
+
+/* ************************************************************************ */
+
+#if ENABLE_RENDER
+void Simulator::drawFinalize()
+{
+    // TODO: implement
 }
 #endif
 

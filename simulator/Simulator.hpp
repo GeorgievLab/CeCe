@@ -69,6 +69,18 @@ public:
     }
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Returns rendering context.
+     *
+     * @return
+     */
+    render::Context& getRenderContext() noexcept
+    {
+        return m_renderContext;
+    }
+#endif
+
 // Public Mutators
 public:
 
@@ -130,23 +142,27 @@ public:
     bool update();
 
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Initialize simulation for rendering.
-     *
-     * @param context
      */
-    void drawInit(render::Context& context);
+    void drawInit();
 #endif
 
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render simulation.
-     *
-     * @param context Render context.
      */
-    void draw(render::Context& context);
+    void draw();
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Finalize rendering.
+     */
+    void drawFinalize();
 #endif
 
 
@@ -159,6 +175,10 @@ private:
     /// Current simulation
     std::unique_ptr<Simulation> m_simulation;
 
+#if ENABLE_RENDER
+    /// Rendering context.
+    render::Context m_renderContext;
+#endif
 };
 
 /* ************************************************************************ */
