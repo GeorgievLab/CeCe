@@ -28,7 +28,7 @@ class Simulation;
 /**
  * @brief Simulator class.
  *
- * Simulator handles simulation of the given (owned) world in current thread.
+ * Simulator handles simulation of the given (owned) simulation in current thread.
  */
 class Simulator final
 {
@@ -40,7 +40,10 @@ public:
     /**
      * @brief Destructor.
      */
-    ~Simulator();
+    ~Simulator()
+    {
+        stop();
+    }
 
 
 /// Public Accessors
@@ -81,6 +84,20 @@ public:
     }
 #endif
 
+
+#if ENABLE_RENDER
+    /**
+     * @brief Returns if rendering context is initialized.
+     *
+     * @return
+     */
+    bool isDrawInitialized() noexcept
+    {
+        return m_renderContext.isInitialized();
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -109,19 +126,16 @@ public:
     /**
      * @brief Stop simulation.
      */
-    void stop();
+    void stop()
+    {
+        m_isRunning = false;
+    }
 
 
     /**
      * @brief Perform one simulation step.
      */
     void step();
-
-
-    /**
-     * @brief Reset simulation.
-     */
-    void reset();
 
 
     /**
@@ -146,23 +160,21 @@ public:
     /**
      * @brief Initialize simulation for rendering.
      */
-    void drawInit();
+    void drawInit()
+    {
+        m_renderContext.init();
+    }
 #endif
 
 
 #if ENABLE_RENDER
     /**
      * @brief Render simulation.
+     *
+     * @param width
+     * @param height
      */
-    void draw();
-#endif
-
-
-#if ENABLE_RENDER
-    /**
-     * @brief Finalize rendering.
-     */
-    void drawFinalize();
+    void draw(unsigned width, unsigned height);
 #endif
 
 

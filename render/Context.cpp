@@ -99,7 +99,7 @@ void Context::setWireframe(bool flag) noexcept
 
 void Context::init() noexcept
 {
-    assert(!isInit());
+    assert(!isInitialized());
 
     // Clear color.
     glClearColor(1.f, 1.f, 1.f, 1.f);
@@ -119,7 +119,7 @@ void Context::init() noexcept
 
 void Context::setView(int width, int height) noexcept
 {
-    if (!m_is_init)
+    if (!isInitialized())
         return;
 
      // Setup viewport (whole window)
@@ -188,7 +188,7 @@ void Context::setStencilBuffer(float width, float height) noexcept
 
 void Context::frameBegin(int width, int height) noexcept
 {
-    assert(isInit());
+    assert(isInitialized());
 
     // Clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -202,7 +202,7 @@ void Context::frameBegin(int width, int height) noexcept
 
 void Context::frameEnd() noexcept
 {
-    assert(isInit());
+    assert(isInitialized());
 
     glDisable(GL_BLEND);
 

@@ -18,13 +18,6 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-Simulator::~Simulator()
-{
-    stop();
-}
-
-/* ************************************************************************ */
-
 void Simulator::start()
 {
     m_isRunning = true;
@@ -33,13 +26,6 @@ void Simulator::start()
     {
         step();
     }
-}
-
-/* ************************************************************************ */
-
-void Simulator::stop()
-{
-    m_isRunning = false;
 }
 
 /* ************************************************************************ */
@@ -55,14 +41,6 @@ void Simulator::step()
 
     // Sleep
     std::this_thread::sleep_until(sleep);
-}
-
-/* ************************************************************************ */
-
-void Simulator::reset()
-{
-    assert(m_simulation);
-    m_simulation->reset();
 }
 
 /* ************************************************************************ */
@@ -84,28 +62,14 @@ bool Simulator::update()
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-void Simulator::drawInit()
+void Simulator::draw(unsigned width, unsigned height)
 {
-    m_renderContext.init();
-}
-#endif
+    m_renderContext.frameBegin(width, height);
 
-/* ************************************************************************ */
-
-#if ENABLE_RENDER
-void Simulator::draw()
-{
     assert(m_simulation);
     m_simulation->draw(m_renderContext);
-}
-#endif
 
-/* ************************************************************************ */
-
-#if ENABLE_RENDER
-void Simulator::drawFinalize()
-{
-    // TODO: implement
+    m_renderContext.frameEnd();
 }
 #endif
 

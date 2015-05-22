@@ -54,11 +54,11 @@ public:
 
 
     /**
-     * @brief Returns if context is init.
+     * @brief Returns if context is initialized.
      *
      * @return
      */
-    bool isInit() noexcept
+    bool isInitialized() noexcept
     {
         return m_is_init;
     }
