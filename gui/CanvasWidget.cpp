@@ -2,7 +2,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "CanvasWidget.h"
+#include "CanvasWidget.hpp"
 
 // C++
 #include <algorithm>
@@ -11,9 +11,8 @@
 #include <wx/dcclient.h>
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "render/Context.hpp"
-#include "modules/diffusion-streamlines/Module.hpp"
 
 // GUI
 #include "gui/SimulatorThread.hpp"
@@ -63,75 +62,6 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
 
 /* ************************************************************************ */
 
-bool CanvasWidget::IsViewGrid() const noexcept
-{
-    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
-
-    if (module)
-        return module->getDiffusion().getDrawable().isRenderGrid();
-
-    return false;
-}
-
-/* ************************************************************************ */
-
-bool CanvasWidget::IsViewVelocity() const noexcept
-{
-    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
-
-    if (module)
-        return module->getStreamlines().getRenderObject().isRenderVelocity();
-
-    return false;
-}
-
-/* ************************************************************************ */
-
-bool CanvasWidget::IsViewInterpolation() const noexcept
-{
-    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
-
-    if (module)
-        return module->getDiffusion().getDrawable().isInterpolate();
-
-    return false;
-}
-
-/* ************************************************************************ */
-
-void CanvasWidget::SetViewGrid(bool flag) noexcept
-{
-    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
-    if (module)
-    {
-        module->getDiffusion().getDrawable().setRenderGrid(flag);
-    }
-}
-
-/* ************************************************************************ */
-
-void CanvasWidget::SetViewVelocity(bool flag) noexcept
-{
-    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
-    if (module)
-    {
-        module->getStreamlines().getRenderObject().setRenderVelocity(flag);
-    }
-}
-
-/* ************************************************************************ */
-
-void CanvasWidget::SetViewInterpolation(bool flag) noexcept
-{
-    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
-    if (module)
-    {
-        module->getDiffusion().getDrawable().setInterpolate(flag);
-    }
-}
-
-/* ************************************************************************ */
-
 void CanvasWidget::Update() noexcept
 {
     Refresh(false);
@@ -141,7 +71,8 @@ void CanvasWidget::Update() noexcept
 
 void CanvasWidget::ViewReset() noexcept
 {
-    auto& camera = m_renderer.getCamera();
+    auto& renderer = m_simulator->getRenderContext();
+    auto& camera = renderer.getCamera();
     camera.setZoom(m_baseZoom);
     camera.setPosition({0, 0});
 
@@ -151,94 +82,23 @@ void CanvasWidget::ViewReset() noexcept
 
 /* ************************************************************************ */
 
-void CanvasWidget::Render() noexcept
-{
-    if (!IsShown())
-        return;
-
-    if (m_error)
-        return;
-
-    // Init renderer
-    if (!m_renderer.isInit())
-    {
-        SetCurrent(*m_context);
-        m_renderer.init();
-
-        wxASSERT(m_simulator);
-        m_simulator->drawInit(m_renderer);
-    }
-
-    wxPaintDC dc(this);
-
-    m_renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
-
-    if (m_simulator->getWorld())
-    {
-        wxASSERT(m_mutex);
-        wxMutexLocker lock(*m_mutex);
-
-        // Render world
-        try
-        {
-            wxASSERT(m_simulator);
-            m_simulator->draw(m_renderer);
-        }
-        catch (const std::exception& e)
-        {
-            wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
-            event->SetString(e.what());
-            wxQueueEvent(GetParent(), event.release());
-            m_error = true;
-            return;
-        }
-    }
-
-    m_renderer.frameEnd();
-    SwapBuffers();
-
-    {
-        using namespace std::chrono;
-
-        // Increase a number of rendered frames
-        m_renderFrames++;
-
-        // Calculate time that takes to render time
-        // Even call to render function.
-        m_renderFpsRecalc += duration_cast<milliseconds>(high_resolution_clock::now() - m_renderTime);
-
-        if (m_renderFpsRecalc > milliseconds(1000))
-        {
-            int fps = m_renderFrames * 1000 / m_renderFpsRecalc.count();
-
-            // Report render time
-            wxCommandEvent event(REPORT_FPS);
-            event.SetInt(fps);
-            wxPostEvent(this, event);
-
-            m_renderFpsRecalc = milliseconds(0);
-        }
-    }
-}
-
-/* ************************************************************************ */
-
 void CanvasWidget::OnResize(wxSizeEvent& event)
 {
-    if (!(m_simulator && m_simulator->getWorld()))
+    if (!(m_simulator && m_simulator->getSimulation()))
     {
         event.Skip();
         return;
     }
 
-    auto size = m_simulator->getWorld()->getSize();
+    auto size = m_simulator->getSimulation()->getWorldSize();
 
     m_baseZoom = std::max(
         size.getWidth() / event.GetSize().GetWidth(),
         size.getHeight() / event.GetSize().GetHeight()
     );
 
-    auto& camera = m_renderer.getCamera();
+    auto& renderer = m_simulator->getRenderContext();
+    auto& camera = renderer.getCamera();
     auto zoom = camera.getZoom();
 
     zoom = std::min(std::max(0.05f * m_baseZoom, zoom), m_baseZoom);
@@ -258,7 +118,8 @@ void CanvasWidget::OnZoom(wxMouseEvent& event) noexcept
         return;
     }
 
-    auto& camera = m_renderer.getCamera();
+    auto& renderer = m_simulator->getRenderContext();
+    auto& camera = renderer.getCamera();
     auto zoom = camera.getZoom();
 
     zoom -= m_baseZoom * 0.001 * event.GetWheelRotation();
@@ -289,14 +150,15 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
     }
 
     // TODO: move camera
-    auto& camera = m_renderer.getCamera();
+    auto& renderer = m_simulator->getRenderContext();
+    auto& camera = renderer.getCamera();
     auto pos = camera.getPosition();
 
     // Change vector
     auto change = event.GetPosition() - m_dragStart;
 
-    pos.getX() += change.x;
-    pos.getY() -= change.y;
+    pos.x() += change.x;
+    pos.y() -= change.y;
 
     camera.setPosition(pos);
 
@@ -317,45 +179,82 @@ void CanvasWidget::OnMouseUp(wxMouseEvent& event)
 
 void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 {
-    wxASSERT(m_simulator);
-    auto* module = m_simulator->findModule<module::diffusion_streamlines::Module>();
+    // Nothing to do
+}
 
-    if (!module)
+/* ************************************************************************ */
+
+void CanvasWidget::Init()
+{
+    auto& renderer = m_simulator->getRenderContext();
+
+    if (renderer.isInit())
         return;
 
-    auto pos = module->getStreamlines().getMainCellPosition();
-    auto speed = module->getStreamlines().getFlowSpeed();
+    wxASSERT(m_simulator);
+    m_simulator->drawInit();
+}
 
-    bool pos_changed = false;
-    bool speed_changed = false;
+/* ************************************************************************ */
 
-    switch (event.GetKeyCode())
+void CanvasWidget::Render() noexcept
+{
+    if (!IsShown())
+        return;
+
+    wxASSERT(m_simulator);
+
+    auto& renderer = m_simulator->getRenderContext();
+    auto simulation = m_simulator->getSimulation();
+
+    // Set current context
+    SetCurrent(*m_context);
+
+    Init();
+
+    wxPaintDC dc(this);
+
+    renderer.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
+
+    if (simulation)
     {
-    default: break;
-    case 'W':
-    case 'w': pos.getY() += units::um(1); pos_changed = true; break;
-    case 'S':
-    case 's': pos.getY() -= units::um(1); pos_changed = true; break;
-    case 'A':
-    case 'a': pos.getX() -= units::um(1); pos_changed = true; break;
-    case 'D':
-    case 'd': pos.getX() += units::um(1); pos_changed = true; break;
-    case WXK_NUMPAD_ADD:
-    case '+': speed += 1; speed_changed = true; break;
-    case WXK_NUMPAD_SUBTRACT:
-    case '-': speed -= 1; speed_changed = true; break;
+        wxASSERT(m_mutex);
+        wxMutexLocker lock(*m_mutex);
+
+        // Draw simulation
+        simulation->draw(renderer);
     }
 
-    //if (speed < 0)
-    //    speed = 0;
+    renderer.frameEnd();
+    SwapBuffers();
 
-    if (pos_changed)
-        module->getStreamlines().setMainCellPosition(pos);
+    UpdateFps();
+}
 
-    if (speed_changed)
-        module->getStreamlines().setFlowSpeed(speed);
+/* ************************************************************************ */
 
-    Update();
+void CanvasWidget::UpdateFps() noexcept
+{
+    using namespace std::chrono;
+
+    // Increase a number of rendered frames
+    m_renderFrames++;
+
+    // Calculate time that takes to render time
+    // Even call to render function.
+    m_renderFpsRecalc += duration_cast<milliseconds>(high_resolution_clock::now() - m_renderTime);
+
+    if (m_renderFpsRecalc > milliseconds(1000))
+    {
+        int fps = m_renderFrames * 1000 / m_renderFpsRecalc.count();
+
+        // Report render time
+        wxCommandEvent event(REPORT_FPS);
+        event.SetInt(fps);
+        wxPostEvent(this, event);
+
+        m_renderFpsRecalc = milliseconds(0);
+    }
 }
 
 /* ************************************************************************ */

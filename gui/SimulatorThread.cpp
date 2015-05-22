@@ -6,11 +6,6 @@
 #include <wx/scopedptr.h>
 #include <wx/log.h>
 
-// Simulator
-#include "simulator/World.hpp"
-#include "modules/diffusion-streamlines/Module.hpp"
-#include "modules/diffusion/Generator.hpp"
-
 /* ************************************************************************ */
 
 wxDEFINE_EVENT(EVT_UPDATED, wxCommandEvent);
@@ -21,11 +16,8 @@ wxDEFINE_EVENT(EVT_LOG, wxCommandEvent);
 
 SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory)
     : m_handler(handler)
-    , m_worldFactory(factory)
+    , m_simulationFactory(factory)
 {
-    auto* module = m_simulator.createModule<module::diffusion_streamlines::Module>();
-    m_simulator.createModule<module::diffusion::Generator>(&module->getDiffusion());
-
     if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
     {
         wxLogError("Could not create the worker thread!");
@@ -84,8 +76,7 @@ void SimulatorThread::SendStart()
 
 void SimulatorThread::SendStep()
 {
-    //m_queue.Post({Message::STEP});
-    DoStep();
+    m_queue.Post({Message::STEP});
 }
 
 /* ************************************************************************ */
@@ -106,8 +97,7 @@ void SimulatorThread::SendRestart()
 
 void SimulatorThread::SendLoad(const wxString& code)
 {
-    //m_queue.Post({Message::LOAD, code});
-    DoLoad(code);
+    m_queue.Post({Message::LOAD, code});
 }
 
 /* ************************************************************************ */
@@ -191,7 +181,7 @@ void SimulatorThread::DoLoad(const wxString& code)
     try
     {
         // Create new world from source
-        m_simulator.setWorld(m_worldFactory->fromSource(code.To8BitData().data()));
+        m_simulator.setSimulation(m_simulationFactory->fromSource(code.To8BitData().data()));
     }
     catch (const std::exception& e)
     {

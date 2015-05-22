@@ -2,21 +2,21 @@
 
 project(gui)
 
-if (ENABLE_RENDER)
-    set(RENDER_LIBS GL GLU)
-    set(RENDER_DEP render)
-endif ()
-
 # wxWidgets
 find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
 include(${wxWidgets_USE_FILE})
 
-# PNG support
-find_package(PNG)
+# Image support
+find_package(ImageMagick COMPONENTS Magick++)
 
-if (PNG_FOUND)
-    message("-- PNG support enabled")
-    add_definitions(-DPNG_SUPPORT ${PNG_DEFINITIONS})
+if (ImageMagick_FOUND)
+    message("-- Image save support")
+
+    # Include directories
+    include_directories(${ImageMagick_INCLUDE_DIRS})
+
+    # Add definitions
+    add_definitions(-DENABLE_IMAGES=1)
 endif ()
 
 # Create program
@@ -31,35 +31,27 @@ add_executable(gui
     CanvasWidget.cpp
     SimulatorThread.hpp
     SimulatorThread.cpp
-    VectorCtrlBase.h
-    VectorIntCtrl.h
-    VectorIntCtrl.cpp
-    VectorFloatCtrl.h
-    VectorFloatCtrl.cpp
-    PngImage.h
-    PngImage.cpp
 )
+
+set(MODULES_LIBS "")
+
+foreach (MODULE ${MODULES})
+    set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
+endforeach ()
 
 # Link libraries
 target_link_libraries(gui
-    module-diffusion-streamlines
-    module-diffusion
-    module-streamlines
-    parser
+    ${MODULES_LIBS}
     simulator
-    core
-    ${RENDER_DEP}
-    ${RENDER_LIBS}
+    parser-xml
     ${wxWidgets_LIBRARIES}
-    ${PNG_LIBRARIES}
+    ${ImageMagick_LIBRARIES}
 )
 
 # Setup dependencies
 add_dependencies(gui
     simulator
-    parser
-    core
-    ${RENDER_DEP}
+    parser-xml
 )
 
 # ######################################################################### #

@@ -59,14 +59,13 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_menuView->AppendSeparator();
     
-    m_menuItemViewGrid = new wxMenuItem(m_menuView, wxID_ANY, _("Grid"), wxT(""), wxITEM_CHECK);
-    m_menuView->Append(m_menuItemViewGrid);
+    m_menuItemViewLog = new wxMenuItem(m_menuView, wxID_ANY, _("Log"), _("Show or hide log"), wxITEM_CHECK);
+    m_menuView->Append(m_menuItemViewLog);
+    m_menuItemViewLog->Check();
     
-    m_menuItemViewVelocity = new wxMenuItem(m_menuView, wxID_ANY, _("Velocity"), wxT(""), wxITEM_CHECK);
-    m_menuView->Append(m_menuItemViewVelocity);
-    
-    m_menuItemViewInterpolate = new wxMenuItem(m_menuView, wxID_ANY, _("Signal interpolation"), wxT(""), wxITEM_CHECK);
-    m_menuView->Append(m_menuItemViewInterpolate);
+    m_menuItemViewCode = new wxMenuItem(m_menuView, wxID_ANY, _("Code"), _("Show or hide simulation code"), wxITEM_CHECK);
+    m_menuView->Append(m_menuItemViewCode);
+    m_menuItemViewCode->Check();
     
     m_menuSimulation = new wxMenu();
     m_menuBar->Append(m_menuSimulation, _("&Simulation"));
@@ -106,24 +105,110 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_mainToolbar->AddTool(ID_RESTART, _("Restart"), wxXmlResource::Get()->LoadBitmap(wxT("restart-24")), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     m_mainToolbar->Realize();
     
-    wxBoxSizer* boxSizerMain = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* boxSizerMain = new wxBoxSizer(wxHORIZONTAL);
     this->SetSizer(boxSizerMain);
     
+    m_splitterMain = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxSP_3D);
+    m_splitterMain->SetSashGravity(0.8);
+    m_splitterMain->SetMinimumPaneSize(10);
+    
+    boxSizerMain->Add(m_splitterMain, 1, wxEXPAND, 5);
+    
+    m_splitterPageTop = new wxPanel(m_splitterMain, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    
+    wxBoxSizer* boxSizerTop = new wxBoxSizer(wxVERTICAL);
+    m_splitterPageTop->SetSizer(boxSizerTop);
+    
+    m_splitterTop = new wxSplitterWindow(m_splitterPageTop, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxSP_3D);
+    m_splitterTop->SetSashGravity(0.8);
+    m_splitterTop->SetMinimumPaneSize(10);
+    
+    boxSizerTop->Add(m_splitterTop, 1, wxLEFT|wxRIGHT|wxEXPAND, 5);
+    
+    m_splitterPageView = new wxPanel(m_splitterTop, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    
+    wxBoxSizer* boxSizerView = new wxBoxSizer(wxVERTICAL);
+    m_splitterPageView->SetSizer(boxSizerView);
+    
     int *m_glCanvasViewAttr = NULL;
-    m_glCanvasView = new CanvasWidget(this, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
+    m_glCanvasView = new CanvasWidget(m_splitterPageView, wxID_ANY, m_glCanvasViewAttr, wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
     wxDELETEA( m_glCanvasViewAttr );
     
-    boxSizerMain->Add(m_glCanvasView, 1, wxLEFT|wxRIGHT|wxEXPAND, 5);
+    boxSizerView->Add(m_glCanvasView, 1, wxEXPAND, 5);
+    
+    m_splitterPageCode = new wxPanel(m_splitterTop, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_splitterTop->SplitVertically(m_splitterPageView, m_splitterPageCode, 0);
+    
+    wxBoxSizer* boxSizerCode = new wxBoxSizer(wxVERTICAL);
+    m_splitterPageCode->SetSizer(boxSizerCode);
+    
+    m_stcCode = new wxStyledTextCtrl(m_splitterPageCode, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), 0);
+    // Configure the fold margin
+    m_stcCode->SetMarginType     (4, wxSTC_MARGIN_SYMBOL);
+    m_stcCode->SetMarginMask     (4, wxSTC_MASK_FOLDERS);
+    m_stcCode->SetMarginSensitive(4, true);
+    m_stcCode->SetMarginWidth    (4, 16);
+    
+    m_stcCode->SetProperty(wxT("fold"),wxT("1"));
+    m_stcCode->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_ARROWDOWN);
+    m_stcCode->MarkerDefine(wxSTC_MARKNUM_FOLDER,        wxSTC_MARK_ARROW);
+    m_stcCode->MarkerDefine(wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_BACKGROUND);
+    m_stcCode->MarkerDefine(wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_BACKGROUND);
+    m_stcCode->MarkerDefine(wxSTC_MARKNUM_FOLDEREND,     wxSTC_MARK_ARROW);
+    m_stcCode->MarkerDefine(wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_ARROWDOWN);
+    m_stcCode->MarkerDefine(wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_BACKGROUND);
+    // Configure the tracker margin
+    m_stcCode->SetMarginWidth(1, 0);
+    
+    // Configure the symbol margin
+    m_stcCode->SetMarginType (2, wxSTC_MARGIN_SYMBOL);
+    m_stcCode->SetMarginMask (2, ~(wxSTC_MASK_FOLDERS));
+    m_stcCode->SetMarginWidth(2, 0);
+    m_stcCode->SetMarginSensitive(2, true);
+    
+    // Configure the line numbers margin
+    int m_stcCode_PixelWidth = 4 + 5 *m_stcCode->TextWidth(wxSTC_STYLE_LINENUMBER, wxT("9"));
+    m_stcCode->SetMarginType(0, wxSTC_MARGIN_NUMBER);
+    m_stcCode->SetMarginWidth(0,m_stcCode_PixelWidth);
+    
+    // Configure the line symbol margin
+    m_stcCode->SetMarginType(3, wxSTC_MARGIN_FORE);
+    m_stcCode->SetMarginMask(3, 0);
+    m_stcCode->SetMarginWidth(3,0);
+    // Select the lexer
+    m_stcCode->SetLexer(wxSTC_LEX_XML);
+    // Set default font / styles
+    m_stcCode->StyleClearAll();
+    m_stcCode->SetWrapMode(0);
+    m_stcCode->SetIndentationGuides(0);
+    m_stcCode->SetKeyWords(0, wxT(""));
+    m_stcCode->SetKeyWords(1, wxT(""));
+    m_stcCode->SetKeyWords(2, wxT(""));
+    m_stcCode->SetKeyWords(3, wxT(""));
+    m_stcCode->SetKeyWords(4, wxT(""));
+    
+    boxSizerCode->Add(m_stcCode, 1, wxEXPAND, 5);
+    
+    m_splitterPageBottom = new wxPanel(m_splitterMain, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_splitterMain->SplitHorizontally(m_splitterPageTop, m_splitterPageBottom, 0);
+    
+    wxBoxSizer* boxSizerBottom = new wxBoxSizer(wxVERTICAL);
+    m_splitterPageBottom->SetSizer(boxSizerBottom);
+    
+    m_textCtrlLog = new wxTextCtrl(m_splitterPageBottom, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(-1,-1), wxTE_READONLY|wxTE_MULTILINE);
+    
+    boxSizerBottom->Add(m_textCtrlLog, 1, wxLEFT|wxRIGHT|wxEXPAND, 5);
     
     m_statusBar = new wxStatusBar(this, wxID_ANY, wxSTB_DEFAULT_STYLE);
     m_statusBar->SetFieldsCount(2);
     this->SetStatusBar(m_statusBar);
     
+    SetName(wxT("MainFrameBaseClass"));
     SetSizeHints(800,600);
     if ( GetSizer() ) {
          GetSizer()->Fit(this);
     }
-    Centre(wxBOTH);
+    CentreOnParent(wxBOTH);
     // Connect events
     this->Connect(m_menuItemFileNew->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileNew), NULL, this);
     this->Connect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
@@ -131,12 +216,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemFileSaveAs->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileSaveAs), NULL, this);
     this->Connect(m_menuItemFileExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItemViewReset->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewReset), NULL, this);
-    this->Connect(m_menuItemViewGrid->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewGrid), NULL, this);
-    this->Connect(m_menuItemViewGrid->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewGridUpdateUi), NULL, this);
-    this->Connect(m_menuItemViewVelocity->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewVelocity), NULL, this);
-    this->Connect(m_menuItemViewVelocity->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewVelocityUpdateUi), NULL, this);
-    this->Connect(m_menuItemViewInterpolate->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewInterpolate), NULL, this);
-    this->Connect(m_menuItemViewInterpolate->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewInterpolateUpdateUi), NULL, this);
+    this->Connect(m_menuItemViewLog->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewLogCheck), NULL, this);
+    this->Connect(m_menuItemViewLog->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewLogChecked), NULL, this);
+    this->Connect(m_menuItemViewCode->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewCodeCheck), NULL, this);
+    this->Connect(m_menuItemViewCode->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewCodeChecked), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Connect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
@@ -149,6 +232,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Connect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
+    m_stcCode->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnCodeUpdateUi), NULL, this);
     
 }
 
@@ -160,12 +244,10 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemFileSaveAs->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileSaveAs), NULL, this);
     this->Disconnect(m_menuItemFileExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItemViewReset->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewReset), NULL, this);
-    this->Disconnect(m_menuItemViewGrid->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewGrid), NULL, this);
-    this->Disconnect(m_menuItemViewGrid->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewGridUpdateUi), NULL, this);
-    this->Disconnect(m_menuItemViewVelocity->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewVelocity), NULL, this);
-    this->Disconnect(m_menuItemViewVelocity->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewVelocityUpdateUi), NULL, this);
-    this->Disconnect(m_menuItemViewInterpolate->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewInterpolate), NULL, this);
-    this->Disconnect(m_menuItemViewInterpolate->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewInterpolateUpdateUi), NULL, this);
+    this->Disconnect(m_menuItemViewLog->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewLogCheck), NULL, this);
+    this->Disconnect(m_menuItemViewLog->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewLogChecked), NULL, this);
+    this->Disconnect(m_menuItemViewCode->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewCodeCheck), NULL, this);
+    this->Disconnect(m_menuItemViewCode->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewCodeChecked), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Disconnect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
@@ -178,5 +260,6 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Disconnect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
+    m_stcCode->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnCodeUpdateUi), NULL, this);
     
 }

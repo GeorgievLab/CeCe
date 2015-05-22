@@ -16,8 +16,12 @@
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 #include <wx/sizer.h>
+#include <wx/splitter.h>
+#include <wx/panel.h>
 #include <wx/glcanvas.h>
-#include "CanvasWidget.h"
+#include "CanvasWidget.hpp"
+#include <wx/stc/stc.h>
+#include <wx/textctrl.h>
 #include <wx/statusbr.h>
 
 class MainFrameBaseClass : public wxFrame
@@ -43,9 +47,8 @@ protected:
     wxMenu* m_menuView;
     wxMenuItem* m_menuItemViewReset;
     wxMenuItem* m_menuItemViewSep1;
-    wxMenuItem* m_menuItemViewGrid;
-    wxMenuItem* m_menuItemViewVelocity;
-    wxMenuItem* m_menuItemViewInterpolate;
+    wxMenuItem* m_menuItemViewLog;
+    wxMenuItem* m_menuItemViewCode;
     wxMenu* m_menuSimulation;
     wxMenuItem* m_menuItemSimulationStart;
     wxMenuItem* m_menuItemSimulationStop;
@@ -56,7 +59,15 @@ protected:
     wxMenu* m_menuHelp;
     wxMenuItem* m_menuItemAbout;
     wxToolBar* m_mainToolbar;
+    wxSplitterWindow* m_splitterMain;
+    wxPanel* m_splitterPageTop;
+    wxSplitterWindow* m_splitterTop;
+    wxPanel* m_splitterPageView;
     CanvasWidget* m_glCanvasView;
+    wxPanel* m_splitterPageCode;
+    wxStyledTextCtrl* m_stcCode;
+    wxPanel* m_splitterPageBottom;
+    wxTextCtrl* m_textCtrlLog;
     wxStatusBar* m_statusBar;
 
 protected:
@@ -66,12 +77,10 @@ protected:
     virtual void OnFileSaveAs(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewReset(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnViewGrid(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnViewGridUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
-    virtual void OnViewVelocity(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnViewVelocityUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
-    virtual void OnViewInterpolate(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnViewInterpolateUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
+    virtual void OnViewLogCheck(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnViewLogChecked(wxUpdateUIEvent& event) { event.Skip(); }
+    virtual void OnViewCodeCheck(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnViewCodeChecked(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnSimulationStart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
@@ -80,12 +89,9 @@ protected:
     virtual void OnSimulationRestart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationScreenshot(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnCodeUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
 
 public:
-    wxMenuBar* GetMenuBar() { return m_menuBar; }
-    wxToolBar* GetMainToolbar() { return m_mainToolbar; }
-    CanvasWidget* GetGlCanvasView() { return m_glCanvasView; }
-    wxStatusBar* GetStatusBar() { return m_statusBar; }
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };

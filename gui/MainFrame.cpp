@@ -9,11 +9,11 @@
 #include <wx/txtstrm.h>
 
 // Simulator
-#include "parser/SimulationFactory.hpp"
+#include "parser-xml/SimulationFactory.hpp"
 
 // GUI
-#ifdef PNG_SUPPORT
-#include "PngImage.h"
+#if ENABLE_IMAGES
+#include <Magick++.h>
 #endif
 
 /* ************************************************************************ */
@@ -83,7 +83,8 @@ inline wxString wxToString(const wxSize& size)
 
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
-    , m_simulatorThread(m_glCanvasView, new parser::SimulationFactory())
+    , m_simulatorThread(m_glCanvasView, new parser::xml::SimulationFactory())
+    //, m_logRedirector(m_textCtrlLog)
 {
     m_fileHistory.UseMenu(m_menuFileRecent);
 
@@ -106,8 +107,8 @@ MainFrame::MainFrame(wxWindow* parent)
 
 MainFrame::~MainFrame()
 {
-    if (m_fileName.IsOk())
-        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
+    // Store current file
+    StoreCurrentFileToHistory();
 
     StoreConfig();
 }
@@ -164,8 +165,8 @@ void MainFrame::OnRenderTime(wxCommandEvent& evt)
 
 void MainFrame::OnFileNew(wxCommandEvent& event)
 {
-    if (m_fileName.IsOk())
-        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
+    // Store current file
+    StoreCurrentFileToHistory();
 
     m_fileName.Clear();
 }
@@ -186,6 +187,7 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
+    // Load file
     LoadFile(selection);
 }
 
@@ -210,7 +212,7 @@ void MainFrame::OnFileSave(wxCommandEvent& event)
         m_fileName = selection;
     }
 
-    // TODO save file
+    // TODO: save file
 }
 
 /* ************************************************************************ */
@@ -229,6 +231,8 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
+    // TODO: save file
+
     LoadFile(selection);
 }
 
@@ -236,15 +240,20 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
 
 void MainFrame::OnFileOpenRecent(wxCommandEvent& event)
 {
-    wxString selection = m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1);
-
-    LoadFile(selection);
+    LoadFile(m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1));
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationStart(wxCommandEvent& event)
 {
+    // Use current simulation code
+    if (m_stcCode->IsModified())
+    {
+        m_simulatorThread.SendLoad(m_stcCode->GetText());
+        m_stcCode->SetModified(false);
+    }
+
     // Start simulation
     m_simulatorThread.SendStart();
 }
@@ -288,8 +297,17 @@ void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
 
 void MainFrame::LoadFile(const wxFileName& path)
 {
-    if (m_fileName.IsOk())
-        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
+    if (!path.Exists())
+    {
+        wxMessageBox(wxString::Format(_("File '%s' not found!"), path.GetFullPath()),
+            wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this
+        );
+
+        return;
+    }
+
+    // Store last file
+    StoreCurrentFileToHistory();
 
     m_fileName = path;
 
@@ -301,9 +319,13 @@ void MainFrame::LoadFile(const wxFileName& path)
     while (input.IsOk() && !input.Eof())
     {
         code += text.ReadLine();
+        code += "\n";
     }
 
     LoadText(code);
+
+    // Load text to editor
+    m_stcCode->SetText(code);
 }
 
 /* ************************************************************************ */
@@ -336,6 +358,21 @@ void MainFrame::LoadConfig()
     }
 
     m_fileHistory.Load(*config);
+
+    // Get sash positions
+    int pos;
+    if (config->Read("sash-main", &pos))
+        m_splitterMain->SetSashPosition(pos);
+
+    if (config->Read("sash-top", &pos))
+        m_splitterTop->SetSashPosition(pos);
+
+    int flag;
+    if (config->Read("show-code", &flag) && !flag)
+        UnsplitCode();
+
+    if (config->Read("show-log", &flag) && !flag)
+        UnsplitLog();
 }
 
 /* ************************************************************************ */
@@ -353,6 +390,22 @@ void MainFrame::StoreConfig()
     }
 
     m_fileHistory.Save(*config);
+
+    // Store sash position
+    config->Write("sash-main", m_splitterMain->GetSashPosition());
+    config->Write("sash-top", m_splitterTop->GetSashPosition());
+
+    // Display flags
+    config->Write("show-code", m_menuItemViewCode->IsChecked());
+    config->Write("show-log", m_menuItemViewLog->IsChecked());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::StoreCurrentFileToHistory()
+{
+    if (m_fileName.IsOk())
+        m_fileHistory.AddFileToHistory(m_fileName.GetFullPath());
 }
 
 /* ************************************************************************ */
@@ -364,34 +417,7 @@ void MainFrame::OnViewReset(wxCommandEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnViewGrid(wxCommandEvent& event)
-{
-    m_glCanvasView->SetViewGrid(m_menuItemViewGrid->IsChecked());
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewVelocity(wxCommandEvent& event)
-{
-    m_glCanvasView->SetViewVelocity(m_menuItemViewVelocity->IsChecked());
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewGridUpdateUi(wxUpdateUIEvent& event)
-{
-    event.Check(m_glCanvasView->IsViewGrid());
-}
-
-/* ************************************************************************ */
-
-void MainFrame::OnViewVelocityUpdateUi(wxUpdateUIEvent& event)
-{
-    event.Check(m_glCanvasView->IsViewVelocity());
-}
-
-/* ************************************************************************ */
-
+#if ENABLE_IMAGES
 void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 {
     wxString selection = wxFileSelector(
@@ -406,30 +432,94 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
-    auto& renderer = m_glCanvasView->GetRenderer();
-
-    // Get image data
-    auto data = renderer.getData();
-#ifdef PNG_SUPPORT
-    if (!SavePNG(wxFileName::FileName(selection), data.first, data.second.getWidth(), data.second.getHeight()))
+}
 #endif
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewCodeCheck(wxCommandEvent& event)
+{
+    static int last_pos = 0;
+
+    if (!event.IsChecked())
     {
-        wxMessageBox("Unable to save image", wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this);
+        last_pos = UnsplitCode();
+    }
+    else
+    {
+        SplitCode(last_pos);
     }
 }
 
 /* ************************************************************************ */
 
-void MainFrame::OnViewInterpolate(wxCommandEvent& event)
+void MainFrame::OnViewCodeChecked(wxUpdateUIEvent& event)
 {
-    m_glCanvasView->SetViewInterpolation(m_menuItemViewInterpolate->IsChecked());
+    event.Check(m_splitterTop->IsSplit());
 }
 
 /* ************************************************************************ */
 
-void MainFrame::OnViewInterpolateUpdateUi(wxUpdateUIEvent& event)
+void MainFrame::OnViewLogCheck(wxCommandEvent& event)
 {
-    event.Check(m_glCanvasView->IsViewInterpolation());
+    static int last_pos = 0;
+
+    if (!event.IsChecked())
+    {
+        last_pos = UnsplitLog();
+    }
+    else
+    {
+        SplitLog(last_pos);
+    }
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnViewLogChecked(wxUpdateUIEvent& event)
+{
+    event.Check(m_splitterMain->IsSplit());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
+{
+    event.Enable(!m_simulatorThread.isRunning());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::SplitLog(int pos)
+{
+    m_splitterMain->SplitHorizontally(m_splitterPageTop, m_splitterPageBottom, pos);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::SplitCode(int pos)
+{
+    m_splitterTop->SplitVertically(m_splitterPageView, m_splitterPageCode, pos);
+}
+
+/* ************************************************************************ */
+
+int MainFrame::UnsplitLog()
+{
+    int pos = m_splitterMain->GetSashPosition();
+    m_splitterMain->Unsplit(m_splitterPageBottom);
+
+    return pos;
+}
+
+/* ************************************************************************ */
+
+int MainFrame::UnsplitCode()
+{
+    int pos = m_splitterTop->GetSashPosition();
+    m_splitterTop->Unsplit(m_splitterPageCode);
+
+    return pos;
 }
 
 /* ************************************************************************ */

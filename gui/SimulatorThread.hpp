@@ -9,10 +9,9 @@
 #include <wx/msgqueue.h>
 #include <wx/scopedptr.h>
 #include <wx/event.h>
-#include <wx/glcanvas.h>
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/SimulationFactory.hpp"
 #include "simulator/Simulator.hpp"
 
@@ -58,7 +57,7 @@ public:
      * @brief Constructor.
      *
      * @param handler Event handler.
-     * @param factory World factory.
+     * @param factory Simulation factory.
      */
     explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory);
 
@@ -214,7 +213,7 @@ private:
     bool m_running = false;
 
     /// World factory
-    wxScopedPtr<simulator::SimulationFactory> m_worldFactory;
+    wxScopedPtr<simulator::SimulationFactory> m_simulationFactory;
 
 };
 

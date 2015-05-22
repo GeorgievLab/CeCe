@@ -11,7 +11,7 @@
 #include "wxcrafter.h"
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/SimulationFactory.hpp"
 
@@ -49,13 +49,13 @@ public:
 
 
     /**
-     * @brief Returns current world.
+     * @brief Returns current simulation.
      *
      * @return
      */
-    simulator::World* GetWorld() const noexcept
+    simulator::Simulation* GetSimulation() const noexcept
     {
-        return m_glCanvasView->GetWorld();
+        return m_glCanvasView->GetSimulation();
     }
 
 
@@ -104,14 +104,16 @@ public:
 
 
 protected:
-    virtual void OnViewInterpolate(wxCommandEvent& event);
-    virtual void OnViewInterpolateUpdateUi(wxUpdateUIEvent& event);
-    virtual void OnSimulationScreenshot(wxCommandEvent& event);
+    void OnCodeUpdateUi(wxUpdateUIEvent& event) override;
+    void OnViewCodeCheck(wxCommandEvent& event) override;
+    void OnViewCodeChecked(wxUpdateUIEvent& event) override;
+    void OnViewLogCheck(wxCommandEvent& event) override;
+    void OnViewLogChecked(wxUpdateUIEvent& event) override;
 
-    void OnViewGridUpdateUi(wxUpdateUIEvent& event) override;
-    void OnViewVelocityUpdateUi(wxUpdateUIEvent& event) override;
-    void OnViewGrid(wxCommandEvent& event) override;
-    void OnViewVelocity(wxCommandEvent& event) override;
+#if ENABLE_IMAGES
+    void OnSimulationScreenshot(wxCommandEvent& event) override;
+#endif
+
     void OnViewReset(wxCommandEvent& event) override;
 
     void OnSimulationStart(wxCommandEvent& event) override;
@@ -159,6 +161,40 @@ public:
     void StoreConfig();
 
 
+    /**
+     * @brief Save current file into history list.
+     */
+    void StoreCurrentFileToHistory();
+
+
+    /**
+     * @brief Split log splitter.
+     */
+    void SplitLog(int pos);
+
+
+    /**
+     * @brief Split code splitter.
+     */
+    void SplitCode(int pos);
+
+
+    /**
+     * @brief Unsplit log splitter.
+     *
+     * @return Sash position.
+     */
+    int UnsplitLog();
+
+
+    /**
+     * @brief Unsplit code splitter.
+     *
+     * @return Sash position.
+     */
+    int UnsplitCode();
+
+
 // Private Data Members
 private:
 
@@ -171,8 +207,8 @@ private:
     /// File history
     wxFileHistory m_fileHistory;
 
-    /// Flag when source is changed.
-    bool m_sourceChanged = false;
+    /// Log redirector
+    //wxStreamToTextRedirector m_logRedirector;
 };
 
 /* ************************************************************************ */

@@ -23,24 +23,22 @@
     <File Name="wxcrafter_bitmaps.cpp"/>
     <File Name="CanvasWidget.cpp"/>
     <File Name="SimulatorThread.cpp"/>
-    <File Name="VectorFloatCtrl.cpp"/>
-    <File Name="VectorIntCtrl.cpp"/>
-    <File Name="PngImage.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>
     <File Name="wxcrafter.h"/>
-    <File Name="CanvasWidget.h"/>
     <File Name="SimulatorThread.hpp"/>
-    <File Name="VectorIntCtrl.h"/>
-    <File Name="VectorFloatCtrl.h"/>
-    <File Name="VectorCtrlBase.h"/>
-    <File Name="PngImage.h"/>
+    <File Name="CanvasWidget.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="simulator"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -63,6 +61,7 @@
     <Configuration Name="Debug" CompilerType="clang++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cflags --debug)" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <Preprocessor Value="ENABLE_IMAGES=1"/>
       </Compiler>
       <Linker Options="$(shell wx-config --libs core,base,stc,gl,adv,xrc --debug)" Required="yes">
         <LibraryPath Value="../javascript/Debug"/>
@@ -96,7 +95,7 @@
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="yes">
+      <Completion EnableCpp11="yes" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -135,7 +134,7 @@
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -143,9 +142,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="simulator"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

@@ -13,11 +13,8 @@
 #include <wx/timer.h>
 
 // Simulator
-#include "simulator/World.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Simulator.hpp"
-
-// Render
-#include "render/Context.hpp"
 
 /* ************************************************************************ */
 
@@ -40,6 +37,15 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param parent
+     * @param id
+     * @param attribList
+     * @param pos
+     * @param size
+     * @param style
+     * @param name
+     * @param palette
      */
     CanvasWidget(wxWindow* parent, wxWindowID id = wxID_ANY,
                  const int* attribList = nullptr,
@@ -58,68 +64,22 @@ public:
      *
      * @return
      */
-    wxGLContext* getContext() const noexcept
+    wxGLContext* GetContext() const noexcept
     {
         return m_context.get();
     }
 
 
     /**
-     * @brief Returns current world.
+     * @brief Returns current simulation.
      *
      * @return
      */
-    simulator::World* GetWorld() const noexcept
+    simulator::Simulation* GetSimulation() const noexcept
     {
         assert(m_simulator);
-        return m_simulator->getWorld();
+        return m_simulator->getSimulation();
     }
-
-
-    /**
-     * @brief Returns renderer.
-     *
-     * @return
-     */
-    render::Context& GetRenderer() noexcept
-    {
-        return m_renderer;
-    }
-
-
-    /**
-     * @brief Returns renderer.
-     *
-     * @return
-     */
-    const render::Context& GetRenderer() const noexcept
-    {
-        return m_renderer;
-    }
-
-
-    /**
-     * @brief If grid is rendered.
-     *
-     * @return
-     */
-    bool IsViewGrid() const noexcept;
-
-
-    /**
-     * @brief If velocity is rendered.
-     *
-     * @param flag
-     */
-    bool IsViewVelocity() const noexcept;
-
-
-    /**
-     * @brief If interpolation is enabled.
-     *
-     * @param flag
-     */
-    bool IsViewInterpolation() const noexcept;
 
 
 // Public Mutators
@@ -129,7 +89,8 @@ public:
     /**
      * @brief Set current simulator.
      *
-     * @return
+     * @param simulator Pointer to simulator.
+     * @param mutex
      */
     void SetSimulator(simulator::Simulator* simulator, wxMutex* mutex) noexcept
     {
@@ -138,32 +99,9 @@ public:
     }
 
 
-    /**
-     * @brief Show or hide grid render.
-     *
-     * @param flag
-     */
-    void SetViewGrid(bool flag) noexcept;
-
-
-    /**
-     * @brief Show or hide velocity render.
-     *
-     * @param flag
-     */
-    void SetViewVelocity(bool flag) noexcept;
-
-
-    /**
-     * @brief Enable or disable signal interpolation.
-     *
-     * @param flag
-     */
-    void SetViewInterpolation(bool flag) noexcept;
-
-
 // Public Operations
 public:
+
 
     /**
      * @brief Update view.
@@ -177,8 +115,14 @@ public:
     void ViewReset() noexcept;
 
 
+// Public Event Handlers
+public:
+
+
     /**
      * @brief On paint event.
+     *
+     * @param event
      */
     void OnPaint(wxPaintEvent& WXUNUSED(event))
     {
@@ -188,6 +132,8 @@ public:
 
     /**
      * @brief On resize event.
+     *
+     * @param event
      */
     void OnResize(wxSizeEvent& event);
 
@@ -267,15 +213,21 @@ protected:
 
 
     /**
-     * @brief Setup projection matrix.
+     * @brief Initialize OpenGL.
      */
-    void SetupProjection() noexcept;
+    void Init();
 
 
     /**
      * @brief Render content.
      */
     void Render() noexcept;
+
+
+    /**
+     * @brief Update render FPS.
+     */
+    void UpdateFps() noexcept;
 
 
 // Private Data Members
@@ -288,13 +240,10 @@ private:
     wxTimer m_timer;
 
     /// Simulator pointer.
-    simulator::Simulator* m_simulator;
+    simulator::Simulator* m_simulator = nullptr;
 
     /// Simulator mutex.
-    wxMutex* m_mutex;
-
-    /// Render context.
-    render::Context m_renderer;
+    wxMutex* m_mutex = nullptr;
 
     /// Position of dragging start.
     wxPoint m_dragStart;
@@ -307,9 +256,6 @@ private:
 
     /// Time from last FPS recalculation.
     std::chrono::milliseconds m_renderFpsRecalc;
-
-    /// Unable to render due an error.
-    bool m_error = false;
 
     /// Base zoom.
     float m_baseZoom = 1.f;
