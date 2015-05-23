@@ -19,6 +19,7 @@
 #endif
 
 // Simulator
+#include "core/args.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
@@ -101,6 +102,9 @@ int main(int argc, char** argv)
     {
         error("not enough arguments: <desc.xml>");
     }
+
+    // Init arguments
+    core::init_args(argc, argv);
 
 #if ENABLE_RENDER
     glutInit(&argc, argv);

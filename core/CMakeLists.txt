@@ -16,6 +16,8 @@ endif ()
 # Create library
 add_library(${PROJECT_NAME} OBJECT
     constants.hpp
+    args.hpp
+    args.cpp
     Matrix.hpp
     Units.hpp
     Vector.hpp

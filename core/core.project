@@ -31,6 +31,7 @@
     <File Name="Log.cpp"/>
     <File Name="TimeMeasurement.cpp"/>
     <File Name="Grid.cpp"/>
+    <File Name="args.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
@@ -42,6 +43,7 @@
     <File Name="VectorUnits.hpp"/>
     <File Name="TimeMeasurement.hpp"/>
     <File Name="Grid.hpp"/>
+    <File Name="args.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
