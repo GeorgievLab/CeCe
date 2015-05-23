@@ -308,9 +308,13 @@ void Context::deleteObject(const Object* obj)
         return ptr.get() == obj;
     });
 
-    // Move object
-    m_releasedObjects.push_back(std::move(*it));
-    m_objects.erase(it);
+    // Not found
+    if (it != end(m_objects))
+    {
+        // Move object
+        m_releasedObjects.push_back(std::move(*it));
+        m_objects.erase(it);
+    }
 }
 
 /* ************************************************************************ */
