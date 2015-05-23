@@ -64,6 +64,9 @@ bool Simulator::update()
 #if ENABLE_RENDER
 void Simulator::draw(unsigned width, unsigned height)
 {
+    // Delete old object
+    m_renderContext.deleteReleasedObjects();
+
     m_renderContext.frameBegin(width, height);
 
     assert(m_simulation);
