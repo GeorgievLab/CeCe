@@ -113,6 +113,24 @@ public:
     }
 
 
+    /**
+     * @brief Change current simulation. The old simulation is returned.
+     *
+     * @note This is handy in case the deletion of simulation is context
+     * dependent.
+     *
+     * @param simulation New simulation.
+     */
+    std::unique_ptr<Simulation> setAndGetSimulation(std::unique_ptr<Simulation> simulation) noexcept
+    {
+        // Swap simulations
+        std::swap(m_simulation, simulation);
+
+        // Return the old one
+        return simulation;
+    }
+
+
 // Public Operations
 public:
 
