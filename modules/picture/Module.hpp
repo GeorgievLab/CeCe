@@ -1,11 +1,10 @@
 
 #pragma once
 
-#if !ENABLE_RENDER
-#error Unable to build module without ENABLE_RENDER
-#endif
-
 /* ************************************************************************ */
+
+// Magick++
+#include <Magick++.h>
 
 // Simulator
 #include "simulator/Module.hpp"
@@ -33,12 +32,6 @@ public:
      * @brief Constructor.
      */
     Module();
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Module();
 
 
 // Public Accessors
@@ -107,6 +100,15 @@ public:
 
 
     /**
+     * @brief Update module state.
+     *
+     * @param dt         Simulation time step.
+     * @param simulation
+     */
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
+
+
+    /**
      * @brief Render module.
      *
      * @param context
@@ -124,6 +126,9 @@ private:
 
     /// Save image each n-th step.
     unsigned int m_eachStep = 1;
+
+    /// Last image.
+    Magick::Image m_image;
 
 };
 

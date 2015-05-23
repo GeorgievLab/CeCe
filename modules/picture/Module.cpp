@@ -2,10 +2,8 @@
 // Declaration
 #include "Module.hpp"
 
-// Magick++
-#include <Magick++.h>
-
 // Simulation
+#include "core/args.hpp"
 #include "core/Log.hpp"
 #include "simulator/Simulation.hpp"
 #include "parser/Parser.hpp"
@@ -19,14 +17,10 @@ namespace picture {
 
 Module::Module()
 {
-    //InitializeMagick(*argv);
-}
-
-/* ************************************************************************ */
-
-Module::~Module()
-{
-
+    if (!args.empty())
+        Magick::InitializeMagick(args[0].c_str());
+    else
+        Log::warning("Variable args is empty");
 }
 
 /* ************************************************************************ */
@@ -50,12 +44,12 @@ void Module::configure(const simulator::ConfigurationBase& config)
 
 /* ************************************************************************ */
 
-void Module::draw(render::Context& context, const simulator::Simulation& simulation)
+void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     const auto stepNumber = simulation.getStepNumber();
 
     // Skip first image, because it's not rendered yet
-    if (stepNumber == 0)
+    if (stepNumber <= 1)
         return;
 
     // Skip steps
@@ -69,28 +63,40 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     if (pos != std::string::npos)
         filename.replace(pos, 2, std::to_string(stepNumber));
 
+    // Write image
+    m_image.write(filename);
+
+    Log::info("Image saved: ", filename);
+}
+
+/* ************************************************************************ */
+
+void Module::draw(render::Context& context, const simulator::Simulation& simulation)
+{
+    // Skip first image, because it's not rendered yet
+    if (simulation.getStepNumber() == 0)
+        return;
+
     // Get pixel data
     auto data = context.getData();
     const auto& imageData = data.first;
     auto imageSize = data.second;
 
-    Magick::Image img(Magick::Geometry(imageSize.getWidth(), imageSize.getHeight()));
+    // Create image
+    m_image = Magick::Image(Magick::Geometry(imageSize.getWidth(), imageSize.getHeight()));
 
     for (unsigned i = 0; i < imageSize.getWidth(); ++i)
     {
         for (unsigned j = 0; j < imageSize.getHeight(); ++j)
         {
             auto base = 3 * (i + imageSize.getWidth() * j);
-            img.pixelColor(i, j, Magick::ColorRGB(
+            m_image.pixelColor(i, j, Magick::ColorRGB(
                 imageData[base] / 255.f,
                 imageData[base + 1] / 255.f,
                 imageData[base + 2] / 255.f
             ));
         }
     }
-
-    // Write image
-    img.write(filename);
 }
 
 /* ************************************************************************ */
