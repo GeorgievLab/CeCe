@@ -95,6 +95,7 @@ MainFrame::MainFrame(wxWindow* parent)
     // Bind events
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
     Bind(EVT_ERROR, &MainFrame::OnSimulationError, this);
+    Bind(EVT_OLD_SIMULATION, &MainFrame::OnOldSimulation, this);
     Bind(REPORT_FPS, &MainFrame::OnRenderTime, this);
 
     // Load configuration
@@ -258,12 +259,6 @@ void MainFrame::OnViewLogChecked(wxUpdateUIEvent& event)
     event.Check(m_splitterMain->IsSplit());
 }
 
-/* ************************************************************************ */
-
-void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
-{
-    event.Enable(!m_simulatorThread.isRunning());
-}
 
 /* ************************************************************************ */
 
@@ -299,7 +294,10 @@ void MainFrame::OnSimulationStep(wxCommandEvent& event)
 
 void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 {
-    // TODO: restart
+    wxASSERT(m_stcCode);
+
+    // Reload source
+    LoadText(m_stcCode->GetText());
 }
 
 /* ************************************************************************ */
@@ -363,6 +361,21 @@ void MainFrame::OnRenderTime(wxCommandEvent& event)
 {
     wxASSERT(m_statusBar);
     m_statusBar->SetStatusText(wxString::Format("%d FPS", event.GetInt()), 1);
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
+{
+    event.Enable(!m_simulatorThread.isRunning());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnOldSimulation(wxCommandEvent& event)
+{
+    wxASSERT(event.GetClientData());
+    m_glCanvasView->SetOldSimulation(static_cast<simulator::Simulation*>(event.GetClientData()));
 }
 
 /* ************************************************************************ */

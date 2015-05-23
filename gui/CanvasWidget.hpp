@@ -6,6 +6,8 @@
 // C++
 #include <cassert>
 #include <chrono>
+#include <memory>
+#include <vector>
 
 // wxWidgets
 #include <wx/scopedptr.h>
@@ -96,6 +98,17 @@ public:
     {
         m_simulator = simulator;
         m_mutex = mutex;
+    }
+
+
+    /**
+     * @brief Set old simulation to be deleted in render function.
+     *
+     * @param simulation Pointer to simulation to delete.
+     */
+    void SetOldSimulation(simulator::Simulation* simulation) noexcept
+    {
+        m_oldSimulations.emplace_back(simulation);
     }
 
 
@@ -230,14 +243,18 @@ private:
     // GL canvas.
     wxScopedPtr<wxGLContext> m_context;
 
-    // Redraw timer.
-    wxTimer m_timer;
-
     /// Simulator pointer.
     simulator::Simulator* m_simulator = nullptr;
 
+    /// A pointer to old simulation. Destoying the old one requires to be
+    /// happend in render function.
+    std::vector<std::unique_ptr<simulator::Simulation>> m_oldSimulations;
+
     /// Simulator mutex.
     wxMutex* m_mutex = nullptr;
+
+    // Redraw timer.
+    wxTimer m_timer;
 
     /// Position of dragging start.
     wxPoint m_dragStart;

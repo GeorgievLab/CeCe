@@ -19,6 +19,7 @@
 /* ************************************************************************ */
 
 wxDECLARE_EVENT(EVT_ERROR, wxCommandEvent);
+wxDECLARE_EVENT(EVT_OLD_SIMULATION, wxCommandEvent);
 
 /* ************************************************************************ */
 

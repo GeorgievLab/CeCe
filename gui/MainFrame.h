@@ -233,11 +233,19 @@ protected:
 
 
     /**
-     * @brief Update UI of source code witget.
+     * @brief Update UI of source code widtget.
      *
      * @param event
      */
     void OnCodeUpdateUi(wxUpdateUIEvent& event) override;
+
+
+    /**
+     * @brief Accept old simulation to delete.
+     *
+     * @param event
+     */
+    void OnOldSimulation(wxCommandEvent& event);
 
 
 // Public Operations

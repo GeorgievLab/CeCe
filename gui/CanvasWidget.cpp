@@ -58,6 +58,9 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
 
     // Start timer
     m_timer.Start(1000 / 60);
+
+    // Reserve memory
+    m_oldSimulations.reserve(2);
 }
 
 /* ************************************************************************ */
@@ -186,6 +189,11 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 
 void CanvasWidget::Render() noexcept
 {
+    static bool s_error = false;
+
+    if (s_error)
+        return;
+
     if (!IsShown())
         return;
 
@@ -195,6 +203,9 @@ void CanvasWidget::Render() noexcept
     // Set current context
     SetCurrent(*m_context);
 
+    // Delete old simulations
+    m_oldSimulations.clear();
+
     // Initialize drawing
     if (!m_simulator->isDrawInitialized())
         m_simulator->drawInit();
@@ -203,10 +214,22 @@ void CanvasWidget::Render() noexcept
 
     if (m_simulator->getSimulation())
     {
-        wxMutexLocker lock(*m_mutex);
-
         // Draw simulation
-        m_simulator->draw(GetSize().GetWidth(), GetSize().GetHeight());
+        try
+        {
+            wxMutexLocker lock(*m_mutex);
+
+            // Draw simulation
+            m_simulator->draw(GetSize().GetWidth(), GetSize().GetHeight());
+        }
+        catch (const std::exception& e)
+        {
+            wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
+            event->SetString(e.what());
+            wxQueueEvent(GetParent(), event.release());
+            s_error = true;
+            wxExit();
+        }
     }
 
     // Swap front and back buffer
@@ -231,7 +254,7 @@ void CanvasWidget::UpdateFps() noexcept
 
     if (m_renderFpsRecalc > milliseconds(1000))
     {
-        int fps = m_renderFrames * 1000 / m_renderFpsRecalc.count();
+        int fps = m_renderFrames * 1000.f / m_renderFpsRecalc.count();
 
         // Report render time
         wxCommandEvent event(REPORT_FPS);
@@ -239,6 +262,7 @@ void CanvasWidget::UpdateFps() noexcept
         wxPostEvent(this, event);
 
         m_renderFpsRecalc = milliseconds(0);
+        m_renderFrames = 0;
     }
 
     m_renderTime = high_resolution_clock::now();
