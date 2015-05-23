@@ -18,6 +18,16 @@ inline namespace core {
 class Log
 {
 
+// Private Types
+private:
+
+
+    /**
+     * @brief End of Line marker.
+     */
+    struct eol_t {};
+
+
 // Public Mutators
 public:
 
@@ -56,7 +66,7 @@ public:
     template<typename... Args>
     static void info(Args&&... args)
     {
-        message(m_output, std::forward<Args>(args)..., "\n");
+        message(m_output, std::forward<Args>(args)..., eol_t{});
     }
 
 
@@ -69,7 +79,7 @@ public:
     static void debug(Args&&... args)
     {
 #ifndef NDEBUG
-        message(m_output, "DEBUG: ", std::forward<Args>(args)..., "\n");
+        message(m_output, "DEBUG: ", std::forward<Args>(args)..., eol_t{});
 #endif
     }
 
@@ -82,7 +92,7 @@ public:
     template<typename... Args>
     static void warning(Args&&... args)
     {
-        message(m_output, "WARNING: ", std::forward<Args>(args)..., "\n");
+        message(m_output, "WARNING: ", std::forward<Args>(args)..., eol_t{});
     }
 
 
@@ -94,7 +104,7 @@ public:
     template<typename... Args>
     static void error(Args&&... args)
     {
-        message(m_error, "ERROR: ", std::forward<Args>(args)..., "\n");
+        message(m_error, "ERROR: ", std::forward<Args>(args)..., eol_t{});
     }
 
 
@@ -108,6 +118,16 @@ private:
     static void message(std::ostream* os)
     {
         // Nothing to do
+    }
+
+
+    /**
+     * @brief Log message - EOL.
+     */
+    static void message(std::ostream* os, eol_t)
+    {
+        if (os)
+            *os << std::endl;
     }
 
 

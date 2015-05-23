@@ -17,6 +17,7 @@
 
 // GUI
 #include "gui/SimulatorThread.hpp"
+#include "gui/Logger.hpp"
 
 /* ************************************************************************ */
 
@@ -233,9 +234,9 @@ protected:
     /**
      * @brief Handle event reporting render time.
      *
-     * @param evt
+     * @param event
      */
-    void OnRenderTime(wxCommandEvent& evt);
+    void OnRenderTime(wxCommandEvent& event);
 
 
     /**
@@ -244,6 +245,14 @@ protected:
      * @param event
      */
     void OnCodeUpdateUi(wxUpdateUIEvent& event) override;
+
+
+    /**
+     * @brief Log message
+     *
+     * @param event
+     */
+    void OnLogMessage(wxCommandEvent& event) noexcept;
 
 
 // Public Operations
@@ -324,8 +333,8 @@ private:
     /// File history
     wxFileHistory m_fileHistory;
 
-    /// Log redirector
-    //wxStreamToTextRedirector m_logRedirector;
+    /// Logger.
+    Logger m_logger;
 };
 
 /* ************************************************************************ */

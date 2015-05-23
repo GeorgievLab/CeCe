@@ -36,6 +36,8 @@ add_executable(gui
     CanvasWidget.cpp
     SimulatorThread.hpp
     SimulatorThread.cpp
+    Logger.hpp
+    Logger.cpp
 )
 
 set(MODULES_LIBS "")

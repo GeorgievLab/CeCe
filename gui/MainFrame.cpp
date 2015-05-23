@@ -9,6 +9,7 @@
 #include <wx/txtstrm.h>
 
 // Simulator
+#include "core/Log.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 
 // GUI
@@ -84,8 +85,12 @@ inline wxString wxToString(const wxSize& size)
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
     , m_simulatorThread(m_glCanvasView, new parser::xml::SimulationFactory())
-    //, m_logRedirector(m_textCtrlLog)
+    , m_logger(this)
 {
+    // Register logger into Log
+    Log::setOutput(&m_logger);
+    Log::setError(&m_logger);
+
     m_fileHistory.UseMenu(m_menuFileRecent);
 
     // Set simulator
@@ -96,6 +101,7 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
     Bind(EVT_ERROR, &MainFrame::OnSimulationError, this);
     Bind(REPORT_FPS, &MainFrame::OnRenderTime, this);
+    Bind(EVT_LOG, &MainFrame::OnLogMessage, this);
 
     // Load configuration
     LoadConfig();
@@ -115,6 +121,9 @@ MainFrame::~MainFrame()
 
     // Store configuration
     StoreConfig();
+
+    Log::setOutput(&std::cout);
+    Log::setError(&std::cerr);
 }
 
 /* ************************************************************************ */
@@ -267,6 +276,7 @@ void MainFrame::OnSimulationStart(wxCommandEvent& event)
     wxASSERT(m_stcCode);
     if (m_stcCode->IsModified())
     {
+        m_textCtrlLog->Clear();
         m_simulatorThread.SendLoad(m_stcCode->GetText());
         m_stcCode->SetModified(false);
     }
@@ -379,6 +389,14 @@ void MainFrame::OnRenderTime(wxCommandEvent& event)
 void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
 {
     event.Enable(!m_simulatorThread.isRunning());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnLogMessage(wxCommandEvent& event) noexcept
+{
+    // Append text
+    m_textCtrlLog->AppendText(event.GetString());
 }
 
 /* ************************************************************************ */
