@@ -104,11 +104,11 @@ void GridColor::resize(Vector<PositionType> size)
     const auto width = getSize().getWidth();
     const auto height = getSize().getHeight();
 
-    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_FLOAT, nullptr));
-
     // Resize color grid
     m_colors.resize(getSize());
+
+    gl(glBindTexture(GL_TEXTURE_2D, m_texture));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_FLOAT, m_colors.getData()));
 }
 
 /* ************************************************************************ */
@@ -118,7 +118,7 @@ void GridColor::clear(const Color& color)
     for (auto& c : m_colors)
         c = color;
 
-    sync();
+    m_colorsUpdated = true;
 }
 
 /* ************************************************************************ */

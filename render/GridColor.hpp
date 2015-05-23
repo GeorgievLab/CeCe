@@ -30,19 +30,6 @@ class GridColor : public GridBase
 {
 
 
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~GridColor()
-    {
-        assert(!isInitialized());
-    }
-
-
 // Public Operators
 public:
 
