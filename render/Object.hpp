@@ -4,6 +4,7 @@
 /* ************************************************************************ */
 
 // C++
+#include <cassert>
 #include <utility>
 
 // Simulator
@@ -142,6 +143,7 @@ public:
      */
     T& operator*() const noexcept
     {
+        assert(m_ptr);
         return *m_ptr;
     }
 
@@ -153,6 +155,7 @@ public:
      */
     T* operator->() const noexcept
     {
+        assert(m_ptr);
         return m_ptr;
     }
 
@@ -195,7 +198,7 @@ public:
      */
     void release()
     {
-        m_ptr->release();
+        if (m_ptr) m_ptr->release();
     }
 
 
