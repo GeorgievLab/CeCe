@@ -169,6 +169,21 @@ private:
     /// Signal grid used for updating.
     SignalGrid m_gridBack;
 
+    /// Background color.
+    render::Color m_background = render::colors::BLACK;
+
+    /// Signal colors.
+    std::vector<render::Color> m_colors{{
+        render::colors::CYAN,
+        render::colors::MAGENTA,
+        render::colors::YELLOW,
+        render::colors::BLUE,
+        render::colors::RED,
+        render::colors::GREEN,
+        render::Color{1, 0.894f, 0.769f}
+    }};
+
+
 #if ENABLE_RENDER
     /// Drawable signal grid
     render::ObjectPtr<SignalGridDrawable> m_drawable;

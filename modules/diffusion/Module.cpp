@@ -160,14 +160,14 @@ void Module::configure(const simulator::ConfigurationBase& config)
 
 #if ENABLE_RENDER
     config.callIfSetString("background", [this](const std::string& value) {
-        m_drawable->setBackground(parser::parse_color(value));
+        m_background = parser::parse_color(value);
     });
 
     config.callIfSetString("colors", [this](const std::string& value) {
         const auto colors = parser::parse_array<render::Color, Signal::COUNT>(value, parser::parse_color);
 
         for (unsigned int i = 0; i < Signal::COUNT; ++i)
-            m_drawable->setColor(i, colors[i]);
+            m_colors[i] = colors[i];
     });
 #endif
 }
@@ -181,6 +181,12 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         m_drawable.create(context, m_grid.getSize(), m_grid.getData());
     else
         m_drawable->update(m_grid.getData());
+
+    // TODO: optimize
+    m_drawable->setBackground(m_background);
+
+    for (unsigned int i = 0; i < Signal::COUNT; ++i)
+        m_drawable->setColor(i, m_colors[i]);
 
     m_drawable->draw(simulation.getWorldSize());
 }
