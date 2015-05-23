@@ -33,6 +33,8 @@ add_library(${PROJECT_NAME} OBJECT
     errors.cpp
     Context.hpp
     Context.cpp
+    Object.hpp
+    Object.cpp
     Camera.hpp
     Camera.cpp
     Buffer.hpp

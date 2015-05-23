@@ -20,7 +20,7 @@ namespace render {
 
 /* ************************************************************************ */
 
-void Buffer::init(Context& context)
+Buffer::Buffer(Context& context)
 {
     // Generate buffer
     gl(glGenBuffers(1, &m_id));
@@ -29,18 +29,16 @@ void Buffer::init(Context& context)
 
 /* ************************************************************************ */
 
-void Buffer::init(Context& context, SizeType size, const void* data)
+Buffer::Buffer(Context& context, SizeType size, const void* data)
+    : Buffer(context)
 {
-    // Generate buffer
-    init(context);
-
     // Init data
     resize(size, data);
 }
 
 /* ************************************************************************ */
 
-void Buffer::release()
+Buffer::~Buffer()
 {
     assert(isInitialized());
     gl(glDeleteBuffers(1, &m_id));

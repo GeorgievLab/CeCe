@@ -30,10 +30,9 @@ namespace render {
 
 /* ************************************************************************ */
 
-void GridVector::init(Context& context, Vector<unsigned int> size, const Vector<float>* data)
+GridVector::GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data)
+    : m_buffer(context)
 {
-    m_buffer.init(context);
-
     resize(size, data);
 }
 

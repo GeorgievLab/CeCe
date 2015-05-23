@@ -24,16 +24,21 @@ class Context;
 class Grid : public GridBase
 {
 
-// Public Operators
+
+// Public Ctors & Dtors
 public:
 
 
     /**
-     * @brief Initialize.
+     * @brief Constructor.
      *
      * @param context Rendering context.
      */
-    void init(Context& context);
+    explicit Grid(Context& context);
+
+
+// Public Operators
+public:
 
 
     /**

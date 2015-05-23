@@ -30,6 +30,28 @@ class GridColor : public GridBase
 {
 
 
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     */
+    explicit GridColor(Context& context);
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     * @param size
+     */
+    GridColor(Context& context, Vector<PositionType> size);
+
+
 // Public Operators
 public:
 
@@ -127,23 +149,6 @@ public:
 
 
     /**
-     * @brief Initialize.
-     *
-     * @param context Rendering context.
-     */
-    void init(Context& context);
-
-
-    /**
-     * @brief Initialize.
-     *
-     * @param context Rendering context.
-     * @param size
-     */
-    void init(Context& context, Vector<PositionType> size);
-
-
-    /**
      * @brief Render at current position.
      *
      * @param context Rendering context.
@@ -173,16 +178,6 @@ public:
     void sync();
 
 
-    /**
-     * @brief Release.
-     */
-    void release()
-    {
-        //m_texture.release();
-        m_buffer.release();
-    }
-
-
 // Private Data Members
 private:
 
@@ -197,6 +192,7 @@ private:
 
     /// If colors were updated.
     bool m_colorsUpdated = false;
+
 };
 
 /* ************************************************************************ */

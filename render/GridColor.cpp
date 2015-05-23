@@ -30,7 +30,17 @@ struct Vertex
 
 /* ************************************************************************ */
 
-void GridColor::init(Context& context)
+static const std::array<Vertex, 4> g_vertices = {{
+    { 0.5f,  0.5f, 1.0f, 1.0f},
+    { 0.5f, -0.5f, 1.0f, 0.0f},
+    {-0.5f, -0.5f, 0.0f, 0.0f},
+    {-0.5f,  0.5f, 0.0f, 1.0f}
+}};
+
+/* ************************************************************************ */
+
+GridColor::GridColor(Context& context)
+    : m_buffer(context, g_vertices.size() * sizeof(decltype(g_vertices)::value_type), g_vertices.data())
 {
     // Generate texture
     gl(glGenTextures(1, &m_texture));
@@ -40,25 +50,13 @@ void GridColor::init(Context& context)
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-
-    const std::array<Vertex, 4> vertices = {{
-        { 0.5f,  0.5f, 1.0f, 1.0f},
-        { 0.5f, -0.5f, 1.0f, 0.0f},
-        {-0.5f, -0.5f, 0.0f, 0.0f},
-        {-0.5f,  0.5f, 0.0f, 1.0f}
-    }};
-
-    m_buffer.init(context,
-        vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data()
-    );
 }
 
 /* ************************************************************************ */
 
-void GridColor::init(Context& context, Vector<PositionType> size)
+GridColor::GridColor(Context& context, Vector<PositionType> size)
+    : GridColor(context)
 {
-    init(context);
     resize(std::move(size));
 }
 

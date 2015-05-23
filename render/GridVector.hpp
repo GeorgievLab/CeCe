@@ -25,6 +25,16 @@ class Context;
 class GridVector
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data);
+
+
 // Public Accessors
 public:
 
@@ -68,12 +78,6 @@ public:
 
 // Public Operations
 public:
-
-
-    /**
-     * @brief Initialize.
-     */
-    void init(Context& context, Vector<unsigned int> size, const Vector<float>* data);
 
 
     /**

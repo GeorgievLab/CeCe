@@ -13,6 +13,7 @@
 // C++
 #include <cmath>
 #include <cassert>
+#include <algorithm>
 
 // OpenGL
 #define GL_GLEXT_PROTOTYPES
@@ -23,6 +24,7 @@
 #include "render/Color.hpp"
 #include "render/Buffer.hpp"
 #include "render/errors.hpp"
+#include "render/Object.hpp"
 
 /* ************************************************************************ */
 
@@ -47,6 +49,20 @@ static GLenum convert(PrimitiveType type) noexcept
     }
 
     return 0;
+}
+
+/* ************************************************************************ */
+
+Context::Context()
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+Context::~Context()
+{
+    // Nothing to do
 }
 
 /* ************************************************************************ */
@@ -271,6 +287,37 @@ void Context::setVertexBuffer(Buffer* buffer) noexcept
 void Context::draw(PrimitiveType type, unsigned int count, unsigned int offset)
 {
     gl(glDrawArrays(convert(type), offset, count));
+}
+
+/* ************************************************************************ */
+
+Object* Context::addObject(Object* obj)
+{
+    m_objects.emplace_back(obj);
+    return m_objects.back().get();
+}
+
+/* ************************************************************************ */
+
+void Context::deleteObject(const Object* obj)
+{
+    using std::begin;
+    using std::end;
+
+    auto it = std::find_if(begin(m_objects), end(m_objects), [obj](const std::unique_ptr<Object>& ptr) {
+        return ptr.get() == obj;
+    });
+
+    // Move object
+    m_objectsToDelete.push_back(std::move(*it));
+    m_objects.erase(it);
+}
+
+/* ************************************************************************ */
+
+void Context::deletePreparedObjects()
+{
+    m_objectsToDelete.clear();
 }
 
 /* ************************************************************************ */

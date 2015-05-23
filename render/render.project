@@ -26,6 +26,7 @@
     <File Name="Program.cpp"/>
     <File Name="Buffer.cpp"/>
     <File Name="GridColor.cpp"/>
+    <File Name="Object.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
@@ -40,6 +41,7 @@
     <File Name="Buffer.hpp"/>
     <File Name="GridColor.hpp"/>
     <File Name="GridBase.hpp"/>
+    <File Name="Object.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

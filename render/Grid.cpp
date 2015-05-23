@@ -22,9 +22,10 @@ namespace render {
 
 /* ************************************************************************ */
 
-void Grid::init(Context& context)
+Grid::Grid(Context& context)
+    : m_buffer(context)
 {
-    m_buffer.init(context);
+    // Nothing to do
 }
 
 /* ************************************************************************ */

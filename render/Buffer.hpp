@@ -43,13 +43,27 @@ public:
 
 
     /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     */
+    explicit Buffer(Context& context);
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     * @param size    Buffer size.
+     * @param data    Optional buffer data.
+     */
+    Buffer(Context& context, SizeType size, const void* data = nullptr);
+
+
+    /**
      * @brief Destructor.
      */
-    ~Buffer()
-    {
-        if (isInitialized())
-            release();
-    }
+    ~Buffer();
 
 
 // Public Accessors
@@ -80,30 +94,6 @@ public:
 
 // Public Operators
 public:
-
-
-    /**
-     * @brief Initialize buffer object.
-     *
-     * @param context Rendering context.
-     */
-    void init(Context& context);
-
-
-    /**
-     * @brief Initialize and create buffer object.
-     *
-     * @param context Rendering context.
-     * @param size    Buffer size.
-     * @param data    Optional buffer data.
-     */
-    void init(Context& context, SizeType size, const void* data = nullptr);
-
-
-    /**
-     * @brief Release buffer.
-     */
-    void release();
 
 
     /**

@@ -3,16 +3,11 @@
 
 /* ************************************************************************ */
 
-#if !ENABLE_RENDER
-#error ENABLE_RENDER must be 1
-#endif
-
-/* ************************************************************************ */
-
 // C++
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <memory>
 
 // Simulator
 #include "core/Units.hpp"
@@ -28,6 +23,7 @@ namespace render {
 
 class Buffer;
 class Color;
+class Object;
 
 /* ************************************************************************ */
 
@@ -48,6 +44,22 @@ enum class PrimitiveType
  */
 class Context
 {
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    Context();
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~Context();
+
 
 // Public Accessors
 public:
@@ -225,6 +237,43 @@ public:
     void draw(PrimitiveType type, unsigned int count, unsigned int offset = 0u);
 
 
+    /**
+     * @brief Add rendering object.
+     *
+     * @param obj
+     */
+    Object* addObject(Object* obj);
+
+
+    /**
+     * @brief Create rendering object.
+     *
+     * @tparam T
+     * @tparam Args
+     *
+     * @param
+     */
+    template<typename T, typename... Args>
+    T* createObject(Args&&... args)
+    {
+        return static_cast<T*>(addObject(new T(*this, std::forward<Args>(args)...)));
+    }
+
+
+    /**
+     * @brief Delete object.
+     *
+     * @param obj
+     */
+    void deleteObject(const Object* obj);
+
+
+    /**
+     * @brief Delete objects that are prepared to delete.
+     */
+    void deletePreparedObjects();
+
+
 // Private Data Members
 private:
 
@@ -233,6 +282,12 @@ private:
 
     /// Camera.
     Camera m_camera;
+
+    /// Rendering objects.
+    std::vector<std::unique_ptr<Object>> m_objects;
+
+    /// Rendering objects that going to be deleted.
+    std::vector<std::unique_ptr<Object>> m_objectsToDelete;
 
 };
 
