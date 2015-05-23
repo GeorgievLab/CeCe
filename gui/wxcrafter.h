@@ -94,6 +94,7 @@ protected:
     virtual void OnSimulationStep(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationRestart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationScreenshot(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnSimulationScreenshotUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnHelpAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnCodeUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
 

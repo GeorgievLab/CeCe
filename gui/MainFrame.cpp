@@ -12,7 +12,7 @@
 #include "parser-xml/SimulationFactory.hpp"
 
 // GUI
-#if ENABLE_IMAGES
+#if ENABLE_SCREENSHOOT
 #include <Magick++.h>
 #endif
 
@@ -301,9 +301,9 @@ void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 
 /* ************************************************************************ */
 
-#if ENABLE_SCREENSHOOT
 void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 {
+#if ENABLE_SCREENSHOOT
     const wxString selection = wxFileSelector(
         wxFileSelectorPromptStr,
         wxEmptyString,
@@ -316,8 +316,20 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
-}
+    //ImageMagick::Image image;
 #endif
+}
+
+/* ************************************************************************ */
+
+void MainFrame::OnSimulationScreenshotUpdateUi(wxUpdateUIEvent& event)
+{
+#if ENABLE_SCREENSHOOT
+    event.Enable(true);
+#else
+    event.Enable(false);
+#endif
+}
 
 /* ************************************************************************ */
 

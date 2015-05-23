@@ -182,14 +182,20 @@ protected:
     void OnSimulationRestart(wxCommandEvent& event) override;
 
 
-#if ENABLE_SCREENSHOOT
     /**
      * @brief Save screenshoot of current simulation step.
      *
      * @param event
      */
     void OnSimulationScreenshot(wxCommandEvent& event) override;
-#endif
+
+
+    /**
+     * @brief Enable or disable screenshot support.
+     *
+     * @param event
+     */
+    void OnSimulationScreenshotUpdateUi(wxUpdateUIEvent& event) override;
 
 
     /**

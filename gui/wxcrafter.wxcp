@@ -1147,6 +1147,13 @@
            "m_functionNameAndSignature": "OnSimulationScreenshot(wxCommandEvent& event)",
            "m_description": "Menu item has been clicked",
            "m_noBody": false
+          }, {
+           "m_eventName": "wxEVT_UPDATE_UI",
+           "m_eventClass": "wxUpdateUIEvent",
+           "m_eventHandler": "wxUpdateUIEventHandler",
+           "m_functionNameAndSignature": "OnSimulationScreenshotUpdateUi(wxUpdateUIEvent& event)",
+           "m_description": "Process a wxEVT_UPDATE_UI event",
+           "m_noBody": false
           }],
          "m_children": []
         }]

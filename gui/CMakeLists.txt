@@ -2,21 +2,26 @@
 
 project(gui)
 
+# Options
+option(ENABLE_GUI_SCREENSHOT    "Enable or disable screenshot support in GUI" On)
+
 # wxWidgets
 find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
 include(${wxWidgets_USE_FILE})
 
-# Image support
-find_package(ImageMagick COMPONENTS Magick++)
+if (ENABLE_GUI_SCREENSHOT)
+    # Image support
+    find_package(ImageMagick COMPONENTS Magick++)
 
-if (ImageMagick_FOUND)
-    message("-- Image save support")
+    if (ImageMagick_FOUND)
+        message("-- Screenshot support enabled")
 
-    # Include directories
-    include_directories(${ImageMagick_INCLUDE_DIRS})
+        # Include directories
+        include_directories(${ImageMagick_INCLUDE_DIRS})
 
-    # Add definitions
-    add_definitions(-DENABLE_IMAGES=1)
+        # Add definitions
+        add_definitions(-DENABLE_SCREENSHOT=1)
+    endif ()
 endif ()
 
 # Create program
@@ -34,8 +39,14 @@ add_executable(gui
 )
 
 set(MODULES_LIBS "")
+set(MODULES_SHARED ${MODULES})
 
-foreach (MODULE ${MODULES})
+# Remove buildin
+foreach (MODULE ${MODULES_BUILDIN})
+    list(REMOVE_ITEM MODULES_SHARED ${MODULE})
+endforeach ()
+
+foreach (MODULE ${MODULES_SHARED})
     set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
 endforeach ()
 
@@ -46,6 +57,7 @@ target_link_libraries(gui
     parser-xml
     ${wxWidgets_LIBRARIES}
     ${ImageMagick_LIBRARIES}
+    -pthread
 )
 
 # Setup dependencies
