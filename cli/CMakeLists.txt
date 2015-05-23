@@ -31,8 +31,14 @@ endif ()
 add_executable(cli ${SRCS})
 
 set(MODULES_LIBS "")
+set(MODULES_SHARED ${MODULES})
 
-foreach (MODULE ${MODULES})
+# Remove buildin
+foreach (MODULE ${MODULES_BUILDIN})
+    list(REMOVE_ITEM MODULES_SHARED ${MODULE})
+endforeach ()
+
+foreach (MODULE ${MODULES_SHARED})
     set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
 endforeach ()
 
