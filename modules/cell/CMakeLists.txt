@@ -36,10 +36,19 @@ set(SRCS
     fs.yeast.hpp
 )
 
-# Create library
-if (MODULE_BUILD_STATIC)
+# Build static / dynamic
+list(FIND MODULES_BUILDIN "cell" IS_STATIC)
+
+if (${IS_STATIC} GREATER -1)
+    message("-- Module ${PROJECT_NAME} is build-in")
+
+    if (UNIX)
+        add_compile_options(-fPIC)
+    endif ()
+
     add_library(${PROJECT_NAME} ${SRCS})
 else ()
+    message("-- Module ${PROJECT_NAME} is dynamic")
     add_library(${PROJECT_NAME} SHARED ${SRCS})
 endif ()
 

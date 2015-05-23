@@ -9,14 +9,10 @@
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/GridVector.hpp"
-#include "render/GridColor.hpp"
-#endif
-
-#ifdef ENABLE_PHYSICS
-#include "Box2D/Box2D.h"
+#include "render/Object.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -113,32 +109,6 @@ public:
     }
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns render object.
-     *
-     * @return
-     */
-    render::GridVector& getRenderObject() noexcept
-    {
-        return m_renderObject;
-    }
-#endif
-
-
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns render object.
-     *
-     * @return
-     */
-    const render::GridVector& getRenderObject() const noexcept
-    {
-        return m_renderObject;
-    }
-#endif
-
-
 // Public Mutators
 public:
 
@@ -184,17 +154,7 @@ public:
     void configure(const simulator::ConfigurationBase& config) override;
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Initialize module for rendering.
-     *
-     * @param context
-     */
-    void drawInit(render::Context& context) override;
-#endif
-
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render module.
      *
@@ -217,15 +177,16 @@ private:
     /// If streams should be updated
     bool m_update = true;
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /// Render grid for velocities
-    render::GridVector m_renderObject;
-
-    /// Rendering grid with filled cells.
-    render::GridColor m_renderObjectColor;
+    render::ObjectPtr<render::GridVector> m_renderObject;
 #endif
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
+    bool m_drawObject = false;
+#endif
+
+#if ENABLE_RENDER
     /// If render object should be updated
     bool m_renderUpdate = false;
 #endif

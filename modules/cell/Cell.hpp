@@ -6,13 +6,10 @@
 // Simulator
 #include "CellBase.hpp"
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 #include "render/Context.hpp"
+#include "render/Object.hpp"
 #include "DrawableCell.hpp"
-#endif
-
-#ifdef ENABLE_PHYSICS
-#include "Box2D/Box2D.h"
 #endif
 
 /* ************************************************************************ */
@@ -58,36 +55,6 @@ public:
     }
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns cell render object.
-     *
-     * @return
-     */
-    DrawableCell& getRenderObject() noexcept
-    {
-        return m_renderObject;
-    }
-#endif
-
-
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns cell render object.
-     *
-     * @return
-     */
-    const DrawableCell& getRenderObject() const noexcept
-    {
-        return m_renderObject;
-    }
-#endif
-
-
-// Public Mutators
-public:
-
-
 // Public Operations
 public:
 
@@ -110,17 +77,7 @@ public:
                    simulator::Simulation& simulation) override;
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Initialize object for rendering.
-     *
-     * @param context
-     */
-    void drawInit(render::Context& context) override;
-#endif
-
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render cell.
      *
@@ -134,7 +91,7 @@ public:
 private:
 
 #if ENABLE_RENDER
-    DrawableCell m_renderObject;
+    render::ObjectPtr<DrawableCell> m_renderObject;
 #endif
 
 };

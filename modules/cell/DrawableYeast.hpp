@@ -27,16 +27,20 @@ namespace cell {
 class DrawableYeast
 {
 
-// Public Operations
+// Public Ctors & Dtors
 public:
 
 
     /**
-     * @brief Initialize.
+     * @brief Constructor.
      *
      * @param context Rendering context.
      */
-    void init(render::Context& context);
+    explicit DrawableYeast(render::Context& context);
+
+
+// Public Operations
+public:
 
 
     /**

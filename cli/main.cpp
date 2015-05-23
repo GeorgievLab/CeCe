@@ -26,11 +26,6 @@
 #include "simulator/Module.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 
-#include "modules/diffusion/Module.hpp"
-#include "modules/diffusion/Generator.hpp"
-#include "modules/diffusion/GeneratorCell.hpp"
-#include "modules/diffusion-streamlines/Module.hpp"
-
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
 #endif
@@ -56,10 +51,6 @@ simulator::Simulator g_sim;
 
 /// Mutex for logging.
 std::mutex g_log_mutex;
-
-/* ************************************************************************ */
-
-module::diffusion::Module* g_diffusionModule;
 
 /* ************************************************************************ */
 
@@ -141,13 +132,6 @@ int main(int argc, char** argv)
         simulation->getWorld().SetDebugDraw(&debugDraw);
 #endif
 
-        // Create modules
-        g_diffusionModule = simulation->getModule<module::diffusion::Module>("diffusion");
-
-        //g_sim.getSimulation()->createModule<module::diffusion::Generator>(g_diffusionModule);
-        //g_sim.getSimulation()->createModule<module::diffusion::GeneratorCell>(g_diffusionModule);
-        //g_sim.getSimulation()->createModule<module::cell::Generator>();
-
 #ifdef ENABLE_RENDER
         // Register callbacks:
         glutDisplayFunc([]() {
@@ -205,16 +189,6 @@ int main(int argc, char** argv)
         });
 
         glutKeyboardFunc([](unsigned char key, int x, int y) {
-            if (g_diffusionModule)
-            {
-                switch (key)
-                {
-                case 'i': case 'I':
-                    g_diffusionModule->getDrawable().setInterpolate(!g_diffusionModule->getDrawable().isInterpolate());
-                    break;
-                }
-            }
-
             switch (key)
             {
             case 'p': case 'P': g_paused = !g_paused; break;

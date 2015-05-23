@@ -83,10 +83,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         m_renderUpdate = true;
     }
 
-#ifdef ENABLE_RENDER
-    m_renderObjectColor.clear(render::Color{0, 0, 0, 0});
-#endif
-
     // Apply streamlines to world objects
     {
         // Get grid
@@ -117,10 +113,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
             // Add acceleration to the object
             obj->applyForce(force);
-
-#ifdef ENABLE_RENDER
-            m_renderObjectColor.set(coord, {1, 1, 1, 1});
-#endif
         }
     }
 }
@@ -151,38 +143,31 @@ void Module::configure(const simulator::ConfigurationBase& config)
         auto drawVelocity = config.getString("draw-velocity");
 
         if (!drawVelocity.empty())
-            m_renderObject.setRenderVelocity(parser::parse_bool(drawVelocity));
+            m_drawObject = parser::parse_bool(drawVelocity);
     }
 #endif
 }
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
-void Module::drawInit(render::Context& context)
-{
-    m_renderObject.init(context, m_grid.getSize(), m_grid.getData());
-    m_renderObjectColor.init(context, m_grid.getSize());
-}
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
-    if (m_renderUpdate)
+    if (!m_drawObject)
+        return;
+
+    if (!m_renderObject)
     {
-        m_renderObject.update(m_grid.getData());
-        m_renderUpdate = false;
+        m_renderObject.create(context, m_grid.getSize(), m_grid.getData());
+    }
+    else if (m_renderUpdate)
+    {
+        m_renderObject->update(m_grid.getData());
     }
 
-    m_renderObject.draw(simulation.getWorldSize());
+    m_renderObject->draw(simulation.getWorldSize());
 
-    context.matrixPush();
-    context.matrixScale(simulation.getWorldSize());
-    m_renderObjectColor.draw(context);
-    context.matrixPop();
+    m_renderUpdate = false;
 }
 #endif
 

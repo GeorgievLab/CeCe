@@ -7,6 +7,10 @@
 // C++
 #include <cassert>
 
+#ifdef ENABLE_PHYSICS
+#include "Box2D/Box2D.h"
+#endif
+
 /* ************************************************************************ */
 
 namespace module {
@@ -72,18 +76,12 @@ void Cell::configure(const simulator::ConfigurationBase& config,
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
-void Cell::drawInit(render::Context& context)
-{
-    m_renderObject.init(context);
-}
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 void Cell::draw(render::Context& context)
 {
+    if (!m_renderObject)
+        m_renderObject.create(context);
+
     const auto pos = getPosition();
     const auto radius = calcSphereRadius(getVolume());
 
@@ -93,7 +91,7 @@ void Cell::draw(render::Context& context)
     context.matrixScale(2 * radius);
     context.matrixRotate(getBody()->GetAngle());
 
-    m_renderObject.draw(context, radius);
+    m_renderObject->draw(context, radius);
 
     context.matrixPop();
 }

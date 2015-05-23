@@ -136,10 +136,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     }
 
     {
-#ifdef THREAD_SAFE
-        std::lock_guard<std::mutex> lock(m_mutex);
-#endif
-
         // Swap grids
         std::swap(m_grid, m_gridBack);
     }
@@ -162,46 +158,31 @@ void Module::configure(const simulator::ConfigurationBase& config)
             setCoefficient(i, coefficients[i]);
     });
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     config.callIfSetString("background", [this](const std::string& value) {
-        getDrawable().setBackground(parser::parse_color(value));
+        m_drawable->setBackground(parser::parse_color(value));
     });
 
     config.callIfSetString("colors", [this](const std::string& value) {
         const auto colors = parser::parse_array<render::Color, Signal::COUNT>(value, parser::parse_color);
 
         for (unsigned int i = 0; i < Signal::COUNT; ++i)
-            getDrawable().setColor(i, colors[i]);
+            m_drawable->setColor(i, colors[i]);
     });
 #endif
 }
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
-void Module::drawInit(render::Context& context)
-{
-#ifdef THREAD_SAFE
-    std::lock_guard<std::mutex> lock(m_mutex);
-#endif
-
-    getDrawable().init(context, m_grid.getSize(), m_grid.getData());
-}
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
-    {
-#ifdef THREAD_SAFE
-        std::lock_guard<std::mutex> lock(m_mutex);
-#endif
-        getDrawable().update(m_grid.getData());
-    }
+    if (!m_drawable)
+        m_drawable.create(context, m_grid.getSize(), m_grid.getData());
+    else
+        m_drawable->update(m_grid.getData());
 
-    getDrawable().draw(simulation.getWorldSize());
+    m_drawable->draw(simulation.getWorldSize());
 }
 #endif
 

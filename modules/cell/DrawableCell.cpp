@@ -35,7 +35,17 @@ struct Vertex
 
 /* ************************************************************************ */
 
-void DrawableCell::init(render::Context& context)
+static const std::array<Vertex, 4> g_vertices = {{
+    { 0.5f,  0.5f, 1.0f, 1.0f},
+    { 0.5f, -0.5f, 1.0f, 0.0f},
+    {-0.5f, -0.5f, 0.0f, 0.0f},
+    {-0.5f,  0.5f, 0.0f, 1.0f}
+}};
+
+/* ************************************************************************ */
+
+DrawableCell::DrawableCell(render::Context& context)
+    : m_buffer(context, g_vertices.size() * sizeof(decltype(g_vertices)::value_type), g_vertices.data())
 {
     m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShader);
     m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShader);
@@ -43,19 +53,6 @@ void DrawableCell::init(render::Context& context)
 
     // Get size variable
     m_uniformSize = m_program.getUniformId("g_size");
-
-    const std::array<Vertex, 4> vertices = {{
-        { 0.5f,  0.5f, 1.0f, 1.0f},
-        { 0.5f, -0.5f, 1.0f, 0.0f},
-        {-0.5f, -0.5f, 0.0f, 0.0f},
-        {-0.5f,  0.5f, 0.0f, 1.0f}
-    }};
-
-    m_buffer.init(context,
-        vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data()
-    );
-
 }
 
 /* ************************************************************************ */

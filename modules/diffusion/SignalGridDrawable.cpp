@@ -78,21 +78,22 @@ static const char g_fragmentShaderSrc[] =
 
 /* ************************************************************************ */
 
+static const std::array<Vertex, 4> g_vertices = {{
+    { 0.5f,  0.5f, 1.0f, 1.0f},
+    { 0.5f, -0.5f, 1.0f, 0.0f},
+    {-0.5f, -0.5f, 0.0f, 0.0f},
+    {-0.5f,  0.5f, 0.0f, 1.0f}
+}};
+
+/* ************************************************************************ */
+
 namespace module {
 namespace diffusion {
 
 /* ************************************************************************ */
 
-SignalGridDrawable::~SignalGridDrawable()
-{
-    // Delete program
-    if (m_texture)
-        gl(glDeleteTextures(1, &m_texture));
-}
-
-/* ************************************************************************ */
-
-void SignalGridDrawable::init(render::Context& context, Vector<unsigned int> size, const Signal* data)
+SignalGridDrawable::SignalGridDrawable(render::Context& context, Vector<unsigned int> size, const Signal* data)
+    : m_buffer(context, g_vertices.size() * sizeof(decltype(g_vertices)::value_type), g_vertices.data())
 {
     // Generate texture
     gl(glGenTextures(1, &m_texture));
@@ -111,19 +112,16 @@ void SignalGridDrawable::init(render::Context& context, Vector<unsigned int> siz
     gl(m_sizePtr = glGetUniformLocation(m_program.getId(), "size"));
     gl(m_interpolatePtr = glGetUniformLocation(m_program.getId(), "interpolate"));
 
-    const std::array<Vertex, 4> vertices = {{
-        { 0.5f,  0.5f, 1.0f, 1.0f},
-        { 0.5f, -0.5f, 1.0f, 0.0f},
-        {-0.5f, -0.5f, 0.0f, 0.0f},
-        {-0.5f,  0.5f, 0.0f, 1.0f}
-    }};
-
-    m_buffer.init(context,
-        vertices.size() * sizeof(decltype(vertices)::value_type),
-        vertices.data()
-    );
-
     resize(size, data);
+}
+
+/* ************************************************************************ */
+
+SignalGridDrawable::~SignalGridDrawable()
+{
+    // Delete program
+    if (m_texture)
+        gl(glDeleteTextures(1, &m_texture));
 }
 
 /* ************************************************************************ */

@@ -137,17 +137,11 @@ void Yeast::budRelease()
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-void Yeast::drawInit(render::Context& context)
-{
-    m_renderObject.init(context);
-}
-#endif
-
-/* ************************************************************************ */
-
-#if ENABLE_RENDER
 void Yeast::draw(render::Context& context)
 {
+    if (!m_renderObject)
+        m_renderObject.create(context);
+
     auto pos = getPosition();
     auto radius = calcSphereRadius(getVolume());
     const auto angle = getBody()->GetAngle() - (m_bud ? m_bud->rotation : 0.0f);
@@ -158,7 +152,7 @@ void Yeast::draw(render::Context& context)
     context.matrixTranslate(pos);
     context.matrixRotate(angle);
     context.matrixScale(2 * radius);
-    m_renderObject.draw(context, 0.5, 0.5 * (budRadius / radius));
+    m_renderObject->draw(context, 0.5, 0.5 * (budRadius / radius));
     context.matrixPop();
 }
 #endif

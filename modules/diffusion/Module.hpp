@@ -3,17 +3,13 @@
 
 /* ************************************************************************ */
 
-#ifdef THREAD_SAFE
-#include <mutex>
-#endif
-
 // Simulator
 #include "core/Grid.hpp"
 #include "simulator/Module.hpp"
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 #include "render/Context.hpp"
-#include "render/Grid.hpp"
+#include "render/Object.hpp"
 #include "SignalGridDrawable.hpp"
 #endif
 
@@ -76,32 +72,6 @@ public:
     {
         return m_grid;
     }
-
-
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns render object.
-     *
-     * @return
-     */
-    SignalGridDrawable& getDrawable() noexcept
-    {
-        return m_drawable;
-    }
-#endif
-
-
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns render object.
-     *
-     * @return
-     */
-    const SignalGridDrawable& getDrawable() const noexcept
-    {
-        return m_drawable;
-    }
-#endif
 
 
     /**
@@ -175,17 +145,7 @@ public:
     void configure(const simulator::ConfigurationBase& config) override;
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Initialize module for rendering.
-     *
-     * @param context
-     */
-    void drawInit(render::Context& context) override;
-#endif
-
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render module.
      *
@@ -209,14 +169,11 @@ private:
     /// Signal grid used for updating.
     SignalGrid m_gridBack;
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /// Drawable signal grid
-    SignalGridDrawable m_drawable;
+    render::ObjectPtr<SignalGridDrawable> m_drawable;
 #endif
 
-#ifdef THREAD_SAFE
-    std::mutex m_mutex;
-#endif
 };
 
 /* ************************************************************************ */

@@ -42,6 +42,12 @@ public:
 
 
     /**
+     * @brief Constructor.
+     */
+    SignalGridDrawable(render::Context& context, Vector<unsigned int> size, const Signal* data);
+
+
+    /**
      * @brief Destructor.
      */
     ~SignalGridDrawable();
@@ -125,12 +131,6 @@ public:
 
 // Public Operations
 public:
-
-
-    /**
-     * @brief Initialize.
-     */
-    void init(render::Context& context, Vector<unsigned int> size, const Signal* data);
 
 
     /**

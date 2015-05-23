@@ -8,6 +8,7 @@
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
+#include "render/Object.hpp"
 #include "DrawableYeast.hpp"
 #endif
 
@@ -84,32 +85,6 @@ public:
     }
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns cell render object.
-     *
-     * @return
-     */
-    DrawableYeast& getRenderObject() noexcept
-    {
-        return m_renderObject;
-    }
-#endif
-
-
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Returns cell render object.
-     *
-     * @return
-     */
-    const DrawableYeast& getRenderObject() const noexcept
-    {
-        return m_renderObject;
-    }
-#endif
-
-
 // Public Operations
 public:
 
@@ -146,16 +121,6 @@ public:
 
 #if ENABLE_RENDER
     /**
-     * @brief Initialize object for rendering.
-     *
-     * @param context
-     */
-    void drawInit(render::Context& context) override;
-#endif
-
-
-#if ENABLE_RENDER
-    /**
      * @brief Render yeast.
      *
      * @param context
@@ -183,7 +148,7 @@ private:
     boost::optional<Bud> m_bud;
 
 #if ENABLE_RENDER
-    DrawableYeast m_renderObject;
+    render::ObjectPtr<DrawableYeast> m_renderObject;
 #endif
 
 #if ENABLE_PHYSICS
