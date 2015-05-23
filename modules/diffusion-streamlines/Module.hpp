@@ -107,17 +107,7 @@ public:
     void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Initialize module for rendering.
-     *
-     * @param context
-     */
-    void drawInit(render::Context& context) override;
-#endif
-
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render module.
      *

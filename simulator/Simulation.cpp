@@ -51,46 +51,6 @@ std::tuple<std::string, std::string> splitModulePath(const std::string& path) no
 
 /* ************************************************************************ */
 
-/**
- * @brief Remove objects from second list that are not in the first list.
- *
- * @param
- */
-template<typename Container1, typename Container2>
-void erase_mismatch(const Container1& con1, Container2& con2) noexcept
-{
-    using std::begin;
-    using std::end;
-
-    // Remove objects from drawInit
-    con2.erase(std::remove_if(begin(con2), end(con2), [&con1](typename Container2::value_type ptr) {
-        return std::find_if(begin(con1), end(con1), [ptr](const typename Container1::value_type& obj) {
-            return obj.get() == ptr;
-        }) == end(con1);
-    }), end(con2));
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Initialize all objects in container and after that remove all.
- *
- * @param con
- */
-template<typename Container, typename Context>
-void draw_init(Container& con, Context& context)
-{
-    for (auto ptr : con)
-    {
-        assert(ptr);
-        ptr->drawInit(context);
-    }
-
-    con.clear();
-}
-
-/* ************************************************************************ */
-
 }
 
 /* ************************************************************************ */
@@ -257,9 +217,6 @@ bool Simulation::update(units::Duration dt) noexcept
                 ((pos.getY() >= -hh.getY()) && (pos.getY() <= hh.getY()))
             );
         }), m_objects.end());
-
-        // Remove objects from drawInit
-        erase_mismatch(m_objects, m_drawInitObjectList);
     }
 
 #ifdef ENABLE_PHYSICS
@@ -310,12 +267,6 @@ bool Simulation::update()
 void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(getWorldSize().getWidth(), getWorldSize().getHeight());
-
-    // Prepare modules for rendering
-    draw_init(m_drawInitModuleList, context);
-
-    // Prepare objects for rendering
-    draw_init(m_drawInitObjectList, context);
 
     // Render modules
     for (auto& module : getModules())

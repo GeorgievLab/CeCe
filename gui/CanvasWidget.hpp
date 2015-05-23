@@ -101,17 +101,6 @@ public:
     }
 
 
-    /**
-     * @brief Set old simulation to be deleted in render function.
-     *
-     * @param simulation Pointer to simulation to delete.
-     */
-    void SetOldSimulation(simulator::Simulation* simulation) noexcept
-    {
-        m_oldSimulations.emplace_back(simulation);
-    }
-
-
 // Public Operations
 public:
 
@@ -245,10 +234,6 @@ private:
 
     /// Simulator pointer.
     simulator::Simulator* m_simulator = nullptr;
-
-    /// A pointer to old simulation. Destoying the old one requires to be
-    /// happend in render function.
-    std::vector<std::unique_ptr<simulator::Simulation>> m_oldSimulations;
 
     /// Simulator mutex.
     wxMutex* m_mutex = nullptr;

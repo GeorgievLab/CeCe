@@ -330,20 +330,7 @@ public:
     virtual void configure(const ConfigurationBase& config, Simulation& simulation);
 
 
-#ifdef ENABLE_RENDER
-    /**
-     * @brief Initialize object for rendering.
-     *
-     * @param context
-     */
-    virtual void drawInit(render::Context& context)
-    {
-        // Nothing to do
-    }
-#endif
-
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render object.
      *

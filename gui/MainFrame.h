@@ -240,14 +240,6 @@ protected:
     void OnCodeUpdateUi(wxUpdateUIEvent& event) override;
 
 
-    /**
-     * @brief Accept old simulation to delete.
-     *
-     * @param event
-     */
-    void OnOldSimulation(wxCommandEvent& event);
-
-
 // Public Operations
 public:
 

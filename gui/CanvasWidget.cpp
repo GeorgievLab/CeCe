@@ -58,9 +58,6 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
 
     // Start timer
     m_timer.Start(1000 / 60);
-
-    // Reserve memory
-    m_oldSimulations.reserve(2);
 }
 
 /* ************************************************************************ */
@@ -202,9 +199,6 @@ void CanvasWidget::Render() noexcept
 
     // Set current context
     SetCurrent(*m_context);
-
-    // Delete old simulations
-    m_oldSimulations.clear();
 
     // Initialize drawing
     if (!m_simulator->isDrawInitialized())

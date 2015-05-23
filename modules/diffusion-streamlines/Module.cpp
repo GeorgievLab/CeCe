@@ -123,19 +123,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::drawInit(render::Context& context)
-{
-    assert(m_streamlines);
-    assert(m_diffusion);
-
-    m_diffusion->drawInit(context);
-    m_streamlines->drawInit(context);
-}
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
     assert(m_streamlines);

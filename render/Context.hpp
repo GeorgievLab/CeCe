@@ -269,9 +269,9 @@ public:
 
 
     /**
-     * @brief Delete objects that are prepared to delete.
+     * @brief Delete released objects.
      */
-    void deletePreparedObjects();
+    void deleteReleasedObjects();
 
 
 // Private Data Members
@@ -287,7 +287,7 @@ private:
     std::vector<std::unique_ptr<Object>> m_objects;
 
     /// Rendering objects that going to be deleted.
-    std::vector<std::unique_ptr<Object>> m_objectsToDelete;
+    std::vector<std::unique_ptr<Object>> m_releasedObjects;
 
 };
 

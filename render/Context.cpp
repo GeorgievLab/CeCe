@@ -309,15 +309,15 @@ void Context::deleteObject(const Object* obj)
     });
 
     // Move object
-    m_objectsToDelete.push_back(std::move(*it));
+    m_releasedObjects.push_back(std::move(*it));
     m_objects.erase(it);
 }
 
 /* ************************************************************************ */
 
-void Context::deletePreparedObjects()
+void Context::deleteReleasedObjects()
 {
-    m_objectsToDelete.clear();
+    m_releasedObjects.clear();
 }
 
 /* ************************************************************************ */

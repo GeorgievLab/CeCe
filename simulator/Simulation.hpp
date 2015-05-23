@@ -370,11 +370,7 @@ public:
     {
         assert(mod);
         auto it = m_modules.emplace(std::make_pair(std::move(name), std::move(mod)));
-        T* ptr = static_cast<T*>(std::get<0>(it)->second.get());
-#if ENABLE_RENDER
-        m_drawInitModuleList.push_back(ptr);
-#endif
-        return ptr;
+        return static_cast<T*>(std::get<0>(it)->second.get());
     }
 
 
@@ -452,11 +448,7 @@ public:
     {
         assert(obj);
         m_objects.push_back(std::move(obj));
-        T* ptr = static_cast<T*>(m_objects.back().get());
-#if ENABLE_RENDER
-        m_drawInitObjectList.push_back(ptr);
-#endif
-        return ptr;
+        return static_cast<T*>(m_objects.back().get());
     }
 
 
@@ -611,16 +603,6 @@ private:
 
     /// A map of preddefined programs.
     std::map<std::string, Program> m_programs;
-
-#if ENABLE_RENDER
-    /// List of modules that requires init.
-    std::vector<Module*> m_drawInitModuleList;
-#endif
-
-#if ENABLE_RENDER
-    /// List of objects that requires init.
-    std::vector<Object*> m_drawInitObjectList;
-#endif
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     bool m_drawPhysics = true;

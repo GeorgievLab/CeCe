@@ -9,7 +9,6 @@
 /* ************************************************************************ */
 
 wxDEFINE_EVENT(EVT_ERROR, wxCommandEvent);
-wxDEFINE_EVENT(EVT_OLD_SIMULATION, wxCommandEvent);
 
 /* ************************************************************************ */
 
@@ -163,15 +162,7 @@ void SimulatorThread::DoLoad(const wxString& code) noexcept
         wxMutexLocker lock(m_mutex);
 
         // Create new world from source
-        auto old = m_simulator.setAndGetSimulation(m_simulationFactory->fromSource(code.To8BitData().data()));
-
-        // Send old simulation
-        if (old)
-        {
-            wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_OLD_SIMULATION));
-            event->SetClientData(old.release());
-            wxQueueEvent(m_handler, event.release());
-        }
+        m_simulator.setSimulation(m_simulationFactory->fromSource(code.To8BitData().data()));
     }
     catch (const std::exception& e)
     {
