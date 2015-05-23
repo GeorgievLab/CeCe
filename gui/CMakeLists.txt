@@ -47,6 +47,7 @@ foreach (MODULE ${MODULES_BUILDIN})
 endforeach ()
 
 foreach (MODULE ${MODULES_SHARED})
+    message("-- Shared module: ${MODULE}")
     set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
 endforeach ()
 

@@ -23,6 +23,6 @@ class StreamlinesApi : public simulator::LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(StreamlinesApi)
+DEFINE_LIBRARY_CREATE_IMPL(streamlines, StreamlinesApi)
 
 /* ************************************************************************ */

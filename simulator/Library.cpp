@@ -55,9 +55,17 @@ std::vector<std::string> Library::s_libraryPaths;
 
 /* ************************************************************************ */
 
-const std::map<std::string, Library::CreateFn> Library::s_buildinLibraries{
+#define ITEM(name) extern "C" simulator::LibraryApi* LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(name)();
+BUILDIN_LIBRARIES
+#undef ITEM
 
+/* ************************************************************************ */
+
+#define ITEM(name) { # name, LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(name) },
+const std::map<std::string, Library::CreateFn> Library::s_buildinLibraries{
+    BUILDIN_LIBRARIES
 };
+#undef ITEM
 
 /* ************************************************************************ */
 

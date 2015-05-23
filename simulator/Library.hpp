@@ -16,43 +16,85 @@
 /* ************************************************************************ */
 
 /**
- * @brief Prototype of function for creating library object.
+ * @brief Function name for dynamic.
+ *
+ * @param name Library name.
  */
-#define LIBRARY_CREATE_PROTOTYPE \
-    extern "C" simulator::LibraryApi* create()
+#define LIBRARY_CREATE_PROTOTYPE_NAME_DYNAMIC(name) create
+
+/* ************************************************************************ */
+
+/**
+ * @brief Function name for dynamic.
+ *
+ * @param name Library name.
+ */
+#define LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(name) create_ ## name
+
+/* ************************************************************************ */
+
+/**
+ * @brief Function name.
+ *
+ * @param name Library name.
+ */
+#if LIBRARY_BUILDIN
+#define LIBRARY_CREATE_PROTOTYPE_NAME(name) LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(name)
+#else
+#define LIBRARY_CREATE_PROTOTYPE_NAME(name) LIBRARY_CREATE_PROTOTYPE_NAME_DYNAMIC(name)
+#endif
+
+/* ************************************************************************ */
+
+/**
+ * @brief Prototype of function for creating library object.
+ *
+ * @param name Library name.
+ */
+#define LIBRARY_CREATE_PROTOTYPE(name) \
+    extern "C" simulator::LibraryApi* LIBRARY_CREATE_PROTOTYPE_NAME(name)()
 
 /* ************************************************************************ */
 
 /**
  * @brief Declare function for creating library object.
+ *
+ * @param name Library name.
  */
-#define DECLARE_LIBRARY_CREATE LIBRARY_CREATE_PROTOTYPE
+#define DECLARE_LIBRARY_CREATE(name) LIBRARY_CREATE_PROTOTYPE(name)
 
 /* ************************************************************************ */
 
 /**
  * @brief Define function for creating library object.
+ *
+ * @param name Library name.
  */
-#define DEFINE_LIBRARY_CREATE LIBRARY_CREATE_PROTOTYPE
+#define DEFINE_LIBRARY_CREATE(name) LIBRARY_CREATE_PROTOTYPE(name)
 
 /* ************************************************************************ */
 
 /**
  * @brief Define function for creating library object.
+ *
+ * @param name      Library name.
+ * @param className
  */
-#define DEFINE_LIBRARY_CREATE_IMPL(name) \
-    LIBRARY_CREATE_PROTOTYPE \
+#define DEFINE_LIBRARY_CREATE_IMPL(name, className) \
+    LIBRARY_CREATE_PROTOTYPE(name) \
     { \
-        return new name{}; \
+        return new className{}; \
     }
 
 /* ************************************************************************ */
 
 /**
  * @brief Declare library functions.
+ *
+ * @param name Library name.
  */
-#define DECLARE_LIBRARY \
-    DECLARE_LIBRARY_CREATE
+#define DECLARE_LIBRARY(name) \
+    DECLARE_LIBRARY_CREATE(name)
 
 /* ************************************************************************ */
 

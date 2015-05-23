@@ -23,6 +23,6 @@ class PictureApi : public simulator::LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(PictureApi)
+DEFINE_LIBRARY_CREATE_IMPL(picture, PictureApi)
 
 /* ************************************************************************ */

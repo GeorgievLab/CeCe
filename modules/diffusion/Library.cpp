@@ -165,6 +165,6 @@ class DiffusionApi : public simulator::LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(DiffusionApi)
+DEFINE_LIBRARY_CREATE_IMPL(diffusion, DiffusionApi)
 
 /* ************************************************************************ */

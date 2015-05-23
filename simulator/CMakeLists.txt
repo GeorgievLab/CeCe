@@ -46,10 +46,16 @@ add_library(${PROJECT_NAME} SHARED
 
 # Include build-in libraries
 set(MODULES_LIBS "")
+set(BUILDIN_LIBRARIES "")
 
 foreach (MODULE ${MODULES_BUILDIN})
+    message("-- Build-in module: ${MODULE}")
     set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
+    set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${MODULE})")
 endforeach ()
+
+# Pass build-in libraries list
+add_definitions(-DBUILDIN_LIBRARIES=${BUILDIN_LIBRARIES})
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
