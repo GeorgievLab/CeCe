@@ -63,9 +63,9 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Use different name
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#    OUTPUT_NAME "sim"
-#)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "cell-sim-core"
+)
 
 if (ENABLE_BUILDIN_PHYSICS)
     # Add dependency
@@ -78,5 +78,10 @@ if (ENABLE_BUILDIN_PHYSICS)
         Box2D
     )
 endif ()
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+    LIBRARY DESTINATION lib
+)
 
 # ######################################################################### #

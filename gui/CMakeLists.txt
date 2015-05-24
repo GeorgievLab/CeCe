@@ -1,6 +1,9 @@
 # ######################################################################### #
 
-project(gui)
+# Project name
+set(PROJECT_NAME gui)
+
+project(${PROJECT_NAME} CXX)
 
 # Options
 option(ENABLE_GUI_SCREENSHOT    "Enable or disable screenshot support in GUI" On)
@@ -25,7 +28,7 @@ if (ENABLE_GUI_SCREENSHOT)
 endif ()
 
 # Create program
-add_executable(gui
+add_executable(${PROJECT_NAME}
     main.cpp
     MainFrame.h
     MainFrame.cpp
@@ -38,6 +41,11 @@ add_executable(gui
     SimulatorThread.cpp
     Logger.hpp
     Logger.cpp
+)
+
+# Use different name
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "cell-sim-gui"
 )
 
 set(MODULES_LIBS "")
@@ -54,7 +62,7 @@ foreach (MODULE ${MODULES_SHARED})
 endforeach ()
 
 # Link libraries
-target_link_libraries(gui
+target_link_libraries(${PROJECT_NAME}
     ${MODULES_LIBS}
     simulator
     parser-xml
@@ -64,9 +72,14 @@ target_link_libraries(gui
 )
 
 # Setup dependencies
-add_dependencies(gui
+add_dependencies(${PROJECT_NAME}
     simulator
     parser-xml
+)
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
 )
 
 # ######################################################################### #

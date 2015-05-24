@@ -1,6 +1,9 @@
 # ######################################################################### #
 
-project(cli)
+# Project name
+set(PROJECT_NAME cli)
+
+project(${PROJECT_NAME} CXX)
 
 if (ENABLE_RENDER)
     find_package(GLUT REQUIRED)
@@ -28,7 +31,7 @@ if (ENABLE_PHYSICS_DEBUG)
 endif ()
 
 # Create program
-add_executable(cli ${SRCS})
+add_executable(${PROJECT_NAME} ${SRCS})
 
 set(MODULES_LIBS "")
 set(MODULES_SHARED ${MODULES})
@@ -43,8 +46,13 @@ foreach (MODULE ${MODULES_SHARED})
     set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
 endforeach ()
 
+# Use different name
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "cell-sim-cli"
+)
+
 # Link libraries
-target_link_libraries(cli
+target_link_libraries(${PROJECT_NAME}
     ${MODULES_LIBS}
     simulator
     parser-xml
@@ -53,8 +61,13 @@ target_link_libraries(cli
 )
 
 # Setup dependencies
-add_dependencies(cli
+add_dependencies(${PROJECT_NAME}
     simulator
+)
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
 )
 
 # ######################################################################### #
