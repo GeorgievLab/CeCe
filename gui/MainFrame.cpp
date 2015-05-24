@@ -326,7 +326,29 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
-    //ImageMagick::Image image;
+    // Get pixel data
+    auto data = context.getData();
+    const auto& imageData = data.first;
+    auto imageSize = data.second;
+
+    // Create image
+    Magick::Image image(Magick::Geometry(imageSize.getWidth(), imageSize.getHeight()), Magick::Color());
+
+    for (unsigned i = 0; i < imageSize.getWidth(); ++i)
+    {
+        for (unsigned j = 0; j < imageSize.getHeight(); ++j)
+        {
+            auto base = 3 * (i + imageSize.getWidth() * j);
+            image.pixelColor(i, j, Magick::ColorRGB(
+                imageData[base] / 255.f,
+                imageData[base + 1] / 255.f,
+                imageData[base + 2] / 255.f
+            ));
+        }
+    }
+
+    // Store image
+    image.write(selection.c_str());
 #endif
 }
 
