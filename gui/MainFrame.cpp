@@ -13,7 +13,7 @@
 #include "parser-xml/SimulationFactory.hpp"
 
 // GUI
-#if ENABLE_SCREENSHOOT
+#if ENABLE_SCREENSHOT
 #include <Magick++.h>
 #endif
 
@@ -313,7 +313,13 @@ void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 
 void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 {
-#if ENABLE_SCREENSHOOT
+#if ENABLE_SCREENSHOT
+    if (!m_simulatorThread.GetSimulator())
+    {
+        event.Skip();
+        return;
+    }
+
     const wxString selection = wxFileSelector(
         wxFileSelectorPromptStr,
         wxEmptyString,
@@ -327,7 +333,7 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
         return;
 
     // Get pixel data
-    auto data = context.getData();
+    auto data = m_simulatorThread.GetSimulator()->getRenderContext().getData();
     const auto& imageData = data.first;
     auto imageSize = data.second;
 
@@ -348,7 +354,7 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
     }
 
     // Store image
-    image.write(selection.c_str());
+    image.write(selection.c_str().AsChar());
 #endif
 }
 
@@ -356,7 +362,7 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 
 void MainFrame::OnSimulationScreenshotUpdateUi(wxUpdateUIEvent& event)
 {
-#if ENABLE_SCREENSHOOT
+#if ENABLE_SCREENSHOT
     event.Enable(true);
 #else
     event.Enable(false);
