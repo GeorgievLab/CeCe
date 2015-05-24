@@ -83,7 +83,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     auto imageSize = data.second;
 
     // Create image
-    m_image = Magick::Image(Magick::Geometry(imageSize.getWidth(), imageSize.getHeight()));
+    m_image = Magick::Image(Magick::Geometry(imageSize.getWidth(), imageSize.getHeight()), Magick::Color());
 
     for (unsigned i = 0; i < imageSize.getWidth(); ++i)
     {
