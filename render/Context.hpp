@@ -10,10 +10,12 @@
 #include <memory>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
 #include "render/Camera.hpp"
 #include "render/Position.hpp"
+#include "render/Program.hpp"
 
 /* ************************************************************************ */
 
@@ -24,6 +26,8 @@ namespace render {
 class Buffer;
 class Color;
 class Object;
+class Program;
+class VertexFormat;
 
 /* ************************************************************************ */
 
@@ -70,7 +74,7 @@ public:
      *
      * @return
      */
-    bool isInitialized() noexcept
+    bool isInitialized() NOEXCEPT
     {
         return m_is_init;
     }
@@ -81,7 +85,7 @@ public:
      *
      * @return
      */
-    Camera& getCamera() noexcept
+    Camera& getCamera() NOEXCEPT
     {
         return m_camera;
     }
@@ -92,7 +96,7 @@ public:
      *
      * @return
      */
-    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> getData() const noexcept;
+    std::pair<std::vector<std::uint8_t>, core::Vector<unsigned>> getData() const NOEXCEPT;
 
 
     /**
@@ -100,7 +104,7 @@ public:
      *
      * @return
      */
-    bool isWireframe() const noexcept;
+    bool isWireframe() const NOEXCEPT;
 
 
 // Public Mutators
@@ -112,7 +116,7 @@ public:
      *
      * @param flag
      */
-    void setWireframe(bool flag) noexcept;
+    void setWireframe(bool flag) NOEXCEPT;
 
 
 // Public Operations
@@ -122,7 +126,7 @@ public:
     /**
      * @brief Initialize context.
      */
-    void init() noexcept;
+    void init() NOEXCEPT;
 
 
     /**
@@ -131,7 +135,7 @@ public:
      * @param width  View width.
      * @param height View height.
      */
-    void setView(int width, int height) noexcept;
+    void setView(int width, int height) NOEXCEPT;
 
 
     /**
@@ -140,7 +144,7 @@ public:
      * @param width  View width.
      * @param height View height.
      */
-    void setStencilBuffer(float width, float height) noexcept;
+    void setStencilBuffer(float width, float height) NOEXCEPT;
 
 
     /**
@@ -149,31 +153,31 @@ public:
      * @param width  View width.
      * @param height View height.
      */
-    void frameBegin(int width, int height) noexcept;
+    void frameBegin(int width, int height) NOEXCEPT;
 
 
     /**
      * @brief End frame rendering.
      */
-    void frameEnd() noexcept;
+    void frameEnd() NOEXCEPT;
 
 
     /**
      * @brief Push transformation matrix.
      */
-    void matrixPush() noexcept;
+    void matrixPush() NOEXCEPT;
 
 
     /**
      * @brief Pop transformation matrix.
      */
-    void matrixPop() noexcept;
+    void matrixPop() NOEXCEPT;
 
 
     /**
      * @brief Set transformation matrix to identity.
      */
-    void matrixIdentity() noexcept;
+    void matrixIdentity() NOEXCEPT;
 
 
     /**
@@ -181,7 +185,7 @@ public:
      *
      * @param pos Translation vector.
      */
-    void matrixTranslate(const PositionVector& pos) noexcept;
+    void matrixTranslate(const core::PositionVector& pos) NOEXCEPT;
 
 
     /**
@@ -189,7 +193,7 @@ public:
      *
      * @param scale Scale vector.
      */
-    void matrixScale(const Vector<float>& scale) noexcept;
+    void matrixScale(const core::Vector<float>& scale) NOEXCEPT;
 
 
     /**
@@ -197,9 +201,9 @@ public:
      *
      * @param scale Scale number.
      */
-    void matrixScale(float scale) noexcept
+    void matrixScale(float scale) NOEXCEPT
     {
-        return matrixScale(Vector<float>{scale});
+        return matrixScale(core::Vector<float>{scale});
     }
 
 
@@ -208,7 +212,7 @@ public:
      *
      * @param angle Angle of the rotation.
      */
-    void matrixRotate(units::Angle angle) noexcept;
+    void matrixRotate(core::units::Angle angle) NOEXCEPT;
 
 
     /**
@@ -216,7 +220,7 @@ public:
      *
      * @param color
      */
-    void setColor(const Color& color) noexcept;
+    void setColor(const Color& color) NOEXCEPT;
 
 
     /**
@@ -224,7 +228,60 @@ public:
      *
      * @param buffer A pointer to used buffer. Can be nullptr to unbind buffer.
      */
-    void setVertexBuffer(Buffer* buffer) noexcept;
+    void setVertexBuffer(Buffer* buffer) NOEXCEPT;
+
+
+	/**
+	* @brief Set vertex buffer format.
+	*
+	* @param format A pointer to vertex buffer format.
+	*/
+	void setVertexFormat(VertexFormat* format) NOEXCEPT;
+
+
+	/**
+	* @brief Set shader program.
+	*
+	* @param program A pointer to shader program.
+	*/
+	void setProgram(Program* program) NOEXCEPT;
+
+
+	/**
+	* @brief Set shader program parameter.
+	*
+	* @param id    Parameter ID.
+	* @param value Parameter value.
+	*/
+	void setProgramParam(Program::UniformId id, bool value) NOEXCEPT;
+
+
+	/**
+	* @brief Set shader program parameter.
+	*
+	* @param id    Parameter ID.
+	* @param value Parameter value.
+	*/
+	void setProgramParam(Program::UniformId id, int value) NOEXCEPT;
+
+
+	/**
+	* @brief Set shader program parameter.
+	*
+	* @param id    Parameter ID.
+	* @param value Parameter value.
+	*/
+	void setProgramParam(Program::UniformId id, float value) NOEXCEPT;
+
+
+	/**
+	* @brief Set shader program parameter.
+	*
+	* @param id     Parameter ID.
+	* @param value1 Parameter value.
+	* @param value2 Parameter value.
+	*/
+	void setProgramParam(Program::UniformId id, int value1, int value2) NOEXCEPT;
 
 
     /**

@@ -11,8 +11,8 @@
 #if __linux__
 // Linux
 #include <dlfcn.h>
-#elif __WIN32__
-#include <windows.h>
+#elif _WIN32
+// Nothing 
 #else
 #error Unsupported platform
 #endif
@@ -29,7 +29,7 @@ namespace {
 
 #if __linux__
 const std::string g_prefix = "libmodule-";
-#elif __WIN32__
+#elif _WIN32
 const std::string g_prefix = "libmodule-";
 #endif
 
@@ -37,7 +37,7 @@ const std::string g_prefix = "libmodule-";
 
 #if __linux__
 const std::string g_extension = ".so";
-#elif __WIN32__
+#elif _WIN32
 const std::string g_extension = ".dll";
 #endif
 
@@ -72,7 +72,7 @@ const std::map<std::string, Library::CreateFn> Library::s_buildinLibraries{
 /**
  * @brief OS dependent library implementation.
  */
-class Library::Impl
+struct Library::Impl
 {
 
 // Public Ctors & Dtors
@@ -87,10 +87,10 @@ public:
     explicit Impl(const std::string& name)
         : m_filename(g_prefix + name + g_extension)
     {
-        Log::debug("Loading shared library: ", m_filename);
+        core::Log::debug("Loading shared library: ", m_filename);
 #if __linux__
         m_ptr = dlopen(m_filename.c_str(), RTLD_LAZY);
-#elif __WIN32__
+#elif _WIN32
         m_ptr = LoadLibrary(m_filename.c_str());
 #endif
     }
@@ -101,12 +101,12 @@ public:
      */
     ~Impl()
     {
-        Log::debug("Closing shared library: ", m_filename);
+        core::Log::debug("Closing shared library: ", m_filename);
 #if __linux__
         if (m_ptr)
             dlclose(m_ptr);
-#elif __WIN32__
-        FreeLibrary(m_impl->lib);
+#elif _WIN32
+        FreeLibrary(m_ptr);
 #endif
     }
 
@@ -120,7 +120,7 @@ public:
      *
      * @return
      */
-    bool isLoaded() const noexcept
+    bool isLoaded() const NOEXCEPT
     {
         return m_ptr != nullptr;
     }
@@ -131,10 +131,12 @@ public:
      *
      * @return
      */
-    std::string getError() const noexcept
+    std::string getError() const NOEXCEPT
     {
 #if __linux__
         return dlerror();
+#elif _WIN32
+		return "Error code: " + std::to_string(GetLastError());
 #endif
     }
 
@@ -144,11 +146,11 @@ public:
      *
      * @param name
      */
-    void* getAddr(const char* name) const noexcept
+    void* getAddr(const char* name) const NOEXCEPT
     {
 #if __linux__
         return dlsym(m_ptr, name);
-#elif __WIN32__
+#elif _WIN32
         return GetProcAddress(m_ptr, name);
 #endif
     }
@@ -160,7 +162,7 @@ public:
      * @param name
      */
     template<typename T>
-    T getAddr(const char* name) const noexcept
+    T getAddr(const char* name) const NOEXCEPT
     {
         return reinterpret_cast<T>(reinterpret_cast<std::intptr_t>(getAddr(name)));
     }
@@ -174,8 +176,8 @@ private:
 
 #if __linux__
     void* m_ptr;
-#elif __WIN32__
-    HMODULE* m_ptr;
+#elif _WIN32
+    HMODULE m_ptr;
 #endif
 };
 
@@ -219,7 +221,7 @@ Library::~Library()
 
 /* ************************************************************************ */
 
-bool Library::isLoaded() const noexcept
+bool Library::isLoaded() const NOEXCEPT
 {
     if (!m_impl)
         return true;
@@ -228,7 +230,7 @@ bool Library::isLoaded() const noexcept
 }
 /* ************************************************************************ */
 
-std::string Library::getError() const noexcept
+std::string Library::getError() const NOEXCEPT
 {
     if (!m_impl)
         return {};

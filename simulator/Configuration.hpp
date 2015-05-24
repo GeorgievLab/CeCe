@@ -6,6 +6,9 @@
 // C++
 #include <string>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
 namespace simulator {
@@ -40,7 +43,7 @@ public:
      *
      * @return
      */
-    virtual const std::string& getSourcePath() const noexcept = 0;
+    virtual const std::string& getSourcePath() const NOEXCEPT = 0;
 
 
     /**
@@ -150,7 +153,7 @@ public:
      *
      * @return
      */
-    std::string buildFilePath(const std::string& filename) const noexcept;
+    std::string buildFilePath(const std::string& filename) const NOEXCEPT;
 
 
     /**

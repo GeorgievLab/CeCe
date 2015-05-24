@@ -6,6 +6,9 @@
 // C++
 #include <array>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
 namespace render {
@@ -61,7 +64,7 @@ public:
      *
      * @return
      */
-    Id getId() const noexcept
+    Id getId() const NOEXCEPT
     {
         return m_id;
     }

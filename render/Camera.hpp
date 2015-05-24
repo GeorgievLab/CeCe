@@ -6,6 +6,9 @@
 // Physics
 #include "render/Position.hpp"
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
 namespace render {
@@ -37,7 +40,7 @@ public:
      *
      * @return
      */
-    const Position& getPosition() const noexcept
+    const Position& getPosition() const NOEXCEPT
     {
         return m_position;
     }
@@ -48,7 +51,7 @@ public:
      *
      * @return
      */
-    float getZoom() const noexcept
+    float getZoom() const NOEXCEPT
     {
         return m_zoom;
     }
@@ -63,7 +66,7 @@ public:
      *
      * @param pos
      */
-    void setPosition(const Position& pos) noexcept
+    void setPosition(const Position& pos) NOEXCEPT
     {
         m_position = pos;
     }
@@ -74,7 +77,7 @@ public:
      *
      * @param zoom
      */
-    void setZoom(float zoom) noexcept
+    void setZoom(float zoom) NOEXCEPT
     {
         m_zoom = zoom;
     }

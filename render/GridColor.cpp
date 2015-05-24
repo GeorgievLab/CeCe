@@ -12,8 +12,13 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 
+#ifdef _WIN32
+#include "render/glext.h"
+#endif
+
 // Simulator
 #include "render/errors.hpp"
+#include "render/Context.hpp"
 
 /* ************************************************************************ */
 
@@ -54,7 +59,7 @@ GridColor::GridColor(Context& context)
 
 /* ************************************************************************ */
 
-GridColor::GridColor(Context& context, Vector<PositionType> size)
+GridColor::GridColor(Context& context, core::Vector<PositionType> size)
     : GridColor(context)
 {
     resize(std::move(size));
@@ -62,7 +67,7 @@ GridColor::GridColor(Context& context, Vector<PositionType> size)
 
 /* ************************************************************************ */
 
-void GridColor::draw(Context& context) noexcept
+void GridColor::draw(Context& context) NOEXCEPT
 {
     if (m_colorsUpdated)
         sync();
@@ -75,7 +80,8 @@ void GridColor::draw(Context& context) noexcept
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
 
     // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
+	context.setVertexBuffer(&m_buffer);
+
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
@@ -87,7 +93,8 @@ void GridColor::draw(Context& context) noexcept
     // Disable states
     gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glDisableClientState(GL_VERTEX_ARRAY));
-    gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    
+	context.setVertexBuffer(nullptr);
 
     gl(glBindTexture(GL_TEXTURE_2D, 0));
     gl(glDisable(GL_TEXTURE_2D));
@@ -95,7 +102,7 @@ void GridColor::draw(Context& context) noexcept
 
 /* ************************************************************************ */
 
-void GridColor::resize(Vector<PositionType> size)
+void GridColor::resize(core::Vector<PositionType> size)
 {
     GridBase::resize(std::move(size));
 

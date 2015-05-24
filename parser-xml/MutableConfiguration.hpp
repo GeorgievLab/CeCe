@@ -35,7 +35,7 @@ public:
      * @param node
      * @param filename
      */
-    explicit MutableConfiguration(pugi::xml_node& node, std::string filename = {}) noexcept
+    explicit MutableConfiguration(pugi::xml_node& node, std::string filename = {}) NOEXCEPT
         : m_node(node)
         , m_sourcePath(std::move(filename))
     {
@@ -52,7 +52,7 @@ public:
      *
      * @return
      */
-    const std::string& getSourcePath() const noexcept override
+    const std::string& getSourcePath() const NOEXCEPT override
     {
         return m_sourcePath;
     }

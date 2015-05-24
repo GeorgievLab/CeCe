@@ -18,7 +18,7 @@ namespace cell {
 
 /* ************************************************************************ */
 
-Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
+Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) NOEXCEPT
     : CellBase(simulation, type)
 {
 #if ENABLE_PHYSICS
@@ -39,7 +39,7 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noex
 
 /* ************************************************************************ */
 
-void Cell::update(units::Duration dt)
+void Cell::update(core::units::Duration dt)
 {
     CellBase::update(dt);
 

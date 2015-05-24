@@ -9,12 +9,9 @@
 #include <array>
 #include <cassert>
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
-// Simulator
-#include "render/errors.hpp"
+// Render
+#include "render/Context.hpp"
+#include "render/VertexFormat.hpp"
 
 // Shaders
 #include "vs.cell.hpp"
@@ -29,8 +26,8 @@ namespace cell {
 
 struct Vertex
 {
-    GLfloat x, y;
-    GLfloat u, v;
+    float x, y;
+    float u, v;
 };
 
 /* ************************************************************************ */
@@ -57,29 +54,24 @@ DrawableCell::DrawableCell(render::Context& context)
 
 /* ************************************************************************ */
 
-void DrawableCell::draw(render::Context& context, float scale) noexcept
+void DrawableCell::draw(render::Context& context, float scale) NOEXCEPT
 {
-    gl(glUseProgram(m_program.getId()));
+	static render::VertexFormat vformat{
+		render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
+		render::VertexElement(render::VertexElementType::Normal, render::DataType::Float, 2)
+	};
 
-    // Set interpolate flag
-    //gl(glUniform1f(m_uniformSize, scale));
-
-    // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
-    gl(glEnableClientState(GL_VERTEX_ARRAY));
-    gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
-    gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
-    gl(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(GLfloat))));
+	// Set pointers
+	context.setProgram(&m_program);
+	context.setVertexBuffer(&m_buffer);
+	context.setVertexFormat(&vformat);
 
     // Draw circle
-    gl(glDrawArrays(GL_QUADS, 0, 4));
+	context.draw(render::PrimitiveType::Quads, 0, 4);
 
-    // Disable states
-    gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
-    gl(glDisableClientState(GL_VERTEX_ARRAY));
-    gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
-
-    gl(glUseProgram(0));
+	context.setVertexFormat(nullptr);
+	context.setVertexBuffer(nullptr);
+	context.setProgram(nullptr);
 }
 
 /* ************************************************************************ */

@@ -45,7 +45,7 @@ void Simulator::step()
 
 /* ************************************************************************ */
 
-bool Simulator::update(units::Duration dt)
+bool Simulator::update(core::units::Duration dt)
 {
     assert(m_simulation);
     return m_simulation->update(dt);

@@ -16,15 +16,31 @@
 #include <algorithm>
 
 // OpenGL
+#ifdef __linux__
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
-#include <GL/glu.h>
+#elif defined(_WIN32)
+#include <GL/gl.h>
+#include "render/glext.h"
+#pragma comment(lib, "opengl32.lib")
+#endif
 
 // Simulator
 #include "render/Color.hpp"
 #include "render/Buffer.hpp"
 #include "render/errors.hpp"
 #include "render/Object.hpp"
+#include "render/VertexFormat.hpp"
+
+/* ************************************************************************ */
+
+#ifdef _WIN32
+static PFNGLBINDBUFFERPROC glBindBuffer = nullptr;
+static PFNGLUSEPROGRAMPROC glUseProgram = nullptr;
+static PFNGLUNIFORM1IPROC glUniform1i = nullptr;
+static PFNGLUNIFORM2IPROC glUniform2i = nullptr;
+static PFNGLUNIFORM1FPROC glUniform1f = nullptr;
+#endif
 
 /* ************************************************************************ */
 
@@ -39,7 +55,7 @@ namespace render {
  *
  * @return
  */
-static GLenum convert(PrimitiveType type) noexcept
+static GLenum convert(PrimitiveType type) NOEXCEPT
 {
     switch (type)
     {
@@ -49,6 +65,35 @@ static GLenum convert(PrimitiveType type) noexcept
     }
 
     return 0;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Convert data type.
+ *
+ * @param type
+ *
+ * @return
+ */
+GLenum convert(DataType type)
+{
+	// GL_SHORT, GL_INT, GL_FLOAT, or GL_DOUBLE
+
+	switch (type)
+	{
+	default: break;
+	case DataType::Byte:	return GL_BYTE;
+	case DataType::Ubyte:	return GL_UNSIGNED_BYTE;
+	case DataType::Short:	return GL_SHORT;
+	case DataType::Ushort:	return GL_UNSIGNED_SHORT;
+	case DataType::Int:		return GL_INT;
+	case DataType::Uint:	return GL_UNSIGNED_INT;
+	case DataType::Float:	return GL_FLOAT;
+	case DataType::Double:	return GL_DOUBLE;
+	}
+
+	return GL_NONE;
 }
 
 /* ************************************************************************ */
@@ -67,9 +112,9 @@ Context::~Context()
 
 /* ************************************************************************ */
 
-std::pair<std::vector<std::uint8_t>, Vector<unsigned>> Context::getData() const noexcept
+std::pair<std::vector<std::uint8_t>, core::Vector<unsigned>> Context::getData() const NOEXCEPT
 {
-    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> result;
+    std::pair<std::vector<std::uint8_t>, core::Vector<unsigned>> result;
 
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -80,7 +125,7 @@ std::pair<std::vector<std::uint8_t>, Vector<unsigned>> Context::getData() const 
     auto height = viewport[3];
 
     result.first.resize(3 * width * height);
-    result.second = Vector<unsigned>(width, height);
+    result.second = core::Vector<unsigned>(width, height);
 
     glReadBuffer(GL_FRONT);
     glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, result.first.data());
@@ -90,7 +135,7 @@ std::pair<std::vector<std::uint8_t>, Vector<unsigned>> Context::getData() const 
 
 /* ************************************************************************ */
 
-bool Context::isWireframe() const noexcept
+bool Context::isWireframe() const NOEXCEPT
 {
     GLint val;
     glGetIntegerv(GL_POLYGON_MODE, &val);
@@ -99,7 +144,7 @@ bool Context::isWireframe() const noexcept
 
 /* ************************************************************************ */
 
-void Context::setWireframe(bool flag) noexcept
+void Context::setWireframe(bool flag) NOEXCEPT
 {
     if (flag)
     {
@@ -113,7 +158,7 @@ void Context::setWireframe(bool flag) noexcept
 
 /* ************************************************************************ */
 
-void Context::init() noexcept
+void Context::init() NOEXCEPT
 {
     assert(!isInitialized());
 
@@ -133,7 +178,7 @@ void Context::init() noexcept
 
 /* ************************************************************************ */
 
-void Context::setView(int width, int height) noexcept
+void Context::setView(int width, int height) NOEXCEPT
 {
     if (!isInitialized())
         return;
@@ -167,7 +212,7 @@ void Context::setView(int width, int height) noexcept
 
 /* ************************************************************************ */
 
-void Context::setStencilBuffer(float width, float height) noexcept
+void Context::setStencilBuffer(float width, float height) NOEXCEPT
 {
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_STENCIL_TEST);
@@ -202,7 +247,7 @@ void Context::setStencilBuffer(float width, float height) noexcept
 
 /* ************************************************************************ */
 
-void Context::frameBegin(int width, int height) noexcept
+void Context::frameBegin(int width, int height) NOEXCEPT
 {
     assert(isInitialized());
 
@@ -216,7 +261,7 @@ void Context::frameBegin(int width, int height) noexcept
 
 /* ************************************************************************ */
 
-void Context::frameEnd() noexcept
+void Context::frameEnd() NOEXCEPT
 {
     assert(isInitialized());
 
@@ -227,59 +272,167 @@ void Context::frameEnd() noexcept
 
 /* ************************************************************************ */
 
-void Context::matrixPush() noexcept
+void Context::matrixPush() NOEXCEPT
 {
     gl(glPushMatrix());
 }
 
 /* ************************************************************************ */
 
-void Context::matrixPop() noexcept
+void Context::matrixPop() NOEXCEPT
 {
     gl(glPopMatrix());
 }
 
 /* ************************************************************************ */
 
-void Context::matrixIdentity() noexcept
+void Context::matrixIdentity() NOEXCEPT
 {
     gl(glLoadIdentity());
 }
 
 /* ************************************************************************ */
 
-void Context::matrixTranslate(const PositionVector& pos) noexcept
+void Context::matrixTranslate(const core::PositionVector& pos) NOEXCEPT
 {
     gl(glTranslatef(pos.getX(), pos.getY(), 0));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixScale(const Vector<float>& scale) noexcept
+void Context::matrixScale(const core::Vector<float>& scale) NOEXCEPT
 {
     gl(glScalef(scale.getX(), scale.getY(), 1));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixRotate(units::Angle angle) noexcept
+void Context::matrixRotate(core::units::Angle angle) NOEXCEPT
 {
-    gl(glRotatef(units::rad2deg(angle), 0.f, 0.f, 1.f));
+    gl(glRotatef(core::units::rad2deg(angle), 0.f, 0.f, 1.f));
 }
 
 /* ************************************************************************ */
 
-void Context::setColor(const Color& color) noexcept
+void Context::setColor(const Color& color) NOEXCEPT
 {
     gl(glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 }
 
 /* ************************************************************************ */
 
-void Context::setVertexBuffer(Buffer* buffer) noexcept
+void Context::setVertexBuffer(Buffer* buffer) NOEXCEPT
 {
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, buffer ? buffer->getId() : 0));
+}
+
+/* ************************************************************************ */
+
+void Context::setVertexFormat(VertexFormat* format) NOEXCEPT
+{
+	if (format)
+	{
+		size_t offset = 0;
+		const unsigned char* ptr = nullptr;
+		const auto size = format->getSize();
+
+		for (const auto& e : *format)
+		{
+			switch (e.getType())
+			{
+			default:
+				break;
+
+			case render::VertexElementType::Position:
+				glEnableClientState(GL_VERTEX_ARRAY);
+				glVertexPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset);
+				//glVertexAttribPointer(i, e.getCount(), Convert(e.getDataType()), GL_FALSE, size, reinterpret_cast<void*>(offset));
+				break;
+
+			case render::VertexElementType::Color:
+				glEnableClientState(GL_COLOR_ARRAY);
+				glColorPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset);
+				//glVertexAttribPointer(i, e.getCount(), Convert(e.getDataType()), GL_TRUE, size, reinterpret_cast<void*>(offset));
+				break;
+
+			case render::VertexElementType::TexCoord:
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset);
+				break;
+
+			}
+
+			// Add size
+			offset += e.getSize();
+		}
+	}
+	else
+	{
+		gl(glEnableClientState(GL_COLOR_ARRAY));
+		gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
+		gl(glDisableClientState(GL_VERTEX_ARRAY));
+	}
+}
+
+/* ************************************************************************ */
+
+void Context::setProgram(Program* program) NOEXCEPT
+{
+#ifdef _WIN32
+	if (!glUseProgram)
+		glUseProgram = (PFNGLUSEPROGRAMPROC) wglGetProcAddress("glUseProgram");
+#endif
+
+	gl(glUseProgram(program ? program->getId() : 0));
+}
+
+/* ************************************************************************ */
+
+void Context::setProgramParam(Program::UniformId id, bool value) NOEXCEPT
+{
+#ifdef _WIN32
+	if (!glUniform1i)
+		glUniform1i = (PFNGLUNIFORM1IPROC) wglGetProcAddress("glUniform1i");
+#endif
+
+	gl(glUniform1i(id, int(value)));
+}
+
+/* ************************************************************************ */
+
+void Context::setProgramParam(Program::UniformId id, int value) NOEXCEPT
+{
+#ifdef _WIN32
+	if (!glUniform1i)
+		glUniform1i = (PFNGLUNIFORM1IPROC) wglGetProcAddress("glUniform1i");
+#endif
+
+	gl(glUniform1i(id, value));
+}
+
+/* ************************************************************************ */
+
+void Context::setProgramParam(Program::UniformId id, int value1, int value2) NOEXCEPT
+{
+#ifdef _WIN32
+	if (!glUniform2i)
+		glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
+#endif
+
+	gl(glUniform2i(id, value1, value2));
+}
+
+/* ************************************************************************ */
+
+void Context::setProgramParam(Program::UniformId id, float value) NOEXCEPT
+{
+#ifdef _WIN32
+	if (!glUniform1f)
+		glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
+#endif
+
+	gl(glUniform1f(id, value));
 }
 
 /* ************************************************************************ */

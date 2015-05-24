@@ -4,6 +4,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "simulator/Module.hpp"
 
 /* ************************************************************************ */
@@ -34,7 +35,7 @@ public:
      * @param dt     Simulation time step.
      * @param world  World object.
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+	void update(core::units::Duration dt, simulator::Simulation& simulation) override;
 
 
 };

@@ -13,6 +13,10 @@
 
 /* ************************************************************************ */
 
+namespace core {
+
+/* ************************************************************************ */
+
 /**
  * @brief 2D matrix of fixed size.
  */
@@ -35,7 +39,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    constexpr Matrix() = default;
+    CONSTEXPR Matrix() = default;
 
 
     /**
@@ -43,7 +47,7 @@ public:
      *
      * @param src Initial data
      */
-    Matrix(const T (&src)[SIZE][SIZE]) noexcept
+    Matrix(const T (&src)[SIZE][SIZE]) NOEXCEPT
     {
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
@@ -62,7 +66,7 @@ public:
      *
      * @return
      */
-    Matrix& operator=(const Matrix& v) noexcept
+    Matrix& operator=(const Matrix& v) NOEXCEPT
     {
         std::memcpy(data, v.data, sizeof(data));
         return *this;
@@ -76,7 +80,7 @@ public:
      *
      * @return
      */
-    T* operator[](unsigned i) noexcept
+	T* operator[](size_t i) NOEXCEPT
     {
         return data[i];
     }
@@ -89,7 +93,7 @@ public:
      *
      * @return
      */
-    const T* operator[](unsigned i) const noexcept
+	const T* operator[](size_t i) const NOEXCEPT
     {
         return data[i];
     }
@@ -102,7 +106,7 @@ public:
      *
      * @return
      */
-    Matrix operator+(const Matrix& v) const noexcept
+    Matrix operator+(const Matrix& v) const NOEXCEPT
     {
         decltype(data) tmp;
 
@@ -121,7 +125,7 @@ public:
      *
      * @return
      */
-    Matrix& operator+=(const Matrix& v) noexcept
+    Matrix& operator+=(const Matrix& v) NOEXCEPT
     {
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
@@ -138,7 +142,7 @@ public:
      *
      * @return
      */
-    Matrix operator+(const T& val) const noexcept
+    Matrix operator+(const T& val) const NOEXCEPT
     {
         decltype(data) tmp;
 
@@ -157,7 +161,7 @@ public:
      *
      * @return
      */
-    Matrix& operator+=(const T& val) noexcept
+    Matrix& operator+=(const T& val) NOEXCEPT
     {
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
@@ -174,7 +178,7 @@ public:
      *
      * @return
      */
-    Matrix operator-(const Matrix& v) const noexcept
+    Matrix operator-(const Matrix& v) const NOEXCEPT
     {
         decltype(data) tmp;
 
@@ -193,7 +197,7 @@ public:
      *
      * @return
      */
-    Matrix& operator-=(const Matrix& v) noexcept
+    Matrix& operator-=(const Matrix& v) NOEXCEPT
     {
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
@@ -210,7 +214,7 @@ public:
      *
      * @return
      */
-    Matrix operator-(const T& val) const noexcept
+    Matrix operator-(const T& val) const NOEXCEPT
     {
         decltype(data) tmp;
 
@@ -229,7 +233,7 @@ public:
      *
      * @return
      */
-    Matrix& operator-=(const T& val) noexcept
+    Matrix& operator-=(const T& val) NOEXCEPT
     {
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
@@ -246,7 +250,7 @@ public:
      *
      * @return
      */
-    Matrix operator*(T val) const noexcept
+    Matrix operator*(T val) const NOEXCEPT
     {
         decltype(data) tmp;
 
@@ -265,7 +269,7 @@ public:
      *
      * @return
      */
-    Matrix& operator*=(T val) noexcept
+    Matrix& operator*=(T val) NOEXCEPT
     {
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
@@ -282,7 +286,7 @@ public:
      *
      * @return
      */
-    Matrix operator/(T val) const noexcept
+    Matrix operator/(T val) const NOEXCEPT
     {
         decltype(data) tmp;
 
@@ -301,7 +305,7 @@ public:
      *
      * @return
      */
-    Matrix& operator/=(T val) noexcept
+    Matrix& operator/=(T val) NOEXCEPT
     {
         for (size_t i = 0; i < SIZE; ++i)
             for (size_t j = 0; j < SIZE; ++j)
@@ -320,7 +324,7 @@ public:
      *
      * @return
      */
-    T sum() const noexcept
+    T sum() const NOEXCEPT
     {
         T val{};
 
@@ -337,7 +341,7 @@ public:
      *
      * @return
      */
-    Matrix& normalize() noexcept
+    Matrix& normalize() NOEXCEPT
     {
         *this /= sum();
         return *this;
@@ -349,7 +353,7 @@ public:
      *
      * @return
      */
-    Matrix normalized() noexcept
+    Matrix normalized() NOEXCEPT
     {
         return *this / sum();
     }
@@ -361,7 +365,7 @@ public:
      * @return
      */
     template<typename F>
-    static Matrix generate(F fn) noexcept
+    static Matrix generate(F fn) NOEXCEPT
     {
         Matrix val;
 
@@ -378,10 +382,10 @@ public:
      *
      * @return
      */
-    static Matrix<Vector<T>, SIZE> makeDistances() noexcept
+    static Matrix<Vector<T>, SIZE> makeDistances() NOEXCEPT
     {
         static_assert(SIZE % 2 == 1, "Size must be odd");
-        static constexpr T HALF = SIZE / T(2);
+        static CONSTEXPR T HALF = SIZE / T(2);
 
         Matrix<Vector<T>, SIZE> val;
 
@@ -393,6 +397,10 @@ public:
     }
 
 };
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 

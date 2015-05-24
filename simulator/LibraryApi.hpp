@@ -8,6 +8,7 @@
 #include <memory>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
@@ -50,7 +51,7 @@ public:
      *
      * @param simulation Simulation.
      */
-    virtual void initSimulation(Simulation& simulation) noexcept
+    virtual void initSimulation(Simulation& simulation) NOEXCEPT
     {
         // Nothing to do
     }
@@ -61,7 +62,7 @@ public:
      *
      * @param simulation Simulation.
      */
-    virtual void finalizeSimulation(Simulation& simulation) noexcept
+    virtual void finalizeSimulation(Simulation& simulation) NOEXCEPT
     {
         // Nothing to do
     }
@@ -75,7 +76,7 @@ public:
      *
      * @return Created module.
      */
-    virtual std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) noexcept
+    virtual std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT
     {
         return nullptr;
     }
@@ -90,7 +91,7 @@ public:
      *
      * @return Created object.
      */
-    virtual std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) noexcept
+    virtual std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT
     {
         return nullptr;
     }
@@ -105,7 +106,7 @@ public:
      *
      * @return Created object.
      */
-    virtual Program createProgram(Simulation& simulation, const std::string& name) noexcept
+    virtual Program createProgram(Simulation& simulation, const std::string& name) NOEXCEPT
     {
         return {};
     }

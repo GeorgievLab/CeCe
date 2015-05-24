@@ -9,6 +9,7 @@
 #include <cassert>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 
 #if ENABLE_RENDER
@@ -55,7 +56,7 @@ public:
      *
      * @return
      */
-    bool isRunning() const noexcept
+    bool isRunning() const NOEXCEPT
     {
         return m_isRunning;
     }
@@ -66,7 +67,7 @@ public:
      *
      * @return A pointer to current simulation or nullptr.
      */
-    Simulation* getSimulation() const noexcept
+    Simulation* getSimulation() const NOEXCEPT
     {
         return m_simulation.get();
     }
@@ -78,7 +79,7 @@ public:
      *
      * @return
      */
-    render::Context& getRenderContext() noexcept
+    render::Context& getRenderContext() NOEXCEPT
     {
         return m_renderContext;
     }
@@ -91,7 +92,7 @@ public:
      *
      * @return
      */
-    bool isDrawInitialized() noexcept
+    bool isDrawInitialized() NOEXCEPT
     {
         return m_renderContext.isInitialized();
     }
@@ -107,7 +108,7 @@ public:
      *
      * @param simulation New simulation.
      */
-    void setSimulation(std::unique_ptr<Simulation> simulation) noexcept
+    void setSimulation(std::unique_ptr<Simulation> simulation) NOEXCEPT
     {
         m_simulation = std::move(simulation);
     }
@@ -145,7 +146,7 @@ public:
      *
      * @return If next step can be calculated.
      */
-    bool update(units::Duration dt);
+	bool update(core::units::Duration dt);
 
 
     /**

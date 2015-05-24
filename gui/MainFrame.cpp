@@ -88,8 +88,8 @@ MainFrame::MainFrame(wxWindow* parent)
     , m_logger(this)
 {
     // Register logger into Log
-    Log::setOutput(&m_logger);
-    Log::setError(&m_logger);
+	core::Log::setOutput(&m_logger);
+	core::Log::setError(&m_logger);
 
     m_fileHistory.UseMenu(m_menuFileRecent);
 
@@ -122,8 +122,8 @@ MainFrame::~MainFrame()
     // Store configuration
     StoreConfig();
 
-    Log::setOutput(&std::cout);
-    Log::setError(&std::cerr);
+	core::Log::setOutput(&std::cout);
+    core::Log::setError(&std::cerr);
 }
 
 /* ************************************************************************ */
@@ -421,7 +421,7 @@ void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnLogMessage(wxCommandEvent& event) noexcept
+void MainFrame::OnLogMessage(wxCommandEvent& event) NOEXCEPT
 {
     // Append text
     m_textCtrlLog->AppendText(event.GetString());

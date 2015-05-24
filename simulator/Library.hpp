@@ -9,6 +9,7 @@
 #include <vector>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
@@ -148,7 +149,7 @@ public:
      *
      * @return
      */
-    bool isLoaded() const noexcept;
+    bool isLoaded() const NOEXCEPT;
 
 
     /**
@@ -156,7 +157,7 @@ public:
      *
      * @return
      */
-    std::string getError() const noexcept;
+    std::string getError() const NOEXCEPT;
 
 
     /**
@@ -164,7 +165,7 @@ public:
      *
      * @return
      */
-    LibraryApi* getApi() const noexcept
+    LibraryApi* getApi() const NOEXCEPT
     {
         return m_api.get();
     }
@@ -175,7 +176,7 @@ public:
      *
      * @return
      */
-    static const std::vector<std::string>& getLibraryPaths() noexcept
+    static const std::vector<std::string>& getLibraryPaths() NOEXCEPT
     {
         return s_libraryPaths;
     }
@@ -188,7 +189,7 @@ public:
      *
      * @return
      */
-    static bool isBuildin(const std::string& name) noexcept
+    static bool isBuildin(const std::string& name) NOEXCEPT
     {
         return s_buildinLibraries.find(name) != s_buildinLibraries.end();
     }

@@ -6,9 +6,12 @@
 // C++
 #include <ostream>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
-inline namespace core {
+namespace core {
 
 /* ************************************************************************ */
 
@@ -37,7 +40,7 @@ public:
      *
      * @param os
      */
-    static void setOutput(std::ostream* os) noexcept
+    static void setOutput(std::ostream* os) NOEXCEPT
     {
         m_output = os;
     }
@@ -48,7 +51,7 @@ public:
      *
      * @param os
      */
-    static void setError(std::ostream* os) noexcept
+    static void setError(std::ostream* os) NOEXCEPT
     {
         m_error = os;
     }

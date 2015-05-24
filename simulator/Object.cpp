@@ -30,7 +30,7 @@ namespace {
  *
  * @return
  */
-b2BodyType convert(Object::Type type) noexcept
+b2BodyType convert(Object::Type type) NOEXCEPT
 {
     switch (type)
     {
@@ -51,7 +51,7 @@ b2BodyType convert(Object::Type type) noexcept
  *
  * @return
  */
-Object::Type convert(b2BodyType type) noexcept
+Object::Type convert(b2BodyType type) NOEXCEPT
 {
     switch (type)
     {
@@ -72,7 +72,7 @@ Object::IdType s_id = 0;
 
 /* ************************************************************************ */
 
-Object::Object(Simulation& simulation, Type type) noexcept
+Object::Object(Simulation& simulation, Type type) NOEXCEPT
     : m_simulation(simulation)
     , m_id(++s_id)
 #if !ENABLE_PHYSICS
@@ -100,7 +100,7 @@ Object::~Object()
 
 /* ************************************************************************ */
 
-Object::Type Object::getType() const noexcept
+Object::Type Object::getType() const NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -112,7 +112,7 @@ Object::Type Object::getType() const noexcept
 
 /* ************************************************************************ */
 
-PositionVector Object::getPosition() const noexcept
+core::PositionVector Object::getPosition() const NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -125,7 +125,7 @@ PositionVector Object::getPosition() const noexcept
 
 /* ************************************************************************ */
 
-units::Angle Object::getRotation() const noexcept
+core::units::Angle Object::getRotation() const NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -137,7 +137,7 @@ units::Angle Object::getRotation() const noexcept
 
 /* ************************************************************************ */
 
-VelocityVector Object::getVelocity() const noexcept
+core::VelocityVector Object::getVelocity() const NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -150,7 +150,7 @@ VelocityVector Object::getVelocity() const noexcept
 
 /* ************************************************************************ */
 
-void Object::setType(Type type) noexcept
+void Object::setType(Type type) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -162,7 +162,7 @@ void Object::setType(Type type) noexcept
 
 /* ************************************************************************ */
 
-void Object::setPosition(PositionVector pos) noexcept
+void Object::setPosition(core::PositionVector pos) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -174,7 +174,7 @@ void Object::setPosition(PositionVector pos) noexcept
 
 /* ************************************************************************ */
 
-void Object::setRotation(units::Angle angle) noexcept
+void Object::setRotation(core::units::Angle angle) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -186,7 +186,7 @@ void Object::setRotation(units::Angle angle) noexcept
 
 /* ************************************************************************ */
 
-void Object::setVelocity(VelocityVector vel) noexcept
+void Object::setVelocity(core::VelocityVector vel) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -198,7 +198,7 @@ void Object::setVelocity(VelocityVector vel) noexcept
 
 /* ************************************************************************ */
 
-void Object::applyForce(const ForceVector& force) noexcept
+void Object::applyForce(const core::ForceVector& force) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -211,7 +211,7 @@ void Object::applyForce(const ForceVector& force) noexcept
 
 /* ************************************************************************ */
 
-void Object::applyForce(const ForceVector& force, const PositionVector& pos) noexcept
+void Object::applyForce(const core::ForceVector& force, const core::PositionVector& pos) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -223,7 +223,7 @@ void Object::applyForce(const ForceVector& force, const PositionVector& pos) noe
 
 /* ************************************************************************ */
 
-void Object::update(units::Duration dt)
+void Object::update(core::units::Duration dt)
 {
 #if !ENABLE_PHYSICS
     // Calculate new object position
@@ -240,7 +240,7 @@ void Object::update(units::Duration dt)
 void Object::configure(const ConfigurationBase& config, Simulation& simulation)
 {
     config.callIfSetString("position", [this](const std::string& value) {
-        setPosition(parser::parse_vector<units::Length>(value));
+		setPosition(parser::parse_vector<core::units::Length>(value));
     });
 
     config.callIfSetString("program", [this, &simulation](const std::string& value) {

@@ -4,6 +4,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
 #include "render/Buffer.hpp"
@@ -48,7 +49,7 @@ public:
      *
      * @param context
      */
-    void draw(render::Context& context, float size, float budSize) noexcept;
+    void draw(render::Context& context, float size, float budSize) NOEXCEPT;
 
 
 // Private Data Members

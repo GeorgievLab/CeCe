@@ -8,6 +8,7 @@
 #include <utility>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "render/Context.hpp"
 
 /* ************************************************************************ */
@@ -130,7 +131,7 @@ public:
     /**
      * @brief Check if pointer is set.
      */
-    explicit operator bool() const noexcept
+    explicit operator bool() const NOEXCEPT
     {
         return m_ptr != nullptr;
     }
@@ -141,7 +142,7 @@ public:
      *
      * @return
      */
-    T& operator*() const noexcept
+    T& operator*() const NOEXCEPT
     {
         assert(m_ptr);
         return *m_ptr;
@@ -153,7 +154,7 @@ public:
      *
      * @return
      */
-    T* operator->() const noexcept
+    T* operator->() const NOEXCEPT
     {
         assert(m_ptr);
         return m_ptr;
@@ -169,7 +170,7 @@ public:
      *
      * @return
      */
-    T* get() const noexcept
+    T* get() const NOEXCEPT
     {
         return m_ptr;
     }

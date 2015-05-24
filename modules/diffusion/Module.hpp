@@ -4,6 +4,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Grid.hpp"
 #include "simulator/Module.hpp"
 
@@ -42,6 +43,12 @@ public:
 public:
 
 
+	/**
+	* @brief Constructor.
+	*/
+	Module();
+
+
     /**
      * @brief Destructor.
      */
@@ -57,7 +64,7 @@ public:
      *
      * @return
      */
-    SignalGrid& getGrid() noexcept
+    SignalGrid& getGrid() NOEXCEPT
     {
         return m_grid;
     }
@@ -68,7 +75,7 @@ public:
      *
      * @return
      */
-    const SignalGrid& getGrid() const noexcept
+    const SignalGrid& getGrid() const NOEXCEPT
     {
         return m_grid;
     }
@@ -79,7 +86,7 @@ public:
      *
      * @return
      */
-    Coefficients getCoefficients() const noexcept
+    Coefficients getCoefficients() const NOEXCEPT
     {
         return m_coefficients;
     }
@@ -94,7 +101,7 @@ public:
      *
      * @param size New grid size.
      */
-    void setSize(const Vector<SignalGrid::SizeType>& size)
+    void setSize(const core::Vector<SignalGrid::SizeType>& size)
     {
         m_grid.resize(size);
         m_gridBack.resize(size);
@@ -106,7 +113,7 @@ public:
      *
      * @param coefficients
      */
-    void setCoefficients(Coefficients coefficients) noexcept
+    void setCoefficients(Coefficients coefficients) NOEXCEPT
     {
         m_coefficients = coefficients;
     }
@@ -118,7 +125,7 @@ public:
      * @param pos
      * @param value
      */
-    void setCoefficient(unsigned int pos, float value) noexcept
+    void setCoefficient(unsigned int pos, float value) NOEXCEPT
     {
         m_coefficients[pos] = value;
     }
@@ -134,7 +141,7 @@ public:
      * @param dt    Simulation time step.
      * @param world World object.
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void update(core::units::Duration dt, simulator::Simulation& simulation) override;
 
 
     /**
@@ -173,16 +180,7 @@ private:
     render::Color m_background = render::colors::BLACK;
 
     /// Signal colors.
-    std::vector<render::Color> m_colors{{
-        render::colors::CYAN,
-        render::colors::MAGENTA,
-        render::colors::YELLOW,
-        render::colors::BLUE,
-        render::colors::RED,
-        render::colors::GREEN,
-        render::Color{1, 0.894f, 0.769f}
-    }};
-
+	std::vector<render::Color> m_colors;
 
 #if ENABLE_RENDER
     /// Drawable signal grid

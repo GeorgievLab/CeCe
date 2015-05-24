@@ -10,8 +10,25 @@
 #include <cassert>
 #include <cmath>
 
+// OpenGL
+#ifdef __linux__
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#elif defined(_WIN32)
+#include <GL/gl.h>
+#include "render/glext.h"
+#pragma comment(lib, "opengl32.lib")
+#endif
+
 // Simulator
 #include "render/errors.hpp"
+#include "render/Context.hpp"
+
+/* ************************************************************************ */
+
+#ifdef _WIN32
+static PFNGLACTIVETEXTUREPROC glActiveTexture = nullptr;
+#endif
 
 /* ************************************************************************ */
 
@@ -92,9 +109,17 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-SignalGridDrawable::SignalGridDrawable(render::Context& context, Vector<unsigned int> size, const Signal* data)
+SignalGridDrawable::SignalGridDrawable(render::Context& context, core::Vector<unsigned int> size, const Signal* data)
     : m_buffer(context, g_vertices.size() * sizeof(decltype(g_vertices)::value_type), g_vertices.data())
 {
+	m_colors.push_back(render::colors::CYAN);
+	m_colors.push_back(render::colors::MAGENTA);
+	m_colors.push_back(render::colors::YELLOW);
+	m_colors.push_back(render::colors::BLUE);
+	m_colors.push_back(render::colors::RED);
+	m_colors.push_back(render::colors::GREEN);
+	m_colors.push_back(render::Color{ 1, 0.894f, 0.769f });
+
     // Generate texture
     gl(glGenTextures(1, &m_texture));
 
@@ -109,8 +134,8 @@ SignalGridDrawable::SignalGridDrawable(render::Context& context, Vector<unsigned
     m_program.init(m_vertexShader, m_fragmentShader);
 
     // Fetch data pointers
-    gl(m_sizePtr = glGetUniformLocation(m_program.getId(), "size"));
-    gl(m_interpolatePtr = glGetUniformLocation(m_program.getId(), "interpolate"));
+    m_sizePtr = m_program.getUniformId("size");
+	m_interpolatePtr = m_program.getUniformId("interpolate");
 
     resize(size, data);
 }
@@ -126,26 +151,29 @@ SignalGridDrawable::~SignalGridDrawable()
 
 /* ************************************************************************ */
 
-void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
+void SignalGridDrawable::draw(render::Context& context) NOEXCEPT
 {
-    gl(glPushMatrix());
-    gl(glScalef(scale.getX(), scale.getY(), 1));
-
     // Use texture
     gl(glEnable(GL_TEXTURE_2D));
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
 
-    gl(glUseProgram(m_program.getId()));
+#ifdef _WIN32
+	if (!glActiveTexture)
+		glActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
+#endif
+
+	context.setProgram(&m_program);
     gl(glActiveTexture(GL_TEXTURE0));
 
     // Set size
-    gl(glUniform2i(m_sizePtr, getSize().getWidth(), getSize().getHeight()));
+	context.setProgramParam(m_sizePtr, getSize().getWidth(), getSize().getHeight());
 
     // Set interpolate flag
-    gl(glUniform1i(m_interpolatePtr, m_interpolate));
+	context.setProgramParam(m_interpolatePtr, m_interpolate);
 
     // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
+	context.setVertexBuffer(&m_buffer);
+
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
@@ -157,19 +185,18 @@ void SignalGridDrawable::draw(const Vector<float>& scale) noexcept
     // Disable states
     gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glDisableClientState(GL_VERTEX_ARRAY));
-    gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    
+	context.setVertexBuffer(nullptr);
 
     gl(glBindTexture(GL_TEXTURE_2D, 0));
     gl(glDisable(GL_TEXTURE_2D));
 
-    gl(glUseProgram(0));
-
-    gl(glPopMatrix());
+	context.setProgram(nullptr);
 }
 
 /* ************************************************************************ */
 
-void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
+void SignalGridDrawable::resize(core::Vector<unsigned int> size, const Signal* data)
 {
     m_size = std::move(size);
 
@@ -183,7 +210,7 @@ void SignalGridDrawable::resize(Vector<unsigned int> size, const Signal* data)
 
 /* ************************************************************************ */
 
-void SignalGridDrawable::update(const Signal* data) noexcept
+void SignalGridDrawable::update(const Signal* data) NOEXCEPT
 {
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
     gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, getSize().getWidth(), getSize().getHeight(), GL_RGBA, GL_FLOAT, updateTextureData(data)));
@@ -191,7 +218,7 @@ void SignalGridDrawable::update(const Signal* data) noexcept
 
 /* ************************************************************************ */
 
-render::Color* SignalGridDrawable::updateTextureData(const Signal* data) noexcept
+render::Color* SignalGridDrawable::updateTextureData(const Signal* data) NOEXCEPT
 {
     // Update all pixels
     for (auto it = m_textureData.begin(), ite = m_textureData.end(); it != ite; ++it, ++data)

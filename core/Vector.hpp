@@ -11,9 +11,12 @@
 // Simulator
 #include "core/Units.hpp"
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
-inline namespace core {
+namespace core {
 
 /* ************************************************************************ */
 
@@ -31,7 +34,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    constexpr Vector() = default;
+    CONSTEXPR Vector() = default;
 
 
     /**
@@ -39,7 +42,7 @@ public:
      *
      * @param val Value for all vector coordinates.
      */
-    explicit constexpr Vector(T val) noexcept
+    explicit CONSTEXPR Vector(T val) NOEXCEPT
         : m_x(val), m_y(val)
     {
         // Nothing to do
@@ -52,7 +55,7 @@ public:
      * @param x
      * @param y
      */
-    constexpr Vector(T x, T y) noexcept
+    CONSTEXPR Vector(T x, T y) NOEXCEPT
         : m_x(x), m_y(y)
     {
         // Nothing to do
@@ -64,7 +67,7 @@ public:
      *
      * @param v Source vector.
      */
-    constexpr Vector(const Vector& v) = default;
+    CONSTEXPR Vector(const Vector& v) = default;
 
 
     /**
@@ -73,8 +76,8 @@ public:
      * @param v Source vector.
      */
     template<typename T2>
-    constexpr Vector(const Vector<T2>& v) noexcept
-        : m_x(v.getX()), m_y(v.getY())
+    CONSTEXPR Vector(const Vector<T2>& v) NOEXCEPT
+		: m_x(static_cast<T>(v.getX())), m_y(static_cast<T>(v.getY()))
     {
         // Nothing to do
     }
@@ -85,7 +88,9 @@ public:
      *
      * @param v Source vector.
      */
-    constexpr Vector(Vector&& v) = default;
+#ifndef _MSC_VER
+    CONSTEXPR Vector(Vector&& v) = default;
+#endif
 
 
 // Public Operators
@@ -109,7 +114,9 @@ public:
      *
      * @return
      */
+#ifndef _MSC_VER
     Vector& operator=(Vector&& v) = default;
+#endif
 
 
     /**
@@ -117,7 +124,7 @@ public:
      *
      * @return
      */
-    constexpr Vector operator-() const noexcept
+    CONSTEXPR Vector operator-() const NOEXCEPT
     {
         return Vector{-getX(), -getY()};
     }
@@ -130,7 +137,7 @@ public:
      *
      * @return
      */
-    constexpr Vector operator+(const Vector& v) const noexcept
+    CONSTEXPR Vector operator+(const Vector& v) const NOEXCEPT
     {
         return Vector{getX() + v.getX(), getY() + v.getY()};
     }
@@ -143,7 +150,7 @@ public:
      *
      * @return
      */
-    Vector& operator+=(const Vector& v) noexcept
+    Vector& operator+=(const Vector& v) NOEXCEPT
     {
         m_x += v.getX();
         m_y += v.getY();
@@ -158,7 +165,7 @@ public:
      *
      * @return
      */
-    constexpr Vector operator-(const Vector& v) const noexcept
+    CONSTEXPR Vector operator-(const Vector& v) const NOEXCEPT
     {
         return Vector{getX() - v.getX(), getY() - v.getY()};
     }
@@ -171,7 +178,7 @@ public:
      *
      * @return
      */
-    Vector& operator-=(const Vector& v) noexcept
+    Vector& operator-=(const Vector& v) NOEXCEPT
     {
         m_x -= v.m_x;
         m_y -= v.m_y;
@@ -186,7 +193,7 @@ public:
      *
      * @return
      */
-    constexpr Vector operator*(const Vector& val) const noexcept
+    CONSTEXPR Vector operator*(const Vector& val) const NOEXCEPT
     {
         return Vector{getX() * val.getX(), getY() * val.getY()};
     }
@@ -199,7 +206,7 @@ public:
      *
      * @return
      */
-    Vector& operator*=(const Vector& val) noexcept
+    Vector& operator*=(const Vector& val) NOEXCEPT
     {
         m_x *= val.getX();
         m_y *= val.getY();
@@ -214,7 +221,7 @@ public:
      *
      * @return
      */
-    constexpr Vector operator/(const Vector& val) const noexcept
+    CONSTEXPR Vector operator/(const Vector& val) const NOEXCEPT
     {
         return Vector{getX() / val.getX(), getY() / val.getY()};
     }
@@ -227,7 +234,7 @@ public:
      *
      * @return
      */
-    Vector& operator/=(const Vector& val) noexcept
+    Vector& operator/=(const Vector& val) NOEXCEPT
     {
         m_x /= val.getX();
         m_y /= val.getY();
@@ -244,7 +251,7 @@ public:
      *
      * @return
      */
-    T& x() noexcept
+    T& x() NOEXCEPT
     {
         return m_x;
     }
@@ -255,7 +262,7 @@ public:
      *
      * @return
      */
-    T getX() const noexcept
+    T getX() const NOEXCEPT
     {
         return m_x;
     }
@@ -266,7 +273,7 @@ public:
      *
      * @return
      */
-    T& y() noexcept
+    T& y() NOEXCEPT
     {
         return m_y;
     }
@@ -277,7 +284,7 @@ public:
      *
      * @return
      */
-    T getY() const noexcept
+    T getY() const NOEXCEPT
     {
         return m_y;
     }
@@ -288,7 +295,7 @@ public:
      *
      * @return
      */
-    T& width() noexcept
+    T& width() NOEXCEPT
     {
         return m_x;
     }
@@ -299,7 +306,7 @@ public:
      *
      * @return
      */
-    T getWidth() const noexcept
+    T getWidth() const NOEXCEPT
     {
         return m_x;
     }
@@ -310,7 +317,7 @@ public:
      *
      * @return
      */
-    T& height() noexcept
+    T& height() NOEXCEPT
     {
         return m_y;
     }
@@ -321,7 +328,7 @@ public:
      *
      * @return
      */
-    T getHeight() const noexcept
+    T getHeight() const NOEXCEPT
     {
         return m_y;
     }
@@ -336,7 +343,7 @@ public:
      *
      * @return
      */
-    static bool inRange(T value, T low, T high) noexcept
+    static bool inRange(T value, T low, T high) NOEXCEPT
     {
         return value >= low && value < high;
     }
@@ -350,7 +357,7 @@ public:
      *
      * @return
      */
-    bool inRange(const Vector& low, const Vector& high) const noexcept
+    bool inRange(const Vector& low, const Vector& high) const NOEXCEPT
     {
         return (
             inRange(getX(), low.getX(), high.getX()) &&
@@ -368,7 +375,7 @@ public:
      *
      * @param x
      */
-    void setX(T x) noexcept
+    void setX(T x) NOEXCEPT
     {
         m_x = x;
     }
@@ -379,7 +386,7 @@ public:
      *
      * @param y
      */
-    void setY(T y) noexcept
+    void setY(T y) NOEXCEPT
     {
         m_y = y;
     }
@@ -394,7 +401,7 @@ public:
      *
      * @return
      */
-    T getLength() const noexcept
+    T getLength() const NOEXCEPT
     {
         return std::sqrt(getLengthSquared());
     }
@@ -405,7 +412,7 @@ public:
      *
      * @return
      */
-    T getLengthSquared() const noexcept
+    T getLengthSquared() const NOEXCEPT
     {
         return dot(*this);
     }
@@ -418,7 +425,7 @@ public:
      *
      * @return
      */
-    T dot(const Vector& rhs) const noexcept
+    T dot(const Vector& rhs) const NOEXCEPT
     {
         return getX() * rhs.getX() + getY() * rhs.getY();
     }
@@ -431,7 +438,7 @@ public:
      *
      * @return
      */
-    Vector rotated(units::Angle angle) const noexcept
+    Vector rotated(units::Angle angle) const NOEXCEPT
     {
         return Vector(
             getX() * cos(angle) - getY() * sin(angle),
@@ -454,6 +461,18 @@ private:
 
 /* ************************************************************************ */
 
+extern template class Vector<float>;
+
+/* ************************************************************************ */
+
+//extern template class Vector<unsigned>;
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 /**
  * @brief Add two vectors.
  *
@@ -462,11 +481,10 @@ private:
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator+(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    using CT = typename std::common_type<T1, T2>::type;
-    return Vector<CT>(lhs) + Vector<CT>(rhs);
+	return core::Vector<CT>(lhs) + core::Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -479,10 +497,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator+(const Vector<T1
  *
  * @return New vector.
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator+(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator+(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return lhs + Vector<T2>{rhs};
+	return operator+(lhs, core::Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -495,10 +513,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator+(const Vector<T1
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator+(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator+(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<T1>{lhs} + rhs;
+	return operator+(core::Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -511,11 +529,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator+(T1 lhs, const V
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator-(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    using CT = typename std::common_type<T1, T2>::type;
-    return Vector<CT>(lhs) - Vector<CT>(rhs);
+	return core::Vector<CT>(lhs) - core::Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -528,10 +545,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator-(const Vector<T1
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator-(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator-(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return lhs - Vector<T2>{rhs};
+	return operator-(lhs, core::Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -544,10 +561,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator-(const Vector<T1
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator-(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator-(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<T1>{lhs} - rhs;
+	return operator-(core::Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -560,11 +577,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator-(T1 lhs, const V
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator*(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    using CT = typename std::common_type<T1, T2>::type;
-    return Vector<CT>(lhs) * Vector<CT>(rhs);
+	return core::Vector<CT>(lhs) * core::Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -577,10 +593,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator*(const Vector<T1
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator*(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator*(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return lhs * Vector<T2>{rhs};
+	return operator*(lhs, core::Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -593,10 +609,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator*(const Vector<T1
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator*(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator*(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<T1>{lhs} * rhs;
+	return operator*(core::Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -609,11 +625,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator*(T1 lhs, const V
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator/(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    using CT = typename std::common_type<T1, T2>::type;
-    return Vector<CT>(lhs) / Vector<CT>(rhs);
+	return core::Vector<CT>(lhs) / core::Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -626,10 +641,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator/(const Vector<T1
  *
  * @return New vector
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator/(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator/(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return lhs / Vector<T2>{rhs};
+	return operator/(lhs, core::Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -642,10 +657,10 @@ inline Vector<typename std::common_type<T1, T2>::type> operator/(const Vector<T1
  *
  * @return New vector.
  */
-template<typename T1, typename T2>
-inline Vector<typename std::common_type<T1, T2>::type> operator/(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline core::Vector<CT> operator/(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<T1>{lhs} / rhs;
+	return operator/(core::Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -659,7 +674,7 @@ inline Vector<typename std::common_type<T1, T2>::type> operator/(T1 lhs, const V
  * @return
  */
 template<typename T1, typename T2>
-static bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+inline bool operator==(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
     auto x1 = lhs.getX();
     auto y1 = lhs.getY();
@@ -680,7 +695,7 @@ static bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  * @return
  */
 template<typename T1, typename T2>
-static bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+inline bool operator!=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
     return !operator==(lhs, rhs);
 }
@@ -696,7 +711,7 @@ static bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  * @return
  */
 template<typename T1, typename T2>
-static bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+inline bool operator<(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
     using T = typename std::common_type<T1, T2>::type;
 
@@ -719,7 +734,7 @@ static bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  * @return
  */
 template<typename T1, typename T2>
-static bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+inline bool operator<=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
     return !operator>(lhs, rhs);
 }
@@ -735,7 +750,7 @@ static bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  * @return
  */
 template<typename T1, typename T2>
-static bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+inline bool operator>(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
     // Reversed operands
     return operator<(rhs, lhs);
@@ -752,21 +767,9 @@ static bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  * @return
  */
 template<typename T1, typename T2>
-static bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+inline bool operator>=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
 {
     return !operator<(lhs, rhs);
-}
-
-/* ************************************************************************ */
-
-extern template class Vector<float>;
-
-/* ************************************************************************ */
-
-//extern template class Vector<unsigned>;
-
-/* ************************************************************************ */
-
 }
 
 /* ************************************************************************ */

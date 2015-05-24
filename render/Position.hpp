@@ -15,7 +15,7 @@ namespace render {
 /**
  * @brief Render position.
  */
-using Position = Vector<float>;
+using Position = core::Vector<float>;
 
 /* ************************************************************************ */
 

@@ -21,7 +21,7 @@ void CellBase::configure(const simulator::ConfigurationBase& config,
     Object::configure(config, simulation);
 
     config.callIfSetString("volume", [this](const std::string& value) {
-        setVolume(parser::parse_value<units::Volume>(value));
+		setVolume(parser::parse_value<core::units::Volume>(value));
     });
 }
 

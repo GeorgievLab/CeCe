@@ -7,6 +7,7 @@
 #include <cassert>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
 
@@ -36,10 +37,10 @@ enum class ShapeType
 struct ShapeCircle
 {
     /// Shape center.
-    PositionVector center;
+    core::PositionVector center;
 
     /// Circle radius.
-    units::Length radius;
+	core::units::Length radius;
 };
 
 /* ************************************************************************ */
@@ -67,7 +68,7 @@ struct Shape
      *
      * @return
      */
-    static Shape makeCircle(units::Length radius, PositionVector center = {0, 0}) noexcept
+	static Shape makeCircle(core::units::Length radius, core::PositionVector center = { 0, 0 }) NOEXCEPT
     {
         return Shape{ShapeType::Circle, ShapeCircle{center, radius}};
     }

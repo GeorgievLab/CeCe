@@ -8,6 +8,10 @@
 #include <vector>
 #include <cassert>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 // OpenGL
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
@@ -30,7 +34,7 @@ Grid::Grid(Context& context)
 
 /* ************************************************************************ */
 
-void Grid::draw(Context& context) noexcept
+void Grid::draw(Context& context) NOEXCEPT
 {
     // Set vertex buffer
     context.setVertexBuffer(&m_buffer);
@@ -53,7 +57,7 @@ void Grid::draw(Context& context) noexcept
 
 /* ************************************************************************ */
 
-void Grid::resize(Vector<PositionType> size) noexcept
+void Grid::resize(core::Vector<PositionType> size) NOEXCEPT
 {
     GridBase::resize(std::move(size));
 
@@ -61,8 +65,8 @@ void Grid::resize(Vector<PositionType> size) noexcept
     const auto width = getSize().getWidth();
     const auto height = getSize().getHeight();
 
-    constexpr Vector<float> start{-0.5f};
-    const Vector<float> step = 1.f / getSize();
+    CONSTEXPR core::Vector<float> start{-0.5f};
+    const core::Vector<float> step = 1.f / getSize();
 
     struct Vertex { GLfloat x, y; };
 

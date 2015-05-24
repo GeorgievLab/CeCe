@@ -1,23 +1,30 @@
 
-/* ************************************************************************ */
-
-// Declaration
-#include "core/args.hpp"
+#pragma once
 
 /* ************************************************************************ */
 
+// Windows
 #ifdef _MSC_VER
-namespace core {
-#else
-inline namespace core {
+#define NOMINMAX
+#include <windows.h>
 #endif
 
 /* ************************************************************************ */
 
-std::vector<std::string> args;
+/// Visual Studio doesn't support NOEXCEPT
+#ifdef _MSC_VER
+#define NOEXCEPT
+#else
+#define NOEXCEPT NOEXCEPT
+#endif
 
 /* ************************************************************************ */
 
-}
+/// Visual Studio doesn't support CONSTEXPR
+#ifdef _MSC_VER
+#define CONSTEXPR
+#else
+#define CONSTEXPR CONSTEXPR
+#endif
 
 /* ************************************************************************ */

@@ -6,6 +6,9 @@
 // Simulator
 #include "CellBase.hpp"
 
+// Simulator
+#include "core/compatibility.hpp"
+
 #if ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/Object.hpp"
@@ -37,7 +40,7 @@ public:
      * @param type       Cell type.
      */
     explicit Cell(simulator::Simulation& simulation,
-                  simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
+                  simulator::Object::Type type = simulator::Object::Type::Dynamic) NOEXCEPT;
 
 
 // Public Accessors
@@ -49,7 +52,7 @@ public:
      *
      * @return
      */
-    units::Length getRadius() const noexcept
+	core::units::Length getRadius() const NOEXCEPT
     {
         return calcSphereRadius(getVolume());
     }
@@ -64,7 +67,7 @@ public:
      *
      * @param dt Time step.
      */
-    void update(units::Duration dt) override;
+	void update(core::units::Duration dt) override;
 
 
     /**

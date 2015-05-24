@@ -10,12 +10,12 @@
 
 /* ************************************************************************ */
 
-inline namespace core {
+namespace core {
 namespace memory {
 
 /* ************************************************************************ */
 
-bool is_power_of_two(std::size_t x) noexcept
+bool is_power_of_two(std::size_t x) NOEXCEPT
 {
     size_t powerOfTwo = 1ul;
 
@@ -35,18 +35,22 @@ void* allocate_aligned_memory(std::size_t align, std::size_t size)
     if (size == 0)
         return nullptr;
 
-    void* ptr = nullptr;
+#ifdef _MSC_VER
+	void* ptr = _aligned_malloc(size, align);
+#else
+	void* ptr = nullptr;
     int rc = posix_memalign(&ptr, align, size);
 
-    if (rc != 0)
-        return nullptr;
+	if (rc != 0)
+		return nullptr;
+#endif
 
     return ptr;
 }
 
 /* ************************************************************************ */
 
-void deallocate_aligned_memory(void* ptr) noexcept
+void deallocate_aligned_memory(void* ptr) NOEXCEPT
 {
     return free(ptr);
 }

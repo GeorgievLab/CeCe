@@ -20,6 +20,19 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
+Module::Module()
+{
+	m_colors.push_back(render::colors::CYAN);
+	m_colors.push_back(render::colors::MAGENTA);
+	m_colors.push_back(render::colors::YELLOW);
+	m_colors.push_back(render::colors::BLUE);
+	m_colors.push_back(render::colors::RED);
+	m_colors.push_back(render::colors::GREEN);
+	m_colors.push_back(render::Color{ 1, 0.894f, 0.769f });
+}
+
+/* ************************************************************************ */
+
 Module::~Module()
 {
     // Nothing to do
@@ -27,36 +40,41 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
 {
-    auto _ = measure_time("diffusion", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+	auto _ = core::measure_time("diffusion", [&simulation](std::ostream& out, const std::string& name, core::Clock::duration dt) {
         out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     });
 
     // Size of mapping matrix
-    constexpr unsigned OFFSET = 1;
-    constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+#if _MSC_VER
+	const unsigned OFFSET = 1;
+	const unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+#else
+    CONSTEXPR unsigned OFFSET = 1;
+    CONSTEXPR unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+#endif
 
     // Precompute values
     const auto step = simulation.getWorldSize() / m_grid.getSize();
 
     //const float A = 1.f / (4 * constants::PI * D * dt);
-    const Coefficients A = 1.f / (4 * constants::PI * getCoefficients() * dt);
+	const Coefficients A = 1.f / (4 * core::constants::PI * getCoefficients() * dt);
 
     // Offset coefficients for matrix
-    static const auto DISTANCES = Matrix<int, MATRIX_SIZE>::makeDistances();
+    static const auto DISTANCES = core::Matrix<int, MATRIX_SIZE>::makeDistances();
 
     // Sizes must match
     assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(m_gridBack.begin(), m_gridBack.end()));
 
     // Generate matrix with coefficients based on distance
     // TODO: precompute matrix
-    const auto q = Matrix<float, MATRIX_SIZE>::generate([&step](int i, int j) {
+	const auto q = core::Matrix<float, MATRIX_SIZE>::generate([&step](size_t i, size_t j) {
         return (step * DISTANCES[i][j]).getLengthSquared();
     });
 
     // Create distribution matrix
-    const auto M = Matrix<Coefficients, MATRIX_SIZE>::generate([&](int i, int j) {
+	const auto M = core::Matrix<Coefficients, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
         using std::exp;
         return A * exp(-q[i][j] / (4.f * getCoefficients() * dt));
         //return A * exp(-q[i][j] / (4.f * D * dt));
@@ -86,7 +104,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const int width = m_grid.getSize().getWidth();
     const int height = m_grid.getSize().getHeight();
 
-    const Matrix<int, 3> MAPPING_MATRIX{{
+	const core::Matrix<int, 3> MAPPING_MATRIX{ {
         {-width - 1, -width, -width + 1},
         {       - 1,      0,        + 1},
         {+width - 1, +width, +width + 1}
@@ -188,7 +206,10 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     for (unsigned int i = 0; i < Signal::COUNT; ++i)
         m_drawable->setColor(i, m_colors[i]);
 
-    m_drawable->draw(simulation.getWorldSize());
+	context.matrixPush();
+	context.matrixScale(simulation.getWorldSize());
+    m_drawable->draw(context);
+	context.matrixPop();
 }
 #endif
 

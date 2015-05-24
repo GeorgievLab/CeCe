@@ -6,6 +6,9 @@
 // Boost
 #include <boost/optional.hpp>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/Object.hpp"
@@ -38,10 +41,10 @@ public:
     struct Bud
     {
         /// Angle.
-        units::Angle rotation = units::deg(0);
+		core::units::Angle rotation = core::units::deg(0);
 
         /// Bud volume.
-        units::Volume volume = units::um3(1);
+		core::units::Volume volume = core::units::um3(1);
 
 #if ENABLE_PHYSICS
         /// Bud shape.
@@ -61,7 +64,7 @@ public:
      * @param type       Cell type.
      */
     explicit Yeast(simulator::Simulation& simulation,
-                   simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
+                   simulator::Object::Type type = simulator::Object::Type::Dynamic) NOEXCEPT;
 
 
     /**
@@ -79,9 +82,9 @@ public:
      *
      * @return
      */
-    bool hasBud() const noexcept
+    bool hasBud() const NOEXCEPT
     {
-        return m_bud;
+        return m_bud.is_initialized();
     }
 
 
@@ -94,7 +97,7 @@ public:
      *
      * @param dt Time step.
      */
-    void update(units::Duration dt) override;
+	void update(core::units::Duration dt) override;
 
 
     /**

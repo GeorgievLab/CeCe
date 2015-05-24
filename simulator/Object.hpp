@@ -9,6 +9,7 @@
 #include <functional>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
 #include "simulator/Shape.hpp"
@@ -72,7 +73,7 @@ public:
      * @param simulation Object owner.
      * @param type       Object type.
      */
-    explicit Object(Simulation& simulation, Type type = Type::Static) noexcept;
+    explicit Object(Simulation& simulation, Type type = Type::Static) NOEXCEPT;
 
 
     /**
@@ -90,7 +91,7 @@ public:
      *
      * @return
      */
-    Simulation& getSimulation() noexcept
+    Simulation& getSimulation() NOEXCEPT
     {
         return m_simulation;
     }
@@ -101,7 +102,7 @@ public:
      *
      * @return
      */
-    const Simulation& getSimulation() const noexcept
+    const Simulation& getSimulation() const NOEXCEPT
     {
         return m_simulation;
     }
@@ -112,7 +113,7 @@ public:
      *
      * @return
      */
-    IdType getId() const noexcept
+    IdType getId() const NOEXCEPT
     {
         return m_id;
     }
@@ -123,7 +124,7 @@ public:
      *
      * @return
      */
-    Type getType() const noexcept;
+    Type getType() const NOEXCEPT;
 
 
     /**
@@ -131,7 +132,7 @@ public:
      *
      * @return
      */
-    PositionVector getPosition() const noexcept;
+	core::PositionVector getPosition() const NOEXCEPT;
 
 
     /**
@@ -139,7 +140,7 @@ public:
      *
      * @return
      */
-    units::Angle getRotation() const noexcept;
+	core::units::Angle getRotation() const NOEXCEPT;
 
 
     /**
@@ -147,7 +148,7 @@ public:
      *
      * @return
      */
-    VelocityVector getVelocity() const noexcept;
+	core::VelocityVector getVelocity() const NOEXCEPT;
 
 
 #if ENABLE_PHYSICS
@@ -156,7 +157,7 @@ public:
      *
      * @return
      */
-    b2Body* getBody() const noexcept
+    b2Body* getBody() const NOEXCEPT
     {
         return m_body;
     }
@@ -168,7 +169,7 @@ public:
      *
      * @return
      */
-    const std::vector<Shape>& getShapes() const noexcept
+    const std::vector<Shape>& getShapes() const NOEXCEPT
     {
         return m_shapes;
     }
@@ -179,7 +180,7 @@ public:
      *
      * @return
      */
-    const std::vector<Program>& getPrograms() const noexcept
+    const std::vector<Program>& getPrograms() const NOEXCEPT
     {
         return m_programs;
     }
@@ -194,7 +195,7 @@ public:
      *
      * @return
      */
-    void setType(Type type) noexcept;
+    void setType(Type type) NOEXCEPT;
 
 
     /**
@@ -202,7 +203,7 @@ public:
      *
      * @param pos
      */
-    void setPosition(PositionVector pos) noexcept;
+	void setPosition(core::PositionVector pos) NOEXCEPT;
 
 
     /**
@@ -210,7 +211,7 @@ public:
      *
      * @param angle
      */
-    void setRotation(units::Angle angle) noexcept;
+	void setRotation(core::units::Angle angle) NOEXCEPT;
 
 
     /**
@@ -218,7 +219,7 @@ public:
      *
      * @param vel
      */
-    void setVelocity(VelocityVector vel) noexcept;
+	void setVelocity(core::VelocityVector vel) NOEXCEPT;
 
 
     /**
@@ -226,7 +227,7 @@ public:
      *
      * @param force
      */
-    void applyForce(const ForceVector& force) noexcept;
+	void applyForce(const core::ForceVector& force) NOEXCEPT;
 
 
     /**
@@ -235,7 +236,7 @@ public:
      * @param force
      * @param pos
      */
-    void applyForce(const ForceVector& force, const PositionVector& pos) noexcept;
+	void applyForce(const core::ForceVector& force, const core::PositionVector& pos) NOEXCEPT;
 
 
     /**
@@ -243,7 +244,7 @@ public:
      *
      * @param shapes
      */
-    void setShapes(std::vector<Shape> shapes) noexcept
+    void setShapes(std::vector<Shape> shapes) NOEXCEPT
     {
         m_shapes = std::move(shapes);
     }
@@ -254,7 +255,7 @@ public:
      *
      * @param programs
      */
-    void setPrograms(std::vector<Program> programs) noexcept
+    void setPrograms(std::vector<Program> programs) NOEXCEPT
     {
         m_programs = std::move(programs);
     }
@@ -265,7 +266,7 @@ public:
      *
      * @param program
      */
-    void addProgram(Program program) noexcept
+    void addProgram(Program program) NOEXCEPT
     {
         m_programs.push_back(std::move(program));
     }
@@ -281,7 +282,7 @@ public:
      * @return
      */
     template<typename T>
-    bool is() const noexcept
+    bool is() const NOEXCEPT
     {
         return dynamic_cast<const T*>(this) != nullptr;
     }
@@ -293,7 +294,7 @@ public:
      * @return
      */
     template<typename T>
-    T* cast() noexcept
+    T* cast() NOEXCEPT
     {
         assert(dynamic_cast<T*>(this));
         return static_cast<T*>(this);
@@ -306,7 +307,7 @@ public:
      * @return
      */
     template<typename T>
-    const T* cast() const noexcept
+    const T* cast() const NOEXCEPT
     {
         assert(dynamic_cast<const T*>(this));
         return static_cast<const T*>(this);
@@ -318,7 +319,7 @@ public:
      *
      * @param dt Simulation time step.
      */
-    virtual void update(units::Duration dt);
+	virtual void update(core::units::Duration dt);
 
 
     /**
@@ -356,7 +357,7 @@ protected:
      *
      * @return
      */
-    std::vector<Shape>& getMutableShapes() noexcept
+    std::vector<Shape>& getMutableShapes() NOEXCEPT
     {
         return m_shapes;
     }
@@ -385,13 +386,13 @@ private:
     Type m_type;
 
     /// Object position
-    PositionVector m_position;
+	core::PositionVector m_position;
 
     /// Object rotation.
-    units::Angle m_rotation;
+	core::units::Angle m_rotation;
 
     /// Object velocity.
-    VelocityVector m_velocity;
+	core::VelocityVector m_velocity;
 #endif
 
 };

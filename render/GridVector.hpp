@@ -4,6 +4,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "render/Position.hpp"
 #include "render/Color.hpp"
 #include "render/Buffer.hpp"
@@ -32,7 +33,7 @@ public:
     /**
      * @brief Constructor.
      */
-    GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data);
+	GridVector(Context& context, core::Vector<unsigned int> size, const core::Vector<float>* data);
 
 
 // Public Accessors
@@ -44,7 +45,7 @@ public:
      *
      * @return
      */
-    const Vector<unsigned int>& getSize() const noexcept
+    const core::Vector<unsigned int>& getSize() const NOEXCEPT
     {
         return m_size;
     }
@@ -55,7 +56,7 @@ public:
      *
      * @return
      */
-    bool isRenderVelocity() const noexcept
+    bool isRenderVelocity() const NOEXCEPT
     {
         return m_renderVelocity;
     }
@@ -70,7 +71,7 @@ public:
      *
      * @param flag
      */
-    void setRenderVelocity(bool flag) noexcept
+    void setRenderVelocity(bool flag) NOEXCEPT
     {
         m_renderVelocity = flag;
     }
@@ -85,7 +86,7 @@ public:
      *
      * @param scale Grid scale.
      */
-    void draw(const Vector<float>& scale) noexcept;
+	void draw(const core::Vector<float>& scale) NOEXCEPT;
 
 
     /**
@@ -94,7 +95,7 @@ public:
      * @param size
      * @param data
      */
-    void resize(Vector<unsigned int> size, const Vector<float>* data);
+	void resize(core::Vector<unsigned int> size, const core::Vector<float>* data);
 
 
     /**
@@ -102,7 +103,7 @@ public:
      *
      * @param data
      */
-    void update(const Vector<float>* data) noexcept;
+	void update(const core::Vector<float>* data) NOEXCEPT;
 
 
 // Private Data Members
@@ -112,7 +113,7 @@ private:
     Buffer m_buffer;
 
     /// Grid size.
-    Vector<unsigned int> m_size;
+	core::Vector<unsigned int> m_size;
 
     /// If velocities should be rendered.
     bool m_renderVelocity = false;

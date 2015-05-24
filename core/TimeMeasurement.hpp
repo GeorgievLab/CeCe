@@ -8,9 +8,12 @@
 #include <string>
 #include <ostream>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
-inline namespace core {
+namespace core {
 
 /* ************************************************************************ */
 
@@ -26,7 +29,7 @@ using Clock = std::chrono::high_resolution_clock;
  *
  * @return
  */
-std::ostream* getMeasureTimeOutput() noexcept;
+std::ostream* getMeasureTimeOutput() NOEXCEPT;
 
 /* ************************************************************************ */
 
@@ -35,7 +38,7 @@ std::ostream* getMeasureTimeOutput() noexcept;
  *
  * @param output
  */
-void setMeasureTimeOutput(std::ostream* output) noexcept;
+void setMeasureTimeOutput(std::ostream* output) NOEXCEPT;
 
 /* ************************************************************************ */
 
@@ -52,7 +55,7 @@ struct DefaultMeasurementOutput
      * @param name Measurement name.
      * @param dt   Measured time.
      */
-    void operator()(std::ostream& out, const std::string& name, Clock::duration dt) const noexcept
+    void operator()(std::ostream& out, const std::string& name, Clock::duration dt) const NOEXCEPT
     {
         out << name << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     }
@@ -122,7 +125,7 @@ private:
  * @return
  */
 template<typename... Args>
-inline int measure_time(Args&&... args) noexcept
+inline int measure_time(Args&&... args) NOEXCEPT
 {
     return 0;
 }
@@ -140,7 +143,7 @@ inline int measure_time(Args&&... args) noexcept
  * @return
  */
 template<typename Fn>
-inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) noexcept
+inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
 {
     return TimeMeasurementBase<Fn>{std::move(name), fn};
 }
@@ -156,7 +159,7 @@ inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) noexcept
  *
  * @return
  */
-inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) noexcept
+inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) NOEXCEPT
 {
     return TimeMeasurementBase<DefaultMeasurementOutput>{std::move(name), DefaultMeasurementOutput{}};
 }

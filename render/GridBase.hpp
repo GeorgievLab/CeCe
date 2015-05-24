@@ -7,6 +7,7 @@
 #include <utility>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 
 /* ************************************************************************ */
@@ -42,7 +43,7 @@ public:
      *
      * @return
      */
-    const Vector<PositionType>& getSize() const noexcept
+    const core::Vector<PositionType>& getSize() const NOEXCEPT
     {
         return m_size;
     }
@@ -58,7 +59,7 @@ public:
      *
      * @param size
      */
-    void resize(Vector<PositionType> size) noexcept
+    void resize(core::Vector<PositionType> size) NOEXCEPT
     {
         m_size = std::move(size);
     }
@@ -69,7 +70,7 @@ private:
 
 
     /// Grid size.
-    Vector<PositionType> m_size;
+    core::Vector<PositionType> m_size;
 
 };
 

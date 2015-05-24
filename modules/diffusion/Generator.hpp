@@ -4,6 +4,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "simulator/Module.hpp"
 
 /* ************************************************************************ */
@@ -32,7 +33,7 @@ public:
      *
      * @param module A pointer to diffusion module.
      */
-    explicit Generator(module::diffusion::Module* module) noexcept
+    explicit Generator(module::diffusion::Module* module) NOEXCEPT
         : m_diffusionModule(module)
     {
         // Nothing to do
@@ -49,7 +50,7 @@ public:
      * @param dt     Simulation time step.
      * @param world  World object.
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void update(core::units::Duration dt, simulator::Simulation& simulation) override;
 
 
 // Private Data Members

@@ -5,6 +5,7 @@
 
 // Simulator
 #include "core/Vector.hpp"
+#include "core/compatibility.hpp"
 #include "render/Buffer.hpp"
 #include "render/GridBase.hpp"
 
@@ -46,7 +47,7 @@ public:
      *
      * @param context Rendering context.
      */
-    void draw(Context& context) noexcept;
+    void draw(Context& context) NOEXCEPT;
 
 
     /**
@@ -54,7 +55,7 @@ public:
      *
      * @param size
      */
-    void resize(Vector<PositionType> size) noexcept;
+    void resize(core::Vector<PositionType> size) NOEXCEPT;
 
 
 // Private Data Members

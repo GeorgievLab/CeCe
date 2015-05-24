@@ -7,6 +7,7 @@
 #include <cmath>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "simulator/Object.hpp"
 
@@ -42,7 +43,15 @@ public:
     /**
      * @brief Constructor.
      */
+#if _MSC_VER
+	explicit CellBase(simulator::Simulation& simulation, simulator::Object::Type type = simulator::Object::Type::Static)
+		: simulator::Object(simulation, type)
+	{
+		// Nothing to do
+	}
+#else
     using simulator::Object::Object;
+#endif
 
 
 // Public Accessors
@@ -54,7 +63,7 @@ public:
      *
      * @return
      */
-    units::Volume getVolume() const noexcept
+    core::units::Volume getVolume() const NOEXCEPT
     {
         return m_volume;
     }
@@ -65,7 +74,7 @@ public:
      *
      * @return
      */
-    FluorescentProteinCount getGfp() const noexcept
+    FluorescentProteinCount getGfp() const NOEXCEPT
     {
         return m_gfp;
     }
@@ -76,7 +85,7 @@ public:
      *
      * @return
      */
-    FluorescentProteinCount getRfp() const noexcept
+    FluorescentProteinCount getRfp() const NOEXCEPT
     {
         return m_rfp;
     }
@@ -87,7 +96,7 @@ public:
      *
      * @return
      */
-    FluorescentProteinCount getYfp() const noexcept
+    FluorescentProteinCount getYfp() const NOEXCEPT
     {
         return m_yfp;
     }
@@ -102,7 +111,7 @@ public:
      *
      * @param volume
      */
-    void setVolume(units::Volume volume) noexcept
+	void setVolume(core::units::Volume volume) NOEXCEPT
     {
         m_volume = volume;
     }
@@ -113,7 +122,7 @@ public:
      *
      * @param gfp
      */
-    void setGfp(FluorescentProteinCount gfp) noexcept
+    void setGfp(FluorescentProteinCount gfp) NOEXCEPT
     {
         m_gfp = gfp;
     }
@@ -124,7 +133,7 @@ public:
      *
      * @param rfp
      */
-    void setRfp(FluorescentProteinCount rfp) noexcept
+    void setRfp(FluorescentProteinCount rfp) NOEXCEPT
     {
         m_rfp = rfp;
     }
@@ -135,7 +144,7 @@ public:
      *
      * @param yfp
      */
-    void setYfp(FluorescentProteinCount yfp) noexcept
+    void setYfp(FluorescentProteinCount yfp) NOEXCEPT
     {
         m_yfp = yfp;
     }
@@ -162,10 +171,10 @@ public:
      *
      * @return Radius.
      */
-    static units::Length calcSphereRadius(units::Volume volume) noexcept
+	static core::units::Length calcSphereRadius(core::units::Volume volume) NOEXCEPT
     {
         // 3th root of ((3 / 4 * pi) * volume)
-        return units::Length(0.62035f * std::pow(volume, 0.3333333f));
+		return core::units::Length(0.62035f * std::pow(volume, 0.3333333f));
     }
 
 
@@ -173,7 +182,7 @@ public:
 private:
 
     /// Cell volume.
-    units::Volume m_volume = units::um(100);
+	core::units::Volume m_volume = core::units::um(100);
 
     /// Number of GFP proteins.
     FluorescentProteinCount m_gfp = 0;

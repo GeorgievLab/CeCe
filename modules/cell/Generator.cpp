@@ -20,9 +20,9 @@ namespace cell {
 
 /* ************************************************************************ */
 
-void Generator::update(units::Duration dt, simulator::Simulation& simulation)
+void Generator::update(core::units::Duration dt, simulator::Simulation& simulation)
 {
-    auto _ = measure_time("cell.generator", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+    auto _ = core::measure_time("cell.generator", [&simulation](std::ostream& out, const std::string& name, core::Clock::duration dt) {
         out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     });
 
@@ -42,7 +42,7 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
 
         // Create cell
         auto* c = simulation.createObject<module::cell::Yeast>();
-        c->setVolume(units::um3(volume_d(eng)));
+        c->setVolume(core::units::um3(volume_d(eng)));
         c->setVelocity({10, 0});
         c->setPosition({-simulation.getWorldSize().getWidth() / 2.f + 0.1f, y});
         c->setGfp(20);

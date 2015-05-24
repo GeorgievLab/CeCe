@@ -10,7 +10,13 @@
 #include <cstring>
 
 // Unix
+#ifdef __unix__
 #include <arpa/inet.h>
+#endif
+
+#ifdef _MSC_VER
+#pragma comment(lib, "Ws2_32.lib")
+#endif
 
 /* ************************************************************************ */
 

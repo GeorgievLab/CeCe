@@ -3,15 +3,12 @@
 
 /* ************************************************************************ */
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
 // C++
 #include <array>
 #include <vector>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "render/Context.hpp"
 #include "render/Shader.hpp"
@@ -44,7 +41,7 @@ public:
     /**
      * @brief Constructor.
      */
-    SignalGridDrawable(render::Context& context, Vector<unsigned int> size, const Signal* data);
+    SignalGridDrawable(render::Context& context, core::Vector<unsigned int> size, const Signal* data);
 
 
     /**
@@ -62,7 +59,7 @@ public:
      *
      * @return
      */
-    const Vector<unsigned int>& getSize() const noexcept
+    const core::Vector<unsigned int>& getSize() const NOEXCEPT
     {
         return m_size;
     }
@@ -73,7 +70,7 @@ public:
      *
      * @return
      */
-    bool isInterpolate() const noexcept
+    bool isInterpolate() const NOEXCEPT
     {
         return m_interpolate;
     }
@@ -85,7 +82,7 @@ public:
      * @param pos
      * @param color
      */
-    render::Color getColor(unsigned pos) const noexcept
+    render::Color getColor(unsigned pos) const NOEXCEPT
     {
         return m_colors[pos];
     }
@@ -100,7 +97,7 @@ public:
      *
      * @param flag
      */
-    void setInterpolate(bool flag) noexcept
+    void setInterpolate(bool flag) NOEXCEPT
     {
         m_interpolate = flag;
     }
@@ -111,7 +108,7 @@ public:
      *
      * @param color
      */
-    void setBackground(render::Color color) noexcept
+    void setBackground(render::Color color) NOEXCEPT
     {
         m_background = color;
     }
@@ -123,7 +120,7 @@ public:
      * @param pos
      * @param color
      */
-    void setColor(unsigned pos, render::Color color) noexcept
+    void setColor(unsigned pos, render::Color color) NOEXCEPT
     {
         m_colors[pos] = color;
     }
@@ -138,7 +135,7 @@ public:
      *
      * @param scale Grid scale.
      */
-    void draw(const Vector<float>& scale) noexcept;
+    void draw(render::Context& context) NOEXCEPT;
 
 
     /**
@@ -147,7 +144,7 @@ public:
      * @param size
      * @param data
      */
-    void resize(Vector<unsigned int> size, const Signal* data);
+    void resize(core::Vector<unsigned int> size, const Signal* data);
 
 
     /**
@@ -155,7 +152,7 @@ public:
      *
      * @param data
      */
-    void update(const Signal* data) noexcept;
+    void update(const Signal* data) NOEXCEPT;
 
 // Private Operations
 private:
@@ -168,7 +165,7 @@ private:
      *
      * @return Texture data
      */
-    render::Color* updateTextureData(const Signal* data) noexcept;
+    render::Color* updateTextureData(const Signal* data) NOEXCEPT;
 
 
 // Private Data Members
@@ -178,10 +175,10 @@ private:
     render::Buffer m_buffer;
 
     /// Grid size.
-    Vector<unsigned int> m_size;
+    core::Vector<unsigned int> m_size;
 
     /// Texture.
-    GLuint m_texture = 0;
+    unsigned int m_texture = 0;
 
     /// Vertex shader.
     render::Shader m_vertexShader;
@@ -193,10 +190,10 @@ private:
     render::Program m_program;
 
     /// Pointer to shader texture size.
-    GLint m_sizePtr;
+    render::Program::UniformId m_sizePtr;
 
     /// Pointer to shader interpolate bool.
-    GLint m_interpolatePtr;
+    render::Program::UniformId m_interpolatePtr;
 
     /// If interpolation is enabled.
     bool m_interpolate = true;
@@ -205,15 +202,7 @@ private:
     render::Color m_background = render::colors::BLACK;
 
     /// Signal colors.
-    std::vector<render::Color> m_colors{{
-        render::colors::CYAN,
-        render::colors::MAGENTA,
-        render::colors::YELLOW,
-        render::colors::BLUE,
-        render::colors::RED,
-        render::colors::GREEN,
-        render::Color{1, 0.894f, 0.769f}
-    }};
+	std::vector<render::Color> m_colors;
 
     /// Texture data buffer
     std::vector<render::Color> m_textureData;

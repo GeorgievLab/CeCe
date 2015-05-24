@@ -9,12 +9,9 @@
 #include <array>
 #include <cassert>
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
 // Simulator
-#include "render/errors.hpp"
+#include "render/Context.hpp"
+#include "render/VertexFormat.hpp"
 
 // Shaders
 #include "vs.yeast.hpp"
@@ -29,8 +26,8 @@ namespace cell {
 
 struct Vertex
 {
-    GLfloat x, y;
-    GLfloat u, v;
+    float x, y;
+    float u, v;
 };
 
 /* ************************************************************************ */
@@ -59,37 +56,28 @@ DrawableYeast::DrawableYeast(render::Context& context)
 
 /* ************************************************************************ */
 
-void DrawableYeast::draw(render::Context& context, float size, float budSize) noexcept
+void DrawableYeast::draw(render::Context& context, float size, float budSize) NOEXCEPT
 {
-    gl(glUseProgram(m_program.getId()));
+	static render::VertexFormat vformat{
+		render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
+		render::VertexElement(render::VertexElementType::Normal, render::DataType::Float, 2)
+	};
 
-    //gl(glMatrixMode(GL_TEXTURE));
-    //glPushMatrix();
-    //gl(glScalef(1.f, 2.f, 1.f));
+	// Set pointers
+	context.setProgram(&m_program);
+	context.setVertexBuffer(&m_buffer);
+	context.setVertexFormat(&vformat);
 
-    // Set interpolate flag
-    gl(glUniform1i(m_uniformHasBud, budSize != 0.0f));
-    gl(glUniform1f(m_uniformSizeMain, size));
-    gl(glUniform1f(m_uniformSizeBud, budSize));
+	context.setProgramParam(m_uniformHasBud, budSize != 0.0f);
+	context.setProgramParam(m_uniformSizeMain, size);
+	context.setProgramParam(m_uniformSizeBud, budSize);
 
-    // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
-    gl(glEnableClientState(GL_VERTEX_ARRAY));
-    gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
-    gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
-    gl(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(GLfloat))));
+	// Draw circle
+	context.draw(render::PrimitiveType::Quads, 0, 4);
 
-    // Draw circle
-    gl(glDrawArrays(GL_QUADS, 0, 4));
-
-    // Disable states
-    gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
-    gl(glDisableClientState(GL_VERTEX_ARRAY));
-    gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
-
-    gl(glUseProgram(0));
-
-    //glPopMatrix();
+	context.setVertexFormat(nullptr);
+	context.setVertexBuffer(nullptr);
+	context.setProgram(nullptr);
 }
 
 /* ************************************************************************ */

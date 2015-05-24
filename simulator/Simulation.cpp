@@ -27,7 +27,7 @@ namespace {
 
 /* ************************************************************************ */
 
-std::tuple<std::string, std::string> splitModulePath(const std::string& path) noexcept
+std::tuple<std::string, std::string> splitModulePath(const std::string& path) NOEXCEPT
 {
     auto pos = path.find(':');
 
@@ -55,7 +55,7 @@ std::tuple<std::string, std::string> splitModulePath(const std::string& path) no
 
 /* ************************************************************************ */
 
-Simulation::Simulation() noexcept
+Simulation::Simulation() NOEXCEPT
 #if ENABLE_PHYSICS
     : m_world{b2Vec2{0.0f, 0.0f}}
 #endif
@@ -78,7 +78,7 @@ Module* Simulation::useModule(const std::string& path)
     if (hasModule(path))
         return getModule(path);
 
-    Log::debug("Loading library: ", path);
+	core::Log::debug("Loading library: ", path);
 
     // Split path into parts
     std::string library, name;
@@ -89,9 +89,9 @@ Module* Simulation::useModule(const std::string& path)
 
     // Load only library
     if (name.empty())
-        Log::debug("Create module '", library, "'");
+		core::Log::debug("Create module '", library, "'");
     else
-        Log::debug("Create module '", library, ".", name, "'");
+		core::Log::debug("Create module '", library, ".", name, "'");
 
     // Create module with given name
     auto module = api->createModule(*this, name);
@@ -99,11 +99,11 @@ Module* Simulation::useModule(const std::string& path)
     // Register module
     if (module)
     {
-        Log::info("Using module: ", path);
+		core::Log::info("Using module: ", path);
         return addModule(path, std::move(module));
     }
 
-    Log::warning("Unable to create module: ", path, " (unsupported by library?)");
+	core::Log::warning("Unable to create module: ", path, " (unsupported by library?)");
 
     return nullptr;
 }
@@ -122,7 +122,7 @@ Object* Simulation::buildObject(const std::string& name, bool dynamic)
     // Get API
     LibraryApi* api = getLibraryApi(library);
 
-    Log::debug("Create object '", library, ".", type, "'");
+	core::Log::debug("Create object '", library, ".", type, "'");
 
     // Create object with given name
     auto object = api->createObject(*this, type, dynamic);
@@ -131,7 +131,7 @@ Object* Simulation::buildObject(const std::string& name, bool dynamic)
     if (object)
         return addObject(std::move(object));
 
-    Log::warning("Unable to create object: ", name, " (unsupported by library?)");
+	core::Log::warning("Unable to create object: ", name, " (unsupported by library?)");
 
     return nullptr;
 }
@@ -150,7 +150,7 @@ Program Simulation::buildProgram(const std::string& path)
     // Get API
     LibraryApi* api = getLibraryApi(library);
 
-    Log::debug("Create program '", library, ".", type, "'");
+	core::Log::debug("Create program '", library, ".", type, "'");
 
     // Create object with given name
     return api->createProgram(*this, type);
@@ -165,14 +165,14 @@ void Simulation::reset()
 
 /* ************************************************************************ */
 
-bool Simulation::update(units::Duration dt) noexcept
+bool Simulation::update(core::units::Duration dt) NOEXCEPT
 {
     // Increase step number
     m_stepNumber++;
 
     // Update modules
     {
-        auto _ = measure_time("sim.modules", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+		auto _ = core::measure_time("sim.modules", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -181,7 +181,7 @@ bool Simulation::update(units::Duration dt) noexcept
     }
 
     {
-        auto _ = measure_time("sim.objects", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+		auto _ = core::measure_time("sim.objects", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -196,7 +196,7 @@ bool Simulation::update(units::Duration dt) noexcept
 
     // Remove objects that are outside world.
     {
-        auto _ = measure_time("sim.delete", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+		auto _ = core::measure_time("sim.delete", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -212,7 +212,7 @@ bool Simulation::update(units::Duration dt) noexcept
             const auto& pos = obj->getPosition();
 
             // TODO: optimize
-            return not (
+            return !(
                 ((pos.getX() >= -hh.getX()) && (pos.getX() <= hh.getX())) &&
                 ((pos.getY() >= -hh.getY()) && (pos.getY() <= hh.getY()))
             );
@@ -221,7 +221,7 @@ bool Simulation::update(units::Duration dt) noexcept
 
 #ifdef ENABLE_PHYSICS
     {
-        auto _ = measure_time("sim.physics", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+		auto _ = core::measure_time("sim.physics", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -346,7 +346,7 @@ LibraryApi* Simulation::getLibraryApi(const std::string& name)
     // Unable to load library
     if (!lib->isLoaded())
     {
-        Log::warning("Unable to load library: ", name, "(", lib->getError(), ")");
+		core::Log::warning("Unable to load library: ", name, "(", lib->getError(), ")");
         return nullptr;
     }
 
@@ -357,7 +357,7 @@ LibraryApi* Simulation::getLibraryApi(const std::string& name)
     // Initialize simulation
     if (init)
     {
-        Log::debug("Initialize simulation '", name, "'");
+		core::Log::debug("Initialize simulation '", name, "'");
         api->initSimulation(*this);
     }
 

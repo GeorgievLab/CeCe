@@ -22,7 +22,7 @@ class Object;
 /**
  * @brief Program for objects.
  */
-using Program = std::function<void(Object&, units::Duration)>;
+using Program = std::function<void(Object&, core::units::Duration)>;
 
 /* ************************************************************************ */
 

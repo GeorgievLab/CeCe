@@ -10,7 +10,11 @@
 
 /* ************************************************************************ */
 
+#ifdef _MSC_VER
+namespace core {
+#else
 inline namespace core {
+#endif
 
 /* ************************************************************************ */
 
@@ -18,14 +22,14 @@ std::ostream* g_output = &std::cout;
 
 /* ************************************************************************ */
 
-std::ostream* getMeasureTimeOutput() noexcept
+std::ostream* getMeasureTimeOutput() NOEXCEPT
 {
     return g_output;
 }
 
 /* ************************************************************************ */
 
-void setMeasureTimeOutput(std::ostream* output) noexcept
+void setMeasureTimeOutput(std::ostream* output) NOEXCEPT
 {
     g_output = output;
 }

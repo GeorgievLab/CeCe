@@ -7,6 +7,7 @@
 #include <cassert>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "core/Grid.hpp"
 #include "render/Buffer.hpp"
@@ -49,7 +50,7 @@ public:
      * @param context Rendering context.
      * @param size
      */
-    GridColor(Context& context, Vector<PositionType> size);
+    GridColor(Context& context, core::Vector<PositionType> size);
 
 
 // Public Operators
@@ -62,7 +63,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& operator[](const Vector<PositionType>& coord) noexcept
+    Color& operator[](const core::Vector<PositionType>& coord) NOEXCEPT
     {
         return get(coord);
     }
@@ -74,7 +75,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& operator[](const Vector<PositionType>& coord) const noexcept
+    const Color& operator[](const core::Vector<PositionType>& coord) const NOEXCEPT
     {
         return get(coord);
     }
@@ -87,7 +88,7 @@ public:
     /**
      * @brief Returns if object is initialized.
      */
-    bool isInitialized() const noexcept
+    bool isInitialized() const NOEXCEPT
     {
         return m_buffer.isInitialized()/* && m_texture.isInitialized() */;
     }
@@ -99,7 +100,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& get(const Vector<PositionType>& coord) noexcept
+    Color& get(const core::Vector<PositionType>& coord) NOEXCEPT
     {
         return m_colors[coord];
     }
@@ -111,7 +112,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& get(const Vector<PositionType>& coord) const noexcept
+    const Color& get(const core::Vector<PositionType>& coord) const NOEXCEPT
     {
         return m_colors[coord];
     }
@@ -127,7 +128,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    void set(const Vector<PositionType>& coord, const Color& color) noexcept
+    void set(const core::Vector<PositionType>& coord, const Color& color) NOEXCEPT
     {
         // Set color
         m_colors[coord] = color;
@@ -138,7 +139,7 @@ public:
     /**
      * @brief Set flag that indicates the texture on GPU should be updated.
      */
-    void colorsUpdated() noexcept
+    void colorsUpdated() NOEXCEPT
     {
         m_colorsUpdated = true;
     }
@@ -153,7 +154,7 @@ public:
      *
      * @param context Rendering context.
      */
-    void draw(Context& context) noexcept;
+    void draw(Context& context) NOEXCEPT;
 
 
     /**
@@ -161,7 +162,7 @@ public:
      *
      * @param size
      */
-    void resize(Vector<PositionType> size);
+    void resize(core::Vector<PositionType> size);
 
 
     /**

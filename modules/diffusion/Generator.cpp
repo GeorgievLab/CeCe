@@ -19,13 +19,13 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-void Generator::update(units::Duration dt, simulator::Simulation& simulation)
+void Generator::update(core::units::Duration dt, simulator::Simulation& simulation)
 {
-    auto _ = measure_time("diffusion.generator", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+    auto _ = core::measure_time("diffusion.generator", [&simulation](std::ostream& out, const std::string& name, core::Clock::duration dt) {
         out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     });
 
-    constexpr float SOURCE_STRENGTH = 500.f;
+    CONSTEXPR float SOURCE_STRENGTH = 500.f;
 
     assert(m_diffusionModule);
     auto& grid = m_diffusionModule->getGrid();
@@ -34,7 +34,7 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
     const int off = grid.getSize().getHeight() * 0.05f;
 
     for (int i = -6; i <= 6; ++i)
-        grid[Vector<int>{0, (int) grid_half + i * off}][(i + 6) % Signal::COUNT] += SOURCE_STRENGTH * dt;
+        grid[core::Vector<int>{0, (int) grid_half + i * off}][(i + 6) % Signal::COUNT] += SOURCE_STRENGTH * dt;
 }
 
 /* ************************************************************************ */

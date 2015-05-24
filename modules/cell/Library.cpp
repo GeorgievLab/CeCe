@@ -23,7 +23,7 @@
 
 class CellApi : public simulator::LibraryApi
 {
-    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
+    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) NOEXCEPT override
     {
         if (name == "generator")
             return std::unique_ptr<simulator::Module>(new module::cell::Generator{});
@@ -31,7 +31,7 @@ class CellApi : public simulator::LibraryApi
         return nullptr;
     }
 
-    std::unique_ptr<simulator::Object> createObject(simulator::Simulation& simulation, const std::string& name, bool dynamic = true) noexcept override
+    std::unique_ptr<simulator::Object> createObject(simulator::Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT override
     {
         auto type = dynamic ? simulator::Object::Type::Dynamic : simulator::Object::Type::Static;
 

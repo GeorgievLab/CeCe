@@ -15,6 +15,7 @@ endif ()
 
 # Create library
 add_library(${PROJECT_NAME} OBJECT
+	compatibility.hpp
     constants.hpp
     args.hpp
     args.cpp
@@ -22,6 +23,7 @@ add_library(${PROJECT_NAME} OBJECT
     Units.hpp
     Vector.hpp
     Vector.cpp
+	VectorUnits.hpp
     Grid.hpp
     Grid.cpp
     AlignedAllocator.hpp

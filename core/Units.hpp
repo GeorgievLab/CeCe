@@ -3,7 +3,12 @@
 
 /* ************************************************************************ */
 
-inline namespace core {
+// Simulator
+#include "core/compatibility.hpp"
+
+/* ************************************************************************ */
+
+namespace core {
 namespace units {
 
 /* ************************************************************************ */
@@ -78,9 +83,9 @@ using Probability = float;
  *
  * @return
  */
-constexpr float deg2rad(float value) noexcept
+inline CONSTEXPR float deg2rad(float value) NOEXCEPT
 {
-    return value * 0.01745329252;
+    return value * 0.01745329252f;
 }
 
 /* ************************************************************************ */
@@ -92,9 +97,9 @@ constexpr float deg2rad(float value) noexcept
  *
  * @return
  */
-constexpr float rad2deg(float value) noexcept
+inline CONSTEXPR float rad2deg(float value) NOEXCEPT
 {
-    return value * 57.2957795;
+    return value * 57.2957795f;
 }
 
 /* ************************************************************************ */
@@ -104,7 +109,7 @@ constexpr float rad2deg(float value) noexcept
  *
  * @param value
  */
-constexpr Length um(float value) noexcept
+inline CONSTEXPR Length um(float value) NOEXCEPT
 {
     return Length(value);
 }
@@ -116,7 +121,7 @@ constexpr Length um(float value) noexcept
  *
  * @param value
  */
-constexpr Length mm(float value) noexcept
+inline CONSTEXPR Length mm(float value) NOEXCEPT
 {
     return Length(1000 * value);
 }
@@ -128,7 +133,7 @@ constexpr Length mm(float value) noexcept
  *
  * @param value
  */
-constexpr Length cm(float value) noexcept
+inline CONSTEXPR Length cm(float value) NOEXCEPT
 {
     return Length(10 * 1000 * value);
 }
@@ -140,7 +145,7 @@ constexpr Length cm(float value) noexcept
  *
  * @param value
  */
-constexpr Length m(float value) noexcept
+inline CONSTEXPR Length m(float value) NOEXCEPT
 {
     return Length(1000 * 1000 * value);
 }
@@ -152,7 +157,7 @@ constexpr Length m(float value) noexcept
  *
  * @param value
  */
-constexpr Volume um3(float value) noexcept
+inline CONSTEXPR Volume um3(float value) NOEXCEPT
 {
     return Volume(value);
 }
@@ -162,7 +167,7 @@ constexpr Volume um3(float value) noexcept
 /**
  * @brief Radian constructor.
  */
-constexpr Angle rad(float value)
+inline CONSTEXPR Angle rad(float value)
 {
     return Angle(value);
 }
@@ -172,7 +177,7 @@ constexpr Angle rad(float value)
 /**
  * @brief Degree constructor.
  */
-constexpr Angle deg(float value)
+inline CONSTEXPR Angle deg(float value)
 {
     return Angle(deg2rad(value));
 }
@@ -184,7 +189,7 @@ constexpr Angle deg(float value)
  *
  * @param value
  */
-constexpr Duration s(float value) noexcept
+inline CONSTEXPR Duration s(float value) NOEXCEPT
 {
     return Duration(value);
 }
@@ -196,7 +201,7 @@ constexpr Duration s(float value) noexcept
  *
  * @param value
  */
-constexpr Duration ms(float value) noexcept
+inline CONSTEXPR Duration ms(float value) NOEXCEPT
 {
     return Duration(value / 1000.f);
 }
@@ -208,13 +213,14 @@ constexpr Duration ms(float value) noexcept
  *
  * @param value
  */
-constexpr Duration us(float value) noexcept
+inline CONSTEXPR Duration us(float value) NOEXCEPT
 {
     return Duration(value / 1000000.f);
 }
 
 /* ************************************************************************ */
 
+#ifndef _MSC_VER
 /**
  * @brief Micrometers literal.
  */
@@ -362,6 +368,7 @@ inline Duration operator"" _ms(unsigned long long int value)
 {
     return Duration(value * 0.001);
 }
+#endif
 
 /* ************************************************************************ */
 

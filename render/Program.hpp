@@ -4,6 +4,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "render/Shader.hpp"
 
 /* ************************************************************************ */
@@ -53,7 +54,7 @@ public:
      *
      * @return
      */
-    Id getId() const noexcept
+    Id getId() const NOEXCEPT
     {
         return m_id;
     }
@@ -66,7 +67,7 @@ public:
      *
      * @return
      */
-    UniformId getUniformId(const char* name) const noexcept;
+    UniformId getUniformId(const char* name) const NOEXCEPT;
 
 
 // Public Operators

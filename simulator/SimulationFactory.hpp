@@ -7,6 +7,9 @@
 #include <memory>
 #include <string>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
 namespace simulator {

@@ -7,9 +7,12 @@
 #include <vector>
 #include <string>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
-inline namespace core {
+namespace core {
 
 /* ************************************************************************ */
 
@@ -24,7 +27,7 @@ extern std::vector<std::string> args;
  * @param argc
  * @param argv
  */
-void init_args(int argc, char** argv) noexcept
+inline void init_args(int argc, char** argv) NOEXCEPT
 {
     args.assign(argv, argv + argc);
 }

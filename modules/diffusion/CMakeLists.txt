@@ -15,8 +15,6 @@ set(SRCS
     Module.cpp
     Generator.hpp
     Generator.cpp
-    GeneratorCell.hpp
-    GeneratorCell.cpp
     SignalGrid.hpp
     SignalGridDrawable.hpp
     SignalGridDrawable.cpp

@@ -6,6 +6,9 @@
 // C++
 #include <cassert>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
 namespace render {
@@ -75,7 +78,7 @@ public:
      *
      * @return
      */
-    Id getId() const noexcept
+    Id getId() const NOEXCEPT
     {
         return m_id;
     }
@@ -86,7 +89,7 @@ public:
      *
      * @return
      */
-    bool isInitialized() const noexcept
+    bool isInitialized() const NOEXCEPT
     {
         return m_id != 0;
     }

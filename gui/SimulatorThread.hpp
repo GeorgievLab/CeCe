@@ -58,7 +58,7 @@ public:
      * @param handler Event handler.
      * @param factory Simulation factory.
      */
-    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory) noexcept;
+    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory) NOEXCEPT;
 
 
     /**
@@ -76,7 +76,7 @@ public:
      *
      * @return
      */
-    bool isRunning() const noexcept
+    bool isRunning() const NOEXCEPT
     {
         return m_running != 0;
     }
@@ -87,7 +87,7 @@ public:
      *
      * @return
      */
-    wxMessageQueue<Message>& GetQueue() noexcept
+    wxMessageQueue<Message>& GetQueue() NOEXCEPT
     {
         return m_queue;
     }
@@ -98,7 +98,7 @@ public:
      *
      * @return
      */
-    simulator::Simulator* GetSimulator() noexcept
+    simulator::Simulator* GetSimulator() NOEXCEPT
     {
         return &m_simulator;
     }
@@ -109,7 +109,7 @@ public:
      *
      * @return
      */
-    wxMutex* GetMutex() noexcept
+    wxMutex* GetMutex() NOEXCEPT
     {
         return &m_mutex;
     }
@@ -124,25 +124,25 @@ public:
      *
      * @return Thread return value.
      */
-    wxThread::ExitCode Entry() noexcept override;
+    wxThread::ExitCode Entry() NOEXCEPT override;
 
 
     /**
      * @brief Send start message.
      */
-    void SendStart() noexcept;
+    void SendStart() NOEXCEPT;
 
 
     /**
      * @brief Send step message.
      */
-    void SendStep() noexcept;
+    void SendStep() NOEXCEPT;
 
 
     /**
      * @brief Send stop message.
      */
-    void SendStop() noexcept;
+    void SendStop() NOEXCEPT;
 
 
     /**
@@ -150,7 +150,7 @@ public:
      *
      * @param code Source code.
      */
-    void SendLoad(const wxString& code) noexcept;
+    void SendLoad(const wxString& code) NOEXCEPT;
 
 
 // Protected Operations
@@ -160,25 +160,25 @@ protected:
     /**
      * @brief Handle incomming messages.
      */
-    void HandleMessages() noexcept;
+    void HandleMessages() NOEXCEPT;
 
 
     /**
      * @brief Perform simulation start.
      */
-    void DoStart() noexcept;
+    void DoStart() NOEXCEPT;
 
 
     /**
      * @brief Perform simulation step.
      */
-    void DoStep() noexcept;
+    void DoStep() NOEXCEPT;
 
 
     /**
      * @brief Perform simulation stop.
      */
-    void DoStop() noexcept;
+    void DoStop() NOEXCEPT;
 
 
     /**
@@ -186,7 +186,7 @@ protected:
      *
      * @param code Source code.
      */
-    void DoLoad(const wxString& code) noexcept;
+    void DoLoad(const wxString& code) NOEXCEPT;
 
 
 // Private Data Members

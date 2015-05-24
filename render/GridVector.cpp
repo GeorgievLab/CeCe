@@ -13,6 +13,10 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 
+#ifdef _WIN32
+#include "render/glext.h"
+#endif
+
 // Simulator
 #include "render/errors.hpp"
 
@@ -30,7 +34,7 @@ namespace render {
 
 /* ************************************************************************ */
 
-GridVector::GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data)
+GridVector::GridVector(Context& context, core::Vector<unsigned int> size, const core::Vector<float>* data)
     : m_buffer(context)
 {
     resize(size, data);
@@ -38,16 +42,17 @@ GridVector::GridVector(Context& context, Vector<unsigned int> size, const Vector
 
 /* ************************************************************************ */
 
-void GridVector::draw(const Vector<float>& scale) noexcept
+void GridVector::draw(const core::Vector<float>& scale) NOEXCEPT
 {
     if (!isRenderVelocity())
         return;
-
+	/*
     gl(glPushMatrix());
     gl(glScalef(scale.getX(), scale.getY(), 1));
 
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
+
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glEnableClientState(GL_COLOR_ARRAY));
     gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
@@ -60,13 +65,13 @@ void GridVector::draw(const Vector<float>& scale) noexcept
     gl(glDisableClientState(GL_COLOR_ARRAY));
     gl(glDisableClientState(GL_VERTEX_ARRAY));
     gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
-
     gl(glPopMatrix());
+	*/
 }
 
 /* ************************************************************************ */
 
-void GridVector::resize(Vector<unsigned int> size, const Vector<float>* data)
+void GridVector::resize(core::Vector<unsigned int> size, const core::Vector<float>* data)
 {
     m_size = std::move(size);
 
@@ -75,10 +80,10 @@ void GridVector::resize(Vector<unsigned int> size, const Vector<float>* data)
 
 /* ************************************************************************ */
 
-void GridVector::update(const Vector<float>* data) noexcept
+void GridVector::update(const core::Vector<float>* data) NOEXCEPT
 {
-    constexpr Vector<float> start{-0.5f, -0.5f};
-    const Vector<float> step{1.f / m_size.getWidth(), 1.f / m_size.getHeight()};
+	CONSTEXPR core::Vector<float> start{ -0.5f, -0.5f };
+    const core::Vector<float> step{1.f / m_size.getWidth(), 1.f / m_size.getHeight()};
 
     auto width = m_size.getWidth();
     auto height = m_size.getHeight();
@@ -92,7 +97,7 @@ void GridVector::update(const Vector<float>* data) noexcept
     {
         for (decltype(width) i = 0; i < width; ++i)
         {
-            const Vector<float>& vec = data[i + j * width];
+			const core::Vector<float>& vec = data[i + j * width];
             const float len_squared = vec.getLengthSquared();
 
             if (max_squared < len_squared)
@@ -109,8 +114,8 @@ void GridVector::update(const Vector<float>* data) noexcept
         for (decltype(width) i = 0; i < width; ++i)
         {
             // Get vector normalized by max length
-            const Vector<float> vec = data[i + j * width] / max;
-            const Vector<float> pos{
+			const core::Vector<float> vec = data[i + j * width] / max;
+			const core::Vector<float> pos{
                     start.getX() + i * step.getX() + step.getX() / 2.f,
                     start.getY() + j * step.getY() + step.getY() / 2.f
             };
@@ -118,7 +123,7 @@ void GridVector::update(const Vector<float>* data) noexcept
             const float green = 5 * std::max(vec.getY(), 0.f);
             const float blue = 5 * std::max(-vec.getY(), 0.f);
 
-            const Vector<float> dest = pos + vec * step;
+			const core::Vector<float> dest = pos + vec * step;
 
             vertices.push_back(Vertex{pos.getX(), pos.getY(), red, green, blue});
             vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});
@@ -126,7 +131,7 @@ void GridVector::update(const Vector<float>* data) noexcept
     }
 
     m_buffer.resize(
-        vertices.size() * sizeof(decltype(vertices)::value_type),
+		vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data()
     );
 }

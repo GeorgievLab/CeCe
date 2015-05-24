@@ -27,8 +27,10 @@ endif ()
 
 # Create library
 add_library(${PROJECT_NAME} OBJECT
+	datatype.hpp
     Position.hpp
     Color.hpp
+	Color.cpp
     errors.hpp
     errors.cpp
     Context.hpp
@@ -50,6 +52,9 @@ add_library(${PROJECT_NAME} OBJECT
     Shader.cpp
     Program.hpp
     Program.cpp
+	VertexElement.hpp
+	VertexFormat.hpp
+	glext.h
 )
 
 # ######################################################################### #

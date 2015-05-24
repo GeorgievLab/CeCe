@@ -6,6 +6,9 @@
 // C++
 #include <array>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 #if ENABLE_SSE && __SSE__
 #include <immintrin.h>
 #endif
@@ -33,16 +36,26 @@ public:
      * @brief Number of stored signals
      */
 #ifdef __AVX__
-    static constexpr unsigned int COUNT = 8;
+#ifdef _MSC_VER
+	static const unsigned int COUNT = 8;
+#else
+    static CONSTEXPR unsigned int COUNT = 8;
+#endif
+#else
+#ifdef _MSC_VER
+	static const unsigned int COUNT = 4;
 #else
     static constexpr unsigned int COUNT = 4;
+#endif
 #endif
 
 
     /**
      * @brief Minimum signal value to be ignored.
      */
-    static constexpr float IGNORE_LEVEL = 0;
+#ifndef _MSC_VER
+    static constexpr float IGNORE_LEVEL = 0.f;
+#endif
 
 
 // Public Ctors & Dtors
@@ -79,11 +92,16 @@ public:
 #else
         : m_sse(_mm_set1_ps(value))
 #endif
-#else
-        : m_values{value, value, value, value}
+#elif !defined(_MSC_VER)
+		: m_values{ value, value, value, value }
 #endif
     {
-        // Nothing to do
+#ifdef _MSC_VER
+		m_values[0] = value;
+		m_values[1] = value;
+		m_values[2] = value;
+		m_values[3] = value;
+#endif
     }
 
 
@@ -106,9 +124,9 @@ public:
      * @param values
      */
 #ifdef __AVX__
-    constexpr Signal(__m256 values)
+    CONSTEXPR Signal(__m256 values)
 #else
-    constexpr Signal(__m128 values)
+    CONSTEXPR Signal(__m128 values)
 #endif
         : m_sse(values)
     {
@@ -124,17 +142,25 @@ public:
     /**
      * @brief Check if values are beyond some level.
      */
-    explicit operator bool() const noexcept
+    explicit operator bool() const NOEXCEPT
     {
 #if ENABLE_SSE && __SSE__
 #ifdef __AVX__
         return _mm256_movemask_ps(_mm256_cmp_ps(m_sse, _mm256_set1_ps(IGNORE_LEVEL), _CMP_GT_OS));
 #else
+#if _MSC_VER
+		return _mm_movemask_ps(_mm_cmpgt_ps(m_sse, _mm_set1_ps(0.f)));
+#else
         return _mm_movemask_ps(_mm_cmpgt_ps(m_sse, _mm_set1_ps(IGNORE_LEVEL)));
+#endif
 #endif
 #else
         for (float v : m_values)
-            if (v > IGNORE_LEVEL)
+#if _MSC_VER
+            if (v > 0.f)
+#else
+			if (v > IGNORE_LEVEL)
+#endif
                 return true;
 
         return false;
@@ -149,7 +175,7 @@ public:
      *
      * @return
      */
-    float& operator[](unsigned int pos) noexcept
+    float& operator[](unsigned int pos) NOEXCEPT
     {
         return m_values[pos];
     }
@@ -162,7 +188,7 @@ public:
      *
      * @return
      */
-    float operator[](unsigned int pos) const noexcept
+    float operator[](unsigned int pos) const NOEXCEPT
     {
         return m_values[pos];
     }
@@ -176,7 +202,7 @@ public:
      *
      * @return New signal
      */
-    Signal operator+(const Signal& rhs) const noexcept
+    Signal operator+(const Signal& rhs) const NOEXCEPT
     {
 #if ENABLE_SSE && __SSE__
 #ifdef __AVX__
@@ -202,7 +228,7 @@ public:
      *
      * @return this
      */
-    Signal& operator+=(const Signal& rhs) noexcept
+    Signal& operator+=(const Signal& rhs) NOEXCEPT
     {
         *this = *this + rhs;
         return *this;
@@ -216,7 +242,7 @@ public:
      *
      * @return this
      */
-    Signal& operator+=(float rhs) noexcept
+    Signal& operator+=(float rhs) NOEXCEPT
     {
         *this = *this + Signal{rhs};
         return *this;
@@ -230,7 +256,7 @@ public:
      *
      * @return New signal
      */
-    Signal operator-(const Signal& rhs) const noexcept
+    Signal operator-(const Signal& rhs) const NOEXCEPT
     {
 #if ENABLE_SSE && __SSE__
 #ifdef __AVX__
@@ -256,7 +282,7 @@ public:
      *
      * @return this
      */
-    Signal& operator-=(const Signal& rhs) noexcept
+    Signal& operator-=(const Signal& rhs) NOEXCEPT
     {
         *this = *this - rhs;
         return *this;
@@ -270,7 +296,7 @@ public:
      *
      * @return this
      */
-    Signal& operator-=(float rhs) noexcept
+    Signal& operator-=(float rhs) NOEXCEPT
     {
         *this = *this - Signal{rhs};
         return *this;
@@ -284,7 +310,7 @@ public:
      *
      * @return New signal
      */
-    Signal operator*(const Signal& rhs) const noexcept
+    Signal operator*(const Signal& rhs) const NOEXCEPT
     {
 #if ENABLE_SSE && __SSE__
 #ifdef __AVX__
@@ -310,7 +336,7 @@ public:
      *
      * @return this
      */
-    Signal& operator*=(const Signal& rhs) noexcept
+    Signal& operator*=(const Signal& rhs) NOEXCEPT
     {
         *this = *this * rhs;
         return *this;
@@ -324,7 +350,7 @@ public:
      *
      * @return this
      */
-    Signal& operator*=(float rhs) noexcept
+    Signal& operator*=(float rhs) NOEXCEPT
     {
         *this = *this * Signal{rhs};
         return *this;
@@ -338,7 +364,7 @@ public:
      *
      * @return New signal
      */
-    Signal operator/(const Signal& rhs) const noexcept
+    Signal operator/(const Signal& rhs) const NOEXCEPT
     {
 #if ENABLE_SSE && __SSE__
 #ifdef __AVX__
@@ -364,7 +390,7 @@ public:
      *
      * @return Modified signal.
      */
-    Signal& operator/=(const Signal& rhs) noexcept
+    Signal& operator/=(const Signal& rhs) NOEXCEPT
     {
         *this = *this / rhs;
         return *this;
@@ -378,7 +404,7 @@ public:
      *
      * @return this
      */
-    Signal& operator/=(float rhs) noexcept
+    Signal& operator/=(float rhs) NOEXCEPT
     {
         *this = *this / Signal{rhs};
         return *this;
@@ -396,9 +422,9 @@ public:
      * @return
      */
 #ifdef __AVX__
-    __m256& getSseValue() noexcept
+    __m256& getSseValue() NOEXCEPT
 #else
-    __m128& getSseValue() noexcept
+    __m128& getSseValue() NOEXCEPT
 #endif
     {
         return m_sse;
@@ -413,9 +439,9 @@ public:
      * @return
      */
 #ifdef __AVX__
-    const __m256& getSseValue() const noexcept
+    const __m256& getSseValue() const NOEXCEPT
 #else
-    const __m128& getSseValue() const noexcept
+    const __m128& getSseValue() const NOEXCEPT
 #endif
     {
         return m_sse;
@@ -452,7 +478,7 @@ private:
  *
  * @return New signal
  */
-inline Signal operator+(const Signal& lhs, float rhs) noexcept
+inline Signal operator+(const Signal& lhs, float rhs) NOEXCEPT
 {
     return lhs + Signal{rhs};
 }
@@ -467,7 +493,7 @@ inline Signal operator+(const Signal& lhs, float rhs) noexcept
  *
  * @return New signal
  */
-inline Signal operator+(float lhs, const Signal& rhs) noexcept
+inline Signal operator+(float lhs, const Signal& rhs) NOEXCEPT
 {
     return Signal{lhs} + rhs;
 }
@@ -482,7 +508,7 @@ inline Signal operator+(float lhs, const Signal& rhs) noexcept
  *
  * @return New signal
  */
-inline Signal operator-(const Signal& lhs, float rhs) noexcept
+inline Signal operator-(const Signal& lhs, float rhs) NOEXCEPT
 {
     return lhs - Signal{rhs};
 }
@@ -497,7 +523,7 @@ inline Signal operator-(const Signal& lhs, float rhs) noexcept
  *
  * @return New signal
  */
-inline Signal operator-(float lhs, const Signal& rhs) noexcept
+inline Signal operator-(float lhs, const Signal& rhs) NOEXCEPT
 {
     return Signal{lhs} - rhs;
 }
@@ -512,7 +538,7 @@ inline Signal operator-(float lhs, const Signal& rhs) noexcept
  *
  * @return New signal
  */
-inline Signal operator*(const Signal& lhs, float rhs) noexcept
+inline Signal operator*(const Signal& lhs, float rhs) NOEXCEPT
 {
     return lhs * Signal{rhs};
 }
@@ -527,7 +553,7 @@ inline Signal operator*(const Signal& lhs, float rhs) noexcept
  *
  * @return New signal
  */
-inline Signal operator*(float lhs, const Signal& rhs) noexcept
+inline Signal operator*(float lhs, const Signal& rhs) NOEXCEPT
 {
     return Signal{lhs} * rhs;
 }
@@ -542,7 +568,7 @@ inline Signal operator*(float lhs, const Signal& rhs) noexcept
  *
  * @return New signal
  */
-inline Signal operator/(const Signal& lhs, float rhs) noexcept
+inline Signal operator/(const Signal& lhs, float rhs) NOEXCEPT
 {
     return lhs / Signal{rhs};
 }
@@ -557,7 +583,7 @@ inline Signal operator/(const Signal& lhs, float rhs) noexcept
  *
  * @return New signal
  */
-inline Signal operator/(float lhs, const Signal& rhs) noexcept
+inline Signal operator/(float lhs, const Signal& rhs) NOEXCEPT
 {
     return Signal{lhs} / rhs;
 }
@@ -572,7 +598,7 @@ inline Signal operator/(float lhs, const Signal& rhs) noexcept
  *
  * @return
  */
-inline Signal exp(const Signal& arg) noexcept
+inline Signal exp(const Signal& arg) NOEXCEPT
 {
 #if OFF // ENABLE_SSE && __SSE__
     return Signal{_mm_exp_ps(arg.getSseValue())};

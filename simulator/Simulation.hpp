@@ -12,6 +12,7 @@
 #include <functional>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "core/Log.hpp"
@@ -71,7 +72,7 @@ public:
     /**
      * @brief Constructor.
      */
-    Simulation() noexcept;
+    Simulation() NOEXCEPT;
 
 
     /**
@@ -89,7 +90,7 @@ public:
      *
      * @return
      */
-    StepNumber getStepNumber() const noexcept
+    StepNumber getStepNumber() const NOEXCEPT
     {
         return m_stepNumber;
     }
@@ -100,7 +101,7 @@ public:
      *
      * @return
      */
-    StepNumber getIterations() const noexcept
+    StepNumber getIterations() const NOEXCEPT
     {
         return m_iterations;
     }
@@ -111,7 +112,7 @@ public:
      *
      * @return
      */
-    bool hasUnlimitedIterations() const noexcept
+    bool hasUnlimitedIterations() const NOEXCEPT
     {
         return getIterations() == 0;
     }
@@ -122,7 +123,7 @@ public:
      *
      * @return
      */
-    const ModuleContainer& getModules() const noexcept
+    const ModuleContainer& getModules() const NOEXCEPT
     {
         return m_modules;
     }
@@ -133,7 +134,7 @@ public:
      *
      * @return
      */
-    units::Duration getTimeStep() const noexcept
+	core::units::Duration getTimeStep() const NOEXCEPT
     {
         return m_timeStep;
     }
@@ -144,7 +145,7 @@ public:
      *
      * @return
      */
-    bool isTimeStepRealTime() const noexcept
+    bool isTimeStepRealTime() const NOEXCEPT
     {
         return m_timeStepRealTime;
     }
@@ -157,7 +158,7 @@ public:
      *
      * @return
      */
-    bool hasLibrary(const std::string& name) const noexcept
+    bool hasLibrary(const std::string& name) const NOEXCEPT
     {
         return m_libraries.find(name) != m_libraries.end();
     }
@@ -170,7 +171,7 @@ public:
      *
      * @return
      */
-    bool hasModule(const std::string& name) const noexcept
+    bool hasModule(const std::string& name) const NOEXCEPT
     {
         return m_modules.find(name) != m_modules.end();
     }
@@ -183,7 +184,7 @@ public:
      *
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
-    Module* getModule(const std::string& name) noexcept
+    Module* getModule(const std::string& name) NOEXCEPT
     {
         auto it = m_modules.find(name);
 
@@ -204,7 +205,7 @@ public:
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
     template<typename ModuleType>
-    ModuleType* getModule(const std::string& name) noexcept
+    ModuleType* getModule(const std::string& name) NOEXCEPT
     {
         auto module = getModule(name);
         if (!module)
@@ -220,7 +221,7 @@ public:
      *
      * @return
      */
-    const ObjectContainer& getObjects() const noexcept
+    const ObjectContainer& getObjects() const NOEXCEPT
     {
         return m_objects;
     }
@@ -231,7 +232,7 @@ public:
      *
      * @return
      */
-    const Vector<units::Length>& getWorldSize() const noexcept
+	 const core::Vector<core::units::Length>& getWorldSize() const NOEXCEPT
     {
         return m_worldSize;
     }
@@ -243,7 +244,7 @@ public:
      *
      * @return
      */
-    b2World& getWorld() noexcept
+    b2World& getWorld() NOEXCEPT
     {
         return m_world;
     }
@@ -256,7 +257,7 @@ public:
      *
      * @return
      */
-    const b2World& getWorld() const noexcept
+    const b2World& getWorld() const NOEXCEPT
     {
         return m_world;
     }
@@ -269,7 +270,7 @@ public:
      *
      * @return
      */
-    bool isDrawPhysics() const noexcept
+    bool isDrawPhysics() const NOEXCEPT
     {
         return m_drawPhysics;
     }
@@ -281,7 +282,7 @@ public:
      *
      * @return
      */
-    const std::map<std::string, Program>& getPrograms() const noexcept
+    const std::map<std::string, Program>& getPrograms() const NOEXCEPT
     {
         return m_programs;
     }
@@ -294,7 +295,7 @@ public:
      *
      * @return
      */
-    bool hasProgram(const std::string& name) const noexcept
+    bool hasProgram(const std::string& name) const NOEXCEPT
     {
         return m_programs.find(name) != m_programs.end();
     }
@@ -307,7 +308,7 @@ public:
      *
      * @return Pointer to program.
      */
-    Program getProgram(const std::string& name) noexcept
+    Program getProgram(const std::string& name) NOEXCEPT
     {
         auto it = m_programs.find(name);
 
@@ -329,7 +330,7 @@ public:
      * @param iterations Number of iterations. If value is 0, there is
      *                   unlimited number of iterations.
      */
-    void setIterations(StepNumber iterations) noexcept
+    void setIterations(StepNumber iterations) NOEXCEPT
     {
         m_iterations = iterations;
     }
@@ -340,7 +341,7 @@ public:
      *
      * @param dt
      */
-    void setTimeStep(units::Duration dt) noexcept
+	void setTimeStep(core::units::Duration dt) NOEXCEPT
     {
         m_timeStep = dt;
     }
@@ -351,7 +352,7 @@ public:
      *
      * @param flag
      */
-    void setTimeStepRealTime(bool flag) noexcept
+    void setTimeStepRealTime(bool flag) NOEXCEPT
     {
         m_timeStepRealTime = flag;
     }
@@ -420,7 +421,7 @@ public:
      *
      * @param size
      */
-    void setWorldSize(Vector<units::Length> size) noexcept
+	void setWorldSize(core::Vector<core::units::Length> size) NOEXCEPT
     {
         m_worldSize = std::move(size);
     }
@@ -432,7 +433,7 @@ public:
      * @param width  New width.
      * @param height New height.
      */
-    void setWorldSize(units::Length width, units::Length height) noexcept
+	void setWorldSize(core::units::Length width, core::units::Length height) NOEXCEPT
     {
         setWorldSize({width, height});
     }
@@ -481,7 +482,7 @@ public:
     /**
      * @brief If physics debug data should be shown.
      */
-    void setDrawPhysics(bool flag) noexcept
+    void setDrawPhysics(bool flag) NOEXCEPT
     {
         m_drawPhysics = flag;
     }
@@ -527,7 +528,7 @@ public:
      *
      * @return If next step can be calculated.
      */
-    bool update(units::Duration dt) noexcept;
+	bool update(core::units::Duration dt) NOEXCEPT;
 
 
     /**
@@ -580,13 +581,13 @@ private:
     StepNumber m_iterations = 0;
 
     /// Simulation step.
-    units::Duration m_timeStep;
+	core::units::Duration m_timeStep;
 
     /// Real-time time step
     bool m_timeStepRealTime = true;
 
     /// World size.
-    Vector<units::Length> m_worldSize{units::um(400), units::um(400)};
+	core::Vector<core::units::Length> m_worldSize{ core::units::um(400), core::units::um(400) };
 
     /// Cache for loaded libraries.
     std::map<std::string, std::unique_ptr<Library>> m_libraries;

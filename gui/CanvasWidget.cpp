@@ -62,14 +62,14 @@ CanvasWidget::CanvasWidget(wxWindow* parent, wxWindowID id,
 
 /* ************************************************************************ */
 
-void CanvasWidget::Update() noexcept
+void CanvasWidget::Update() NOEXCEPT
 {
     Refresh(false);
 }
 
 /* ************************************************************************ */
 
-void CanvasWidget::ViewReset() noexcept
+void CanvasWidget::ViewReset() NOEXCEPT
 {
     auto& renderer = m_simulator->getRenderContext();
     auto& camera = renderer.getCamera();
@@ -110,7 +110,7 @@ void CanvasWidget::OnResize(wxSizeEvent& event)
 
 /* ************************************************************************ */
 
-void CanvasWidget::OnZoom(wxMouseEvent& event) noexcept
+void CanvasWidget::OnZoom(wxMouseEvent& event) NOEXCEPT
 {
     if (event.GetWheelAxis() != wxMOUSE_WHEEL_VERTICAL)
     {
@@ -184,7 +184,7 @@ void CanvasWidget::OnKeyDown(wxKeyEvent& event)
 
 /* ************************************************************************ */
 
-void CanvasWidget::Render() noexcept
+void CanvasWidget::Render() NOEXCEPT
 {
     static bool s_error = false;
 
@@ -235,7 +235,7 @@ void CanvasWidget::Render() noexcept
 
 /* ************************************************************************ */
 
-void CanvasWidget::UpdateFps() noexcept
+void CanvasWidget::UpdateFps() NOEXCEPT
 {
     using namespace std::chrono;
 
