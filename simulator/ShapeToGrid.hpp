@@ -33,7 +33,7 @@ namespace simulator {
  */
 template<typename OutIt, typename T, typename StepT>
 OutIt mapShapeToGrid(OutIt out, const Shape& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max, 
+	const core::Vector<T>& center, const core::Vector<T>& max,
 	const core::Vector<T>& min = {})
 {
     switch (shape.type)
@@ -65,7 +65,7 @@ OutIt mapShapeToGrid(OutIt out, const Shape& shape, const core::Vector<StepT>& s
  */
 template<typename OutIt, typename T, typename StepT>
 OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max, 
+	const core::Vector<T>& center, const core::Vector<T>& max,
 	const core::Vector<T>& min = {})
 {
     // Get signed type
@@ -122,7 +122,7 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const core::Vector<Ste
  */
 template<typename OutIt, typename T, typename StepT, typename OffT = int>
 OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max, const core::Vector<T>& min = {}, 
+	const core::Vector<T>& center, const core::Vector<T>& max, const core::Vector<T>& min = {},
 	OffT off = OffT{})
 {
     switch (shape.type)
@@ -158,7 +158,7 @@ OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const core::Vector<Ste
  */
 template<typename OutIt, typename T, typename StepT, typename OffT = int>
 OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max, const core::Vector<T>& min = {}, 
+	const core::Vector<T>& center, const core::Vector<T>& max, const core::Vector<T>& min = {},
 	OffT off = OffT{})
 {
     // Get signed type
@@ -170,7 +170,7 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const core::Vect
 	const core::Vector<Ts> maxS = max;
 	const core::Vector<Ts> minS = min;
 
-    auto putCoord = [&out, &shapeCenter, &minS, &maxS](Vector<Ts> xy) {
+    auto putCoord = [&out, &shapeCenter, &minS, &maxS](core::Vector<Ts> xy) {
         // Calculate grid coordinates
 		const core::Vector<T> coord = shapeCenter + xy;
 
@@ -194,9 +194,9 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const core::Vect
     while (stopping.getX() >= stopping.getY())
     {
         putCoord(xy);
-        putCoord(xy * Vector<Ts>(-1,  1));
-        putCoord(xy * Vector<Ts>(-1, -1));
-        putCoord(xy * Vector<Ts>( 1, -1));
+        putCoord(xy * core::Vector<Ts>(-1,  1));
+        putCoord(xy * core::Vector<Ts>(-1, -1));
+        putCoord(xy * core::Vector<Ts>( 1, -1));
 
         ++xy.y();
         stopping.y() += twoSquare.getX();
@@ -212,21 +212,21 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const core::Vect
         }
     }
 
-    xy = Vector<Ts>(0, radius.getY());
-    change = Vector<Ts>(
+    xy = core::Vector<Ts>(0, radius.getY());
+    change = core::Vector<Ts>(
         radiusSquare.getY(),
         radiusSquare.getX() * (1 - 2 * radius.getY())
     );
 
     error = 0;
-    stopping = Vector<Ts>(0, twoSquare.getY() * radius.getY());
+    stopping = core::Vector<Ts>(0, twoSquare.getY() * radius.getY());
 
     while (stopping.getX() <= stopping.getY())
     {
         putCoord(xy);
-        putCoord(xy * Vector<Ts>(-1,  1));
-        putCoord(xy * Vector<Ts>(-1, -1));
-        putCoord(xy * Vector<Ts>( 1, -1));
+        putCoord(xy * core::Vector<Ts>(-1,  1));
+        putCoord(xy * core::Vector<Ts>(-1, -1));
+        putCoord(xy * core::Vector<Ts>( 1, -1));
 
         ++xy.x();
         stopping.x() += twoSquare.getY();
