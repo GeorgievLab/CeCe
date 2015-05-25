@@ -13,14 +13,14 @@
 
 /* ************************************************************************ */
 
-Vector<units::Length> get_simulation_size(simulator::Simulation* sim)
+core::Vector<core::units::Length> get_simulation_size(simulator::Simulation* sim)
 {
     return sim->getWorldSize();
 }
 
 /* ************************************************************************ */
 
-void python_wrapper_simulator()
+static void python_wrapper_simulator_Configuration()
 {
     namespace py = boost::python;
 
@@ -30,12 +30,27 @@ void python_wrapper_simulator()
         .def("getFloat", &simulator::ConfigurationBase::getFloat)
         .def("getInteger", &simulator::ConfigurationBase::getInteger)
     ;
+}
+
+/* ************************************************************************ */
+
+static void python_wrapper_simulator_Simulation()
+{
+    namespace py = boost::python;
 
     // Simulation
     py::class_<simulator::Simulation, boost::noncopyable>("Simulation", py::no_init)
         .add_property("worldSize", &get_simulation_size,
-            static_cast<void(simulator::Simulation::*)(Vector<units::Length>)>(&simulator::Simulation::setWorldSize))
+            static_cast<void(simulator::Simulation::*)(core::Vector<core::units::Length>)>(&simulator::Simulation::setWorldSize))
     ;
+}
+
+/* ************************************************************************ */
+
+void python_wrapper_simulator()
+{
+    python_wrapper_simulator_Configuration();
+    python_wrapper_simulator_Simulation();
 }
 
 /* ************************************************************************ */

@@ -33,10 +33,9 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param simulation
      * @param path       Path to source file.
      */
-    explicit Module(simulator::Simulation& simulation, const boost::filesystem::path& filename);
+    explicit Module(const boost::filesystem::path& filename);
 
 
     /**
@@ -65,7 +64,7 @@ public:
      * @param dt    Simulation time step.
      * @param simulation
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void update(core::units::Duration dt, simulator::Simulation& simulation) override;
 
 
     /**
@@ -74,16 +73,6 @@ public:
      * @param config
      */
     void configure(const simulator::ConfigurationBase& config) override;
-
-
-#if ENABLE_RENDER
-    /**
-     * @brief Initialize module for rendering.
-     *
-     * @param context
-     */
-    void drawInit(render::Context& context) override;
-#endif
 
 
 #if ENABLE_RENDER
@@ -109,11 +98,6 @@ private:
 
     /// Update function.
     boost::python::object m_updateFn;
-
-#if ENABLE_RENDER
-    /// Draw init function.
-    boost::python::object m_drawInitFn;
-#endif
 
 #if ENABLE_RENDER
     /// Draw function.

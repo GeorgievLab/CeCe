@@ -16,7 +16,7 @@
 
 /* ************************************************************************ */
 
-void python_wrapper_render()
+static void python_wrapper_render_Color()
 {
 #if ENABLE_RENDER
     namespace py = boost::python;
@@ -29,9 +29,18 @@ void python_wrapper_render()
         .add_property("blue", &render::Color::getBlue, &render::Color::setBlue)
         .add_property("alpha", &render::Color::getAlpha, &render::Color::setAlpha)
     ;
+#endif
+}
+
+/* ************************************************************************ */
+
+static void python_wrapper_render_Context()
+{
+#if ENABLE_RENDER
+    namespace py = boost::python;
 
     void (render::Context::*matrixScale1)(float) = &render::Context::matrixScale;
-    void (render::Context::*matrixScale2)(const Vector<float>&) = &render::Context::matrixScale;
+    void (render::Context::*matrixScale2)(const core::Vector<float>&) = &render::Context::matrixScale;
 
     // render::Context
     py::class_<render::Context, boost::noncopyable>("Context", py::no_init)
@@ -41,9 +50,18 @@ void python_wrapper_render()
         .def("matrixScale", matrixScale1)
         .def("matrixScale", matrixScale2)
     ;
+#endif
+}
+
+/* ************************************************************************ */
+
+static void python_wrapper_render_GridColor()
+{
+#if 0 // ENABLE_RENDER
+    namespace py = boost::python;
 
     void (render::GridColor::*init_1)(render::Context&) = &render::GridColor::init;
-    void (render::GridColor::*init_2)(render::Context&, Vector<render::GridColor::PositionType>) = &render::GridColor::init;
+    void (render::GridColor::*init_2)(render::Context&, core::Vector<render::GridColor::PositionType>) = &render::GridColor::init;
 
     py::class_<render::GridColor, boost::noncopyable>("GridColor")
         .def("init", init_1)
@@ -51,10 +69,18 @@ void python_wrapper_render()
         .def("draw", &render::GridColor::draw)
         .def("clear", &render::GridColor::clear)
         .def("set", &render::GridColor::set)
-        //.def("get", &render::GridColor::get)
+        .def("get", &render::GridColor::get)
     ;
-
 #endif
+}
+
+/* ************************************************************************ */
+
+void python_wrapper_render()
+{
+    python_wrapper_render_Color();
+    python_wrapper_render_Context();
+    python_wrapper_render_GridColor();
 }
 
 /* ************************************************************************ */

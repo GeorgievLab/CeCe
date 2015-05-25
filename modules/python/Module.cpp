@@ -89,7 +89,7 @@ static std::string parse_python_exception() noexcept
 
 /* ************************************************************************ */
 
-Module::Module(simulator::Simulation& simulation, const boost::filesystem::path& filename)
+Module::Module(const boost::filesystem::path& filename)
 {
     namespace py = boost::python;
     namespace fs = boost::filesystem;
@@ -102,51 +102,59 @@ Module::Module(simulator::Simulation& simulation, const boost::filesystem::path&
     // Initialize python
     Py_Initialize();
 
-    fs::path foundPath;
-
-    // Foreach possible paths
-    for (auto p : simulator::Library::getLibraryPaths())
+    // External file
+    auto ext = filename.extension();
+    if (filename.has_extension() && ext == ".py")
     {
-        if (fs::exists(p / filename))
+        fs::path foundPath;
+
+        // Foreach possible paths
+        for (auto p : simulator::Library::getLibraryPaths())
         {
-            foundPath = p / filename;
-            break;
+            if (fs::exists(p / filename))
+            {
+                foundPath = p / filename;
+                break;
+            }
         }
-    }
 
-    if (foundPath.empty())
-        throw std::invalid_argument("Unable to find: " + filename.string());
+        if (foundPath.empty())
+        {
+            core::Log::warning("Unable to find: " + filename.string());
+        }
+        else
+        {
+            try
+            {
+                // Load the module object
+                m_module = py::import("__main__");
 
-    if (filename.empty())
-    {
-        Log::warning("Python wrapper module filename is empty!");
-        return;
-    }
+                // Get dictionary with list of objects
+                auto dict = m_module.attr("__dict__");
 
-    try
-    {
-        // Load the module object
-        m_module = py::import("__main__");
+                // Execute given module file
+                py::exec_file(foundPath.c_str(), dict);
 
-        // Get dictionary with list of objects
-        auto dict = m_module.attr("__dict__");
+                // Get function pointers
+                if (py::dict(dict).has_key("configure")) {
+                    m_configureFn = dict["configure"];
+                }
 
-        // Execute given module file
-        py::exec_file(foundPath.c_str(), dict);
-
-        // Get function pointers
-        m_configureFn = dict["configure"];
-        m_updateFn = dict["update"];
+                if (py::dict(dict).has_key("update")) {
+                    m_updateFn = dict["update"];
+                }
 
 #if ENABLE_RENDER
-        m_drawInitFn = dict["drawInit"];
-        m_drawFn = dict["draw"];
+                if (py::dict(dict).has_key("draw")) {
+                    m_drawFn = dict["draw"];
+                }
 #endif
-
-    }
-    catch (const py::error_already_set&)
-    {
-        throw std::runtime_error(parse_python_exception());
+            }
+            catch (const py::error_already_set&)
+            {
+                throw std::runtime_error(parse_python_exception());
+            }
+        }
     }
 }
 
@@ -160,16 +168,18 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
 {
+    namespace py = boost::python;
+
     if (!m_updateFn)
         return;
 
     try
     {
-        m_updateFn(boost::python::object(dt), boost::python::ptr(&simulation));
+        m_updateFn(py::object(dt), py::ptr(&simulation));
     }
-    catch (const boost::python::error_already_set&)
+    catch (const py::error_already_set&)
     {
         throw std::runtime_error(parse_python_exception());
     }
@@ -179,14 +189,54 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 void Module::configure(const simulator::ConfigurationBase& config)
 {
+    namespace py = boost::python;
+
+    // Check if configuration contains code
+    if (config.hasText())
+    {
+        if (m_module)
+            core::Log::warning("Overriding external script by internal code");
+
+        try
+        {
+            // Load the module object
+            m_module = py::import("__main__");
+
+            // Get dictionary with list of objects
+            auto dict = m_module.attr("__dict__");
+
+            // Execute given module file
+            py::exec(py::str(config.getText()), dict);
+
+            // Get function pointers
+            if (py::dict(dict).has_key("configure")) {
+                m_configureFn = dict["configure"];
+            }
+
+            if (py::dict(dict).has_key("update")) {
+                m_updateFn = dict["update"];
+            }
+
+#if ENABLE_RENDER
+            if (py::dict(dict).has_key("draw")) {
+                m_drawFn = dict["draw"];
+            }
+#endif
+        }
+        catch (const py::error_already_set&)
+        {
+            throw std::runtime_error(parse_python_exception());
+        }
+    }
+
     if (!m_configureFn)
         return;
 
     try
     {
-        m_configureFn(boost::python::ptr(&config));
+        m_configureFn(py::ptr(&config));
     }
-    catch (const boost::python::error_already_set&)
+    catch (const py::error_already_set&)
     {
         throw std::runtime_error(parse_python_exception());
     }
@@ -194,36 +244,19 @@ void Module::configure(const simulator::ConfigurationBase& config)
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
-void Module::drawInit(render::Context& context)
-{
-    if (!m_drawInitFn)
-        return;
-
-    try
-    {
-        m_drawInitFn(boost::python::ptr(&context));
-    }
-    catch (const boost::python::error_already_set&)
-    {
-        throw std::runtime_error(parse_python_exception());
-    }
-}
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
+    namespace py = boost::python;
+
     if (!m_drawFn)
         return;
 
     try
     {
-        m_drawFn(boost::python::ptr(&context), boost::python::ptr(&simulation));
+        m_drawFn(py::ptr(&context), py::ptr(&simulation));
     }
-    catch (const boost::python::error_already_set&)
+    catch (const py::error_already_set&)
     {
         throw std::runtime_error(parse_python_exception());
     }

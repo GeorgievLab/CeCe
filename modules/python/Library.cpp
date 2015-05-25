@@ -9,6 +9,7 @@
 
 // Simulator
 #include "simulator/Library.hpp"
+#include "simulator/LibraryApi.hpp"
 
 // Module
 #include "Module.hpp"
@@ -24,11 +25,11 @@ class PythonApi : public simulator::LibraryApi
     {
         try
         {
-            return std::unique_ptr<simulator::Module>(new module::python::Module{simulation, boost::filesystem::path(name)});
+            return std::unique_ptr<simulator::Module>(new module::python::Module{boost::filesystem::path(name)});
         }
         catch (const std::exception& e)
         {
-            Log::warning(e.what());
+            core::Log::warning(e.what());
         }
 
         return nullptr;
@@ -37,6 +38,6 @@ class PythonApi : public simulator::LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(PythonApi)
+DEFINE_LIBRARY_CREATE_IMPL(python, PythonApi)
 
 /* ************************************************************************ */

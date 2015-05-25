@@ -23,7 +23,7 @@ static void define_vector(const char* name) noexcept
 {
     using namespace boost::python;
 
-    bool (Vector<T>::*inRange)(const Vector<T>&, const Vector<T>&) const = &core::Vector<T>::inRange;
+    bool (core::Vector<T>::*inRange)(const core::Vector<T>&, const core::Vector<T>&) const = &core::Vector<T>::inRange;
 
     class_<core::Vector<T>>(name)
         .def(init<T, T>())
@@ -32,31 +32,31 @@ static void define_vector(const char* name) noexcept
         .add_property("y", &core::Vector<T>::getY, &core::Vector<T>::setY)
         // Add
         .def(self + self)
-        .def(self + T())
-        .def(T() + self)
+        //.def(self + T())
+        //.def(T() + self)
         .def(self += self)
         // Substract
         .def(self - self)
-        .def(self - T())
-        .def(T() - self)
+        //.def(self - T())
+        //.def(T() - self)
         .def(self -= self)
         // Multiple
         .def(self * self)
-        .def(self * T())
-        .def(T() * self)
+        //.def(self * T())
+        //.def(T() * self)
         .def(self *= self)
         // Divide
         .def(self / self)
-        .def(self / T())
-        .def(T() / self)
+        //.def(self / T())
+        //.def(T() / self)
         .def(self /= self)
         // Relation
-        .def(self == self)
-        .def(self != self)
-        .def(self < self)
-        .def(self <= self)
-        .def(self > self)
-        .def(self >= self)
+        //.def(self == self)
+        //.def(self != self)
+        //.def(self < self)
+        //.def(self <= self)
+        //.def(self > self)
+        //.def(self >= self)
 
         .def("inRange", inRange)
         .def("length", &core::Vector<T>::getLength)
@@ -68,12 +68,19 @@ static void define_vector(const char* name) noexcept
 
 /* ************************************************************************ */
 
-void python_wrapper_core()
+static void python_wrapper_core_Vector()
 {
     // Predefined types
     define_vector<float>("VectorFloat");
     define_vector<int>("VectorInt");
     define_vector<unsigned int>("VectorUint");
+}
+
+/* ************************************************************************ */
+
+void python_wrapper_core()
+{
+    python_wrapper_core_Vector();
 }
 
 /* ************************************************************************ */
