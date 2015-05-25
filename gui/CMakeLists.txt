@@ -6,12 +6,12 @@ set(PROJECT_NAME gui)
 project(${PROJECT_NAME} CXX)
 
 # wxWidgets
-find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
+find_package(wxWidgets REQUIRED core base scintilla stc gl xml xrc adv)
 include(${wxWidgets_USE_FILE})
 
-# Create program
-add_executable(${PROJECT_NAME}
-    main.cpp
+# Sources
+set(SRCS
+	main.cpp
     MainFrame.h
     MainFrame.cpp
     wxcrafter.h
@@ -24,6 +24,17 @@ add_executable(${PROJECT_NAME}
     Logger.hpp
     Logger.cpp
 )
+
+# Create program
+if (WIN32)
+	add_executable(${PROJECT_NAME} WIN32
+		${SRCS}
+	)
+else ()
+	add_executable(${PROJECT_NAME}
+		${SRCS}
+	)
+endif ()
 
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -49,7 +60,6 @@ target_link_libraries(${PROJECT_NAME}
     simulator
     parser-xml
     ${wxWidgets_LIBRARIES}
-    ${ImageMagick_LIBRARIES}
     -pthread
 )
 
