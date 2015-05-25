@@ -58,26 +58,26 @@ DrawableYeast::DrawableYeast(render::Context& context)
 
 void DrawableYeast::draw(render::Context& context, float size, float budSize) NOEXCEPT
 {
-	static render::VertexFormat vformat{
-		render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
-		render::VertexElement(render::VertexElementType::Normal, render::DataType::Float, 2)
-	};
+    static render::VertexFormat vformat{
+        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
+        render::VertexElement(render::VertexElementType::TexCoord, render::DataType::Float, 2)
+    };
 
-	// Set pointers
-	context.setProgram(&m_program);
-	context.setVertexBuffer(&m_buffer);
-	context.setVertexFormat(&vformat);
+    // Set pointers
+    context.setProgram(&m_program);
+    context.setVertexBuffer(&m_buffer);
+    context.setVertexFormat(&vformat);
 
-	context.setProgramParam(m_uniformHasBud, budSize != 0.0f);
-	context.setProgramParam(m_uniformSizeMain, size);
-	context.setProgramParam(m_uniformSizeBud, budSize);
+    context.setProgramParam(m_uniformHasBud, budSize != 0.0f);
+    context.setProgramParam(m_uniformSizeMain, size);
+    context.setProgramParam(m_uniformSizeBud, budSize);
 
-	// Draw circle
-	context.draw(render::PrimitiveType::Quads, 0, 4);
+    // Draw circle
+    context.draw(render::PrimitiveType::Quads, 4);
 
-	context.setVertexFormat(nullptr);
-	context.setVertexBuffer(nullptr);
-	context.setProgram(nullptr);
+    context.setVertexFormat(nullptr);
+    context.setVertexBuffer(nullptr);
+    context.setProgram(nullptr);
 }
 
 /* ************************************************************************ */

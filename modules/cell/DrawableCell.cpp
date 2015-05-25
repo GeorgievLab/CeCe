@@ -56,22 +56,22 @@ DrawableCell::DrawableCell(render::Context& context)
 
 void DrawableCell::draw(render::Context& context, float scale) NOEXCEPT
 {
-	static render::VertexFormat vformat{
-		render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
-		render::VertexElement(render::VertexElementType::Normal, render::DataType::Float, 2)
-	};
+    static render::VertexFormat vformat{
+        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
+        render::VertexElement(render::VertexElementType::TexCoord, render::DataType::Float, 2)
+    };
 
-	// Set pointers
-	context.setProgram(&m_program);
-	context.setVertexBuffer(&m_buffer);
-	context.setVertexFormat(&vformat);
+    // Set pointers
+    context.setProgram(&m_program);
+    context.setVertexBuffer(&m_buffer);
+    context.setVertexFormat(&vformat);
 
     // Draw circle
-	context.draw(render::PrimitiveType::Quads, 0, 4);
+    context.draw(render::PrimitiveType::Quads, 4);
 
-	context.setVertexFormat(nullptr);
-	context.setVertexBuffer(nullptr);
-	context.setProgram(nullptr);
+    context.setVertexFormat(nullptr);
+    context.setVertexBuffer(nullptr);
+    context.setProgram(nullptr);
 }
 
 /* ************************************************************************ */
