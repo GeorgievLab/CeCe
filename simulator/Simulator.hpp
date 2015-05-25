@@ -182,16 +182,17 @@ public:
 // Data Members
 private:
 
+#if ENABLE_RENDER
+    /// Rendering context.
+    render::Context m_renderContext;
+#endif
+
     /// Flag if thread is running
     std::atomic<bool> m_isRunning{false};
 
     /// Current simulation
     std::unique_ptr<Simulation> m_simulation;
 
-#if ENABLE_RENDER
-    /// Rendering context.
-    render::Context m_renderContext;
-#endif
 };
 
 /* ************************************************************************ */
