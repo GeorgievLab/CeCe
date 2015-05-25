@@ -131,12 +131,14 @@ void SimulatorThread::DoStart() NOEXCEPT
 
 void SimulatorThread::DoStep() NOEXCEPT
 {
+    wxASSERT(m_simulation);
+
     try
     {
         wxMutexLocker lock(m_mutex);
 
-        // Simulator step
-        m_simulator.step();
+        // Update simulation
+        m_simulation->update();
     }
     catch (const std::exception& e)
     {
@@ -162,7 +164,7 @@ void SimulatorThread::DoLoad(const wxString& code) NOEXCEPT
         wxMutexLocker lock(m_mutex);
 
         // Create new world from source
-        m_simulator.setSimulation(m_simulationFactory->fromSource(code.To8BitData().data()));
+        m_simulation.reset(m_simulationFactory->fromSource(code.To8BitData().data()).release());
     }
     catch (const std::exception& e)
     {

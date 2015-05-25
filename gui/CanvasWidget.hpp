@@ -15,8 +15,10 @@
 #include <wx/timer.h>
 
 // Simulator
-#include "simulator/Simulation.hpp"
-#include "simulator/Simulator.hpp"
+#include "render/Context.hpp"
+
+// GUI
+#include "gui/SimulatorThread.hpp"
 
 /* ************************************************************************ */
 
@@ -73,6 +75,17 @@ public:
 
 
     /**
+     * @brief Return render context.
+     *
+     * @return
+     */
+    render::Context& GetRenderContext() NOEXCEPT
+    {
+        return m_renderContext;
+    }
+
+
+    /**
      * @brief Returns current simulation.
      *
      * @return
@@ -80,7 +93,7 @@ public:
     simulator::Simulation* GetSimulation() const NOEXCEPT
     {
         assert(m_simulator);
-        return m_simulator->getSimulation();
+        return m_simulator->GetSimulation();
     }
 
 
@@ -91,13 +104,11 @@ public:
     /**
      * @brief Set current simulator.
      *
-     * @param simulator Pointer to simulator.
-     * @param mutex
+     * @param simulator Pointer to simulator thread.
      */
-    void SetSimulator(simulator::Simulator* simulator, wxMutex* mutex) NOEXCEPT
+    void SetSimulator(SimulatorThread* simulator) NOEXCEPT
     {
         m_simulator = simulator;
-        m_mutex = mutex;
     }
 
 
@@ -229,14 +240,14 @@ protected:
 // Private Data Members
 private:
 
-    // GL canvas.
+    /// GL canvas.
     wxScopedPtr<wxGLContext> m_context;
 
-    /// Simulator pointer.
-    simulator::Simulator* m_simulator = nullptr;
+    /// Rendering context.
+    render::Context m_renderContext;
 
-    /// Simulator mutex.
-    wxMutex* m_mutex = nullptr;
+    /// Simulator pointer.
+    SimulatorThread* m_simulator = nullptr;
 
     // Redraw timer.
     wxTimer m_timer;

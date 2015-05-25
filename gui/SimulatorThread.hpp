@@ -94,13 +94,13 @@ public:
 
 
     /**
-     * @brief Returns simulator.
+     * @brief Returns current simulation.
      *
      * @return
      */
-    simulator::Simulator* GetSimulator() NOEXCEPT
+    simulator::Simulation* GetSimulation() NOEXCEPT
     {
-        return &m_simulator;
+        return m_simulation.get();
     }
 
 
@@ -202,7 +202,7 @@ private:
     wxMutex m_mutex;
 
     /// Simulator.
-    simulator::Simulator m_simulator;
+    wxScopedPtr<simulator::Simulation> m_simulation;
 
     /// If simulator should run.
     wxAtomicInt m_running = 0;

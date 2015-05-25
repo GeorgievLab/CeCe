@@ -71,8 +71,7 @@ void CanvasWidget::Update() NOEXCEPT
 
 void CanvasWidget::ViewReset() NOEXCEPT
 {
-    auto& renderer = m_simulator->getRenderContext();
-    auto& camera = renderer.getCamera();
+    auto& camera = m_renderContext.getCamera();
     camera.setZoom(m_baseZoom);
     camera.setPosition({0, 0});
 
@@ -84,21 +83,20 @@ void CanvasWidget::ViewReset() NOEXCEPT
 
 void CanvasWidget::OnResize(wxSizeEvent& event)
 {
-    if (!(m_simulator && m_simulator->getSimulation()))
+    if (!(m_simulator && m_simulator->GetSimulation()))
     {
         event.Skip();
         return;
     }
 
-    auto size = m_simulator->getSimulation()->getWorldSize();
+    auto size = m_simulator->GetSimulation()->getWorldSize();
 
     m_baseZoom = std::max(
         size.getWidth() / event.GetSize().GetWidth(),
         size.getHeight() / event.GetSize().GetHeight()
     );
 
-    auto& renderer = m_simulator->getRenderContext();
-    auto& camera = renderer.getCamera();
+    auto& camera = m_renderContext.getCamera();
     auto zoom = camera.getZoom();
 
     zoom = std::min(std::max(0.05f * m_baseZoom, zoom), m_baseZoom);
@@ -118,8 +116,7 @@ void CanvasWidget::OnZoom(wxMouseEvent& event) NOEXCEPT
         return;
     }
 
-    auto& renderer = m_simulator->getRenderContext();
-    auto& camera = renderer.getCamera();
+    auto& camera = m_renderContext.getCamera();
     auto zoom = camera.getZoom();
 
     zoom -= m_baseZoom * 0.001 * event.GetWheelRotation();
@@ -150,8 +147,7 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
     }
 
     // TODO: move camera
-    auto& renderer = m_simulator->getRenderContext();
-    auto& camera = renderer.getCamera();
+    auto& camera = m_renderContext.getCamera();
     auto pos = camera.getPosition();
 
     // Change vector
@@ -195,26 +191,27 @@ void CanvasWidget::Render() NOEXCEPT
         return;
 
     wxASSERT(m_simulator);
-    wxASSERT(m_mutex);
 
     // Set current context
     SetCurrent(*m_context);
 
     // Initialize drawing
-    if (!m_simulator->isDrawInitialized())
-        m_simulator->drawInit();
+    if (!m_renderContext.isInitialized())
+        m_renderContext.init();
 
     wxPaintDC dc(this);
 
-    if (m_simulator->getSimulation())
+    if (m_simulator->GetSimulation())
     {
         // Draw simulation
         try
         {
-            wxMutexLocker lock(*m_mutex);
+            wxMutexLocker lock(*m_simulator->GetMutex());
 
-            // Draw simulation
-            m_simulator->draw(GetSize().GetWidth(), GetSize().GetHeight());
+            m_renderContext.deleteReleasedObjects();
+            m_renderContext.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
+            m_simulator->GetSimulation()->draw(m_renderContext);
+            m_renderContext.frameEnd();
         }
         catch (const std::exception& e)
         {
@@ -222,7 +219,7 @@ void CanvasWidget::Render() NOEXCEPT
             event->SetString(e.what());
             wxQueueEvent(GetParent(), event.release());
             s_error = true;
-            wxExit();
+            return;
         }
     }
 

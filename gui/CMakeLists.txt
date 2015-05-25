@@ -13,18 +13,8 @@ find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
 include(${wxWidgets_USE_FILE})
 
 if (ENABLE_GUI_SCREENSHOT)
-    # Image support
-    find_package(ImageMagick COMPONENTS Magick++)
-
-    if (ImageMagick_FOUND)
-        message("-- Screenshot support enabled")
-
-        # Include directories
-        include_directories(${ImageMagick_INCLUDE_DIRS})
-
-        # Add definitions
-        add_definitions(-DENABLE_SCREENSHOT=1)
-    endif ()
+    # Add definitions
+    add_definitions(-DENABLE_SCREENSHOT=1)
 endif ()
 
 # Create program

@@ -63,7 +63,7 @@
     <Configuration Name="Debug" CompilerType="clang++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cflags --debug)" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <Preprocessor Value="ENABLE_IMAGES=1"/>
+        <Preprocessor Value="ENABLE_SCREENSHOT=1"/>
       </Compiler>
       <Linker Options="$(shell wx-config --libs core,base,stc,gl,adv,xrc --debug)" Required="yes">
         <LibraryPath Value="../javascript/Debug"/>
@@ -72,7 +72,7 @@
         <LibraryPath Value="../simulator/Debug"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug" Command="./$(ProjectName)" CommandArguments="../../examples/simple.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/cell-sim-$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug" Command="./cell-sim-$(ProjectName)" CommandArguments="../../examples/colony.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

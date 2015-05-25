@@ -7,15 +7,13 @@
 #include <wx/config.h>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
+#if ENABLE_SCREENSHOT
+#include <wx/image.h>
+#endif
 
 // Simulator
 #include "core/Log.hpp"
 #include "parser-xml/SimulationFactory.hpp"
-
-// GUI
-#if ENABLE_SCREENSHOT
-#include <Magick++.h>
-#endif
 
 /* ************************************************************************ */
 
@@ -95,7 +93,7 @@ MainFrame::MainFrame(wxWindow* parent)
 
     // Set simulator
     wxASSERT(m_glCanvasView);
-    m_glCanvasView->SetSimulator(m_simulatorThread.GetSimulator(), m_simulatorThread.GetMutex());
+    m_glCanvasView->SetSimulator(&m_simulatorThread);
 
     // Bind events
     Bind(wxEVT_MENU, &MainFrame::OnFileOpenRecent, this, wxID_FILE1, wxID_FILE9);
@@ -276,9 +274,7 @@ void MainFrame::OnSimulationStart(wxCommandEvent& event)
     wxASSERT(m_stcCode);
     if (m_stcCode->IsModified())
     {
-        m_textCtrlLog->Clear();
-        m_simulatorThread.SendLoad(m_stcCode->GetText());
-        m_stcCode->SetModified(false);
+        LoadText(m_stcCode->GetText());
     }
 
     // Start simulation
@@ -314,7 +310,7 @@ void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 {
 #if ENABLE_SCREENSHOT
-    if (!m_simulatorThread.GetSimulator())
+    if (!m_simulatorThread.GetSimulation())
     {
         event.Skip();
         return;
@@ -333,28 +329,20 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
         return;
 
     // Get pixel data
-    auto data = m_simulatorThread.GetSimulator()->getRenderContext().getData();
+    auto data = m_glCanvasView->GetRenderContext().getData();
     const auto& imageData = data.first;
     auto imageSize = data.second;
 
     // Create image
-    Magick::Image image(Magick::Geometry(imageSize.getWidth(), imageSize.getHeight()), Magick::Color());
-
-    for (unsigned i = 0; i < imageSize.getWidth(); ++i)
-    {
-        for (unsigned j = 0; j < imageSize.getHeight(); ++j)
-        {
-            auto base = 3 * (i + imageSize.getWidth() * j);
-            image.pixelColor(i, j, Magick::ColorRGB(
-                imageData[base] / 255.f,
-                imageData[base + 1] / 255.f,
-                imageData[base + 2] / 255.f
-            ));
-        }
-    }
+    wxImage image(imageSize.getWidth(), imageSize.getHeight(), imageData.data());
 
     // Store image
-    image.write(selection.c_str().AsChar());
+    if (!image.SaveFile(selection))
+    {
+        wxMessageBox(wxString::Format(_("Unable to save screenshot as '%s'!"), selection),
+            wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this
+        );
+    }
 #endif
 }
 
@@ -461,6 +449,7 @@ void MainFrame::LoadFile(const wxFileName& path)
 
     // Load text to editor
     m_stcCode->SetText(code);
+    m_stcCode->SetModified(false);
 }
 
 /* ************************************************************************ */
@@ -469,6 +458,7 @@ void MainFrame::LoadText(const wxString& code)
 {
     // Update world
     m_simulatorThread.SendLoad(code);
+    m_textCtrlLog->Clear();
 }
 
 /* ************************************************************************ */
