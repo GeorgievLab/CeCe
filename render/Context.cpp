@@ -323,6 +323,11 @@ void Context::setColor(const Color& color) NOEXCEPT
 
 void Context::setVertexBuffer(Buffer* buffer) NOEXCEPT
 {
+#ifdef _WIN32
+    if (!glBindBuffer)
+        glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress("glBindBuffer");
+#endif
+
     // Bind buffer
     gl(glBindBuffer(GL_ARRAY_BUFFER, buffer ? buffer->getId() : 0));
 }
