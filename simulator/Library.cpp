@@ -27,18 +27,22 @@ namespace {
 
 /* ************************************************************************ */
 
+#if !STATIC_BUILD
 #if __linux__
 const std::string g_prefix = "libmodule-";
 #elif _WIN32
 const std::string g_prefix = "libmodule-";
 #endif
+#endif
 
 /* ************************************************************************ */
 
+#if !STATIC_BUILD
 #if __linux__
 const std::string g_extension = ".so";
 #elif _WIN32
 const std::string g_extension = ".dll";
+#endif
 #endif
 
 /* ************************************************************************ */
@@ -69,12 +73,12 @@ const std::map<std::string, Library::CreateFn> Library::s_buildinLibraries{
 
 /* ************************************************************************ */
 
+#if !STATIC_BUILD
 /**
  * @brief OS dependent library implementation.
  */
 struct Library::Impl
 {
-
 // Public Ctors & Dtors
 public:
 
@@ -179,7 +183,9 @@ private:
 #elif _WIN32
     HMODULE m_ptr;
 #endif
+
 };
+#endif
 
 /* ************************************************************************ */
 
@@ -194,6 +200,11 @@ Library::Library(const std::string& name)
         // Create library API
         m_api.reset(it->second());
     }
+#if STATIC_BUILD
+    else
+        throw std::runtime_error("Build-in library '" + name + "' not found "
+                                 "and dynamic are not supported");
+#else
     else
     {
         // Create dynamic implementation
@@ -210,6 +221,7 @@ Library::Library(const std::string& name)
         // Create extension object
         m_api.reset(fn());
     }
+#endif
 }
 
 /* ************************************************************************ */
@@ -223,26 +235,34 @@ Library::~Library()
 
 bool Library::isLoaded() const NOEXCEPT
 {
+#if STATIC_BUILD
+    return true;
+#else
     if (!m_impl)
         return true;
 
     return m_impl->isLoaded();
+#endif
 }
 /* ************************************************************************ */
 
 std::string Library::getError() const NOEXCEPT
 {
+#if STATIC_BUILD
+    return {};
+#else
     if (!m_impl)
         return {};
 
     return m_impl->getError();
+#endif
 }
 
 /* ************************************************************************ */
 
 void Library::addLibraryPath(std::string path)
 {
-#if __linux__
+#if !STATIC_BUILD && __linux__
     // Get previous paths
     std::string paths;
     char* p = getenv("LD_LIBRARY_PATH");

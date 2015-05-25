@@ -218,9 +218,11 @@ public:
 // Private Data Members
 private:
 
+#if !STATIC_BUILD
     /// Implementation
     struct Impl;
     std::unique_ptr<Impl> m_impl;
+#endif
 
     /// Object for library API.
     std::unique_ptr<LibraryApi> m_api;
