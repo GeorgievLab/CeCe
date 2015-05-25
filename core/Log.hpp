@@ -18,7 +18,7 @@ namespace core {
 /**
  * @brief Logging class.
  */
-class Log
+class DLL_EXPORT Log
 {
 
 // Private Types

@@ -71,7 +71,7 @@ class AlignedAllocator;
  * @tparam Align
  */
 template<std::size_t Align>
-class AlignedAllocator<void, Align>
+class DLL_EXPORT AlignedAllocator<void, Align>
 {
 
 // Public Types
@@ -94,7 +94,7 @@ public:
  * @tparam Align
  */
 template <typename T, std::size_t Align>
-class AlignedAllocator
+class DLL_EXPORT AlignedAllocator
 {
 
 // Public Types

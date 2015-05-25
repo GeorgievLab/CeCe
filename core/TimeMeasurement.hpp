@@ -45,7 +45,7 @@ void setMeasureTimeOutput(std::ostream* output) NOEXCEPT;
 /**
  * @brief Default functor for writing measurement output.
  */
-struct DefaultMeasurementOutput
+struct DLL_EXPORT DefaultMeasurementOutput
 {
 
     /**
@@ -67,7 +67,7 @@ struct DefaultMeasurementOutput
  * @brief Time measurement class.
  */
 template<typename OutFn>
-class TimeMeasurementBase
+class DLL_EXPORT TimeMeasurementBase
 {
 
 // Public Ctors & Dtors
@@ -125,7 +125,7 @@ private:
  * @return
  */
 template<typename... Args>
-inline int measure_time(Args&&... args) NOEXCEPT
+DLL_EXPORT inline int measure_time(Args&&... args) NOEXCEPT
 {
     return 0;
 }
@@ -143,7 +143,7 @@ inline int measure_time(Args&&... args) NOEXCEPT
  * @return
  */
 template<typename Fn>
-inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
+DLL_EXPORT inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
 {
     return TimeMeasurementBase<Fn>{std::move(name), fn};
 }
@@ -159,7 +159,7 @@ inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
  *
  * @return
  */
-inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) NOEXCEPT
+DLL_EXPORT inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) NOEXCEPT
 {
     return TimeMeasurementBase<DefaultMeasurementOutput>{std::move(name), DefaultMeasurementOutput{}};
 }

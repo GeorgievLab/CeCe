@@ -18,7 +18,7 @@ namespace simulator {
 /**
  * @brief Base class for configuration storages.
  */
-class ConfigurationBase
+class DLL_EXPORT ConfigurationBase
 {
 
 // Public Ctors & Dtors

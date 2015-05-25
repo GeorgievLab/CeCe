@@ -18,7 +18,7 @@ namespace render {
 /**
  * @brief OpenGL shader object.
  */
-class Shader
+class DLL_EXPORT Shader
 {
 
 // Public Types

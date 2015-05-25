@@ -20,7 +20,7 @@ namespace render {
 /**
  * @brief Basic class for drawing objects.
  */
-class Object
+class DLL_EXPORT Object
 {
 
 

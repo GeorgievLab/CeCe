@@ -46,7 +46,7 @@ enum class PrimitiveType
 /**
  * @brief Renderer context.
  */
-class Context
+class DLL_EXPORT Context
 {
 
 // Public Ctors & Dtors

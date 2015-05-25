@@ -22,7 +22,7 @@ class Context;
 /**
  * @brief GPU buffer.
  */
-class Buffer
+class DLL_EXPORT Buffer
 {
 
 // Public Types

@@ -22,7 +22,7 @@ namespace render {
 /**
  * @brief Color structure.
  */
-class Color
+class DLL_EXPORT Color
 {
 
 // Public Types

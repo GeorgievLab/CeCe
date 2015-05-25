@@ -23,7 +23,7 @@ class Simulation;
 /**
  * @brief Simulation factory interface.
  */
-class SimulationFactory
+class DLL_EXPORT SimulationFactory
 {
 
 // Public Dtors

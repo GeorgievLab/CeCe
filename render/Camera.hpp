@@ -18,7 +18,7 @@ namespace render {
 /**
  * @brief Render camera.
  */
-class Camera
+class DLL_EXPORT Camera
 {
 
 // Public Ctors & Dtors

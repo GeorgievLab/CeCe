@@ -11,7 +11,7 @@
 
 /* ************************************************************************ */
 
-#if defined (_WIN32)
+#if defined (_WIN32) && STATIC_BUILD
     #if defined(SIMULATOR_DLL_EXPORT)
         #define DLL_EXPORT __declspec(dllexport)
     #else

@@ -50,7 +50,7 @@ using StepNumber = unsigned long long;
 /**
  * @brief Simulation class.
  */
-class Simulation
+class DLL_EXPORT Simulation
 {
 
 

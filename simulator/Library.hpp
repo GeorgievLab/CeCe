@@ -111,7 +111,7 @@ class Simulation;
 /**
  * @brief Class for loading module libraries into simulation.
  */
-class Library final
+class DLL_EXPORT Library final
 {
 
 // Public Types

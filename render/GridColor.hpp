@@ -27,7 +27,7 @@ class Context;
 /**
  * @brief Texture-like grid.
  */
-class GridColor : public GridBase
+class DLL_EXPORT GridColor : public GridBase
 {
 
 

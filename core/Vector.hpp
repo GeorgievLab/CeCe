@@ -24,7 +24,7 @@ namespace core {
  * @brief 2D vector.
  */
 template<typename T>
-class Vector
+class DLL_EXPORT Vector
 {
 
 // Public Ctors

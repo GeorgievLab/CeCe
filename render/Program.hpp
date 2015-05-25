@@ -16,7 +16,7 @@ namespace render {
 /**
  * @brief OpenGL program object.
  */
-class Program
+class DLL_EXPORT Program
 {
 
 // Public Types

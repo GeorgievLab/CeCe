@@ -29,7 +29,7 @@ class Simulation;
 /**
  * @brief Abstract class for simulation modules.
  */
-class Module
+class DLL_EXPORT Module
 {
 
 

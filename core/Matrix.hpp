@@ -21,7 +21,7 @@ namespace core {
  * @brief 2D matrix of fixed size.
  */
 template<typename T, unsigned SIZE>
-struct Matrix
+struct DLL_EXPORT Matrix
 {
 
 // Public Data Members

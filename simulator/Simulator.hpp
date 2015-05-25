@@ -31,7 +31,7 @@ class Simulation;
  *
  * Simulator handles simulation of the given (owned) simulation in current thread.
  */
-class Simulator final
+class DLL_EXPORT Simulator final
 {
 
 // Public Ctors & Dtors

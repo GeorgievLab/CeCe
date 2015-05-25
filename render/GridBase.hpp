@@ -23,7 +23,7 @@ class Context;
 /**
  * @brief Rendering grid object - base class.
  */
-class GridBase
+class DLL_EXPORT GridBase
 {
 
 // Public Types

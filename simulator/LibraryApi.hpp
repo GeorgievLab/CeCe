@@ -26,7 +26,7 @@ class Simulation;
 /**
  * @brief Library API type.
  */
-class LibraryApi
+class DLL_EXPORT LibraryApi
 {
 
 // Public Ctors & Dtors

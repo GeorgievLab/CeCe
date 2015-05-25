@@ -23,7 +23,7 @@ class Context;
 /**
  * @brief OpenGL grid for vectors object.
  */
-class GridVector
+class DLL_EXPORT GridVector
 {
 
 // Public Ctors & Dtors

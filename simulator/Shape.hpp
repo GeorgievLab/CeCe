@@ -34,7 +34,7 @@ enum class ShapeType
 /**
  * @brief Structure for circle shape.
  */
-struct ShapeCircle
+struct DLL_EXPORT ShapeCircle
 {
     /// Shape center.
     core::PositionVector center;
@@ -48,7 +48,7 @@ struct ShapeCircle
 /**
  * @brief Structure for storing shape.
  */
-struct Shape
+struct DLL_EXPORT Shape
 {
     /// Type of the shape.
     ShapeType type;

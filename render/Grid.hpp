@@ -22,7 +22,7 @@ class Context;
 /**
  * @brief Rendering grid object.
  */
-class Grid : public GridBase
+class DLL_EXPORT Grid : public GridBase
 {
 
 

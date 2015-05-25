@@ -38,7 +38,7 @@ class Simulation;
 /**
  * @brief Basic simulation object.
  */
-class Object
+class DLL_EXPORT Object
 {
 
 // Public Enums
