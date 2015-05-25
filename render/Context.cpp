@@ -78,22 +78,22 @@ static GLenum convert(PrimitiveType type) NOEXCEPT
  */
 GLenum convert(DataType type)
 {
-	// GL_SHORT, GL_INT, GL_FLOAT, or GL_DOUBLE
+    // GL_SHORT, GL_INT, GL_FLOAT, or GL_DOUBLE
 
-	switch (type)
-	{
-	default: break;
-	case DataType::Byte:	return GL_BYTE;
-	case DataType::Ubyte:	return GL_UNSIGNED_BYTE;
-	case DataType::Short:	return GL_SHORT;
-	case DataType::Ushort:	return GL_UNSIGNED_SHORT;
-	case DataType::Int:		return GL_INT;
-	case DataType::Uint:	return GL_UNSIGNED_INT;
-	case DataType::Float:	return GL_FLOAT;
-	case DataType::Double:	return GL_DOUBLE;
-	}
+    switch (type)
+    {
+    default: break;
+    case DataType::Byte:	return GL_BYTE;
+    case DataType::Ubyte:	return GL_UNSIGNED_BYTE;
+    case DataType::Short:	return GL_SHORT;
+    case DataType::Ushort:	return GL_UNSIGNED_SHORT;
+    case DataType::Int:		return GL_INT;
+    case DataType::Uint:	return GL_UNSIGNED_INT;
+    case DataType::Float:	return GL_FLOAT;
+    case DataType::Double:	return GL_DOUBLE;
+    }
 
-	return GL_NONE;
+    return GL_NONE;
 }
 
 /* ************************************************************************ */
@@ -331,48 +331,48 @@ void Context::setVertexBuffer(Buffer* buffer) NOEXCEPT
 
 void Context::setVertexFormat(VertexFormat* format) NOEXCEPT
 {
-	if (format)
-	{
-		size_t offset = 0;
-		const unsigned char* ptr = nullptr;
-		const auto size = format->getSize();
+    if (format)
+    {
+        size_t offset = 0;
+        const unsigned char* ptr = nullptr;
+        const auto size = format->getSize();
 
-		for (const auto& e : *format)
-		{
-			switch (e.getType())
-			{
-			default:
-				break;
+        for (const auto& e : *format)
+        {
+            switch (e.getType())
+            {
+            default:
+                break;
 
-			case render::VertexElementType::Position:
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset);
-				//glVertexAttribPointer(i, e.getCount(), Convert(e.getDataType()), GL_FALSE, size, reinterpret_cast<void*>(offset));
-				break;
+            case render::VertexElementType::Position:
+                gl(glEnableClientState(GL_VERTEX_ARRAY));
+                gl(glVertexPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset));
+                //glVertexAttribPointer(i, e.getCount(), Convert(e.getDataType()), GL_FALSE, size, reinterpret_cast<void*>(offset));
+                break;
 
-			case render::VertexElementType::Color:
-				glEnableClientState(GL_COLOR_ARRAY);
-				glColorPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset);
-				//glVertexAttribPointer(i, e.getCount(), Convert(e.getDataType()), GL_TRUE, size, reinterpret_cast<void*>(offset));
-				break;
+            case render::VertexElementType::Color:
+                gl(glEnableClientState(GL_COLOR_ARRAY));
+                gl(glColorPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset));
+                //glVertexAttribPointer(i, e.getCount(), Convert(e.getDataType()), GL_TRUE, size, reinterpret_cast<void*>(offset));
+                break;
 
-			case render::VertexElementType::TexCoord:
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset);
-				break;
+            case render::VertexElementType::TexCoord:
+                gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
+                gl(glTexCoordPointer(e.getCount(), convert(e.getDataType()), static_cast<GLsizei>(size), ptr + offset));
+                break;
 
-			}
+            }
 
-			// Add size
-			offset += e.getSize();
-		}
-	}
-	else
-	{
-		gl(glEnableClientState(GL_COLOR_ARRAY));
-		gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
-		gl(glDisableClientState(GL_VERTEX_ARRAY));
-	}
+            // Add size
+            offset += e.getSize();
+        }
+    }
+    else
+    {
+        gl(glDisableClientState(GL_COLOR_ARRAY));
+        gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
+        gl(glDisableClientState(GL_VERTEX_ARRAY));
+    }
 }
 
 /* ************************************************************************ */
