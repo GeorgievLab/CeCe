@@ -5,17 +5,9 @@ set(PROJECT_NAME gui)
 
 project(${PROJECT_NAME} CXX)
 
-# Options
-option(ENABLE_GUI_SCREENSHOT    "Enable or disable screenshot support in GUI" On)
-
 # wxWidgets
 find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
 include(${wxWidgets_USE_FILE})
-
-if (ENABLE_GUI_SCREENSHOT)
-    # Add definitions
-    add_definitions(-DENABLE_SCREENSHOT=1)
-endif ()
 
 # Create program
 add_executable(${PROJECT_NAME}

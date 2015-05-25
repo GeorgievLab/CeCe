@@ -192,11 +192,11 @@ protected:
 
 
     /**
-     * @brief Enable or disable screenshot support.
+     * @brief On modules info event.
      *
      * @param event
      */
-    void OnSimulationScreenshotUpdateUi(wxUpdateUIEvent& event) override;
+    void OnHelpModules(wxCommandEvent& event) override;
 
 
     /**

@@ -7,12 +7,11 @@
 #include <wx/config.h>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
-#if ENABLE_SCREENSHOT
 #include <wx/image.h>
-#endif
 
 // Simulator
 #include "core/Log.hpp"
+#include "simulator/Library.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 
 /* ************************************************************************ */
@@ -108,6 +107,18 @@ MainFrame::MainFrame(wxWindow* parent)
         int widths[] = {-1, 150};
         m_statusBar->SetStatusWidths(sizeof(widths) / sizeof(widths[0]), widths);
     }
+
+    wxFont font = m_stcCode->GetFont();
+    font.SetFamily(wxFONTFAMILY_TELETYPE);
+    m_stcCode->StyleSetForeground(wxSTC_H_DOUBLESTRING,     wxColour(255,0,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_SINGLESTRING,     wxColour(255,0,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_ENTITY,           wxColour(255,0,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_TAG,              wxColour(0,150,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_TAGUNKNOWN,       wxColour(0,150,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_ATTRIBUTE,        wxColour(0,0,150));
+    m_stcCode->StyleSetForeground(wxSTC_H_ATTRIBUTEUNKNOWN, wxColour(0,0,150));
+    m_stcCode->StyleSetForeground(wxSTC_H_COMMENT,          wxColour(150,150,150));
+
 }
 
 /* ************************************************************************ */
@@ -175,7 +186,7 @@ void MainFrame::OnFileSave(wxCommandEvent& event)
         m_fileName = selection;
     }
 
-    // TODO: save file
+    m_stcCode->SaveFile(m_fileName.GetFullPath());
 }
 
 /* ************************************************************************ */
@@ -194,7 +205,8 @@ void MainFrame::OnFileSaveAs(wxCommandEvent& event)
     if (selection.IsEmpty())
         return;
 
-    // TODO: save file
+    m_fileName = selection;
+    m_stcCode->SaveFile(m_fileName.GetFullPath());
 }
 
 /* ************************************************************************ */
@@ -309,7 +321,6 @@ void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 
 void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 {
-#if ENABLE_SCREENSHOT
     if (!m_simulatorThread.GetSimulation())
     {
         event.Skip();
@@ -334,7 +345,8 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
     auto imageSize = data.second;
 
     // Create image
-    wxImage image(imageSize.getWidth(), imageSize.getHeight(), imageData.data());
+    wxImage image(wxSize(imageSize.getWidth(), imageSize.getHeight()),
+        const_cast<unsigned char*>(imageData.data()), true);
 
     // Store image
     if (!image.SaveFile(selection))
@@ -343,18 +355,23 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
             wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_ERROR, this
         );
     }
-#endif
 }
 
 /* ************************************************************************ */
 
-void MainFrame::OnSimulationScreenshotUpdateUi(wxUpdateUIEvent& event)
+void MainFrame::OnHelpModules(wxCommandEvent& event)
 {
-#if ENABLE_SCREENSHOT
-    event.Enable(true);
-#else
-    event.Enable(false);
-#endif
+    wxString message;
+
+    for (auto&& name : simulator::Library::getBuildInNames())
+    {
+        message += name;
+        message += "\n";
+    }
+
+    wxMessageBox(wxString::Format(_("Build-in modules:\n%s"), message),
+        wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_INFORMATION, this
+    );
 }
 
 /* ************************************************************************ */
