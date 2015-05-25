@@ -11,20 +11,20 @@
 
 /* ************************************************************************ */
 
-/// Visual Studio doesn't support NOEXCEPT
+/// Visual Studio doesn't support noexcept
 #ifdef _MSC_VER
 #define NOEXCEPT
 #else
-#define NOEXCEPT NOEXCEPT
+#define NOEXCEPT noexcept
 #endif
 
 /* ************************************************************************ */
 
-/// Visual Studio doesn't support CONSTEXPR
+/// Visual Studio doesn't support constexpr
 #ifdef _MSC_VER
 #define CONSTEXPR
 #else
-#define CONSTEXPR CONSTEXPR
+#define CONSTEXPR constexpr
 #endif
 
 /* ************************************************************************ */
