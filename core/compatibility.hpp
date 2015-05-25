@@ -11,6 +11,18 @@
 
 /* ************************************************************************ */
 
+#if defined (_WIN32)
+    #if defined(SIMULATOR_DLL_EXPORT)
+        #define DLL_EXPORT __declspec(dllexport)
+    #else
+        #define DLL_EXPORT __declspec(dllimport)
+    #endif
+#else
+#define DLL_EXPORT
+#endif
+
+/* ************************************************************************ */
+
 /// Visual Studio doesn't support noexcept
 #ifdef _MSC_VER
 #define NOEXCEPT
