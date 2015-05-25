@@ -44,6 +44,7 @@
     <File Name="TimeMeasurement.hpp"/>
     <File Name="Grid.hpp"/>
     <File Name="args.hpp"/>
+    <File Name="compatibility.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
