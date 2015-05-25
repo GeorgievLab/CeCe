@@ -52,7 +52,11 @@ void* allocate_aligned_memory(std::size_t align, std::size_t size)
 
 void deallocate_aligned_memory(void* ptr) NOEXCEPT
 {
-    return free(ptr);
+#ifdef _MSC_VER
+    _aligned_free(ptr);
+#else
+    free(ptr);
+#endif
 }
 
 /* ************************************************************************ */
