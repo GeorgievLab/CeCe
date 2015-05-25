@@ -35,6 +35,8 @@ SimulatorThread::~SimulatorThread()
 {
     if (GetThread() && GetThread()->IsRunning())
     {
+		wxLogNull no;
+
         GetThread()->Delete();
         GetThread()->Wait();
     }
