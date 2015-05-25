@@ -6,6 +6,8 @@ set(PROJECT_NAME simulator)
 # Create project
 project(${PROJECT_NAME} CXX)
 
+option(ENABLE_SIMULATOR_STATIC "Enable or disable static build of the simulator library. Static build doen't support dynamic modules." Off)
+
 # Sources
 set(SRCS
     Object.hpp
@@ -39,23 +41,46 @@ if (ENABLE_RENDER)
     set(SRCS ${SRCS} $<TARGET_OBJECTS:render>)
 endif ()
 
-# Create library
-add_library(${PROJECT_NAME} SHARED
-    ${SRCS}
-)
-
 # Include build-in libraries
 set(MODULES_LIBS "")
 set(BUILDIN_LIBRARIES "")
+set(DYNAMIC_MODULES ${MODULES})
 
 foreach (MODULE ${MODULES_BUILDIN})
     message("-- Build-in module: ${MODULE}")
     set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
     set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${MODULE})")
+    list(REMOVE_ITEM DYNAMIC_MODULES ${MODULE})
 endforeach ()
 
 # Pass build-in libraries list
 add_definitions(-DBUILDIN_LIBRARIES=${BUILDIN_LIBRARIES})
+
+# If there is dynamic module, force shared library
+list(LENGTH DYNAMIC_MODULES DYNAMIC_MODULES_LEN)
+if (DYNAMIC_MODULES_LEN GREATER 0)
+    set(ENABLE_SIMULATOR_STATIC Off)
+endif ()
+
+if (ENABLE_SIMULATOR_STATIC)
+    message("-- Build simulator library as static")
+
+    add_definitions(-DSTATIC_BUILD=1)
+
+    # Create library
+    add_library(${PROJECT_NAME}
+        ${SRCS}
+    )
+else ()
+    message("-- Build simulator library as shared")
+
+    add_definitions(-DSIMULATOR_DLL_EXPORT=1)
+
+    # Create library
+    add_library(${PROJECT_NAME} SHARED
+        ${SRCS}
+    )
+endif ()
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
