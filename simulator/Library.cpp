@@ -12,7 +12,7 @@
 // Linux
 #include <dlfcn.h>
 #elif _WIN32
-// Nothing 
+// Nothing
 #else
 #error Unsupported platform
 #endif
@@ -262,6 +262,19 @@ void Library::addLibraryPath(std::string path)
 #endif
 
     s_libraryPaths.push_back(std::move(path));
+}
+
+/* ************************************************************************ */
+
+std::vector<std::string> Library::getBuildInNames() NOEXCEPT
+{
+    std::vector<std::string> names;
+    names.reserve(s_buildinLibraries.size());
+
+    for (const auto& p : s_buildinLibraries)
+        names.push_back(p.first);
+
+    return names;
 }
 
 /* ************************************************************************ */

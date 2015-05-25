@@ -195,6 +195,14 @@ public:
     }
 
 
+    /**
+     * @brief Return a list of build-in libraries
+     *
+     * @param path
+     */
+    static std::vector<std::string> getBuildInNames() NOEXCEPT;
+
+
 // Public Mutators
 public:
 
