@@ -6,7 +6,13 @@ set(PROJECT_NAME gui)
 project(${PROJECT_NAME} CXX)
 
 # wxWidgets
-find_package(wxWidgets REQUIRED core base scintilla stc gl xml xrc adv)
+if (WIN32)
+    # On Windows the scintilla library is required
+    find_package(wxWidgets REQUIRED core base scintilla stc gl xml xrc adv)
+else ()
+    find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
+endif ()
+
 include(${wxWidgets_USE_FILE})
 
 # Sources
