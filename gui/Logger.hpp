@@ -10,6 +10,9 @@
 // wxWidgets
 #include <wx/event.h>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
 wxDECLARE_EVENT(EVT_LOG, wxCommandEvent);
