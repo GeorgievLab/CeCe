@@ -57,6 +57,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns output buffer.
+     *
+     * @return
+     */
+    Buffer& GetBuffer() NOEXCEPT
+    {
+        return m_buffer;
+    }
+
+
 // Private Data Members
 private:
 

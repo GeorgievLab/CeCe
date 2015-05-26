@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="cell-sim" Database="">
-  <Project Name="gui" Path="gui/gui.project" Active="No"/>
+  <Project Name="gui" Path="gui/gui.project" Active="Yes"/>
   <Project Name="core" Path="core/core.project" Active="No"/>
   <Project Name="simulator" Path="simulator/simulator.project"/>
   <Project Name="render" Path="render/render.project"/>
-  <Project Name="cli" Path="cli/cli.project" Active="Yes"/>
+  <Project Name="cli" Path="cli/cli.project" Active="No"/>
   <Project Name="parser" Path="parser/parser.project" Active="No"/>
   <Project Name="diffusion" Path="modules/diffusion/diffusion.project" Active="No"/>
   <Project Name="streamlines" Path="modules/streamlines/streamlines.project" Active="No"/>

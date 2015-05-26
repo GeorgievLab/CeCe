@@ -88,6 +88,9 @@ MainFrame::MainFrame(wxWindow* parent)
 	core::Log::setOutput(&m_logger);
 	core::Log::setError(&m_logger);
 
+    std::cout.rdbuf(&m_logger.GetBuffer());
+    std::cerr.rdbuf(&m_logger.GetBuffer());
+
     m_fileHistory.UseMenu(m_menuFileRecent);
 
     // Set simulator
