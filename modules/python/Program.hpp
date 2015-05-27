@@ -4,10 +4,14 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "render/Object.hpp"
+#include "core/Units.hpp"
+#include "simulator/Object.hpp"
 
 // Python
-#include <boost/python.hpp>
+#include <Python.h>
+
+// Module
+#include "Source.hpp"
 
 /* ************************************************************************ */
 
@@ -55,11 +59,11 @@ public:
 private:
 
 
-    /// Code module.
-    boost::python::object m_module;
+    /// Source.
+    Source m_source;
 
     /// Call function.
-    boost::python::object m_call;
+    Handle<PyObject> m_call;
 
 };
 
