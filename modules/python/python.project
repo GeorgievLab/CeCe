@@ -26,6 +26,7 @@
     <File Name="Program.cpp"/>
     <File Name="Source.cpp"/>
     <File Name="Exception.cpp"/>
+    <File Name="Object.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
@@ -38,6 +39,7 @@
     <File Name="Source.hpp"/>
     <File Name="Handle.hpp"/>
     <File Name="Exception.hpp"/>
+    <File Name="Object.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="core"/>
