@@ -27,6 +27,10 @@ set(SRCS
     Source.cpp
     Module.hpp
     Module.cpp
+    Program.hpp
+    Program.cpp
+    Object.hpp
+    Object.cpp
     Library.hpp
     Library.cpp
     wrapper_core.hpp
