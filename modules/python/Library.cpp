@@ -28,7 +28,7 @@
 /**
  * @brief Python modules initialization table.
  */
-static struct _inittab INIT_TABLE[] = {
+static const struct _inittab INIT_TABLE[] = {
     {"core", python_wrapper_core},
     {"simulator", python_wrapper_simulator},
     {"render", python_wrapper_render},
@@ -52,7 +52,7 @@ class PythonApi : public LibraryApi
      */
     void initSimulation(Simulation& simulation) NOEXCEPT override
     {
-        if (PyImport_ExtendInittab(INIT_TABLE) != 0)
+        if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
             throw std::runtime_error("Unable to initialize Python import table");
 
         // Initialize Python interpreter
