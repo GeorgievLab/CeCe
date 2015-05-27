@@ -23,6 +23,9 @@
     <File Name="wrapper_simulator.cpp"/>
     <File Name="wrapper_render.cpp"/>
     <File Name="wrapper_parser.cpp"/>
+    <File Name="Program.cpp"/>
+    <File Name="Source.cpp"/>
+    <File Name="Exception.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
@@ -31,6 +34,10 @@
     <File Name="wrapper_simulator.hpp"/>
     <File Name="wrapper_render.hpp"/>
     <File Name="wrapper_parser.hpp"/>
+    <File Name="Program.hpp"/>
+    <File Name="Source.hpp"/>
+    <File Name="Handle.hpp"/>
+    <File Name="Exception.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="core"/>

@@ -6,6 +6,6 @@
 /**
  * @brief Create wrappers for core library.
  */
-void python_wrapper_core();
+extern "C" void python_wrapper_core();
 
 /* ************************************************************************ */

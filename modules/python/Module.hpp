@@ -7,11 +7,12 @@
 #include "simulator/Module.hpp"
 #include "render/Context.hpp"
 
-// Boost
-#include <boost/filesystem/path.hpp>
-
 // Python
-#include <boost/python.hpp>
+#include <Python.h>
+
+// Module
+#include "Handle.hpp"
+#include "Source.hpp"
 
 /* ************************************************************************ */
 
@@ -33,25 +34,9 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param path       Path to source file.
+     * @param name Module name. Can be path to python source.
      */
-    explicit Module(const boost::filesystem::path& filename);
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Module();
-
-
-// Public Accessors
-public:
-
-
-
-// Public Mutators
-public:
-
+    explicit Module(const std::string& name);
 
 
 // Public Operations
@@ -90,18 +75,18 @@ public:
 private:
 
 
-    /// Code module.
-    boost::python::object m_module;
+    /// Source.
+    Source m_source;
 
     /// Configure function.
-    boost::python::object m_configureFn;
+    Handle<PyObject> m_configureFn;
 
     /// Update function.
-    boost::python::object m_updateFn;
+    Handle<PyObject> m_updateFn;
 
 #if ENABLE_RENDER
     /// Draw function.
-    boost::python::object m_drawFn;
+    Handle<PyObject> m_drawFn;
 #endif
 };
 

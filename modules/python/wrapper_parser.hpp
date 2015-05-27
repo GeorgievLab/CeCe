@@ -6,6 +6,6 @@
 /**
  * @brief Create wrappers for parser library.
  */
-void python_wrapper_parser();
+extern "C" void python_wrapper_parser();
 
 /* ************************************************************************ */

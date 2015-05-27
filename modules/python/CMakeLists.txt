@@ -10,7 +10,7 @@ project(${PROJECT_NAME} CXX)
 find_package(PythonLibs REQUIRED)
 
 # Include Boost filesystem and Python
-find_package(Boost REQUIRED COMPONENTS filesystem system python)
+find_package(Boost REQUIRED COMPONENTS python)
 
 # Include directories
 include_directories(
@@ -20,6 +20,11 @@ include_directories(
 
 # Sources
 set(SRCS
+    Handle.hpp
+    Exception.hpp
+    Exception.cpp
+    Source.hpp
+    Source.cpp
     Module.hpp
     Module.cpp
     Library.hpp

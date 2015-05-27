@@ -14,18 +14,76 @@
 // Module
 #include "Module.hpp"
 
-// Boost
-#include <boost/filesystem/path.hpp>
+// Python
+#include <Python.h>
+
+// Wrappers
+#include "wrapper_core.hpp"
+#include "wrapper_render.hpp"
+#include "wrapper_parser.hpp"
+#include "wrapper_simulator.hpp"
 
 /* ************************************************************************ */
 
-class PythonApi : public simulator::LibraryApi
+/**
+ * @brief Python modules initialization table.
+ */
+static struct _inittab INIT_TABLE[] = {
+    {"core", python_wrapper_core},
+    {"simulator", python_wrapper_simulator},
+    {"render", python_wrapper_render},
+    {"parser", python_wrapper_parser},
+    {NULL, NULL}
+};
+
+/* ************************************************************************ */
+
+using namespace simulator;
+
+/* ************************************************************************ */
+
+class PythonApi : public LibraryApi
 {
-    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
+
+    /**
+     * @brief Initialize simulation for Python interpreter.
+     *
+     * @param simulation Simulation.
+     */
+    void initSimulation(Simulation& simulation) NOEXCEPT override
+    {
+        if (PyImport_ExtendInittab(INIT_TABLE) != 0)
+            throw std::runtime_error("Unable to initialize Python import table");
+
+        // Initialize Python interpreter
+        Py_Initialize();
+    }
+
+
+    /**
+     * @brief Finalize simulation.
+     *
+     * @param simulation Simulation.
+     */
+    void finalizeSimulation(Simulation& simulation) NOEXCEPT override
+    {
+        Py_Finalize();
+    }
+
+
+    /**
+     * @brief Create module from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Module name.
+     *
+     * @return Created module.
+     */
+    std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT override
     {
         try
         {
-            return std::unique_ptr<simulator::Module>(new module::python::Module{boost::filesystem::path(name)});
+            return std::unique_ptr<Module>(new module::python::Module{name});
         }
         catch (const std::exception& e)
         {
@@ -34,6 +92,37 @@ class PythonApi : public simulator::LibraryApi
 
         return nullptr;
     }
+
+
+    /**
+     * @brief Create object from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Object name.
+     * @param dynamic    If object should be dynamic.
+     *
+     * @return Created object.
+     */
+    std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT override
+    {
+        return nullptr;
+    }
+
+
+    /**
+     * @brief Create program from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Object name.
+     * @param dynamic    If object should be dynamic.
+     *
+     * @return Created object.
+     */
+    Program createProgram(Simulation& simulation, const std::string& name) NOEXCEPT override
+    {
+        return {};
+    }
+
 };
 
 /* ************************************************************************ */

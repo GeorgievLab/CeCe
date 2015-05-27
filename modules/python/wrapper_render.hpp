@@ -6,6 +6,6 @@
 /**
  * @brief Create wrappers for render library.
  */
-void python_wrapper_render();
+extern "C" void python_wrapper_render();
 
 /* ************************************************************************ */
