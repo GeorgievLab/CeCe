@@ -44,20 +44,20 @@ public:
 
 
     /**
+     * @brief Configure module.
+     *
+     * @param config
+     */
+    void configure(const simulator::ConfigurationBase& config) override;
+
+
+    /**
      * @brief Update module state.
      *
      * @param dt    Simulation time step.
      * @param simulation
      */
     void update(core::units::Duration dt, simulator::Simulation& simulation) override;
-
-
-    /**
-     * @brief Configure module.
-     *
-     * @param config
-     */
-    void configure(const simulator::ConfigurationBase& config) override;
 
 
 #if ENABLE_RENDER

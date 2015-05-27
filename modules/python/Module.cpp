@@ -65,18 +65,6 @@ Module::Module(const std::string& name)
 
 /* ************************************************************************ */
 
-void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
-{
-    if (!m_updateFn)
-        return;
-
-    // m_updateFn(py::object(dt), py::ptr(&simulation));
-    if (!makeHandle(PyObject_CallFunctionObjArgs(m_updateFn.get(), NULL)))
-        throw Exception();
-}
-
-/* ************************************************************************ */
-
 void Module::configure(const simulator::ConfigurationBase& config)
 {
     // Check if configuration contains code
@@ -102,6 +90,18 @@ void Module::configure(const simulator::ConfigurationBase& config)
 
     // m_configureFn(py::ptr(&config));
     if (!makeHandle(PyObject_CallFunctionObjArgs(m_configureFn.get(), NULL)))
+        throw Exception();
+}
+
+/* ************************************************************************ */
+
+void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
+{
+    if (!m_updateFn)
+        return;
+
+    // m_updateFn(py::object(dt), py::ptr(&simulation));
+    if (!makeHandle(PyObject_CallFunctionObjArgs(m_updateFn.get(), NULL)))
         throw Exception();
 }
 
