@@ -144,6 +144,9 @@ void SimulatorThread::DoStep() NOEXCEPT
     }
     catch (const std::exception& e)
     {
+        // Stop simulation
+        DoStop();
+
         wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
         event->SetString(e.what());
         wxQueueEvent(m_handler, event.release());
@@ -170,6 +173,9 @@ void SimulatorThread::DoLoad(const wxString& code) NOEXCEPT
     }
     catch (const std::exception& e)
     {
+        // Stop simulation
+        DoStop();
+
         wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
         event->SetString(e.what());
         wxQueueEvent(m_handler, event.release());
