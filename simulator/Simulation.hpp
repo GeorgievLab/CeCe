@@ -528,7 +528,7 @@ public:
      *
      * @return If next step can be calculated.
      */
-	bool update(core::units::Duration dt) NOEXCEPT;
+	bool update(core::units::Duration dt);
 
 
     /**

@@ -165,7 +165,7 @@ void Simulation::reset()
 
 /* ************************************************************************ */
 
-bool Simulation::update(core::units::Duration dt) NOEXCEPT
+bool Simulation::update(core::units::Duration dt)
 {
     // Increase step number
     m_stepNumber++;
