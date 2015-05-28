@@ -15,6 +15,7 @@
 
 // Module
 #include "Exception.hpp"
+#include "Utils.hpp"
 
 /* ************************************************************************ */
 
@@ -88,8 +89,8 @@ void Module::configure(const simulator::ConfigurationBase& config)
     if (!m_configureFn)
         return;
 
-    // m_configureFn(py::ptr(&config));
-    if (!makeHandle(PyObject_CallFunctionObjArgs(m_configureFn.get(), NULL)))
+    // Call configure
+    if (!call(m_configureFn, config))
         throw Exception();
 }
 
@@ -100,8 +101,8 @@ void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
     if (!m_updateFn)
         return;
 
-    // m_updateFn(py::object(dt), py::ptr(&simulation));
-    if (!makeHandle(PyObject_CallFunctionObjArgs(m_updateFn.get(), NULL)))
+    // Call update
+    if (!call(m_updateFn, dt, simulation))
         throw Exception();
 }
 
@@ -113,8 +114,8 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     if (!m_drawFn)
         return;
 
-    // m_drawFn(py::ptr(&context), py::ptr(&simulation));
-    if (!makeHandle(PyObject_CallFunctionObjArgs(m_drawFn.get(), NULL)))
+    // Call draw
+    if (!call(m_drawFn, context, simulation))
         throw Exception();
 }
 #endif

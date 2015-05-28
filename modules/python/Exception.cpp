@@ -2,11 +2,15 @@
 // Declaration
 #include "Exception.hpp"
 
+// C++
+#include <cassert>
+
 // Python
 #include <Python.h>
 
 // Module
 #include "Handle.hpp"
+#include "Utils.hpp"
 
 /* ************************************************************************ */
 
@@ -17,25 +21,37 @@ namespace python {
 
 Exception::Exception()
 {
-    Handle<PyObject> exc;
-    Handle<PyObject> val;
-    Handle<PyObject> tb;
+    assert(PyErr_Occurred());
 
-    PyErr_Fetch(&exc.getRef(), &val.getRef(), &tb.getRef());
-    PyErr_NormalizeException(&exc.getRef(), &val.getRef(), &tb.getRef());
+    Handle<PyObject> hexc;
+    Handle<PyObject> hval;
+    Handle<PyObject> htb;
 
-    if(val)
+    PyErr_Fetch(&hexc.getRef(), &hval.getRef(), &htb.getRef());
+    PyErr_NormalizeException(&hexc.getRef(), &hval.getRef(), &htb.getRef());
+
+    assert(hexc);
+
+    if (hval)
     {
-        auto traceback = makeHandle(PyImport_ImportModule("traceback"));
-        auto format_exception = makeHandle(PyObject_GetAttrString(traceback, "format_exception"));
-        auto formatted_list = makeHandle(PyObject_CallFunctionObjArgs(format_exception, exc.get(), val.get(), tb.get(), NULL));
-        auto formatted = makeHandle(PyUnicode_Join(makeString(""), formatted_list));
-
-        m_message = PyString_AsString(formatted);
+        if (htb)
+        {
+            auto traceback = makeHandle(PyImport_ImportModule("traceback"));
+            auto format_exception = makeHandle(PyObject_GetAttrString(traceback, "format_exception"));
+            auto formatted_list = call(format_exception, hexc, hval, htb);
+            auto formatted = makeHandle(PyUnicode_Join(str(""), formatted_list));
+            m_message = PyString_AsString(formatted);
+        }
+        else
+        {
+            auto str = makeHandle(PyObject_Str(hval));
+            m_message = PyString_AsString(str);
+        }
     }
     else
     {
-        m_message = PyString_AsString(exc);
+        auto str = makeHandle(PyObject_Str(hexc));
+        m_message = PyString_AsString(str);
     }
 }
 

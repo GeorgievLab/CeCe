@@ -192,20 +192,6 @@ Handle<T> makeHandle(T* ptr) NOEXCEPT
 
 /* ************************************************************************ */
 
-/**
- * @brief Create string handle from pointer.
- *
- * @param str String.
- *
- * @return
- */
-inline Handle<PyObject> makeString(const char* str) NOEXCEPT
-{
-    return makeHandle(PyString_FromString(""));
-}
-
-/* ************************************************************************ */
-
 }
 }
 

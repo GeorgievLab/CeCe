@@ -13,6 +13,8 @@
 
 // Module
 #include "Module.hpp"
+#include "Object.hpp"
+#include "Program.hpp"
 
 // Python
 #include <Python.h>
@@ -105,6 +107,15 @@ class PythonApi : public LibraryApi
      */
     std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT override
     {
+        try
+        {
+            return std::unique_ptr<Object>(new module::python::Object{simulation, name});
+        }
+        catch (const std::exception& e)
+        {
+            core::Log::warning(e.what());
+        }
+
         return nullptr;
     }
 

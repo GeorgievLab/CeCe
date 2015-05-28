@@ -40,6 +40,7 @@
     <File Name="Handle.hpp"/>
     <File Name="Exception.hpp"/>
     <File Name="Object.hpp"/>
+    <File Name="Utils.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="core"/>

@@ -31,6 +31,9 @@ void Source::initSource(const std::string& source)
     // Get dictionary with list of objects
     m_dictionary = PyObject_GetAttrString(m_module.get(), "__dict__");
 
+    //makeHandle(PyImport_ImportModule("core"));
+    //makeHandle(PyImport_ImportModule("simulator"));
+
     // Execute given module file
     if (!makeHandle(PyRun_String(source.c_str(), Py_single_input, m_dictionary.get(), nullptr)))
         throw Exception();

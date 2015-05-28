@@ -1,4 +1,21 @@
-<simulation world-size="100um 100um" dt="10ms" iterations="10000">
-	<module name="python:example.py" />
+<simulation world-size="100um 100um" dt="auto" iterations="10000">
+	<!--module name="python:example.py" /-->
+	<module name="python:pdt">
+<![CDATA[
+def update(dt, simulation):
+	print "Module:", dt
+]]>
+	</module>
+	<object class="python:cell1">
+<![CDATA[
+def update(dt):
+	print "Object1:", dt
+]]>
+	</object>
+	<object class="python:cell2">
+<![CDATA[
+def update(dt):
+	print "Object2:", dt
+]]>
+	</object>
 </simulation>
-

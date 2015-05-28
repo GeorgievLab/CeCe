@@ -3,6 +3,7 @@
 #include "Program.hpp"
 
 // Module
+#include "Utils.hpp"
 #include "Exception.hpp"
 
 /* ************************************************************************ */
@@ -32,7 +33,7 @@ void Program::operator()(simulator::Object& object, core::units::Duration dt) co
         return;
 
     // Call function
-    if (!makeHandle(PyObject_CallFunctionObjArgs(m_call.get(), NULL)))
+    if (!call(m_call, object, dt))
         throw Exception();
 }
 
