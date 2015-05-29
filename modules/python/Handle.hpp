@@ -56,7 +56,7 @@ public:
     Handle(const Handle& src) NOEXCEPT
         : m_ptr(src.m_ptr)
     {
-        Py_INCREF(m_ptr);
+        Py_XINCREF(m_ptr);
     }
 
 
