@@ -201,26 +201,28 @@ void CanvasWidget::Render() NOEXCEPT
 
     wxPaintDC dc(this);
 
-    if (m_simulator->GetSimulation())
+    // Draw simulation
+    try
     {
-        // Draw simulation
-        try
-        {
-            wxMutexLocker lock(*m_simulator->GetMutex());
+        wxMutexLocker lock(*m_simulator->GetMutex());
 
-            m_renderContext.deleteReleasedObjects();
-            m_renderContext.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
-            m_simulator->GetSimulation()->draw(m_renderContext);
-            m_renderContext.frameEnd();
-        }
-        catch (const std::exception& e)
+        m_renderContext.deleteReleasedObjects();
+        m_renderContext.frameBegin(GetSize().GetWidth(), GetSize().GetHeight());
+
+        if (m_simulator->GetSimulation())
         {
-            wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
-            event->SetString(e.what());
-            wxQueueEvent(GetParent(), event.release());
-            s_error = true;
-            return;
+            m_simulator->GetSimulation()->draw(m_renderContext);
         }
+
+        m_renderContext.frameEnd();
+    }
+    catch (const std::exception& e)
+    {
+        wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
+        event->SetString(e.what());
+        wxQueueEvent(GetParent(), event.release());
+        s_error = true;
+        return;
     }
 
     // Swap front and back buffer
