@@ -22,7 +22,11 @@
 
 /* ************************************************************************ */
 
-static void generate_signal(simulator::Simulation& simulation, simulator::Object& obj, core::units::Duration dt, int signal)
+using namespace simulator;
+
+/* ************************************************************************ */
+
+static void generate_signal(Simulation& simulation, Object& obj, core::units::Duration dt, int signal)
 {
     CONSTEXPR float SOURCE_STRENGTH = 0.2f;
 
@@ -50,7 +54,7 @@ static void generate_signal(simulator::Simulation& simulation, simulator::Object
 
     for (const auto& shape : shapes)
     {
-        coordIt = simulator::mapShapeToGrid(coordIt, shape, step, coord, grid.getSize());
+        coordIt = mapShapeToGrid(coordIt, shape, step, coord, grid.getSize());
     }
 
 	std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
@@ -69,7 +73,7 @@ static void generate_signal(simulator::Simulation& simulation, simulator::Object
 
 /* ************************************************************************ */
 
-static void remove_signal(simulator::Simulation& simulation, simulator::Object& obj, core::units::Duration dt, int signal)
+static void remove_signal(Simulation& simulation, Object& obj, core::units::Duration dt, int signal)
 {
     CONSTEXPR float SOURCE_STRENGTH = 0.2f;
 
@@ -97,7 +101,7 @@ static void remove_signal(simulator::Simulation& simulation, simulator::Object& 
 
     for (const auto& shape : shapes)
     {
-        coordIt = simulator::mapShapeToGrid(coordIt, shape, step, coord, grid.getSize());
+        coordIt = mapShapeToGrid(coordIt, shape, step, coord, grid.getSize());
     }
 
 	std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
@@ -116,55 +120,55 @@ static void remove_signal(simulator::Simulation& simulation, simulator::Object& 
 
 /* ************************************************************************ */
 
-class DiffusionApi : public simulator::LibraryApi
+class DiffusionApi : public LibraryApi
 {
-    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) NOEXCEPT override
+    std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT override
     {
         if (name == "generator")
-            return std::unique_ptr<simulator::Module>(new module::diffusion::Generator{simulation.useModule<module::diffusion::Module>("diffusion")});
+            return std::unique_ptr<Module>(new module::diffusion::Generator{simulation.useModule<module::diffusion::Module>("diffusion")});
 
-        return std::unique_ptr<simulator::Module>(new module::diffusion::Module{});
+        return std::unique_ptr<Module>(new module::diffusion::Module{});
     }
 
-    simulator::Program createProgram(simulator::Simulation& simulation, const std::string& name) NOEXCEPT override
+    Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT override
     {
         if (name == "diffusion.gen1")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 0);
             };
 
         if (name == "diffusion.gen2")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 1);
             };
 
         if (name == "diffusion.gen3")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 2);
             };
 
         if (name == "diffusion.gen4")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 3);
             };
 
         if (name == "diffusion.rem1")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 0);
             };
 
         if (name == "diffusion.rem2")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 1);
             };
 
         if (name == "diffusion.rem3")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 2);
             };
 
         if (name == "diffusion.rem4")
-			return [&simulation](simulator::Object& obj, core::units::Duration dt) {
+			return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 3);
             };
 
