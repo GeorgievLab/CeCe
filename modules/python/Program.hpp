@@ -47,6 +47,30 @@ public:
 
 
     /**
+     * @brief Initialize from source.
+     *
+     * @param source Source code.
+     */
+    void initSource(const std::string& source)
+    {
+        m_source.initSource(source);
+        m_call = m_source.getFunction("call");
+    }
+
+
+    /**
+     * @brief Initialize from file.
+     *
+     * @param filename Path to source file.
+     */
+    void initFile(const std::string& filename)
+    {
+        m_source.initFile(filename);
+        m_call = m_source.getFunction("call");
+    }
+
+
+    /**
      * @brief Call program.
      *
      * @param object Simulation object.

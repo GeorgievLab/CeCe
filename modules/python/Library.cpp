@@ -20,6 +20,7 @@
 #include <Python.h>
 
 // Wrappers
+#include "wrapper_stdout.hpp"
 #include "wrapper_core.hpp"
 #include "wrapper_render.hpp"
 #include "wrapper_parser.hpp"
@@ -31,6 +32,7 @@
  * @brief Python modules initialization table.
  */
 static const struct _inittab INIT_TABLE[] = {
+    {"cppout", python_wrapper_stdout},
     {"core", python_wrapper_core},
     {"simulator", python_wrapper_simulator},
     {"render", python_wrapper_render},
@@ -129,8 +131,28 @@ class PythonApi : public LibraryApi
      *
      * @return Created object.
      */
-    Program createProgram(Simulation& simulation, const std::string& name) NOEXCEPT override
+    Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT override
     {
+        try
+        {
+            module::python::Program program;
+
+            if (code.empty())
+            {
+                program.initFile(name);
+            }
+            else
+            {
+                program.initSource(code);
+            }
+
+            return program;
+        }
+        catch (const std::exception& e)
+        {
+            core::Log::warning(e.what());
+        }
+
         return {};
     }
 

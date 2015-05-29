@@ -31,6 +31,7 @@ void Source::initSource(const std::string& source)
     // Get dictionary with list of objects
     m_dictionary = PyObject_GetAttrString(m_module.get(), "__dict__");
 
+    makeHandle(PyImport_ImportModule("cppout"));
     //makeHandle(PyImport_ImportModule("core"));
     //makeHandle(PyImport_ImportModule("simulator"));
 
@@ -48,6 +49,8 @@ void Source::initFile(const std::string& filename)
 
     // Get dictionary with list of objects
     m_dictionary = PyObject_GetAttrString(m_module, "__dict__");
+
+    makeHandle(PyImport_ImportModule("cppout"));
 
     // Execute given module file
     if (!makeHandle(PyRun_FileEx(fopen(filename.c_str(), "r"), filename.c_str(), Py_file_input, m_dictionary, nullptr, 1)))

@@ -33,6 +33,8 @@ set(SRCS
     Object.cpp
     Library.hpp
     Library.cpp
+    wrapper_stdout.hpp
+    wrapper_stdout.cpp
     wrapper_core.hpp
     wrapper_core.cpp
     wrapper_render.hpp

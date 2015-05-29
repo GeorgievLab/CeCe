@@ -18,4 +18,12 @@ def update(dt):
 	print "Object2:", dt
 ]]>
 	</object>
+	<program name="print" language="python">
+<![CDATA[
+def call(object, dt):
+	print "Hello World!"
+]]>
+	</program>
+	<object class="cell.Yeast" programs="print" />
 </simulation>
+
