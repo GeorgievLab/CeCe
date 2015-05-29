@@ -183,6 +183,12 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         process_module_node(module, simulation, filename);
     }
 
+    // Parse programs
+    for (const auto& program : node.children("program"))
+    {
+        process_program_node(program, simulation, filename);
+    }
+
     // Parse objects
     for (const auto& object : node.children("object"))
     {
