@@ -101,12 +101,12 @@ public:
      * @brief Create program from current library.
      *
      * @param simulation Simulation for that module is created.
-     * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
+     * @param name       Program name.
+     * @param code       Optional program code.
      *
-     * @return Created object.
+     * @return Created program.
      */
-    virtual Program createProgram(Simulation& simulation, const std::string& name) NOEXCEPT
+    virtual Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT
     {
         return {};
     }
