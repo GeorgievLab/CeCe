@@ -6,9 +6,12 @@
 
 // C++
 #include <cassert>
+#include <string>
+#include <sstream>
 
 // Simulator
 #include "core/Units.hpp"
+#include "core/Log.hpp"
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 
@@ -61,6 +64,31 @@ Object::Type convert(b2BodyType type) NOEXCEPT
     }
 }
 #endif
+
+
+/* ************************************************************************ */
+
+/**
+ * @brief Split string into multiple strings separated by separator.
+ *
+ * @param value
+ * @param separator
+ *
+ * @return
+ */
+std::vector<std::string> split(std::string value, char separator) NOEXCEPT
+{
+    std::vector<std::string> elems;
+    std::istringstream ss(std::move(value));
+    std::string item;
+
+    while (std::getline(ss, item, separator))
+    {
+        elems.push_back(item);
+    }
+
+    return elems;
+}
 
 /* ************************************************************************ */
 
@@ -243,11 +271,16 @@ void Object::configure(const ConfigurationBase& config, Simulation& simulation)
 		setPosition(parser::parse_vector<core::units::Length>(value));
     });
 
-    config.callIfSetString("program", [this, &simulation](const std::string& value) {
-        auto program = simulation.getProgram(value);
+    config.callIfSetString("programs", [this, &simulation](const std::string& value) {
+        for (const auto& name : split(value, ' '))
+        {
+            auto program = simulation.getProgram(name);
 
-        if (program)
-            addProgram(std::move(program));
+            if (program)
+                addProgram(std::move(program));
+            else
+                core::Log::warning("Unable to create program: ", name);
+        }
     });
 }
 
