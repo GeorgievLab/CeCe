@@ -21,6 +21,9 @@
 #include "core/Log.hpp"
 #include "parser/Parser.hpp"
 #include "simulator/Library.hpp"
+#include "simulator/LibraryApi.hpp"
+#include "simulator/Object.hpp"
+#include "simulator/Program.hpp"
 
 // Parser
 #include "parser-xml/ImmutableConfiguration.hpp"
@@ -28,6 +31,47 @@
 /* ************************************************************************ */
 
 namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Process program node.
+ *
+ * @param node
+ * @param simulation
+ */
+void process_program_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+{
+    assert(!strcmp(node.name(), "program"));
+
+    // Create configuration
+    const parser::xml::ImmutableConfiguration configuration(node, filename);
+
+    // Global name of the program
+    if (!configuration.hasValue("name"))
+        throw parser::Exception("Missing attribute 'name' in 'program' element");
+
+    // Program language
+    if (!configuration.hasValue("language"))
+        throw parser::Exception("Missing attribute 'language' in 'program' element");
+
+    // Program code
+    if (!configuration.hasText())
+        throw parser::Exception("Missing program element code");
+
+    const auto name = configuration.getString("name");
+    const auto lang = configuration.getString("language");
+    const auto code = configuration.getText();
+
+    // Get library by language name
+    simulator::LibraryApi* api = simulation.getLibraryApi(lang);
+
+    if (!api)
+        throw parser::Exception("Unable to load library for language '" + lang + "'");
+
+    // Register program
+    simulation.addProgram(name, api->createProgram(simulation, name, code));
+}
 
 /* ************************************************************************ */
 
