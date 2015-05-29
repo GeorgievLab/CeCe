@@ -103,6 +103,17 @@ if (ENABLE_MEASUREMENT)
     add_definitions(-DENABLE_MEASUREMENT=1)
 endif ()
 
+# Remove missing modules
+foreach (MODULE ${MODULES})
+    if (EXISTS "${CMAKE_SOURCE_DIR}/modules/${MODULE}")
+        message("-- Module '${MODULE}' found, build")
+    else ()
+        message("-- Module '${MODULE}' not found, ignore")
+        list(REMOVE_ITEM MODULES ${MODULE})
+        list(REMOVE_ITEM MODULES_BUILDIN ${MODULE})
+    endif ()
+endforeach ()
+
 # Default libraries
 add_subdirectory(core)
 add_subdirectory(parser)
@@ -126,7 +137,6 @@ add_subdirectory(simulator)
 
 # Modules
 foreach (MODULE ${MODULES})
-    message("-- Module: ${MODULE}")
     add_subdirectory(modules/${MODULE})
 endforeach ()
 
