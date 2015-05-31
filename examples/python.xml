@@ -1,29 +1,40 @@
 <simulation world-size="100um 100um" dt="auto" iterations="10000">
 	<!--module name="python:example.py" /-->
-	<module name="python:pdt">
+	<module name="python:pdt" color="red">
 <![CDATA[
+def configure(config):
+	print "Color:", config.get("color")
+
 def update(dt, simulation):
-	print "Module:", dt
+	print simulation.objectCount
+
 ]]>
 	</module>
 	<object class="python:cell1">
 <![CDATA[
 def update(dt):
-	print "Object1:", dt
+	pass #print "Object1:", dt
 ]]>
 	</object>
 	<object class="python:cell2">
 <![CDATA[
 def update(dt):
-	print "Object2:", dt
+	pass #print "Object2:", dt
 ]]>
 	</object>
 	<program name="print" language="python">
 <![CDATA[
 def call(object, dt):
-	print "Hello World!"
+	pass #print "Hello World!"
 ]]>
 	</program>
 	<object class="cell.Yeast" programs="print" />
 </simulation>
+
+
+
+
+
+
+
 
