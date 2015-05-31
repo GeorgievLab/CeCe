@@ -13,40 +13,49 @@
 /* ************************************************************************ */
 
 namespace module {
-namespace streamlines {
+namespace cylinder_streamlines {
 
 /* ************************************************************************ */
 
-Module::~Module()
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
 {
     if (m_update)
     {
-        const auto R = 10.5f;
-
         // Precompute values
-        const auto R2 = R * R;
-        const Vector<float> start = simulation.getWorldSize() * -0.5f;
+        const core::Vector<float> start = simulation.getWorldSize() * -0.5f;
         const auto gridSize = m_grid.getSize();
-        const Vector<float> step = simulation.getWorldSize() / gridSize;
+        const core::Vector<float> step = simulation.getWorldSize() / gridSize;
+
+        float radius = 0.f;
+
+        if (m_object)
+        {
+            const auto& shapes = m_object->getShapes();
+            assert(shapes.size());
+            const simulator::Shape& shape = shapes[0];
+            assert(shape.type == simulator::ShapeType::Circle);
+            radius = 2 * shape.circle.radius;
+        }
+
+        const auto R2 = radius * radius;
 
         for (decltype(gridSize.getHeight()) j = 0; j < gridSize.getHeight(); ++j)
         {
             for (decltype(gridSize.getWidth()) i = 0; i < gridSize.getWidth(); ++i)
             {
-                auto& velocity = m_grid[Vector<SizeType>(i, j)];
+                auto& velocity = m_grid[core::Vector<SizeType>(i, j)];
+
+                if (!m_object)
+                {
+                    velocity = core::Vector<float>{1.f, 0.f};
+                    continue;
+                }
 
                 // Transform i, j coordinates to position
                 // Cell center position
-                const Vector<float> coord = Vector<float>(i, j) + 0.5f;
+                const core::Vector<float> coord = core::Vector<float>(i, j) + 0.5f;
                 // Real position in the world
-                const Vector<float> pos = start + step * coord;// - getMainCell()->getPosition();
+                const core::Vector<float> pos = start + step * coord - m_object->getPosition();
 
                 // Calculate squared distance from main cell
                 const auto distSq = pos.getLengthSquared();
@@ -54,7 +63,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 // Cell is in main cell, ignore
                 if (distSq <= R2)
                 {
-                    velocity = Vector<float>{0.f, 0.f};
+                    velocity = core::Vector<float>{0.f, 0.f};
                     continue;
                 }
     /*
@@ -69,7 +78,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     */
                 const float theta = atan2(pos.getY(), pos.getX());
 
-                const Vector<float> u = Vector<float>{
+                const core::Vector<float> u = core::Vector<float>{
                     cosf(theta) * (1 - R2 / distSq),
                     -sinf(theta) * (1 + R2 / distSq)
                 };
@@ -88,7 +97,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         // Get grid
         const auto& grid = getGrid();
 
-        const Vector<float> start = simulation.getWorldSize() * -0.5;
+        const core::Vector<float> start = simulation.getWorldSize() * -0.5;
         const auto step = simulation.getWorldSize() / grid.getSize();
 
         for (auto& obj : simulation.getObjects())
@@ -100,51 +109,48 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             // Get position
             const auto pos = obj->getPosition() - start;
 
-            // TODO: improve
-            if ((pos.getX() < 0 || pos.getY() < 0) ||
-                (pos.getX() >= simulation.getWorldSize().getWidth() || pos.getY() >= simulation.getWorldSize().getHeight()))
+            // Check if object is in range
+            if (!pos.inRange(core::Vector<float>{0}, simulation.getWorldSize()))
                 continue;
 
             // Get grid position
-            Vector<SizeType> coord = pos / step;
+            core::Vector<SizeType> coord = pos / step;
 
             // Get velocity
-            const auto force = grid[coord] * m_flowSpeed;
+            const auto velocity = grid[coord] * m_flowSpeed;
 
-            // Add acceleration to the object
-            obj->applyForce(force);
+            // Set object velocity
+            obj->setVelocity(velocity);
         }
     }
 }
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::ConfigurationBase& config)
+void Module::configure(const simulator::ConfigurationBase& config, simulator::Simulation& simulation)
 {
     // Grid size
-    {
-        auto grid = config.getString("grid");
-
-        if (!grid.empty())
-            m_grid.resize(parser::parse_vector<SizeType>(grid));
-    }
+    config.callIfSetString("grid", [this](const std::string& value) {
+        m_grid.resize(parser::parse_vector_single<SizeType>(value));
+    });
 
     // Flow speed
-    {
-        auto flowSpeed = config.getString("flow-speed");
+    config.callIfSetString("flow-speed", [this](const std::string& value) {
+        setFlowSpeed(parser::parse_value<float>(value));
+    });
 
-        if (!flowSpeed.empty())
-            setFlowSpeed(parser::parse_value<float>(flowSpeed));
-    }
+    // Create object
+    config.callIfSetString("object", [this, &config, &simulation](const std::string& value) mutable {
+        m_object = simulation.buildObject(value, false);
+        if (m_object)
+            m_object->configure(config, simulation);
+    });
 
 #ifdef ENABLE_RENDER
     // Draw flags
-    {
-        auto drawVelocity = config.getString("draw-velocity");
-
-        if (!drawVelocity.empty())
-            m_drawObject = parser::parse_bool(drawVelocity);
-    }
+    config.callIfSetString("draw-velocity", [this](const std::string& value) {
+        m_drawObject = parser::parse_bool(value);
+    });
 #endif
 }
 
@@ -165,7 +171,10 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         m_renderObject->update(m_grid.getData());
     }
 
-    m_renderObject->draw(simulation.getWorldSize());
+    context.matrixPush();
+    context.matrixScale(simulation.getWorldSize());
+    m_renderObject->draw(context);
+    context.matrixPop();
 
     m_renderUpdate = false;
 }

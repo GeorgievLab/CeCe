@@ -18,12 +18,12 @@
 /* ************************************************************************ */
 
 namespace module {
-namespace streamlines {
+namespace cylinder_streamlines {
 
 /* ************************************************************************ */
 
 /**
- * @brief Module for streamlines.
+ * @brief Module for cylinder streamlines.
  */
 class Module : public simulator::Module
 {
@@ -33,43 +33,10 @@ public:
 
 
     /// Grid type.
-    using GridType = core::Grid<VelocityVector>;
+    using GridType = core::Grid<core::VelocityVector>;
 
     /// Grid size type.
     using SizeType = GridType::SizeType;
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    Module()
-        : Module(300)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param size Signal grid size.
-     */
-    template<typename... Args>
-    Module(Args&&... args)
-        : m_grid(std::forward<Args>(args)...)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~Module();
 
 
 // Public Accessors
@@ -143,7 +110,7 @@ public:
      * @param dt         Simulation time step.
      * @param simulation
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void update(core::units::Duration dt, simulator::Simulation& simulation) override;
 
 
     /**
@@ -151,7 +118,7 @@ public:
      *
      * @param config
      */
-    void configure(const simulator::ConfigurationBase& config) override;
+    void configure(const simulator::ConfigurationBase& config, simulator::Simulation& simulation) override;
 
 
 #if ENABLE_RENDER
@@ -170,6 +137,9 @@ private:
 
     /// Flow speed.
     float m_flowSpeed = 50.f;
+
+    /// Center object.
+    simulator::Object* m_object = nullptr;
 
     /// Velocity grid.
     GridType m_grid;

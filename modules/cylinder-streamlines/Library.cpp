@@ -13,16 +13,16 @@
 
 /* ************************************************************************ */
 
-class StreamlinesApi : public simulator::LibraryApi
+class CylinderStreamlinesApi : public simulator::LibraryApi
 {
     std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
     {
-        return std::unique_ptr<simulator::Module>(new module::streamlines::Module{});
+        return std::unique_ptr<simulator::Module>(new module::cylinder_streamlines::Module{});
     }
 };
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(streamlines, StreamlinesApi)
+DEFINE_LIBRARY_CREATE_IMPL(cylinder_streamlines, CylinderStreamlinesApi)
 
 /* ************************************************************************ */

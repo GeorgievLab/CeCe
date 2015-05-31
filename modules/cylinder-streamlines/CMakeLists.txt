@@ -1,7 +1,7 @@
 # ######################################################################### #
 
 # Project name
-set(PROJECT_NAME module-streamlines)
+set(PROJECT_NAME module-cylinder-streamlines)
 
 # Create project
 project(${PROJECT_NAME} CXX)
@@ -16,7 +16,7 @@ set(SRCS
 
 
 # Build static / dynamic
-list(FIND MODULES_BUILDIN "streamlines" IS_STATIC)
+list(FIND MODULES_BUILDIN "cylinder-streamlines" IS_STATIC)
 
 if (${IS_STATIC} GREATER -1)
     message("-- Module ${PROJECT_NAME} is build-in")
