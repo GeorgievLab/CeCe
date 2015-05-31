@@ -5,10 +5,10 @@
 
 // Simulator
 #include "core/compatibility.hpp"
-#include "render/Position.hpp"
-#include "render/Color.hpp"
+#include "core/Vector.hpp"
+#include "render/Context.hpp"
 #include "render/Buffer.hpp"
-#include "render/Shader.hpp"
+#include "render/GridBase.hpp"
 
 /* ************************************************************************ */
 
@@ -23,7 +23,7 @@ class Context;
 /**
  * @brief OpenGL grid for vectors object.
  */
-class DLL_EXPORT GridVector
+class DLL_EXPORT GridVector : public GridBase
 {
 
 // Public Ctors & Dtors
@@ -33,48 +33,7 @@ public:
     /**
      * @brief Constructor.
      */
-	GridVector(Context& context, core::Vector<unsigned int> size, const core::Vector<float>* data);
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns current grid size.
-     *
-     * @return
-     */
-    const core::Vector<unsigned int>& getSize() const NOEXCEPT
-    {
-        return m_size;
-    }
-
-
-    /**
-     * @brief If velocities rendering is enabled.
-     *
-     * @return
-     */
-    bool isRenderVelocity() const NOEXCEPT
-    {
-        return m_renderVelocity;
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Enable or disable velocities rendering.
-     *
-     * @param flag
-     */
-    void setRenderVelocity(bool flag) NOEXCEPT
-    {
-        m_renderVelocity = flag;
-    }
+    GridVector(Context& context, core::Vector<unsigned int> size, const core::Vector<float>* data);
 
 
 // Public Operations
@@ -84,9 +43,9 @@ public:
     /**
      * @brief Render at current position.
      *
-     * @param scale Grid scale.
+     * @param context
      */
-	void draw(const core::Vector<float>& scale) NOEXCEPT;
+    void draw(Context& context) NOEXCEPT;
 
 
     /**
@@ -95,7 +54,7 @@ public:
      * @param size
      * @param data
      */
-	void resize(core::Vector<unsigned int> size, const core::Vector<float>* data);
+    void resize(core::Vector<unsigned int> size, const core::Vector<float>* data);
 
 
     /**
@@ -103,7 +62,7 @@ public:
      *
      * @param data
      */
-	void update(const core::Vector<float>* data) NOEXCEPT;
+    void update(const core::Vector<float>* data) NOEXCEPT;
 
 
 // Private Data Members
@@ -111,12 +70,6 @@ private:
 
     /// Buffer object.
     Buffer m_buffer;
-
-    /// Grid size.
-	core::Vector<unsigned int> m_size;
-
-    /// If velocities should be rendered.
-    bool m_renderVelocity = false;
 
 };
 

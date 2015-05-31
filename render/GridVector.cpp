@@ -9,23 +9,15 @@
 #include <cassert>
 #include <cmath>
 
-// OpenGL
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-
-#ifdef _WIN32
-#include "render/glext.h"
-#endif
-
 // Simulator
-#include "render/errors.hpp"
+#include "render/VertexFormat.hpp"
 
 /* ************************************************************************ */
 
 struct Vertex
 {
-    GLfloat x, y;
-    GLfloat red, green, blue;
+    float x, y;
+    float red, green, blue;
 };
 
 /* ************************************************************************ */
@@ -42,38 +34,29 @@ GridVector::GridVector(Context& context, core::Vector<unsigned int> size, const 
 
 /* ************************************************************************ */
 
-void GridVector::draw(const core::Vector<float>& scale) NOEXCEPT
+void GridVector::draw(Context& context) NOEXCEPT
 {
-    if (!isRenderVelocity())
-        return;
-	/*
-    gl(glPushMatrix());
-    gl(glScalef(scale.getX(), scale.getY(), 1));
+    static render::VertexFormat vformat{
+        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
+        render::VertexElement(render::VertexElementType::Color, render::DataType::Float, 3)
+    };
 
-    // Bind buffer
-    gl(glBindBuffer(GL_ARRAY_BUFFER, m_buffer.getId()));
+    context.setVertexBuffer(&m_buffer);
+    context.setVertexFormat(&vformat);
 
-    gl(glEnableClientState(GL_VERTEX_ARRAY));
-    gl(glEnableClientState(GL_COLOR_ARRAY));
-    gl(glVertexPointer(2, GL_FLOAT, sizeof(Vertex), 0));
-    gl(glColorPointer(3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(2 * sizeof(GLfloat))));
+    // Draw lines
+    const auto size = getSize();
+    context.draw(render::PrimitiveType::Lines, 2 * size.getWidth() * size.getHeight());
 
-    // Draw circle
-    gl(glDrawArrays(GL_LINES, 0, 2 * m_size.getWidth() * m_size.getHeight()));
-
-    // Disable states
-    gl(glDisableClientState(GL_COLOR_ARRAY));
-    gl(glDisableClientState(GL_VERTEX_ARRAY));
-    gl(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    gl(glPopMatrix());
-	*/
+    context.setVertexFormat(nullptr);
+    context.setVertexBuffer(nullptr);
 }
 
 /* ************************************************************************ */
 
 void GridVector::resize(core::Vector<unsigned int> size, const core::Vector<float>* data)
 {
-    m_size = std::move(size);
+    GridBase::resize(std::move(size));
 
     update(data);
 }
@@ -82,11 +65,13 @@ void GridVector::resize(core::Vector<unsigned int> size, const core::Vector<floa
 
 void GridVector::update(const core::Vector<float>* data) NOEXCEPT
 {
-	CONSTEXPR core::Vector<float> start{ -0.5f, -0.5f };
-    const core::Vector<float> step{1.f / m_size.getWidth(), 1.f / m_size.getHeight()};
+    const auto size = getSize();
 
-    auto width = m_size.getWidth();
-    auto height = m_size.getHeight();
+    CONSTEXPR core::Vector<float> start{ -0.5f, -0.5f };
+    const core::Vector<float> step = 1.f / size;
+
+    auto width = size.getWidth();
+    auto height = size.getHeight();
 
     std::vector<Vertex> vertices;
     vertices.reserve(2 * width * height);
@@ -97,7 +82,7 @@ void GridVector::update(const core::Vector<float>* data) NOEXCEPT
     {
         for (decltype(width) i = 0; i < width; ++i)
         {
-			const core::Vector<float>& vec = data[i + j * width];
+            const core::Vector<float>& vec = data[i + j * width];
             const float len_squared = vec.getLengthSquared();
 
             if (max_squared < len_squared)
@@ -114,8 +99,8 @@ void GridVector::update(const core::Vector<float>* data) NOEXCEPT
         for (decltype(width) i = 0; i < width; ++i)
         {
             // Get vector normalized by max length
-			const core::Vector<float> vec = data[i + j * width] / max;
-			const core::Vector<float> pos{
+            const core::Vector<float> vec = data[i + j * width] / max;
+            const core::Vector<float> pos{
                     start.getX() + i * step.getX() + step.getX() / 2.f,
                     start.getY() + j * step.getY() + step.getY() / 2.f
             };
@@ -123,7 +108,7 @@ void GridVector::update(const core::Vector<float>* data) NOEXCEPT
             const float green = 5 * std::max(vec.getY(), 0.f);
             const float blue = 5 * std::max(-vec.getY(), 0.f);
 
-			const core::Vector<float> dest = pos + vec * step;
+            const core::Vector<float> dest = pos + vec * step;
 
             vertices.push_back(Vertex{pos.getX(), pos.getY(), red, green, blue});
             vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});
@@ -131,7 +116,7 @@ void GridVector::update(const core::Vector<float>* data) NOEXCEPT
     }
 
     m_buffer.resize(
-		vertices.size() * sizeof(decltype(vertices)::value_type),
+        vertices.size() * sizeof(decltype(vertices)::value_type),
         vertices.data()
     );
 }
