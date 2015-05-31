@@ -232,7 +232,7 @@ public:
      *
      * @return
      */
-	 const core::Vector<core::units::Length>& getWorldSize() const NOEXCEPT
+    const core::Vector<core::units::Length>& getWorldSize() const NOEXCEPT
     {
         return m_worldSize;
     }

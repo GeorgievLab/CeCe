@@ -80,7 +80,7 @@ void GridColor::draw(Context& context) NOEXCEPT
     gl(glBindTexture(GL_TEXTURE_2D, m_texture));
 
     // Bind buffer
-	context.setVertexBuffer(&m_buffer);
+    context.setVertexBuffer(&m_buffer);
 
     gl(glEnableClientState(GL_VERTEX_ARRAY));
     gl(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
@@ -93,8 +93,8 @@ void GridColor::draw(Context& context) NOEXCEPT
     // Disable states
     gl(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
     gl(glDisableClientState(GL_VERTEX_ARRAY));
-    
-	context.setVertexBuffer(nullptr);
+
+    context.setVertexBuffer(nullptr);
 
     gl(glBindTexture(GL_TEXTURE_2D, 0));
     gl(glDisable(GL_TEXTURE_2D));
