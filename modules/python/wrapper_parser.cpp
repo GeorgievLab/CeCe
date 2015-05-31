@@ -4,15 +4,13 @@
 // Declaration
 #include "wrapper_parser.hpp"
 
-// Boost
-#include <boost/python/class.hpp>
+// Python
+#include <Python.h>
 
 /* ************************************************************************ */
 
 void python_wrapper_parser()
 {
-    namespace py = boost::python;
-
 
 }
 

@@ -32,11 +32,12 @@ void Source::initSource(const std::string& source)
     m_dictionary = PyObject_GetAttrString(m_module.get(), "__dict__");
 
     makeHandle(PyImport_ImportModule("cppout"));
-    //makeHandle(PyImport_ImportModule("core"));
-    //makeHandle(PyImport_ImportModule("simulator"));
+    makeHandle(PyImport_ImportModule("core"));
+    makeHandle(PyImport_ImportModule("render"));
+    makeHandle(PyImport_ImportModule("simulator"));
 
     // Execute given module file
-    if (!makeHandle(PyRun_String(source.c_str(), Py_single_input, m_dictionary.get(), nullptr)))
+    if (!makeHandle(PyRun_String(source.c_str(), Py_file_input, m_dictionary.get(), nullptr)))
         throw Exception();
 }
 

@@ -4,8 +4,8 @@
 // Declaration
 #include "wrapper_render.hpp"
 
-// Boost
-#include <boost/python/class.hpp>
+// Python
+#include <Python.h>
 
 #if ENABLE_RENDER
 // Render
@@ -14,63 +14,93 @@
 #include "render/GridColor.hpp"
 #endif
 
+// Library
+#include "wrapper.hpp"
+
 /* ************************************************************************ */
 
-static void python_wrapper_render_Color()
+using namespace module::python;
+
+/* ************************************************************************ */
+
+static void python_wrapper_render_Color(PyObject* module)
 {
 #if ENABLE_RENDER
-    namespace py = boost::python;
 
-    py::class_<render::Color>("Color")
-        .def(py::init<render::Color::ComponentType>())
-        .def(py::init<render::Color::ComponentType, render::Color::ComponentType, render::Color::ComponentType, render::Color::ComponentType>())
-        .add_property("red", &render::Color::getRed, &render::Color::setRed)
-        .add_property("green", &render::Color::getGreen, &render::Color::setGreen)
-        .add_property("blue", &render::Color::getBlue, &render::Color::setBlue)
-        .add_property("alpha", &render::Color::getAlpha, &render::Color::setAlpha)
-    ;
 #endif
 }
 
 /* ************************************************************************ */
 
-static void python_wrapper_render_Context()
+static PyObject* Context_matrixPush(ObjectWrapper<render::Context>* self)
+{
+    assert(self);
+    assert(self->ptr);
+
+    // Get value
+    self->ptr->matrixPush();
+
+    // Return value
+    return Py_BuildValue("");
+}
+
+/* ************************************************************************ */
+
+static PyObject* Context_matrixPop(ObjectWrapper<render::Context>* self)
+{
+    assert(self);
+    assert(self->ptr);
+
+    // Get value
+    self->ptr->matrixPop();
+
+    // Return value
+    return Py_BuildValue("");
+}
+
+/* ************************************************************************ */
+
+static PyObject* Context_matrixIdentity(ObjectWrapper<render::Context>* self)
+{
+    assert(self);
+    assert(self->ptr);
+
+    // Get value
+    self->ptr->matrixIdentity();
+
+    // Return value
+    return Py_BuildValue("");
+}
+
+/* ************************************************************************ */
+
+static PyMethodDef g_contextMethods[] = {
+    {"matrixPush", (PyCFunction) Context_matrixPush, METH_NOARGS, nullptr},
+    {"matrixPop", (PyCFunction) Context_matrixPop, METH_NOARGS, nullptr},
+    {"matrixIdentity", (PyCFunction) Context_matrixIdentity, METH_NOARGS, nullptr},
+    {nullptr}  /* Sentinel */
+};
+
+/* ************************************************************************ */
+
+static void python_wrapper_render_Context(PyObject* module)
 {
 #if ENABLE_RENDER
-    namespace py = boost::python;
+    TypeDefinition<render::Context>::init("render.Context");
+    TypeDefinition<render::Context>::definition.tp_methods = g_contextMethods;
+    TypeDefinition<render::Context>::ready();
 
-    void (render::Context::*matrixScale1)(float) = &render::Context::matrixScale;
-    void (render::Context::*matrixScale2)(const core::Vector<float>&) = &render::Context::matrixScale;
-
-    // render::Context
-    py::class_<render::Context, boost::noncopyable>("Context", py::no_init)
-        .def("matrixPush", &render::Context::matrixPush)
-        .def("matrixPop", &render::Context::matrixPop)
-        .def("matrixIdentity", &render::Context::matrixIdentity)
-        .def("matrixScale", matrixScale1)
-        .def("matrixScale", matrixScale2)
-    ;
+    Py_INCREF(&TypeDefinition<render::Context>::definition);
+    PyModule_AddObject(module, "Context", reinterpret_cast<PyObject*>(&TypeDefinition<render::Context>::definition));
 #endif
 }
 
 /* ************************************************************************ */
 
-static void python_wrapper_render_GridColor()
+static void python_wrapper_render_GridColor(PyObject* module)
 {
-#if 0 // ENABLE_RENDER
-    namespace py = boost::python;
+#if ENABLE_RENDER
 
-    void (render::GridColor::*init_1)(render::Context&) = &render::GridColor::init;
-    void (render::GridColor::*init_2)(render::Context&, core::Vector<render::GridColor::PositionType>) = &render::GridColor::init;
-
-    py::class_<render::GridColor, boost::noncopyable>("GridColor")
-        .def("init", init_1)
-        .def("init", init_2)
-        .def("draw", &render::GridColor::draw)
-        .def("clear", &render::GridColor::clear)
-        .def("set", &render::GridColor::set)
-        .def("get", &render::GridColor::get)
-    ;
 #endif
 }
 
@@ -78,9 +108,11 @@ static void python_wrapper_render_GridColor()
 
 void python_wrapper_render()
 {
-    python_wrapper_render_Color();
-    python_wrapper_render_Context();
-    python_wrapper_render_GridColor();
+    PyObject* module = Py_InitModule3("render", nullptr, nullptr);
+
+    python_wrapper_render_Color(module);
+    python_wrapper_render_Context(module);
+    python_wrapper_render_GridColor(module);
 }
 
 /* ************************************************************************ */

@@ -9,13 +9,9 @@ project(${PROJECT_NAME} CXX)
 # Include Python API
 find_package(PythonLibs REQUIRED)
 
-# Include Boost filesystem and Python
-find_package(Boost REQUIRED COMPONENTS python)
-
 # Include directories
 include_directories(
     ${PYTHON_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
 )
 
 # Sources
@@ -65,7 +61,6 @@ if (${IS_STATIC} GREATER -1)
 
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
-        ${Boost_LIBRARIES}
         ${PYTHON_LIBRARIES}
     )
 else ()
@@ -81,7 +76,6 @@ else ()
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         simulator
-        ${Boost_LIBRARIES}
         ${PYTHON_LIBRARIES}
     )
 endif ()

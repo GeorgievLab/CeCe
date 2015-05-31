@@ -13,7 +13,8 @@
 // Simulator
 #include "core/compatibility.hpp"
 
-// Module
+// Library
+#include "wrapper.hpp"
 #include "Handle.hpp"
 
 /* ************************************************************************ */
@@ -60,58 +61,22 @@ Handle<PyObject> makeObject(T value) NOEXCEPT
 /* ************************************************************************ */
 
 /**
- * @brief Create object from pointer.
- *
- * @param value
- *
- * @return
- */
-template<typename T>
-Handle<PyObject> makeObject(T* value) NOEXCEPT
-{
-    return makeHandle(PyCapsule_New(value, nullptr, nullptr));
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from reference.
- *
- * @param value
- *
- * @return
- */
-template<
-    typename T,
-    typename std::enable_if<std::is_class<T>::value>::type* = nullptr
->
-Handle<PyObject> makeObject(T& value) NOEXCEPT
-{
-    return makeHandle(PyCapsule_New(&value, nullptr, nullptr));
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from const reference.
- *
- * @param value
- *
- * @return
- */
-template<
-    typename T,
-    typename std::enable_if<std::is_class<T>::value>::type* = nullptr
->
-Handle<PyObject> makeObject(const T& value) NOEXCEPT
-{
-    return makeHandle(PyCapsule_New(const_cast<T*>(&value), nullptr, nullptr));
-}
-
-/* ************************************************************************ */
-
-/**
  * @brief Create object from const handle.
+ *
+ * @param value
+ *
+ * @return
+ */
+inline
+const Handle<PyObject>& makeObject(Handle<PyObject>& value) NOEXCEPT
+{
+    return value;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create object from handle.
  *
  * @param value
  *
@@ -136,6 +101,57 @@ inline
 Handle<PyObject> makeObject(Handle<PyObject>&& value) NOEXCEPT
 {
     return value;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create object from pointer.
+ *
+ * @param value
+ *
+ * @return
+ */
+template<typename T>
+Handle<PyObject> makeObject(T* value) NOEXCEPT
+{
+    return TypeDefinition<T>::wrap(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create object from reference.
+ *
+ * @param value
+ *
+ * @return
+ */
+template<
+    typename T,
+    typename std::enable_if<std::is_class<T>::value>::type* = nullptr
+>
+Handle<PyObject> makeObject(T& value) NOEXCEPT
+{
+    return makeObject((T*) &value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create object from const reference.
+ *
+ * @param value
+ *
+ * @return
+ */
+template<
+    typename T,
+    typename std::enable_if<std::is_class<T>::value>::type* = nullptr
+>
+Handle<PyObject> makeObject(const T& value) NOEXCEPT
+{
+    return makeObject((T*) const_cast<T*>(&value));
 }
 
 /* ************************************************************************ */

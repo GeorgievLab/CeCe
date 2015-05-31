@@ -43,6 +43,7 @@
     <File Name="Object.hpp"/>
     <File Name="Utils.hpp"/>
     <File Name="wrapper_stdout.hpp"/>
+    <File Name="wrapper.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="core"/>
