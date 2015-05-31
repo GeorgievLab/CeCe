@@ -66,8 +66,9 @@ public:
      * @brief Configure module.
      *
      * @param config
+     * @param simulation
      */
-    virtual void configure(const ConfigurationBase& config)
+    virtual void configure(const ConfigurationBase& config, simulator::Simulation& simulation)
     {
         // Nothing to do
     }

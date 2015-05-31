@@ -125,7 +125,7 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
 
         // Configure module
         if (module)
-            module->configure(configuration);
+            module->configure(configuration, simulation);
     }
 }
 
