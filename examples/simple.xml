@@ -1,10 +1,12 @@
 <simulation world-size="100um 100um" dt="10ms" iterations="10000">
     <module name="cell.generator" />
-    <module name="cell.cells" />
-    <module name="streamlines" grid="200 200" flow-speed="10um/s" />
-    <module name="diffusion" grid="200" coefficients="1 0.5 1 100" background="#ffffff" colors="#ff0000 #00ff00 #0000ff #ff00ff" />
-    <module name="diffusion.generator" />
-    <module name="diffusion-streamlines" />
+    <module name="cylinder-streamlines" draw-velocity="true" grid="200" flow-speed="100um/s" object="cell.Cell" position="0 0" volume="1540um3" />
+    <!--module name="diffusion" grid="200" coefficients="1 0.5 1 100" background="#ffffff" colors="#ff0000 #00ff00 #0000ff #ff00ff" /-->
+    <!--module name="diffusion.generator" /-->
+    <!--module name="diffusion-streamlines" /-->
     <!--module name="picture" filename="image_$1.png" each="100" /-->
-    <object class="cell.Cell" type="static" position="0 0" volume="1540um3" />
 </simulation>
+
+
+
+
