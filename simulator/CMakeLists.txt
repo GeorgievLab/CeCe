@@ -49,7 +49,9 @@ set(DYNAMIC_MODULES ${MODULES})
 foreach (MODULE ${MODULES_BUILDIN})
     message("-- Build-in module: ${MODULE}")
     set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
-    set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${MODULE})")
+    # Fix module name: replace '-' by '_'
+    string(REPLACE "-" "_" FIXED_MODULE ${MODULE})
+    set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${MODULE},${FIXED_MODULE})")
     list(REMOVE_ITEM DYNAMIC_MODULES ${MODULE})
 endforeach ()
 
@@ -85,6 +87,7 @@ endif ()
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     ${MODULES_LIBS}
+    ${RENDER_LIBS}
 )
 
 # Use different name
