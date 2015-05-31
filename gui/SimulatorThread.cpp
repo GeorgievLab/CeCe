@@ -126,7 +126,8 @@ void SimulatorThread::HandleMessages() NOEXCEPT
 
 void SimulatorThread::DoStart() NOEXCEPT
 {
-    wxAtomicInc(m_running);
+    if (!isRunning())
+        wxAtomicInc(m_running);
 }
 
 /* ************************************************************************ */
@@ -157,7 +158,8 @@ void SimulatorThread::DoStep() NOEXCEPT
 
 void SimulatorThread::DoStop() NOEXCEPT
 {
-    wxAtomicDec(m_running);
+    if (isRunning())
+        wxAtomicDec(m_running);
 }
 
 /* ************************************************************************ */
