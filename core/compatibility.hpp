@@ -42,3 +42,12 @@
 #endif
 
 /* ************************************************************************ */
+
+/// Visual Studio doesn't support constexpr (fallback to const)
+#ifdef _MSC_VER
+#define CONSTEXPR_CONST const
+#else
+#define CONSTEXPR_CONST constexpr
+#endif
+
+/* ************************************************************************ */
