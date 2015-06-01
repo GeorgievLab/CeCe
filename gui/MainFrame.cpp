@@ -9,14 +9,15 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <wx/image.h>
+#include <wx/sstream.h>
 
 // Simulator
 #include "core/Log.hpp"
-#include "simulator/Library.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 
 // GUI
 #include "AboutDialog.h"
+#include "ModulesDialog.h"
 
 /* ************************************************************************ */
 
@@ -89,8 +90,8 @@ MainFrame::MainFrame(wxWindow* parent)
     , m_logger(this)
 {
     // Register logger into Log
-	core::Log::setOutput(&m_logger);
-	core::Log::setError(&m_logger);
+    core::Log::setOutput(&m_logger);
+    core::Log::setError(&m_logger);
 
     std::cout.rdbuf(&m_logger.GetBuffer());
     std::cerr.rdbuf(&m_logger.GetBuffer());
@@ -369,17 +370,7 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 
 void MainFrame::OnHelpModules(wxCommandEvent& event)
 {
-    wxString message;
-
-    for (auto&& name : simulator::Library::getBuildInNames())
-    {
-        message += name;
-        message += "\n";
-    }
-
-    wxMessageBox(wxString::Format(_("Build-in modules:\n%s"), message),
-        wxMessageBoxCaptionStr, wxOK | wxCENTER | wxICON_INFORMATION, this
-    );
+    ModulesDialog(this).ShowModal();
 }
 
 /* ************************************************************************ */
@@ -393,14 +384,14 @@ void MainFrame::OnHelpAbout(wxCommandEvent& event)
 
 void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
 {
-	event.Enable(m_simulatorThread.GetSimulation() && m_simulatorThread.isRunning());
+    event.Enable(m_simulatorThread.GetSimulation() && m_simulatorThread.isRunning());
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event)
 {
-	event.Enable(m_simulatorThread.GetSimulation() && !m_simulatorThread.isRunning());
+    event.Enable(m_simulatorThread.GetSimulation() && !m_simulatorThread.isRunning());
 }
 
 /* ************************************************************************ */
@@ -452,15 +443,10 @@ void MainFrame::LoadFile(const wxFileName& path)
     m_fileName = path;
 
     wxFileInputStream input(m_fileName.GetFullPath());
-    wxTextInputStream text(input);
+    wxStringOutputStream text;
+    input.Read(text);
 
-    wxString code;
-
-    while (input.IsOk() && !input.Eof())
-    {
-        code += text.ReadLine();
-        code += "\n";
-    }
+    wxString code = text.GetString();
 
     // Load source code to simulator
     LoadText(code);

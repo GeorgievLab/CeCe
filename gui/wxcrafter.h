@@ -29,6 +29,13 @@
 #include <wx/hyperlink.h>
 #include <wx/statline.h>
 #include <wx/button.h>
+#include <wx/listbox.h>
+#if wxVERSION_NUMBER >= 2900
+#include <wx/persist.h>
+#include <wx/persist/toplevel.h>
+#include <wx/persist/bookctrl.h>
+#include <wx/persist/treebook.h>
+#endif
 
 class MainFrameBaseClass : public wxFrame
 {
@@ -102,6 +109,18 @@ protected:
     virtual void OnCodeChange(wxStyledTextEvent& event) { event.Skip(); }
 
 public:
+    wxMenuBar* GetMenuBar() { return m_menuBar; }
+    wxToolBar* GetMainToolbar() { return m_mainToolbar; }
+    CanvasWidget* GetGlCanvasView() { return m_glCanvasView; }
+    wxPanel* GetSplitterPageView() { return m_splitterPageView; }
+    wxStyledTextCtrl* GetStcCode() { return m_stcCode; }
+    wxPanel* GetSplitterPageCode() { return m_splitterPageCode; }
+    wxSplitterWindow* GetSplitterTop() { return m_splitterTop; }
+    wxPanel* GetSplitterPageTop() { return m_splitterPageTop; }
+    wxTextCtrl* GetTextCtrlLog() { return m_textCtrlLog; }
+    wxPanel* GetSplitterPageBottom() { return m_splitterPageBottom; }
+    wxSplitterWindow* GetSplitterMain() { return m_splitterMain; }
+    wxStatusBar* GetStatusBar() { return m_statusBar; }
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
@@ -124,8 +143,33 @@ protected:
 protected:
 
 public:
+    wxStaticBitmap* GetStaticBitmapHeader() { return m_staticBitmapHeader; }
+    wxStaticText* GetStaticTextAppName() { return m_staticTextAppName; }
+    wxStaticText* GetStaticTextVersion() { return m_staticTextVersion; }
+    wxStaticText* GetStaticTextBuild() { return m_staticTextBuild; }
+    wxStaticText* GetStaticTextCopyright() { return m_staticTextCopyright; }
+    wxHyperlinkCtrl* GetHyperLinkWeb() { return m_hyperLinkWeb; }
+    wxPanel* GetPanelContent() { return m_panelContent; }
+    wxStaticLine* GetStaticLineSeparator() { return m_staticLineSeparator; }
     AboutDialogBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,400), long style = wxCAPTION|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~AboutDialogBaseClass();
+};
+
+
+class ModulesDialogBase : public wxDialog
+{
+protected:
+    wxListBox* m_listBoxModules;
+    wxStdDialogButtonSizer* m_stdBtnSizerMain;
+    wxButton* m_buttonOk;
+
+protected:
+    virtual void OnInitDialog(wxInitDialogEvent& event) { event.Skip(); }
+
+public:
+    wxListBox* GetListBoxModules() { return m_listBoxModules; }
+    ModulesDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Modules"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(500,300), long style = wxDEFAULT_DIALOG_STYLE);
+    virtual ~ModulesDialogBase();
 };
 
 #endif

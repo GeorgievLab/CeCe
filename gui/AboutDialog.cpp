@@ -43,11 +43,11 @@ static wxString buildString()
 AboutDialog::AboutDialog(wxWindow* parent)
     : AboutDialogBaseClass(parent)
 {
-    {
-        auto font = m_staticTextAppName->GetFont();
-        font.SetPointSize(20);
-        m_staticTextAppName->SetFont(font);
-    }
+//    {
+//        auto font = m_staticTextAppName->GetFont();
+//        font.SetPointSize(20);
+//        m_staticTextAppName->SetFont(font);
+//    }
 
     m_staticTextAppName->SetLabel(wxTheApp->GetAppDisplayName());
     m_staticTextVersion->SetLabel(_("version ") + VERSION);

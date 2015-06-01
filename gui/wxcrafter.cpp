@@ -90,7 +90,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuHelp = new wxMenu();
     m_menuBar->Append(m_menuHelp, _("&Help"));
     
-    m_menuItemHelpModules = new wxMenuItem(m_menuHelp, wxID_ANY, _("Build-in modules..."), _("Show a list of build-in modules"), wxITEM_NORMAL);
+    m_menuItemHelpModules = new wxMenuItem(m_menuHelp, wxID_ANY, _("Modules..."), _("Show a list of build-in modules"), wxITEM_NORMAL);
     m_menuHelp->Append(m_menuItemHelpModules);
     
     m_menuHelp->AppendSeparator();
@@ -214,6 +214,13 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
     // Connect events
     this->Connect(m_menuItemFileNew->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileNew), NULL, this);
     this->Connect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
@@ -287,46 +294,48 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
     this->SetSizer(boxSizerMain);
     
     m_panelContent = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
-    m_panelContent->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
+    m_panelContent->SetBackgroundColour(wxColour(wxT("rgb(255,255,255)")));
     
     boxSizerMain->Add(m_panelContent, 1, wxEXPAND, 5);
     
     wxBoxSizer* boxSizerContent = new wxBoxSizer(wxVERTICAL);
     m_panelContent->SetSizer(boxSizerContent);
     
-    m_staticBitmapHeader = new wxStaticBitmap(m_panelContent, wxID_ANY, wxXmlResource::Get()->LoadBitmap(wxT("georgiev-lab_logo")), wxDefaultPosition, wxSize(-1,-1), 0 );
+    m_staticBitmapHeader = new wxStaticBitmap(m_panelContent, wxID_ANY, wxXmlResource::Get()->LoadBitmap(wxT("logo")), wxDefaultPosition, wxSize(-1,-1), 0 );
     
-    boxSizerContent->Add(m_staticBitmapHeader, 1, wxALL|wxEXPAND, 5);
+    boxSizerContent->Add(m_staticBitmapHeader, 0, wxALL|wxEXPAND, 5);
     
     wxBoxSizer* boxSizerInfo = new wxBoxSizer(wxVERTICAL);
     
-    boxSizerContent->Add(boxSizerInfo, 1, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 10);
+    boxSizerContent->Add(boxSizerInfo, 0, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 10);
     
     m_staticTextAppName = new wxStaticText(m_panelContent, wxID_ANY, _("AppName"), wxDefaultPosition, wxSize(-1,-1), 0);
     m_staticTextAppName->SetForegroundColour(wxColour(wxT("rgb(255,0,0)")));
+    wxFont m_staticTextAppNameFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Noto Sans"));
+    m_staticTextAppName->SetFont(m_staticTextAppNameFont);
     
-    boxSizerInfo->Add(m_staticTextAppName, 0, wxLEFT|wxRIGHT|wxTOP, 5);
+    boxSizerInfo->Add(m_staticTextAppName, 1, wxALL|wxEXPAND, 5);
     
     m_staticTextVersion = new wxStaticText(m_panelContent, wxID_ANY, _("Version"), wxDefaultPosition, wxSize(-1,-1), 0);
     m_staticTextVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
     
-    boxSizerInfo->Add(m_staticTextVersion, 0, wxLEFT|wxRIGHT|wxTOP, 5);
+    boxSizerInfo->Add(m_staticTextVersion, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
     
     m_staticTextBuild = new wxStaticText(m_panelContent, wxID_ANY, _("Build"), wxDefaultPosition, wxSize(-1,-1), 0);
     m_staticTextBuild->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
     
-    boxSizerInfo->Add(m_staticTextBuild, 0, wxALL, 5);
+    boxSizerInfo->Add(m_staticTextBuild, 0, wxALL|wxEXPAND, 5);
     
     m_staticTextCopyright = new wxStaticText(m_panelContent, wxID_ANY, _("Copyright"), wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
     
-    boxSizerInfo->Add(m_staticTextCopyright, 0, wxALL, 5);
+    boxSizerInfo->Add(m_staticTextCopyright, 0, wxALL|wxEXPAND, 5);
     
     m_hyperLinkWeb = new wxHyperlinkCtrl(m_panelContent, wxID_ANY, _("ccy.zcu.cz"), wxT("http://ccy.zcu.cz"), wxDefaultPosition, wxSize(-1,-1), wxHL_DEFAULT_STYLE);
     m_hyperLinkWeb->SetNormalColour(wxColour(wxT("#0000FF")));
     m_hyperLinkWeb->SetHoverColour(wxColour(wxT("#0000FF")));
     m_hyperLinkWeb->SetVisitedColour(wxColour(wxT("#FF0000")));
     
-    boxSizerInfo->Add(m_hyperLinkWeb, 0, 0, 5);
+    boxSizerInfo->Add(m_hyperLinkWeb, 0, wxEXPAND|wxALIGN_LEFT, 5);
     
     m_staticLineSeparator = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxLI_HORIZONTAL);
     
@@ -347,8 +356,66 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
 }
 
 AboutDialogBaseClass::~AboutDialogBaseClass()
 {
+}
+
+ModulesDialogBase::ModulesDialogBase(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+    : wxDialog(parent, id, title, pos, size, style)
+{
+    if ( !bBitmapLoaded ) {
+        // We need to initialise the default bitmap handler
+        wxXmlResource::Get()->AddHandler(new wxBitmapXmlHandler);
+        wxC9ED9InitBitmapResources();
+        bBitmapLoaded = true;
+    }
+    
+    wxBoxSizer* boxSizerMain = new wxBoxSizer(wxVERTICAL);
+    this->SetSizer(boxSizerMain);
+    
+    wxArrayString m_listBoxModulesArr;
+    m_listBoxModules = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), m_listBoxModulesArr, wxLB_SINGLE);
+    
+    boxSizerMain->Add(m_listBoxModules, 1, wxALL|wxEXPAND, 5);
+    
+    m_stdBtnSizerMain = new wxStdDialogButtonSizer();
+    
+    boxSizerMain->Add(m_stdBtnSizerMain, 0, wxALL|wxEXPAND, 5);
+    
+    m_buttonOk = new wxButton(this, wxID_OK, wxT(""), wxDefaultPosition, wxSize(-1, -1), 0);
+    m_buttonOk->SetDefault();
+    m_stdBtnSizerMain->AddButton(m_buttonOk);
+    m_stdBtnSizerMain->Realize();
+    
+    SetName(wxT("ModulesDialogBase"));
+    SetSizeHints(500,300);
+    if ( GetSizer() ) {
+         GetSizer()->Fit(this);
+    }
+    CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
+    // Connect events
+    this->Connect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(ModulesDialogBase::OnInitDialog), NULL, this);
+    
+}
+
+ModulesDialogBase::~ModulesDialogBase()
+{
+    this->Disconnect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(ModulesDialogBase::OnInitDialog), NULL, this);
+    
 }
