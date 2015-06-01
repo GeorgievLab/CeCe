@@ -10,8 +10,10 @@
 #include <cstring>
 
 // Unix
-#ifdef __unix__
+#if defined(__unix__)
 #include <arpa/inet.h>
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+#include <winsock.h>
 #endif
 
 #ifdef _MSC_VER

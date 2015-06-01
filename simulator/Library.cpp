@@ -12,7 +12,7 @@
 // Linux
 #include <dlfcn.h>
 #elif _WIN32
-// Nothing
+#include <windows.h>
 #else
 #error Unsupported platform
 #endif
@@ -155,7 +155,7 @@ public:
 #if __linux__
         return dlsym(m_ptr, name);
 #elif _WIN32
-        return GetProcAddress(m_ptr, name);
+        return reinterpret_cast<void*>(reinterpret_cast<std::intptr_t>(GetProcAddress(m_ptr, name)));
 #endif
     }
 

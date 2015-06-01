@@ -35,14 +35,14 @@ void* allocate_aligned_memory(std::size_t align, std::size_t size)
     if (size == 0)
         return nullptr;
 
-#ifdef _MSC_VER
-	void* ptr = _aligned_malloc(size, align);
+#ifdef _WIN32
+    void* ptr = _aligned_malloc(size, align);
 #else
-	void* ptr = nullptr;
+    void* ptr = nullptr;
     int rc = posix_memalign(&ptr, align, size);
 
-	if (rc != 0)
-		return nullptr;
+    if (rc != 0)
+        return nullptr;
 #endif
 
     return ptr;

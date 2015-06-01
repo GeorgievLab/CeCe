@@ -109,6 +109,12 @@ if (ENABLE_BUILDIN_PHYSICS)
     )
 endif ()
 
+if (MINGW)
+    target_link_libraries(${PROJECT_NAME}
+        Ws2_32
+    )
+endif ()
+
 # Install
 install(TARGETS ${PROJECT_NAME}
 	ARCHIVE DESTINATION lib
