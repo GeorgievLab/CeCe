@@ -17,6 +17,7 @@
   <Project Name="picture" Path="modules/picture/picture.project" Active="No"/>
   <Project Name="tool-shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <Project Name="cylinder-streamlines" Path="modules/cylinder-streamlines/cylinder-streamlines.project" Active="No"/>
+  <Project Name="python" Path="modules/python/python.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -32,6 +33,7 @@
       <Project Name="module-picture" ConfigName="Debug"/>
       <Project Name="tool-shader-convert" ConfigName="Debug"/>
       <Project Name="module-cylinder-streamlines" ConfigName="Debug"/>
+      <Project Name="module-python" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -47,6 +49,7 @@
       <Project Name="module-picture" ConfigName="Release"/>
       <Project Name="tool-shader-convert" ConfigName="Release"/>
       <Project Name="module-cylinder-streamlines" ConfigName="Release"/>
+      <Project Name="module-python" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
