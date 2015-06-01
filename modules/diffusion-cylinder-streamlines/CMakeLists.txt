@@ -31,11 +31,6 @@ if (${IS_STATIC} GREATER -1)
     add_dependencies(${PROJECT_NAME}
         core
     )
-
-    # Link libraries
-    target_link_libraries(${PROJECT_NAME}
-        ${Boost_LIBRARIES}
-    )
 else ()
     message("-- Module ${PROJECT_NAME} is dynamic")
     add_library(${PROJECT_NAME} SHARED ${SRCS})
@@ -48,8 +43,9 @@ else ()
 
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
+        diffusion
+        cylinder-streamlines
         simulator
-        ${Boost_LIBRARIES}
     )
 endif ()
 
