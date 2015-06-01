@@ -24,7 +24,7 @@ namespace core {
  * @brief 2D vector.
  */
 template<typename T>
-class DLL_EXPORT Vector
+class Vector
 {
 
 // Public Ctors
@@ -461,7 +461,7 @@ private:
 
 /* ************************************************************************ */
 
-extern template class Vector<float>;
+//extern template class Vector<float>;
 
 /* ************************************************************************ */
 

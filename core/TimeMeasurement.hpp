@@ -125,7 +125,7 @@ private:
  * @return
  */
 template<typename... Args>
-DLL_EXPORT inline int measure_time(Args&&... args) NOEXCEPT
+inline int measure_time(Args&&... args) NOEXCEPT
 {
     return 0;
 }
@@ -143,7 +143,7 @@ DLL_EXPORT inline int measure_time(Args&&... args) NOEXCEPT
  * @return
  */
 template<typename Fn>
-DLL_EXPORT inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
+inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
 {
     return TimeMeasurementBase<Fn>{std::move(name), fn};
 }
@@ -159,7 +159,7 @@ DLL_EXPORT inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) 
  *
  * @return
  */
-DLL_EXPORT inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) NOEXCEPT
+inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) NOEXCEPT
 {
     return TimeMeasurementBase<DefaultMeasurementOutput>{std::move(name), DefaultMeasurementOutput{}};
 }

@@ -26,7 +26,7 @@ namespace core {
  * @tparam Alloc Type of used allocator.
  */
 template<typename T, typename Alloc = AlignedAllocator<T>>
-class DLL_EXPORT Grid
+class Grid
 {
 
 
