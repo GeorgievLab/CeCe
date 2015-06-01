@@ -15,8 +15,8 @@ option(ENABLE_MEASUREMENT           "Enable or disable time measurement" Off)
 option(ENABLE_BUILDIN_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
 
 option(BUILD_TOOLS                  "Build support tools" Off)
-set(MODULES                         "streamlines;diffusion;diffusion-streamlines;cell;picture" CACHE STRING "A list of build modules")
-set(MODULES_BUILDIN                 "streamlines;diffusion;diffusion-streamlines;cell;picture" CACHE STRING "A list of build-in modules")
+set(MODULES                         "cylinder-streamlines;diffusion;diffusion-cylinder-streamlines;cell;python" CACHE STRING "A list of build modules")
+set(MODULES_BUILDIN                 "cylinder-streamlines;diffusion;diffusion-cylinder-streamlines;cell;python" CACHE STRING "A list of build-in modules")
 
 # Options specific for different compilers
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
