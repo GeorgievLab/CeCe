@@ -59,13 +59,13 @@ std::vector<std::string> Library::s_libraryPaths;
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) extern "C" simulator::LibraryApi* LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(validname)();
+#define ITEM(name, validname) extern "C" simulator::LibraryApi* LIBRARY_PROTOTYPE_NAME_BUILDIN(create, validname)();
 BUILDIN_LIBRARIES
 #undef ITEM
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) { # name, LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(validname) },
+#define ITEM(name, validname) { # name, LIBRARY_PROTOTYPE_NAME_BUILDIN(create, validname) },
 const std::map<std::string, Library::CreateFn> Library::s_buildinLibraries{
     BUILDIN_LIBRARIES
 };
@@ -213,10 +213,19 @@ Library::Library(const std::string& name)
         if (!m_impl->isLoaded())
             throw std::runtime_error("Library is not loaded");
 
+        // Check API version
+        auto apiVerFn = m_impl->getAddr<ApiVersionFn>("api_version");
+
+        if (!apiVerFn)
+            throw std::runtime_error("Library doesn't contains 'api_version' function");
+
+        if (apiVerFn() != LIBRARY_API_VERSION)
+            throw std::runtime_error("Library API version is different from the simulator");
+
         auto fn = m_impl->getAddr<CreateFn>("create");
 
         if (!fn)
-            throw std::runtime_error("Library doesn't contains pointer to create function");
+            throw std::runtime_error("Library doesn't contains 'create' function");
 
         // Create extension object
         m_api.reset(fn());

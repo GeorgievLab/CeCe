@@ -179,6 +179,6 @@ class DiffusionApi : public LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(diffusion, DiffusionApi)
+DEFINE_LIBRARY(diffusion, DiffusionApi)
 
 /* ************************************************************************ */

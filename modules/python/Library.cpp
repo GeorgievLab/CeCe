@@ -160,6 +160,6 @@ class PythonApi : public LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(python, PythonApi)
+DEFINE_LIBRARY(python, PythonApi)
 
 /* ************************************************************************ */

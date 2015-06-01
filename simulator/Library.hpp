@@ -17,20 +17,29 @@
 /* ************************************************************************ */
 
 /**
- * @brief Function name for dynamic.
- *
- * @param name Library name.
+ * @brief Library API version.
  */
-#define LIBRARY_CREATE_PROTOTYPE_NAME_DYNAMIC(name) create
+#define LIBRARY_API_VERSION 1
 
 /* ************************************************************************ */
 
 /**
- * @brief Function name for dynamic.
+ * @brief Define function name for dynamic libraries.
  *
- * @param name Library name.
+ * @param prefix Function prefix.
+ * @param name   Library name.
  */
-#define LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(name) create_ ## name
+#define LIBRARY_PROTOTYPE_NAME_DYNAMIC(prefix, name) prefix
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define function name for build-in libraries.
+ *
+ * @param prefix Function prefix.
+ * @param name   Library name.
+ */
+#define LIBRARY_PROTOTYPE_NAME_BUILDIN(prefix, name) prefix ## _ ## name
 
 /* ************************************************************************ */
 
@@ -40,9 +49,9 @@
  * @param name Library name.
  */
 #if LIBRARY_BUILDIN
-#define LIBRARY_CREATE_PROTOTYPE_NAME(name) LIBRARY_CREATE_PROTOTYPE_NAME_BUILDIN(name)
+#define LIBRARY_PROTOTYPE_NAME(prefix, name) LIBRARY_PROTOTYPE_NAME_BUILDIN(prefix, name)
 #else
-#define LIBRARY_CREATE_PROTOTYPE_NAME(name) LIBRARY_CREATE_PROTOTYPE_NAME_DYNAMIC(name)
+#define LIBRARY_PROTOTYPE_NAME(prefix, name) LIBRARY_PROTOTYPE_NAME_DYNAMIC(prefix, name)
 #endif
 
 /* ************************************************************************ */
@@ -53,7 +62,7 @@
  * @param name Library name.
  */
 #define LIBRARY_CREATE_PROTOTYPE(name) \
-    extern "C" simulator::LibraryApi* LIBRARY_CREATE_PROTOTYPE_NAME(name)()
+    extern "C" simulator::LibraryApi* LIBRARY_PROTOTYPE_NAME(create, name)()
 
 /* ************************************************************************ */
 
@@ -90,12 +99,65 @@
 /* ************************************************************************ */
 
 /**
+ * @brief Prototype of function for returning library API version.
+ *
+ * @param name Library name.
+ */
+#define LIBRARY_API_VERSION_PROTOTYPE(name) \
+    extern "C" int LIBRARY_PROTOTYPE_NAME(api_version, name)()
+
+/* ************************************************************************ */
+
+/**
+ * @brief Declare function for returning library API version.
+ *
+ * @param name Library name.
+ */
+#define DECLARE_LIBRARY_API_VERSION(name) LIBRARY_API_VERSION_PROTOTYPE(name)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define function for returning library API version.
+ *
+ * @param name Library name.
+ */
+#define DEFINE_LIBRARY_API_VERSION(name) LIBRARY_API_VERSION_PROTOTYPE(name)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define function for returning library API version.
+ *
+ * @param name Library name.
+ */
+#define DEFINE_LIBRARY_API_VERSION_IMPL(name) \
+    LIBRARY_API_VERSION_PROTOTYPE(name) \
+    { \
+        return LIBRARY_API_VERSION; \
+    }
+
+/* ************************************************************************ */
+
+/**
  * @brief Declare library functions.
  *
  * @param name Library name.
  */
 #define DECLARE_LIBRARY(name) \
-    DECLARE_LIBRARY_CREATE(name)
+    DECLARE_LIBRARY_CREATE(name); \
+    DECLARE_LIBRARY_API_VERSION(name)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define library functions.
+ *
+ * @param name Library name.
+ */
+#define DEFINE_LIBRARY(name, className) \
+    DEFINE_LIBRARY_CREATE_IMPL(name, className) \
+    DEFINE_LIBRARY_API_VERSION_IMPL(name)
 
 /* ************************************************************************ */
 
@@ -120,6 +182,9 @@ public:
 
     /// Create API function pointer type.
     using CreateFn = LibraryApi* (*)();
+
+    /// API version function pointer type.
+    using ApiVersionFn = int (*)();
 
 
 // Public Ctors & Dtors

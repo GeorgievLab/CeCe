@@ -23,6 +23,6 @@ class CylinderStreamlinesApi : public simulator::LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(cylinder_streamlines, CylinderStreamlinesApi)
+DEFINE_LIBRARY(cylinder_streamlines, CylinderStreamlinesApi)
 
 /* ************************************************************************ */

@@ -51,6 +51,6 @@ class CellApi : public simulator::LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(cell, CellApi)
+DEFINE_LIBRARY(cell, CellApi)
 
 /* ************************************************************************ */

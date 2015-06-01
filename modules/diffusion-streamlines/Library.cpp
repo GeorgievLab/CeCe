@@ -31,6 +31,6 @@ class DiffusionStreamlinesApi : public simulator::LibraryApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY_CREATE_IMPL(diffusion-streamlines, DiffusionStreamlinesApi)
+DEFINE_LIBRARY(diffusion_cylinder_streamlines, DiffusionStreamlinesApi)
 
 /* ************************************************************************ */
