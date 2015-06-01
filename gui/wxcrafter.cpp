@@ -304,6 +304,7 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
     m_staticBitmapHeader = new wxStaticBitmap(m_panelContent, wxID_ANY, wxXmlResource::Get()->LoadBitmap(wxT("logo")), wxDefaultPosition, wxSize(-1,-1), 0 );
     
     boxSizerContent->Add(m_staticBitmapHeader, 0, wxALL|wxEXPAND, 5);
+    m_staticBitmapHeader->SetMinSize(wxSize(300,-1));
     
     wxBoxSizer* boxSizerInfo = new wxBoxSizer(wxVERTICAL);
     
@@ -397,6 +398,7 @@ ModulesDialogBase::ModulesDialogBase(wxWindow* parent, wxWindowID id, const wxSt
     m_stdBtnSizerMain->Realize();
     
     SetName(wxT("ModulesDialogBase"));
+    SetMinSize( wxSize(300,100) );
     SetSizeHints(500,300);
     if ( GetSizer() ) {
          GetSizer()->Fit(this);

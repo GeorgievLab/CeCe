@@ -2578,7 +2578,7 @@
    "border": 5,
    "gbSpan": "1,1",
    "gbPosition": "0,0",
-   "m_styles": ["wxCAPTION", "wxSYSTEM_MENU", "wxCLOSE_BOX"],
+   "m_styles": ["wxCAPTION", "wxRESIZE_BORDER", "wxSYSTEM_MENU", "wxCLOSE_BOX"],
    "m_sizerFlags": ["wxALL", "wxLEFT", "wxRIGHT", "wxTOP", "wxBOTTOM"],
    "m_properties": [{
      "type": "string",
@@ -2822,7 +2822,7 @@
             }, {
              "type": "string",
              "m_label": "Minimum Size:",
-             "m_value": "-1,-1"
+             "m_value": "300,-1"
             }, {
              "type": "string",
              "m_label": "Name:",
@@ -3461,7 +3461,7 @@
    "border": 5,
    "gbSpan": "1,1",
    "gbPosition": "0,0",
-   "m_styles": ["wxDEFAULT_DIALOG_STYLE"],
+   "m_styles": ["wxDEFAULT_DIALOG_STYLE", "wxRESIZE_BORDER"],
    "m_sizerFlags": ["wxALL", "wxLEFT", "wxRIGHT", "wxTOP", "wxBOTTOM"],
    "m_properties": [{
      "type": "string",
@@ -3470,7 +3470,7 @@
     }, {
      "type": "string",
      "m_label": "Minimum Size:",
-     "m_value": "-1,-1"
+     "m_value": "300,100"
     }, {
      "type": "string",
      "m_label": "Name:",

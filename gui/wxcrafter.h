@@ -151,7 +151,7 @@ public:
     wxHyperlinkCtrl* GetHyperLinkWeb() { return m_hyperLinkWeb; }
     wxPanel* GetPanelContent() { return m_panelContent; }
     wxStaticLine* GetStaticLineSeparator() { return m_staticLineSeparator; }
-    AboutDialogBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,400), long style = wxCAPTION|wxSYSTEM_MENU|wxCLOSE_BOX);
+    AboutDialogBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,400), long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~AboutDialogBaseClass();
 };
 
@@ -168,7 +168,7 @@ protected:
 
 public:
     wxListBox* GetListBoxModules() { return m_listBoxModules; }
-    ModulesDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Modules"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(500,300), long style = wxDEFAULT_DIALOG_STYLE);
+    ModulesDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Modules"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(500,300), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
     virtual ~ModulesDialogBase();
 };
 
