@@ -84,6 +84,13 @@ else ()
     )
 endif ()
 
+if (ENABLE_BUILDIN_PHYSICS)
+    # Add dependency
+    add_dependencies(${PROJECT_NAME}
+        Box2D
+    )
+endif ()
+
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     ${MODULES_LIBS}
@@ -96,11 +103,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 if (ENABLE_BUILDIN_PHYSICS)
-    # Add dependency
-    add_dependencies(${PROJECT_NAME}
-        Box2D
-    )
-
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         Box2D
