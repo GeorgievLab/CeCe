@@ -11,6 +11,10 @@ if (UNIX)
     add_compile_options(-fPIC)
 endif ()
 
+if (NOT ENABLE_SIMULATOR_STATIC)
+    add_definitions(-DSIMULATOR_DLL_EXPORT=1)
+endif ()
+
 # Create library
 add_library(${PROJECT_NAME} OBJECT
     Parser.hpp

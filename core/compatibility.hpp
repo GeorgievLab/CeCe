@@ -11,17 +11,17 @@
 
 /* ************************************************************************ */
 
-//#if defined (_WIN32)
-//	#if STATIC_BUILD
-//		#define DLL_EXPORT
-//    #elif defined(SIMULATOR_DLL_EXPORT)
-//		#define DLL_EXPORT __declspec(dllexport)
-//    #else
-//        #define DLL_EXPORT __declspec(dllimport)
-//    #endif
-//#else
+#if defined (_WIN32)
+    #if STATIC_BUILD
+        #define DLL_EXPORT
+    #elif defined(SIMULATOR_DLL_EXPORT)
+        #define DLL_EXPORT __declspec(dllexport)
+    #else
+        #define DLL_EXPORT __declspec(dllimport)
+    #endif
+#else
 #define DLL_EXPORT
-//#endif
+#endif
 
 /* ************************************************************************ */
 

@@ -44,7 +44,6 @@ endif ()
 # Include build-in libraries
 set(MODULES_LIBS "")
 set(BUILDIN_LIBRARIES "")
-set(DYNAMIC_MODULES ${MODULES})
 
 foreach (MODULE ${MODULES_BUILDIN})
     message("-- Build-in module: ${MODULE}")
@@ -52,22 +51,17 @@ foreach (MODULE ${MODULES_BUILDIN})
     # Fix module name: replace '-' by '_'
     string(REPLACE "-" "_" FIXED_MODULE ${MODULE})
     set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${MODULE},${FIXED_MODULE})")
-    list(REMOVE_ITEM DYNAMIC_MODULES ${MODULE})
 endforeach ()
 
 # Pass build-in libraries list
 add_definitions(-DBUILDIN_LIBRARIES=${BUILDIN_LIBRARIES})
 
-# If there is dynamic module, force shared library
-list(LENGTH DYNAMIC_MODULES DYNAMIC_MODULES_LEN)
-if (DYNAMIC_MODULES_LEN GREATER 0)
-    set(ENABLE_SIMULATOR_STATIC Off)
+if (NOT ENABLE_SIMULATOR_STATIC)
+    add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()
 
 if (ENABLE_SIMULATOR_STATIC)
     message("-- Build simulator library as static")
-
-    add_definitions(-DSTATIC_BUILD=1)
 
     # Create library
     add_library(${PROJECT_NAME}
@@ -75,8 +69,6 @@ if (ENABLE_SIMULATOR_STATIC)
     )
 else ()
     message("-- Build simulator library as shared")
-
-    add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 
     # Create library
     add_library(${PROJECT_NAME} SHARED

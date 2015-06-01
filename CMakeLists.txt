@@ -103,6 +103,8 @@ if (ENABLE_MEASUREMENT)
     add_definitions(-DENABLE_MEASUREMENT=1)
 endif ()
 
+set(DYNAMIC_MODULES ${MODULES})
+
 # Remove missing modules
 foreach (MODULE ${MODULES})
     if (EXISTS "${CMAKE_SOURCE_DIR}/modules/${MODULE}")
@@ -112,7 +114,18 @@ foreach (MODULE ${MODULES})
         list(REMOVE_ITEM MODULES ${MODULE})
         list(REMOVE_ITEM MODULES_BUILDIN ${MODULE})
     endif ()
+    list(REMOVE_ITEM DYNAMIC_MODULES ${MODULE})
 endforeach ()
+
+if (ENABLE_SIMULATOR_STATIC)
+    add_definitions(-DSTATIC_BUILD=1)
+endif ()
+
+# If there is dynamic module, force shared library
+list(LENGTH DYNAMIC_MODULES DYNAMIC_MODULES_LEN)
+if (DYNAMIC_MODULES_LEN GREATER 0)
+    set(ENABLE_SIMULATOR_STATIC Off)
+endif ()
 
 # Default libraries
 add_subdirectory(core)
