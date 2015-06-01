@@ -1,10 +1,16 @@
-<simulation world-size="300um 300um" dt="50ms" iterations="10000">
+<simulation world-size="300um 300um" dt="100ms" iterations="10000">
     <module name="diffusion" grid="200" coefficients="1 0.5 1 100" background="#ffffff" colors="#ff0000 #00ff00 #0000ff #ff00ff" />
-    <!--module name="diffusion.generator-cell" /-->
     <!--module name="picture" filename="image_$1.png" each="100" /-->
-    <!--object class="cell.Yeast" position="0 0" /-->
-    <object class="cell.Yeast" position="5um 5um" program="diffusion.gen1" />
-    <object class="cell.Yeast" position="-5um -5um" program="diffusion.gen2" />
-    <object class="cell.Yeast" position="5um -5um" program="diffusion.gen3" />
-    <object class="cell.Yeast" position="-5um 5um" program="diffusion.gen4" />
+    <object class="cell.Yeast" position="5um 5um" programs="diffusion.gen1" />
+    <object class="cell.Yeast" position="-5um -5um" programs="diffusion.gen2" />
+    <object class="cell.Yeast" position="5um -5um" programs="diffusion.gen3" />
+    <object class="cell.Yeast" position="-5um 5um" programs="diffusion.gen4" />
+    <module name="python:objectCount">
+def update(dt, simulation):
+	print "Iteration:", simulation.iteration, "/", simulation.iterations
+	print "Objects:", simulation.objectsCount
+    </module>
 </simulation>
+
+
+
