@@ -27,7 +27,10 @@ static PyObject* log_write(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, "s", &what))
         return nullptr;
 
-    std::cout << what;
+    if (!strcmp(what, "\n"))
+        std::cout << std::endl;
+    else
+        std::cout << what;
 
     // Return None
     Py_RETURN_NONE;
