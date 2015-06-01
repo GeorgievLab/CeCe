@@ -51,7 +51,7 @@ public:
      *
      * @param simulation Simulation.
      */
-    virtual void initSimulation(Simulation& simulation) NOEXCEPT
+    virtual void initSimulation(Simulation& simulation)
     {
         // Nothing to do
     }
@@ -62,7 +62,7 @@ public:
      *
      * @param simulation Simulation.
      */
-    virtual void finalizeSimulation(Simulation& simulation) NOEXCEPT
+    virtual void finalizeSimulation(Simulation& simulation)
     {
         // Nothing to do
     }
@@ -76,7 +76,7 @@ public:
      *
      * @return Created module.
      */
-    virtual std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT
+    virtual std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name)
     {
         return nullptr;
     }
@@ -91,7 +91,7 @@ public:
      *
      * @return Created object.
      */
-    virtual std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT
+    virtual std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true)
     {
         return nullptr;
     }
@@ -106,7 +106,7 @@ public:
      *
      * @return Created program.
      */
-    virtual Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT
+    virtual Program createProgram(Simulation& simulation, const std::string& name, std::string code = {})
     {
         return {};
     }
