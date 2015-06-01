@@ -45,7 +45,7 @@ static void generate_signal(Simulation& simulation, Object& obj, core::units::Du
         return;
 
     // Get grid position
-	core::Vector<unsigned int> coord = pos / step;
+    core::Vector<unsigned int> coord = pos / step;
 
     // TODO: use vector + unique (faster?)
     std::vector<decltype(coord)> coords;
@@ -57,12 +57,12 @@ static void generate_signal(Simulation& simulation, Object& obj, core::units::Du
         coordIt = mapShapeToGrid(coordIt, shape, step, coord, grid.getSize());
     }
 
-	std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-		return lhs < rhs;
-	});
-	coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-		return lhs == rhs;
-	}), coords.end());
+    std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+        return lhs < rhs;
+    });
+    coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+        return lhs == rhs;
+    }), coords.end());
 
     for (const auto& c : coords)
     {
@@ -81,21 +81,21 @@ static void remove_signal(Simulation& simulation, Object& obj, core::units::Dura
     assert(diff);
     auto& grid = diff->getGrid();
 
-	const core::Vector<float> start = simulation.getWorldSize() * -0.5;
+    const core::Vector<float> start = simulation.getWorldSize() * -0.5;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-	if (!pos.inRange(core::Vector<float>{0}, simulation.getWorldSize()))
+    if (!pos.inRange(core::Vector<float>{0}, simulation.getWorldSize()))
         return;
 
     // Get grid position
-	core::Vector<unsigned int> coord = pos / step;
+    core::Vector<unsigned int> coord = pos / step;
 
     // TODO: use vector + unique (faster?)
-	std::vector<decltype(coord)> coords;
+    std::vector<decltype(coord)> coords;
     const auto& shapes = obj.getShapes();
     auto coordIt = std::inserter(coords, coords.end());
 
@@ -104,12 +104,12 @@ static void remove_signal(Simulation& simulation, Object& obj, core::units::Dura
         coordIt = mapShapeToGrid(coordIt, shape, step, coord, grid.getSize());
     }
 
-	std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-		return lhs < rhs;
-	});
-	coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-		return lhs == rhs;
-	}), coords.end());
+    std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+        return lhs < rhs;
+    });
+    coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+        return lhs == rhs;
+    }), coords.end());
 
     for (const auto& c : coords)
     {
@@ -132,43 +132,43 @@ class DiffusionApi : public LibraryApi
 
     Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT override
     {
-        if (name == "diffusion.gen1")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "gen1")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 0);
             };
 
-        if (name == "diffusion.gen2")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "gen2")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 1);
             };
 
-        if (name == "diffusion.gen3")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "gen3")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 2);
             };
 
-        if (name == "diffusion.gen4")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "gen4")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 generate_signal(simulation, obj, dt, 3);
             };
 
-        if (name == "diffusion.rem1")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "rem1")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 0);
             };
 
-        if (name == "diffusion.rem2")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "rem2")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 1);
             };
 
-        if (name == "diffusion.rem3")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "rem3")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 2);
             };
 
-        if (name == "diffusion.rem4")
-			return [&simulation](Object& obj, core::units::Duration dt) {
+        if (name == "rem4")
+            return [&simulation](Object& obj, core::units::Duration dt) {
                 remove_signal(simulation, obj, dt, 3);
             };
 
