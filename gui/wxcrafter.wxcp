@@ -2302,6 +2302,13 @@
                      "m_functionNameAndSignature": "OnCodeUpdateUi(wxUpdateUIEvent& event)",
                      "m_description": "Process a wxEVT_UPDATE_UI event",
                      "m_noBody": false
+                    }, {
+                     "m_eventName": "wxEVT_STC_CHANGE",
+                     "m_eventClass": "wxStyledTextEvent",
+                     "m_eventHandler": "wxStyledTextEventHandler",
+                     "m_functionNameAndSignature": "OnCodeChange(wxStyledTextEvent& event)",
+                     "m_description": "",
+                     "m_noBody": false
                     }],
                    "m_children": []
                   }]

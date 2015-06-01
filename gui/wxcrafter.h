@@ -23,12 +23,6 @@
 #include <wx/stc/stc.h>
 #include <wx/textctrl.h>
 #include <wx/statusbr.h>
-#if wxVERSION_NUMBER >= 2900
-#include <wx/persist.h>
-#include <wx/persist/toplevel.h>
-#include <wx/persist/bookctrl.h>
-#include <wx/persist/treebook.h>
-#endif
 
 class MainFrameBaseClass : public wxFrame
 {
@@ -99,20 +93,9 @@ protected:
     virtual void OnHelpModules(wxCommandEvent& event) { event.Skip(); }
     virtual void OnHelpAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnCodeUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
+    virtual void OnCodeChange(wxStyledTextEvent& event) { event.Skip(); }
 
 public:
-    wxMenuBar* GetMenuBar() { return m_menuBar; }
-    wxToolBar* GetMainToolbar() { return m_mainToolbar; }
-    CanvasWidget* GetGlCanvasView() { return m_glCanvasView; }
-    wxPanel* GetSplitterPageView() { return m_splitterPageView; }
-    wxStyledTextCtrl* GetStcCode() { return m_stcCode; }
-    wxPanel* GetSplitterPageCode() { return m_splitterPageCode; }
-    wxSplitterWindow* GetSplitterTop() { return m_splitterTop; }
-    wxPanel* GetSplitterPageTop() { return m_splitterPageTop; }
-    wxTextCtrl* GetTextCtrlLog() { return m_textCtrlLog; }
-    wxPanel* GetSplitterPageBottom() { return m_splitterPageBottom; }
-    wxSplitterWindow* GetSplitterMain() { return m_splitterMain; }
-    wxStatusBar* GetStatusBar() { return m_statusBar; }
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };

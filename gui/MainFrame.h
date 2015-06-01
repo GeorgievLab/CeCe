@@ -255,6 +255,17 @@ protected:
     void OnLogMessage(wxCommandEvent& event) NOEXCEPT;
 
 
+    /**
+     * @brief Code change event.
+     *
+     * @param event
+     */
+    void OnCodeChange(wxStyledTextEvent& event) override
+    {
+        m_isModified = true;
+    }
+
+
 // Public Operations
 public:
 
@@ -335,6 +346,9 @@ private:
 
     /// Logger.
     Logger m_logger;
+
+    /// If source is modified.
+    bool m_isModified = false;
 };
 
 /* ************************************************************************ */

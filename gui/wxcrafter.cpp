@@ -214,13 +214,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
     // Connect events
     this->Connect(m_menuItemFileNew->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileNew), NULL, this);
     this->Connect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
@@ -246,6 +239,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Connect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
     m_stcCode->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnCodeUpdateUi), NULL, this);
+    m_stcCode->Connect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(MainFrameBaseClass::OnCodeChange), NULL, this);
     
 }
 
@@ -275,5 +269,6 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Disconnect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
     m_stcCode->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnCodeUpdateUi), NULL, this);
+    m_stcCode->Disconnect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(MainFrameBaseClass::OnCodeChange), NULL, this);
     
 }

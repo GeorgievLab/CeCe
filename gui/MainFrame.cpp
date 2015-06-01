@@ -287,9 +287,10 @@ void MainFrame::OnSimulationStart(wxCommandEvent& event)
 {
     // Use current simulation code
     wxASSERT(m_stcCode);
-    if (m_stcCode->IsModified())
+    if (m_stcCode->IsModified() || m_isModified)
     {
         LoadText(m_stcCode->GetText());
+        m_isModified = false;
     }
 
     // Start simulation
