@@ -47,7 +47,10 @@ public:
     bool OnCmdLineParsed(wxCmdLineParser& parser) override
     {
         if (parser.GetParamCount() > 0)
+        {
             m_initFileName = wxFileName::FileName(parser.GetParam(0));
+            m_initFileName.MakeAbsolute();
+        }
 
         return true;
     }
