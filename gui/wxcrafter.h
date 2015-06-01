@@ -23,6 +23,12 @@
 #include <wx/stc/stc.h>
 #include <wx/textctrl.h>
 #include <wx/statusbr.h>
+#include <wx/dialog.h>
+#include <wx/statbmp.h>
+#include <wx/stattext.h>
+#include <wx/hyperlink.h>
+#include <wx/statline.h>
+#include <wx/button.h>
 
 class MainFrameBaseClass : public wxFrame
 {
@@ -98,6 +104,28 @@ protected:
 public:
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
+};
+
+
+class AboutDialogBaseClass : public wxDialog
+{
+protected:
+    wxPanel* m_panelContent;
+    wxStaticBitmap* m_staticBitmapHeader;
+    wxStaticText* m_staticTextAppName;
+    wxStaticText* m_staticTextVersion;
+    wxStaticText* m_staticTextBuild;
+    wxStaticText* m_staticTextCopyright;
+    wxHyperlinkCtrl* m_hyperLinkWeb;
+    wxStaticLine* m_staticLineSeparator;
+    wxStdDialogButtonSizer* m_stdBtnSizerButtons;
+    wxButton* m_buttonOk;
+
+protected:
+
+public:
+    AboutDialogBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,400), long style = wxCAPTION|wxSYSTEM_MENU|wxCLOSE_BOX);
+    virtual ~AboutDialogBaseClass();
 };
 
 #endif

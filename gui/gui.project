@@ -24,6 +24,7 @@
     <File Name="CanvasWidget.cpp"/>
     <File Name="SimulatorThread.cpp"/>
     <File Name="Logger.cpp"/>
+    <File Name="AboutDialog.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="SimulatorThread.hpp"/>
@@ -31,6 +32,7 @@
     <File Name="MainFrame.h"/>
     <File Name="wxcrafter.h"/>
     <File Name="Logger.hpp"/>
+    <File Name="AboutDialog.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>

@@ -272,3 +272,83 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_stcCode->Disconnect(wxEVT_STC_CHANGE, wxStyledTextEventHandler(MainFrameBaseClass::OnCodeChange), NULL, this);
     
 }
+
+AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+    : wxDialog(parent, id, title, pos, size, style)
+{
+    if ( !bBitmapLoaded ) {
+        // We need to initialise the default bitmap handler
+        wxXmlResource::Get()->AddHandler(new wxBitmapXmlHandler);
+        wxC9ED9InitBitmapResources();
+        bBitmapLoaded = true;
+    }
+    
+    wxBoxSizer* boxSizerMain = new wxBoxSizer(wxVERTICAL);
+    this->SetSizer(boxSizerMain);
+    
+    m_panelContent = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_panelContent->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
+    
+    boxSizerMain->Add(m_panelContent, 1, wxEXPAND, 5);
+    
+    wxBoxSizer* boxSizerContent = new wxBoxSizer(wxVERTICAL);
+    m_panelContent->SetSizer(boxSizerContent);
+    
+    m_staticBitmapHeader = new wxStaticBitmap(m_panelContent, wxID_ANY, wxXmlResource::Get()->LoadBitmap(wxT("georgiev-lab_logo")), wxDefaultPosition, wxSize(-1,-1), 0 );
+    
+    boxSizerContent->Add(m_staticBitmapHeader, 1, wxALL|wxEXPAND, 5);
+    
+    wxBoxSizer* boxSizerInfo = new wxBoxSizer(wxVERTICAL);
+    
+    boxSizerContent->Add(boxSizerInfo, 1, wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 10);
+    
+    m_staticTextAppName = new wxStaticText(m_panelContent, wxID_ANY, _("AppName"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_staticTextAppName->SetForegroundColour(wxColour(wxT("rgb(255,0,0)")));
+    
+    boxSizerInfo->Add(m_staticTextAppName, 0, wxLEFT|wxRIGHT|wxTOP, 5);
+    
+    m_staticTextVersion = new wxStaticText(m_panelContent, wxID_ANY, _("Version"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_staticTextVersion->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+    
+    boxSizerInfo->Add(m_staticTextVersion, 0, wxLEFT|wxRIGHT|wxTOP, 5);
+    
+    m_staticTextBuild = new wxStaticText(m_panelContent, wxID_ANY, _("Build"), wxDefaultPosition, wxSize(-1,-1), 0);
+    m_staticTextBuild->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
+    
+    boxSizerInfo->Add(m_staticTextBuild, 0, wxALL, 5);
+    
+    m_staticTextCopyright = new wxStaticText(m_panelContent, wxID_ANY, _("Copyright"), wxDefaultPosition, wxSize(-1,-1), wxFULL_REPAINT_ON_RESIZE);
+    
+    boxSizerInfo->Add(m_staticTextCopyright, 0, wxALL, 5);
+    
+    m_hyperLinkWeb = new wxHyperlinkCtrl(m_panelContent, wxID_ANY, _("ccy.zcu.cz"), wxT("http://ccy.zcu.cz"), wxDefaultPosition, wxSize(-1,-1), wxHL_DEFAULT_STYLE);
+    m_hyperLinkWeb->SetNormalColour(wxColour(wxT("#0000FF")));
+    m_hyperLinkWeb->SetHoverColour(wxColour(wxT("#0000FF")));
+    m_hyperLinkWeb->SetVisitedColour(wxColour(wxT("#FF0000")));
+    
+    boxSizerInfo->Add(m_hyperLinkWeb, 0, 0, 5);
+    
+    m_staticLineSeparator = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxLI_HORIZONTAL);
+    
+    boxSizerMain->Add(m_staticLineSeparator, 0, wxALL|wxEXPAND, 0);
+    
+    m_stdBtnSizerButtons = new wxStdDialogButtonSizer();
+    
+    boxSizerMain->Add(m_stdBtnSizerButtons, 0, wxALL|wxEXPAND, 5);
+    
+    m_buttonOk = new wxButton(this, wxID_OK, wxT(""), wxDefaultPosition, wxSize(-1, -1), 0);
+    m_buttonOk->SetDefault();
+    m_stdBtnSizerButtons->AddButton(m_buttonOk);
+    m_stdBtnSizerButtons->Realize();
+    
+    SetName(wxT("AboutDialogBaseClass"));
+    SetSizeHints(300,400);
+    if ( GetSizer() ) {
+         GetSizer()->Fit(this);
+    }
+    CentreOnParent(wxBOTH);
+}
+
+AboutDialogBaseClass::~AboutDialogBaseClass()
+{
+}

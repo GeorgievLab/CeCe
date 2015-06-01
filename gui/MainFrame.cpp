@@ -1,7 +1,8 @@
+
+// Declaration
 #include "MainFrame.h"
 
 // wxWidgets
-#include <wx/aboutdlg.h>
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 #include <wx/config.h>
@@ -13,6 +14,9 @@
 #include "core/Log.hpp"
 #include "simulator/Library.hpp"
 #include "parser-xml/SimulationFactory.hpp"
+
+// GUI
+#include "AboutDialog.h"
 
 /* ************************************************************************ */
 
@@ -382,14 +386,7 @@ void MainFrame::OnHelpModules(wxCommandEvent& event)
 
 void MainFrame::OnHelpAbout(wxCommandEvent& event)
 {
-    wxUnusedVar(event);
-    wxAboutDialogInfo info;
-    info.SetCopyright(_("2015"));
-    info.SetLicence(_("TBA"));
-    info.SetDescription(_("Cell Simulator"));
-    info.AddDeveloper(wxT("Jiří Fatka"));
-    info.AddDeveloper(wxT("Hynek Kasl"));
-    ::wxAboutBox(info);
+    AboutDialog(this).ShowModal();
 }
 
 /* ************************************************************************ */
