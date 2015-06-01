@@ -160,10 +160,12 @@ public:
     /**
      * @brief Returns mutable stored pointer.
      */
+#ifndef _MSC_VER
     T*& getRef()& NOEXCEPT
     {
         return m_ptr;
     }
+#endif
 
 
 // Private Data Members
