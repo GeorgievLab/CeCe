@@ -14,23 +14,23 @@
 
 // Modules
 #include "../diffusion/Module.hpp"
-#include "../streamlines/Module.hpp"
+#include "../cylinder-streamlines/Module.hpp"
 
 /* ************************************************************************ */
 
-class DiffusionStreamlinesApi : public simulator::LibraryApi
+class DiffusionCylinderStreamlinesApi : public simulator::LibraryApi
 {
     std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
     {
-        return std::unique_ptr<simulator::Module>(new module::diffusion_streamlines::Module{
+        return std::unique_ptr<simulator::Module>(new module::diffusion_cylinder_streamlines::Module{
             simulation.useModule<module::diffusion::Module>("diffusion"),
-            simulation.useModule<module::streamlines::Module>("streamlines")
+            simulation.useModule<module::cylinder_streamlines::Module>("cylinder-streamlines")
         });
     }
 };
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(diffusion_cylinder_streamlines, DiffusionStreamlinesApi)
+DEFINE_LIBRARY(diffusion_cylinder_streamlines, DiffusionCylinderStreamlinesApi)
 
 /* ************************************************************************ */

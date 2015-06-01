@@ -6,12 +6,12 @@
 // Simulator
 #include "simulator/Module.hpp"
 #include "../diffusion/Module.hpp"
-#include "../streamlines/Module.hpp"
+#include "../cylinder-streamlines/Module.hpp"
 
 /* ************************************************************************ */
 
 namespace module {
-namespace diffusion_streamlines {
+namespace diffusion_cylinder_streamlines {
 
 /* ************************************************************************ */
 
@@ -32,65 +32,11 @@ public:
      * @param diffusion
      * @param streamlines
      */
-    Module(diffusion::Module* diffusion, streamlines::Module* streamlines)
+    Module(diffusion::Module* diffusion, cylinder_streamlines::Module* streamlines)
         : m_diffusion(diffusion)
         , m_streamlines(streamlines)
     {
         // Nothing to do
-    }
-
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~Module();
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns diffusion module.
-     *
-     * @return
-     */
-    diffusion::Module& getDiffusion() noexcept
-    {
-        return *m_diffusion;
-    }
-
-
-    /**
-     * @brief Returns diffusion module.
-     *
-     * @return
-     */
-    const diffusion::Module& getDiffusion() const noexcept
-    {
-        return *m_diffusion;
-    }
-
-
-    /**
-     * @brief Returns streamlines module.
-     *
-     * @return
-     */
-    streamlines::Module& getStreamlines() noexcept
-    {
-        return *m_streamlines;
-    }
-
-
-    /**
-     * @brief Returns streamlines module.
-     *
-     * @return
-     */
-    const streamlines::Module& getStreamlines() const noexcept
-    {
-        return *m_streamlines;
     }
 
 
@@ -104,7 +50,7 @@ public:
      * @param dt    Simulation time step.
      * @param simulation
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void update(core::units::Duration dt, simulator::Simulation& simulation) override;
 
 
 #if ENABLE_RENDER
@@ -125,7 +71,7 @@ private:
     diffusion::Module* m_diffusion;
 
     /// Streamlines module.
-    streamlines::Module* m_streamlines;
+    cylinder_streamlines::Module* m_streamlines;
 
 };
 

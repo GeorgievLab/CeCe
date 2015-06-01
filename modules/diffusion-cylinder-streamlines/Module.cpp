@@ -17,20 +17,13 @@
 /* ************************************************************************ */
 
 namespace module {
-namespace diffusion_streamlines {
+namespace diffusion_cylinder_streamlines {
 
 /* ************************************************************************ */
 
-Module::~Module()
+void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
 {
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
-{
-    auto _ = measure_time("diffusion-streamlines", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
+    auto _ = core::measure_time("diffusion-cylinder-streamlines", [&simulation](std::ostream& out, const std::string& name, core::Clock::duration dt) {
         out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     });
 
@@ -51,9 +44,9 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     assert(std::distance(signalGrid.begin(), signalGrid.end()) == std::distance(signalGridNew.begin(), signalGridNew.end()));
 
     // Transform i, j coordinates to position
-    auto getPosition = [&start, &step](const Vector<unsigned int>& pos) {
+    auto getPosition = [&start, &step](const core::Vector<unsigned int>& pos) {
         // Cell center position
-        const Vector<float> coord = Vector<float>(pos) + 0.5f;
+        const auto coord = core::Vector<float>(pos) + 0.5f;
         // Real position
         return start + step * coord;
     };
@@ -62,7 +55,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     {
         for (decltype(signalGrid.getSize().getWidth()) i = 0; i < signalGrid.getSize().getWidth(); ++i)
         {
-            const Vector<unsigned> ij(i, j);
+            const core::Vector<unsigned> ij(i, j);
 
             auto& signal = signalGrid[ij];
 
@@ -75,16 +68,16 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             auto& velocity = velocityGrid[ij];
 
             // Calculate coordinate change
-            Vector<float> dij = velocity * dt * m_streamlines->getFlowSpeed() / step;
+            core::Vector<float> dij = velocity * dt * m_streamlines->getFlowSpeed() / step;
             dij.x() = std::abs(dij.getX());
             dij.y() = std::abs(dij.getY());
 
-            Matrix<float, 2> tmp;
+            core::Matrix<float, 2> tmp;
             int offset = 0;
 
             if (velocity.getY() < 0)
             {
-                tmp = Matrix<float, 2>{{
+                tmp = core::Matrix<float, 2>{{
                     {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() },
                     {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())}
                 }};
@@ -92,7 +85,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             }
             else
             {
-                tmp = Matrix<float, 2>{{
+                tmp = core::Matrix<float, 2>{{
                     {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())},
                     {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() }
                 }};
@@ -104,7 +97,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             {
                 for (unsigned b = 0; b < 2; ++b)
                 {
-                    Vector<int> ab(
+                    core::Vector<int> ab(
                         ij.getX() + b,
                         ij.getY() - offset + a
                     );
