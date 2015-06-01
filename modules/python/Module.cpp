@@ -90,7 +90,7 @@ void Module::configure(const simulator::ConfigurationBase& config)
         return;
 
     // Call configure
-    if (!call(m_configureFn, config))
+    if (!call(m_configureFn, &config))
         throw Exception();
 }
 
@@ -102,7 +102,7 @@ void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
         return;
 
     // Call update
-    if (!call(m_updateFn, dt, simulation))
+    if (!call(m_updateFn, dt, &simulation))
         throw Exception();
 }
 
@@ -115,7 +115,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         return;
 
     // Call draw
-    if (!call(m_drawFn, context, simulation))
+    if (!call(m_drawFn, &context, &simulation))
         throw Exception();
 }
 #endif

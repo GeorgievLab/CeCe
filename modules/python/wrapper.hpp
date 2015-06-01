@@ -26,7 +26,7 @@ template<typename T>
 struct ObjectWrapper
 {
     PyObject_HEAD
-    T* ptr;
+    T value;
 };
 
 /* ************************************************************************ */
@@ -96,13 +96,13 @@ struct TypeDefinition
 
 
     /**
-     * @brief Wrap pointer.
+     * @brief Wrap value.
      */
-    static Handle<PyObject> wrap(T* ptr) NOEXCEPT
+    static Handle<PyObject> wrap(T value) NOEXCEPT
     {
         // Create new object
         auto obj = PyObject_New(ObjectWrapper<T>, &definition);
-        obj->ptr = ptr;
+        obj->value = std::move(value);
 
         return Handle<PyObject>(reinterpret_cast<PyObject*>(obj));
     }

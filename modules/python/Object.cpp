@@ -91,7 +91,7 @@ void Object::configure(const simulator::ConfigurationBase& config, simulator::Si
         return;
 
     // Call configure
-    if (!call(m_configureFn, config))
+    if (!call(m_configureFn, static_cast<simulator::Object*>(this), &config))
         throw Exception();
 }
 
@@ -103,7 +103,7 @@ void Object::update(core::units::Duration dt)
         return;
 
     // Call update
-    if (!call(m_updateFn, dt))
+    if (!call(m_updateFn, static_cast<simulator::Object*>(this), dt))
         throw Exception();
 }
 
@@ -116,7 +116,7 @@ void Object::draw(render::Context& context)
         return;
 
     // Call draw
-    if (!call(m_drawFn, context))
+    if (!call(m_drawFn, static_cast<simulator::Object*>(this), &context))
         throw Exception();
 }
 #endif

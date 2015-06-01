@@ -33,7 +33,7 @@ void Program::operator()(simulator::Object& object, core::units::Duration dt) co
         return;
 
     // Call function
-    if (!call(m_call, object, dt))
+    if (!call(m_call, &object, dt))
         throw Exception();
 }
 

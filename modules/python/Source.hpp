@@ -28,6 +28,16 @@ namespace python {
 class Source
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    Source();
+
+
 // Public Accessors
 public:
 
@@ -39,28 +49,8 @@ public:
      */
     bool isInitialized() const NOEXCEPT
     {
-        return m_module;
+        return m_initialized;
     }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Initialize from source.
-     *
-     * @param source Source code.
-     */
-    void initSource(const std::string& source);
-
-
-    /**
-     * @brief Initialize from file.
-     *
-     * @param filename Path to source file.
-     */
-    void initFile(const std::string& filename);
 
 
 // Public Accessors
@@ -90,12 +80,31 @@ public:
     }
 
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Initialize from source.
+     *
+     * @param source Source code.
+     */
+    void initSource(const std::string& source);
+
+
+    /**
+     * @brief Initialize from file.
+     *
+     * @param filename Path to source file.
+     */
+    void initFile(const std::string& filename);
+
+
 // Private Data Members
 private:
 
-
-    /// Main module.
-    Handle<PyObject> m_module;
+    /// If source is initialized.
+    bool m_initialized = false;
 
     /// Main module dictionary.
     Handle<PyObject> m_dictionary;

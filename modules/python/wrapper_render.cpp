@@ -32,13 +32,13 @@ static void python_wrapper_render_Color(PyObject* module)
 
 /* ************************************************************************ */
 
-static PyObject* Context_matrixPush(ObjectWrapper<render::Context>* self)
+static PyObject* Context_matrixPush(ObjectWrapper<render::Context*>* self)
 {
     assert(self);
-    assert(self->ptr);
+    assert(self->value);
 
     // Get value
-    self->ptr->matrixPush();
+    self->value->matrixPush();
 
     // Return value
     return Py_BuildValue("");
@@ -46,13 +46,13 @@ static PyObject* Context_matrixPush(ObjectWrapper<render::Context>* self)
 
 /* ************************************************************************ */
 
-static PyObject* Context_matrixPop(ObjectWrapper<render::Context>* self)
+static PyObject* Context_matrixPop(ObjectWrapper<render::Context*>* self)
 {
     assert(self);
-    assert(self->ptr);
+    assert(self->value);
 
     // Get value
-    self->ptr->matrixPop();
+    self->value->matrixPop();
 
     // Return value
     return Py_BuildValue("");
@@ -60,13 +60,13 @@ static PyObject* Context_matrixPop(ObjectWrapper<render::Context>* self)
 
 /* ************************************************************************ */
 
-static PyObject* Context_matrixIdentity(ObjectWrapper<render::Context>* self)
+static PyObject* Context_matrixIdentity(ObjectWrapper<render::Context*>* self)
 {
     assert(self);
-    assert(self->ptr);
+    assert(self->value);
 
     // Get value
-    self->ptr->matrixIdentity();
+    self->value->matrixIdentity();
 
     // Return value
     return Py_BuildValue("");
@@ -86,12 +86,14 @@ static PyMethodDef g_contextMethods[] = {
 static void python_wrapper_render_Context(PyObject* module)
 {
 #if ENABLE_RENDER
-    TypeDefinition<render::Context>::init("render.Context");
-    TypeDefinition<render::Context>::definition.tp_methods = g_contextMethods;
-    TypeDefinition<render::Context>::ready();
+    using type_def = TypeDefinition<render::Context*>;
 
-    Py_INCREF(&TypeDefinition<render::Context>::definition);
-    PyModule_AddObject(module, "Context", reinterpret_cast<PyObject*>(&TypeDefinition<render::Context>::definition));
+    type_def::init("render.Context");
+    type_def::definition.tp_methods = g_contextMethods;
+    type_def::ready();
+
+    Py_INCREF(&type_def::definition);
+    PyModule_AddObject(module, "Context", reinterpret_cast<PyObject*>(&type_def::definition));
 #endif
 }
 

@@ -2,6 +2,9 @@
 // Declaration
 #include "Source.hpp"
 
+// C++
+#include <stdexcept>
+
 // Module
 #include "Exception.hpp"
 
@@ -9,6 +12,14 @@
 
 namespace module {
 namespace python {
+
+/* ************************************************************************ */
+
+Source::Source()
+    : m_dictionary(PyDict_New())
+{
+    // Nothing to do
+}
 
 /* ************************************************************************ */
 
@@ -25,12 +36,6 @@ Handle<PyObject> Source::getFunction(const char* name) const NOEXCEPT
 
 void Source::initSource(const std::string& source)
 {
-    // Import module
-    m_module = PyImport_ImportModule("__main__");
-
-    // Get dictionary with list of objects
-    m_dictionary = PyObject_GetAttrString(m_module.get(), "__dict__");
-
     makeHandle(PyImport_ImportModule("cppout"));
     makeHandle(PyImport_ImportModule("core"));
     makeHandle(PyImport_ImportModule("render"));
@@ -39,23 +44,21 @@ void Source::initSource(const std::string& source)
     // Execute given module file
     if (!makeHandle(PyRun_String(source.c_str(), Py_file_input, m_dictionary.get(), nullptr)))
         throw Exception();
+
+    m_initialized = true;
 }
 
 /* ************************************************************************ */
 
 void Source::initFile(const std::string& filename)
 {
-    // Import module
-    m_module = PyImport_ImportModule("__main__");
-
-    // Get dictionary with list of objects
-    m_dictionary = PyObject_GetAttrString(m_module, "__dict__");
-
     makeHandle(PyImport_ImportModule("cppout"));
 
     // Execute given module file
     if (!makeHandle(PyRun_FileEx(fopen(filename.c_str(), "r"), filename.c_str(), Py_file_input, m_dictionary, nullptr, 1)))
         throw Exception();
+
+    m_initialized = true;
 }
 
 /* ************************************************************************ */

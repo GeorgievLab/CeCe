@@ -106,6 +106,26 @@ Handle<PyObject> makeObject(Handle<PyObject>&& value) NOEXCEPT
 /* ************************************************************************ */
 
 /**
+ * @brief Create object from value.
+ *
+ * @param value
+ *
+ * @return
+ */
+template<
+    typename T,
+    typename std::enable_if<!std::is_scalar<typename std::remove_reference<T>::type>::value>::type* = nullptr
+>
+Handle<PyObject> makeObject(T value) NOEXCEPT
+{
+    using TC = typename std::remove_const<T>::type;
+    assert(TypeDefinition<TC>::definition.tp_name);
+    return TypeDefinition<TC>::wrap(value);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Create object from pointer.
  *
  * @param value
@@ -115,43 +135,9 @@ Handle<PyObject> makeObject(Handle<PyObject>&& value) NOEXCEPT
 template<typename T>
 Handle<PyObject> makeObject(T* value) NOEXCEPT
 {
-    return TypeDefinition<T>::wrap(value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from reference.
- *
- * @param value
- *
- * @return
- */
-template<
-    typename T,
-    typename std::enable_if<std::is_class<T>::value>::type* = nullptr
->
-Handle<PyObject> makeObject(T& value) NOEXCEPT
-{
-    return makeObject((T*) &value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from const reference.
- *
- * @param value
- *
- * @return
- */
-template<
-    typename T,
-    typename std::enable_if<std::is_class<T>::value>::type* = nullptr
->
-Handle<PyObject> makeObject(const T& value) NOEXCEPT
-{
-    return makeObject((T*) const_cast<T*>(&value));
+    using TC = typename std::remove_const<T>::type*;
+    assert(TypeDefinition<TC>::definition.tp_name);
+    return TypeDefinition<TC>::wrap(const_cast<TC>(value));
 }
 
 /* ************************************************************************ */
