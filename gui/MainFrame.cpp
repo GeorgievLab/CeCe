@@ -139,7 +139,7 @@ MainFrame::~MainFrame()
     // Store configuration
     StoreConfig();
 
-	core::Log::setOutput(&std::cout);
+    core::Log::setOutput(&std::cout);
     core::Log::setError(&std::cerr);
 }
 
@@ -471,21 +471,6 @@ void MainFrame::LoadConfig()
 {
     wxConfigBase* config = wxConfig::Get();
 
-    bool maximized = false;
-    if (config->Read("maximized", &maximized))
-        Maximize(maximized);
-
-    if (!maximized)
-    {
-        wxSize size;
-        if (config->Read("size", &size))
-            SetSize(size);
-
-        wxPoint point;
-        if (config->Read("position", &point))
-            SetPosition(point);
-    }
-
     m_fileHistory.Load(*config);
 
     // Get sash positions
@@ -509,14 +494,6 @@ void MainFrame::LoadConfig()
 void MainFrame::StoreConfig()
 {
     wxConfigBase* config = wxConfig::Get();
-
-    config->Write("maximized", IsMaximized());
-
-    if (!IsMaximized())
-    {
-        config->Write("size", GetSize());
-        config->Write("position", GetPosition());
-    }
 
     m_fileHistory.Save(*config);
 
