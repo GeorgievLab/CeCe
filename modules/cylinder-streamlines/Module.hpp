@@ -6,6 +6,7 @@
 // Simulator
 #include "core/Units.hpp"
 #include "core/Grid.hpp"
+#include "core/compatibility.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 
@@ -48,7 +49,7 @@ public:
      *
      * @return
      */
-    GridType& getGrid() noexcept
+    GridType& getGrid() NOEXCEPT
     {
         return m_grid;
     }
@@ -59,7 +60,7 @@ public:
      *
      * @return
      */
-    const GridType& getGrid() const noexcept
+    const GridType& getGrid() const NOEXCEPT
     {
         return m_grid;
     }
@@ -70,7 +71,7 @@ public:
      *
      * @return
      */
-    float getFlowSpeed() const noexcept
+    float getFlowSpeed() const NOEXCEPT
     {
         return m_flowSpeed;
     }
@@ -83,7 +84,7 @@ public:
     /**
      * @brief Mark state to be updated.
      */
-    void markUpdate() noexcept
+    void markUpdate() NOEXCEPT
     {
         m_update = true;
     }
@@ -94,7 +95,7 @@ public:
      *
      * @param speed.
      */
-    void setFlowSpeed(float speed) noexcept
+    void setFlowSpeed(float speed) NOEXCEPT
     {
         m_flowSpeed = speed;
     }
