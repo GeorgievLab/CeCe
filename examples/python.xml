@@ -1,5 +1,4 @@
-<simulation world-size="100um 100um" dt="auto" iterations="10000">
-	<module name="python:example.py" />
+<simulation world-size="100um 100um" iterations="10000">
 	<module name="python:pdt" color="red">
 <![CDATA[
 def configure(config):
