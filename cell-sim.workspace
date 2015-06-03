@@ -7,7 +7,6 @@
   <Project Name="cli" Path="cli/cli.project" Active="No"/>
   <Project Name="parser" Path="parser/parser.project" Active="No"/>
   <Project Name="diffusion" Path="modules/diffusion/diffusion.project" Active="No"/>
-  <Project Name="diffusion-streamlines" Path="modules/diffusion-streamlines/diffusion-streamlines.project" Active="No"/>
   <Project Name="cell" Path="modules/cell/cell.project" Active="No"/>
   <Environment>
     <![CDATA[]]>
