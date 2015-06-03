@@ -37,7 +37,7 @@ public:
      */
     struct Message
     {
-        enum Code { NONE, LOAD, START, STEP, STOP };
+        enum Code { NONE, NEW, LOAD, START, STEP, STOP };
 
         Message() = default;
         Message(Code code) : code(code) {}
@@ -128,6 +128,12 @@ public:
 
 
     /**
+     * @brief Send new simulation message.
+     */
+    void SendNew() NOEXCEPT;
+
+
+    /**
      * @brief Send start message.
      */
     void SendStart() NOEXCEPT;
@@ -164,6 +170,12 @@ protected:
 
 
     /**
+     * @brief Perform simulation deleting.
+     */
+    void DoNew() NOEXCEPT;
+
+
+    /**
      * @brief Perform simulation start.
      */
     void DoStart() NOEXCEPT;
@@ -187,6 +199,14 @@ protected:
      * @param code Source code.
      */
     void DoLoad(const wxString& code) NOEXCEPT;
+
+
+    /**
+     * @brief Send error message.
+     *
+     * @param msg Error message.
+     */
+    void SendError(const wxString& msg) NOEXCEPT;
 
 
 // Private Data Members

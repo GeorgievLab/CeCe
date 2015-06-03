@@ -151,6 +151,8 @@ void MainFrame::OnFileNew(wxCommandEvent& event)
     StoreCurrentFileToHistory();
 
     m_fileName.Clear();
+    m_stcCode->ClearAll();
+    m_simulatorThread.SendNew();
 }
 
 /* ************************************************************************ */
@@ -384,14 +386,14 @@ void MainFrame::OnHelpAbout(wxCommandEvent& event)
 
 void MainFrame::OnSimulationRunningUpdateUi(wxUpdateUIEvent& event)
 {
-    event.Enable(m_simulatorThread.GetSimulation() && m_simulatorThread.isRunning());
+    event.Enable(m_simulatorThread.isRunning());
 }
 
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event)
 {
-    event.Enable(m_simulatorThread.GetSimulation() && !m_simulatorThread.isRunning());
+    event.Enable(!m_simulatorThread.isRunning());
 }
 
 /* ************************************************************************ */
