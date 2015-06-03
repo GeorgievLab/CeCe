@@ -271,6 +271,12 @@ public:
 
 
     /**
+     * @brief Initialize code viewer.
+     */
+    void InitCodeViewer() NOEXCEPT;
+
+
+    /**
      * @brief Load file and create world.
      *
      * @param path Path to file.

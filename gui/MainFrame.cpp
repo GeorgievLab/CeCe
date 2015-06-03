@@ -21,69 +21,6 @@
 
 /* ************************************************************************ */
 
-/**
- * @brief Converts string into wxPoint.
- *
- * @param str   Source string.
- * @param point Result point.
- *
- * @return If conversion was successful.
- */
-inline bool wxFromString(const wxString& str, wxPoint*& point)
-{
-    return sscanf(str.c_str(), "%d:%d", &(point->x), &(point->y)) == 2;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Converts string into wxSize.
- *
- * @param str  Source string.
- * @param size Result size.
- *
- * @return If conversion was successful.
- */
-inline bool wxFromString(const wxString& str, wxSize*& size)
-{
-    int width, height;
-    if (sscanf(str.c_str(), "%d:%d", &width, &height) != 2)
-        return false;
-
-    size->Set(width, height);
-    return true;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Converts wxPoint into string.
- *
- * @param point Source point.
- *
- * @return Result string.
- */
-inline wxString wxToString(const wxPoint& point)
-{
-    return wxString::Format("%d:%d", point.x, point.y);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Converts wxSize into string.
- *
- * @param size Source size.
- *
- * @return Result string.
- */
-inline wxString wxToString(const wxSize& size)
-{
-    return wxString::Format("%d:%d", size.GetWidth(), size.GetHeight());
-}
-
-/* ************************************************************************ */
-
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
     , m_simulatorThread(m_glCanvasView, new parser::xml::SimulationFactory())
@@ -108,25 +45,16 @@ MainFrame::MainFrame(wxWindow* parent)
     Bind(REPORT_FPS, &MainFrame::OnRenderTime, this);
     Bind(EVT_LOG, &MainFrame::OnLogMessage, this);
 
-    // Load configuration
-    LoadConfig();
+    // Initialize subwindows
+    InitCodeViewer();
 
     {
         int widths[] = {-1, 150};
         m_statusBar->SetStatusWidths(sizeof(widths) / sizeof(widths[0]), widths);
     }
 
-    wxFont font = m_stcCode->GetFont();
-    font.SetFamily(wxFONTFAMILY_TELETYPE);
-    m_stcCode->StyleSetForeground(wxSTC_H_DOUBLESTRING,     wxColour(255,0,0));
-    m_stcCode->StyleSetForeground(wxSTC_H_SINGLESTRING,     wxColour(255,0,0));
-    m_stcCode->StyleSetForeground(wxSTC_H_ENTITY,           wxColour(255,0,0));
-    m_stcCode->StyleSetForeground(wxSTC_H_TAG,              wxColour(0,150,0));
-    m_stcCode->StyleSetForeground(wxSTC_H_TAGUNKNOWN,       wxColour(0,150,0));
-    m_stcCode->StyleSetForeground(wxSTC_H_ATTRIBUTE,        wxColour(0,0,150));
-    m_stcCode->StyleSetForeground(wxSTC_H_ATTRIBUTEUNKNOWN, wxColour(0,0,150));
-    m_stcCode->StyleSetForeground(wxSTC_H_COMMENT,          wxColour(150,150,150));
-
+    // Load configuration
+    LoadConfig();
 }
 
 /* ************************************************************************ */
@@ -287,7 +215,6 @@ void MainFrame::OnViewLogChecked(wxUpdateUIEvent& event)
     event.Check(m_splitterMain->IsSplit());
 }
 
-
 /* ************************************************************************ */
 
 void MainFrame::OnSimulationStart(wxCommandEvent& event)
@@ -322,10 +249,13 @@ void MainFrame::OnSimulationStep(wxCommandEvent& event)
 
 void MainFrame::OnSimulationRestart(wxCommandEvent& event)
 {
+    // Create simulation from updated code
     wxASSERT(m_stcCode);
+    m_simulatorThread.SendLoad(m_stcCode->GetText());
 
-    // Reload source
-    LoadText(m_stcCode->GetText());
+    // Clear output log
+    wxASSERT(m_textCtrlLog);
+    m_textCtrlLog->Clear();
 }
 
 /* ************************************************************************ */
@@ -338,12 +268,36 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
         return;
     }
 
+    // "BMP files (*.bmp)|*.bmp|GIF files (*.gif)|*.gif"
+    wxString wildcard;
+
+    for (const auto& obj : wxImage::GetHandlers())
+    {
+        auto handler = wxDynamicCast(obj, wxImageHandler);
+        wildcard << handler->GetName() <<  " "
+            "(*." << handler->GetExtension();
+
+        for (const auto& ext : handler->GetAltExtensions())
+            wildcard << ", *." << ext;
+
+        wildcard << ")|"
+            "*." << handler->GetExtension();
+
+        for (const auto& ext : handler->GetAltExtensions())
+            wildcard << ";*." << ext;
+
+        wildcard << "|";
+    }
+
+    // Remove last |
+    wildcard.RemoveLast();
+
     const wxString selection = wxFileSelector(
         wxFileSelectorPromptStr,
         wxEmptyString,
         "screenshot.png",
         wxEmptyString,
-        "PNG (*.png)|*.png",
+        wildcard, //"PNG (*.png)|*.png",
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT
     );
 
@@ -423,7 +377,25 @@ void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
 void MainFrame::OnLogMessage(wxCommandEvent& event) NOEXCEPT
 {
     // Append text
+    wxASSERT(m_textCtrlLog);
     m_textCtrlLog->AppendText(event.GetString());
+}
+
+/* ************************************************************************ */
+
+void MainFrame::InitCodeViewer() NOEXCEPT
+{
+    wxASSERT(m_stcCode);
+    wxFont font = m_stcCode->GetFont();
+    font.SetFamily(wxFONTFAMILY_TELETYPE);
+    m_stcCode->StyleSetForeground(wxSTC_H_DOUBLESTRING,     wxColour(255,0,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_SINGLESTRING,     wxColour(255,0,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_ENTITY,           wxColour(255,0,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_TAG,              wxColour(0,150,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_TAGUNKNOWN,       wxColour(0,150,0));
+    m_stcCode->StyleSetForeground(wxSTC_H_ATTRIBUTE,        wxColour(0,0,150));
+    m_stcCode->StyleSetForeground(wxSTC_H_ATTRIBUTEUNKNOWN, wxColour(0,0,150));
+    m_stcCode->StyleSetForeground(wxSTC_H_COMMENT,          wxColour(150,150,150));
 }
 
 /* ************************************************************************ */
@@ -448,22 +420,24 @@ void MainFrame::LoadFile(const wxFileName& path)
     wxStringOutputStream text;
     input.Read(text);
 
-    wxString code = text.GetString();
-
     // Load source code to simulator
-    LoadText(code);
-
-    // Load text to editor
-    m_stcCode->SetText(code);
-    m_stcCode->SetModified(false);
+    LoadText(text.GetString());
 }
 
 /* ************************************************************************ */
 
 void MainFrame::LoadText(const wxString& code)
 {
-    // Update world
+    // Load text to editor
+    wxASSERT(m_stcCode);
+    m_stcCode->SetText(code);
+    m_stcCode->SetModified(false);
+
+    // Create simulation from updated code
     m_simulatorThread.SendLoad(code);
+
+    // Clear output log
+    wxASSERT(m_textCtrlLog);
     m_textCtrlLog->Clear();
 }
 
