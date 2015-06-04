@@ -12,6 +12,7 @@
 #include "core/Grid.hpp"
 #include "render/Buffer.hpp"
 #include "render/Color.hpp"
+#include "render/Texture.hpp"
 #include "render/GridBase.hpp"
 
 /* ************************************************************************ */
@@ -160,9 +161,10 @@ public:
     /**
      * @brief Resize grid.
      *
-     * @param size
+     * @param size  New grid size.
+     * @param color Background color.
      */
-    void resize(core::Vector<PositionType> size);
+    void resize(core::Vector<PositionType> size, const Color& color = colors::BLACK);
 
 
     /**
@@ -183,7 +185,7 @@ public:
 private:
 
     /// Texture.
-    unsigned int m_texture;
+    Texture m_texture;
 
     /// Buffer for texture rendering.
     Buffer m_buffer;
