@@ -11,7 +11,7 @@
 #if ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/Object.hpp"
-#include "SignalGridDrawable.hpp"
+#include "render/GridColorSmooth.hpp"
 #endif
 
 // Module
@@ -164,6 +164,14 @@ public:
 #endif
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Update drawable.
+     */
+    void updateDrawable();
+#endif
+
+
 // Private Data Members
 private:
 
@@ -184,8 +192,8 @@ private:
 	std::vector<render::Color> m_colors;
 
 #if ENABLE_RENDER
-    /// Drawable signal grid
-    render::ObjectPtr<SignalGridDrawable> m_drawable;
+    /// Drawable signal grid.
+    render::ObjectPtr<render::GridColorSmooth> m_drawable;
 #endif
 
 };

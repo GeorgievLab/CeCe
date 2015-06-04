@@ -42,17 +42,17 @@ Module::~Module()
 
 void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
 {
-	auto _ = core::measure_time("diffusion", [&simulation](std::ostream& out, const std::string& name, core::Clock::duration dt) {
+    auto _ = core::measure_time("diffusion", [&simulation](std::ostream& out, const std::string& name, core::Clock::duration dt) {
         out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     });
 
     // Size of mapping matrix
 #if _MSC_VER
-	const unsigned OFFSET = 1;
-	const unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+    const unsigned OFFSET = 1;
+    const unsigned MATRIX_SIZE = 2 * OFFSET + 1;
 #else
-    CONSTEXPR unsigned OFFSET = 1;
-    CONSTEXPR unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+    CONSTEXPR_CONST unsigned OFFSET = 1;
+    CONSTEXPR_CONST unsigned MATRIX_SIZE = 2 * OFFSET + 1;
 #endif
 
     // Precompute values
@@ -196,20 +196,45 @@ void Module::configure(const simulator::ConfigurationBase& config, simulator::Si
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
     if (!m_drawable)
-        m_drawable.create(context, m_grid.getSize(), m_grid.getData());
-    else
-        m_drawable->update(m_grid.getData());
+        m_drawable.create(context, m_grid.getSize());
 
-    // TODO: optimize
-    m_drawable->setBackground(m_background);
+    updateDrawable();
 
-    for (unsigned int i = 0; i < Signal::COUNT; ++i)
-        m_drawable->setColor(i, m_colors[i]);
-
-	context.matrixPush();
-	context.matrixScale(simulation.getWorldSize());
+    context.matrixPush();
+    context.matrixScale(simulation.getWorldSize());
     m_drawable->draw(context);
-	context.matrixPop();
+    context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#if ENABLE_RENDER
+void Module::updateDrawable()
+{
+    assert(m_grid.getSize() == m_drawable->getSize());
+
+    const auto size = m_grid.getSize();
+
+    for (unsigned int y = 0u; y < size.getHeight(); ++y)
+    {
+        for (unsigned int x = 0u; x < size.getWidth(); ++x)
+        {
+            const auto& signal = m_grid[{x, y}];
+            auto pixel = m_drawable->get({x, y});
+            // Clear pixel
+            pixel = m_background;
+
+            // Mixup signal colors
+            for (unsigned int i = 0; i < Signal::COUNT; ++i)
+            {
+                pixel *= (1 - signal[i]);
+                pixel += m_colors[i % m_colors.size()] * signal[i];
+            }
+
+            m_drawable->set({x, y}, pixel);
+        }
+    }
 }
 #endif
 

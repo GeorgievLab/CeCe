@@ -19,7 +19,6 @@
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
     <File Name="Generator.cpp"/>
-    <File Name="SignalGridDrawable.cpp"/>
     <File Name="Library.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
@@ -27,7 +26,6 @@
     <File Name="Signal.hpp"/>
     <File Name="Generator.hpp"/>
     <File Name="SignalGrid.hpp"/>
-    <File Name="SignalGridDrawable.hpp"/>
     <File Name="Library.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">

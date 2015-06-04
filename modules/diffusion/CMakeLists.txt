@@ -16,8 +16,6 @@ set(SRCS
     Generator.hpp
     Generator.cpp
     SignalGrid.hpp
-    SignalGridDrawable.hpp
-    SignalGridDrawable.cpp
 )
 
 # Build static / dynamic
