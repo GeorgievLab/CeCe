@@ -19,15 +19,14 @@ endif ()
 
 # Create library
 add_library(${PROJECT_NAME} OBJECT
-	compatibility.hpp
+    compatibility.hpp
     constants.hpp
-    args.hpp
-    args.cpp
+    DynamicArray.hpp
     Matrix.hpp
     Units.hpp
     Vector.hpp
     Vector.cpp
-	VectorUnits.hpp
+    VectorUnits.hpp
     Grid.hpp
     Grid.cpp
     AlignedAllocator.hpp

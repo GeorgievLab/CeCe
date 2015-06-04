@@ -1,8 +1,10 @@
 
+#pragma once
+
 /* ************************************************************************ */
 
-// Declaration
-#include "core/args.hpp"
+// C++
+#include <vector>
 
 /* ************************************************************************ */
 
@@ -10,7 +12,14 @@ namespace core {
 
 /* ************************************************************************ */
 
-std::vector<std::string> args;
+/**
+ * @brief Dynamic array.
+ *
+ * @tparam T
+ * @tparam Allocator
+ */
+template<typename T, class Allocator = std::allocator<T>>
+using DynamicArray = std::vector<T, Allocator>;
 
 /* ************************************************************************ */
 

@@ -8,6 +8,7 @@
 
 // Simulator
 #include "core/Vector.hpp"
+#include "core/DynamicArray.hpp"
 #include "core/AlignedAllocator.hpp"
 
 /* ************************************************************************ */
@@ -55,7 +56,7 @@ public:
     /**
      * @brief Container type.
      */
-    using ContainerType = std::vector<ValueType, AllocatorType>;
+    using ContainerType = DynamicArray<ValueType, AllocatorType>;
 
 
     /**
