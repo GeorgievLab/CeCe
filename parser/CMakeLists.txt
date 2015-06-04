@@ -11,7 +11,7 @@ if (UNIX)
     add_compile_options(-fPIC)
 endif ()
 
-if (NOT ENABLE_SIMULATOR_STATIC)
+if (WIN32)
     add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()
 

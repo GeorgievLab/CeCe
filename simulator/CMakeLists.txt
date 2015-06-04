@@ -6,8 +6,6 @@ set(PROJECT_NAME simulator)
 # Create project
 project(${PROJECT_NAME} CXX)
 
-option(ENABLE_SIMULATOR_STATIC "Enable or disable static build of the simulator library. Static build doen't support dynamic modules." Off)
-
 # Sources
 set(SRCS
     Object.hpp
@@ -56,25 +54,16 @@ endforeach ()
 # Pass build-in libraries list
 add_definitions(-DBUILDIN_LIBRARIES=${BUILDIN_LIBRARIES})
 
-if (NOT ENABLE_SIMULATOR_STATIC)
+if (WIN32)
     add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()
 
-if (ENABLE_SIMULATOR_STATIC)
-    message("-- Build simulator library as static")
+message("-- Build simulator library as shared")
 
-    # Create library
-    add_library(${PROJECT_NAME}
-        ${SRCS}
-    )
-else ()
-    message("-- Build simulator library as shared")
-
-    # Create library
-    add_library(${PROJECT_NAME} SHARED
-        ${SRCS}
-    )
-endif ()
+# Create library
+add_library(${PROJECT_NAME} SHARED
+    ${SRCS}
+)
 
 if (ENABLE_BUILDIN_PHYSICS)
     # Add dependency
@@ -109,7 +98,7 @@ endif ()
 
 # Install
 install(TARGETS ${PROJECT_NAME}
-	ARCHIVE DESTINATION lib
+    ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
 )
 
