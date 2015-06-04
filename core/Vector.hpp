@@ -16,7 +16,9 @@
 
 /* ************************************************************************ */
 
-namespace core {
+#ifndef _MSC_VER
+inline namespace core {
+#endif
 
 /* ************************************************************************ */
 
@@ -469,7 +471,9 @@ private:
 
 /* ************************************************************************ */
 
+#ifndef _MSC_VER
 }
+#endif
 
 /* ************************************************************************ */
 
@@ -482,9 +486,9 @@ private:
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator+(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return core::Vector<CT>(lhs) + core::Vector<CT>(rhs);
+    return Vector<CT>(lhs) + Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -498,9 +502,9 @@ inline core::Vector<CT> operator+(const core::Vector<T1>& lhs, const core::Vecto
  * @return New vector.
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator+(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<CT> operator+(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator+(lhs, core::Vector<T2>(rhs));
+	return operator+(lhs, Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -514,9 +518,9 @@ inline core::Vector<CT> operator+(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator+(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator+(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator+(core::Vector<T1>(lhs), rhs);
+	return operator+(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -530,9 +534,9 @@ inline core::Vector<CT> operator+(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator-(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return core::Vector<CT>(lhs) - core::Vector<CT>(rhs);
+	return Vector<CT>(lhs) - Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -546,9 +550,9 @@ inline core::Vector<CT> operator-(const core::Vector<T1>& lhs, const core::Vecto
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator-(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<CT> operator-(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator-(lhs, core::Vector<T2>(rhs));
+	return operator-(lhs, Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -562,9 +566,9 @@ inline core::Vector<CT> operator-(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator-(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator-(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator-(core::Vector<T1>(lhs), rhs);
+	return operator-(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -578,9 +582,9 @@ inline core::Vector<CT> operator-(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator*(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return core::Vector<CT>(lhs) * core::Vector<CT>(rhs);
+	return Vector<CT>(lhs) * Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -594,9 +598,9 @@ inline core::Vector<CT> operator*(const core::Vector<T1>& lhs, const core::Vecto
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator*(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<CT> operator*(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator*(lhs, core::Vector<T2>(rhs));
+	return operator*(lhs, Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -610,9 +614,9 @@ inline core::Vector<CT> operator*(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator*(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator*(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator*(core::Vector<T1>(lhs), rhs);
+	return operator*(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -626,9 +630,9 @@ inline core::Vector<CT> operator*(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator/(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return core::Vector<CT>(lhs) / core::Vector<CT>(rhs);
+	return Vector<CT>(lhs) / Vector<CT>(rhs);
 }
 
 /* ************************************************************************ */
@@ -642,9 +646,9 @@ inline core::Vector<CT> operator/(const core::Vector<T1>& lhs, const core::Vecto
  * @return New vector
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator/(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<CT> operator/(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator/(lhs, core::Vector<T2>(rhs));
+	return operator/(lhs, Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -658,9 +662,9 @@ inline core::Vector<CT> operator/(const core::Vector<T1>& lhs, T2 rhs) NOEXCEPT
  * @return New vector.
  */
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline core::Vector<CT> operator/(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline Vector<CT> operator/(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator/(core::Vector<T1>(lhs), rhs);
+	return operator/(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -674,7 +678,7 @@ inline core::Vector<CT> operator/(T1 lhs, const core::Vector<T2>& rhs) NOEXCEPT
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator==(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     auto x1 = lhs.getX();
     auto y1 = lhs.getY();
@@ -695,7 +699,7 @@ inline bool operator==(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs)
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator!=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     return !operator==(lhs, rhs);
 }
@@ -711,7 +715,7 @@ inline bool operator!=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs)
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator<(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     using T = typename std::common_type<T1, T2>::type;
 
@@ -734,7 +738,7 @@ inline bool operator<(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) 
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator<=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     return !operator>(lhs, rhs);
 }
@@ -750,7 +754,7 @@ inline bool operator<=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs)
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator>(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     // Reversed operands
     return operator<(rhs, lhs);
@@ -767,7 +771,7 @@ inline bool operator>(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) 
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator>=(const core::Vector<T1>& lhs, const core::Vector<T2>& rhs) NOEXCEPT
+inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     return !operator<(lhs, rhs);
 }

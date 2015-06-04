@@ -44,6 +44,11 @@
     <File Name="Grid.hpp"/>
     <File Name="compatibility.hpp"/>
     <File Name="DynamicArray.hpp"/>
+    <File Name="String.hpp"/>
+    <File Name="FilePath.hpp"/>
+    <File Name="Map.hpp"/>
+    <File Name="UniquePtr.hpp"/>
+    <File Name="Exception.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

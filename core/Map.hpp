@@ -4,7 +4,7 @@
 /* ************************************************************************ */
 
 // C++
-#include <vector>
+#include <map>
 
 /* ************************************************************************ */
 
@@ -15,13 +15,13 @@ inline namespace core {
 /* ************************************************************************ */
 
 /**
- * @brief Dynamic array.
+ * @brief Map class.
  *
+ * @tparam K
  * @tparam T
- * @tparam Allocator
  */
-template<typename T, class Allocator = std::allocator<T>>
-using DynamicArray = std::vector<T, Allocator>;
+template<typename K, typename T>
+using Map = std::map<K, T>;
 
 /* ************************************************************************ */
 

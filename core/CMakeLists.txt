@@ -35,6 +35,9 @@ add_library(${PROJECT_NAME} OBJECT
     Log.cpp
     TimeMeasurement.hpp
     TimeMeasurement.cpp
+    String.hpp
+    FilePath.hpp
+    Exception.hpp
 )
 
 # ######################################################################### #

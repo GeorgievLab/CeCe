@@ -4,7 +4,7 @@
 /* ************************************************************************ */
 
 // C++
-#include <vector>
+#include <string>
 
 /* ************************************************************************ */
 
@@ -15,13 +15,9 @@ inline namespace core {
 /* ************************************************************************ */
 
 /**
- * @brief Dynamic array.
- *
- * @tparam T
- * @tparam Allocator
+ * @brief String type.
  */
-template<typename T, class Allocator = std::allocator<T>>
-using DynamicArray = std::vector<T, Allocator>;
+using String = std::string;
 
 /* ************************************************************************ */
 

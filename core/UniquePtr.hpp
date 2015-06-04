@@ -4,7 +4,7 @@
 /* ************************************************************************ */
 
 // C++
-#include <vector>
+#include <memory>
 
 /* ************************************************************************ */
 
@@ -15,13 +15,12 @@ inline namespace core {
 /* ************************************************************************ */
 
 /**
- * @brief Dynamic array.
+ * @brief Unique smart pointer class.
  *
- * @tparam T
- * @tparam Allocator
+ * @tparam T Type of managed object.
  */
-template<typename T, class Allocator = std::allocator<T>>
-using DynamicArray = std::vector<T, Allocator>;
+template<typename T>
+using UniquePtr = std::unique_ptr<T>;
 
 /* ************************************************************************ */
 
