@@ -3,9 +3,7 @@
 #include "Library.hpp"
 
 // C++
-#include <map>
 #include <cstdint>
-#include <cassert>
 #include <cstdlib>
 
 #if __linux__
@@ -19,6 +17,8 @@
 
 // Simulator
 #include "core/Log.hpp"
+#include "core/Exception.hpp"
+#include "core/FilePath.hpp"
 #include "simulator/LibraryApi.hpp"
 
 /* ************************************************************************ */
@@ -28,17 +28,17 @@ namespace {
 /* ************************************************************************ */
 
 #if __linux__
-const std::string g_prefix = "libmodule-";
+const String g_prefix = "libmodule-";
 #elif _WIN32
-const std::string g_prefix = "libmodule-";
+const String g_prefix = "libmodule-";
 #endif
 
 /* ************************************************************************ */
 
 #if __linux__
-const std::string g_extension = ".so";
+const String g_extension = ".so";
 #elif _WIN32
-const std::string g_extension = ".dll";
+const String g_extension = ".dll";
 #endif
 
 /* ************************************************************************ */
@@ -51,7 +51,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-std::vector<std::string> Library::s_libraryPaths;
+DynamicArray<String> Library::s_libraryPaths;
 
 /* ************************************************************************ */
 
@@ -62,7 +62,7 @@ BUILDIN_LIBRARIES
 /* ************************************************************************ */
 
 #define ITEM(name, validname) { # name, LIBRARY_PROTOTYPE_NAME_BUILDIN(create, validname) },
-const std::map<std::string, Library::CreateFn> Library::s_buildinLibraries{
+const Map<String, Library::CreateFn> Library::s_buildinLibraries{
     BUILDIN_LIBRARIES
 };
 #undef ITEM
@@ -83,10 +83,10 @@ public:
      *
      * @param name
      */
-    explicit Impl(const std::string& name)
+    explicit Impl(const String& name)
         : m_filename(g_prefix + name + g_extension)
     {
-        core::Log::debug("Loading shared library: ", m_filename);
+        Log::debug("Loading shared library: ", m_filename);
 #if __linux__
         m_ptr = dlopen(m_filename.c_str(), RTLD_LAZY);
 #elif _WIN32
@@ -100,7 +100,7 @@ public:
      */
     ~Impl()
     {
-        core::Log::debug("Closing shared library: ", m_filename);
+        Log::debug("Closing shared library: ", m_filename);
 #if __linux__
         if (m_ptr)
             dlclose(m_ptr);
@@ -130,12 +130,12 @@ public:
      *
      * @return
      */
-    std::string getError() const NOEXCEPT
+    String getError() const NOEXCEPT
     {
 #if __linux__
         return dlerror();
 #elif _WIN32
-		return "Error code: " + std::to_string(GetLastError());
+        return "Error code: " + std::to_string(GetLastError());
 #endif
     }
 
@@ -171,7 +171,7 @@ public:
 private:
 
     /// Source file name.
-    std::string m_filename;
+    FilePath m_filename;
 
 #if __linux__
     void* m_ptr;
@@ -183,7 +183,7 @@ private:
 
 /* ************************************************************************ */
 
-Library::Library(const std::string& name)
+Library::Library(const String& name)
 {
     // Try to find in build-in libraries
     auto it = s_buildinLibraries.find(name);
@@ -200,21 +200,21 @@ Library::Library(const std::string& name)
         m_impl.reset(new Impl{name});
 
         if (!m_impl->isLoaded())
-            throw std::runtime_error("Library is not loaded");
+            throw RuntimeException("Library is not loaded");
 
         // Check API version
         auto apiVerFn = m_impl->getAddr<ApiVersionFn>("api_version");
 
         if (!apiVerFn)
-            throw std::runtime_error("Library doesn't contains 'api_version' function");
+            throw RuntimeException("Library doesn't contains 'api_version' function");
 
         if (apiVerFn() != LIBRARY_API_VERSION)
-            throw std::runtime_error("Library API version is different from the simulator");
+            throw RuntimeException("Library API version is different from the simulator");
 
         auto fn = m_impl->getAddr<CreateFn>("create");
 
         if (!fn)
-            throw std::runtime_error("Library doesn't contains 'create' function");
+            throw RuntimeException("Library doesn't contains 'create' function");
 
         // Create extension object
         m_api.reset(fn());
@@ -239,7 +239,7 @@ bool Library::isLoaded() const NOEXCEPT
 }
 /* ************************************************************************ */
 
-std::string Library::getError() const NOEXCEPT
+String Library::getError() const NOEXCEPT
 {
     if (!m_impl)
         return {};
@@ -249,11 +249,11 @@ std::string Library::getError() const NOEXCEPT
 
 /* ************************************************************************ */
 
-void Library::addLibraryPath(std::string path)
+void Library::addLibraryPath(String path)
 {
 #if __linux__
     // Get previous paths
-    std::string paths;
+    String paths;
     char* p = getenv("LD_LIBRARY_PATH");
 
     // Previously set
@@ -275,13 +275,24 @@ void Library::addLibraryPath(std::string path)
 
 /* ************************************************************************ */
 
-std::vector<std::string> Library::getBuildInNames() NOEXCEPT
+DynamicArray<String> Library::getBuildInNames() NOEXCEPT
 {
-    std::vector<std::string> names;
+    DynamicArray<String> names;
     names.reserve(s_buildinLibraries.size());
 
     for (const auto& p : s_buildinLibraries)
         names.push_back(p.first);
+
+    return names;
+}
+
+/* ************************************************************************ */
+
+DynamicArray<String> getExternNames() NOEXCEPT
+{
+    DynamicArray<String> names;
+
+    // TODO: detect available libraries
 
     return names;
 }

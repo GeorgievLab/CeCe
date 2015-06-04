@@ -3,13 +3,12 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <string>
-#include <memory>
-#include <vector>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/String.hpp"
+#include "core/DynamicArray.hpp"
+#include "core/Map.hpp"
+#include "core/UniquePtr.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
@@ -194,9 +193,9 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param name
+     * @param name Library name.
      */
-    explicit Library(const std::string& name);
+    explicit Library(const String& name);
 
 
     /**
@@ -222,7 +221,7 @@ public:
      *
      * @return
      */
-    std::string getError() const NOEXCEPT;
+    String getError() const NOEXCEPT;
 
 
     /**
@@ -241,7 +240,7 @@ public:
      *
      * @return
      */
-    static const std::vector<std::string>& getLibraryPaths() NOEXCEPT
+    static const DynamicArray<String>& getLibraryPaths() NOEXCEPT
     {
         return s_libraryPaths;
     }
@@ -254,18 +253,26 @@ public:
      *
      * @return
      */
-    static bool isBuildin(const std::string& name) NOEXCEPT
+    static bool isBuildin(const String& name) NOEXCEPT
     {
         return s_buildinLibraries.find(name) != s_buildinLibraries.end();
     }
 
 
     /**
-     * @brief Return a list of build-in libraries
+     * @brief Return a list of build-in extension libraries.
      *
-     * @param path
+     * @return An array of build-in library names.
      */
-    static std::vector<std::string> getBuildInNames() NOEXCEPT;
+    static DynamicArray<String> getBuildInNames() NOEXCEPT;
+
+
+    /**
+     * @brief Return a list of extern extension libraries.
+     *
+     * @return An array of extern library names.
+     */
+    static DynamicArray<String> getExternNames() NOEXCEPT;
 
 
 // Public Mutators
@@ -277,7 +284,7 @@ public:
      *
      * @param path
      */
-    static void addLibraryPath(std::string path);
+    static void addLibraryPath(String path);
 
 
 // Private Data Members
@@ -285,16 +292,16 @@ private:
 
     /// Implementation
     struct Impl;
-    std::unique_ptr<Impl> m_impl;
+    UniquePtr<Impl> m_impl;
 
     /// Object for library API.
-    std::unique_ptr<LibraryApi> m_api;
+    UniquePtr<LibraryApi> m_api;
 
     /// Library paths.
-    static std::vector<std::string> s_libraryPaths;
+    static DynamicArray<String> s_libraryPaths;
 
     /// Build-in static library builders.
-    static const std::map<std::string, CreateFn> s_buildinLibraries;
+    static const Map<String, CreateFn> s_buildinLibraries;
 
 };
 
