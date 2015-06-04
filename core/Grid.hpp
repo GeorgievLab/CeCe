@@ -274,7 +274,7 @@ public:
     /**
      * @brief Resize grid.
      *
-     * @param size Grid size.
+     * @param size New size of the grid.
      */
     void resize(SizeType size)
     {
@@ -285,12 +285,37 @@ public:
     /**
      * @brief Resize grid.
      *
-     * @param size Grid size.
+     * @param size  New size of the grid.
+     * @param value The value to initialize the new elements with.
+     */
+    void resize(SizeType size, const ValueType& value)
+    {
+        resize(Vector<SizeType>{size}, value);
+    }
+
+
+    /**
+     * @brief Resize grid.
+     *
+     * @param size New size of the grid.
      */
     void resize(Vector<SizeType> size)
     {
         m_size = std::move(size);
         m_data.resize(m_size.getWidth() * m_size.getHeight());
+    }
+
+
+    /**
+     * @brief Resize grid.
+     *
+     * @param size  New size of the grid.
+     * @param value The value to initialize the new elements with.
+     */
+    void resize(Vector<SizeType> size, const ValueType& value)
+    {
+        m_size = std::move(size);
+        m_data.resize(m_size.getWidth() * m_size.getHeight(), value);
     }
 
 
