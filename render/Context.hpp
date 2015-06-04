@@ -26,8 +26,8 @@ namespace render {
 class Buffer;
 class Color;
 class Object;
-class Program;
 class VertexFormat;
+class Texture;
 
 /* ************************************************************************ */
 
@@ -231,57 +231,65 @@ public:
     void setVertexBuffer(Buffer* buffer) NOEXCEPT;
 
 
-	/**
-	* @brief Set vertex buffer format.
-	*
-	* @param format A pointer to vertex buffer format.
-	*/
-	void setVertexFormat(VertexFormat* format) NOEXCEPT;
+    /**
+    * @brief Set vertex buffer format.
+    *
+    * @param format A pointer to vertex buffer format.
+    */
+    void setVertexFormat(VertexFormat* format) NOEXCEPT;
 
 
-	/**
-	* @brief Set shader program.
-	*
-	* @param program A pointer to shader program.
-	*/
-	void setProgram(Program* program) NOEXCEPT;
+    /**
+    * @brief Set texture.
+    *
+    * @param texture Texture.
+    */
+    void setTexture(Texture* texture) NOEXCEPT;
 
 
-	/**
-	* @brief Set shader program parameter.
-	*
-	* @param id    Parameter ID.
-	* @param value Parameter value.
-	*/
-	void setProgramParam(Program::UniformId id, bool value) NOEXCEPT;
+    /**
+    * @brief Set shader program.
+    *
+    * @param program A pointer to shader program.
+    */
+    void setProgram(Program* program) NOEXCEPT;
 
 
-	/**
-	* @brief Set shader program parameter.
-	*
-	* @param id    Parameter ID.
-	* @param value Parameter value.
-	*/
-	void setProgramParam(Program::UniformId id, int value) NOEXCEPT;
+    /**
+    * @brief Set shader program parameter.
+    *
+    * @param id    Parameter ID.
+    * @param value Parameter value.
+    */
+    void setProgramParam(Program::UniformId id, bool value) NOEXCEPT;
 
 
-	/**
-	* @brief Set shader program parameter.
-	*
-	* @param id    Parameter ID.
-	* @param value Parameter value.
-	*/
-	void setProgramParam(Program::UniformId id, float value) NOEXCEPT;
+    /**
+    * @brief Set shader program parameter.
+    *
+    * @param id    Parameter ID.
+    * @param value Parameter value.
+    */
+    void setProgramParam(Program::UniformId id, int value) NOEXCEPT;
 
 
-	/**
-	* @brief Set shader program parameter.
-	*
-	* @param id     Parameter ID.
-	* @param value1 Parameter value.
-	* @param value2 Parameter value.
-	*/
-	void setProgramParam(Program::UniformId id, int value1, int value2) NOEXCEPT;
+    /**
+    * @brief Set shader program parameter.
+    *
+    * @param id    Parameter ID.
+    * @param value Parameter value.
+    */
+    void setProgramParam(Program::UniformId id, float value) NOEXCEPT;
+
+
+    /**
+    * @brief Set shader program parameter.
+    *
+    * @param id     Parameter ID.
+    * @param value1 Parameter value.
+    * @param value2 Parameter value.
+    */
+    void setProgramParam(Program::UniformId id, int value1, int value2) NOEXCEPT;
 
 
     /**

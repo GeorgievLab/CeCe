@@ -31,6 +31,7 @@
 #include "render/errors.hpp"
 #include "render/Object.hpp"
 #include "render/VertexFormat.hpp"
+#include "render/Texture.hpp"
 
 /* ************************************************************************ */
 
@@ -83,14 +84,14 @@ GLenum convert(DataType type)
     switch (type)
     {
     default: break;
-    case DataType::Byte:	return GL_BYTE;
-    case DataType::Ubyte:	return GL_UNSIGNED_BYTE;
-    case DataType::Short:	return GL_SHORT;
-    case DataType::Ushort:	return GL_UNSIGNED_SHORT;
-    case DataType::Int:		return GL_INT;
-    case DataType::Uint:	return GL_UNSIGNED_INT;
-    case DataType::Float:	return GL_FLOAT;
-    case DataType::Double:	return GL_DOUBLE;
+    case DataType::Byte:    return GL_BYTE;
+    case DataType::Ubyte:   return GL_UNSIGNED_BYTE;
+    case DataType::Short:   return GL_SHORT;
+    case DataType::Ushort:  return GL_UNSIGNED_SHORT;
+    case DataType::Int:     return GL_INT;
+    case DataType::Uint:    return GL_UNSIGNED_INT;
+    case DataType::Float:   return GL_FLOAT;
+    case DataType::Double:  return GL_DOUBLE;
     }
 
     return GL_NONE;
@@ -382,14 +383,31 @@ void Context::setVertexFormat(VertexFormat* format) NOEXCEPT
 
 /* ************************************************************************ */
 
+void Context::setTexture(Texture* texture) NOEXCEPT
+{
+    if (texture)
+    {
+        // Use texture
+        gl(glEnable(GL_TEXTURE_2D));
+        gl(glBindTexture(GL_TEXTURE_2D, texture->getId()));
+    }
+    else
+    {
+        gl(glBindTexture(GL_TEXTURE_2D, 0));
+        gl(glDisable(GL_TEXTURE_2D));
+    }
+}
+
+/* ************************************************************************ */
+
 void Context::setProgram(Program* program) NOEXCEPT
 {
 #ifdef _WIN32
-	if (!glUseProgram)
-		glUseProgram = (PFNGLUSEPROGRAMPROC) wglGetProcAddress("glUseProgram");
+    if (!glUseProgram)
+        glUseProgram = (PFNGLUSEPROGRAMPROC) wglGetProcAddress("glUseProgram");
 #endif
 
-	gl(glUseProgram(program ? program->getId() : 0));
+    gl(glUseProgram(program ? program->getId() : 0));
 }
 
 /* ************************************************************************ */
@@ -397,11 +415,11 @@ void Context::setProgram(Program* program) NOEXCEPT
 void Context::setProgramParam(Program::UniformId id, bool value) NOEXCEPT
 {
 #ifdef _WIN32
-	if (!glUniform1i)
-		glUniform1i = (PFNGLUNIFORM1IPROC) wglGetProcAddress("glUniform1i");
+    if (!glUniform1i)
+        glUniform1i = (PFNGLUNIFORM1IPROC) wglGetProcAddress("glUniform1i");
 #endif
 
-	gl(glUniform1i(id, int(value)));
+    gl(glUniform1i(id, int(value)));
 }
 
 /* ************************************************************************ */
@@ -409,11 +427,11 @@ void Context::setProgramParam(Program::UniformId id, bool value) NOEXCEPT
 void Context::setProgramParam(Program::UniformId id, int value) NOEXCEPT
 {
 #ifdef _WIN32
-	if (!glUniform1i)
-		glUniform1i = (PFNGLUNIFORM1IPROC) wglGetProcAddress("glUniform1i");
+    if (!glUniform1i)
+        glUniform1i = (PFNGLUNIFORM1IPROC) wglGetProcAddress("glUniform1i");
 #endif
 
-	gl(glUniform1i(id, value));
+    gl(glUniform1i(id, value));
 }
 
 /* ************************************************************************ */
@@ -421,11 +439,11 @@ void Context::setProgramParam(Program::UniformId id, int value) NOEXCEPT
 void Context::setProgramParam(Program::UniformId id, int value1, int value2) NOEXCEPT
 {
 #ifdef _WIN32
-	if (!glUniform2i)
-		glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
+    if (!glUniform2i)
+        glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
 #endif
 
-	gl(glUniform2i(id, value1, value2));
+    gl(glUniform2i(id, value1, value2));
 }
 
 /* ************************************************************************ */
@@ -433,11 +451,11 @@ void Context::setProgramParam(Program::UniformId id, int value1, int value2) NOE
 void Context::setProgramParam(Program::UniformId id, float value) NOEXCEPT
 {
 #ifdef _WIN32
-	if (!glUniform1f)
-		glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
+    if (!glUniform1f)
+        glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
 #endif
 
-	gl(glUniform1f(id, value));
+    gl(glUniform1f(id, value));
 }
 
 /* ************************************************************************ */
