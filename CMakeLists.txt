@@ -88,6 +88,10 @@ endif ()
 # Build-in physics enabled
 if (ENABLE_BUILDIN_PHYSICS)
     message("-- Using build-in physics (Box2D)")
+    set(BOX2D_BUILD_EXAMPLES Off)
+    set(BOX2D_INSTALL Off)
+    set(BOX2D_BUILD_SHARED On)
+    set(BOX2D_BUILD_STATIC Off)
     # Physics engine
     include_directories(Box2D)
     add_definitions(-DENABLE_PHYSICS=1)
