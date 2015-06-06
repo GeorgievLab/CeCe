@@ -7,10 +7,11 @@
 #include <cstdlib>
 
 #if __linux__
-// Linux
 #include <dlfcn.h>
 #elif _WIN32
 #include <windows.h>
+#elif __APPLE__ && __MACH__
+#include <dlfcn.h>
 #else
 #error Unsupported platform
 #endif
@@ -31,6 +32,8 @@ namespace {
 const String g_prefix = "libmodule-";
 #elif _WIN32
 const String g_prefix = "libmodule-";
+#elif __APPLE__ && __MACH__
+const String g_prefix = "libmodule-";
 #endif
 
 /* ************************************************************************ */
@@ -39,6 +42,8 @@ const String g_prefix = "libmodule-";
 const String g_extension = ".so";
 #elif _WIN32
 const String g_extension = ".dll";
+#elif __APPLE__ && __MACH__
+const String g_extension = ".dylib";
 #endif
 
 /* ************************************************************************ */
@@ -87,7 +92,7 @@ public:
         : m_filename(g_prefix + name + g_extension)
     {
         Log::debug("Loading shared library: ", m_filename);
-#if __linux__
+#if __linux__ || __APPLE__ && __MACH__
         m_ptr = dlopen(m_filename.c_str(), RTLD_LAZY);
 #elif _WIN32
         m_ptr = LoadLibrary(m_filename.c_str());
@@ -101,7 +106,7 @@ public:
     ~Impl()
     {
         Log::debug("Closing shared library: ", m_filename);
-#if __linux__
+#if __linux__ || __APPLE__ && __MACH__
         if (m_ptr)
             dlclose(m_ptr);
 #elif _WIN32
@@ -132,7 +137,7 @@ public:
      */
     String getError() const NOEXCEPT
     {
-#if __linux__
+#if __linux__ || __APPLE__ && __MACH__
         return dlerror();
 #elif _WIN32
         return "Error code: " + std::to_string(GetLastError());
@@ -147,7 +152,7 @@ public:
      */
     void* getAddr(const char* name) const NOEXCEPT
     {
-#if __linux__
+#if __linux__ || __APPLE__ && __MACH__
         return dlsym(m_ptr, name);
 #elif _WIN32
         return reinterpret_cast<void*>(reinterpret_cast<std::intptr_t>(GetProcAddress(m_ptr, name)));
@@ -173,7 +178,7 @@ private:
     /// Source file name.
     FilePath m_filename;
 
-#if __linux__
+#if __linux__ || __APPLE__ && __MACH__
     void* m_ptr;
 #elif _WIN32
     HMODULE m_ptr;
@@ -251,7 +256,7 @@ String Library::getError() const NOEXCEPT
 
 void Library::addLibraryPath(String path)
 {
-#if __linux__
+#if __linux__ || __APPLE__ && __MACH__
     // Get previous paths
     String paths;
     char* p = getenv("LD_LIBRARY_PATH");
