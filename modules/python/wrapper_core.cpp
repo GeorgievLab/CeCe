@@ -84,10 +84,10 @@ static int vectorFloat_setY(ObjectWrapper<core::Vector<float>>* self, PyObject* 
 /* ************************************************************************ */
 
 static PyGetSetDef g_vectorFloatGettersSeters[] = {
-    {"x", (getter)vectorFloat_getX, (setter)vectorFloat_setX, nullptr, nullptr },
-    {"y", (getter)vectorFloat_getY, (setter)vectorFloat_setY, nullptr, nullptr },
-    {"width", (getter)vectorFloat_getX, (setter)vectorFloat_setX, nullptr, nullptr },
-    {"height", (getter)vectorFloat_getY, (setter)vectorFloat_setY, nullptr, nullptr },
+    {const_cast<char*>("x"), (getter)vectorFloat_getX, (setter)vectorFloat_setX, nullptr, nullptr },
+    {const_cast<char*>("y"), (getter)vectorFloat_getY, (setter)vectorFloat_setY, nullptr, nullptr },
+    {const_cast<char*>("width"), (getter)vectorFloat_getX, (setter)vectorFloat_setX, nullptr, nullptr },
+    {const_cast<char*>("height"), (getter)vectorFloat_getY, (setter)vectorFloat_setY, nullptr, nullptr },
     {NULL}  /* Sentinel */
 };
 
@@ -172,8 +172,8 @@ static int vectorInt_setY(ObjectWrapper<core::Vector<int>>* self, PyObject* valu
 /* ************************************************************************ */
 
 static PyGetSetDef g_vectorIntGettersSeters[] = {
-    {"x", (getter)vectorInt_getX, (setter)vectorInt_setX, nullptr, nullptr },
-    {"y", (getter)vectorInt_getY, (setter)vectorInt_setY, nullptr, nullptr },
+    {const_cast<char*>("x"), (getter)vectorInt_getX, (setter)vectorInt_setX, nullptr, nullptr },
+    {const_cast<char*>("y"), (getter)vectorInt_getY, (setter)vectorInt_setY, nullptr, nullptr },
     {NULL}  /* Sentinel */
 };
 

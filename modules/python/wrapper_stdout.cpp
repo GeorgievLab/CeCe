@@ -52,7 +52,7 @@ void python_wrapper_stdout()
     if (m == nullptr)
         return;
 
-    PySys_SetObject("stdout", m);
+    PySys_SetObject(const_cast<char*>("stdout"), m);
 }
 
 /* ************************************************************************ */

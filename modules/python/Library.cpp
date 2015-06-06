@@ -32,11 +32,11 @@
  * @brief Python modules initialization table.
  */
 static const struct _inittab INIT_TABLE[] = {
-    {"cppout", python_wrapper_stdout},
-    {"core", python_wrapper_core},
-    {"simulator", python_wrapper_simulator},
-    {"render", python_wrapper_render},
-    {"parser", python_wrapper_parser},
+    {const_cast<char*>("cppout"), python_wrapper_stdout},
+    {const_cast<char*>("core"), python_wrapper_core},
+    {const_cast<char*>("simulator"), python_wrapper_simulator},
+    {const_cast<char*>("render"), python_wrapper_render},
+    {const_cast<char*>("parser"), python_wrapper_parser},
     {NULL, NULL}
 };
 

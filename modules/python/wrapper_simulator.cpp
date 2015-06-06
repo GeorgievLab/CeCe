@@ -120,10 +120,10 @@ static PyObject* simulation_getIterations(ObjectWrapper<simulator::Simulation*>*
 /* ************************************************************************ */
 
 static PyGetSetDef g_simulationGettersSeters[] = {
-    {"worldSize", (getter)simulation_getWorldSize, nullptr, nullptr, nullptr },
-    {"objectsCount", (getter)simulation_getObjectsCount, nullptr, nullptr, nullptr },
-    {"iteration", (getter)simulation_getIteration, nullptr, nullptr, nullptr },
-    {"iterations", (getter)simulation_getIterations, nullptr, nullptr, nullptr },
+    {const_cast<char*>("worldSize"), (getter)simulation_getWorldSize, nullptr, nullptr, nullptr },
+    {const_cast<char*>("objectsCount"), (getter)simulation_getObjectsCount, nullptr, nullptr, nullptr },
+    {const_cast<char*>("iteration"), (getter)simulation_getIteration, nullptr, nullptr, nullptr },
+    {const_cast<char*>("iterations"), (getter)simulation_getIterations, nullptr, nullptr, nullptr },
     {NULL}  /* Sentinel */
 };
 
@@ -257,10 +257,10 @@ static int object_setVelocity(ObjectWrapper<simulator::Object*>* self, PyObject*
 /* ************************************************************************ */
 
 static PyGetSetDef g_objectGettersSeters[] = {
-    {"id", (getter)object_getId, nullptr, nullptr, nullptr },
-    {"position", (getter)object_getPosition, (setter)object_setPosition, nullptr, nullptr },
-    {"rotation", (getter)object_getRotation, (setter)object_setRotation, nullptr, nullptr },
-    {"velocity", (getter)object_getVelocity, (setter)object_setVelocity, nullptr, nullptr },
+    {const_cast<char*>("id"), (getter)object_getId, nullptr, nullptr, nullptr },
+    {const_cast<char*>("position"), (getter)object_getPosition, (setter)object_setPosition, nullptr, nullptr },
+    {const_cast<char*>("rotation"), (getter)object_getRotation, (setter)object_setRotation, nullptr, nullptr },
+    {const_cast<char*>("velocity"), (getter)object_getVelocity, (setter)object_setVelocity, nullptr, nullptr },
     {NULL}  /* Sentinel */
 };
 
