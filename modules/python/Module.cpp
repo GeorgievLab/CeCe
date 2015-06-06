@@ -5,10 +5,10 @@
 // C++
 #include <cassert>
 #include <string>
-#include <fstream>
 
 // Simulation
 #include "core/Log.hpp"
+#include "core/FilePath.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Configuration.hpp"
 #include "simulator/Library.hpp"
@@ -31,11 +31,6 @@ Module::Module(const std::string& name)
         return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
     };
 
-    auto file_exists = [](const std::string& path) {
-        std::ifstream f(path.c_str());
-        return f.good();
-    };
-
     // External file
     if (ends_with(name, ".py"))
     {
@@ -46,7 +41,7 @@ Module::Module(const std::string& name)
         {
             auto path = p + "/" + name;
 
-            if (file_exists(path))
+            if (fileExists(path))
             {
                 foundPath = path;
                 break;

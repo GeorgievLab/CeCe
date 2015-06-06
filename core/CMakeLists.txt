@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME} OBJECT
     TimeMeasurement.cpp
     String.hpp
     FilePath.hpp
+    FilePath.cpp
     Exception.hpp
 )
 

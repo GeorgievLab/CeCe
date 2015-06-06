@@ -1,13 +1,12 @@
 
-#pragma once
-
 /* ************************************************************************ */
 
-// C++
-#include <string>
+// Declaration
+#include "core/FilePath.hpp"
 
-// Simulator
-#include "core/compatibility.hpp"
+// C++
+//#include <cstdio>
+#include <fstream>
 
 /* ************************************************************************ */
 
@@ -17,21 +16,24 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-/**
- * @brief File path type.
- */
-using FilePath = std::string;
+bool fileExists(const FilePath& path) NOEXCEPT
+{
+    /*
+    FILE* f = fopen(path.c_str(), "r");
 
-/* ************************************************************************ */
-
-/**
- * @brief Tests if file path exists.
- *
- * @param path
- *
- * @return
- */
-bool fileExists(const FilePath& path) NOEXCEPT;
+    if (f)
+    {
+        fclose(f);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    */
+    std::ifstream f(path.c_str());
+    return f.good();
+}
 
 /* ************************************************************************ */
 
