@@ -14,6 +14,7 @@
 #include "simulator/Library.hpp"
 
 // Module
+#include "Python.hpp"
 #include "Utils.hpp"
 #include "Exception.hpp"
 

@@ -7,13 +7,11 @@
 #include <type_traits>
 #include <string>
 
-// Python
-#include <Python.h>
-
 // Simulator
 #include "core/compatibility.hpp"
 
-// Library
+// Module
+#include "Python.hpp"
 #include "wrapper.hpp"
 #include "Handle.hpp"
 

@@ -7,10 +7,8 @@
 #include "core/Units.hpp"
 #include "simulator/Object.hpp"
 
-// Python
-#include <Python.h>
-
 // Module
+#include "Python.hpp"
 #include "Source.hpp"
 
 /* ************************************************************************ */

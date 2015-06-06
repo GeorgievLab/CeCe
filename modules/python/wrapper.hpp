@@ -3,13 +3,11 @@
 
 /* ************************************************************************ */
 
-// Python
-#include <Python.h>
-
 // Simulator
 #include "core/compatibility.hpp"
 
-// Library
+// Module
+#include "Python.hpp"
 #include "Handle.hpp"
 
 /* ************************************************************************ */

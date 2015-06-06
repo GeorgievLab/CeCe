@@ -7,14 +7,12 @@
 // C++
 #include <cassert>
 
-// Python
-#include <Python.h>
-
 // Simulation
 #include "simulator/Simulation.hpp"
 #include "simulator/Configuration.hpp"
 
-// Library
+// Module
+#include "Python.hpp"
 #include "wrapper.hpp"
 #include "Utils.hpp"
 

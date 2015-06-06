@@ -4,9 +4,6 @@
 // Declaration
 #include "wrapper_render.hpp"
 
-// Python
-#include <Python.h>
-
 #if ENABLE_RENDER
 // Render
 #include "render/Color.hpp"
@@ -14,7 +11,8 @@
 #include "render/GridColor.hpp"
 #endif
 
-// Library
+// Module
+#include "Python.hpp"
 #include "wrapper.hpp"
 
 /* ************************************************************************ */

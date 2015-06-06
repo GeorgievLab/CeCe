@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 // Module
+#include "Python.hpp"
 #include "Exception.hpp"
 
 /* ************************************************************************ */

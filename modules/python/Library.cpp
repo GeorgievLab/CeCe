@@ -12,12 +12,10 @@
 #include "simulator/LibraryApi.hpp"
 
 // Module
+#include "Python.hpp"
 #include "Module.hpp"
 #include "Object.hpp"
 #include "Program.hpp"
-
-// Python
-#include <Python.h>
 
 // Wrappers
 #include "wrapper_stdout.hpp"

@@ -4,13 +4,11 @@
 // Declaration
 #include "wrapper_core.hpp"
 
-// Python
-#include <Python.h>
-
 // Core
 #include "core/Vector.hpp"
 
 // Module
+#include "Python.hpp"
 #include "wrapper.hpp"
 
 /* ************************************************************************ */

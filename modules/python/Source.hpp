@@ -6,13 +6,11 @@
 // C++
 #include <string>
 
-// Python
-#include <Python.h>
-
 // Simulator
 #include "core/compatibility.hpp"
 
 // Module
+#include "Python.hpp"
 #include "Handle.hpp"
 
 /* ************************************************************************ */

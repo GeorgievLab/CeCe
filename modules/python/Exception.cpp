@@ -5,10 +5,8 @@
 // C++
 #include <cassert>
 
-// Python
-#include <Python.h>
-
 // Module
+#include "Python.hpp"
 #include "Handle.hpp"
 #include "Utils.hpp"
 

@@ -7,10 +7,8 @@
 #include "simulator/Module.hpp"
 #include "render/Context.hpp"
 
-// Python
-#include <Python.h>
-
 // Module
+#include "Python.hpp"
 #include "Handle.hpp"
 #include "Source.hpp"
 

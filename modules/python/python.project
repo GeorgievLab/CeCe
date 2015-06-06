@@ -44,6 +44,7 @@
     <File Name="Utils.hpp"/>
     <File Name="wrapper_stdout.hpp"/>
     <File Name="wrapper.hpp"/>
+    <File Name="Python.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
