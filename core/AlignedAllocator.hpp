@@ -274,7 +274,6 @@ inline bool operator!=(const AlignedAllocator<T, TAlign>& t, const AlignedAlloca
 
 /* ************************************************************************ */
 
-
 #ifndef _MSC_VER
 }
 #endif
