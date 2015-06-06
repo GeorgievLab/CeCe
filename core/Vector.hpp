@@ -44,7 +44,12 @@ public:
      *
      * @param val Value for all vector coordinates.
      */
+#if __APPLE__ && __MACH__
+    /// NOTE: On Mac OS X explicit keyword causes problem with free operators deduction.
+    CONSTEXPR Vector(T val) NOEXCEPT
+#else
     explicit CONSTEXPR Vector(T val) NOEXCEPT
+#endif
         : m_x(val), m_y(val)
     {
         // Nothing to do
@@ -79,7 +84,7 @@ public:
      */
     template<typename T2>
     CONSTEXPR Vector(const Vector<T2>& v) NOEXCEPT
-		: m_x(static_cast<T>(v.getX())), m_y(static_cast<T>(v.getY()))
+        : m_x(static_cast<T>(v.getX())), m_y(static_cast<T>(v.getY()))
     {
         // Nothing to do
     }
@@ -471,12 +476,6 @@ private:
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
-}
-#endif
-
-/* ************************************************************************ */
-
 /**
  * @brief Add two vectors.
  *
@@ -488,7 +487,7 @@ private:
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<CT>(lhs) + Vector<CT>(rhs);
+    return Vector<CT>(lhs).operator+(Vector<CT>(rhs));
 }
 
 /* ************************************************************************ */
@@ -504,7 +503,7 @@ inline Vector<CT> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCE
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator+(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator+(lhs, Vector<T2>(rhs));
+    return operator+(lhs, Vector<T1>(rhs));
 }
 
 /* ************************************************************************ */
@@ -520,7 +519,7 @@ inline Vector<CT> operator+(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator+(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator+(Vector<T1>(lhs), rhs);
+    return operator+(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -536,7 +535,7 @@ inline Vector<CT> operator+(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return Vector<CT>(lhs) - Vector<CT>(rhs);
+    return Vector<CT>(lhs).operator-(Vector<CT>(rhs));
 }
 
 /* ************************************************************************ */
@@ -552,7 +551,7 @@ inline Vector<CT> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCE
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator-(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator-(lhs, Vector<T2>(rhs));
+    return operator-<T1, T2>(lhs, Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -568,7 +567,7 @@ inline Vector<CT> operator-(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator-(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator-(Vector<T1>(lhs), rhs);
+    return operator-(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -584,7 +583,7 @@ inline Vector<CT> operator-(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return Vector<CT>(lhs) * Vector<CT>(rhs);
+    return Vector<CT>(lhs).operator*(Vector<CT>(rhs));
 }
 
 /* ************************************************************************ */
@@ -600,7 +599,7 @@ inline Vector<CT> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCE
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator*(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator*(lhs, Vector<T2>(rhs));
+    return operator*(lhs, Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -616,7 +615,7 @@ inline Vector<CT> operator*(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator*(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator*(Vector<T1>(lhs), rhs);
+    return operator*(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -632,7 +631,7 @@ inline Vector<CT> operator*(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return Vector<CT>(lhs) / Vector<CT>(rhs);
+    return Vector<CT>(lhs).operator/(Vector<CT>(rhs));
 }
 
 /* ************************************************************************ */
@@ -648,7 +647,7 @@ inline Vector<CT> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCE
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator/(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-	return operator/(lhs, Vector<T2>(rhs));
+    return operator/(lhs, Vector<T2>(rhs));
 }
 
 /* ************************************************************************ */
@@ -664,7 +663,7 @@ inline Vector<CT> operator/(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
 inline Vector<CT> operator/(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-	return operator/(Vector<T1>(lhs), rhs);
+    return operator/(Vector<T1>(lhs), rhs);
 }
 
 /* ************************************************************************ */
@@ -775,5 +774,11 @@ inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     return !operator<(lhs, rhs);
 }
+
+/* ************************************************************************ */
+
+#ifndef _MSC_VER
+}
+#endif
 
 /* ************************************************************************ */
