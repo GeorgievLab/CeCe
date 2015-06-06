@@ -20,6 +20,8 @@
 #include <GL/gl.h>
 #include "render/glext.h"
 #pragma comment(lib, "opengl32.lib")
+#elif __APPLE__ && __MACH__
+#include <OpenGL/gl.h>
 #endif
 
 // Simulator
