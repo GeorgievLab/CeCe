@@ -6,6 +6,7 @@
 // C++
 #include <streambuf>
 #include <array>
+#include <ostream>
 
 // wxWidgets
 #include <wx/event.h>
