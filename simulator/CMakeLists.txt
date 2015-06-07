@@ -91,8 +91,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Install
 install(TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
+    DESTINATION lib
 )
 
 # ######################################################################### #
