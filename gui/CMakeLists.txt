@@ -37,13 +37,13 @@ set(SRCS
 
 # Create program
 if (WIN32)
-	add_executable(${PROJECT_NAME} WIN32
-		${SRCS}
-	)
-else ()
-	add_executable(${PROJECT_NAME}
-		${SRCS}
-	)
+    add_executable(${PROJECT_NAME} WIN32
+        ${SRCS}
+    )
+    else ()
+    add_executable(${PROJECT_NAME}
+        ${SRCS}
+    )
 endif ()
 
 # Use different name
@@ -70,14 +70,13 @@ target_link_libraries(${PROJECT_NAME}
     simulator
     parser-xml
     ${wxWidgets_LIBRARIES}
-    -pthread
 )
 
-# Setup dependencies
-add_dependencies(${PROJECT_NAME}
-    simulator
-    parser-xml
-)
+if (UNIX)
+    target_link_libraries(${PROJECT_NAME}
+        -pthread
+    )
+endif ()
 
 # Install
 install(TARGETS ${PROJECT_NAME}

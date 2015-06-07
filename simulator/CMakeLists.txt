@@ -65,28 +65,17 @@ add_library(${PROJECT_NAME} SHARED
     ${SRCS}
 )
 
-if (ENABLE_BUILDIN_PHYSICS)
-    # Add dependency
-    add_dependencies(${PROJECT_NAME}
-        Box2D
-    )
-endif ()
-
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     ${MODULES_LIBS}
     ${RENDER_LIBS}
 )
 
-# Use different name
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "cell-sim-core"
-)
-
 if (ENABLE_BUILDIN_PHYSICS)
+    message("LIB: ${BOX2D_LIBRARIES}")
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
-        Box2D
+        ${BOX2D_LIBRARIES}
     )
 endif ()
 
@@ -95,6 +84,11 @@ if (MINGW)
         Ws2_32
     )
 endif ()
+
+# Use different name
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "cell-sim-core"
+)
 
 # Install
 install(TARGETS ${PROJECT_NAME}
