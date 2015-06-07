@@ -29,22 +29,18 @@ if (${IS_STATIC} GREATER -1)
 
     # Setup dependencies
     add_dependencies(${PROJECT_NAME}
-        core
+        module-diffusion
+        module-cylinder-streamlines
+        simulator
     )
 else ()
     message("-- Module ${PROJECT_NAME} is dynamic")
     add_library(${PROJECT_NAME} SHARED ${SRCS})
 
-    # Setup dependencies
-    add_dependencies(${PROJECT_NAME}
-        core
-        simulator
-    )
-
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
-        diffusion
-        cylinder-streamlines
+        module-diffusion
+        module-cylinder-streamlines
         simulator
     )
 

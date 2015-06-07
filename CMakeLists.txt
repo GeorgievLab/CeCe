@@ -5,10 +5,22 @@ cmake_minimum_required(VERSION 2.8)
 # Workspace name
 project(cell-sim)
 
+# Add path to additional modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
+
 # Applicatio version
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 0)
+set(VERSION_PATCH 1)
+set(VERSION_SPECIAL "alpha")
+
+# Setup macros with application version
+add_definitions(
+    -DVERSION_MAJOR=${VERSION_MAJOR}
+    -DVERSION_MINOR=${VERSION_MINOR}
+    -DVERSION_PATCH=${VERSION_PATCH}
+    -DVERSION_SPECIAL="${VERSION_SPECIAL}"
+)
 
 # Options
 option(ENABLE_GUI                   "Enable GUI" On)
@@ -21,7 +33,7 @@ option(ENABLE_BUILDIN_PHYSICS_DEBUG "Enable or disable physics engine debugging"
 
 option(BUILD_TOOLS                  "Build support tools" Off)
 set(MODULES                         "cylinder-streamlines;diffusion;diffusion-cylinder-streamlines;cell;python" CACHE STRING "A list of build modules")
-set(MODULES_BUILDIN                 "cylinder-streamlines;diffusion;diffusion-cylinder-streamlines;cell;python" CACHE STRING "A list of build-in modules")
+set(MODULES_BUILDIN                 "" CACHE STRING "A list of build-in modules")
 
 # Options specific for different compilers
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -93,12 +105,9 @@ endif ()
 # Build-in physics enabled
 if (ENABLE_BUILDIN_PHYSICS)
     message("-- Using build-in physics (Box2D)")
-    set(BOX2D_BUILD_EXAMPLES Off)
-    set(BOX2D_INSTALL Off)
-    set(BOX2D_BUILD_SHARED On)
-    set(BOX2D_BUILD_STATIC Off)
-    # Physics engine
-    include_directories(Box2D)
+    find_package(Box2D)
+    include_directories(${Box2D_INCLUDE_DIRS})
+
     add_definitions(-DENABLE_PHYSICS=1)
 
     if (ENABLE_BUILDIN_PHYSICS_DEBUG)
@@ -137,11 +146,8 @@ if (ENABLE_RENDER)
 endif ()
 
 if (ENABLE_BUILDIN_PHYSICS)
-    # Physics engine
-    add_subdirectory(Box2D)
-
     # Link libraries
-    link_directories(${CMAKE_BINARY_DIR}/Box2D/Box2D)
+    link_directories(${Box2D_LIBRARIES})
 endif ()
 
 # Main simulator project
@@ -173,6 +179,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cell simulator")
 set(CPACK_PACKAGE_VENDOR "Georgiev Lab")
 #set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
 #set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
+set(CPACK_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
@@ -197,9 +204,10 @@ elseif (APPLE)
     set(CPACK_BUNDLE_PLIST "${PROJECT_BINARY_DIR}/Info.plist")
     set(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}/bundle.sh")
 else ()
-    #set(CPACK_STRIP_FILES "bin/MyExecutable")
-    #set(CPACK_SOURCE_STRIP_FILES "")
-    #set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.19), libgcc1 (>= 1:4.1.1)")
+    set(CPACK_STRIP_FILES "bin/cell-sim-gui")
+    set(CPACK_SOURCE_STRIP_FILES "")
+    # autogenerate dependency information
+    set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 endif ()
 
 set(CPACK_PACKAGE_EXECUTABLES "Cell Simulator" "Cell Simulator")
