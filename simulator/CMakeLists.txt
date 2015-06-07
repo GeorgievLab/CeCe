@@ -72,7 +72,6 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 if (ENABLE_BUILDIN_PHYSICS)
-    message("LIB: ${BOX2D_LIBRARIES}")
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         ${BOX2D_LIBRARIES}
