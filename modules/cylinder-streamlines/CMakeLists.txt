@@ -52,6 +52,12 @@ else ()
         simulator
         ${Boost_LIBRARIES}
     )
+
+    # Install
+    install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION lib
+    )
+
 endif ()
 
 # ######################################################################### #

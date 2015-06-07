@@ -78,6 +78,12 @@ else ()
         simulator
         ${PYTHON_LIBRARIES}
     )
+
+    # Install
+    install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION lib
+    )
+
 endif ()
 
 # ######################################################################### #

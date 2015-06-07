@@ -47,6 +47,12 @@ else ()
         cylinder-streamlines
         simulator
     )
+
+    # Install
+    install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION lib
+    )
+
 endif ()
 
 # ######################################################################### #
