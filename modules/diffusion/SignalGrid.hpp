@@ -19,7 +19,7 @@ namespace diffusion {
 /**
  * @brief Signal grid.
  */
-using SignalGrid = core::Grid<Signal>;
+using SignalGrid = Grid<Signal>;
 
 /* ************************************************************************ */
 

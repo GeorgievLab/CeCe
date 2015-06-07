@@ -4,8 +4,8 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/Vector.hpp"
 #include "core/compatibility.hpp"
+#include "core/Vector.hpp"
 #include "render/Buffer.hpp"
 #include "render/GridBase.hpp"
 
@@ -55,7 +55,7 @@ public:
      *
      * @param size
      */
-    void resize(core::Vector<PositionType> size) NOEXCEPT;
+    void resize(Vector<PositionType> size) NOEXCEPT;
 
 
 // Private Data Members

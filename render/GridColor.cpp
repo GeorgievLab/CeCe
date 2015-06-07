@@ -45,7 +45,7 @@ GridColor::GridColor(Context& context)
 
 /* ************************************************************************ */
 
-GridColor::GridColor(Context& context, core::Vector<PositionType> size)
+GridColor::GridColor(Context& context, Vector<PositionType> size)
     : GridColor(context)
 {
     resize(std::move(size));
@@ -79,7 +79,7 @@ void GridColor::draw(Context& context) NOEXCEPT
 
 /* ************************************************************************ */
 
-void GridColor::resize(core::Vector<PositionType> size, const Color& color)
+void GridColor::resize(Vector<PositionType> size, const Color& color)
 {
     GridBase::resize(std::move(size));
 

@@ -37,10 +37,10 @@ enum class ShapeType
 struct DLL_EXPORT ShapeCircle
 {
     /// Shape center.
-    core::PositionVector center;
+    PositionVector center;
 
     /// Circle radius.
-	core::units::Length radius;
+    units::Length radius;
 };
 
 /* ************************************************************************ */
@@ -68,7 +68,7 @@ struct DLL_EXPORT Shape
      *
      * @return
      */
-	static Shape makeCircle(core::units::Length radius, core::PositionVector center = { 0, 0 }) NOEXCEPT
+    static Shape makeCircle(units::Length radius, PositionVector center = { 0, 0 }) NOEXCEPT
     {
         return Shape{ShapeType::Circle, ShapeCircle{center, radius}};
     }

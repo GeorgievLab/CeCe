@@ -52,7 +52,7 @@ public:
      *
      * @return
      */
-	core::units::Length getRadius() const NOEXCEPT
+    units::Length getRadius() const NOEXCEPT
     {
         return calcSphereRadius(getVolume());
     }
@@ -67,7 +67,7 @@ public:
      *
      * @param dt Time step.
      */
-	void update(core::units::Duration dt) override;
+    void update(units::Duration dt) override;
 
 
     /**

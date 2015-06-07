@@ -28,7 +28,7 @@ Program::~Program()
 
 /* ************************************************************************ */
 
-void Program::operator()(simulator::Object& object, core::units::Duration dt) const
+void Program::operator()(simulator::Object& object, units::Duration dt) const
 {
     if (!m_call)
         return;

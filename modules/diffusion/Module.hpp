@@ -101,7 +101,7 @@ public:
      *
      * @param size New grid size.
      */
-    void setSize(const core::Vector<SignalGrid::SizeType>& size)
+    void setSize(const Vector<SignalGrid::SizeType>& size)
     {
         m_grid.resize(size);
         m_gridBack.resize(size);
@@ -141,7 +141,7 @@ public:
      * @param dt    Simulation time step.
      * @param world World object.
      */
-    void update(core::units::Duration dt, simulator::Simulation& simulation) override;
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
     /**
@@ -189,7 +189,7 @@ private:
     render::Color m_background = render::colors::BLACK;
 
     /// Signal colors.
-	std::vector<render::Color> m_colors;
+    std::vector<render::Color> m_colors;
 
 #if ENABLE_RENDER
     /// Drawable signal grid.

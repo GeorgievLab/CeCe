@@ -56,7 +56,7 @@ public:
      * @param dt         Simulation time step.
      * @param simulation Simulation object.
      */
-    virtual void update(core::units::Duration dt, Simulation& simulation)
+    virtual void update(units::Duration dt, Simulation& simulation)
     {
         // Nothing to do
     }

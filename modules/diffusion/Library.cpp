@@ -26,7 +26,7 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-static void generate_signal(Simulation& simulation, Object& obj, core::units::Duration dt, int signal)
+static void generate_signal(Simulation& simulation, Object& obj, units::Duration dt, int signal)
 {
     CONSTEXPR float SOURCE_STRENGTH = 0.2f;
 
@@ -34,18 +34,18 @@ static void generate_signal(Simulation& simulation, Object& obj, core::units::Du
     assert(diff);
     auto& grid = diff->getGrid();
 
-    const core::Vector<float> start = simulation.getWorldSize() * -0.5;
+    const Vector<float> start = simulation.getWorldSize() * -0.5;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-    if (!pos.inRange(core::Vector<float>{0}, simulation.getWorldSize()))
+    if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
         return;
 
     // Get grid position
-    core::Vector<unsigned int> coord = pos / step;
+    Vector<unsigned int> coord = pos / step;
 
     // TODO: use vector + unique (faster?)
     std::vector<decltype(coord)> coords;
@@ -73,7 +73,7 @@ static void generate_signal(Simulation& simulation, Object& obj, core::units::Du
 
 /* ************************************************************************ */
 
-static void remove_signal(Simulation& simulation, Object& obj, core::units::Duration dt, int signal)
+static void remove_signal(Simulation& simulation, Object& obj, units::Duration dt, int signal)
 {
     CONSTEXPR float SOURCE_STRENGTH = 0.2f;
 
@@ -81,18 +81,18 @@ static void remove_signal(Simulation& simulation, Object& obj, core::units::Dura
     assert(diff);
     auto& grid = diff->getGrid();
 
-    const core::Vector<float> start = simulation.getWorldSize() * -0.5;
+    const Vector<float> start = simulation.getWorldSize() * -0.5;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-    if (!pos.inRange(core::Vector<float>{0}, simulation.getWorldSize()))
+    if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
         return;
 
     // Get grid position
-    core::Vector<unsigned int> coord = pos / step;
+    Vector<unsigned int> coord = pos / step;
 
     // TODO: use vector + unique (faster?)
     std::vector<decltype(coord)> coords;
@@ -133,42 +133,42 @@ class DiffusionApi : public LibraryApi
     Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT override
     {
         if (name == "gen1")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 0);
             };
 
         if (name == "gen2")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 1);
             };
 
         if (name == "gen3")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 2);
             };
 
         if (name == "gen4")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 3);
             };
 
         if (name == "rem1")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 0);
             };
 
         if (name == "rem2")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 1);
             };
 
         if (name == "rem3")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 2);
             };
 
         if (name == "rem4")
-            return [&simulation](Object& obj, core::units::Duration dt) {
+            return [&simulation](Object& obj, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 3);
             };
 

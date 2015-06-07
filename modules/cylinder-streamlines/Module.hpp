@@ -34,7 +34,7 @@ public:
 
 
     /// Grid type.
-    using GridType = core::Grid<core::VelocityVector>;
+    using GridType = Grid<VelocityVector>;
 
     /// Grid size type.
     using SizeType = GridType::SizeType;
@@ -111,7 +111,7 @@ public:
      * @param dt         Simulation time step.
      * @param simulation
      */
-    void update(core::units::Duration dt, simulator::Simulation& simulation) override;
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
     /**

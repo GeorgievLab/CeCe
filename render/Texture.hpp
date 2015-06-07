@@ -62,7 +62,7 @@ public:
      * @param size    Texture size.
      * @param color   Initialization color.
      */
-    Texture(Context& context, core::Vector<SizeType> size, const Color& color = colors::BLACK);
+    Texture(Context& context, Vector<SizeType> size, const Color& color = colors::BLACK);
 
 
     /**
@@ -108,7 +108,7 @@ public:
      * @param size    Texture size.
      * @param color   Initialization color.
      */
-    void resize(core::Vector<SizeType> size, const Color& color = colors::BLACK);
+    void resize(Vector<SizeType> size, const Color& color = colors::BLACK);
 
 
     /**
@@ -117,7 +117,7 @@ public:
      * @param size   Texture data size.
      * @param colors New texture data.
      */
-    void update(const core::Vector<SizeType>& size, const Color* colors);
+    void update(const Vector<SizeType>& size, const Color* colors);
 
 
 // Private Data Members

@@ -58,7 +58,7 @@ public:
      *
      * @param dt Simulation time step.
      */
-    void update(core::units::Duration dt) override;
+    void update(units::Duration dt) override;
 
 
 #if ENABLE_RENDER

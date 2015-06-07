@@ -49,19 +49,19 @@ struct value_constructor<float>
             return val;
 
         if (suffix == "um")
-            return core::units::um(val);
+            return units::um(val);
 
         if (suffix == "um3")
-			return core::units::um3(val);
+            return units::um3(val);
 
         if (suffix == "s")
-			return core::units::s(val);
+            return units::s(val);
 
         if (suffix == "ms")
-			return core::units::ms(val);
+            return units::ms(val);
 
         if (suffix == "us")
-			return core::units::us(val);
+            return units::us(val);
 
         throw Exception("Unsupported suffix: " + suffix);
     }
@@ -167,13 +167,13 @@ inline T parse_value(const std::string& str, const char** end = nullptr)
  * @return
  */
 template<typename T>
-core::Vector<T> parse_vector(const char* str, const char** end = nullptr)
+Vector<T> parse_vector(const char* str, const char** end = nullptr)
 {
     const char* in_end = str;
     T x = parse_value<T>(in_end, &in_end);
     T y = parse_value<T>(in_end, &in_end);
 
-	return core::Vector<T>{x, y};
+    return Vector<T>{x, y};
 }
 
 /* ************************************************************************ */
@@ -187,7 +187,7 @@ core::Vector<T> parse_vector(const char* str, const char** end = nullptr)
  * @return
  */
 template<typename T>
-inline core::Vector<T> parse_vector(const std::string& str, const char** end = nullptr)
+inline Vector<T> parse_vector(const std::string& str, const char** end = nullptr)
 {
     return parse_vector<T>(str.c_str(), end);
 }
@@ -205,7 +205,7 @@ inline core::Vector<T> parse_vector(const std::string& str, const char** end = n
  * @return
  */
 template<typename T>
-core::Vector<T> parse_vector_single(const char* str, const char** end = nullptr)
+Vector<T> parse_vector_single(const char* str, const char** end = nullptr)
 {
     const char* in_end = str;
     T x = parse_value<T>(in_end, &in_end);
@@ -216,7 +216,7 @@ core::Vector<T> parse_vector_single(const char* str, const char** end = nullptr)
     else
         y = x;
 
-    return core::Vector<T>{x, y};
+    return Vector<T>{x, y};
 }
 
 /* ************************************************************************ */
@@ -230,7 +230,7 @@ core::Vector<T> parse_vector_single(const char* str, const char** end = nullptr)
  * @return
  */
 template<typename T>
-inline core::Vector<T> parse_vector_single(const std::string& str, const char** end = nullptr)
+inline Vector<T> parse_vector_single(const std::string& str, const char** end = nullptr)
 {
     return parse_vector_single<T>(str.c_str(), end);
 }

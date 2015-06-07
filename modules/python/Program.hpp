@@ -74,7 +74,7 @@ public:
      * @param object Simulation object.
      * @param dt     Simulation time step.
      */
-    void operator()(simulator::Object& object, core::units::Duration dt) const;
+    void operator()(simulator::Object& object, units::Duration dt) const;
 
 
 // Private Data Members

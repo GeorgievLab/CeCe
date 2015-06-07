@@ -146,7 +146,7 @@ public:
      *
      * @return If next step can be calculated.
      */
-	bool update(core::units::Duration dt);
+    bool update(units::Duration dt);
 
 
     /**

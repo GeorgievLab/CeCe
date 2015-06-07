@@ -132,7 +132,7 @@ public:
      *
      * @return
      */
-	core::PositionVector getPosition() const NOEXCEPT;
+    PositionVector getPosition() const NOEXCEPT;
 
 
     /**
@@ -140,7 +140,7 @@ public:
      *
      * @return
      */
-	core::units::Angle getRotation() const NOEXCEPT;
+    units::Angle getRotation() const NOEXCEPT;
 
 
     /**
@@ -148,7 +148,7 @@ public:
      *
      * @return
      */
-	core::VelocityVector getVelocity() const NOEXCEPT;
+    VelocityVector getVelocity() const NOEXCEPT;
 
 
 #if ENABLE_PHYSICS
@@ -203,7 +203,7 @@ public:
      *
      * @param pos
      */
-	void setPosition(core::PositionVector pos) NOEXCEPT;
+    void setPosition(PositionVector pos) NOEXCEPT;
 
 
     /**
@@ -211,7 +211,7 @@ public:
      *
      * @param angle
      */
-	void setRotation(core::units::Angle angle) NOEXCEPT;
+    void setRotation(units::Angle angle) NOEXCEPT;
 
 
     /**
@@ -219,7 +219,7 @@ public:
      *
      * @param vel
      */
-	void setVelocity(core::VelocityVector vel) NOEXCEPT;
+    void setVelocity(VelocityVector vel) NOEXCEPT;
 
 
     /**
@@ -227,7 +227,7 @@ public:
      *
      * @param force
      */
-	void applyForce(const core::ForceVector& force) NOEXCEPT;
+    void applyForce(const ForceVector& force) NOEXCEPT;
 
 
     /**
@@ -236,7 +236,7 @@ public:
      * @param force
      * @param pos
      */
-	void applyForce(const core::ForceVector& force, const core::PositionVector& pos) NOEXCEPT;
+    void applyForce(const ForceVector& force, const PositionVector& pos) NOEXCEPT;
 
 
     /**
@@ -319,7 +319,7 @@ public:
      *
      * @param dt Simulation time step.
      */
-	virtual void update(core::units::Duration dt);
+	virtual void update(units::Duration dt);
 
 
     /**
@@ -386,13 +386,13 @@ private:
     Type m_type;
 
     /// Object position
-	core::PositionVector m_position;
+	PositionVector m_position;
 
     /// Object rotation.
-	core::units::Angle m_rotation;
+	units::Angle m_rotation;
 
     /// Object velocity.
-	core::VelocityVector m_velocity;
+	VelocityVector m_velocity;
 #endif
 
 };

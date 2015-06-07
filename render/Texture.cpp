@@ -48,7 +48,7 @@ Texture::Texture(Context& context)
 
 /* ************************************************************************ */
 
-Texture::Texture(Context& context, core::Vector<SizeType> size, const Color& color)
+Texture::Texture(Context& context, Vector<SizeType> size, const Color& color)
     : Texture(context)
 {
     // Init texture
@@ -65,7 +65,7 @@ Texture::~Texture()
 
 /* ************************************************************************ */
 
-void Texture::resize(core::Vector<SizeType> size, const Color& color)
+void Texture::resize(Vector<SizeType> size, const Color& color)
 {
     assert(isInitialized());
 
@@ -81,7 +81,7 @@ void Texture::resize(core::Vector<SizeType> size, const Color& color)
 
 /* ************************************************************************ */
 
-void Texture::update(const core::Vector<SizeType>& size, const Color* colors)
+void Texture::update(const Vector<SizeType>& size, const Color* colors)
 {
     const int width = size.getWidth();
     const int height = size.getHeight();

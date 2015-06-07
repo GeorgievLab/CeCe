@@ -65,7 +65,7 @@ void Grid::draw(Context& context) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Grid::resize(core::Vector<PositionType> size) NOEXCEPT
+void Grid::resize(Vector<PositionType> size) NOEXCEPT
 {
     GridBase::resize(std::move(size));
 
@@ -73,8 +73,8 @@ void Grid::resize(core::Vector<PositionType> size) NOEXCEPT
     const auto width = getSize().getWidth();
     const auto height = getSize().getHeight();
 
-    CONSTEXPR core::Vector<float> start{-0.5f};
-    const core::Vector<float> step = 1.f / getSize();
+    CONSTEXPR Vector<float> start{-0.5f};
+    const Vector<float> step = 1.f / getSize();
 
     struct Vertex { GLfloat x, y; };
 

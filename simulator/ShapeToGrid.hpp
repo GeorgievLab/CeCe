@@ -32,9 +32,9 @@ namespace simulator {
  * @param mim    Minimum coordinates (default is {0, 0}).
  */
 template<typename OutIt, typename T, typename StepT>
-OutIt mapShapeToGrid(OutIt out, const Shape& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max,
-	const core::Vector<T>& min = {})
+OutIt mapShapeToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
+	const Vector<T>& center, const Vector<T>& max,
+	const Vector<T>& min = {})
 {
     switch (shape.type)
     {
@@ -64,18 +64,18 @@ OutIt mapShapeToGrid(OutIt out, const Shape& shape, const core::Vector<StepT>& s
  * @param mim    Minimum coordinates (default is {0, 0}).
  */
 template<typename OutIt, typename T, typename StepT>
-OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max,
-	const core::Vector<T>& min = {})
+OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& steps,
+    const Vector<T>& center, const Vector<T>& max,
+    const Vector<T>& min = {})
 {
     // Get signed type
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-	const core::Vector<float> radiusSteps = core::Vector<float>(shape.radius) / steps;
-	const core::Vector<Ts> shapeCenter = center + shape.center / steps;
-	const core::Vector<Ts> maxS = max;
-	const core::Vector<Ts> minS = min;
+    const Vector<float> radiusSteps = Vector<float>(shape.radius) / steps;
+    const Vector<Ts> shapeCenter = center + shape.center / steps;
+    const Vector<Ts> maxS = max;
+    const Vector<Ts> minS = min;
 
     // Foreach grid given by radius steps
     for (Ts x = Ts(-radiusSteps.getX()); x < Ts(radiusSteps.getX()); ++x)
@@ -83,15 +83,15 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const core::Vector<Ste
         for (Ts y = Ts(-radiusSteps.getY()); y < Ts(radiusSteps.getY()); ++y)
         {
             // Calculate normalized length for ellipse
-			const core::Vector<float> xyVec{ static_cast<float>(x), static_cast<float>(y) };
-			const core::Vector<float> lenVec = operator/(xyVec, radiusSteps);
+            const Vector<float> xyVec{ static_cast<float>(x), static_cast<float>(y) };
+            const Vector<float> lenVec = operator/(xyVec, radiusSteps);
             const float len = lenVec.getLengthSquared();
 
             if (len > 1.f)
                 continue;
 
             // Calculate grid coordinates
-			const core::Vector<Ts> coord = shapeCenter + core::Vector<Ts>(xyVec);
+            const Vector<Ts> coord = shapeCenter + Vector<Ts>(xyVec);
 
             // Check if coordinates are in range
             if (!coord.inRange(minS, maxS))
@@ -121,9 +121,9 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const core::Vector<Ste
  * @param mim    Minimum coordinates (default is {0, 0}).
  */
 template<typename OutIt, typename T, typename StepT, typename OffT = int>
-OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max, const core::Vector<T>& min = {},
-	OffT off = OffT{})
+OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
+    const Vector<T>& center, const Vector<T>& max, const Vector<T>& min = {},
+    OffT off = OffT{})
 {
     switch (shape.type)
     {
@@ -157,22 +157,22 @@ OutIt mapShapeBorderToGrid(OutIt out, const Shape& shape, const core::Vector<Ste
  * @see https://web.archive.org/web/20120225095359/http://homepage.smc.edu/kennedy_john/belipse.pdf
  */
 template<typename OutIt, typename T, typename StepT, typename OffT = int>
-OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const core::Vector<StepT>& steps,
-	const core::Vector<T>& center, const core::Vector<T>& max, const core::Vector<T>& min = {},
-	OffT off = OffT{})
+OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& steps,
+    const Vector<T>& center, const Vector<T>& max, const Vector<T>& min = {},
+    OffT off = OffT{})
 {
     // Get signed type
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-	const core::Vector<T> radius = shape.radius / steps + off;
-	const core::Vector<Ts> shapeCenter = center + shape.center / steps;
-	const core::Vector<Ts> maxS = max;
-	const core::Vector<Ts> minS = min;
+    const Vector<T> radius = shape.radius / steps + off;
+    const Vector<Ts> shapeCenter = center + shape.center / steps;
+    const Vector<Ts> maxS = max;
+    const Vector<Ts> minS = min;
 
-    auto putCoord = [&out, &shapeCenter, &minS, &maxS](core::Vector<Ts> xy) {
+    auto putCoord = [&out, &shapeCenter, &minS, &maxS](Vector<Ts> xy) {
         // Calculate grid coordinates
-		const core::Vector<T> coord = shapeCenter + xy;
+        const Vector<T> coord = shapeCenter + xy;
 
         // Check if coordinates are in range
         if (coord.inRange(minS, maxS))
@@ -182,21 +182,21 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const core::Vect
     const auto radiusSquare = radius * radius;
     const auto twoSquare = 2 * radiusSquare;
 
-	core::Vector<Ts> xy(radius.getX(), 0);
-	core::Vector<Ts> change(
+    Vector<Ts> xy(radius.getX(), 0);
+    Vector<Ts> change(
         radiusSquare.getY() * (1 - 2 * radius.getX()),
         radiusSquare.getX()
     );
 
     Ts error = 0;
-	core::Vector<Ts> stopping(twoSquare.getY() * radius.getX(), 0);
+    Vector<Ts> stopping(twoSquare.getY() * radius.getX(), 0);
 
     while (stopping.getX() >= stopping.getY())
     {
         putCoord(xy);
-        putCoord(xy * core::Vector<Ts>(-1,  1));
-        putCoord(xy * core::Vector<Ts>(-1, -1));
-        putCoord(xy * core::Vector<Ts>( 1, -1));
+        putCoord(xy * Vector<Ts>(-1,  1));
+        putCoord(xy * Vector<Ts>(-1, -1));
+        putCoord(xy * Vector<Ts>( 1, -1));
 
         ++xy.y();
         stopping.y() += twoSquare.getX();
@@ -212,21 +212,21 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const core::Vect
         }
     }
 
-    xy = core::Vector<Ts>(0, radius.getY());
-    change = core::Vector<Ts>(
+    xy = Vector<Ts>(0, radius.getY());
+    change = Vector<Ts>(
         radiusSquare.getY(),
         radiusSquare.getX() * (1 - 2 * radius.getY())
     );
 
     error = 0;
-    stopping = core::Vector<Ts>(0, twoSquare.getY() * radius.getY());
+    stopping = Vector<Ts>(0, twoSquare.getY() * radius.getY());
 
     while (stopping.getX() <= stopping.getY())
     {
         putCoord(xy);
-        putCoord(xy * core::Vector<Ts>(-1,  1));
-        putCoord(xy * core::Vector<Ts>(-1, -1));
-        putCoord(xy * core::Vector<Ts>( 1, -1));
+        putCoord(xy * Vector<Ts>(-1,  1));
+        putCoord(xy * Vector<Ts>(-1, -1));
+        putCoord(xy * Vector<Ts>( 1, -1));
 
         ++xy.x();
         stopping.x() += twoSquare.getY();

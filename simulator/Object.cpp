@@ -140,7 +140,7 @@ Object::Type Object::getType() const NOEXCEPT
 
 /* ************************************************************************ */
 
-core::PositionVector Object::getPosition() const NOEXCEPT
+PositionVector Object::getPosition() const NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -153,7 +153,7 @@ core::PositionVector Object::getPosition() const NOEXCEPT
 
 /* ************************************************************************ */
 
-core::units::Angle Object::getRotation() const NOEXCEPT
+units::Angle Object::getRotation() const NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -165,7 +165,7 @@ core::units::Angle Object::getRotation() const NOEXCEPT
 
 /* ************************************************************************ */
 
-core::VelocityVector Object::getVelocity() const NOEXCEPT
+VelocityVector Object::getVelocity() const NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -190,7 +190,7 @@ void Object::setType(Type type) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::setPosition(core::PositionVector pos) NOEXCEPT
+void Object::setPosition(PositionVector pos) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -202,7 +202,7 @@ void Object::setPosition(core::PositionVector pos) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::setRotation(core::units::Angle angle) NOEXCEPT
+void Object::setRotation(units::Angle angle) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -214,7 +214,7 @@ void Object::setRotation(core::units::Angle angle) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::setVelocity(core::VelocityVector vel) NOEXCEPT
+void Object::setVelocity(VelocityVector vel) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -226,7 +226,7 @@ void Object::setVelocity(core::VelocityVector vel) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::applyForce(const core::ForceVector& force) NOEXCEPT
+void Object::applyForce(const ForceVector& force) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -239,7 +239,7 @@ void Object::applyForce(const core::ForceVector& force) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::applyForce(const core::ForceVector& force, const core::PositionVector& pos) NOEXCEPT
+void Object::applyForce(const ForceVector& force, const PositionVector& pos) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -251,7 +251,7 @@ void Object::applyForce(const core::ForceVector& force, const core::PositionVect
 
 /* ************************************************************************ */
 
-void Object::update(core::units::Duration dt)
+void Object::update(units::Duration dt)
 {
 #if !ENABLE_PHYSICS
     // Calculate new object position
@@ -268,7 +268,7 @@ void Object::update(core::units::Duration dt)
 void Object::configure(const ConfigurationBase& config, Simulation& simulation)
 {
     config.callIfSetString("position", [this](const std::string& value) {
-		setPosition(parser::parse_vector<core::units::Length>(value));
+		setPosition(parser::parse_vector<units::Length>(value));
     });
 
     config.callIfSetString("programs", [this, &simulation](const std::string& value) {
@@ -279,7 +279,7 @@ void Object::configure(const ConfigurationBase& config, Simulation& simulation)
             if (program)
                 addProgram(std::move(program));
             else
-                core::Log::warning("Unable to create program: ", name);
+                Log::warning("Unable to create program: ", name);
         }
     });
 }

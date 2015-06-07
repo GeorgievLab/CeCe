@@ -143,7 +143,7 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
 
     // Resize world
     {
-        auto size = parser::parse_vector<core::units::Length>(node.attribute("world-size").value());
+        auto size = parser::parse_vector<units::Length>(node.attribute("world-size").value());
 
         if (size.getWidth() == 0 || size.getHeight() == 0)
             throw parser::Exception("Width or height is zero!");
@@ -163,7 +163,7 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         else
         {
             // Parse time step
-            auto dt = parser::parse_value<core::units::Duration>(dtStr);
+            auto dt = parser::parse_value<units::Duration>(dtStr);
             simulation.setTimeStep(dt);
             simulation.setTimeStepRealTime(false);
         }

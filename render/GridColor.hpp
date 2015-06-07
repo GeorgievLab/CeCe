@@ -51,7 +51,7 @@ public:
      * @param context Rendering context.
      * @param size
      */
-    GridColor(Context& context, core::Vector<PositionType> size);
+    GridColor(Context& context, Vector<PositionType> size);
 
 
 // Public Operators
@@ -64,7 +64,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& operator[](const core::Vector<PositionType>& coord) NOEXCEPT
+    Color& operator[](const Vector<PositionType>& coord) NOEXCEPT
     {
         return get(coord);
     }
@@ -76,7 +76,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& operator[](const core::Vector<PositionType>& coord) const NOEXCEPT
+    const Color& operator[](const Vector<PositionType>& coord) const NOEXCEPT
     {
         return get(coord);
     }
@@ -101,7 +101,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& get(const core::Vector<PositionType>& coord) NOEXCEPT
+    Color& get(const Vector<PositionType>& coord) NOEXCEPT
     {
         return m_colors[coord];
     }
@@ -113,7 +113,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& get(const core::Vector<PositionType>& coord) const NOEXCEPT
+    const Color& get(const Vector<PositionType>& coord) const NOEXCEPT
     {
         return m_colors[coord];
     }
@@ -129,7 +129,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    void set(const core::Vector<PositionType>& coord, const Color& color) NOEXCEPT
+    void set(const Vector<PositionType>& coord, const Color& color) NOEXCEPT
     {
         // Set color
         m_colors[coord] = color;
@@ -164,7 +164,7 @@ public:
      * @param size  New grid size.
      * @param color Background color.
      */
-    void resize(core::Vector<PositionType> size, const Color& color = colors::BLACK);
+    void resize(Vector<PositionType> size, const Color& color = colors::BLACK);
 
 
     /**
@@ -191,7 +191,7 @@ private:
     Buffer m_buffer;
 
     /// Buffer for storing texture data.
-    core::Grid<Color> m_colors;
+    Grid<Color> m_colors;
 
     /// If colors were updated.
     bool m_colorsUpdated = false;

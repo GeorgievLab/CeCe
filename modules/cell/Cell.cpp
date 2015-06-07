@@ -39,7 +39,7 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) NOEX
 
 /* ************************************************************************ */
 
-void Cell::update(core::units::Duration dt)
+void Cell::update(units::Duration dt)
 {
     CellBase::update(dt);
 

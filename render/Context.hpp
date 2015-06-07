@@ -96,7 +96,7 @@ public:
      *
      * @return
      */
-    std::pair<std::vector<std::uint8_t>, core::Vector<unsigned>> getData() const NOEXCEPT;
+    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> getData() const NOEXCEPT;
 
 
     /**
@@ -185,7 +185,7 @@ public:
      *
      * @param pos Translation vector.
      */
-    void matrixTranslate(const core::PositionVector& pos) NOEXCEPT;
+    void matrixTranslate(const PositionVector& pos) NOEXCEPT;
 
 
     /**
@@ -193,7 +193,7 @@ public:
      *
      * @param scale Scale vector.
      */
-    void matrixScale(const core::Vector<float>& scale) NOEXCEPT;
+    void matrixScale(const Vector<float>& scale) NOEXCEPT;
 
 
     /**
@@ -203,7 +203,7 @@ public:
      */
     void matrixScale(float scale) NOEXCEPT
     {
-        return matrixScale(core::Vector<float>{scale});
+        return matrixScale(Vector<float>{scale});
     }
 
 
@@ -212,7 +212,7 @@ public:
      *
      * @param angle Angle of the rotation.
      */
-    void matrixRotate(core::units::Angle angle) NOEXCEPT;
+    void matrixRotate(units::Angle angle) NOEXCEPT;
 
 
     /**

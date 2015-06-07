@@ -115,9 +115,9 @@ Context::~Context()
 
 /* ************************************************************************ */
 
-std::pair<std::vector<std::uint8_t>, core::Vector<unsigned>> Context::getData() const NOEXCEPT
+std::pair<std::vector<std::uint8_t>, Vector<unsigned>> Context::getData() const NOEXCEPT
 {
-    std::pair<std::vector<std::uint8_t>, core::Vector<unsigned>> result;
+    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> result;
 
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -128,7 +128,7 @@ std::pair<std::vector<std::uint8_t>, core::Vector<unsigned>> Context::getData() 
     auto height = viewport[3];
 
     result.first.resize(3 * width * height);
-    result.second = core::Vector<unsigned>(width, height);
+    result.second = Vector<unsigned>(width, height);
 
     glReadBuffer(GL_FRONT);
     glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, result.first.data());
@@ -296,23 +296,23 @@ void Context::matrixIdentity() NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::matrixTranslate(const core::PositionVector& pos) NOEXCEPT
+void Context::matrixTranslate(const PositionVector& pos) NOEXCEPT
 {
     gl(glTranslatef(pos.getX(), pos.getY(), 0));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixScale(const core::Vector<float>& scale) NOEXCEPT
+void Context::matrixScale(const Vector<float>& scale) NOEXCEPT
 {
     gl(glScalef(scale.getX(), scale.getY(), 1));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixRotate(core::units::Angle angle) NOEXCEPT
+void Context::matrixRotate(units::Angle angle) NOEXCEPT
 {
-    gl(glRotatef(core::units::rad2deg(angle), 0.f, 0.f, 1.f));
+    gl(glRotatef(units::rad2deg(angle), 0.f, 0.f, 1.f));
 }
 
 /* ************************************************************************ */

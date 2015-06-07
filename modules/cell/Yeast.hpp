@@ -41,10 +41,10 @@ public:
     struct Bud
     {
         /// Angle.
-		core::units::Angle rotation = core::units::deg(0);
+        units::Angle rotation = units::deg(0);
 
         /// Bud volume.
-		core::units::Volume volume = core::units::um3(1);
+        units::Volume volume = units::um3(1);
 
 #if ENABLE_PHYSICS
         /// Bud shape.
@@ -97,7 +97,7 @@ public:
      *
      * @param dt Time step.
      */
-	void update(core::units::Duration dt) override;
+    void update(units::Duration dt) override;
 
 
     /**

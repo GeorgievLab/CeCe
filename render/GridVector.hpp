@@ -33,7 +33,7 @@ public:
     /**
      * @brief Constructor.
      */
-    GridVector(Context& context, core::Vector<unsigned int> size, const core::Vector<float>* data);
+    GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data);
 
 
 // Public Operations
@@ -54,7 +54,7 @@ public:
      * @param size
      * @param data
      */
-    void resize(core::Vector<unsigned int> size, const core::Vector<float>* data);
+    void resize(Vector<unsigned int> size, const Vector<float>* data);
 
 
     /**
@@ -62,7 +62,7 @@ public:
      *
      * @param data
      */
-    void update(const core::Vector<float>* data) NOEXCEPT;
+    void update(const Vector<float>* data) NOEXCEPT;
 
 
 // Private Data Members

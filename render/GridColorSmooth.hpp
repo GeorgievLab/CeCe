@@ -48,7 +48,7 @@ public:
      * @param context Rendering context.
      * @param size
      */
-    GridColorSmooth(Context& context, core::Vector<PositionType> size)
+    GridColorSmooth(Context& context, Vector<PositionType> size)
         : GridColorSmooth(context)
     {
         resize(std::move(size));

@@ -17,14 +17,14 @@ namespace cylinder_streamlines {
 
 /* ************************************************************************ */
 
-void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
+void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     if (m_update)
     {
         // Precompute values
-        const core::Vector<float> start = simulation.getWorldSize() * -0.5f;
+        const Vector<float> start = simulation.getWorldSize() * -0.5f;
         const auto gridSize = m_grid.getSize();
-        const core::Vector<float> step = simulation.getWorldSize() / gridSize;
+        const Vector<float> step = simulation.getWorldSize() / gridSize;
 
         float radius = 0.f;
 
@@ -43,19 +43,19 @@ void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
         {
             for (decltype(gridSize.getWidth()) i = 0; i < gridSize.getWidth(); ++i)
             {
-                auto& velocity = m_grid[core::Vector<SizeType>(i, j)];
+                auto& velocity = m_grid[Vector<SizeType>(i, j)];
 
                 if (!m_object)
                 {
-                    velocity = core::Vector<float>{1.f, 0.f};
+                    velocity = Vector<float>{1.f, 0.f};
                     continue;
                 }
 
                 // Transform i, j coordinates to position
                 // Cell center position
-                const core::Vector<float> coord = core::Vector<float>(i, j) + 0.5f;
+                const Vector<float> coord = Vector<float>(i, j) + 0.5f;
                 // Real position in the world
-                const core::Vector<float> pos = start + step * coord - m_object->getPosition();
+                const Vector<float> pos = start + step * coord - m_object->getPosition();
 
                 // Calculate squared distance from main cell
                 const auto distSq = pos.getLengthSquared();
@@ -63,7 +63,7 @@ void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
                 // Cell is in main cell, ignore
                 if (distSq <= R2)
                 {
-                    velocity = core::Vector<float>{0.f, 0.f};
+                    velocity = Vector<float>{0.f, 0.f};
                     continue;
                 }
     /*
@@ -78,7 +78,7 @@ void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
     */
                 const float theta = atan2(pos.getY(), pos.getX());
 
-                const core::Vector<float> u = core::Vector<float>{
+                const Vector<float> u = Vector<float>{
                     cosf(theta) * (1 - R2 / distSq),
                     -sinf(theta) * (1 + R2 / distSq)
                 };
@@ -97,7 +97,7 @@ void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
         // Get grid
         const auto& grid = getGrid();
 
-        const core::Vector<float> start = simulation.getWorldSize() * -0.5;
+        const Vector<float> start = simulation.getWorldSize() * -0.5;
         const auto step = simulation.getWorldSize() / grid.getSize();
 
         for (auto& obj : simulation.getObjects())
@@ -110,11 +110,11 @@ void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
             const auto pos = obj->getPosition() - start;
 
             // Check if object is in range
-            if (!pos.inRange(core::Vector<float>{0}, simulation.getWorldSize()))
+            if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
                 continue;
 
             // Get grid position
-            core::Vector<SizeType> coord = pos / step;
+            Vector<SizeType> coord = pos / step;
 
             // Get velocity
             const auto velocity = grid[coord] * m_flowSpeed;

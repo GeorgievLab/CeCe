@@ -27,8 +27,8 @@ MainFrame::MainFrame(wxWindow* parent)
     , m_logger(this)
 {
     // Register logger into Log
-    core::Log::setOutput(&m_logger);
-    core::Log::setError(&m_logger);
+    Log::setOutput(&m_logger);
+    Log::setError(&m_logger);
 
     std::cout.rdbuf(&m_logger.GetBuffer());
     std::cerr.rdbuf(&m_logger.GetBuffer());
@@ -67,8 +67,8 @@ MainFrame::~MainFrame()
     // Store configuration
     StoreConfig();
 
-    core::Log::setOutput(&std::cout);
-    core::Log::setError(&std::cerr);
+    Log::setOutput(&std::cout);
+    Log::setError(&std::cerr);
 }
 
 /* ************************************************************************ */

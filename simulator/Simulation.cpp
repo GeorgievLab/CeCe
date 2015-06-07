@@ -78,7 +78,7 @@ Module* Simulation::useModule(const std::string& path)
     if (hasModule(path))
         return getModule(path);
 
-	core::Log::debug("Loading library: ", path);
+    Log::debug("Loading library: ", path);
 
     // Split path into parts
     std::string library, name;
@@ -89,9 +89,9 @@ Module* Simulation::useModule(const std::string& path)
 
     // Load only library
     if (name.empty())
-		core::Log::debug("Create module '", library, "'");
+        Log::debug("Create module '", library, "'");
     else
-		core::Log::debug("Create module '", library, ".", name, "'");
+        Log::debug("Create module '", library, ".", name, "'");
 
     // Create module with given name
     auto module = api->createModule(*this, name);
@@ -99,11 +99,11 @@ Module* Simulation::useModule(const std::string& path)
     // Register module
     if (module)
     {
-		core::Log::info("Using module: ", path);
+        Log::info("Using module: ", path);
         return addModule(path, std::move(module));
     }
 
-	core::Log::warning("Unable to create module: ", path, " (unsupported by library?)");
+    Log::warning("Unable to create module: ", path, " (unsupported by library?)");
 
     return nullptr;
 }
@@ -122,7 +122,7 @@ Object* Simulation::buildObject(const std::string& name, bool dynamic)
     // Get API
     LibraryApi* api = getLibraryApi(library);
 
-	core::Log::debug("Create object '", library, ".", type, "'");
+    Log::debug("Create object '", library, ".", type, "'");
 
     // Create object with given name
     auto object = api->createObject(*this, type, dynamic);
@@ -131,7 +131,7 @@ Object* Simulation::buildObject(const std::string& name, bool dynamic)
     if (object)
         return addObject(std::move(object));
 
-	core::Log::warning("Unable to create object: ", name, " (unsupported by library?)");
+    Log::warning("Unable to create object: ", name, " (unsupported by library?)");
 
     return nullptr;
 }
@@ -150,7 +150,7 @@ Program Simulation::buildProgram(const std::string& path)
     // Get API
     LibraryApi* api = getLibraryApi(library);
 
-	core::Log::debug("Create program '", library, ".", type, "'");
+    Log::debug("Create program '", library, ".", type, "'");
 
     // Create object with given name
     return api->createProgram(*this, type);
@@ -165,14 +165,14 @@ void Simulation::reset()
 
 /* ************************************************************************ */
 
-bool Simulation::update(core::units::Duration dt)
+bool Simulation::update(units::Duration dt)
 {
     // Increase step number
     m_stepNumber++;
 
     // Update modules
     {
-		auto _ = core::measure_time("sim.modules", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
+        auto _ = measure_time("sim.modules", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -181,7 +181,7 @@ bool Simulation::update(core::units::Duration dt)
     }
 
     {
-		auto _ = core::measure_time("sim.objects", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
+        auto _ = measure_time("sim.objects", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -196,7 +196,7 @@ bool Simulation::update(core::units::Duration dt)
 
     // Remove objects that are outside world.
     {
-		auto _ = core::measure_time("sim.delete", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
+        auto _ = measure_time("sim.delete", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -221,7 +221,7 @@ bool Simulation::update(core::units::Duration dt)
 
 #ifdef ENABLE_PHYSICS
     {
-		auto _ = core::measure_time("sim.physics", [this](std::ostream& out, const std::string& name, core::Clock::duration dt) {
+        auto _ = measure_time("sim.physics", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -346,7 +346,7 @@ LibraryApi* Simulation::getLibraryApi(const std::string& name)
     // Unable to load library
     if (!lib->isLoaded())
     {
-		core::Log::warning("Unable to load library: ", name, "(", lib->getError(), ")");
+        Log::warning("Unable to load library: ", name, "(", lib->getError(), ")");
         return nullptr;
     }
 
@@ -357,7 +357,7 @@ LibraryApi* Simulation::getLibraryApi(const std::string& name)
     // Initialize simulation
     if (init)
     {
-		core::Log::debug("Initialize simulation '", name, "'");
+        Log::debug("Initialize simulation '", name, "'");
         api->initSimulation(*this);
     }
 

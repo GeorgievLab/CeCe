@@ -3,7 +3,8 @@
 
 /* ************************************************************************ */
 
-// Render
+// Simulator
+#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 
 /* ************************************************************************ */
@@ -15,7 +16,7 @@ namespace render {
 /**
  * @brief Render position.
  */
-using Position = core::Vector<float>;
+using Position = Vector<float>;
 
 /* ************************************************************************ */
 

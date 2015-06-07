@@ -26,7 +26,7 @@ namespace render {
 
 /* ************************************************************************ */
 
-GridVector::GridVector(Context& context, core::Vector<unsigned int> size, const core::Vector<float>* data)
+GridVector::GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data)
     : m_buffer(context)
 {
     resize(size, data);
@@ -54,7 +54,7 @@ void GridVector::draw(Context& context) NOEXCEPT
 
 /* ************************************************************************ */
 
-void GridVector::resize(core::Vector<unsigned int> size, const core::Vector<float>* data)
+void GridVector::resize(Vector<unsigned int> size, const Vector<float>* data)
 {
     GridBase::resize(std::move(size));
 
@@ -63,12 +63,12 @@ void GridVector::resize(core::Vector<unsigned int> size, const core::Vector<floa
 
 /* ************************************************************************ */
 
-void GridVector::update(const core::Vector<float>* data) NOEXCEPT
+void GridVector::update(const Vector<float>* data) NOEXCEPT
 {
     const auto size = getSize();
 
-    CONSTEXPR core::Vector<float> start{ -0.5f, -0.5f };
-    const core::Vector<float> step = 1.f / size;
+    CONSTEXPR Vector<float> start{ -0.5f, -0.5f };
+    const Vector<float> step = 1.f / size;
 
     auto width = size.getWidth();
     auto height = size.getHeight();
@@ -82,7 +82,7 @@ void GridVector::update(const core::Vector<float>* data) NOEXCEPT
     {
         for (decltype(width) i = 0; i < width; ++i)
         {
-            const core::Vector<float>& vec = data[i + j * width];
+            const Vector<float>& vec = data[i + j * width];
             const float len_squared = vec.getLengthSquared();
 
             if (max_squared < len_squared)
@@ -99,8 +99,8 @@ void GridVector::update(const core::Vector<float>* data) NOEXCEPT
         for (decltype(width) i = 0; i < width; ++i)
         {
             // Get vector normalized by max length
-            const core::Vector<float> vec = data[i + j * width] / max;
-            const core::Vector<float> pos{
+            const Vector<float> vec = data[i + j * width] / max;
+            const Vector<float> pos{
                     start.getX() + i * step.getX() + step.getX() / 2.f,
                     start.getY() + j * step.getY() + step.getY() / 2.f
             };
@@ -108,7 +108,7 @@ void GridVector::update(const core::Vector<float>* data) NOEXCEPT
             const float green = 5 * std::max(vec.getY(), 0.f);
             const float blue = 5 * std::max(-vec.getY(), 0.f);
 
-            const core::Vector<float> dest = pos + vec * step;
+            const Vector<float> dest = pos + vec * step;
 
             vertices.push_back(Vertex{pos.getX(), pos.getY(), red, green, blue});
             vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});

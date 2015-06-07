@@ -52,7 +52,7 @@ Object::Object(simulator::Simulation& simulation, const std::string& name, Type 
 
         if (foundPath.empty())
         {
-            core::Log::warning("Unable to find: " + name);
+            Log::warning("Unable to find: " + name);
         }
         else
         {
@@ -69,7 +69,7 @@ void Object::configure(const simulator::ConfigurationBase& config, simulator::Si
     if (config.hasText())
     {
         if (m_source.isInitialized())
-            core::Log::warning("Overriding external script by internal code");
+            Log::warning("Overriding external script by internal code");
 
         // Initialize from source text
         m_source.initSource(config.getText());
@@ -93,7 +93,7 @@ void Object::configure(const simulator::ConfigurationBase& config, simulator::Si
 
 /* ************************************************************************ */
 
-void Object::update(core::units::Duration dt)
+void Object::update(units::Duration dt)
 {
     if (!m_updateFn)
         return;

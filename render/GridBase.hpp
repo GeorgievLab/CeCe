@@ -43,7 +43,7 @@ public:
      *
      * @return
      */
-    const core::Vector<PositionType>& getSize() const NOEXCEPT
+    const Vector<PositionType>& getSize() const NOEXCEPT
     {
         return m_size;
     }
@@ -59,7 +59,7 @@ public:
      *
      * @param size
      */
-    void resize(core::Vector<PositionType> size) NOEXCEPT
+    void resize(Vector<PositionType> size) NOEXCEPT
     {
         m_size = std::move(size);
     }
@@ -70,7 +70,7 @@ private:
 
 
     /// Grid size.
-    core::Vector<PositionType> m_size;
+    Vector<PositionType> m_size;
 
 };
 

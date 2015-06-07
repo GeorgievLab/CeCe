@@ -89,7 +89,7 @@ class PythonApi : public LibraryApi
         }
         catch (const std::exception& e)
         {
-            core::Log::warning(e.what());
+            Log::warning(e.what());
         }
 
         return nullptr;
@@ -113,7 +113,7 @@ class PythonApi : public LibraryApi
         }
         catch (const std::exception& e)
         {
-            core::Log::warning(e.what());
+            Log::warning(e.what());
         }
 
         return nullptr;
@@ -148,7 +148,7 @@ class PythonApi : public LibraryApi
         }
         catch (const std::exception& e)
         {
-            core::Log::warning(e.what());
+            Log::warning(e.what());
         }
 
         return {};

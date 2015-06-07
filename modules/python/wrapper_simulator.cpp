@@ -77,7 +77,7 @@ static PyObject* simulation_getWorldSize(ObjectWrapper<simulator::Simulation*>* 
 {
     assert(self);
     assert(self->value);
-    const core::Vector<float> pos = self->value->getWorldSize();
+    const Vector<float> pos = self->value->getWorldSize();
 
     return makeObject(pos);
 }
@@ -156,7 +156,7 @@ static PyObject* object_getPosition(ObjectWrapper<simulator::Object*>* self, voi
 {
     assert(self);
     assert(self->value);
-    const core::Vector<float> pos = self->value->getPosition();
+    const Vector<float> pos = self->value->getPosition();
 
     return makeObject(pos);
 }
@@ -171,13 +171,13 @@ static int object_setPosition(ObjectWrapper<simulator::Object*>* self, PyObject*
         return -1;
     }
 
-    if (!PyObject_TypeCheck(value, &TypeDefinition<core::Vector<float>>::definition))
+    if (!PyObject_TypeCheck(value, &TypeDefinition<Vector<float>>::definition))
     {
         PyErr_SetString(PyExc_TypeError, "Position must have VectorFloat type");
         return -1;
     }
 
-    using value_type = TypeDefinition<core::Vector<float>>::type;
+    using value_type = TypeDefinition<Vector<float>>::type;
     value_type* val = reinterpret_cast<value_type*>(value);
 
     assert(self);
@@ -227,7 +227,7 @@ static PyObject* object_getVelocity(ObjectWrapper<simulator::Object*>* self, voi
 {
     assert(self);
     assert(self->value);
-    const core::Vector<float> velocity = self->value->getVelocity();
+    const Vector<float> velocity = self->value->getVelocity();
 
     return makeObject(velocity);
 }
@@ -236,13 +236,13 @@ static PyObject* object_getVelocity(ObjectWrapper<simulator::Object*>* self, voi
 
 static int object_setVelocity(ObjectWrapper<simulator::Object*>* self, PyObject* value, void* closure)
 {
-    if (!PyObject_TypeCheck(value, &TypeDefinition<core::Vector<float>>::definition))
+    if (!PyObject_TypeCheck(value, &TypeDefinition<Vector<float>>::definition))
     {
         PyErr_SetString(PyExc_TypeError, "Position must have VectorFloat type");
         return -1;
     }
 
-    using value_type = TypeDefinition<core::Vector<float>>::type;
+    using value_type = TypeDefinition<Vector<float>>::type;
     value_type* val = reinterpret_cast<value_type*>(value);
 
     assert(self);

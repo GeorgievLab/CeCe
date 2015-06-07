@@ -17,7 +17,7 @@ using namespace module::python;
 
 /* ************************************************************************ */
 
-static PyObject* vectorFloat_getX(ObjectWrapper<core::Vector<float>>* self, void* closure)
+static PyObject* vectorFloat_getX(ObjectWrapper<Vector<float>>* self, void* closure)
 {
     assert(self);
     const float x = self->value.getX();
@@ -27,7 +27,7 @@ static PyObject* vectorFloat_getX(ObjectWrapper<core::Vector<float>>* self, void
 
 /* ************************************************************************ */
 
-static int vectorFloat_setX(ObjectWrapper<core::Vector<float>>* self, PyObject* value, void* closure)
+static int vectorFloat_setX(ObjectWrapper<Vector<float>>* self, PyObject* value, void* closure)
 {
     if (value == nullptr)
     {
@@ -49,7 +49,7 @@ static int vectorFloat_setX(ObjectWrapper<core::Vector<float>>* self, PyObject* 
 
 /* ************************************************************************ */
 
-static PyObject* vectorFloat_getY(ObjectWrapper<core::Vector<float>>* self, void* closure)
+static PyObject* vectorFloat_getY(ObjectWrapper<Vector<float>>* self, void* closure)
 {
     assert(self);
     const float y = self->value.getY();
@@ -59,7 +59,7 @@ static PyObject* vectorFloat_getY(ObjectWrapper<core::Vector<float>>* self, void
 
 /* ************************************************************************ */
 
-static int vectorFloat_setY(ObjectWrapper<core::Vector<float>>* self, PyObject* value, void* closure)
+static int vectorFloat_setY(ObjectWrapper<Vector<float>>* self, PyObject* value, void* closure)
 {
     if (value == nullptr)
     {
@@ -93,7 +93,7 @@ static PyGetSetDef g_vectorFloatGettersSeters[] = {
 
 static void python_wrapper_core_VectorFloat(PyObject* module)
 {
-    using type_def = TypeDefinition<core::Vector<float>>;
+    using type_def = TypeDefinition<Vector<float>>;
 
     type_def::init("core.VectorFloat");
     type_def::definition.tp_getset = g_vectorFloatGettersSeters;
@@ -105,7 +105,7 @@ static void python_wrapper_core_VectorFloat(PyObject* module)
 
 /* ************************************************************************ */
 
-static PyObject* vectorInt_getX(ObjectWrapper<core::Vector<int>>* self, void* closure)
+static PyObject* vectorInt_getX(ObjectWrapper<Vector<int>>* self, void* closure)
 {
     assert(self);
     const int x = self->value.getX();
@@ -115,7 +115,7 @@ static PyObject* vectorInt_getX(ObjectWrapper<core::Vector<int>>* self, void* cl
 
 /* ************************************************************************ */
 
-static int vectorInt_setX(ObjectWrapper<core::Vector<int>>* self, PyObject* value, void* closure)
+static int vectorInt_setX(ObjectWrapper<Vector<int>>* self, PyObject* value, void* closure)
 {
     if (value == nullptr)
     {
@@ -137,7 +137,7 @@ static int vectorInt_setX(ObjectWrapper<core::Vector<int>>* self, PyObject* valu
 
 /* ************************************************************************ */
 
-static PyObject* vectorInt_getY(ObjectWrapper<core::Vector<int>>* self, void* closure)
+static PyObject* vectorInt_getY(ObjectWrapper<Vector<int>>* self, void* closure)
 {
     assert(self);
     const int y = self->value.getY();
@@ -147,7 +147,7 @@ static PyObject* vectorInt_getY(ObjectWrapper<core::Vector<int>>* self, void* cl
 
 /* ************************************************************************ */
 
-static int vectorInt_setY(ObjectWrapper<core::Vector<int>>* self, PyObject* value, void* closure)
+static int vectorInt_setY(ObjectWrapper<Vector<int>>* self, PyObject* value, void* closure)
 {
     if (value == nullptr)
     {
@@ -179,7 +179,7 @@ static PyGetSetDef g_vectorIntGettersSeters[] = {
 
 static void python_wrapper_core_VectorInt(PyObject* module)
 {
-    using type_def = TypeDefinition<core::Vector<int>>;
+    using type_def = TypeDefinition<Vector<int>>;
 
     type_def::init("core.VectorInt");
     type_def::definition.tp_getset = g_vectorIntGettersSeters;

@@ -76,7 +76,7 @@ else ()
 
     # Install
     install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION lib
+        DESTINATION lib
     )
 
 endif ()

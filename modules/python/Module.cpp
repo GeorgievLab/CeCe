@@ -51,7 +51,7 @@ Module::Module(const std::string& name)
 
         if (foundPath.empty())
         {
-            core::Log::warning("Unable to find: " + name);
+            Log::warning("Unable to find: " + name);
         }
         else
         {
@@ -68,7 +68,7 @@ void Module::configure(const simulator::ConfigurationBase& config, simulator::Si
     if (config.hasText())
     {
         if (m_source.isInitialized())
-            core::Log::warning("Overriding external script by internal code");
+            Log::warning("Overriding external script by internal code");
 
         // Initialize from source text
         m_source.initSource(config.getText());
@@ -92,7 +92,7 @@ void Module::configure(const simulator::ConfigurationBase& config, simulator::Si
 
 /* ************************************************************************ */
 
-void Module::update(core::units::Duration dt, simulator::Simulation& simulation)
+void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     if (!m_updateFn)
         return;
