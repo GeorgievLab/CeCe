@@ -80,7 +80,8 @@ endif ()
 
 # Install
 install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
+    BUNDLE  DESTINATION .   COMPONENT Runtime
+    RUNTIME DESTINATION bin COMPONENT Runtime
 )
 
 # ######################################################################### #
