@@ -1,14 +1,17 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
 // C++
-#include <memory>
-#include <vector>
-#include <map>
 #include <cassert>
-#include <string>
 #include <functional>
 
 // Simulator
@@ -16,6 +19,10 @@
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "core/Log.hpp"
+#include "core/String.hpp"
+#include "core/Map.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/DynamicArray.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Library.hpp"
@@ -36,7 +43,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulator;
-class ConfigurationBase;
+class Configuration;
 
 /* ************************************************************************ */
 
@@ -58,11 +65,17 @@ class DLL_EXPORT Simulation
 public:
 
 
+    /// Loaded library container.
+    using LibraryContainer = Map<String, UniquePtr<Library>>;
+
     /// Module container type.
-    using ModuleContainer = std::map<std::string, std::unique_ptr<Module>>;
+    using ModuleContainer = Map<String, UniquePtr<Module>>;
 
     /// Object container type.
-    using ObjectContainer = std::vector<std::unique_ptr<Object>>;
+    using ObjectContainer = DynamicArray<UniquePtr<Object>>;
+
+    /// Container type for programs.
+    using ProgramContainer = Map<String, Program>;
 
 
 // Public Ctors
@@ -158,7 +171,7 @@ public:
      *
      * @return
      */
-    bool hasLibrary(const std::string& name) const NOEXCEPT
+    bool hasLibrary(const String& name) const NOEXCEPT
     {
         return m_libraries.find(name) != m_libraries.end();
     }
@@ -171,7 +184,7 @@ public:
      *
      * @return
      */
-    bool hasModule(const std::string& name) const NOEXCEPT
+    bool hasModule(const String& name) const NOEXCEPT
     {
         return m_modules.find(name) != m_modules.end();
     }
@@ -184,7 +197,7 @@ public:
      *
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
-    Module* getModule(const std::string& name) NOEXCEPT
+    Module* getModule(const String& name) NOEXCEPT
     {
         auto it = m_modules.find(name);
 
@@ -205,7 +218,7 @@ public:
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
     template<typename ModuleType>
-    ModuleType* getModule(const std::string& name) NOEXCEPT
+    ModuleType* getModule(const String& name) NOEXCEPT
     {
         auto module = getModule(name);
         if (!module)
@@ -232,7 +245,7 @@ public:
      *
      * @return
      */
-    const Vector<units::Length>& getWorldSize() const NOEXCEPT
+    const SizeVector& getWorldSize() const NOEXCEPT
     {
         return m_worldSize;
     }
@@ -282,7 +295,7 @@ public:
      *
      * @return
      */
-    const std::map<std::string, Program>& getPrograms() const NOEXCEPT
+    const ProgramContainer& getPrograms() const NOEXCEPT
     {
         return m_programs;
     }
@@ -295,7 +308,7 @@ public:
      *
      * @return
      */
-    bool hasProgram(const std::string& name) const NOEXCEPT
+    bool hasProgram(const String& name) const NOEXCEPT
     {
         return m_programs.find(name) != m_programs.end();
     }
@@ -308,7 +321,7 @@ public:
      *
      * @return Pointer to program.
      */
-    Program getProgram(const std::string& name) NOEXCEPT
+    Program getProgram(const String& name) NOEXCEPT
     {
         auto it = m_programs.find(name);
 
@@ -367,7 +380,7 @@ public:
      * @return A pointer to inserted module.
      */
     template<typename T>
-    T* addModule(std::string name, std::unique_ptr<T> mod)
+    T* addModule(String name, UniquePtr<T> mod)
     {
         assert(mod);
         auto it = m_modules.emplace(std::make_pair(std::move(name), std::move(mod)));
@@ -384,9 +397,9 @@ public:
      * @return A pointer to created module.
      */
     template<typename T, typename... Args>
-    T* createModule(std::string name, Args&&... args)
+    T* createModule(String name, Args&&... args)
     {
-        return addModule(std::move(name), std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+        return addModule(std::move(name), makeUniquePtr<T>(std::forward<Args>(args)...));
     }
 
 
@@ -397,7 +410,7 @@ public:
      *
      * @return A pointer to created module.
      */
-    Module* useModule(const std::string& path);
+    Module* useModule(const String& path);
 
 
     /**
@@ -410,7 +423,7 @@ public:
      * @return A pointer to created module.
      */
     template<typename ModuleType>
-    ModuleType* useModule(const std::string& path)
+    ModuleType* useModule(const String& path)
     {
         return static_cast<ModuleType*>(useModule(path));
     }
@@ -421,21 +434,9 @@ public:
      *
      * @param size
      */
-	void setWorldSize(Vector<units::Length> size) NOEXCEPT
+	void setWorldSize(SizeVector size) NOEXCEPT
     {
         m_worldSize = std::move(size);
-    }
-
-
-    /**
-     * @brief Change world size.
-     *
-     * @param width  New width.
-     * @param height New height.
-     */
-	void setWorldSize(units::Length width, units::Length height) NOEXCEPT
-    {
-        setWorldSize({width, height});
     }
 
 
@@ -445,7 +446,7 @@ public:
      * @param obj
      */
     template<typename T>
-    T* addObject(std::unique_ptr<T> obj)
+    T* addObject(UniquePtr<T> obj)
     {
         assert(obj);
         m_objects.push_back(std::move(obj));
@@ -463,7 +464,7 @@ public:
     template<typename T, typename... Args>
     T* createObject(Args&&... args)
     {
-        return addObject(std::unique_ptr<T>(new T(*this, std::forward<Args>(args)...)));
+        return addObject(makeUniquePtr<T>(*this, std::forward<Args>(args)...));
     }
 
 
@@ -475,7 +476,7 @@ public:
      *
      * @return
      */
-    Object* buildObject(const std::string& name, bool dynamic = true);
+    Object* buildObject(const String& name, bool dynamic = true);
 
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
@@ -495,7 +496,7 @@ public:
      * @param name    Program name.
      * @param program Added program.
      */
-    void addProgram(std::string name, Program program)
+    void addProgram(String name, Program program)
     {
         m_programs.emplace(std::move(name), std::move(program));
     }
@@ -508,7 +509,7 @@ public:
      *
      * @return Created program.
      */
-    Program buildProgram(const std::string& path);
+    Program buildProgram(const String& path);
 
 
 // Public Operations
@@ -558,7 +559,7 @@ public:
      *
      * @return
      */
-    Library* loadLibrary(const std::string& name);
+    Library* loadLibrary(const String& name);
 
 
     /**
@@ -568,7 +569,7 @@ public:
      *
      * @return
      */
-    LibraryApi* getLibraryApi(const std::string& name);
+    LibraryApi* getLibraryApi(const String& name);
 
 
 // Private Data Members
@@ -587,10 +588,10 @@ private:
     bool m_timeStepRealTime = true;
 
     /// World size.
-	Vector<units::Length> m_worldSize{ units::um(400), units::um(400) };
+	SizeVector m_worldSize{ units::um(400), units::um(400) };
 
     /// Cache for loaded libraries.
-    std::map<std::string, std::unique_ptr<Library>> m_libraries;
+    LibraryContainer m_libraries;
 
     /// Simulation modules.
     ModuleContainer m_modules;
@@ -603,7 +604,7 @@ private:
     ObjectContainer m_objects;
 
     /// A map of preddefined programs.
-    std::map<std::string, Program> m_programs;
+    ProgramContainer m_programs;
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     bool m_drawPhysics = true;

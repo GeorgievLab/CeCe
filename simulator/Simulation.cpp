@@ -1,4 +1,9 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -27,12 +32,12 @@ namespace {
 
 /* ************************************************************************ */
 
-std::tuple<std::string, std::string> splitModulePath(const std::string& path) NOEXCEPT
+std::tuple<String, String> splitModulePath(const String& path) NOEXCEPT
 {
     auto pos = path.find(':');
 
     // Using wrapper
-    if (pos != std::string::npos)
+    if (pos != String::npos)
     {
         // Create wrapper version
         return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
@@ -42,8 +47,8 @@ std::tuple<std::string, std::string> splitModulePath(const std::string& path) NO
         // Find dot separator
         auto pos = path.find('.');
 
-        if (pos == std::string::npos)
-            return std::make_tuple(path, std::string{});
+        if (pos == String::npos)
+            return std::make_tuple(path, String{});
         else
             return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
     }
@@ -72,7 +77,7 @@ Simulation::~Simulation()
 
 /* ************************************************************************ */
 
-Module* Simulation::useModule(const std::string& path)
+Module* Simulation::useModule(const String& path)
 {
     // Module exists, return the existing one
     if (hasModule(path))
@@ -81,7 +86,7 @@ Module* Simulation::useModule(const std::string& path)
     Log::debug("Loading library: ", path);
 
     // Split path into parts
-    std::string library, name;
+    String library, name;
     std::tie(library, name) = splitModulePath(path);
 
     // Get API
@@ -110,10 +115,10 @@ Module* Simulation::useModule(const std::string& path)
 
 /* ************************************************************************ */
 
-Object* Simulation::buildObject(const std::string& name, bool dynamic)
+Object* Simulation::buildObject(const String& name, bool dynamic)
 {
     // Split path into parts
-    std::string library, type;
+    String library, type;
     std::tie(library, type) = splitModulePath(name);
 
     if (type.empty())
@@ -138,10 +143,10 @@ Object* Simulation::buildObject(const std::string& name, bool dynamic)
 
 /* ************************************************************************ */
 
-Program Simulation::buildProgram(const std::string& path)
+Program Simulation::buildProgram(const String& path)
 {
     // Split path into parts
-    std::string library, type;
+    String library, type;
     std::tie(library, type) = splitModulePath(path);
 
     if (type.empty())
@@ -172,7 +177,7 @@ bool Simulation::update(units::Duration dt)
 
     // Update modules
     {
-        auto _ = measure_time("sim.modules", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+        auto _ = measure_time("sim.modules", [this](OStream& out, const String& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -181,7 +186,7 @@ bool Simulation::update(units::Duration dt)
     }
 
     {
-        auto _ = measure_time("sim.objects", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+        auto _ = measure_time("sim.objects", [this](OStream& out, const String& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -196,7 +201,7 @@ bool Simulation::update(units::Duration dt)
 
     // Remove objects that are outside world.
     {
-        auto _ = measure_time("sim.delete", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+        auto _ = measure_time("sim.delete", [this](OStream& out, const String& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -221,7 +226,7 @@ bool Simulation::update(units::Duration dt)
 
 #ifdef ENABLE_PHYSICS
     {
-        auto _ = measure_time("sim.physics", [this](std::ostream& out, const std::string& name, Clock::duration dt) {
+        auto _ = measure_time("sim.physics", [this](OStream& out, const String& name, Clock::duration dt) {
             out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
         });
 
@@ -312,7 +317,7 @@ void Simulation::draw(render::Context& context)
 
 /* ************************************************************************ */
 
-Library* Simulation::loadLibrary(const std::string& name)
+Library* Simulation::loadLibrary(const String& name)
 {
     // Try to find library in cache
     auto it = m_libraries.find(name);
@@ -334,7 +339,7 @@ Library* Simulation::loadLibrary(const std::string& name)
 
 /* ************************************************************************ */
 
-LibraryApi* Simulation::getLibraryApi(const std::string& name)
+LibraryApi* Simulation::getLibraryApi(const String& name)
 {
     // Get if library is already loaded
     const bool init = !hasLibrary(name);

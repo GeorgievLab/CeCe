@@ -1,13 +1,19 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <string>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/String.hpp"
+#include "core/FilePath.hpp"
 
 /* ************************************************************************ */
 
@@ -18,7 +24,7 @@ namespace simulator {
 /**
  * @brief Base class for configuration storages.
  */
-class DLL_EXPORT ConfigurationBase
+class DLL_EXPORT Configuration
 {
 
 // Public Ctors & Dtors
@@ -28,7 +34,7 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~ConfigurationBase()
+    virtual ~Configuration()
     {
         // Nothing to do
     }
@@ -43,7 +49,7 @@ public:
      *
      * @return
      */
-    virtual const std::string& getSourcePath() const NOEXCEPT = 0;
+    virtual const FilePath& getSourcePath() const NOEXCEPT = 0;
 
 
     /**
@@ -53,7 +59,7 @@ public:
      *
      * @return
      */
-    virtual bool hasValue(const std::string& name) const = 0;
+    virtual bool hasValue(const String& name) const = 0;
 
 
     /**
@@ -63,7 +69,7 @@ public:
      *
      * @return
      */
-    virtual std::string getString(const std::string& name) const = 0;
+    virtual String getString(const String& name) const = 0;
 
 
     /**
@@ -73,7 +79,7 @@ public:
      *
      * @return
      */
-    virtual int getInteger(const std::string& name) const = 0;
+    virtual int getInteger(const String& name) const = 0;
 
 
     /**
@@ -83,7 +89,7 @@ public:
      *
      * @return
      */
-    virtual float getFloat(const std::string& name) const = 0;
+    virtual float getFloat(const String& name) const = 0;
 
 
     /**
@@ -99,7 +105,7 @@ public:
      *
      * @return
      */
-    virtual std::string getText() const = 0;
+    virtual String getText() const = 0;
 
 
 // Public Mutators
@@ -112,7 +118,7 @@ public:
      * @param name
      * @param value
      */
-    virtual void setString(const std::string& name, const std::string& value) = 0;
+    virtual void setString(const String& name, const String& value) = 0;
 
 
     /**
@@ -121,7 +127,7 @@ public:
      * @param name
      * @param value
      */
-    virtual void setInteger(const std::string& name, int value) = 0;
+    virtual void setInteger(const String& name, int value) = 0;
 
 
     /**
@@ -130,7 +136,7 @@ public:
      * @param name
      * @param value
      */
-    virtual void setFloat(const std::string& name, float value) = 0;
+    virtual void setFloat(const String& name, float value) = 0;
 
 
     /**
@@ -138,7 +144,7 @@ public:
      *
      * @param text
      */
-    virtual void setText(std::string text) = 0;
+    virtual void setText(String text) = 0;
 
 
 // Public Operations
@@ -153,7 +159,7 @@ public:
      *
      * @return
      */
-    std::string buildFilePath(const std::string& filename) const NOEXCEPT;
+    FilePath buildFilePath(const FilePath& filename) const NOEXCEPT;
 
 
     /**
@@ -165,7 +171,7 @@ public:
      * @param fn
      */
     template<typename Fn>
-    void callIfSetString(const std::string& name, Fn fn) const
+    void callIfSetString(const String& name, Fn fn) const
     {
         if (hasValue(name))
             fn(getString(name));
@@ -181,7 +187,7 @@ public:
      * @param fn
      */
     template<typename Fn>
-    void callIfSetInteger(const std::string& name, Fn fn) const
+    void callIfSetInteger(const String& name, Fn fn) const
     {
         if (hasValue(name))
             fn(getInteger(name));
@@ -197,7 +203,7 @@ public:
      * @param fn
      */
     template<typename Fn>
-    void callIfSetFloat(const std::string& name, Fn fn) const
+    void callIfSetFloat(const String& name, Fn fn) const
     {
         if (hasValue(name))
             fn(getFloat(name));

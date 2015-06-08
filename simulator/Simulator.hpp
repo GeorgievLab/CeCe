@@ -1,16 +1,23 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
 // C++
-#include <memory>
 #include <atomic>
 #include <cassert>
 
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/Units.hpp"
+#include "core/UniquePtr.hpp"
 
 #if ENABLE_RENDER
 #include "render/Context.hpp"
@@ -108,7 +115,7 @@ public:
      *
      * @param simulation New simulation.
      */
-    void setSimulation(std::unique_ptr<Simulation> simulation) NOEXCEPT
+    void setSimulation(UniquePtr<Simulation> simulation) NOEXCEPT
     {
         m_simulation = std::move(simulation);
     }
@@ -191,7 +198,7 @@ private:
     std::atomic<bool> m_isRunning{false};
 
     /// Current simulation
-    std::unique_ptr<Simulation> m_simulation;
+    UniquePtr<Simulation> m_simulation;
 
 };
 

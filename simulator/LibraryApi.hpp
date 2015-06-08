@@ -1,14 +1,19 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <string>
-#include <memory>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/String.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
@@ -76,7 +81,7 @@ public:
      *
      * @return Created module.
      */
-    virtual std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name)
+    virtual UniquePtr<Module> createModule(Simulation& simulation, const String& name)
     {
         return nullptr;
     }
@@ -91,7 +96,7 @@ public:
      *
      * @return Created object.
      */
-    virtual std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true)
+    virtual UniquePtr<Object> createObject(Simulation& simulation, const String& name, bool dynamic = true)
     {
         return nullptr;
     }
@@ -106,7 +111,7 @@ public:
      *
      * @return Created program.
      */
-    virtual Program createProgram(Simulation& simulation, const std::string& name, std::string code = {})
+    virtual Program createProgram(Simulation& simulation, const String& name, String code = {})
     {
         return {};
     }

@@ -1,4 +1,9 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -76,11 +81,11 @@ Object::Type convert(b2BodyType type) NOEXCEPT
  *
  * @return
  */
-std::vector<std::string> split(std::string value, char separator) NOEXCEPT
+DynamicArray<String> split(String value, char separator) NOEXCEPT
 {
-    std::vector<std::string> elems;
+    DynamicArray<String> elems;
     std::istringstream ss(std::move(value));
-    std::string item;
+    String item;
 
     while (std::getline(ss, item, separator))
     {
@@ -265,13 +270,13 @@ void Object::update(units::Duration dt)
 
 /* ************************************************************************ */
 
-void Object::configure(const ConfigurationBase& config, Simulation& simulation)
+void Object::configure(const Configuration& config, Simulation& simulation)
 {
-    config.callIfSetString("position", [this](const std::string& value) {
+    config.callIfSetString("position", [this](const String& value) {
 		setPosition(parser::parse_vector<units::Length>(value));
     });
 
-    config.callIfSetString("programs", [this, &simulation](const std::string& value) {
+    config.callIfSetString("programs", [this, &simulation](const String& value) {
         for (const auto& name : split(value, ' '))
         {
             auto program = simulation.getProgram(name);

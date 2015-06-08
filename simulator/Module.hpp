@@ -1,19 +1,21 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <map>
-#include <string>
-
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/Units.hpp"
-#include "simulator/Configuration.hpp"
 
 #ifdef ENABLE_RENDER
-#include "render/Context.hpp"
+namespace render { class Context; }
 #endif
 
 /* ************************************************************************ */
@@ -23,6 +25,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulation;
+class Configuration;
 
 /* ************************************************************************ */
 
@@ -68,7 +71,7 @@ public:
      * @param config
      * @param simulation
      */
-    virtual void configure(const ConfigurationBase& config, simulator::Simulation& simulation)
+    virtual void configure(const Configuration& config, Simulation& simulation)
     {
         // Nothing to do
     }

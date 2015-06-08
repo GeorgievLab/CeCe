@@ -1,3 +1,10 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -12,12 +19,12 @@
 #include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
+#include "core/DynamicArray.hpp"
 #include "simulator/Shape.hpp"
 #include "simulator/Configuration.hpp"
 #include "simulator/Program.hpp"
 
 #ifdef ENABLE_RENDER
-// Render
 #include "render/Context.hpp"
 #endif
 
@@ -169,7 +176,7 @@ public:
      *
      * @return
      */
-    const std::vector<Shape>& getShapes() const NOEXCEPT
+    const DynamicArray<Shape>& getShapes() const NOEXCEPT
     {
         return m_shapes;
     }
@@ -180,7 +187,7 @@ public:
      *
      * @return
      */
-    const std::vector<Program>& getPrograms() const NOEXCEPT
+    const DynamicArray<Program>& getPrograms() const NOEXCEPT
     {
         return m_programs;
     }
@@ -244,7 +251,7 @@ public:
      *
      * @param shapes
      */
-    void setShapes(std::vector<Shape> shapes) NOEXCEPT
+    void setShapes(DynamicArray<Shape> shapes) NOEXCEPT
     {
         m_shapes = std::move(shapes);
     }
@@ -255,7 +262,7 @@ public:
      *
      * @param programs
      */
-    void setPrograms(std::vector<Program> programs) NOEXCEPT
+    void setPrograms(DynamicArray<Program> programs) NOEXCEPT
     {
         m_programs = std::move(programs);
     }
@@ -328,7 +335,7 @@ public:
      * @param config
      * @param simulation
      */
-    virtual void configure(const ConfigurationBase& config, Simulation& simulation);
+    virtual void configure(const Configuration& config, Simulation& simulation);
 
 
 #if ENABLE_RENDER
@@ -357,7 +364,7 @@ protected:
      *
      * @return
      */
-    std::vector<Shape>& getMutableShapes() NOEXCEPT
+    DynamicArray<Shape>& getMutableShapes() NOEXCEPT
     {
         return m_shapes;
     }
@@ -373,10 +380,10 @@ private:
     IdType m_id;
 
     /// A list of object shapes.
-    std::vector<Shape> m_shapes;
+    DynamicArray<Shape> m_shapes;
 
     /// Registered object programs.
-    std::vector<Program> m_programs;
+    DynamicArray<Program> m_programs;
 
 #if ENABLE_PHYSICS
     /// Physics body.

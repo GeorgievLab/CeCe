@@ -1,14 +1,20 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <memory>
-#include <string>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/String.hpp"
+#include "core/FilePath.hpp"
 
 /* ************************************************************************ */
 
@@ -33,7 +39,10 @@ public:
     /**
      * @brief Virtual destructor.
      */
-    virtual ~SimulationFactory() {}
+    virtual ~SimulationFactory()
+    {
+        // Nothing to do
+    }
 
 
 // Public Operations
@@ -45,7 +54,7 @@ public:
      *
      * @return
      */
-    virtual std::unique_ptr<Simulation> createSimulation() const;
+    virtual UniquePtr<Simulation> createSimulation() const;
 
 
     /**
@@ -55,7 +64,7 @@ public:
      *
      * @return
      */
-    virtual std::unique_ptr<Simulation> fromFile(const std::string& filename) const;
+    virtual UniquePtr<Simulation> fromFile(const FilePath& filename) const;
 
 
     /**
@@ -65,7 +74,7 @@ public:
      *
      * @return
      */
-    virtual std::unique_ptr<Simulation> fromSource(const std::string& source, const std::string& filename = "<source>") const = 0;
+    virtual UniquePtr<Simulation> fromSource(const String& source, const FilePath& filename = "<source>") const = 0;
 
 };
 

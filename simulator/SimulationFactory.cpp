@@ -1,4 +1,9 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -16,21 +21,21 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-std::unique_ptr<Simulation> SimulationFactory::createSimulation() const
+UniquePtr<Simulation> SimulationFactory::createSimulation() const
 {
-    return std::unique_ptr<Simulation>(new Simulation());
+    return makeUniquePtr<Simulation>();
 }
 
 /* ************************************************************************ */
 
-std::unique_ptr<Simulation> SimulationFactory::fromFile(const std::string& filename) const
+UniquePtr<Simulation> SimulationFactory::fromFile(const FilePath& filename) const
 {
-    std::string source;
+    String source;
 
     {
         std::ifstream file(filename, std::ios::in);
 
-        std::string line;
+        String line;
         while (std::getline(file, line))
         {
             // Read source
