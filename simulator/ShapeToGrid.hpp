@@ -40,8 +40,8 @@ namespace simulator {
  */
 template<typename OutIt, typename T, typename StepT>
 OutIt mapShapeToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
-	const Vector<T>& center, const Vector<T>& max,
-	const Vector<T>& min = {})
+    const Vector<T>& center, const Vector<T>& max,
+    const Vector<T>& min = {})
 {
     switch (shape.type)
     {

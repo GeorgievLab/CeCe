@@ -147,7 +147,7 @@ public:
      *
      * @return
      */
-	units::Duration getTimeStep() const NOEXCEPT
+    units::Duration getTimeStep() const NOEXCEPT
     {
         return m_timeStep;
     }
@@ -354,7 +354,7 @@ public:
      *
      * @param dt
      */
-	void setTimeStep(units::Duration dt) NOEXCEPT
+    void setTimeStep(units::Duration dt) NOEXCEPT
     {
         m_timeStep = dt;
     }
@@ -434,7 +434,7 @@ public:
      *
      * @param size
      */
-	void setWorldSize(SizeVector size) NOEXCEPT
+    void setWorldSize(SizeVector size) NOEXCEPT
     {
         m_worldSize = std::move(size);
     }
@@ -529,7 +529,7 @@ public:
      *
      * @return If next step can be calculated.
      */
-	bool update(units::Duration dt);
+    bool update(units::Duration dt);
 
 
     /**
@@ -582,13 +582,13 @@ private:
     StepNumber m_iterations = 0;
 
     /// Simulation step.
-	units::Duration m_timeStep;
+    units::Duration m_timeStep;
 
     /// Real-time time step
     bool m_timeStepRealTime = true;
 
     /// World size.
-	SizeVector m_worldSize{ units::um(400), units::um(400) };
+    SizeVector m_worldSize{ units::um(400), units::um(400) };
 
     /// Cache for loaded libraries.
     LibraryContainer m_libraries;

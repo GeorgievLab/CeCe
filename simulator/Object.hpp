@@ -326,7 +326,7 @@ public:
      *
      * @param dt Simulation time step.
      */
-	virtual void update(units::Duration dt);
+    virtual void update(units::Duration dt);
 
 
     /**
@@ -393,13 +393,13 @@ private:
     Type m_type;
 
     /// Object position
-	PositionVector m_position;
+    PositionVector m_position;
 
     /// Object rotation.
-	units::Angle m_rotation;
+    units::Angle m_rotation;
 
     /// Object velocity.
-	VelocityVector m_velocity;
+    VelocityVector m_velocity;
 #endif
 
 };

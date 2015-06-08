@@ -273,7 +273,7 @@ void Object::update(units::Duration dt)
 void Object::configure(const Configuration& config, Simulation& simulation)
 {
     config.callIfSetString("position", [this](const String& value) {
-		setPosition(parser::parse_vector<units::Length>(value));
+        setPosition(parser::parse_vector<units::Length>(value));
     });
 
     config.callIfSetString("programs", [this, &simulation](const String& value) {
