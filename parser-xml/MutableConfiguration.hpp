@@ -3,10 +3,10 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <string>
-
 // Simulator
+#include "core/compatibility.hpp"
+#include "core/String.hpp"
+#include "core/FilePath.hpp"
 #include "simulator/Configuration.hpp"
 
 // pugixml
@@ -22,7 +22,7 @@ namespace xml {
 /**
  * @brief XML mutable configuration.
  */
-class MutableConfiguration : public simulator::ConfigurationBase
+class DLL_EXPORT MutableConfiguration : public simulator::ConfigurationBase
 {
 
 // Public Ctors & Dtors
@@ -35,7 +35,7 @@ public:
      * @param node
      * @param filename
      */
-    explicit MutableConfiguration(pugi::xml_node& node, std::string filename = {}) NOEXCEPT
+    explicit MutableConfiguration(pugi::xml_node& node, FilePath filename = {}) NOEXCEPT
         : m_node(node)
         , m_sourcePath(std::move(filename))
     {
@@ -52,7 +52,7 @@ public:
      *
      * @return
      */
-    const std::string& getSourcePath() const NOEXCEPT override
+    const String& getSourcePath() const NOEXCEPT override
     {
         return m_sourcePath;
     }
@@ -65,7 +65,7 @@ public:
      *
      * @return
      */
-    bool hasValue(const std::string& name) const override
+    bool hasValue(const String& name) const override
     {
         return !m_node.attribute(name.c_str()).empty();
     }
@@ -78,7 +78,7 @@ public:
      *
      * @return
      */
-    std::string getString(const std::string& name) const override
+    String getString(const String& name) const override
     {
         return m_node.attribute(name.c_str()).value();
     }
@@ -91,7 +91,7 @@ public:
      *
      * @return
      */
-    int getInteger(const std::string& name) const override
+    int getInteger(const String& name) const override
     {
         return m_node.attribute(name.c_str()).as_int();
     }
@@ -104,7 +104,7 @@ public:
      *
      * @return
      */
-    float getFloat(const std::string& name) const override
+    float getFloat(const String& name) const override
     {
         return m_node.attribute(name.c_str()).as_float();
     }
@@ -126,7 +126,7 @@ public:
      *
      * @return
      */
-    std::string getText() const override
+    String getText() const override
     {
         return m_node.text().get();
     }
@@ -142,7 +142,7 @@ public:
      * @param name
      * @param value
      */
-    void setString(const std::string& name, const std::string& value) override
+    void setString(const String& name, const String& value) override
     {
         m_node.attribute(name.c_str()).set_value(value.c_str());
     }
@@ -154,7 +154,7 @@ public:
      * @param name
      * @param value
      */
-    void setInteger(const std::string& name, int value) override
+    void setInteger(const String& name, int value) override
     {
         m_node.attribute(name.c_str()).set_value(value);
     }
@@ -166,7 +166,7 @@ public:
      * @param name
      * @param value
      */
-    void setFloat(const std::string& name, float value) override
+    void setFloat(const String& name, float value) override
     {
         m_node.attribute(name.c_str()).set_value(value);
     }
@@ -177,7 +177,7 @@ public:
      *
      * @param text
      */
-    void setText(std::string text) override
+    void setText(String text) override
     {
         m_node.text().set(text.c_str());
     }
@@ -190,7 +190,7 @@ private:
     pugi::xml_node& m_node;
 
     /// Path to source file
-    std::string m_sourcePath;
+    FilePath m_sourcePath;
 
 };
 

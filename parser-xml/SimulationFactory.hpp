@@ -3,12 +3,16 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <memory>
-#include <istream>
-
 // Simulator
+#include "core/compatibility.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/IStream.hpp"
+#include "core/FilePath.hpp"
 #include "parser/SimulationFactory.hpp"
+
+/* ************************************************************************ */
+
+namespace simulator { class Simulation; }
 
 /* ************************************************************************ */
 
@@ -20,7 +24,7 @@ namespace xml {
 /**
  * @brief XML parser simulation factory.
  */
-class SimulationFactory : public parser::SimulationFactory
+class DLL_EXPORT SimulationFactory : public parser::SimulationFactory
 {
 
 
@@ -37,8 +41,8 @@ protected:
      *
      * @return
      */
-    std::unique_ptr<simulator::Simulation> fromStream(std::istream& source,
-        const std::string& filename) const override;
+    UniquePtr<simulator::Simulation> fromStream(IStream& source,
+        const FilePath& filename) const override;
 
 };
 

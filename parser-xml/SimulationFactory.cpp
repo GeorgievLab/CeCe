@@ -20,6 +20,7 @@
 // Simulator
 #include "core/Log.hpp"
 #include "parser/Parser.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/LibraryApi.hpp"
 #include "simulator/Object.hpp"
@@ -208,10 +209,10 @@ namespace xml {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::Simulation> SimulationFactory::fromStream(
-    std::istream& source, const std::string& filename) const
+UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
+    IStream& source, const FilePath& filename) const
 {
-    std::unique_ptr<simulator::Simulation> simulation(new simulator::Simulation());
+    UniquePtr<simulator::Simulation> simulation(new simulator::Simulation());
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load(source);
