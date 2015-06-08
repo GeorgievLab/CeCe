@@ -306,12 +306,10 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 
     // Get pixel data
     auto data = m_glCanvasView->GetRenderContext().getData();
-    const auto& imageData = data.first;
-    auto imageSize = data.second;
 
     // Create image
-    wxImage image(wxSize(imageSize.getWidth(), imageSize.getHeight()),
-        const_cast<unsigned char*>(imageData.data()), true);
+    wxImage image(wxSize(data.size.getWidth(), data.size.getHeight()),
+        const_cast<unsigned char*>(data.data.data()), true);
 
     // Store image
     if (!image.SaveFile(selection))
