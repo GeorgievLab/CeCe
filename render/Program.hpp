@@ -1,3 +1,10 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -24,7 +31,7 @@ public:
 
 
     /**
-     * @brief Buffer ID type.
+     * @brief Program ID type.
      */
     using Id = unsigned int;
 

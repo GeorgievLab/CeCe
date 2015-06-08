@@ -1,10 +1,14 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
-
-// C++
-#include <cassert>
 
 // Simulator
 #include "core/compatibility.hpp"
@@ -51,7 +55,7 @@ public:
      * @param context Rendering context.
      * @param size
      */
-    GridColor(Context& context, Vector<PositionType> size);
+    GridColor(Context& context, Size size);
 
 
 // Public Operators
@@ -64,7 +68,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& operator[](const Vector<PositionType>& coord) NOEXCEPT
+    Color& operator[](const Coordinate& coord) NOEXCEPT
     {
         return get(coord);
     }
@@ -76,7 +80,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& operator[](const Vector<PositionType>& coord) const NOEXCEPT
+    const Color& operator[](const Coordinate& coord) const NOEXCEPT
     {
         return get(coord);
     }
@@ -101,7 +105,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& get(const Vector<PositionType>& coord) NOEXCEPT
+    Color& get(const Coordinate& coord) NOEXCEPT
     {
         return m_colors[coord];
     }
@@ -113,7 +117,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& get(const Vector<PositionType>& coord) const NOEXCEPT
+    const Color& get(const Coordinate& coord) const NOEXCEPT
     {
         return m_colors[coord];
     }
@@ -129,7 +133,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    void set(const Vector<PositionType>& coord, const Color& color) NOEXCEPT
+    void set(const Coordinate& coord, const Color& color) NOEXCEPT
     {
         // Set color
         m_colors[coord] = color;
@@ -164,7 +168,7 @@ public:
      * @param size  New grid size.
      * @param color Background color.
      */
-    void resize(Vector<PositionType> size, const Color& color = colors::BLACK);
+    void resize(Size size, const Color& color = colors::BLACK);
 
 
     /**

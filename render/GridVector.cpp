@@ -1,15 +1,21 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
 #include "render/GridVector.hpp"
 
 // C++
-#include <vector>
 #include <cassert>
 #include <cmath>
 
 // Simulator
+#include "core/DynamicArray.hpp"
+#include "render/Context.hpp"
 #include "render/VertexFormat.hpp"
 
 /* ************************************************************************ */
@@ -26,10 +32,10 @@ namespace render {
 
 /* ************************************************************************ */
 
-GridVector::GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data)
+GridVector::GridVector(Context& context, Size size, const Vector<float>* data)
     : m_buffer(context)
 {
-    resize(size, data);
+    resize(std::move(size), data);
 }
 
 /* ************************************************************************ */
@@ -54,7 +60,7 @@ void GridVector::draw(Context& context) NOEXCEPT
 
 /* ************************************************************************ */
 
-void GridVector::resize(Vector<unsigned int> size, const Vector<float>* data)
+void GridVector::resize(Size size, const Vector<float>* data)
 {
     GridBase::resize(std::move(size));
 
@@ -67,22 +73,22 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
 {
     const auto size = getSize();
 
-    CONSTEXPR Vector<float> start{ -0.5f, -0.5f };
-    const Vector<float> step = 1.f / size;
+    CONSTEXPR PositionVector start{-0.5f};
+    const PositionVector step = getSize().inversed();
 
-    auto width = size.getWidth();
-    auto height = size.getHeight();
+    const auto width = size.getWidth();
+    const auto height = size.getHeight();
 
-    std::vector<Vertex> vertices;
+    DynamicArray<Vertex> vertices;
     vertices.reserve(2 * width * height);
 
     // Get maximum value
     float max_squared = 1.f;
-    for (decltype(height) j = 0; j < height; ++j)
+    for (Size::value_type j = 0; j < height; ++j)
     {
-        for (decltype(width) i = 0; i < width; ++i)
+        for (Size::value_type i = 0; i < width; ++i)
         {
-            const Vector<float>& vec = data[i + j * width];
+            const auto& vec = data[i + j * width];
             const float len_squared = vec.getLengthSquared();
 
             if (max_squared < len_squared)
@@ -94,13 +100,13 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
     const float max = std::sqrt(max_squared);
 
     // Draw grid vectors
-    for (decltype(height) j = 0; j < height; ++j)
+    for (Size::value_type j = 0; j < height; ++j)
     {
-        for (decltype(width) i = 0; i < width; ++i)
+        for (Size::value_type i = 0; i < width; ++i)
         {
             // Get vector normalized by max length
-            const Vector<float> vec = data[i + j * width] / max;
-            const Vector<float> pos{
+            const auto vec = data[i + j * width] / max;
+            const PositionVector pos{
                     start.getX() + i * step.getX() + step.getX() / 2.f,
                     start.getY() + j * step.getY() + step.getY() / 2.f
             };
@@ -108,7 +114,7 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
             const float green = 5 * std::max(vec.getY(), 0.f);
             const float blue = 5 * std::max(-vec.getY(), 0.f);
 
-            const Vector<float> dest = pos + vec * step;
+            const PositionVector dest = pos + vec * step;
 
             vertices.push_back(Vertex{pos.getX(), pos.getY(), red, green, blue});
             vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});

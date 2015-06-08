@@ -1,13 +1,18 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <array>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/StaticArray.hpp"
 
 /* ************************************************************************ */
 
@@ -91,7 +96,7 @@ public:
      * @param source Shader source.
      */
     template<std::size_t N>
-    void init(Type type, const std::array<char, N>& source)
+    void init(Type type, const StaticArray<char, N>& source)
     {
         init(type, source.data(), N);
     }

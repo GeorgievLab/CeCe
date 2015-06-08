@@ -1,4 +1,9 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #if !ENABLE_RENDER
@@ -115,23 +120,23 @@ Context::~Context()
 
 /* ************************************************************************ */
 
-std::pair<std::vector<std::uint8_t>, Vector<unsigned>> Context::getData() const NOEXCEPT
+ImageData Context::getData() const NOEXCEPT
 {
-    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> result;
+    ImageData result;
 
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    auto x = viewport[0];
-    auto y = viewport[1];
-    auto width = viewport[2];
-    auto height = viewport[3];
+    const auto x = viewport[0];
+    const auto y = viewport[1];
+    const auto width = viewport[2];
+    const auto height = viewport[3];
 
-    result.first.resize(3 * width * height);
-    result.second = Vector<unsigned>(width, height);
+    result.data.resize(3 * width * height);
+    result.size = Size(width, height);
 
     glReadBuffer(GL_FRONT);
-    glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, result.first.data());
+    gl(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, result.data.data()));
 
     return result;
 }
@@ -176,7 +181,7 @@ void Context::init() NOEXCEPT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-    m_is_init = true;
+    m_isInitialized = true;
 }
 
 /* ************************************************************************ */

@@ -1,10 +1,14 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
-
-// C++
-#include <cassert>
 
 // Simulator
 #include "core/compatibility.hpp"
@@ -48,7 +52,7 @@ public:
      * @param context Rendering context.
      * @param size
      */
-    GridColorSmooth(Context& context, Vector<PositionType> size)
+    GridColorSmooth(Context& context, Size size)
         : GridColorSmooth(context)
     {
         resize(std::move(size));

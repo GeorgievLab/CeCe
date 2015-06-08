@@ -1,13 +1,18 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// Physics
-#include "render/Position.hpp"
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/VectorUnits.hpp"
 
 /* ************************************************************************ */
 
@@ -40,7 +45,7 @@ public:
      *
      * @return
      */
-    const Position& getPosition() const NOEXCEPT
+    const PositionVector& getPosition() const NOEXCEPT
     {
         return m_position;
     }
@@ -66,9 +71,9 @@ public:
      *
      * @param pos
      */
-    void setPosition(const Position& pos) NOEXCEPT
+    void setPosition(PositionVector pos) NOEXCEPT
     {
-        m_position = pos;
+        m_position = std::move(pos);
     }
 
 
@@ -87,10 +92,10 @@ public:
 private:
 
     /// Camera position.
-    Position m_position{0, 0};
+    PositionVector m_position{PositionVector::Zero};
 
     /// Zoom value.
-    float m_zoom = 1.0;
+    float m_zoom = 1.0f;
 
 };
 

@@ -1,10 +1,14 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
-
-// C++
-#include <array>
 
 #if ENABLE_SSE && __SSE__
 #include <xmmintrin.h>
@@ -12,6 +16,7 @@
 
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/StaticArray.hpp"
 
 /* ************************************************************************ */
 
@@ -409,7 +414,7 @@ private:
     union {
         __m128 m_sse;
 #endif
-        std::array<ComponentType, 4> m_components;
+        StaticArray<ComponentType, 4> m_components;
 #if ENABLE_SSE && __SSE__
     };
 #endif

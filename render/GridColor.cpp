@@ -1,14 +1,19 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
 #include "render/GridColor.hpp"
 
 // C++
-#include <array>
 #include <cassert>
 
 // Simulator
+#include "core/StaticArray.hpp"
 #include "render/Context.hpp"
 #include "render/VertexFormat.hpp"
 
@@ -27,7 +32,7 @@ struct Vertex
 
 /* ************************************************************************ */
 
-static const std::array<Vertex, 4> g_vertices = {{
+static const StaticArray<Vertex, 4> g_vertices = {{
     { 0.5f,  0.5f, 1.0f, 1.0f},
     { 0.5f, -0.5f, 1.0f, 0.0f},
     {-0.5f, -0.5f, 0.0f, 0.0f},
@@ -45,7 +50,7 @@ GridColor::GridColor(Context& context)
 
 /* ************************************************************************ */
 
-GridColor::GridColor(Context& context, Vector<PositionType> size)
+GridColor::GridColor(Context& context, Size size)
     : GridColor(context)
 {
     resize(std::move(size));
@@ -79,7 +84,7 @@ void GridColor::draw(Context& context) NOEXCEPT
 
 /* ************************************************************************ */
 
-void GridColor::resize(Vector<PositionType> size, const Color& color)
+void GridColor::resize(Size size, const Color& color)
 {
     GridBase::resize(std::move(size));
 

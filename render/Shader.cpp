@@ -1,4 +1,9 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -6,9 +11,6 @@
 
 // C++
 #include <cassert>
-#include <vector>
-#include <string>
-#include <stdexcept>
 
 // OpenGL
 #ifdef __linux__
@@ -23,6 +25,9 @@
 #endif
 
 // Simulator
+#include "core/DynamicArray.hpp"
+#include "core/String.hpp"
+#include "core/Exception.hpp"
 #include "render/errors.hpp"
 
 /* ************************************************************************ */
@@ -109,9 +114,9 @@ void Shader::init(Type type, const char* source, unsigned length)
 #endif
 
         // The maxLength includes the NULL character
-        std::vector<GLchar> err(maxLength);
+        DynamicArray<GLchar> err(maxLength);
         glGetShaderInfoLog(m_id, maxLength, &maxLength, &err[0]);
-        throw std::runtime_error(std::string(err.begin(), err.end()));
+        throw RuntimeException(String(err.begin(), err.end()));
     }
 }
 

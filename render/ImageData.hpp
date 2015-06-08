@@ -10,11 +10,12 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <cstdint>
+
 // Simulator
-#include "core/compatibility.hpp"
+#include "core/DynamicArray.hpp"
 #include "core/Vector.hpp"
-#include "render/Buffer.hpp"
-#include "render/GridBase.hpp"
 
 /* ************************************************************************ */
 
@@ -22,54 +23,17 @@ namespace render {
 
 /* ************************************************************************ */
 
-class Context;
-
-/* ************************************************************************ */
-
 /**
- * @brief Rendering grid object.
+ * @brief Image data structure.
  */
-class DLL_EXPORT Grid : public GridBase
+struct DLL_EXPORT ImageData
 {
 
+    /// Image size.
+    Size size;
 
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param context Rendering context.
-     */
-    explicit Grid(Context& context);
-
-
-// Public Operators
-public:
-
-
-    /**
-     * @brief Render at current position.
-     *
-     * @param context Rendering context.
-     */
-    void draw(Context& context) NOEXCEPT;
-
-
-    /**
-     * @brief Resize grid.
-     *
-     * @param size New grid size.
-     */
-    void resize(Size size) NOEXCEPT;
-
-
-// Private Data Members
-private:
-
-    /// Buffer object.
-    Buffer m_buffer;
+    /// Image data.
+    DynamicArray<std::uint8_t> data;
 
 };
 

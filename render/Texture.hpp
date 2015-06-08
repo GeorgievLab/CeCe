@@ -1,10 +1,14 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
-
-// C++
-#include <cassert>
 
 // Simulator
 #include "core/compatibility.hpp"
@@ -37,12 +41,6 @@ public:
     using Id = unsigned int;
 
 
-    /**
-     * @brief Texture size type.
-     */
-    using SizeType = unsigned int;
-
-
 // Public Ctors & Dtors
 public:
 
@@ -62,7 +60,7 @@ public:
      * @param size    Texture size.
      * @param color   Initialization color.
      */
-    Texture(Context& context, Vector<SizeType> size, const Color& color = colors::BLACK);
+    Texture(Context& context, Size size, const Color& color = colors::BLACK);
 
 
     /**
@@ -108,7 +106,7 @@ public:
      * @param size    Texture size.
      * @param color   Initialization color.
      */
-    void resize(Vector<SizeType> size, const Color& color = colors::BLACK);
+    void resize(Size size, const Color& color = colors::BLACK);
 
 
     /**
@@ -117,7 +115,7 @@ public:
      * @param size   Texture data size.
      * @param colors New texture data.
      */
-    void update(const Vector<SizeType>& size, const Color* colors);
+    void update(const Size& size, const Color* colors);
 
 
 // Private Data Members

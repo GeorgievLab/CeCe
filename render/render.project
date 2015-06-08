@@ -33,7 +33,6 @@
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
     <File Name="Color.hpp"/>
-    <File Name="Position.hpp"/>
     <File Name="Context.hpp"/>
     <File Name="Grid.hpp"/>
     <File Name="errors.hpp"/>
@@ -46,8 +45,11 @@
     <File Name="Object.hpp"/>
     <File Name="Texture.hpp"/>
     <File Name="GridColorSmooth.hpp"/>
-    <File Name="fs.smooth.hpp"/>
-    <File Name="vs.smooth.hpp"/>
+    <File Name="ImageData.hpp"/>
+    <VirtualDirectory Name="shaders">
+      <File Name="fs.smooth.hpp"/>
+      <File Name="vs.smooth.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

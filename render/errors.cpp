@@ -1,13 +1,18 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Simulator
 #include "render/errors.hpp"
 
-// C++
-#include <map>
-#include <string>
-#include <stdexcept>
+// Simulator
+#include "core/Map.hpp"
+#include "core/String.hpp"
+#include "core/Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -15,7 +20,7 @@ namespace render {
 
 /* ************************************************************************ */
 
-static const std::map<GLenum, std::string> errors{{
+static const Map<GLenum, String> errors{{
     {GL_INVALID_ENUM, "Invalid enum"},
     {GL_INVALID_VALUE, "Invalid value"},
     {GL_INVALID_OPERATION, "Invalid operation"},
@@ -43,9 +48,9 @@ void throwGlError(GLenum error, const char* operation)
     auto it = errors.find(error);
 
     if (it != errors.end())
-        throw std::runtime_error(std::string(operation) + ": " + it->second);
+        throw RuntimeException(String(operation) + ": " + it->second);
     else
-        throw std::runtime_error(std::string(operation) + ": Unknown error");
+        throw RuntimeException(String(operation) + ": Unknown error");
 }
 
 /* ************************************************************************ */

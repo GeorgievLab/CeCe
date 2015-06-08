@@ -1,3 +1,10 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -6,7 +13,6 @@
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/Vector.hpp"
-#include "render/Context.hpp"
 #include "render/Buffer.hpp"
 #include "render/GridBase.hpp"
 
@@ -33,7 +39,7 @@ public:
     /**
      * @brief Constructor.
      */
-    GridVector(Context& context, Vector<unsigned int> size, const Vector<float>* data);
+    GridVector(Context& context, Size size, const Vector<float>* data);
 
 
 // Public Operations
@@ -54,7 +60,7 @@ public:
      * @param size
      * @param data
      */
-    void resize(Vector<unsigned int> size, const Vector<float>* data);
+    void resize(Size size, const Vector<float>* data);
 
 
     /**

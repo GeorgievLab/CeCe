@@ -1,3 +1,10 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -26,14 +33,6 @@ class Context;
 class DLL_EXPORT GridBase
 {
 
-// Public Types
-public:
-
-
-    /// Position type.
-    using PositionType = unsigned int;
-
-
 // Public Accessors
 public:
 
@@ -43,7 +42,7 @@ public:
      *
      * @return
      */
-    const Vector<PositionType>& getSize() const NOEXCEPT
+    const Size& getSize() const NOEXCEPT
     {
         return m_size;
     }
@@ -59,7 +58,7 @@ public:
      *
      * @param size
      */
-    void resize(Vector<PositionType> size) NOEXCEPT
+    void resize(Size size) NOEXCEPT
     {
         m_size = std::move(size);
     }
@@ -70,7 +69,7 @@ private:
 
 
     /// Grid size.
-    Vector<PositionType> m_size;
+    Size m_size;
 
 };
 

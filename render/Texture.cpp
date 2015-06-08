@@ -1,4 +1,9 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -6,7 +11,6 @@
 
 // C++
 #include <cassert>
-#include <vector>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -25,6 +29,7 @@
 #endif
 
 // Simulator
+#include "core/DynamicArray.hpp"
 #include "render/errors.hpp"
 
 /* ************************************************************************ */
@@ -48,7 +53,7 @@ Texture::Texture(Context& context)
 
 /* ************************************************************************ */
 
-Texture::Texture(Context& context, Vector<SizeType> size, const Color& color)
+Texture::Texture(Context& context, Size size, const Color& color)
     : Texture(context)
 {
     // Init texture
@@ -65,7 +70,7 @@ Texture::~Texture()
 
 /* ************************************************************************ */
 
-void Texture::resize(Vector<SizeType> size, const Color& color)
+void Texture::resize(Size size, const Color& color)
 {
     assert(isInitialized());
 
@@ -73,7 +78,7 @@ void Texture::resize(Vector<SizeType> size, const Color& color)
     const auto height = size.getHeight();
 
     // Create initial buffer
-    std::vector<Color> colors(width * height, color);
+    DynamicArray<Color> colors(width * height, color);
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
     gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_FLOAT, colors.data()));
@@ -81,7 +86,7 @@ void Texture::resize(Vector<SizeType> size, const Color& color)
 
 /* ************************************************************************ */
 
-void Texture::update(const Vector<SizeType>& size, const Color* colors)
+void Texture::update(const Size& size, const Color* colors)
 {
     const int width = size.getWidth();
     const int height = size.getHeight();

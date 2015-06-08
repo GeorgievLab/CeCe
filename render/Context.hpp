@@ -1,21 +1,24 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <vector>
-#include <string>
-#include <cstdint>
-#include <memory>
-
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/Units.hpp"
+#include "core/DynamicArray.hpp"
 #include "core/VectorUnits.hpp"
+#include "core/UniquePtr.hpp"
 #include "render/Camera.hpp"
-#include "render/Position.hpp"
 #include "render/Program.hpp"
+#include "render/ImageData.hpp"
 
 /* ************************************************************************ */
 
@@ -76,7 +79,7 @@ public:
      */
     bool isInitialized() NOEXCEPT
     {
-        return m_is_init;
+        return m_isInitialized;
     }
 
 
@@ -96,7 +99,7 @@ public:
      *
      * @return
      */
-    std::pair<std::vector<std::uint8_t>, Vector<unsigned>> getData() const NOEXCEPT;
+    ImageData getData() const NOEXCEPT;
 
 
     /**
@@ -193,7 +196,7 @@ public:
      *
      * @param scale Scale vector.
      */
-    void matrixScale(const Vector<float>& scale) NOEXCEPT;
+    void matrixScale(const ScaleVector& scale) NOEXCEPT;
 
 
     /**
@@ -203,7 +206,7 @@ public:
      */
     void matrixScale(float scale) NOEXCEPT
     {
-        return matrixScale(Vector<float>{scale});
+        return matrixScale(ScaleVector{scale});
     }
 
 
@@ -342,17 +345,17 @@ public:
 // Private Data Members
 private:
 
-    /// If context is init
-    bool m_is_init = false;
+    /// If context is initialized.
+    bool m_isInitialized = false;
 
     /// Camera.
     Camera m_camera;
 
     /// Rendering objects.
-    std::vector<std::unique_ptr<Object>> m_objects;
+    DynamicArray<UniquePtr<Object>> m_objects;
 
     /// Rendering objects that going to be deleted.
-    std::vector<std::unique_ptr<Object>> m_releasedObjects;
+    DynamicArray<UniquePtr<Object>> m_releasedObjects;
 
 };
 
