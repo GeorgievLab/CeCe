@@ -63,7 +63,7 @@ Object::Object(simulator::Simulation& simulation, const std::string& name, Type 
 
 /* ************************************************************************ */
 
-void Object::configure(const simulator::ConfigurationBase& config, simulator::Simulation& simulation)
+void Object::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Check if configuration contains code
     if (config.hasText())

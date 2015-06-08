@@ -106,7 +106,7 @@ public:
      * @param config
      * @param simulation
      */
-    void configure(const simulator::ConfigurationBase& config,
+    void configure(const simulator::Configuration& config,
                    simulator::Simulation& simulation) override;
 
 

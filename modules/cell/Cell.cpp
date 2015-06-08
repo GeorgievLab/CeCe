@@ -68,7 +68,7 @@ void Cell::update(units::Duration dt)
 
 /* ************************************************************************ */
 
-void Cell::configure(const simulator::ConfigurationBase& config,
+void Cell::configure(const simulator::Configuration& config,
                      simulator::Simulation& simulation)
 {
     CellBase::configure(config, simulation);

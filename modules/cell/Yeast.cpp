@@ -83,7 +83,7 @@ void Yeast::update(units::Duration dt)
 
 /* ************************************************************************ */
 
-void Yeast::configure(const simulator::ConfigurationBase& config,
+void Yeast::configure(const simulator::Configuration& config,
                       simulator::Simulation& simulation)
 {
     CellBase::configure(config, simulation);

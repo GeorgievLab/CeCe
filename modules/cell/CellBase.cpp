@@ -15,7 +15,7 @@ namespace cell {
 
 /* ************************************************************************ */
 
-void CellBase::configure(const simulator::ConfigurationBase& config,
+void CellBase::configure(const simulator::Configuration& config,
                          simulator::Simulation& simulation)
 {
     Object::configure(config, simulation);

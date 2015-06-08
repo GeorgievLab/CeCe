@@ -25,7 +25,7 @@ Module::Module()
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::ConfigurationBase& config)
+void Module::configure(const simulator::Configuration& config)
 {
     // File name pattern
     {

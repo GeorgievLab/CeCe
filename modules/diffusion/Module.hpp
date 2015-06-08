@@ -43,10 +43,10 @@ public:
 public:
 
 
-	/**
-	* @brief Constructor.
-	*/
-	Module();
+    /**
+    * @brief Constructor.
+    */
+    Module();
 
 
     /**
@@ -150,7 +150,7 @@ public:
      * @param config
      * @param simulation
      */
-    void configure(const simulator::ConfigurationBase& config, simulator::Simulation& simulation) override;
+    void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
 
 
 #if ENABLE_RENDER

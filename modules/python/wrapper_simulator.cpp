@@ -31,7 +31,7 @@ using namespace module::python;
  *
  * @return
  */
-static PyObject* Configuration_get(ObjectWrapper<simulator::ConfigurationBase*>* self, PyObject* args)
+static PyObject* Configuration_get(ObjectWrapper<simulator::Configuration*>* self, PyObject* args)
 {
     char* name;
 
@@ -61,7 +61,7 @@ static PyMethodDef g_configurationMethods[] = {
 
 static void python_wrapper_simulator_Configuration(PyObject* module)
 {
-    using type_def = TypeDefinition<simulator::ConfigurationBase*>;
+    using type_def = TypeDefinition<simulator::Configuration*>;
 
     type_def::init("simulator.Configuration");
     type_def::definition.tp_methods = g_configurationMethods;

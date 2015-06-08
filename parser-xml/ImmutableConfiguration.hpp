@@ -29,7 +29,7 @@ namespace xml {
 /**
  * @brief XML immutable configuration.
  */
-class DLL_EXPORT ImmutableConfiguration : public simulator::ConfigurationBase
+class DLL_EXPORT ImmutableConfiguration : public simulator::Configuration
 {
 
 // Public Ctors & Dtors

@@ -62,7 +62,7 @@ Module::Module(const std::string& name)
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::ConfigurationBase& config, simulator::Simulation& simulation)
+void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Check if configuration contains code
     if (config.hasText())

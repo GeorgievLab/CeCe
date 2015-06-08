@@ -161,7 +161,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::ConfigurationBase& config, simulator::Simulation& simulation)
+void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Grid size
     config.callIfSetString("grid", [this](const std::string& value) {
