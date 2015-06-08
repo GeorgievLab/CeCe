@@ -544,15 +544,22 @@ using Coordinate = Vector<unsigned int>;
 
 /* ************************************************************************ */
 
+// TODO: GCC have problem with =default constructor in linking stage.
+#ifndef __GNUC__
 extern template class DLL_EXPORT Vector<float>;
+#endif
 
 /* ************************************************************************ */
 
+#ifndef __GNUC__
 extern template class DLL_EXPORT Vector<unsigned int>;
+#endif
 
 /* ************************************************************************ */
 
+#ifndef __GNUC__
 extern template class DLL_EXPORT Vector<int>;
+#endif
 
 /* ************************************************************************ */
 
