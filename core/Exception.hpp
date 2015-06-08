@@ -6,6 +6,9 @@
 // C++
 #include <stdexcept>
 
+// Simulator
+#include "core/compatibility.hpp"
+
 /* ************************************************************************ */
 
 #ifndef _MSC_VER

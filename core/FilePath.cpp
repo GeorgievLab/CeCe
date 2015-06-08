@@ -5,7 +5,6 @@
 #include "core/FilePath.hpp"
 
 // C++
-//#include <cstdio>
 #include <fstream>
 
 /* ************************************************************************ */
@@ -18,19 +17,6 @@ inline namespace core {
 
 bool fileExists(const FilePath& path) NOEXCEPT
 {
-    /*
-    FILE* f = fopen(path.c_str(), "r");
-
-    if (f)
-    {
-        fclose(f);
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-    */
     std::ifstream f(path.c_str());
     return f.good();
 }

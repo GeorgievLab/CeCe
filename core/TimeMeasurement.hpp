@@ -5,11 +5,11 @@
 
 // C++
 #include <chrono>
-#include <string>
-#include <ostream>
 
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/OStream.hpp"
+#include "core/String.hpp"
 
 /* ************************************************************************ */
 
@@ -31,7 +31,7 @@ using Clock = std::chrono::high_resolution_clock;
  *
  * @return
  */
-std::ostream* getMeasureTimeOutput() NOEXCEPT;
+OStream* getMeasureTimeOutput() NOEXCEPT;
 
 /* ************************************************************************ */
 
@@ -40,7 +40,7 @@ std::ostream* getMeasureTimeOutput() NOEXCEPT;
  *
  * @param output
  */
-void setMeasureTimeOutput(std::ostream* output) NOEXCEPT;
+void setMeasureTimeOutput(OStream* output) NOEXCEPT;
 
 /* ************************************************************************ */
 
@@ -57,9 +57,10 @@ struct DLL_EXPORT DefaultMeasurementOutput
      * @param name Measurement name.
      * @param dt   Measured time.
      */
-    void operator()(std::ostream& out, const std::string& name, Clock::duration dt) const NOEXCEPT
+    void operator()(OStream& out, const String& name, Clock::duration dt) const NOEXCEPT
     {
-        out << name << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+        using namespace std::chrono;
+        out << name << ";" << duration_cast<microseconds>(dt).count() << "\n";
     }
 };
 
@@ -69,7 +70,7 @@ struct DLL_EXPORT DefaultMeasurementOutput
  * @brief Time measurement class.
  */
 template<typename OutFn>
-class DLL_EXPORT TimeMeasurementBase
+class TimeMeasurementBase
 {
 
 // Public Ctors & Dtors
@@ -82,7 +83,7 @@ public:
      * @param name Measurement name.
      * @param out  Output function.
      */
-    explicit TimeMeasurementBase(std::string name, OutFn out)
+    explicit TimeMeasurementBase(String name, OutFn out)
         : m_name(std::move(name))
         , m_outFn(std::move(out))
     {
@@ -107,7 +108,7 @@ public:
 private:
 
     /// Measurement name.
-    std::string m_name;
+    String m_name;
 
     /// Measurement start
     Clock::time_point m_start;
@@ -145,7 +146,7 @@ inline int measure_time(Args&&... args) NOEXCEPT
  * @return
  */
 template<typename Fn>
-inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
+inline TimeMeasurementBase<Fn> measure_time(String name, Fn fn) NOEXCEPT
 {
     return TimeMeasurementBase<Fn>{std::move(name), fn};
 }
@@ -161,7 +162,7 @@ inline TimeMeasurementBase<Fn> measure_time(std::string name, Fn fn) NOEXCEPT
  *
  * @return
  */
-inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(std::string name) NOEXCEPT
+inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(String name) NOEXCEPT
 {
     return TimeMeasurementBase<DefaultMeasurementOutput>{std::move(name), DefaultMeasurementOutput{}};
 }

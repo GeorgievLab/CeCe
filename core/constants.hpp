@@ -16,7 +16,7 @@ namespace constants {
 /**
  * @brief PI value.
  */
-static CONSTEXPR float PI = 3.14159265359f;
+static CONSTEXPR_CONST float PI = 3.14159265359f;
 
 /* ************************************************************************ */
 

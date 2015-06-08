@@ -50,6 +50,7 @@
     <File Name="Map.hpp"/>
     <File Name="UniquePtr.hpp"/>
     <File Name="Exception.hpp"/>
+    <File Name="OStream.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

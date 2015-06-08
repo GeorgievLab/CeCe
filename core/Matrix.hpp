@@ -23,7 +23,7 @@ inline namespace core {
  * @brief 2D matrix of fixed size.
  */
 template<typename T, unsigned SIZE>
-struct DLL_EXPORT Matrix
+struct Matrix
 {
 
 // Public Data Members
@@ -82,7 +82,7 @@ public:
      *
      * @return
      */
-	T* operator[](size_t i) NOEXCEPT
+    T* operator[](size_t i) NOEXCEPT
     {
         return data[i];
     }
@@ -95,7 +95,7 @@ public:
      *
      * @return
      */
-	const T* operator[](size_t i) const NOEXCEPT
+    const T* operator[](size_t i) const NOEXCEPT
     {
         return data[i];
     }

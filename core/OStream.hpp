@@ -1,12 +1,10 @@
 
+#pragma once
 
 /* ************************************************************************ */
 
-// Declaration
-#include "core/TimeMeasurement.hpp"
-
 // C++
-#include <iostream>
+#include <ostream>
 
 /* ************************************************************************ */
 
@@ -16,21 +14,10 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-OStream* g_output = &std::cout;
-
-/* ************************************************************************ */
-
-OStream* getMeasureTimeOutput() NOEXCEPT
-{
-    return g_output;
-}
-
-/* ************************************************************************ */
-
-void setMeasureTimeOutput(OStream* output) NOEXCEPT
-{
-    g_output = output;
-}
+/**
+ * @brief Output stream type.
+ */
+using OStream = std::ostream;
 
 /* ************************************************************************ */
 

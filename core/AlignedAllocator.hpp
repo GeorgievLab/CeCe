@@ -35,7 +35,7 @@ namespace memory {
  * @param align Memory alignment.
  * @param size  Number of required bytes.
  */
-void* allocate_aligned_memory(std::size_t align, std::size_t size);
+void* DLL_EXPORT allocate_aligned_memory(std::size_t align, std::size_t size);
 
 /* ************************************************************************ */
 
@@ -44,7 +44,7 @@ void* allocate_aligned_memory(std::size_t align, std::size_t size);
  *
  * @param ptr
  */
-void deallocate_aligned_memory(void* ptr) NOEXCEPT;
+void DLL_EXPORT deallocate_aligned_memory(void* ptr) NOEXCEPT;
 
 /* ************************************************************************ */
 
@@ -231,9 +231,9 @@ public:
      * @param p Pointer to object.
      */
 #ifdef _MSC_VER
-	void destroy(pointer p)
+    void destroy(pointer p)
 #else
-    void destroy(pointer p) NOEXCEPT(NOEXCEPT(p->~T()))
+    void destroy(pointer p) noexcept(noexcept(p->~T()))
 #endif
     {
         p->~T();

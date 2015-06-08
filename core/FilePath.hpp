@@ -31,7 +31,7 @@ using FilePath = std::string;
  *
  * @return
  */
-bool fileExists(const FilePath& path) NOEXCEPT;
+bool DLL_EXPORT fileExists(const FilePath& path) NOEXCEPT;
 
 /* ************************************************************************ */
 

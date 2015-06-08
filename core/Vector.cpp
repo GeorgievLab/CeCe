@@ -12,11 +12,15 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-//template class DLL_EXPORT Vector<float>;
+template class Vector<float>;
 
 /* ************************************************************************ */
 
-//template class Vector<unsigned>;
+template class Vector<unsigned int>;
+
+/* ************************************************************************ */
+
+template class Vector<int>;
 
 /* ************************************************************************ */
 

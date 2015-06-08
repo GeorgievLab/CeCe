@@ -39,6 +39,7 @@ add_library(${PROJECT_NAME} OBJECT
     FilePath.hpp
     FilePath.cpp
     Exception.hpp
+    OStream.hpp
 )
 
 # ######################################################################### #

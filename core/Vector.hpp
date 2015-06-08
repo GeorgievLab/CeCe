@@ -468,11 +468,29 @@ private:
 
 /* ************************************************************************ */
 
-//extern template class Vector<float>;
+/**
+ * @brief Vector for integer size.
+ */
+using Size = Vector<unsigned int>;
 
 /* ************************************************************************ */
 
-//extern template class Vector<unsigned>;
+/**
+ * @brief Vector for real size.
+ */
+using SizeReal = Vector<float>;
+
+/* ************************************************************************ */
+
+extern template class DLL_EXPORT Vector<float>;
+
+/* ************************************************************************ */
+
+extern template class DLL_EXPORT Vector<unsigned int>;
+
+/* ************************************************************************ */
+
+extern template class DLL_EXPORT Vector<int>;
 
 /* ************************************************************************ */
 

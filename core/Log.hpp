@@ -3,11 +3,9 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <ostream>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/OStream.hpp"
 
 /* ************************************************************************ */
 
@@ -42,7 +40,7 @@ public:
      *
      * @param os
      */
-    static void setOutput(std::ostream* os) NOEXCEPT
+    static void setOutput(OStream* os) NOEXCEPT
     {
         m_output = os;
     }
@@ -53,7 +51,7 @@ public:
      *
      * @param os
      */
-    static void setError(std::ostream* os) NOEXCEPT
+    static void setError(OStream* os) NOEXCEPT
     {
         m_error = os;
     }
@@ -120,7 +118,7 @@ private:
     /**
      * @brief Log message.
      */
-    static void message(std::ostream* os)
+    static void message(OStream* os)
     {
         // Nothing to do
     }
@@ -129,7 +127,7 @@ private:
     /**
      * @brief Log message - EOL.
      */
-    static void message(std::ostream* os, eol_t)
+    static void message(OStream* os, eol_t)
     {
         if (os)
             *os << std::endl;
@@ -142,7 +140,7 @@ private:
      * @param args
      */
     template<typename Arg, typename... Args>
-    static void message(std::ostream* os, Arg&& arg, Args&&... args)
+    static void message(OStream* os, Arg&& arg, Args&&... args)
     {
         if (os)
         {
@@ -156,10 +154,10 @@ private:
 private:
 
     /// Standard output.
-    static std::ostream* m_output;
+    static OStream* m_output;
 
     /// Error output.
-    static std::ostream* m_error;
+    static OStream* m_error;
 
 };
 
