@@ -57,6 +57,13 @@ using ScaleVector = Vector<float>;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Size vector.
+ */
+using SizeVector = Vector<float>;
+
+/* ************************************************************************ */
+
 #ifndef _MSC_VER
 }
 #endif
