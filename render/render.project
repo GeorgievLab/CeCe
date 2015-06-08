@@ -50,6 +50,8 @@
       <File Name="fs.smooth.hpp"/>
       <File Name="vs.smooth.hpp"/>
     </VirtualDirectory>
+    <File Name="VertexElement.hpp"/>
+    <File Name="VertexFormat.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

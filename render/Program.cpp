@@ -51,8 +51,8 @@ namespace render {
 Program::~Program()
 {
 #ifdef _WIN32
-	if (!glDeleteProgram)
-		glDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
+    if (!glDeleteProgram)
+        glDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
 #endif
 
     if (m_id)
@@ -64,8 +64,8 @@ Program::~Program()
 Program::UniformId Program::getUniformId(const char* name) const NOEXCEPT
 {
 #ifdef _WIN32
-	if (!glGetUniformLocation)
-		glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
+    if (!glGetUniformLocation)
+        glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
 #endif
 
     assert(getId());
@@ -79,31 +79,31 @@ Program::UniformId Program::getUniformId(const char* name) const NOEXCEPT
 void Program::init(const Shader& vs, const Shader& fs)
 {
 #ifdef _WIN32
-	if (!glCreateProgram)
-		glCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
+    if (!glCreateProgram)
+        glCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
 #endif
 
     m_id = glCreateProgram();
     assert(m_id);
 
 #ifdef _WIN32
-	if (!glAttachShader)
-		glAttachShader = (PFNGLATTACHSHADERPROC)wglGetProcAddress("glAttachShader");
+    if (!glAttachShader)
+        glAttachShader = (PFNGLATTACHSHADERPROC)wglGetProcAddress("glAttachShader");
 #endif
 
     gl(glAttachShader(m_id, vs.getId()));
     gl(glAttachShader(m_id, fs.getId()));
 
 #ifdef _WIN32
-	if (!glLinkProgram)
-		glLinkProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glLinkProgram");
+    if (!glLinkProgram)
+        glLinkProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glLinkProgram");
 #endif
 
     gl(glLinkProgram(m_id));
 
 #ifdef _WIN32
-	if (!glGetProgramiv)
-		glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
+    if (!glGetProgramiv)
+        glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
 #endif
 
     GLint isLinked = 0;
@@ -114,8 +114,8 @@ void Program::init(const Shader& vs, const Shader& fs)
         glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &maxLength);
 
 #ifdef _WIN32
-		if (!glGetProgramInfoLog)
-			glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
+        if (!glGetProgramInfoLog)
+            glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
 #endif
 
         // The maxLength includes the NULL character
@@ -125,8 +125,8 @@ void Program::init(const Shader& vs, const Shader& fs)
     }
 
 #ifdef _WIN32
-	if (!glDetachShader)
-		glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
+    if (!glDetachShader)
+        glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
 #endif
 
     glDetachShader(m_id, vs.getId());

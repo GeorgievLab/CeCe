@@ -1,13 +1,18 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <vector>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/DynamicArray.hpp"
 #include "render/VertexElement.hpp"
 
 /* ************************************************************************ */
@@ -19,7 +24,7 @@ namespace render {
 /**
  * @brief Description of vertices stored in vertex buffer.
  */
-class VertexFormat
+class DLL_EXPORT VertexFormat
 {
 
 // Public Ctors & Dtors
@@ -39,7 +44,7 @@ public:
      */
     VertexFormat(std::initializer_list<VertexElement> elements)
 #if _MSC_VER
-		: m_elements(elements.begin(), elements.end())
+        : m_elements(elements.begin(), elements.end())
 #else
         : m_elements{elements}
 #endif
@@ -87,7 +92,7 @@ public:
      *
      * @return
      */
-	size_t getCount() const NOEXCEPT
+    size_t getCount() const NOEXCEPT
     {
         return m_elements.size();
     }
@@ -109,9 +114,9 @@ public:
      *
      * @return
      */
-	size_t getSize() const NOEXCEPT
+    size_t getSize() const NOEXCEPT
     {
-		size_t sum = 0;
+        size_t sum = 0;
 
         for (auto& element : m_elements)
             sum += element.getSize();
@@ -125,7 +130,7 @@ public:
      *
      * @return
      */
-	 const std::vector<VertexElement>& getElements() const NOEXCEPT
+    const DynamicArray<VertexElement>& getElements() const NOEXCEPT
     {
         return m_elements;
     }
@@ -136,7 +141,7 @@ public:
      *
      * @return
      */
-	 std::vector<VertexElement>::const_iterator begin() const NOEXCEPT
+    DynamicArray<VertexElement>::const_iterator begin() const NOEXCEPT
     {
         return m_elements.begin();
     }
@@ -147,7 +152,7 @@ public:
      *
      * @return
      */
-	 std::vector<VertexElement>::const_iterator end() const NOEXCEPT
+    DynamicArray<VertexElement>::const_iterator end() const NOEXCEPT
     {
         return m_elements.end();
     }
@@ -157,7 +162,7 @@ public:
 private:
 
     /// Stored elements.
-    std::vector<VertexElement> m_elements;
+    DynamicArray<VertexElement> m_elements;
 
 };
 

@@ -49,8 +49,8 @@ namespace render {
 Buffer::Buffer(Context& context)
 {
 #ifdef _WIN32
-	if (!glGenBuffers)
-		glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress("glGenBuffers");
+    if (!glGenBuffers)
+        glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress("glGenBuffers");
 #endif
 
     // Generate buffer
@@ -72,8 +72,8 @@ Buffer::Buffer(Context& context, SizeType size, const void* data)
 Buffer::~Buffer()
 {
 #ifdef _WIN32
-	if (!glDeleteBuffers)
-		glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress("glDeleteBuffers");
+    if (!glDeleteBuffers)
+        glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress("glDeleteBuffers");
 #endif
 
     assert(isInitialized());
@@ -87,10 +87,10 @@ void Buffer::resize(SizeType size, const void* data)
     assert(isInitialized());
 
 #ifdef _WIN32
-	if (!glBindBuffer)
-		glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress("glBindBuffer");
-	if (!glBufferData)
-		glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress("glBufferData");
+    if (!glBindBuffer)
+        glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress("glBindBuffer");
+    if (!glBufferData)
+        glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress("glBufferData");
 #endif
 
     // Bind buffer and set data

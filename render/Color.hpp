@@ -77,10 +77,10 @@ public:
 #endif
     {
 #ifdef _MSC_VER
-		m_components[0] = red;
-		m_components[1] = green;
-		m_components[2] = blue;
-		m_components[3] = alpha;
+        m_components[0] = red;
+        m_components[1] = green;
+        m_components[2] = blue;
+        m_components[3] = alpha;
 #endif
     }
 
