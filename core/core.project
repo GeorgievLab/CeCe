@@ -52,6 +52,7 @@
     <File Name="Exception.hpp"/>
     <File Name="OStream.hpp"/>
     <File Name="IStream.hpp"/>
+    <File Name="StaticArray.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

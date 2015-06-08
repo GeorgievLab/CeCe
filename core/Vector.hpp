@@ -1,3 +1,10 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -28,6 +35,28 @@ inline namespace core {
 template<typename T>
 class Vector
 {
+
+// Public Types
+public:
+
+
+    /// Vector value type.
+    using value_type = T;
+
+
+    /// Zero value initializer type.
+    struct Zero_t {};
+
+
+// Public Constants
+public:
+
+
+    /**
+     * @brief Placeholder for zero vector.
+     */
+    static CONSTEXPR_CONST Zero_t Zero{};
+
 
 // Public Ctors
 public:
@@ -64,6 +93,16 @@ public:
      */
     CONSTEXPR Vector(T x, T y) NOEXCEPT
         : m_x(x), m_y(y)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Zero value constructor.
+     */
+    CONSTEXPR Vector(Zero_t) NOEXCEPT
+        : Vector(T{})
     {
         // Nothing to do
     }
@@ -432,9 +471,32 @@ public:
      *
      * @return
      */
-    T dot(const Vector& rhs) const NOEXCEPT
+    CONSTEXPR T dot(const Vector& rhs) const NOEXCEPT
     {
         return getX() * rhs.getX() + getY() * rhs.getY();
+    }
+
+
+    /**
+     * @brief Inverse current vector (1 / *this).
+     *
+     * @return
+     */
+    Vector inversed() const NOEXCEPT
+    {
+        return Vector(T(1) / getX(), T(1) / getY());
+    }
+
+
+    /**
+     * @brief Inverse current vector (1 / *this).
+     *
+     * @return
+     */
+    template<typename T2>
+    Vector<T2> inversed() const NOEXCEPT
+    {
+        return Vector<T2>(T2(1) / getX(), T2(1) / getY());
     }
 
 
@@ -476,9 +538,9 @@ using Size = Vector<unsigned int>;
 /* ************************************************************************ */
 
 /**
- * @brief Vector for real size.
+ * @brief Vector for coordinates.
  */
-using SizeReal = Vector<float>;
+using Coordinate = Vector<unsigned int>;
 
 /* ************************************************************************ */
 

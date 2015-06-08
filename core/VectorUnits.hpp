@@ -1,3 +1,10 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -40,6 +47,13 @@ using AccelerationVector = Vector<units::Acceleration>;
  * @brief Force vector structure.
  */
 using ForceVector = Vector<units::Force>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Scale vector.
+ */
+using ScaleVector = Vector<float>;
 
 /* ************************************************************************ */
 
