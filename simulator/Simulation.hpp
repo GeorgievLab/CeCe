@@ -23,6 +23,7 @@
 #include "core/Map.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/DynamicArray.hpp"
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Library.hpp"
@@ -609,6 +610,44 @@ private:
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     bool m_drawPhysics = true;
 #endif
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Time measurement functor with printing current iteration.
+ */
+struct DLL_EXPORT TimeMeasurementIterationOutput
+{
+    /// Simulation.
+    Simulation* m_simulation;
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param sim
+     */
+    explicit TimeMeasurementIterationOutput(Simulation* sim)
+        : m_simulation(sim)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Functor function.
+     *
+     * @param out  Output stream.
+     * @param name Measurement name.
+     * @param dt   Measured time.
+     */
+    void operator()(OStream& out, const String& name, Clock::duration dt) const NOEXCEPT
+    {
+        using namespace std::chrono;
+        out << name << ";" << m_simulation->getStepNumber() << ";" << duration_cast<microseconds>(dt).count() << "\n";
+    }
+
 };
 
 /* ************************************************************************ */

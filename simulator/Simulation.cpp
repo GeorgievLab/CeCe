@@ -16,7 +16,6 @@
 
 // Simulator
 #include "core/Log.hpp"
-#include "core/TimeMeasurement.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/LibraryApi.hpp"
@@ -177,18 +176,14 @@ bool Simulation::update(units::Duration dt)
 
     // Update modules
     {
-        auto _ = measure_time("sim.modules", [this](OStream& out, const String& name, Clock::duration dt) {
-            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
-        });
+        auto _ = measure_time("sim.modules", TimeMeasurementIterationOutput(this));
 
         for (auto& module : getModules())
             module.second->update(dt, *this);
     }
 
     {
-        auto _ = measure_time("sim.objects", [this](OStream& out, const String& name, Clock::duration dt) {
-            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
-        });
+        auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
 
         // Update simulations objects
         for (std::size_t i = 0; i < getObjects().size(); ++i)
@@ -201,9 +196,7 @@ bool Simulation::update(units::Duration dt)
 
     // Remove objects that are outside world.
     {
-        auto _ = measure_time("sim.delete", [this](OStream& out, const String& name, Clock::duration dt) {
-            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
-        });
+        auto _ = measure_time("sim.delete", TimeMeasurementIterationOutput(this));
 
         const auto hh = getWorldSize() * 0.5f;
 
@@ -226,9 +219,7 @@ bool Simulation::update(units::Duration dt)
 
 #ifdef ENABLE_PHYSICS
     {
-        auto _ = measure_time("sim.physics", [this](OStream& out, const String& name, Clock::duration dt) {
-            out << name << ";" << getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
-        });
+        auto _ = measure_time("sim.physics", TimeMeasurementIterationOutput(this));
 
         m_world.Step(dt, 5, 5);
     }
