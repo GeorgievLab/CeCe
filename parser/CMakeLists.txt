@@ -1,10 +1,22 @@
 # ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
+# Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                   #
+# ######################################################################### #
+
+cmake_minimum_required(VERSION 2.8.8)
+
+# ######################################################################### #
 
 # Project name
 set(PROJECT_NAME parser)
 
 # Create project
 project(${PROJECT_NAME} CXX)
+
+# ######################################################################### #
 
 # Current version is unable to add object library into shared library.
 if (UNIX)
@@ -14,6 +26,8 @@ endif ()
 if (WIN32)
     add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()
+
+# ######################################################################### #
 
 # Create library
 add_library(${PROJECT_NAME} OBJECT
