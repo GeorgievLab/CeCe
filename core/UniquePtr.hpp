@@ -31,6 +31,19 @@ using UniquePtr = std::unique_ptr<T>;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Make unique ptr function.
+ *
+ * @return
+ */
+template<typename T, typename... Args>
+UniquePtr<T> makeUniquePtr(Args&&... args)
+{
+    return UniquePtr<T>(new T{std::forward<Args>(args)...});
+}
+
+/* ************************************************************************ */
+
 #ifndef _MSC_VER
 }
 #endif
