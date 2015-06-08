@@ -8,13 +8,16 @@
 #include <fstream>
 #include <sstream>
 
+// Simulator
+#include "simulator/Simulation.hpp"
+
 /* ************************************************************************ */
 
 namespace parser {
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::Simulation> SimulationFactory::fromFile(const std::string& filename) const
+UniquePtr<simulator::Simulation> SimulationFactory::fromFile(const FilePath& filename) const
 {
     std::ifstream file(filename, std::ios::in);
     return fromStream(file, filename);
@@ -22,8 +25,8 @@ std::unique_ptr<simulator::Simulation> SimulationFactory::fromFile(const std::st
 
 /* ************************************************************************ */
 
-std::unique_ptr<simulator::Simulation> SimulationFactory::fromSource(
-    const std::string& source, const std::string& filename) const
+UniquePtr<simulator::Simulation> SimulationFactory::fromSource(const String& source,
+    const FilePath& filename) const
 {
     std::istringstream iss(source);
     return fromStream(iss, filename);

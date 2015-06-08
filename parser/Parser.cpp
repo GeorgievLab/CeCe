@@ -33,9 +33,9 @@ float parse_number(const char* str, const char** end)
 
 /* ************************************************************************ */
 
-std::string parse_suffix(const char* str, const char** end)
+String parse_suffix(const char* str, const char** end)
 {
-    std::string res;
+    String res;
 
     for (; *str != '\0' && isalnum(*str); ++str)
     {
@@ -68,7 +68,7 @@ bool parse_bool(const char* str, const char** end)
 render::Color parse_color(const char* str, const char** end)
 {
     if (*str != '#')
-        throw std::invalid_argument("Invalid color value");
+        throw InvalidArgumentException("Invalid color value");
 
     // Parse hexadecimal value
     uint32_t value = htonl(std::strtoul(str + 1, const_cast<char**>(end), 16));

@@ -3,15 +3,17 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <memory>
-#include <string>
-#include <istream>
-
 // Simulator
 #include "core/compatibility.hpp"
-#include "simulator/Simulation.hpp"
+#include "core/String.hpp"
+#include "core/FilePath.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/IStream.hpp"
 #include "simulator/SimulationFactory.hpp"
+
+/* ************************************************************************ */
+
+namespace simulator { class Simulation; }
 
 /* ************************************************************************ */
 
@@ -22,7 +24,7 @@ namespace parser {
 /**
  * @brief Parse simulation factory interface.
  */
-class SimulationFactory : public simulator::SimulationFactory
+class DLL_EXPORT SimulationFactory : public simulator::SimulationFactory
 {
 
 
@@ -35,7 +37,7 @@ public:
      *
      * @param filename
      */
-    std::unique_ptr<simulator::Simulation> fromFile(const std::string& filename) const override;
+    UniquePtr<simulator::Simulation> fromFile(const FilePath& filename) const override;
 
 
     /**
@@ -44,8 +46,8 @@ public:
      * @param source
      * @param filename
      */
-    std::unique_ptr<simulator::Simulation> fromSource(
-        const std::string& source, const std::string& filename = "<source>") const override;
+    UniquePtr<simulator::Simulation> fromSource(const String& source,
+        const FilePath& filename = "<source>") const override;
 
 
 // Protected Operations
@@ -53,15 +55,15 @@ protected:
 
 
     /**
-     * @brief Parse simulation from stream.
+     * @brief Parse simulation from input stream.
      *
      * @param source
      * @param filename
      *
      * @return
      */
-    virtual std::unique_ptr<simulator::Simulation> fromStream(
-        std::istream& source, const std::string& filename) const = 0;
+    virtual UniquePtr<simulator::Simulation> fromStream(IStream& source,
+        const String& filename) const = 0;
 
 };
 

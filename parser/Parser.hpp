@@ -3,12 +3,10 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <string>
-#include <stdexcept>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/String.hpp"
+#include "core/Exception.hpp"
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 
@@ -22,7 +20,7 @@ namespace parser {
 
 /* ************************************************************************ */
 
-using Exception = std::runtime_error;
+using Exception = RuntimeException;
 
 /* ************************************************************************ */
 
@@ -77,7 +75,7 @@ struct value_constructor<float>
  *
  * @return
  */
-float parse_number(const char* str, const char** end = nullptr);
+float DLL_EXPORT parse_number(const char* str, const char** end = nullptr);
 
 /* ************************************************************************ */
 
@@ -89,7 +87,7 @@ float parse_number(const char* str, const char** end = nullptr);
  *
  * @return
  */
-std::string parse_suffix(const char* str, const char** end = nullptr);
+String DLL_EXPORT parse_suffix(const char* str, const char** end = nullptr);
 
 /* ************************************************************************ */
 
@@ -101,7 +99,7 @@ std::string parse_suffix(const char* str, const char** end = nullptr);
  *
  * @return
  */
-bool parse_bool(const char* str, const char** end = nullptr);
+bool DLL_EXPORT parse_bool(const char* str, const char** end = nullptr);
 
 /* ************************************************************************ */
 
@@ -133,7 +131,7 @@ T parse_value(const char* str, const char** end = nullptr)
 {
     const char* in_end = str;
     float val = parse_number(in_end, &in_end);
-    std::string suffix = parse_suffix(in_end, &in_end);
+    String suffix = parse_suffix(in_end, &in_end);
 
     if (end) *end = in_end;
 
@@ -151,7 +149,7 @@ T parse_value(const char* str, const char** end = nullptr)
  * @return
  */
 template<typename T>
-inline T parse_value(const std::string& str, const char** end = nullptr)
+inline T parse_value(const String& str, const char** end = nullptr)
 {
     return parse_value<T>(str.c_str(), end);
 }
@@ -187,7 +185,7 @@ Vector<T> parse_vector(const char* str, const char** end = nullptr)
  * @return
  */
 template<typename T>
-inline Vector<T> parse_vector(const std::string& str, const char** end = nullptr)
+inline Vector<T> parse_vector(const String& str, const char** end = nullptr)
 {
     return parse_vector<T>(str.c_str(), end);
 }
@@ -230,7 +228,7 @@ Vector<T> parse_vector_single(const char* str, const char** end = nullptr)
  * @return
  */
 template<typename T>
-inline Vector<T> parse_vector_single(const std::string& str, const char** end = nullptr)
+inline Vector<T> parse_vector_single(const String& str, const char** end = nullptr)
 {
     return parse_vector_single<T>(str.c_str(), end);
 }
@@ -246,7 +244,7 @@ inline Vector<T> parse_vector_single(const std::string& str, const char** end = 
  *
  * @return
  */
-render::Color parse_color(const char* str, const char** end = nullptr);
+render::Color DLL_EXPORT parse_color(const char* str, const char** end = nullptr);
 #endif
 
 /* ************************************************************************ */
@@ -260,7 +258,7 @@ render::Color parse_color(const char* str, const char** end = nullptr);
  *
  * @return
  */
-inline render::Color parse_color(const std::string& str, const char** end = nullptr)
+inline render::Color parse_color(const String& str, const char** end = nullptr)
 {
     return parse_color(str.c_str(), end);
 }
@@ -313,7 +311,7 @@ std::array<T, N> parse_array(const char* str, T (*fn)(const char*, const char**)
  * @param end
  */
 template<typename T, size_t N>
-inline std::array<T, N> parse_array(const std::string& str, T (*fn)(const char*, const char**), const char** end = nullptr)
+inline std::array<T, N> parse_array(const String& str, T (*fn)(const char*, const char**), const char** end = nullptr)
 {
     return parse_array<T, N>(str.c_str(), fn, end);
 }
