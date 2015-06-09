@@ -6,14 +6,24 @@ set(PROJECT_NAME module-streamlines)
 # Create project
 project(${PROJECT_NAME} CXX)
 
+#find_package(ImageMagick REQUIRED COMPONENTS Magick++)
+#include_directories(${ImageMagick_INCLUDE_DIRS})
+
 # Sources
 set(SRCS
     Module.hpp
     Module.cpp
     Library.hpp
     Library.cpp
+    Lattice.hpp
+    Lattice.cpp
+    LatticeData.hpp
+    LatticeData.cpp
+    ObstacleMap.hpp
+    ObstacleMap.cpp
 )
 
+add_definitions(-DOPT_DRAW_VELOCITY=1)
 
 # Build static / dynamic
 list(FIND MODULES_BUILDIN "streamlines" IS_STATIC)
@@ -35,7 +45,7 @@ if (${IS_STATIC} GREATER -1)
 
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
-        ${Boost_LIBRARIES}
+        #${ImageMagick_LIBRARIES}
     )
 else ()
     message("-- Module ${PROJECT_NAME} is dynamic")
@@ -50,7 +60,7 @@ else ()
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         simulator
-        ${Boost_LIBRARIES}
+        #${ImageMagick_LIBRARIES}
     )
 
     # Install

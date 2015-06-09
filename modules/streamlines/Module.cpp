@@ -10,9 +10,13 @@
 #include "Module.hpp"
 
 // C++
-#include <random>
+#include <algorithm>
+
+// Magick++
+//#include <Magick++.h>
 
 // Simulator
+#include "core/DynamicArray.hpp"
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
@@ -25,6 +29,13 @@
 
 namespace module {
 namespace streamlines {
+
+/* ************************************************************************ */
+
+Module::Module()
+{
+    //Magick::InitializeMagick(NULL);
+}
 
 /* ************************************************************************ */
 
@@ -57,8 +68,8 @@ void Module::init(Size size)
     {
         for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
         {
-            //m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
-            m_lattice[{x, y}].init({0.f, 0.f});
+            m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
+            //m_lattice[{x, y}].init({0.f, 0.f});
         }
     }
 /*
@@ -75,51 +86,7 @@ void Module::init(Size size)
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     // Dynamic obstacles
-    {
-        m_lattice.clearDynamicObstacles();
-
-        const Vector<float> start = simulation.getWorldSize() * -0.5;
-        const auto step = simulation.getWorldSize() / m_lattice.getSize();
-
-        // Foreach all cells
-        for (auto& obj : simulation.getObjects())
-        {
-            // Get cell position
-            const auto pos = obj->getPosition() - start;
-
-            // TODO: improve
-            if ((pos.getX() < 0 || pos.getY() < 0) ||
-                (pos.getX() >= simulation.getWorldSize().getWidth() || pos.getY() >= simulation.getWorldSize().getHeight()))
-                continue;
-
-            // Get grid position
-            Coordinate coord = pos / step;
-
-            std::vector<decltype(coord)> coords;
-            const auto& shapes = obj->getShapes();
-            auto coordIt = std::inserter(coords, coords.end());
-
-            for (const auto& shape : shapes)
-            {
-                coordIt = mapShapeToGrid(coordIt, shape, step, coord, getLattice().getSize());
-            }
-
-            std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-                return lhs < rhs;
-            });
-            coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-                return lhs == rhs;
-            }), coords.end());
-
-            for (const auto& c : coords)
-            {
-                Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
-
-                if (m_lattice.inRange(coord))
-                    m_lattice[coord].setDynamicObstacle(true);
-            }
-        }
-    }
+    updateDynamicObstacleMap(simulation);
 
     {
         // Get grid
@@ -249,7 +216,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
     // Grid size
     config.callIfSetString("grid", [this](const String& value) {
-        init(parser::parse_vector<Lattice::SizeType>(value));
+        init(parser::parse_vector_single<Lattice::SizeType>(value));
     });
 
     {
@@ -283,6 +250,8 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     if (!m_drawable)
         m_drawable.create(context, size);
 
+    Grid<VelocityVector> velocities(size);
+
     // Update texture
     for (decltype(size.getHeight()) y = 0; y < size.getHeight(); ++y)
     {
@@ -293,31 +262,97 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             const Coordinate coord{x, size.getHeight() - y - 1};
 
             // Background color
-            render::Color color = {0, 0, 0, 1};
+            render::Color color = {1, 1, 1, 1};
 
             if (!cell.isObstacle())
             {
                 // Calculate velocity vector
-                const auto velocity = cell.calcVelocityNormalized() / getFlowSpeed();
+                const auto velocity = cell.calcVelocityNormalized() * 100;// / getFlowSpeed();
 
-                //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
-                color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
+                color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
+                //color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
                 //color = {0, velocity.getLength(), 0, 1};
+                velocities[{x, y}] = velocity;
+            }
+            else
+            {
+                velocities[{x, y}] = VelocityVector::Zero;
             }
 
             // Set color
-            m_drawable.set(coord, color);
+            m_drawable->set(coord, color);
         }
     }
+
+    if (!m_drawableVector)
+        m_drawableVector.create(context, size, velocities.getData());
+    else
+        m_drawableVector->update(velocities.getData());
 
     // Draw color grid
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize());
-    m_drawable.draw(context);
+    m_drawable->draw(context);
+    m_drawableVector->draw(context);
     context.matrixPop();
 #endif
 }
 #endif
+
+/* ************************************************************************ */
+
+void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation)
+{
+    // Clear previous flag
+    m_lattice.clearDynamicObstacles();
+
+    const PositionVector start = simulation.getWorldSize() * -0.5f;
+    const auto step = simulation.getWorldSize() / m_lattice.getSize();
+
+    DynamicArray<Coordinate> coords;
+    coords.reserve(256);
+
+    // Foreach all cells
+    for (auto& obj : simulation.getObjects())
+    {
+        // Get object position
+        const auto pos = obj->getPosition() - start;
+
+        // Check if position is in range
+        if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+            continue;
+
+        // Get grid position
+        const Coordinate coord = pos / step;
+
+        coords.clear();
+        const auto& shapes = obj->getShapes();
+        auto coordIt = std::back_inserter(coords);
+
+        // Map shapes to grid
+        for (const auto& shape : shapes)
+        {
+            coordIt = mapShapeToGrid(coordIt, shape, step, coord, getLattice().getSize());
+        }
+
+        // Sort coordinates
+        // TODO: remove lambdas -> will work in Visual Studio?
+        std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+            return lhs < rhs;
+        });
+        coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+            return lhs == rhs;
+        }), coords.end());
+
+        for (const auto& c : coords)
+        {
+            const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
+
+            if (m_lattice.inRange(coord))
+                m_lattice[coord].setDynamicObstacle(true);
+        }
+    }
+}
 
 /* ************************************************************************ */
 

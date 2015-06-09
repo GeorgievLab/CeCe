@@ -10,7 +10,7 @@
 #include <stdexcept>
 
 // Magick++
-#include <Magick++.h>
+//#include <Magick++.h>
 
 /* ************************************************************************ */
 
@@ -23,7 +23,7 @@ ObstacleMap ObstacleMap::createFromFile(const std::string& filename, const Vecto
 {
     const auto width = size.getWidth();
     const auto height = size.getHeight();
-
+/*
     Magick::Image image;
 
     // Read a file into image object
@@ -34,10 +34,10 @@ ObstacleMap ObstacleMap::createFromFile(const std::string& filename, const Vecto
 
     // To black & white
     image.threshold(0.5);
-
+*/
     // Create a map
     ObstacleMap map(size);
-
+/*
     // Get image data
     std::vector<char> pixels(width * height);
     // Image should be black & white only, so get only one component value
@@ -50,7 +50,7 @@ ObstacleMap ObstacleMap::createFromFile(const std::string& filename, const Vecto
     std::transform(begin(pixels), end(pixels), begin(map), [](char c) {
         return !c;
     });
-
+*/
     return map;
 }
 

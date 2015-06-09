@@ -22,6 +22,7 @@
 #include "render/Context.hpp"
 #include "render/Object.hpp"
 #include "render/GridColor.hpp"
+#include "render/GridVector.hpp"
 #endif
 
 // Module
@@ -42,6 +43,12 @@ class Module : public simulator::Module
 
 // Public Ctors & Dtors
 public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    Module();
 
 
     /**
@@ -141,6 +148,17 @@ public:
     void draw(render::Context& context, const simulator::Simulation& simulation) override;
 #endif
 
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Update dynamic obstacle map from dynamic objects.
+     *
+     * @param simulation
+     */
+    void updateDynamicObstacleMap(const simulator::Simulation& simulation);
+
 
 // Private Data Members
 private:
@@ -154,6 +172,11 @@ private:
 #if ENABLE_RENDER && OPT_DRAW_VELOCITY
     /// Rendering grid with filled cells.
     render::ObjectPtr<render::GridColor> m_drawable;
+#endif
+
+#if ENABLE_RENDER
+    /// Render grid for velocities
+    render::ObjectPtr<render::GridVector> m_drawableVector;
 #endif
 
 };
