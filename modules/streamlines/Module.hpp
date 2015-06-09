@@ -20,6 +20,7 @@
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
+#include "render/Object.hpp"
 #include "render/GridColor.hpp"
 #endif
 
