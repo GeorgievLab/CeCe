@@ -43,7 +43,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     option(CLANG_USE_LIBCPP         "If libc++ should be used" Off)
 
     # C++11 required
-    add_compile_options(-pedantic-errors -pedantic -std=c++11)
+    add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
 
     # Use libc++
     if (CLANG_USE_LIBCPP)
@@ -61,14 +61,15 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
         set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
     endif ()
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+elseif (CMAKE_COMPILER_IS_GNUCXX)
     # using GCC
 
     # C++11 required
-    add_compile_options(-pedantic-errors -pedantic -std=c++11)
+    add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
 
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+elseif (MSVC)
     # using Visual Studio C++
+    add_compile_options(/W3)
 endif()
 
 # Default include directories
