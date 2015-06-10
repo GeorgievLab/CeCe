@@ -1,5 +1,6 @@
-<simulation world-size="100um 100um" dt="10ms" iterations="10000">
+<simulation world-size="100um 100um" dt="40ms" iterations="10000">
     <module name="cell.generator" />
-    <module name="streamlines" grid="200 200" flow-speed="0.1" obstacle-map="scene.png" />
+    <module name="streamlines" grid="100" velocity-max="10um/s" viscosity="1" />
+    <object class="cell.Cell" volume="2000um3" />
 </simulation>
 
