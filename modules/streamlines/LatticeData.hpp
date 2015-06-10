@@ -4,12 +4,12 @@
 /* ************************************************************************ */
 
 // C++
-#include <array>
 #include <algorithm>
 
 // Simulator
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
+#include "core/StaticArray.hpp"
 
 /* ************************************************************************ */
 
@@ -44,21 +44,21 @@ public:
     static constexpr IndexType SIZE = 9;
 
     /// Direction weights
-    static constexpr std::array<ValueType, SIZE> DIRECTION_WEIGHTS = {{
+    static constexpr StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
         4.f / 9.f, // Center
         1.f / 9.f, 1.f / 9.f, 1.f / 9.f, 1.f / 9.f, // Linear
         1.f / 36.f, 1.f / 36.f, 1.f / 36.f, 1.f / 36.f // Diagonal
     }};
 
     /// Direction velocities
-    static constexpr std::array<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
+    static constexpr StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
         { 0,  0},
         { 1,  0}, { 0,  1}, {-1,  0}, { 0, -1},
         { 1,  1}, {-1,  1}, {-1, -1}, { 1, -1}
     }};
 
     /// Direction opposites
-    static constexpr std::array<IndexType, SIZE> DIRECTION_OPPOSITES = {
+    static constexpr StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {
         0,
         3, 4, 1, 2,
         7, 8, 5, 6
@@ -274,14 +274,14 @@ public:
      *
      * @return
      */
-    static std::array<ValueType, SIZE> calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept;
+    static StaticArray<ValueType, SIZE> calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept;
 
 
 // Private Data Members
 public:
 
     /// Distribution functions.
-    std::array<ValueType, SIZE> m_values;
+    StaticArray<ValueType, SIZE> m_values;
 
     /// If current item is a static obstacle.
     bool m_staticObstacle = false;

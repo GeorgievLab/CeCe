@@ -12,18 +12,13 @@
 // C++
 #include <algorithm>
 
-// Magick++
-//#include <Magick++.h>
-
 // Simulator
 #include "core/DynamicArray.hpp"
+#include "core/Exception.hpp"
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/ShapeToGrid.hpp"
-
-// Module
-#include "ObstacleMap.hpp"
 
 /* ************************************************************************ */
 
@@ -34,7 +29,7 @@ namespace streamlines {
 
 Module::Module()
 {
-    //Magick::InitializeMagick(NULL);
+    // Nothing to do
 }
 
 /* ************************************************************************ */
@@ -56,7 +51,7 @@ void Module::init(Size size)
     const auto grid_size = grid.getRealSize();
 
     // maximum velocity of the Poiseuille inflow
-    const float uMax = getFlowSpeed();
+    const float uMax = 0.1;//getVelocityMax();
 
     auto computePoiseuille = [&grid_size, uMax](int i) {
         float y = (float) (i - 1);
@@ -85,25 +80,21 @@ void Module::init(Size size)
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    // Check condition time step condition
+    checkTimeStepCondition(dt, simulation);
+
     // Dynamic obstacles
     updateDynamicObstacleMap(simulation);
 
     {
-        // Get grid
-        const auto size = getLattice().getSize();
+        const auto dl = simulation.getWorldSize() / getLattice().getSize();
 
-        float obst_x = size.getWidth() / 2;
-        float obst_y = size.getHeight() / 2;
-        float obst_r = size.getHeight() / 10 + 1;
+        // LB viscosity
+        const auto nu_lb = (dt / dl.getX()) * getViscosity();
 
-        // maximum velocity of the Poiseuille inflow
-        const float uMax = getFlowSpeed();
-        // Reynolds number
-        const float Re = 100;
-        // kinematic fluid viscosity
-        const float nu = uMax * 2.f * obst_r / Re;
-        // relaxation parameter
-        const float omega = 1.f / (3.f * nu + 1.f / 2.f);
+        // Relaxation parameter
+        const float tau = (3.f * nu_lb + 0.5f);
+        const float omega = 1.f / tau;
 
         ///////////////////
 
@@ -115,7 +106,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         /**/
         {
             // maximum velocity of the Poiseuille inflow
-            const float uMax = getFlowSpeed();
+            const float uMax = getVelocityMax();
             const auto grid_size = getLattice().getRealSize();
 
             auto computePoiseuille = [&grid_size, uMax](int i) {
@@ -127,7 +118,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             // Generate input / output
             for (Lattice::SizeType y = 0; y < grid_size.getHeight(); ++y)
             {
-                m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
+                //m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
                 //m_lattice[{0, y}].init({0.f, 0.f});
                 //m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
                 //m_lattice[{grid_size.getWidth() - 1, y}].init(m_lattice[{grid_size.getWidth() - 2, y}].calcVelocityNormalized());
@@ -170,73 +161,27 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     }
 
     // Apply streamlines to world objects
-    /*
-    {
-        // Get grid
-        const auto& grid = getGrid();
-
-        const Vector<float> start = simulation.getWorldSize() * -0.5;
-        const auto step = simulation.getWorldSize() / grid.getSize();
-
-        for (auto& obj : simulation.getObjects())
-        {
-            // Ignore static objects
-            if (obj->getType() == simulator::Object::Type::Static)
-                continue;
-
-            // Get position
-            const auto pos = obj->getPosition() - start;
-
-            // TODO: improve
-            if ((pos.getX() < 0 || pos.getY() < 0) ||
-                (pos.getX() >= simulation.getWorldSize().getWidth() || pos.getY() >= simulation.getWorldSize().getHeight()))
-                continue;
-
-            // Get grid position
-            Vector<SizeType> coord = pos / step;
-
-            // Get velocity
-            const auto force = grid[coord] * m_flowSpeed;
-
-            // Add acceleration to the object
-            obj->applyForce(force);
-        }
-    }
-    */
+    //applyToObjects(simulation);
 }
 
 /* ************************************************************************ */
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
-    // Flow speed
-    config.callIfSetString("flow-speed", [this](const String& value) {
-        setFlowSpeed(parser::parse_value<float>(value));
+    // Maximum velocity
+    config.callIfSetString("velocity-max", [this](const String& value) {
+        setVelocityMax(parser::parse_value<units::Velocity>(value));
+    });
+
+    // Viscosity
+    config.callIfSetString("viscosity", [this](const String& value) {
+        setViscosity(parser::parse_value<units::Viscosity>(value.c_str()));
     });
 
     // Grid size
     config.callIfSetString("grid", [this](const String& value) {
         init(parser::parse_vector_single<Lattice::SizeType>(value));
     });
-
-    {
-        auto obstacleMap = config.getString("obstacle-map");
-
-        if (!obstacleMap.empty())
-        {
-            // Create obstacle map with given size
-            auto map = ObstacleMap::createFromFile(config.buildFilePath(obstacleMap), m_lattice.getSize());
-            auto size = map.getSize();
-
-            for (unsigned int y = 0; y < size.getHeight(); ++y)
-            {
-                for (unsigned int x = 0; x < size.getWidth(); ++x)
-                {
-                    m_lattice[{x + 1, y + 1}].setStaticObstacle(map[{x, y}]);
-                }
-            }
-        }
-    }
 }
 
 /* ************************************************************************ */
@@ -301,6 +246,18 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
 /* ************************************************************************ */
 
+void Module::checkTimeStepCondition(units::Duration dt, const simulator::Simulation& simulation)
+{
+    // Steps in all directions
+    const auto dl = simulation.getWorldSize() / getLattice().getSize();
+    const auto dt_max = dl / getVelocityMax();
+
+    if (dt > std::max(dt_max.getX(), dt_max.getY()))
+        throw InvalidArgumentException("Time step is to large");
+}
+
+/* ************************************************************************ */
+
 void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation)
 {
     // Clear previous flag
@@ -351,6 +308,73 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation)
             if (m_lattice.inRange(coord))
                 m_lattice[coord].setDynamicObstacle(true);
         }
+    }
+}
+
+/* ************************************************************************ */
+
+void Module::applyToObjects(const simulator::Simulation& simulation)
+{
+    // Get lattice
+    const auto& lattice = getLattice();
+
+    const PositionVector start = simulation.getWorldSize() * -0.5f;
+    const auto step = simulation.getWorldSize() / lattice.getSize();
+
+    DynamicArray<Coordinate> coords;
+    coords.reserve(256);
+
+    // Foreach objects
+    for (auto& obj : simulation.getObjects())
+    {
+        // Ignore static objects
+        if (obj->getType() == simulator::Object::Type::Static)
+            continue;
+
+        // Transform from [-size / 2, size / 2] to [0, size] space
+        const auto pos = obj->getPosition() - start;
+
+        // Check if position is in range
+        if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+            continue;
+
+        // Get coordinate to lattice
+        Coordinate coord = pos / step;
+
+        coords.clear();
+        const auto& shapes = obj->getShapes();
+        auto coordIt = std::back_inserter(coords);
+
+        // Map shapes border to grid
+        for (const auto& shape : shapes)
+        {
+            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, getLattice().getSize());
+        }
+
+        // Sort coordinates
+        // TODO: remove lambdas -> will work in Visual Studio?
+        std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+            return lhs < rhs;
+        });
+        coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
+            return lhs == rhs;
+        }), coords.end());
+
+        VelocityVector velocity = VelocityVector::Zero;
+
+        for (const auto& c : coords)
+        {
+            const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
+
+            // Sum velocities
+            velocity += lattice[coord].calcVelocityNormalized() * getVelocityMax();
+        }
+
+        // Average
+        velocity = velocity / coords.size();
+
+        // Set object velocity
+        obj->setVelocity(velocity);
     }
 }
 

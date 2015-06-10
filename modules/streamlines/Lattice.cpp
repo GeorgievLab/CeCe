@@ -11,7 +11,7 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-void Lattice::setSize(Vector<SizeType> size)
+void Lattice::setSize(Size size)
 {
     // Data requires 1 cell margin
     m_data.resize(size + 2);

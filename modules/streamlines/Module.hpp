@@ -11,6 +11,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "core/Units.hpp"
 #include "core/Grid.hpp"
@@ -66,7 +67,7 @@ public:
      *
      * @return
      */
-    Lattice& getLattice() noexcept
+    Lattice& getLattice() NOEXCEPT
     {
         return m_lattice;
     }
@@ -77,20 +78,31 @@ public:
      *
      * @return
      */
-    const Lattice& getLattice() const noexcept
+    const Lattice& getLattice() const NOEXCEPT
     {
         return m_lattice;
     }
 
 
     /**
-     * @brief Returns flow speed.
+     * @brief Returns maximum flow velocity.
      *
      * @return
      */
-    float getFlowSpeed() const noexcept
+    units::Velocity getVelocityMax() const NOEXCEPT
     {
-        return m_flowSpeed;
+        return m_velocityMax;
+    }
+
+
+    /**
+     * @brief Returns fluid viscosity.
+     *
+     * @return
+     */
+    units::Viscosity getViscosity() const NOEXCEPT
+    {
+        return m_viscosity;
     }
 
 
@@ -99,13 +111,24 @@ public:
 
 
     /**
-     * @brief Set flow speed.
+     * @brief Set maximum velocity.
      *
-     * @param speed.
+     * @param velocity
      */
-    void setFlowSpeed(float speed) noexcept
+    void setVelocityMax(units::Velocity velocity) NOEXCEPT
     {
-        m_flowSpeed = speed;
+        m_velocityMax = velocity;
+    }
+
+
+    /**
+     * @brief Set fluid viscosity.
+     *
+     * @param viscosity
+     */
+    void setViscosity(units::Viscosity viscosity) NOEXCEPT
+    {
+        m_viscosity = viscosity;
     }
 
 
@@ -149,7 +172,16 @@ public:
 #endif
 
 // Protected Operations
-protected:
+        protected:
+
+
+    /**
+     * @brief Check time step condition: dt <= dx / u_max.
+     *
+     * @param dt         Time step.
+     * @param simulation Simulation.
+     */
+    void checkTimeStepCondition(units::Duration dt, const simulator::Simulation& simulation);
 
 
     /**
@@ -160,11 +192,22 @@ protected:
     void updateDynamicObstacleMap(const simulator::Simulation& simulation);
 
 
+    /**
+     * @brief Apply streamlines to objects.
+     *
+     * @param simulation
+     */
+    void applyToObjects(const simulator::Simulation& simulation);
+
+
 // Private Data Members
 private:
 
-    /// Flow speed.
-    float m_flowSpeed = 50.f;
+    /// Maximum flow velocity.
+    units::Velocity m_velocityMax = 50.f;
+
+    /// Fluid viscosity.
+    units::Viscosity m_viscosity = 1.f;
 
     /// Lattice.
     Lattice m_lattice;

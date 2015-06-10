@@ -11,15 +11,15 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-constexpr std::array<LatticeData::ValueType, LatticeData::SIZE> LatticeData::DIRECTION_WEIGHTS;
+constexpr StaticArray<LatticeData::ValueType, LatticeData::SIZE> LatticeData::DIRECTION_WEIGHTS;
 
 /* ************************************************************************ */
 
-constexpr std::array<Vector<int>, LatticeData::SIZE> LatticeData::DIRECTION_VELOCITIES;
+constexpr StaticArray<Vector<int>, LatticeData::SIZE> LatticeData::DIRECTION_VELOCITIES;
 
 /* ************************************************************************ */
 
-constexpr std::array<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DIRECTION_OPPOSITES;
+constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DIRECTION_OPPOSITES;
 
 /* ************************************************************************ */
 
@@ -27,7 +27,7 @@ void LatticeData::collide(ValueType omega)
 {
     if (isObstacle())
     {
-        std::array<ValueType, SIZE> temp;
+        StaticArray<ValueType, SIZE> temp;
 
         // Move updated values into opposite directions
         for (IndexType i = 0; i < SIZE; ++i)
@@ -53,9 +53,9 @@ void LatticeData::collide(ValueType omega)
 
 /* ************************************************************************ */
 
-std::array<LatticeData::ValueType, LatticeData::SIZE> LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept
+StaticArray<LatticeData::ValueType, LatticeData::SIZE> LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept
 {
-    std::array<ValueType, SIZE> res;
+    StaticArray<ValueType, SIZE> res;
 
     for (IndexType alpha = 0; alpha < SIZE; ++alpha)
     {

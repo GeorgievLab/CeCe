@@ -4,13 +4,14 @@
 /* ************************************************************************ */
 
 // C++
-#include <array>
 #include <algorithm>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "core/Grid.hpp"
+#include "core/StaticArray.hpp"
 
 // Module
 #include "LatticeData.hpp"
@@ -49,6 +50,12 @@ public:
      * @brief Coordinates type.
      */
     using CoordinateType = ContainerType::CoordinateType;
+
+
+    /**
+     * @brief Size type.
+     */
+    using Size = Vector<SizeType>;
 
 
 // Public Constants
@@ -98,7 +105,7 @@ public:
      *
      * @return
      */
-    Vector<SizeType> getSize() const noexcept
+    Size getSize() const noexcept
     {
         // Lattice itself have 1 cell margin
         return getRealSize() - 2;
@@ -110,7 +117,7 @@ public:
      *
      * @return
      */
-    const Vector<SizeType>& getRealSize() const noexcept
+    const Size& getRealSize() const noexcept
     {
         return m_data.getSize();
     }
@@ -123,7 +130,7 @@ public:
      *
      * @return
      */
-    bool inRange(const Vector<SizeType>& coord) const noexcept
+    bool inRange(const CoordinateType& coord) const noexcept
     {
         return m_data.inRange(coord);
     }
@@ -138,7 +145,7 @@ public:
      *
      * @param size
      */
-    void setSize(Vector<SizeType> size);
+    void setSize(Size size);
 
 
 // Public Operations
@@ -172,7 +179,7 @@ public:
     /// Current lattice data.
     core::Grid<LatticeData> m_data;
 
-    /// Temporaty lattice data
+    /// Temporaty lattice data.
     core::Grid<LatticeData> m_dataTmp;
 
 };
