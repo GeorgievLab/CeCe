@@ -74,7 +74,7 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
     const auto size = getSize();
 
     CONSTEXPR PositionVector start{-0.5f};
-    const PositionVector step = getSize().inversed();
+    const PositionVector step = getSize().inversed<float>();
 
     const auto width = size.getWidth();
     const auto height = size.getHeight();
