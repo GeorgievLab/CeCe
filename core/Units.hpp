@@ -90,6 +90,13 @@ using Density = float;
 /* ************************************************************************ */
 
 /**
+ * @brief Class for representing viscosity.
+ */
+using Viscosity = float;
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing volume.
  */
 using Angle = float;
