@@ -6,6 +6,7 @@
 #include <random>
 
 // Simulator
+#include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
 #include "parser/Parser.hpp"
@@ -39,53 +40,51 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
         const auto R2 = radius * radius;
 
-        for (decltype(gridSize.getHeight()) j = 0; j < gridSize.getHeight(); ++j)
+        // Foreach all combination in range [0, 0] - gridSize
+        for (auto&& c : range(gridSize))
         {
-            for (decltype(gridSize.getWidth()) i = 0; i < gridSize.getWidth(); ++i)
+            auto& velocity = m_grid[c];
+
+            if (!m_object)
             {
-                auto& velocity = m_grid[Vector<SizeType>(i, j)];
-
-                if (!m_object)
-                {
-                    velocity = Vector<float>{1.f, 0.f};
-                    continue;
-                }
-
-                // Transform i, j coordinates to position
-                // Cell center position
-                const Vector<float> coord = Vector<float>(i, j) + 0.5f;
-                // Real position in the world
-                const Vector<float> pos = start + step * coord - m_object->getPosition();
-
-                // Calculate squared distance from main cell
-                const auto distSq = pos.getLengthSquared();
-
-                // Cell is in main cell, ignore
-                if (distSq <= R2)
-                {
-                    velocity = Vector<float>{0.f, 0.f};
-                    continue;
-                }
-    /*
-                // Precompute values
-                const float distQuad = distSq * distSq;
-                const float xx = pos.x * pos.x;
-                const float xy = pos.x * pos.y;
-
-                // COPYRIGHT: Hynek magic
-                cell.velocity.x = U * (1 + R2 / distSq - 2 * (xx * R2) / distQuad);
-                cell.velocity.y = U * -2 * (R2 * xy) / distQuad;
-    */
-                const float theta = atan2(pos.getY(), pos.getX());
-
-                const Vector<float> u = Vector<float>{
-                    cosf(theta) * (1 - R2 / distSq),
-                    -sinf(theta) * (1 + R2 / distSq)
-                };
-
-                velocity = u.rotated(theta);
-                //cell.velocity = u;
+                velocity = VelocityVector{1.f, 0.f};
+                continue;
             }
+
+            // Transform i, j coordinates to position
+            // Cell center position
+            const auto coord = PositionVector(c) + 0.5f;
+            // Real position in the world
+            const auto pos = start + step * coord - m_object->getPosition();
+
+            // Calculate squared distance from main cell
+            const auto distSq = pos.getLengthSquared();
+
+            // Cell is in main cell, ignore
+            if (distSq <= R2)
+            {
+                velocity = VelocityVector::Zero;
+                continue;
+            }
+/*
+            // Precompute values
+            const float distQuad = distSq * distSq;
+            const float xx = pos.x * pos.x;
+            const float xy = pos.x * pos.y;
+
+            // COPYRIGHT: Hynek magic
+            cell.velocity.x = U * (1 + R2 / distSq - 2 * (xx * R2) / distQuad);
+            cell.velocity.y = U * -2 * (R2 * xy) / distQuad;
+*/
+            const float theta = atan2(pos.getY(), pos.getX());
+
+            const auto u = VelocityVector{
+                cosf(theta) * (1 - R2 / distSq),
+                -sinf(theta) * (1 + R2 / distSq)
+            };
+
+            velocity = u.rotated(theta);
+            //cell.velocity = u;
         }
 
         m_update = false;
@@ -93,36 +92,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     }
 
     // Apply streamlines to world objects
-    {
-        // Get grid
-        const auto& grid = getGrid();
-
-        const Vector<float> start = simulation.getWorldSize() * -0.5f;
-        const auto step = simulation.getWorldSize() / grid.getSize();
-
-        for (auto& obj : simulation.getObjects())
-        {
-            // Ignore static objects
-            if (obj->getType() == simulator::Object::Type::Static)
-                continue;
-
-            // Get position
-            const auto pos = obj->getPosition() - start;
-
-            // Check if object is in range
-            if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
-                continue;
-
-            // Get grid position
-            const auto coord = Vector<SizeType>(pos / step);
-
-            // Get velocity
-            const auto velocity = grid[coord] * m_flowSpeed;
-
-            // Set object velocity
-            obj->setVelocity(velocity);
-        }
-    }
+    applyToObjects(simulation);
 }
 
 /* ************************************************************************ */
@@ -130,17 +100,17 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Grid size
-    config.callIfSetString("grid", [this](const std::string& value) {
+    config.callIfSetString("grid", [this](const String& value) {
         m_grid.resize(parser::parse_vector_single<SizeType>(value));
     });
 
-    // Flow speed
-    config.callIfSetString("flow-speed", [this](const std::string& value) {
+    // Flow velocity
+    config.callIfSetString("flow-velocity", [this](const String& value) {
         setFlowSpeed(parser::parse_value<float>(value));
     });
 
     // Create object
-    config.callIfSetString("object", [this, &config, &simulation](const std::string& value) mutable {
+    config.callIfSetString("object", [this, &config, &simulation](const String& value) mutable {
         m_object = simulation.buildObject(value, false);
         if (m_object)
             m_object->configure(config, simulation);
@@ -148,7 +118,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
 #ifdef ENABLE_RENDER
     // Draw flags
-    config.callIfSetString("draw-velocity", [this](const std::string& value) {
+    config.callIfSetString("draw-velocity", [this](const String& value) {
         m_drawObject = parser::parse_bool(value);
     });
 #endif
@@ -179,6 +149,38 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     m_renderUpdate = false;
 }
 #endif
+
+/* ************************************************************************ */
+
+void Module::applyToObjects(const simulator::Simulation& simulation)
+{
+    // Get grid
+    const auto& grid = getGrid();
+
+    const PositionVector start = simulation.getWorldSize() * -0.5f;
+    const auto step = simulation.getWorldSize() / grid.getSize();
+
+    // Foreach objects
+    for (auto& obj : simulation.getObjects())
+    {
+        // Ignore static objects
+        if (obj->getType() == simulator::Object::Type::Static)
+            continue;
+
+        // Get position
+        const auto pos = obj->getPosition() - start;
+
+        // Check if object is in range
+        if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+            continue;
+
+        // Get grid position
+        const auto coord = Coordinate(pos / step);
+
+        // Set object velocity
+        obj->setVelocity(grid[coord] * getFlowSpeed());
+    }
+}
 
 /* ************************************************************************ */
 

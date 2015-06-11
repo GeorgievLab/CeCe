@@ -133,6 +133,18 @@ public:
 #endif
 
 
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Apply flowstreams to simulation objects.
+     *
+     * @param simulation
+     */
+    void applyToObjects(const simulator::Simulation& simulation);
+
+
 // Private Data Members
 private:
 
