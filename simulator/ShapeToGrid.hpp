@@ -79,10 +79,10 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-    const Vector<float> radiusSteps = Vector<float>(shape.radius) / steps;
-    const Vector<Ts> shapeCenter = center + shape.center / steps;
-    const Vector<Ts> maxS = max;
-    const Vector<Ts> minS = min;
+    const auto radiusSteps = Vector<float>(shape.radius) / steps;
+    const auto shapeCenter = Vector<Ts>(center + shape.center / steps);
+    const auto maxS = Vector<Ts>(max);
+    const auto minS = Vector<Ts>(min);
 
     // Foreach grid given by radius steps
     for (Ts x = Ts(-radiusSteps.getX()); x < Ts(radiusSteps.getX()); ++x)
@@ -105,7 +105,7 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
                 continue;
 
             // Insert coordinates into output iterator
-            *out++ = coord;
+            *out++ = Vector<T>(coord);
         }
     }
 

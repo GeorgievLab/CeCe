@@ -97,7 +97,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             {
                 for (unsigned b = 0; b < 2; ++b)
                 {
-                    Vector<int> ab(
+                    Vector<unsigned int> ab(
                         ij.getX() + b,
                         ij.getY() - offset + a
                     );

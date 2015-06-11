@@ -122,7 +122,7 @@ public:
      * @param v Source vector.
      */
     template<typename T2>
-    CONSTEXPR Vector(const Vector<T2>& v) NOEXCEPT
+    explicit CONSTEXPR Vector(const Vector<T2>& v) NOEXCEPT
         : m_x(static_cast<T>(v.getX())), m_y(static_cast<T>(v.getY()))
     {
         // Nothing to do
@@ -860,6 +860,22 @@ template<typename T1, typename T2>
 inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Calculate dot product of two vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
+inline CONSTEXPR CT dot(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+{
+    return lhs.getX() * rhs.getX() + lhs.getY() * rhs.getY();
 }
 
 /* ************************************************************************ */

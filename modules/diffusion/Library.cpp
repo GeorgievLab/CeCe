@@ -34,7 +34,7 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
     assert(diff);
     auto& grid = diff->getGrid();
 
-    const Vector<float> start = simulation.getWorldSize() * -0.5;
+    const Vector<float> start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
@@ -45,7 +45,7 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
         return;
 
     // Get grid position
-    Vector<unsigned int> coord = pos / step;
+    auto coord = Vector<unsigned int>(pos / step);
 
     // TODO: use vector + unique (faster?)
     std::vector<decltype(coord)> coords;
@@ -81,7 +81,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
     assert(diff);
     auto& grid = diff->getGrid();
 
-    const Vector<float> start = simulation.getWorldSize() * -0.5;
+    const Vector<float> start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
@@ -92,7 +92,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
         return;
 
     // Get grid position
-    Vector<unsigned int> coord = pos / step;
+    auto coord = Vector<unsigned int>(pos / step);
 
     // TODO: use vector + unique (faster?)
     std::vector<decltype(coord)> coords;

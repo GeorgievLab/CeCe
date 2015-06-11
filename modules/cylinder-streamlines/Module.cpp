@@ -97,7 +97,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         // Get grid
         const auto& grid = getGrid();
 
-        const Vector<float> start = simulation.getWorldSize() * -0.5;
+        const Vector<float> start = simulation.getWorldSize() * -0.5f;
         const auto step = simulation.getWorldSize() / grid.getSize();
 
         for (auto& obj : simulation.getObjects())
@@ -114,7 +114,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 continue;
 
             // Get grid position
-            Vector<SizeType> coord = pos / step;
+            const auto coord = Vector<SizeType>(pos / step);
 
             // Get velocity
             const auto velocity = grid[coord] * m_flowSpeed;

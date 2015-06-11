@@ -60,7 +60,7 @@ void Grid::resize(Size size) NOEXCEPT
     const auto height = getSize().getHeight();
 
     CONSTEXPR_CONST PositionVector start{-0.5f};
-    const PositionVector step = getSize().inversed();
+    const PositionVector step = getSize().inversed<float>();
 
     struct Vertex { float x, y; };
 
