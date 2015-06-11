@@ -172,14 +172,14 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const Vector<Ste
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-    const Vector<T> radius = shape.radius / steps + off;
-    const Vector<Ts> shapeCenter = center + shape.center / steps;
-    const Vector<Ts> maxS = max;
-    const Vector<Ts> minS = min;
+    const auto radius = Vector<T>(shape.radius / steps + off);
+    const auto shapeCenter = Vector<Ts>(center + shape.center / steps);
+    const auto maxS = Vector<Ts>(max);
+    const auto minS = Vector<Ts>(min);
 
     auto putCoord = [&out, &shapeCenter, &minS, &maxS](Vector<Ts> xy) {
         // Calculate grid coordinates
-        const Vector<T> coord = shapeCenter + xy;
+        const auto coord = Vector<T>(shapeCenter + xy);
 
         // Check if coordinates are in range
         if (coord.inRange(minS, maxS))
