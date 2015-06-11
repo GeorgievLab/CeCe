@@ -53,6 +53,9 @@
     <File Name="OStream.hpp"/>
     <File Name="IStream.hpp"/>
     <File Name="StaticArray.hpp"/>
+    <File Name="Iterator.hpp"/>
+    <File Name="Range.hpp"/>
+    <File Name="VectorRange.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

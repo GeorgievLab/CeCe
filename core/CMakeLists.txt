@@ -55,6 +55,9 @@ add_library(${PROJECT_NAME} OBJECT
     Exception.hpp
     OStream.hpp
     IStream.hpp
+    Iterator.hpp
+    Range.hpp
+    VectorRange.hpp
 )
 
 # ######################################################################### #
