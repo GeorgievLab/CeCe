@@ -179,11 +179,11 @@ OutIt mapShapeBorderToGrid(OutIt out, const ShapeCircle& shape, const Vector<Ste
 
     auto putCoord = [&out, &shapeCenter, &minS, &maxS](Vector<Ts> xy) {
         // Calculate grid coordinates
-        const auto coord = Vector<T>(shapeCenter + xy);
+        const auto coord = shapeCenter + xy;
 
         // Check if coordinates are in range
         if (coord.inRange(minS, maxS))
-            *out++ = coord;
+            *out++ = Vector<T>(coord);
     };
 
     const auto radiusSquare = radius * radius;
