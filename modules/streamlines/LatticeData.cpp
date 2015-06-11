@@ -4,6 +4,9 @@
 // Declaration
 #include "LatticeData.hpp"
 
+// C++
+#include <cassert>
+
 /* ************************************************************************ */
 
 namespace module {
@@ -53,7 +56,8 @@ void LatticeData::collide(ValueType omega)
 
 /* ************************************************************************ */
 
-StaticArray<LatticeData::ValueType, LatticeData::SIZE> LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept
+StaticArray<LatticeData::ValueType, LatticeData::SIZE>
+LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) NOEXCEPT
 {
     StaticArray<ValueType, SIZE> res;
 
@@ -61,7 +65,7 @@ StaticArray<LatticeData::ValueType, LatticeData::SIZE> LatticeData::calcEquilibr
     {
         const auto weight = DIRECTION_WEIGHTS[alpha];
         const auto velocity = DIRECTION_VELOCITIES[alpha];
-        const auto vu = velocity.dot(u);
+        const auto vu = dot(velocity, u);
 
         res[alpha] = rho * weight * (
               1.f
@@ -69,6 +73,7 @@ StaticArray<LatticeData::ValueType, LatticeData::SIZE> LatticeData::calcEquilibr
             + 9.f / 2.f * vu * vu
             - 3.f / 2.f * u.getLengthSquared()
         );
+        assert(res[alpha] >= 0);
     }
 
     return res;

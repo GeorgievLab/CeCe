@@ -77,7 +77,7 @@ public:
      *
      * @return
      */
-    LatticeData& operator[](const CoordinateType& coord) noexcept
+    LatticeData& operator[](const CoordinateType& coord) NOEXCEPT
     {
         return m_data[coord];
     }
@@ -90,7 +90,7 @@ public:
      *
      * @return
      */
-    const LatticeData& operator[](const CoordinateType& coord) const noexcept
+    const LatticeData& operator[](const CoordinateType& coord) const NOEXCEPT
     {
         return m_data[coord];
     }
@@ -105,7 +105,7 @@ public:
      *
      * @return
      */
-    Size getSize() const noexcept
+    Size getSize() const NOEXCEPT
     {
         // Lattice itself have 1 cell margin
         return getRealSize() - 2;
@@ -117,7 +117,7 @@ public:
      *
      * @return
      */
-    const Size& getRealSize() const noexcept
+    const Size& getRealSize() const NOEXCEPT
     {
         return m_data.getSize();
     }
@@ -130,7 +130,7 @@ public:
      *
      * @return
      */
-    bool inRange(const CoordinateType& coord) const noexcept
+    bool inRange(const CoordinateType& coord) const NOEXCEPT
     {
         return m_data.inRange(coord);
     }

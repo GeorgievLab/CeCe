@@ -63,8 +63,8 @@ void Module::init(Size size)
     {
         for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
         {
-            m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
-            //m_lattice[{x, y}].init({0.f, 0.f});
+            //m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
+            m_lattice[{x, y}].init({uMax, 0.f});
         }
     }
 /*
@@ -90,7 +90,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         const auto dl = simulation.getWorldSize() / getLattice().getSize();
 
         // LB viscosity
-        const auto nu_lb = (dt / dl.getX()) * getViscosity();
+        const auto nu_lb = (dt / (dl.getX() * dl.getX())) * getViscosity();
 
         // Relaxation parameter
         const float tau = (3.f * nu_lb + 0.5f);
@@ -103,7 +103,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         getLattice().propagate();
 
         ///////////////////
-        /**/
+        /*
         {
             // maximum velocity of the Poiseuille inflow
             const float uMax = getVelocityMax();
@@ -124,8 +124,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 //m_lattice[{grid_size.getWidth() - 1, y}].init(m_lattice[{grid_size.getWidth() - 2, y}].calcVelocityNormalized());
             }
         }
+        */
         /**/
-        /*
         // Make periodic
         const auto realSize = getLattice().getRealSize();
         auto width = realSize.getWidth() - 2;
@@ -157,11 +157,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         m_lattice[{width, 1}][6]  = m_lattice[{0, height + 1}][6];
         m_lattice[{width, height}][7] = m_lattice[{0, 0}][7];
         m_lattice[{1, height}][8]  = m_lattice[{width + 1, 0}][8];
-        */
+        /**/
     }
 
     // Apply streamlines to world objects
-    //applyToObjects(simulation);
+    applyToObjects(simulation);
 }
 
 /* ************************************************************************ */
@@ -212,11 +212,11 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             if (!cell.isObstacle())
             {
                 // Calculate velocity vector
-                const auto velocity = cell.calcVelocityNormalized() * 100;// / getFlowSpeed();
+                const auto velocity = cell.calcVelocityNormalized();// * 100;// / getFlowSpeed();
 
-                color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
+                //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
                 //color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
-                //color = {0, velocity.getLength(), 0, 1};
+                color = {cell.calcRho() * 0.5f, velocity.getLength(), 0, 1};
                 velocities[{x, y}] = velocity;
             }
             else
@@ -280,7 +280,7 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation)
             continue;
 
         // Get grid position
-        const Coordinate coord = pos / step;
+        const auto coord = Coordinate(pos / step);
 
         coords.clear();
         const auto& shapes = obj->getShapes();
@@ -339,7 +339,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
             continue;
 
         // Get coordinate to lattice
-        Coordinate coord = pos / step;
+        const auto coord = Coordinate(pos / step);
 
         coords.clear();
         const auto& shapes = obj->getShapes();
@@ -371,7 +371,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
         }
 
         // Average
-        velocity = velocity / coords.size();
+        //velocity = velocity / coords.size();
 
         // Set object velocity
         obj->setVelocity(velocity);

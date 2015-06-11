@@ -7,6 +7,7 @@
 #include <algorithm>
 
 // Simulator
+#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "core/StaticArray.hpp"
@@ -76,7 +77,7 @@ public:
      *
      * @return
      */
-    ValueType operator[](IndexType pos) const noexcept
+    ValueType operator[](IndexType pos) const NOEXCEPT
     {
         return m_values[pos];
     }
@@ -89,7 +90,7 @@ public:
      *
      * @return
      */
-    ValueType& operator[](IndexType pos) noexcept
+    ValueType& operator[](IndexType pos) NOEXCEPT
     {
         return m_values[pos];
     }
@@ -104,7 +105,7 @@ public:
      *
      * @return
      */
-    bool isStaticObstacle() const noexcept
+    bool isStaticObstacle() const NOEXCEPT
     {
         return m_staticObstacle;
     }
@@ -115,7 +116,7 @@ public:
      *
      * @return
      */
-    bool isDynamicObstacle() const noexcept
+    bool isDynamicObstacle() const NOEXCEPT
     {
         return m_dynamicObstacle;
     }
@@ -126,7 +127,7 @@ public:
      *
      * @return
      */
-    bool isObstacle() const noexcept
+    bool isObstacle() const NOEXCEPT
     {
         return isStaticObstacle() || isDynamicObstacle();
     }
@@ -139,7 +140,7 @@ public:
      *
      * @return
      */
-    ValueType get(IndexType pos) const noexcept
+    ValueType get(IndexType pos) const NOEXCEPT
     {
         return m_values[pos];
     }
@@ -154,7 +155,7 @@ public:
      *
      * @param flag
      */
-    void setStaticObstacle(bool flag) noexcept
+    void setStaticObstacle(bool flag) NOEXCEPT
     {
         m_staticObstacle = flag;
     }
@@ -165,7 +166,7 @@ public:
      *
      * @param flag
      */
-    void setDynamicObstacle(bool flag) noexcept
+    void setDynamicObstacle(bool flag) NOEXCEPT
     {
         m_dynamicObstacle = flag;
     }
@@ -178,7 +179,7 @@ public:
     /**
      * @brief Clear values.
      */
-    void clear() noexcept
+    void clear() NOEXCEPT
     {
         m_values = calcEquilibrium({0, 0}, 1.f);
         //for (auto& val : m_values)
@@ -191,7 +192,7 @@ public:
      *
      * @return
      */
-    ValueType calcRho() const noexcept
+    ValueType calcRho() const NOEXCEPT
     {
         using std::begin;
         using std::end;
@@ -204,7 +205,7 @@ public:
      *
      * @return
      */
-    ValueType sumValues(std::initializer_list<IndexType> list) const noexcept
+    ValueType sumValues(std::initializer_list<IndexType> list) const NOEXCEPT
     {
         ValueType res{};
 
@@ -220,7 +221,7 @@ public:
      *
      * @return
      */
-    Vector<ValueType> calcVelocity() const noexcept
+    Vector<ValueType> calcVelocity() const NOEXCEPT
     {
         return Vector<ValueType>{
             sumValues({1, 5, 8}) - sumValues({3, 6, 7}),
@@ -234,7 +235,7 @@ public:
      *
      * @return
      */
-    Vector<ValueType> calcVelocityNormalized() const noexcept
+    Vector<ValueType> calcVelocityNormalized() const NOEXCEPT
     {
         const auto rho = calcRho();
 
@@ -274,7 +275,7 @@ public:
      *
      * @return
      */
-    static StaticArray<ValueType, SIZE> calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept;
+    static StaticArray<ValueType, SIZE> calcEquilibrium(const Vector<ValueType>& u, ValueType rho) NOEXCEPT;
 
 
 // Private Data Members

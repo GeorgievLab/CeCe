@@ -1,6 +1,7 @@
-<simulation world-size="100um 100um" dt="40ms" iterations="10000">
-    <module name="cell.generator" />
-    <module name="streamlines" grid="100" velocity-max="10um/s" viscosity="1" />
-    <object class="cell.Cell" volume="2000um3" />
+<simulation world-size="100um 100um" dt="1ms" iterations="10000">
+    <!--module name="cell.generator" /-->
+    <module name="streamlines" grid="100" velocity-max="10um/s" viscosity="120" />
+    <!--object class="cell.Cell" type="static" volume="2000um3" />
+    <object class="cell.Cell" volume="200um3" position="-20um 0" /-->
 </simulation>
 
