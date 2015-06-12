@@ -14,10 +14,21 @@
 #include "core/compatibility.hpp"
 #include "core/String.hpp"
 #include "core/FilePath.hpp"
+#include "core/Exception.hpp"
 
 /* ************************************************************************ */
 
 namespace simulator {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Configuration exception.
+ */
+class ConfigException : public RuntimeException
+{
+    using RuntimeException::RuntimeException;
+};
 
 /* ************************************************************************ */
 
@@ -187,10 +198,46 @@ public:
      * @param fn
      */
     template<typename Fn>
+    void callString(const String& name, Fn fn) const
+    {
+        if (hasValue(name))
+            fn(getString(name));
+        else
+            throw ConfigException("Missing configuration '" + name + "'");
+    }
+
+
+    /**
+     * @brief Call given function when configuration under name is set (not empty).
+     *
+     * @tparam Fn Function type.
+     *
+     * @param name
+     * @param fn
+     */
+    template<typename Fn>
     void callIfSetInteger(const String& name, Fn fn) const
     {
         if (hasValue(name))
             fn(getInteger(name));
+    }
+
+
+    /**
+     * @brief Call given function when configuration under name is set (not empty).
+     *
+     * @tparam Fn Function type.
+     *
+     * @param name
+     * @param fn
+     */
+    template<typename Fn>
+    void callInteger(const String& name, Fn fn) const
+    {
+        if (hasValue(name))
+            fn(getInteger(name));
+        else
+            throw ConfigException("Missing configuration '" + name + "'");
     }
 
 
@@ -208,6 +255,25 @@ public:
         if (hasValue(name))
             fn(getFloat(name));
     }
+
+
+    /**
+     * @brief Call given function when configuration under name is set (not empty).
+     *
+     * @tparam Fn Function type.
+     *
+     * @param name
+     * @param fn
+     */
+    template<typename Fn>
+    void callFloat(const String& name, Fn fn) const
+    {
+        if (hasValue(name))
+            fn(getFloat(name));
+        else
+            throw ConfigException("Missing configuration '" + name + "'");
+    }
+
 };
 
 /* ************************************************************************ */
