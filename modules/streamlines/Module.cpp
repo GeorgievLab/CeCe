@@ -27,6 +27,10 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
+static CONSTEXPR_CONST float MAX_LB_SPEED = 0.1;
+
+/* ************************************************************************ */
+
 Module::Module()
 {
     // Nothing to do
@@ -50,13 +54,10 @@ void Module::init(Size size)
     auto& grid = getLattice();
     const auto grid_size = grid.getRealSize();
 
-    // maximum velocity of the Poiseuille inflow
-    const float uMax = 0.1;//getVelocityMax();
-
-    auto computePoiseuille = [&grid_size, uMax](int i) {
+    auto computePoiseuille = [&grid_size](int i) {
         float y = (float) (i - 1);
         float L = (float) (grid_size.getHeight() - 1);
-        return 4.f * uMax / (L * L) * (L * y - y * y);
+        return 4.f * MAX_LB_SPEED / (L * L) * (L * y - y * y);
     };
 
     for (Lattice::SizeType y = 1; y < grid_size.getHeight() - 1; ++y)
@@ -64,7 +65,7 @@ void Module::init(Size size)
         for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
         {
             //m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
-            m_lattice[{x, y}].init({uMax, 0.f});
+            m_lattice[{x, y}].init({MAX_LB_SPEED, 0.f});
         }
     }
 /*
@@ -212,11 +213,11 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             if (!cell.isObstacle())
             {
                 // Calculate velocity vector
-                const auto velocity = cell.calcVelocityNormalized();// * 100;// / getFlowSpeed();
+                const auto velocity = cell.calcVelocityNormalized() / MAX_LB_SPEED;// * 100;// / getFlowSpeed();
 
                 //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
                 //color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
-                color = {cell.calcRho() * 0.5f, velocity.getLength(), 0, 1};
+                color = {cell.calcRho(), velocity.getLength(), 0, 1};
                 velocities[{x, y}] = velocity;
             }
             else
