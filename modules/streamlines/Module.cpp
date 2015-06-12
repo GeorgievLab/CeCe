@@ -64,17 +64,17 @@ void Module::init(Size size)
     {
         for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
         {
-            m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
+            //m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
             //m_lattice[{x, y}].init({MAX_LB_SPEED, 0.f});
+            m_lattice[{x, y}].init({0.f, 0.f});
         }
     }
-/*
+
     for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
     {
-        m_lattice[{x, 1}].setObstacle(true);
-        m_lattice[{x, grid_size.getHeight() - 2}].setObstacle(true);
+        m_lattice[{x, 1}].setStaticObstacle(true);
+        m_lattice[{x, grid_size.getHeight() - 2}].setStaticObstacle(true);
     }
-*/
 }
 
 /* ************************************************************************ */
@@ -126,7 +126,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     });
 
     // Grid size
-    config.callIfSetString("grid", [this](const String& value) {
+    config.callString("grid", [this](const String& value) {
         init(parser::parse_vector_single<Lattice::SizeType>(value));
     });
 }
