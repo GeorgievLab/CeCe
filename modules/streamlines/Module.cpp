@@ -318,7 +318,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
         }
 
         // Average
-        //velocity = velocity / coords.size();
+        velocity = velocity / coords.size();
 
         // Set object velocity
         obj->setVelocity(velocity);
