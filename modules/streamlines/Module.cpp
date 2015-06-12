@@ -64,8 +64,8 @@ void Module::init(Size size)
     {
         for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
         {
-            //m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
-            m_lattice[{x, y}].init({MAX_LB_SPEED, 0.f});
+            m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
+            //m_lattice[{x, y}].init({MAX_LB_SPEED, 0.f});
         }
     }
 /*
@@ -104,61 +104,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         getLattice().propagate();
 
         ///////////////////
-        /*
-        {
-            // maximum velocity of the Poiseuille inflow
-            const float uMax = getVelocityMax();
-            const auto grid_size = getLattice().getRealSize();
-
-            auto computePoiseuille = [&grid_size, uMax](int i) {
-                float y = (float) (i - 1);
-                float L = (float) (grid_size.getHeight() - 1);
-                return 4.f * uMax / (L * L) * (L * y - y * y);
-            };
-
-            // Generate input / output
-            for (Lattice::SizeType y = 0; y < grid_size.getHeight(); ++y)
-            {
-                //m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
-                //m_lattice[{0, y}].init({0.f, 0.f});
-                //m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
-                //m_lattice[{grid_size.getWidth() - 1, y}].init(m_lattice[{grid_size.getWidth() - 2, y}].calcVelocityNormalized());
-            }
-        }
-        */
-        /**/
-        // Make periodic
-        const auto realSize = getLattice().getRealSize();
-        auto width = realSize.getWidth() - 2;
-        auto height = realSize.getHeight() - 2;
-
-        for (decltype(width) x = 1; x <= width; ++x)
-        {
-            m_lattice[{x, height}][4] = m_lattice[{x, 0}][4];
-            m_lattice[{x, height}][7] = m_lattice[{x, 0}][7];
-            m_lattice[{x, height}][8] = m_lattice[{x, 0}][8];
-
-            m_lattice[{x, 1}][2] = m_lattice[{x, height + 1}][2];
-            m_lattice[{x, 1}][5] = m_lattice[{x, height + 1}][5];
-            m_lattice[{x, 1}][6] = m_lattice[{x, height + 1}][6];
-        }
-
-        for (decltype(height) y = 1; y <= height; ++y)
-        {
-            m_lattice[{1, y}][1] = m_lattice[{width + 1, y}][1];
-            m_lattice[{1, y}][5] = m_lattice[{width + 1, y}][5];
-            m_lattice[{1, y}][8] = m_lattice[{width + 1, y}][8];
-
-            m_lattice[{width, y}][3] = m_lattice[{0, y}][3];
-            m_lattice[{width, y}][6] = m_lattice[{0, y}][6];
-            m_lattice[{width, y}][7] = m_lattice[{0, y}][7];
-        }
-
-        m_lattice[{1, 1}][5]   = m_lattice[{width + 1, height + 1}][5];
-        m_lattice[{width, 1}][6]  = m_lattice[{0, height + 1}][6];
-        m_lattice[{width, height}][7] = m_lattice[{0, 0}][7];
-        m_lattice[{1, height}][8]  = m_lattice[{width + 1, 0}][8];
-        /**/
+        applyBoundaryConditions(simulation);
     }
 
     // Apply streamlines to world objects
@@ -377,6 +323,66 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
         // Set object velocity
         obj->setVelocity(velocity);
     }
+}
+
+/* ************************************************************************ */
+
+void Module::applyBoundaryConditions(const simulator::Simulation& simulation)
+{
+    /**/
+    {
+        // maximum velocity of the Poiseuille inflow
+        const auto grid_size = getLattice().getRealSize();
+
+        auto computePoiseuille = [&grid_size](int i) {
+            float y = (float) (i - 1);
+            float L = (float) (grid_size.getHeight() - 1);
+            return 4.f * MAX_LB_SPEED / (L * L) * (L * y - y * y);
+        };
+
+        // Generate input / output
+        for (Lattice::SizeType y = 0; y < grid_size.getHeight(); ++y)
+        {
+            m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
+            //m_lattice[{1, y}].init({MAX_LB_SPEED, 0.f});
+            //m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
+            m_lattice[{grid_size.getWidth() - 2, y}].init(m_lattice[{grid_size.getWidth() - 3, y}].calcVelocityNormalized());
+        }
+    }
+    /**/
+    /*
+    // Make periodic
+    const auto realSize = getLattice().getRealSize();
+    auto width = realSize.getWidth() - 2;
+    auto height = realSize.getHeight() - 2;
+
+    for (decltype(width) x = 1; x <= width; ++x)
+    {
+        m_lattice[{x, height}][4] = m_lattice[{x, 0}][4];
+        m_lattice[{x, height}][7] = m_lattice[{x, 0}][7];
+        m_lattice[{x, height}][8] = m_lattice[{x, 0}][8];
+
+        m_lattice[{x, 1}][2] = m_lattice[{x, height + 1}][2];
+        m_lattice[{x, 1}][5] = m_lattice[{x, height + 1}][5];
+        m_lattice[{x, 1}][6] = m_lattice[{x, height + 1}][6];
+    }
+
+    for (decltype(height) y = 1; y <= height; ++y)
+    {
+        m_lattice[{1, y}][1] = m_lattice[{width + 1, y}][1];
+        m_lattice[{1, y}][5] = m_lattice[{width + 1, y}][5];
+        m_lattice[{1, y}][8] = m_lattice[{width + 1, y}][8];
+
+        m_lattice[{width, y}][3] = m_lattice[{0, y}][3];
+        m_lattice[{width, y}][6] = m_lattice[{0, y}][6];
+        m_lattice[{width, y}][7] = m_lattice[{0, y}][7];
+    }
+
+    m_lattice[{1, 1}][5]   = m_lattice[{width + 1, height + 1}][5];
+    m_lattice[{width, 1}][6]  = m_lattice[{0, height + 1}][6];
+    m_lattice[{width, height}][7] = m_lattice[{0, 0}][7];
+    m_lattice[{1, height}][8]  = m_lattice[{width + 1, 0}][8];
+    */
 }
 
 /* ************************************************************************ */

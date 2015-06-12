@@ -200,6 +200,14 @@ public:
     void applyToObjects(const simulator::Simulation& simulation);
 
 
+    /**
+     * @brief Apply boundary conditions.
+     *
+     * @param simulation
+     */
+    void applyBoundaryConditions(const simulator::Simulation& simulation);
+
+
 // Private Data Members
 private:
 
