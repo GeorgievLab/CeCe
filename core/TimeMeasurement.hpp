@@ -127,6 +127,19 @@ private:
 /* ************************************************************************ */
 
 #if !ENABLE_MEASUREMENT
+
+/**
+ * @brief Dummy struct for time measurement that doesn't invoke unused variable
+ * warnings.
+ */
+struct TimeMeasurementDummy
+{
+    TimeMeasurementDummy() NOEXCEPT {}
+    ~TimeMeasurementDummy() {}
+};
+
+/* ************************************************************************ */
+
 /**
  * @brief Dummy function for time measurement.
  *
@@ -135,9 +148,9 @@ private:
  * @return
  */
 template<typename... Args>
-inline int measure_time(Args&&... args) NOEXCEPT
+inline TimeMeasurementDummy measure_time(Args&&... args) NOEXCEPT
 {
-    return 0;
+    return {};
 }
 #endif
 
