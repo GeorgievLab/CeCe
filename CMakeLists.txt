@@ -1,6 +1,14 @@
 # ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
+# Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                   #
+# ######################################################################### #
 
 cmake_minimum_required(VERSION 2.8)
+
+# ######################################################################### #
 
 # Workspace name
 project(cell-sim)
@@ -72,10 +80,17 @@ elseif (MSVC)
     add_compile_options(/W3)
 endif()
 
+# ######################################################################### #
+
 # Default include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}
 )
+
+# Boost libraries
+set(Boost_USE_STATIC_LIBS On)
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 # GUI enabled
 if (ENABLE_GUI)
@@ -136,6 +151,8 @@ foreach (MODULE ${MODULES})
     list(REMOVE_ITEM DYNAMIC_MODULES ${MODULE})
 endforeach ()
 
+# ######################################################################### #
+
 # Default libraries
 add_subdirectory(core)
 add_subdirectory(parser)
@@ -172,6 +189,8 @@ endif ()
 if (BUILD_TOOLS)
     add_subdirectory(tools/shader-convert)
 endif()
+
+# ######################################################################### #
 
 # CPACK
 include(InstallRequiredSystemLibraries)

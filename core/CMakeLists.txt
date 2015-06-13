@@ -58,6 +58,7 @@ add_library(${PROJECT_NAME} OBJECT
     Iterator.hpp
     Range.hpp
     VectorRange.hpp
+    Any.hpp
 )
 
 # ######################################################################### #
