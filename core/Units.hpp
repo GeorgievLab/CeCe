@@ -26,9 +26,38 @@ namespace units {
 /* ************************************************************************ */
 
 /**
- * @brief Class for representing distance (micrometers).
+ * @brief Class for representing distance (meters).
  */
 using Length = float;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for representing mass (kilograms).
+ */
+using Mass = float;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for representing time (seconds).
+ */
+using Time = float;
+using Duration = Time;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for representing area.
+ */
+using Area = float;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for representing volume.
+ */
+using Volume = float;
 
 /* ************************************************************************ */
 
@@ -54,13 +83,6 @@ using Force = float;
 /* ************************************************************************ */
 
 /**
- * @brief Class for representing volume.
- */
-using Volume = float;
-
-/* ************************************************************************ */
-
-/**
  * @brief Class for representing density.
  */
 using Density = float;
@@ -71,13 +93,6 @@ using Density = float;
  * @brief Class for representing volume.
  */
 using Angle = float;
-
-/* ************************************************************************ */
-
-/**
- * @brief Class for representing duration.
- */
-using Duration = float;
 
 /* ************************************************************************ */
 
@@ -117,13 +132,14 @@ inline CONSTEXPR float rad2deg(float value) NOEXCEPT
 /* ************************************************************************ */
 
 /**
- * @brief Micrometer value.
+ * @brief Meter value.
  *
  * @param value
  */
-inline CONSTEXPR Length um(float value) NOEXCEPT
+inline CONSTEXPR Length m(float value) NOEXCEPT
 {
-    return Length(value);
+    // 1m = 1'000'000um
+    return Length(1000.f * 1000.f * value);
 }
 
 /* ************************************************************************ */
@@ -135,63 +151,73 @@ inline CONSTEXPR Length um(float value) NOEXCEPT
  */
 inline CONSTEXPR Length mm(float value) NOEXCEPT
 {
-    return Length(1000 * value);
+    // 1mm = 1/1'000m
+    return m(value / 1000.f);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Centimeter value.
+ * @brief Micrometer value.
  *
  * @param value
  */
-inline CONSTEXPR Length cm(float value) NOEXCEPT
+inline CONSTEXPR Length um(float value) NOEXCEPT
 {
-    return Length(10 * 1000 * value);
+    // 1um = 1/1'000'000m
+    return m(value / (1000.f * 1000.f));
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Meter value.
+ * @brief Kilograms value.
  *
  * @param value
  */
-inline CONSTEXPR Length m(float value) NOEXCEPT
+inline CONSTEXPR Mass kg(float value) NOEXCEPT
 {
-    return Length(1000 * 1000 * value);
+    // 1mg
+    return Mass(value / (1000.f * 1000.f));
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Micrometer^3 value.
+ * @brief Grams value.
  *
  * @param value
  */
-inline CONSTEXPR Volume um3(float value) NOEXCEPT
+inline CONSTEXPR Mass g(float value) NOEXCEPT
 {
-    return Volume(value);
+    // 1kg = 1'000g
+    return kg(value * 1000.f);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Radian constructor.
+ * @brief Milligrams value.
+ *
+ * @param value
  */
-inline CONSTEXPR Angle rad(float value)
+inline CONSTEXPR Mass mg(float value) NOEXCEPT
 {
-    return Angle(value);
+    // 1g = 1'000mg
+    return g(value * 1000.f);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Degree constructor.
+ * @brief Micrograms value.
+ *
+ * @param value
  */
-inline CONSTEXPR Angle deg(float value)
+inline CONSTEXPR Mass ug(float value) NOEXCEPT
 {
-    return Angle(deg2rad(value));
+    // 1mg = 1'000ug
+    return mg(value * 1000.f);
 }
 
 /* ************************************************************************ */
@@ -203,6 +229,7 @@ inline CONSTEXPR Angle deg(float value)
  */
 inline CONSTEXPR Duration s(float value) NOEXCEPT
 {
+    // 1s
     return Duration(value);
 }
 
@@ -215,7 +242,8 @@ inline CONSTEXPR Duration s(float value) NOEXCEPT
  */
 inline CONSTEXPR Duration ms(float value) NOEXCEPT
 {
-    return Duration(value / 1000.f);
+    // 1s = 1'000ms
+    return s(value / 1000.f);
 }
 
 /* ************************************************************************ */
@@ -227,160 +255,267 @@ inline CONSTEXPR Duration ms(float value) NOEXCEPT
  */
 inline CONSTEXPR Duration us(float value) NOEXCEPT
 {
-    return Duration(value / 1000000.f);
-}
-
-/* ************************************************************************ */
-
-#ifndef _MSC_VER
-/**
- * @brief Micrometers literal.
- */
-inline Length operator"" _um(long double value)
-{
-    return um(value);
+    // 1ms = 1'000us
+    return ms(value / 1000.f);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Micrometers literal.
+ * @brief Meters^2 value.
+ *
+ * @param value
  */
-inline Length operator"" _um(unsigned long long int value)
+inline CONSTEXPR Area m2(float value) NOEXCEPT
 {
-    return um(value);
+    return m(value) * m(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief MilliMeters literal.
+ * @brief Millimeters^2 value.
+ *
+ * @param value
  */
-inline Length operator"" _mm(unsigned long long int value)
+inline CONSTEXPR Area mm2(float value) NOEXCEPT
 {
-    return mm(value);
+    return mm(value) * mm(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief CentiMeters literal.
+ * @brief Micrometers^2 value.
+ *
+ * @param value
  */
-inline Length operator"" _cm(unsigned long long int value)
+inline CONSTEXPR Area um2(float value) NOEXCEPT
 {
-    return cm(value);
+    return um(value) * um(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Meters literal.
+ * @brief Meters^3 value.
+ *
+ * @param value
  */
-inline Length operator"" _m(unsigned long long int value)
+inline CONSTEXPR Volume m3(float value) NOEXCEPT
 {
-    return m(value);
+    return m2(value) * m(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Micrometers^3 literal.
+ * @brief Millimeters^3 value.
+ *
+ * @param value
  */
-inline Volume operator"" _um3(long double value)
+inline CONSTEXPR Area mm3(float value) NOEXCEPT
 {
-    return um3(value);
+    return mm2(value) * mm(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Micrometers^3 literal.
+ * @brief Micrometers^3 value.
+ *
+ * @param value
  */
-inline Volume operator"" _um3(unsigned long long int value)
+inline CONSTEXPR Area um3(float value) NOEXCEPT
 {
-    return um3(value);
+    return um2(value) * um(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Radian literal.
+ * @brief Meters per second value.
+ *
+ * @param value
  */
-inline Angle operator"" _rad(long double value)
+inline CONSTEXPR Velocity m_s(float value) NOEXCEPT
 {
-    return rad(value);
+    return m(value) / s(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Radian literal.
+ * @brief Millimeters per second value.
+ *
+ * @param value
  */
-inline Angle operator"" _rad(unsigned long long int value)
+inline CONSTEXPR Velocity mm_s(float value) NOEXCEPT
 {
-    return rad(value);
+    return mm(value) / s(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Radian literal.
+ * @brief Micrometers per second value.
+ *
+ * @param value
  */
-inline Angle operator"" _deg(long double value)
+inline CONSTEXPR Velocity um_s(float value) NOEXCEPT
 {
-    return deg(value);
+    return um(value) / s(1);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Radian literal.
+ * @brief Meters per second^2 value.
+ *
+ * @param value
  */
-inline Angle operator"" _deg(unsigned long long int value)
+inline CONSTEXPR Acceleration m_s2(float value) NOEXCEPT
 {
-    return deg(value);
+    return m(value) / (s(1) * s(1));
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Seconds literal.
+ * @brief Millimeters per second^2 value.
+ *
+ * @param value
  */
-inline Duration operator"" _s(long double value)
+inline CONSTEXPR Velocity mm_s2(float value) NOEXCEPT
 {
-    return Duration(value);
+    return mm(value) / (s(1) * s(1));
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Seconds literal.
+ * @brief Micrometers per second^2 value.
+ *
+ * @param value
  */
-inline Duration operator"" _s(unsigned long long int value)
+inline CONSTEXPR Velocity um_s2(float value) NOEXCEPT
 {
-    return Duration(value);
+    return um(value) / (s(1) * s(1));
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Seconds literal.
+ * @brief Kilogram meter per second^2 value.
+ *
+ * @param value
  */
-inline Duration operator"" _ms(long double value)
+inline CONSTEXPR Force kgm_s2(float value) NOEXCEPT
 {
-    return Duration(value * 0.001);
+    return kg(value) * m(1) / (s(1) * s(1));
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Seconds literal.
+ * @brief Gram meter per second^2 value.
+ *
+ * @param value
  */
-inline Duration operator"" _ms(unsigned long long int value)
+inline CONSTEXPR Force gm_s2(float value) NOEXCEPT
 {
-    return Duration(value * 0.001);
+    return g(value) * m(1) / (s(1) * s(1));
 }
-#endif
+
+/* ************************************************************************ */
+
+/**
+ * @brief Milligram meter per second^2 value.
+ *
+ * @param value
+ */
+inline CONSTEXPR Force mgm_s2(float value) NOEXCEPT
+{
+    return kg(value) * m(1) / (s(1) * s(1));
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Newton value.
+ *
+ * @param value
+ */
+inline CONSTEXPR Force N(float value) NOEXCEPT
+{
+    return kgm_s2(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Millinewton value.
+ *
+ * @param value
+ */
+inline CONSTEXPR Force mN(float value) NOEXCEPT
+{
+    return gm_s2(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Micronewton value.
+ *
+ * @param value
+ */
+inline CONSTEXPR Force uN(float value) NOEXCEPT
+{
+    return mgm_s2(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Radian constructor.
+ *
+ * @param value Value in radians.
+ *
+ * @return Angle.
+ */
+inline CONSTEXPR Angle rad(float value) NOEXCEPT
+{
+    return Angle(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Degree constructor.
+ *
+ * @param value Value in degrees.
+ *
+ * @return Angle.
+ */
+inline CONSTEXPR Angle deg(float value) NOEXCEPT
+{
+    return rad(deg2rad(value));
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Probability constructor.
+ *
+ * @param value Value in precent.
+ *
+ * @return
+ */
+inline CONSTEXPR Probability precent(float value) NOEXCEPT
+{
+    return value / 100.f;
+}
 
 /* ************************************************************************ */
 

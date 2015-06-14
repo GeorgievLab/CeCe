@@ -42,7 +42,7 @@ String parse_suffix(const char* str, const char** end)
 {
     String res;
 
-    for (; *str != '\0' && isalnum(*str); ++str)
+    for (; *str != '\0' && (isalnum(*str) || *str == '/'); ++str)
     {
         res.push_back(*str);
     }

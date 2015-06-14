@@ -37,7 +37,7 @@ using Exception = RuntimeException;
 template<typename T>
 struct value_constructor
 {
-    static T construct(float val, const std::string& suffix)
+    static T construct(float val, const String& suffix)
     {
         return static_cast<T>(val);
     }
@@ -48,13 +48,34 @@ struct value_constructor
 template<>
 struct value_constructor<float>
 {
-    static float construct(float val, const std::string& suffix)
+    static float construct(float val, const String& suffix)
     {
         if (suffix.empty())
             return val;
 
+        if (suffix == "m")
+            return units::m(val);
+
+        if (suffix == "mm")
+            return units::mm(val);
+
         if (suffix == "um")
             return units::um(val);
+
+        if (suffix == "m2")
+            return units::m2(val);
+
+        if (suffix == "mm2")
+            return units::mm2(val);
+
+        if (suffix == "um2")
+            return units::um2(val);
+
+        if (suffix == "m3")
+            return units::m3(val);
+
+        if (suffix == "mm3")
+            return units::mm3(val);
 
         if (suffix == "um3")
             return units::um3(val);
@@ -67,6 +88,33 @@ struct value_constructor<float>
 
         if (suffix == "us")
             return units::us(val);
+
+        if (suffix == "m/s")
+            return units::m_s(val);
+
+        if (suffix == "mm/s")
+            return units::mm_s(val);
+
+        if (suffix == "um/s")
+            return units::um_s(val);
+
+        if (suffix == "m/s2")
+            return units::m_s2(val);
+
+        if (suffix == "mm/s2")
+            return units::mm_s2(val);
+
+        if (suffix == "um/s2")
+            return units::um_s2(val);
+
+        if (suffix == "N")
+            return units::N(val);
+
+        if (suffix == "mN")
+            return units::mN(val);
+
+        if (suffix == "uN")
+            return units::uN(val);
 
         throw Exception("Unsupported suffix: " + suffix);
     }
@@ -118,7 +166,7 @@ bool DLL_EXPORT parse_bool(const char* str, const char** end = nullptr);
  *
  * @return
  */
-inline bool parse_bool(const std::string& str, const char** end = nullptr)
+inline bool parse_bool(const String& str, const char** end = nullptr)
 {
     return parse_bool(str.c_str(), end);
 }
