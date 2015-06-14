@@ -26,23 +26,490 @@ namespace units {
 /* ************************************************************************ */
 
 /**
+ * @brief Base SI units.
+ */
+enum class SI
+{
+    Length,
+    Time,
+    Mass,
+    ElectricCurrent,
+    ThermodynamicTemperature,
+    AmountOfSubstance,
+    LuminousIntensity
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for storing unit value.
+ *
+ * @tparam Derived Derived class.
+ */
+template<typename Derived>
+class Value
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Default constructor.
+     */
+    Value() = default;
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param value Init value.
+     */
+    explicit CONSTEXPR Value(float value) NOEXCEPT
+        : m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Addition operator.
+     *
+     * @param rhs
+     *
+     * @return *this.
+     */
+    Derived& operator+=(Derived rhs) NOEXCEPT
+    {
+        m_value += rhs.m_value;
+        return *this;
+    }
+
+
+    /**
+     * @brief Substract operator.
+     *
+     * @param rhs
+     *
+     * @return *this.
+     */
+    Derived& operator-=(Derived rhs) NOEXCEPT
+    {
+        m_value -= rhs.m_value;
+        return *this;
+    }
+
+
+    /**
+     * @brief Multiply operator.
+     *
+     * @param rhs
+     *
+     * @return *this.
+     */
+    Derived& operator*=(float rhs) NOEXCEPT
+    {
+        m_value *= rhs;
+        return *this;
+    }
+
+
+    /**
+     * @brief Divide operator.
+     *
+     * @param rhs
+     *
+     * @return *this.
+     */
+    Derived& operator/=(float rhs) NOEXCEPT
+    {
+        m_value /= rhs;
+        return *this;
+    }
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns current value.
+     *
+     * @return
+     */
+    CONSTEXPR float value() const NOEXCEPT
+    {
+        return m_value;
+    }
+
+
+// Private Data Members
+private:
+
+    /// Stored value.
+    float m_value;
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Base SI unit.
+ *
+ * @tparam BaseSI
+ */
+template<SI BaseSI>
+class Base : public Value<Base<BaseSI>>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructors.
+     */
+    using Value<Base>::Value;
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Derived SI unit.
+ *
+ * @tparam T1
+ * @tparam T2
+ */
+template<typename T1, typename T2>
+class Derived : public Value<Derived<T1, T2>>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructors.
+     */
+    using Value<Derived>::Value;
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Divided value helper.
+ *
+ * @tparam T
+ */
+template<typename T>
+class Divide : public Value<Divide<T>>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructors.
+     */
+    using Value<Divide>::Value;
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Addition operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR Base<BaseSI> operator+(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return lhs += rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR Base<BaseSI> operator-(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return lhs -= rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR Base<BaseSI> operator*(Base<BaseSI> lhs, float rhs) NOEXCEPT
+{
+    return lhs *= rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR Base<BaseSI> operator*(float lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return rhs *= lhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
+ * @tparam BaseSI1 Basic SI unit type.
+ * @tparam BaseSI2 Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI1, SI BaseSI2>
+inline CONSTEXPR Derived<Base<BaseSI1>, Base<BaseSI2>> operator*(Base<BaseSI1> lhs, Base<BaseSI2> rhs) NOEXCEPT
+{
+    return Derived<Base<BaseSI1>, Base<BaseSI2>>{rhs.value() * lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI, typename T1, typename T2>
+inline CONSTEXPR Derived<Base<BaseSI>, Derived<T1, T2>> operator*(Base<BaseSI> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return Derived<Base<BaseSI>, Derived<T1, T2>>{rhs.value() * lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2, SI BaseSI>
+inline CONSTEXPR Derived<Derived<T1, T2>, Base<BaseSI>> operator*(Derived<T1, T2> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return Derived<Derived<T1, T2>, Base<BaseSI>>{rhs.value() * lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
+ * @tparam T11
+ * @tparam T12
+ * @tparam T21
+ * @tparam T22
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T11, typename T12, typename T21, typename T22>
+inline CONSTEXPR Derived<Derived<T11, T12>, Derived<T21, T22>> operator*(Derived<T11, T12> lhs, Derived<T21, T22> rhs) NOEXCEPT
+{
+    return Derived<Derived<T11, T12>, Derived<T21, T22>>{rhs.value() * lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Dividing operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR Base<BaseSI> operator/(Base<BaseSI> lhs, float rhs) NOEXCEPT
+{
+    return lhs /= rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Dividing operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR Base<BaseSI> operator/(float lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return rhs /= lhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Dividing operator.
+ *
+ * @tparam BaseSI1 Basic SI unit type.
+ * @tparam BaseSI2 Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI1, SI BaseSI2>
+inline CONSTEXPR Derived<Base<BaseSI1>, Divide<Base<BaseSI2>>> operator/(Base<BaseSI1> lhs, Base<BaseSI2> rhs) NOEXCEPT
+{
+    return Derived<Base<BaseSI1>, Divide<Base<BaseSI2>>>{rhs.value() / lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Dividing operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI, typename T1, typename T2>
+inline CONSTEXPR Derived<Base<BaseSI>, Divide<Derived<T1, T2>>> operator/(Base<BaseSI> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return Derived<Base<BaseSI>, Divide<Derived<T1, T2>>>{rhs.value() / lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Dividing operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2, SI BaseSI>
+inline CONSTEXPR Derived<Derived<T1, T2>, Divide<Base<BaseSI>>> operator/(Derived<T1, T2> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return Derived<Derived<T1, T2>, Divide<Base<BaseSI>>>{rhs.value() / lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Dividing operator.
+ *
+ * @tparam T11
+ * @tparam T12
+ * @tparam T21
+ * @tparam T22
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T11, typename T12, typename T21, typename T22>
+inline CONSTEXPR Derived<Derived<T11, T12>, Divide<Derived<T21, T22>>> operator/(Derived<T11, T12> lhs, Derived<T21, T22> rhs) NOEXCEPT
+{
+    return Derived<Derived<T11, T12>, Divide<Derived<T21, T22>>>{rhs.value() / lhs.value()};
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing distance (meters).
  */
-using Length = float;
+using Length = float; //Base<SI::Length>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing mass (kilograms).
  */
-using Mass = float;
+using Mass = float; // Base<SI::Mass>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing time (seconds).
  */
-using Time = float;
+using Time = float; // Base<SI::Time>;
 using Duration = Time;
 
 /* ************************************************************************ */
@@ -50,28 +517,28 @@ using Duration = Time;
 /**
  * @brief Class for representing area.
  */
-using Area = float;
+using Area = float; // Derived<Length, Length>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing volume.
  */
-using Volume = float;
+using Volume = float; // Derived<Area, Length>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing velocity (micrometers per second).
  */
-using Velocity = float;
+using Velocity = float; // Derived<Length, Divide<Time>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing acceleration (micrometers per second^2).
  */
-using Acceleration = float;
+using Acceleration = float; // Derived<Velocity, Divide<Time>>;
 
 /* ************************************************************************ */
 
