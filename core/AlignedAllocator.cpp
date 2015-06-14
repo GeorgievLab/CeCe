@@ -62,7 +62,7 @@ void* allocate_aligned_memory(std::size_t align, std::size_t size)
 
 void deallocate_aligned_memory(void* ptr) NOEXCEPT
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
     _aligned_free(ptr);
 #else
     free(ptr);
