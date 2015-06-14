@@ -65,7 +65,7 @@ struct value_constructor<units::Length>
     static units::Length construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return val;
+            return units::Length(val);
 
         if (suffix == "m")
             return units::m(val);
@@ -88,7 +88,7 @@ struct value_constructor<units::Mass>
     static units::Mass construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return val;
+            return units::Mass(val);
 
         if (suffix == "kg")
             return units::kg(val);
@@ -114,7 +114,7 @@ struct value_constructor<units::Time>
     static units::Time construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return val;
+            return units::Time(val);
 
         if (suffix == "s")
             return units::s(val);
@@ -137,7 +137,7 @@ struct value_constructor<units::Volume>
     static units::Volume construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return val;
+            return units::Volume(val);
 
         if (suffix == "m3")
             return units::m3(val);
@@ -160,7 +160,7 @@ struct value_constructor<units::Velocity>
     static units::Velocity construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return val;
+            return units::Velocity(val);
 
         if (suffix == "m/s")
             return units::m_s(val);
@@ -183,7 +183,7 @@ struct value_constructor<units::Acceleration>
     static units::Acceleration construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return val;
+            return units::Acceleration(val);
 
         if (suffix == "m/s2")
             return units::m_s2(val);
@@ -206,7 +206,7 @@ struct value_constructor<units::Force>
     static units::Force construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return val;
+            return units::Force(val);
 
         if (suffix == "N")
             return units::N(val);

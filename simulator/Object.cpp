@@ -150,7 +150,7 @@ PositionVector Object::getPosition() const NOEXCEPT
 #if ENABLE_PHYSICS
     assert(m_body);
     auto pos = m_body->GetPosition();
-    return {pos.x, pos.y};
+    return {units::Length(pos.x), units::Length(pos.y)};
 #else
     return m_position;
 #endif
@@ -175,7 +175,7 @@ VelocityVector Object::getVelocity() const NOEXCEPT
 #if ENABLE_PHYSICS
     assert(m_body);
     auto vel = m_body->GetLinearVelocity();
-    return {vel.x, vel.y};
+    return {units::Velocity(vel.x), units::Velocity(vel.y)};
 #else
     return m_velocity;
 #endif
@@ -199,7 +199,7 @@ void Object::setPosition(PositionVector pos) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
-    m_body->SetTransform({pos.getX(), pos.getY()}, m_body->GetAngle());
+    m_body->SetTransform({pos.getX().value(), pos.getY().value()}, m_body->GetAngle());
 #else
     m_position = std::move(pos);
 #endif
@@ -223,7 +223,7 @@ void Object::setVelocity(VelocityVector vel) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
-    m_body->SetLinearVelocity({vel.getX(), vel.getY()});
+    m_body->SetLinearVelocity({vel.getX().value(), vel.getY().value()});
 #else
     m_velocity = std::move(vel);
 #endif
@@ -235,7 +235,7 @@ void Object::applyForce(const ForceVector& force) NOEXCEPT
 {
 #if ENABLE_PHYSICS
     assert(m_body);
-    m_body->ApplyForceToCenter({force.getX(), force.getY()}, true);
+    m_body->ApplyForceToCenter({force.getX().value(), force.getY().value()}, true);
 #else
     // NOTE: This is a little bit weird
     m_velocity = force;
@@ -248,7 +248,7 @@ void Object::applyForce(const ForceVector& force, const PositionVector& pos) NOE
 {
 #if ENABLE_PHYSICS
     assert(m_body);
-    m_body->ApplyForce({force.getX(), force.getY()}, {pos.getX(), pos.getY()}, true);
+    m_body->ApplyForce({force.getX().value(), force.getY().value()}, {pos.getX().value(), pos.getY().value()}, true);
 #else
     m_velocity = force;
 #endif

@@ -41,7 +41,7 @@ void Simulator::step()
     auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(16);
 
     {
-        update(0.016f);
+        update(units::ms(16));
     }
 
     // Sleep

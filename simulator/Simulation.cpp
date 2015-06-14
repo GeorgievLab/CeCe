@@ -221,7 +221,7 @@ bool Simulation::update(units::Duration dt)
     {
         auto _ = measure_time("sim.physics", TimeMeasurementIterationOutput(this));
 
-        m_world.Step(dt, 5, 5);
+        m_world.Step(dt.value(), 5, 5);
     }
 #endif
 
@@ -244,7 +244,7 @@ bool Simulation::update()
         auto start = clock_type::now();
 
         static_assert(std::chrono::treat_as_floating_point<duration_type::rep>::value, "ehm...");
-        bool res = update(std::chrono::duration_cast<duration_type>(diff).count());
+        bool res = update(units::Time(std::chrono::duration_cast<duration_type>(diff).count()));
 
         // Calculate time that takes to update simulation (then use it in next step)
         diff = clock_type::now() - start;
@@ -262,7 +262,7 @@ bool Simulation::update()
 #ifdef ENABLE_RENDER
 void Simulation::draw(render::Context& context)
 {
-    context.setStencilBuffer(getWorldSize().getWidth(), getWorldSize().getHeight());
+    context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
 
     // Render modules
     for (auto& module : getModules())

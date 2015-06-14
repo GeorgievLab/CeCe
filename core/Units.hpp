@@ -299,6 +299,44 @@ inline CONSTEXPR Base<BaseSI> operator*(float lhs, Base<BaseSI> rhs) NOEXCEPT
 /**
  * @brief Multiply operator.
  *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR Derived<T1, T2> operator*(Derived<T1, T2> lhs, float rhs) NOEXCEPT
+{
+    return lhs *= rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR Derived<T1, T2> operator*(float lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return rhs *= lhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiply operator.
+ *
  * @tparam BaseSI1 Basic SI unit type.
  * @tparam BaseSI2 Basic SI unit type.
  *

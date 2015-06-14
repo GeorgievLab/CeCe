@@ -60,7 +60,7 @@ using ScaleVector = Vector<float>;
 /**
  * @brief Size vector.
  */
-using SizeVector = Vector<float>;
+using SizeVector = Vector<units::Length>;
 
 /* ************************************************************************ */
 
