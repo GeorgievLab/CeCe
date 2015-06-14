@@ -17,7 +17,7 @@ include(${wxWidgets_USE_FILE})
 
 # Sources
 set(SRCS
-	main.cpp
+    main.cpp
     MainFrame.h
     MainFrame.cpp
     AboutDialog.h
