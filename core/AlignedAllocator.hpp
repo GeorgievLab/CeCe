@@ -42,7 +42,7 @@ namespace memory {
  * @param align Memory alignment.
  * @param size  Number of required bytes.
  */
-void* DLL_EXPORT allocate_aligned_memory(std::size_t align, std::size_t size);
+DLL_EXPORT void* allocate_aligned_memory(std::size_t align, std::size_t size);
 
 /* ************************************************************************ */
 
@@ -51,7 +51,7 @@ void* DLL_EXPORT allocate_aligned_memory(std::size_t align, std::size_t size);
  *
  * @param ptr
  */
-void DLL_EXPORT deallocate_aligned_memory(void* ptr) NOEXCEPT;
+DLL_EXPORT void deallocate_aligned_memory(void* ptr) NOEXCEPT;
 
 /* ************************************************************************ */
 
