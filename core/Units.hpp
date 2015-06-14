@@ -88,6 +88,17 @@ public:
 
 
     /**
+     * @brief If value is set operator.
+     *
+     * @return
+     */
+    explicit operator bool() const NOEXCEPT
+    {
+        return m_value != 0;
+    }
+
+
+    /**
      * @brief Negation operator.
      *
      * @return New value.
@@ -108,7 +119,7 @@ public:
     Derived& operator+=(Derived rhs) NOEXCEPT
     {
         m_value += rhs.m_value;
-        return *this;
+        return static_cast<Derived&>(*this);
     }
 
 
@@ -122,7 +133,7 @@ public:
     Derived& operator-=(Derived rhs) NOEXCEPT
     {
         m_value -= rhs.m_value;
-        return *this;
+        return static_cast<Derived&>(*this);
     }
 
 
@@ -136,7 +147,7 @@ public:
     Derived& operator*=(value_type rhs) NOEXCEPT
     {
         m_value *= rhs;
-        return *this;
+        return static_cast<Derived&>(*this);
     }
 
 
@@ -150,7 +161,7 @@ public:
     Derived& operator/=(value_type rhs) NOEXCEPT
     {
         m_value /= rhs;
-        return *this;
+        return static_cast<Derived&>(*this);
     }
 
 
