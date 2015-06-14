@@ -121,7 +121,7 @@ endif ()
 # Build-in physics enabled
 if (ENABLE_BUILDIN_PHYSICS)
     message("-- Using build-in physics (Box2D)")
-    find_package(Box2D REQUIRED)
+    find_package(BOX2D REQUIRED)
     include_directories(${BOX2D_INCLUDE_DIR})
 
     add_definitions(-DENABLE_PHYSICS=1)

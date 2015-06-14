@@ -37,7 +37,10 @@ find_library(BOX2D_LIBRARY_DEBUG
   /opt/csw     # Blastwave
   /opt
   ${BOX2DDIR}
-  $ENV{BOX2DDIR})
+  $ENV{BOX2DDIR}
+  ${BOX2DDIR_LIB}
+  $ENV{BOX2DDIR_LIB}
+)
 
 find_library(BOX2D_LIBRARY_RELEASE
   Box2D
@@ -52,7 +55,10 @@ find_library(BOX2D_LIBRARY_RELEASE
   /opt/csw     # Blastwave
   /opt
   ${BOX2DDIR}
-  $ENV{BOX2DDIR})
+  $ENV{BOX2DDIR}
+  ${BOX2DDIR_LIB}
+  $ENV{BOX2DDIR_LIB}
+)
 
 if(BOX2D_LIBRARY_DEBUG OR BOX2D_LIBRARY_RELEASE)
   # Library found
