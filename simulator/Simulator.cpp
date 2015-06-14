@@ -11,8 +11,12 @@
 
 // C++
 #include <cassert>
-#include <thread>
 #include <chrono>
+#ifdef __MINGW32__
+// MinGW has issue with undefined reference to __impl_nanosleep (nanosleep function)
+#undef _GLIBCXX_USE_NANOSLEEP
+#endif
+#include <thread>
 
 // Simulator
 #include "simulator/Simulation.hpp"
