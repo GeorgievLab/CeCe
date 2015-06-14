@@ -48,8 +48,13 @@ protected:
      *
      * @return
      */
+#ifdef __MINGW32__
+    UniquePtr<simulator::Simulation> fromStream(core::IStream& source,
+        const FilePath& filename) const override;
+#else
     UniquePtr<simulator::Simulation> fromStream(IStream& source,
         const FilePath& filename) const override;
+#endif
 
 };
 

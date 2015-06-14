@@ -69,8 +69,13 @@ protected:
      *
      * @return
      */
+#ifdef __MINGW32__
+    virtual UniquePtr<simulator::Simulation> fromStream(core::IStream& source,
+        const String& filename) const = 0;
+#else
     virtual UniquePtr<simulator::Simulation> fromStream(IStream& source,
         const String& filename) const = 0;
+#endif
 
 };
 
