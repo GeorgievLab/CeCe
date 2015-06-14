@@ -495,21 +495,21 @@ inline CONSTEXPR Derived<Derived<T11, T12>, Divide<Derived<T21, T22>>> operator/
 /**
  * @brief Class for representing distance (meters).
  */
-using Length = float; //Base<SI::Length>;
+using Length = Base<SI::Length>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing mass (kilograms).
  */
-using Mass = float; // Base<SI::Mass>;
+using Mass = Base<SI::Mass>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing time (seconds).
  */
-using Time = float; // Base<SI::Time>;
+using Time = Base<SI::Time>;
 using Duration = Time;
 
 /* ************************************************************************ */
@@ -517,42 +517,42 @@ using Duration = Time;
 /**
  * @brief Class for representing area.
  */
-using Area = float; // Derived<Length, Length>;
+using Area = Derived<Length, Length>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing volume.
  */
-using Volume = float; // Derived<Area, Length>;
+using Volume = Derived<Area, Length>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing velocity (micrometers per second).
  */
-using Velocity = float; // Derived<Length, Divide<Time>>;
+using Velocity = Derived<Length, Divide<Time>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing acceleration (micrometers per second^2).
  */
-using Acceleration = float; // Derived<Velocity, Divide<Time>>;
+using Acceleration = Derived<Velocity, Divide<Time>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing force (Newton).
  */
-using Force = float;
+using Force = Derived<Mass, Acceleration>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing density.
  */
-using Density = float;
+using Density = Derived<Mass, Volume>;
 
 /* ************************************************************************ */
 
@@ -781,7 +781,7 @@ inline CONSTEXPR Volume m3(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Area mm3(float value) NOEXCEPT
+inline CONSTEXPR Volume mm3(float value) NOEXCEPT
 {
     return mm2(value) * mm(1);
 }
@@ -793,7 +793,7 @@ inline CONSTEXPR Area mm3(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Area um3(float value) NOEXCEPT
+inline CONSTEXPR Volume um3(float value) NOEXCEPT
 {
     return um2(value) * um(1);
 }
@@ -843,7 +843,7 @@ inline CONSTEXPR Velocity um_s(float value) NOEXCEPT
  */
 inline CONSTEXPR Acceleration m_s2(float value) NOEXCEPT
 {
-    return m(value) / (s(1) * s(1));
+    return m_s(value) / s(1);
 }
 
 /* ************************************************************************ */
@@ -853,9 +853,9 @@ inline CONSTEXPR Acceleration m_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Velocity mm_s2(float value) NOEXCEPT
+inline CONSTEXPR Acceleration mm_s2(float value) NOEXCEPT
 {
-    return mm(value) / (s(1) * s(1));
+    return mm_s(value) / s(1);
 }
 
 /* ************************************************************************ */
@@ -865,9 +865,9 @@ inline CONSTEXPR Velocity mm_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Velocity um_s2(float value) NOEXCEPT
+inline CONSTEXPR Acceleration um_s2(float value) NOEXCEPT
 {
-    return um(value) / (s(1) * s(1));
+    return um_s(value) / s(1);
 }
 
 /* ************************************************************************ */
@@ -879,7 +879,7 @@ inline CONSTEXPR Velocity um_s2(float value) NOEXCEPT
  */
 inline CONSTEXPR Force kgm_s2(float value) NOEXCEPT
 {
-    return kg(value) * m(1) / (s(1) * s(1));
+    return kg(value) * m_s2(1);
 }
 
 /* ************************************************************************ */
@@ -891,7 +891,7 @@ inline CONSTEXPR Force kgm_s2(float value) NOEXCEPT
  */
 inline CONSTEXPR Force gm_s2(float value) NOEXCEPT
 {
-    return g(value) * m(1) / (s(1) * s(1));
+    return g(value) * m_s2(1);
 }
 
 /* ************************************************************************ */
@@ -903,7 +903,7 @@ inline CONSTEXPR Force gm_s2(float value) NOEXCEPT
  */
 inline CONSTEXPR Force mgm_s2(float value) NOEXCEPT
 {
-    return kg(value) * m(1) / (s(1) * s(1));
+    return kg(value) * m_s2(1);
 }
 
 /* ************************************************************************ */

@@ -53,6 +53,20 @@ struct value_constructor<float>
         if (suffix.empty())
             return val;
 
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<units::Length>
+{
+    static units::Length construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return val;
+
         if (suffix == "m")
             return units::m(val);
 
@@ -62,23 +76,45 @@ struct value_constructor<float>
         if (suffix == "um")
             return units::um(val);
 
-        if (suffix == "m2")
-            return units::m2(val);
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
 
-        if (suffix == "mm2")
-            return units::mm2(val);
+/* ************************************************************************ */
 
-        if (suffix == "um2")
-            return units::um2(val);
+template<>
+struct value_constructor<units::Mass>
+{
+    static units::Mass construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return val;
 
-        if (suffix == "m3")
-            return units::m3(val);
+        if (suffix == "kg")
+            return units::kg(val);
 
-        if (suffix == "mm3")
-            return units::mm3(val);
+        if (suffix == "g")
+            return units::g(val);
 
-        if (suffix == "um3")
-            return units::um3(val);
+        if (suffix == "mg")
+            return units::mg(val);
+
+        if (suffix == "ug")
+            return units::ug(val);
+
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<units::Time>
+{
+    static units::Time construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return val;
 
         if (suffix == "s")
             return units::s(val);
@@ -89,6 +125,43 @@ struct value_constructor<float>
         if (suffix == "us")
             return units::us(val);
 
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<units::Volume>
+{
+    static units::Volume construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return val;
+
+        if (suffix == "m3")
+            return units::m3(val);
+
+        if (suffix == "mm3")
+            return units::mm3(val);
+
+        if (suffix == "um3")
+            return units::um3(val);
+
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<units::Velocity>
+{
+    static units::Velocity construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return val;
+
         if (suffix == "m/s")
             return units::m_s(val);
 
@@ -98,6 +171,20 @@ struct value_constructor<float>
         if (suffix == "um/s")
             return units::um_s(val);
 
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<units::Acceleration>
+{
+    static units::Acceleration construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return val;
+
         if (suffix == "m/s2")
             return units::m_s2(val);
 
@@ -106,6 +193,20 @@ struct value_constructor<float>
 
         if (suffix == "um/s2")
             return units::um_s2(val);
+
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<units::Force>
+{
+    static units::Force construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return val;
 
         if (suffix == "N")
             return units::N(val);
