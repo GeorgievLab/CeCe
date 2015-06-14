@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="gui" InternalType="GUI">
   <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
   "enabled": true,
   "buildDirectory": "build-debug",
   "sourceDirectory": "$(WorkspacePath)",
-  "generator": "Unix Makefiles",
+  "generator": "",
   "buildType": "Debug",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release",
+  "enabled": true,
+  "buildDirectory": "build-release",
+  "sourceDirectory": "$(WorkspacePath)",
+  "generator": "",
+  "buildType": "Release",
   "arguments": [],
   "parentProject": ""
  }]]]>
@@ -40,6 +52,11 @@
     <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="simulator"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -143,9 +160,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="simulator"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>
