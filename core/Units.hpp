@@ -10,6 +10,9 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <type_traits>
+
 // Simulator
 #include "core/compatibility.hpp"
 
@@ -50,6 +53,14 @@ template<typename Derived>
 class Value
 {
 
+// Public Types
+public:
+
+
+    /// Value type.
+    using value_type = float;
+
+
 // Public Ctors & Dtors
 public:
 
@@ -65,7 +76,7 @@ public:
      *
      * @param value Init value.
      */
-    explicit CONSTEXPR Value(float value) NOEXCEPT
+    explicit CONSTEXPR Value(value_type value) NOEXCEPT
         : m_value(value)
     {
         // Nothing to do
@@ -74,6 +85,17 @@ public:
 
 // Public Operators
 public:
+
+
+    /**
+     * @brief Negation operator.
+     *
+     * @return New value.
+     */
+    Derived operator-() const NOEXCEPT
+    {
+        return Derived(-m_value);
+    }
 
 
     /**
@@ -111,7 +133,7 @@ public:
      *
      * @return *this.
      */
-    Derived& operator*=(float rhs) NOEXCEPT
+    Derived& operator*=(value_type rhs) NOEXCEPT
     {
         m_value *= rhs;
         return *this;
@@ -125,7 +147,7 @@ public:
      *
      * @return *this.
      */
-    Derived& operator/=(float rhs) NOEXCEPT
+    Derived& operator/=(value_type rhs) NOEXCEPT
     {
         m_value /= rhs;
         return *this;
@@ -141,7 +163,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR float value() const NOEXCEPT
+    CONSTEXPR value_type value() const NOEXCEPT
     {
         return m_value;
     }
@@ -151,7 +173,7 @@ public:
 private:
 
     /// Stored value.
-    float m_value;
+    value_type m_value;
 
 };
 
@@ -221,6 +243,228 @@ public:
     using Value<Divide>::Value;
 
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR bool operator==(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return lhs.value() == rhs.value();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR bool operator!=(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR bool operator==(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return lhs.value() == rhs.value();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR bool operator!=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR bool operator<(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return lhs.value() < rhs.value();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR bool operator<(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return lhs.value() < rhs.value();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less equals operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR bool operator<=(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less equals operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR bool operator<=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Greater operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR bool operator>(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return operator<(rhs, lhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Greater operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR bool operator>(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return operator<(rhs, lhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Greater equals operator.
+ *
+ * @tparam BaseSI Basic SI unit type.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<SI BaseSI>
+inline CONSTEXPR bool operator>=(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+{
+    return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Greater equals operator.
+ *
+ * @tparam T1
+ * @tparam T2
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename T1, typename T2>
+inline CONSTEXPR bool operator>=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+{
+    return !operator<(lhs, rhs);
+}
 
 /* ************************************************************************ */
 
@@ -1031,5 +1275,50 @@ inline CONSTEXPR Probability precent(float value) NOEXCEPT
 #ifndef _MSC_VER
 }
 #endif
+
+/* ************************************************************************ */
+
+namespace std
+{
+
+/* ************************************************************************ */
+
+template<typename T, units::SI BaseSI>
+struct common_type<T, units::Base<BaseSI>>
+{
+    //using type = typename std::common_type<T, typename units::Base<BaseSI>::value_type>::type;
+    using type = units::Base<BaseSI>;
+};
+
+/* ************************************************************************ */
+
+template<units::SI BaseSI, typename T>
+struct common_type<units::Base<BaseSI>, T>
+{
+    //using type = typename std::common_type<typename units::Base<BaseSI>::value_type, T>::type;
+    using type = units::Base<BaseSI>;
+};
+
+/* ************************************************************************ */
+
+template<typename T, typename T1, typename T2>
+struct common_type<T, units::Derived<T1, T2>>
+{
+    //using type = typename std::common_type<T, typename units::Derived<T1, T2>::value_type>::type;
+    using type = units::Derived<T1, T2>;
+};
+
+/* ************************************************************************ */
+
+template<typename T1, typename T2, typename T>
+struct common_type<units::Derived<T1, T2>, T>
+{
+    //using type = typename std::common_type<typename units::Derived<T1, T2>::value_type, T>::type;
+    using type = units::Derived<T1, T2>;
+};
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
