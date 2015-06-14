@@ -88,9 +88,6 @@ void GridColor::resize(Size size, const Color& color)
 {
     GridBase::resize(std::move(size));
 
-    const auto width = getSize().getWidth();
-    const auto height = getSize().getHeight();
-
     // Resize color grid
     m_colors.resize(getSize(), color);
     m_texture.resize(getSize(), color);
