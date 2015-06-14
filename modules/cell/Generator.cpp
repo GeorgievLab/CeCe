@@ -22,7 +22,7 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("cell.generator", simulator::TimeMeasurementIterationOutput(&simulation));
 
-    const float half = simulation.getWorldSize().getHeight() / 2.f;
+    const units::Length half = simulation.getWorldSize().getHeight() / 2.f;
 
     std::random_device rd;
     std::default_random_engine eng(rd());
@@ -33,14 +33,14 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
     // If object should be generated
     if (genDist(eng))
     {
-        std::uniform_real_distribution<float> dist(-half, half);
-        float y = dist(eng);
+        std::uniform_real_distribution<float> dist(-half.value(), half.value());
+        const auto y = units::Length(dist(eng));
 
         // Create object
         auto* object = simulation.buildObject(getObjectClass());
         //c->setVolume(units::um3(volume_d(eng)));
         object->setVelocity(getStartVelocity());
-        object->setPosition({-simulation.getWorldSize().getWidth() / 2.f + 0.1f, y});
+        object->setPosition({-simulation.getWorldSize().getWidth() / 2.f + units::um(0.1f), y});
     }
 }
 

@@ -23,11 +23,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     if (m_update)
     {
         // Precompute values
-        const Vector<float> start = simulation.getWorldSize() * -0.5f;
+        const auto start = simulation.getWorldSize() * -0.5f;
         const auto gridSize = m_grid.getSize();
-        const Vector<float> step = simulation.getWorldSize() / gridSize;
+        const auto step = simulation.getWorldSize() / gridSize;
 
-        float radius = 0.f;
+        auto radius = units::Length(0);
 
         if (m_object)
         {
@@ -47,7 +47,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
             if (!m_object)
             {
-                velocity = VelocityVector{1.f, 0.f};
+                velocity = VelocityVector{units::Velocity(1), units::Velocity(0)};
                 continue;
             }
 

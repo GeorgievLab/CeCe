@@ -34,7 +34,7 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
     const int off = grid.getSize().getHeight() * 0.05f;
 
     for (int i = -6; i <= 6; ++i)
-        grid[Vector<unsigned int>{0u, (unsigned) grid_half + i * off}][(i + 6) % Signal::COUNT] += SOURCE_STRENGTH * dt;
+        grid[Vector<unsigned int>{0u, (unsigned) grid_half + i * off}][(i + 6) % Signal::COUNT] += SOURCE_STRENGTH * dt.value();
 }
 
 /* ************************************************************************ */

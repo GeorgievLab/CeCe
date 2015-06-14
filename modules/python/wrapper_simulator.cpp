@@ -77,7 +77,7 @@ static PyObject* simulation_getWorldSize(ObjectWrapper<simulator::Simulation*>* 
 {
     assert(self);
     assert(self->value);
-    const Vector<float> pos = self->value->getWorldSize();
+    const auto pos = self->value->getWorldSize();
 
     return makeObject(pos);
 }

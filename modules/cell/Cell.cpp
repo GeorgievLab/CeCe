@@ -23,7 +23,7 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) NOEX
 {
 #if ENABLE_PHYSICS
     b2CircleShape shape;
-    shape.m_radius = getRadius();
+    shape.m_radius = getRadius().value();
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &shape;
@@ -46,7 +46,7 @@ void Cell::update(units::Duration dt)
 #if ENABLE_PHYSICS
     // Update cell shape
     b2CircleShape shape;
-    shape.m_radius = getRadius();
+    shape.m_radius = getRadius().value();
 
     // Update fixture
     b2Fixture* fixture = getBody()->GetFixtureList();
@@ -88,10 +88,10 @@ void Cell::draw(render::Context& context)
     // Transform
     context.matrixPush();
     context.matrixTranslate(pos);
-    context.matrixScale(2 * radius);
+    context.matrixScale(2 * radius.value());
     context.matrixRotate(getBody()->GetAngle());
 
-    m_renderObject->draw(context, radius);
+    m_renderObject->draw(context, radius.value());
 
     context.matrixPop();
 }

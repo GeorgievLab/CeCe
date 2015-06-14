@@ -59,7 +59,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const auto step = simulation.getWorldSize() / m_grid.getSize();
 
     //const float A = 1.f / (4 * constants::PI * D * dt);
-    const Coefficients A = 1.f / (4 * constants::PI * getCoefficients() * dt);
+    const Coefficients A = 1.f / (4 * constants::PI * getCoefficients() * dt.value());
 
     // Offset coefficients for matrix
     static const auto DISTANCES = Matrix<int, MATRIX_SIZE>::makeDistances();
@@ -76,7 +76,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Create distribution matrix
     const auto M = Matrix<Coefficients, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
         using std::exp;
-        return A * exp(-q[i][j] / (4.f * getCoefficients() * dt));
+        return A * exp(-q[i][j] / (4.f * getCoefficients() * dt.value()));
         //return A * exp(-q[i][j] / (4.f * D * dt));
         //return A * exp(-q[i][j] / dt);
     }).normalize();
@@ -201,7 +201,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     updateDrawable();
 
     context.matrixPush();
-    context.matrixScale(simulation.getWorldSize());
+    context.matrixScale(simulation.getWorldSize() / units::Length(1));
     m_drawable->draw(context);
     context.matrixPop();
 }

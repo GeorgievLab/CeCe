@@ -34,14 +34,14 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
     assert(diff);
     auto& grid = diff->getGrid();
 
-    const Vector<float> start = simulation.getWorldSize() * -0.5f;
+    const auto start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-    if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
+    if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
         return;
 
     // Get grid position
