@@ -3,6 +3,11 @@
 
 /* ************************************************************************ */
 
+#ifdef __MINGW64__
+// Undefined reference to __impl_Py_InitModule4 on 64 bit MinGW compiler
+#define MS_WIN64
+#endif
+
 // Python
 #include <Python.h>
 
