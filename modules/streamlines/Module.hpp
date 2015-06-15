@@ -96,6 +96,17 @@ public:
 
 
     /**
+     * @brief Returns inflow velocity.
+     *
+     * @return
+     */
+    units::Velocity getVelocityInflow() const NOEXCEPT
+    {
+        return m_velocityInflow;
+    }
+
+
+    /**
      * @brief Returns fluid viscosity.
      *
      * @return
@@ -118,6 +129,17 @@ public:
     void setVelocityMax(units::Velocity velocity) NOEXCEPT
     {
         m_velocityMax = velocity;
+    }
+
+
+    /**
+     * @brief Set inflow velocity.
+     *
+     * @param velocity
+     */
+    void setVelocityInflow(units::Velocity velocity) NOEXCEPT
+    {
+        m_velocityInflow = velocity;
     }
 
 
@@ -172,7 +194,7 @@ public:
 #endif
 
 // Protected Operations
-        protected:
+protected:
 
 
     /**
@@ -213,6 +235,9 @@ private:
 
     /// Maximum flow velocity.
     units::Velocity m_velocityMax = 50.f;
+
+    /// In-flow velocity.
+    units::Velocity m_velocityInflow = 10.f;
 
     /// Fluid viscosity.
     units::Viscosity m_viscosity = 1.f;

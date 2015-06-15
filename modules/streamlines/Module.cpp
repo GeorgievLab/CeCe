@@ -13,6 +13,7 @@
 #include <algorithm>
 
 // Simulator
+#include "core/constants.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Exception.hpp"
 #include "parser/Parser.hpp"
@@ -24,10 +25,6 @@
 
 namespace module {
 namespace streamlines {
-
-/* ************************************************************************ */
-
-static CONSTEXPR_CONST float MAX_LB_SPEED = 0.1;
 
 /* ************************************************************************ */
 
@@ -53,13 +50,13 @@ void Module::init(Size size)
     // Get grid
     auto& grid = getLattice();
     const auto grid_size = grid.getRealSize();
-
+/*
     auto computePoiseuille = [&grid_size](int i) {
         float y = (float) (i - 1);
         float L = (float) (grid_size.getHeight() - 1);
         return 4.f * MAX_LB_SPEED / (L * L) * (L * y - y * y);
     };
-
+*/
     for (Lattice::SizeType y = 1; y < grid_size.getHeight() - 1; ++y)
     {
         for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
@@ -82,7 +79,7 @@ void Module::init(Size size)
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     // Check condition time step condition
-    checkTimeStepCondition(dt, simulation);
+    //checkTimeStepCondition(dt, simulation);
 
     // Dynamic obstacles
     updateDynamicObstacleMap(simulation);
@@ -118,6 +115,11 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Maximum velocity
     config.callIfSetString("velocity-max", [this](const String& value) {
         setVelocityMax(parser::parse_value<units::Velocity>(value));
+    });
+
+    // Maximum velocity
+    config.callIfSetString("velocity-inflow", [this](const String& value) {
+        setVelocityInflow(parser::parse_value<units::Velocity>(value));
     });
 
     // Viscosity
@@ -159,11 +161,11 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             if (!cell.isObstacle())
             {
                 // Calculate velocity vector
-                const auto velocity = cell.calcVelocityNormalized() / MAX_LB_SPEED;// * 100;// / getFlowSpeed();
+                const auto velocity = cell.calcVelocityNormalized();// / MAX_LB_SPEED;// * 100;// / getFlowSpeed();
 
                 //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
-                //color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
-                color = {cell.calcRho(), velocity.getLength(), 0, 1};
+                color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
+                //color = {cell.calcRho(), velocity.getLength(), 0, 1};
                 velocities[{x, y}] = velocity;
             }
             else
@@ -295,7 +297,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
         // Map shapes border to grid
         for (const auto& shape : shapes)
         {
-            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, getLattice().getSize());
+            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, getLattice().getSize(), {}, 1);
         }
 
         // Sort coordinates
@@ -317,11 +319,20 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
             velocity += lattice[coord].calcVelocityNormalized() * getVelocityMax();
         }
 
+        assert(!coords.empty());
+
         // Average
         velocity = velocity / coords.size();
 
+        // Difference between velocities
+        const auto dv = velocity - obj->getVelocity();
+
         // Set object velocity
-        obj->setVelocity(velocity);
+        //obj->setVelocity(velocity);
+        const auto force = 3 * constants::PI * getViscosity() * dv * shapes[0].circle.radius;
+
+        // Apply force
+        obj->applyForce(force);
     }
 }
 
@@ -333,20 +344,25 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation)
     {
         // maximum velocity of the Poiseuille inflow
         const auto grid_size = getLattice().getRealSize();
+        const float lb_speed = getVelocityInflow() / getVelocityMax();
 
-        auto computePoiseuille = [&grid_size](int i) {
+        auto computePoiseuille = [&grid_size, lb_speed](int i) {
             float y = (float) (i - 1);
             float L = (float) (grid_size.getHeight() - 1);
-            return 4.f * MAX_LB_SPEED / (L * L) * (L * y - y * y);
+            return 4.f * lb_speed / (L * L) * (L * y - y * y);
         };
 
         // Generate input / output
         for (Lattice::SizeType y = 0; y < grid_size.getHeight(); ++y)
         {
             m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
-            //m_lattice[{1, y}].init({MAX_LB_SPEED, 0.f});
+            //m_lattice[{1, y}].init({lb_speed, 0.f});
             //m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
-            m_lattice[{grid_size.getWidth() - 2, y}].init(m_lattice[{grid_size.getWidth() - 3, y}].calcVelocityNormalized());
+            m_lattice[{grid_size.getWidth() - 2, y}].init(
+                m_lattice[{grid_size.getWidth() - 3, y}].calcVelocityNormalized(),
+                m_lattice[{grid_size.getWidth() - 3, y}].calcRho()
+            );
+            m_lattice[{grid_size.getWidth() - 1, y}].clear();
         }
     }
     /**/
