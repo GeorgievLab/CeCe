@@ -41,25 +41,28 @@ public:
 public:
 
 
+    /// Maximum speed in lattice.
+    static CONSTEXPR_CONST ValueType MAX_SPEED = 0.5f;
+
     /// Number of stored values.
-    static constexpr IndexType SIZE = 9;
+    static CONSTEXPR_CONST IndexType SIZE = 9;
 
     /// Direction weights
-    static constexpr StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
+    static CONSTEXPR_CONST StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
         4.f / 9.f, // Center
         1.f / 9.f, 1.f / 9.f, 1.f / 9.f, 1.f / 9.f, // Linear
         1.f / 36.f, 1.f / 36.f, 1.f / 36.f, 1.f / 36.f // Diagonal
     }};
 
     /// Direction velocities
-    static constexpr StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
+    static CONSTEXPR_CONST StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
         { 0,  0},
         { 1,  0}, { 0,  1}, {-1,  0}, { 0, -1},
         { 1,  1}, {-1,  1}, {-1, -1}, { 1, -1}
     }};
 
     /// Direction opposites
-    static constexpr StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {
+    static CONSTEXPR_CONST StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {
         0,
         3, 4, 1, 2,
         7, 8, 5, 6
