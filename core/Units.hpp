@@ -10,9 +10,6 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <type_traits>
-
 // Simulator
 #include "core/compatibility.hpp"
 
@@ -1286,50 +1283,5 @@ inline CONSTEXPR Probability precent(float value) NOEXCEPT
 #ifndef _MSC_VER
 }
 #endif
-
-/* ************************************************************************ */
-
-namespace std
-{
-
-/* ************************************************************************ */
-
-template<typename T, units::SI BaseSI>
-struct common_type<T, units::Base<BaseSI>>
-{
-    //using type = typename std::common_type<T, typename units::Base<BaseSI>::value_type>::type;
-    using type = units::Base<BaseSI>;
-};
-
-/* ************************************************************************ */
-
-template<units::SI BaseSI, typename T>
-struct common_type<units::Base<BaseSI>, T>
-{
-    //using type = typename std::common_type<typename units::Base<BaseSI>::value_type, T>::type;
-    using type = units::Base<BaseSI>;
-};
-
-/* ************************************************************************ */
-
-template<typename T, typename T1, typename T2>
-struct common_type<T, units::Derived<T1, T2>>
-{
-    //using type = typename std::common_type<T, typename units::Derived<T1, T2>::value_type>::type;
-    using type = units::Derived<T1, T2>;
-};
-
-/* ************************************************************************ */
-
-template<typename T1, typename T2, typename T>
-struct common_type<units::Derived<T1, T2>, T>
-{
-    //using type = typename std::common_type<typename units::Derived<T1, T2>::value_type, T>::type;
-    using type = units::Derived<T1, T2>;
-};
-
-/* ************************************************************************ */
-
-}
 
 /* ************************************************************************ */
