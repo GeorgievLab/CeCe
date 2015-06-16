@@ -157,6 +157,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
             // Background color
             render::Color color = {1, 1, 1, 1};
+            //render::Color color = {0, 0, 0, 1};
 
             if (!cell.isObstacle())
             {
@@ -166,11 +167,12 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
                 //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
                 color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
                 //color = {cell.calcRho(), velocity.getLength(), 0, 1};
-                velocities[{x, y}] = velocity;
+
+                velocities[coord] = velocity;
             }
             else
             {
-                velocities[{x, y}] = VelocityVector::Zero;
+                velocities[coord] = VelocityVector::Zero;
             }
 
             // Set color
@@ -297,7 +299,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
         // Map shapes border to grid
         for (const auto& shape : shapes)
         {
-            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, getLattice().getSize(), {}, 1);
+            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, getLattice().getSize(), {}, 5);
         }
 
         // Sort coordinates
