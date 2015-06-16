@@ -12,7 +12,6 @@
 // C++
 #include <cassert>
 #include <cstring>
-#include <map>
 
 // Linux
 #if __linux__
@@ -37,6 +36,64 @@
 /* ************************************************************************ */
 
 namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse value attribute.
+ *
+ * @param object
+ * @param name
+ * @param value
+ */
+void parse_attribute_value(simulator::Object& object, const String& name, const String& value)
+{
+    static const String PREFIX = "value";
+
+    // Not a value attribute
+    if (name.substr(0, PREFIX.length()) != PREFIX || name.length() <= PREFIX.length())
+        return;
+
+    String nameStr;
+
+    // Type specifier
+    switch (name[PREFIX.length()])
+    {
+    case '.':
+    {
+        const auto START = PREFIX.length() + 1;
+
+        // Find '-'
+        auto pos = name.find('-', START);
+
+        if (pos != String::npos)
+        {
+            // Value type
+            const String type = name.substr(START, pos - PREFIX.length() - 1);
+
+            if (type == "int")
+                object.setValue(name.substr(pos + 1), std::stoi(value));
+            else if (type == "float")
+                object.setValue(name.substr(pos + 1), std::stof(value));
+            else
+                object.setValue(name.substr(pos + 1), value);
+        }
+        else
+        {
+            Log::warning("Invalid value attribute name: ", name);
+        }
+
+        break;
+    }
+    case '-':
+        object.setValue(name.substr(PREFIX.size() + 1), value);
+        break;
+
+    default:
+        Log::warning("Invalid value attribute name: ", name);
+        break;
+    }
+}
 
 /* ************************************************************************ */
 
@@ -103,7 +160,15 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
     simulator::Object* object = simulation.buildObject(configuration.getString("class"), !isStatic);
 
     if (object)
+    {
         object->configure(configuration, simulation);
+
+        // Set object values
+        for (const pugi::xml_attribute& attr : node.attributes())
+        {
+            parse_attribute_value(*object, attr.name(), attr.value());
+        }
+    }
 }
 
 /* ************************************************************************ */
