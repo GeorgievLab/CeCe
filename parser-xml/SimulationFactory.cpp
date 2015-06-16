@@ -54,8 +54,6 @@ void parse_attribute_value(simulator::Object& object, const String& name, const 
     if (name.substr(0, PREFIX.length()) != PREFIX || name.length() <= PREFIX.length())
         return;
 
-    String nameStr;
-
     // Type specifier
     switch (name[PREFIX.length()])
     {
