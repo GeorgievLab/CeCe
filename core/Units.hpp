@@ -28,34 +28,60 @@ namespace units {
 /**
  * @brief Base SI units.
  */
-enum class SI
+struct BaseLength {};
+struct BaseTime {};
+struct BaseMass {};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Unit nominator.
+ *
+ * @tparam Types A list of nominator types.
+ */
+template<typename... Types>
+struct Nominator
 {
-    Length,
-    Time,
-    Mass,
-    ElectricCurrent,
-    ThermodynamicTemperature,
-    AmountOfSubstance,
-    LuminousIntensity
+
 };
 
 /* ************************************************************************ */
 
 /**
- * @brief Class for storing unit value.
+ * @brief Unit denominator.
  *
- * @tparam Derived Derived class.
+ * @tparam Types A list of denominator types.
  */
-template<typename Derived>
-class Value
+template<typename... Types>
+struct Denominator
+{
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief SI Unit.
+ *
+ * @tparam Nom   Nominator type.
+ * @tparam Denom Denominator type.
+ */
+template<typename Nom, typename Denom>
+struct Unit
 {
 
 // Public Types
 public:
 
-
     /// Value type.
     using value_type = float;
+
+    /// Nominator type.
+    using nominator = Nom;
+
+    /// Denominator type.
+    using denominator = Denom;
+
 
 
 // Public Ctors & Dtors
@@ -65,7 +91,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    Value() = default;
+    Unit() = default;
 
 
     /**
@@ -73,7 +99,7 @@ public:
      *
      * @param value Init value.
      */
-    explicit CONSTEXPR Value(value_type value) NOEXCEPT
+    explicit CONSTEXPR Unit(value_type value) NOEXCEPT
         : m_value(value)
     {
         // Nothing to do
@@ -96,13 +122,24 @@ public:
 
 
     /**
-     * @brief Negation operator.
+     * @brief Unary plus operator.
      *
      * @return New value.
      */
-    Derived operator-() const NOEXCEPT
+    Unit operator+() const NOEXCEPT
     {
-        return Derived(-m_value);
+        return Unit(m_value);
+    }
+
+
+    /**
+     * @brief Unary minus operator.
+     *
+     * @return New value.
+     */
+    Unit operator-() const NOEXCEPT
+    {
+        return Unit(-m_value);
     }
 
 
@@ -113,52 +150,52 @@ public:
      *
      * @return *this.
      */
-    Derived& operator+=(Derived rhs) NOEXCEPT
+    Unit& operator+=(Unit rhs) NOEXCEPT
     {
         m_value += rhs.m_value;
-        return static_cast<Derived&>(*this);
+        return *this;
     }
 
 
     /**
-     * @brief Substract operator.
+     * @brief Substraction operator.
      *
-     * @param rhs
+     * @param rhs Right operand.
      *
      * @return *this.
      */
-    Derived& operator-=(Derived rhs) NOEXCEPT
+    Unit& operator-=(Unit rhs) NOEXCEPT
     {
         m_value -= rhs.m_value;
-        return static_cast<Derived&>(*this);
+        return *this;
     }
 
 
     /**
-     * @brief Multiply operator.
+     * @brief Multiplication operator.
      *
-     * @param rhs
+     * @param rhs Right operand.
      *
      * @return *this.
      */
-    Derived& operator*=(value_type rhs) NOEXCEPT
+    Unit& operator*=(value_type rhs) NOEXCEPT
     {
         m_value *= rhs;
-        return static_cast<Derived&>(*this);
+        return *this;
     }
 
 
     /**
-     * @brief Divide operator.
+     * @brief Division operator.
      *
-     * @param rhs
+     * @param rhs Right operand.
      *
      * @return *this.
      */
-    Derived& operator/=(value_type rhs) NOEXCEPT
+    Unit& operator/=(value_type rhs) NOEXCEPT
     {
         m_value /= rhs;
-        return static_cast<Derived&>(*this);
+        return *this;
     }
 
 
@@ -188,84 +225,21 @@ private:
 /* ************************************************************************ */
 
 /**
- * @brief Base SI unit.
- *
- * @tparam BaseSI
- */
-template<SI BaseSI>
-class Base : public Value<Base<BaseSI>>
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructors.
-     */
-    using Value<Base>::Value;
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Derived SI unit.
- *
- * @tparam T1
- * @tparam T2
- */
-template<typename T1, typename T2>
-class Derived : public Value<Derived<T1, T2>>
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructors.
-     */
-    using Value<Derived>::Value;
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Divided value helper.
- *
- * @tparam T
- */
-template<typename T>
-class Divide : public Value<Divide<T>>
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructors.
-     */
-    using Value<Divide>::Value;
-
-};
-
-/* ************************************************************************ */
-
-/**
  * @brief Compare operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR bool operator==(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR bool operator==(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return lhs.value() == rhs.value();
 }
@@ -275,53 +249,19 @@ inline CONSTEXPR bool operator==(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
 /**
  * @brief Compare operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR bool operator!=(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
-{
-    return !operator==(lhs, rhs);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Compare operator.
- *
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2>
-inline CONSTEXPR bool operator==(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
-{
-    return lhs.value() == rhs.value();
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Compare operator.
- *
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2>
-inline CONSTEXPR bool operator!=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR bool operator!=(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return !operator==(lhs, rhs);
 }
@@ -331,34 +271,19 @@ inline CONSTEXPR bool operator!=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXC
 /**
  * @brief Less operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR bool operator<(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
-{
-    return lhs.value() < rhs.value();
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Less operator.
- *
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2>
-inline CONSTEXPR bool operator<(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR bool operator<(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return lhs.value() < rhs.value();
 }
@@ -368,34 +293,19 @@ inline CONSTEXPR bool operator<(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCE
 /**
  * @brief Less equals operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR bool operator<=(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
-{
-    return !operator>(lhs, rhs);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Less equals operator.
- *
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2>
-inline CONSTEXPR bool operator<=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR bool operator<=(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return !operator>(lhs, rhs);
 }
@@ -405,34 +315,19 @@ inline CONSTEXPR bool operator<=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXC
 /**
  * @brief Greater operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR bool operator>(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
-{
-    return operator<(rhs, lhs);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Greater operator.
- *
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2>
-inline CONSTEXPR bool operator>(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR bool operator>(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return operator<(rhs, lhs);
 }
@@ -442,34 +337,19 @@ inline CONSTEXPR bool operator>(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCE
 /**
  * @brief Greater equals operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR bool operator>=(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
-{
-    return !operator<(lhs, rhs);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Greater equals operator.
- *
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2>
-inline CONSTEXPR bool operator>=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR bool operator>=(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return !operator<(lhs, rhs);
 }
@@ -479,15 +359,20 @@ inline CONSTEXPR bool operator>=(Derived<T1, T2> lhs, Derived<T1, T2> rhs) NOEXC
 /**
  * @brief Addition operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR Base<BaseSI> operator+(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR
+Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator+(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return lhs += rhs;
 }
@@ -495,17 +380,22 @@ inline CONSTEXPR Base<BaseSI> operator+(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEX
 /* ************************************************************************ */
 
 /**
- * @brief Substract operator.
+ * @brief Substraction operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR Base<BaseSI> operator-(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR
+Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator-(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return lhs -= rhs;
 }
@@ -513,17 +403,21 @@ inline CONSTEXPR Base<BaseSI> operator-(Base<BaseSI> lhs, Base<BaseSI> rhs) NOEX
 /* ************************************************************************ */
 
 /**
- * @brief Multiply operator.
+ * @brief Multiplication operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR Base<BaseSI> operator*(Base<BaseSI> lhs, float rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR
+Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator*(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type rhs) NOEXCEPT
 {
     return lhs *= rhs;
 }
@@ -531,17 +425,22 @@ inline CONSTEXPR Base<BaseSI> operator*(Base<BaseSI> lhs, float rhs) NOEXCEPT
 /* ************************************************************************ */
 
 /**
- * @brief Multiply operator.
+ * @brief Multiplication operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR Base<BaseSI> operator*(float lhs, Base<BaseSI> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR
+Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator*(
+    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return rhs *= lhs;
 }
@@ -549,119 +448,28 @@ inline CONSTEXPR Base<BaseSI> operator*(float lhs, Base<BaseSI> rhs) NOEXCEPT
 /* ************************************************************************ */
 
 /**
- * @brief Multiply operator.
+ * @brief Multiplication operator.
  *
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2>
-inline CONSTEXPR Derived<T1, T2> operator*(Derived<T1, T2> lhs, float rhs) NOEXCEPT
-{
-    return lhs *= rhs;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Multiply operator.
- *
- * @tparam T1
- * @tparam T2
+ * @tparam Nominators1   A list of nominators.
+ * @tparam Denominators1 A list of denominators.
+ * @tparam Nominators2   A list of nominators.
+ * @tparam Denominators2 A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<typename T1, typename T2>
-inline CONSTEXPR Derived<T1, T2> operator*(float lhs, Derived<T1, T2> rhs) NOEXCEPT
+template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
+inline CONSTEXPR
+Unit<Nominator<Nominators1..., Nominators2...>, Denominator<Denominators1..., Denominators2...>> operator*(
+    Unit<Nominator<Nominators1...>, Denominator<Denominators1...>> lhs,
+    Unit<Nominator<Nominators2...>, Denominator<Denominators2...>> rhs
+) NOEXCEPT
 {
-    return rhs *= lhs;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Multiply operator.
- *
- * @tparam BaseSI1 Basic SI unit type.
- * @tparam BaseSI2 Basic SI unit type.
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<SI BaseSI1, SI BaseSI2>
-inline CONSTEXPR Derived<Base<BaseSI1>, Base<BaseSI2>> operator*(Base<BaseSI1> lhs, Base<BaseSI2> rhs) NOEXCEPT
-{
-    return Derived<Base<BaseSI1>, Base<BaseSI2>>{rhs.value() * lhs.value()};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Multiply operator.
- *
- * @tparam BaseSI Basic SI unit type.
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<SI BaseSI, typename T1, typename T2>
-inline CONSTEXPR Derived<Base<BaseSI>, Derived<T1, T2>> operator*(Base<BaseSI> lhs, Derived<T1, T2> rhs) NOEXCEPT
-{
-    return Derived<Base<BaseSI>, Derived<T1, T2>>{rhs.value() * lhs.value()};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Multiply operator.
- *
- * @tparam T1
- * @tparam T2
- * @tparam BaseSI Basic SI unit type.
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2, SI BaseSI>
-inline CONSTEXPR Derived<Derived<T1, T2>, Base<BaseSI>> operator*(Derived<T1, T2> lhs, Base<BaseSI> rhs) NOEXCEPT
-{
-    return Derived<Derived<T1, T2>, Base<BaseSI>>{rhs.value() * lhs.value()};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Multiply operator.
- *
- * @tparam T11
- * @tparam T12
- * @tparam T21
- * @tparam T22
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T11, typename T12, typename T21, typename T22>
-inline CONSTEXPR Derived<Derived<T11, T12>, Derived<T21, T22>> operator*(Derived<T11, T12> lhs, Derived<T21, T22> rhs) NOEXCEPT
-{
-    return Derived<Derived<T11, T12>, Derived<T21, T22>>{rhs.value() * lhs.value()};
+    return Unit<Nominator<Nominators1..., Nominators2...>, Denominator<Denominators1..., Denominators2...>>{
+        rhs.value() * lhs.value()
+    };
 }
 
 /* ************************************************************************ */
@@ -669,15 +477,20 @@ inline CONSTEXPR Derived<Derived<T11, T12>, Derived<T21, T22>> operator*(Derived
 /**
  * @brief Dividing operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR Base<BaseSI> operator/(Base<BaseSI> lhs, float rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR
+Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator/(
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
+    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type rhs
+) NOEXCEPT
 {
     return lhs /= rhs;
 }
@@ -687,15 +500,20 @@ inline CONSTEXPR Base<BaseSI> operator/(Base<BaseSI> lhs, float rhs) NOEXCEPT
 /**
  * @brief Dividing operator.
  *
- * @tparam BaseSI Basic SI unit type.
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI>
-inline CONSTEXPR Base<BaseSI> operator/(float lhs, Base<BaseSI> rhs) NOEXCEPT
+template<typename... Nominators, typename... Denominators>
+inline CONSTEXPR
+Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator/(
+    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type lhs,
+    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+) NOEXCEPT
 {
     return rhs /= lhs;
 }
@@ -705,79 +523,26 @@ inline CONSTEXPR Base<BaseSI> operator/(float lhs, Base<BaseSI> rhs) NOEXCEPT
 /**
  * @brief Dividing operator.
  *
- * @tparam BaseSI1 Basic SI unit type.
- * @tparam BaseSI2 Basic SI unit type.
+ * @tparam Nominators1   A list of nominators.
+ * @tparam Denominators1 A list of denominators.
+ * @tparam Nominators2   A list of nominators.
+ * @tparam Denominators2 A list of denominators.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result value.
  */
-template<SI BaseSI1, SI BaseSI2>
-inline CONSTEXPR Derived<Base<BaseSI1>, Divide<Base<BaseSI2>>> operator/(Base<BaseSI1> lhs, Base<BaseSI2> rhs) NOEXCEPT
+template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
+inline CONSTEXPR
+Unit<Nominator<Nominators1..., Denominators2...>, Denominator<Denominators1..., Nominators2...>> operator/(
+    Unit<Nominator<Nominators1...>, Denominator<Denominators1...>> lhs,
+    Unit<Nominator<Nominators2...>, Denominator<Denominators2...>> rhs
+) NOEXCEPT
 {
-    return Derived<Base<BaseSI1>, Divide<Base<BaseSI2>>>{rhs.value() / lhs.value()};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Dividing operator.
- *
- * @tparam BaseSI Basic SI unit type.
- * @tparam T1
- * @tparam T2
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<SI BaseSI, typename T1, typename T2>
-inline CONSTEXPR Derived<Base<BaseSI>, Divide<Derived<T1, T2>>> operator/(Base<BaseSI> lhs, Derived<T1, T2> rhs) NOEXCEPT
-{
-    return Derived<Base<BaseSI>, Divide<Derived<T1, T2>>>{rhs.value() / lhs.value()};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Dividing operator.
- *
- * @tparam T1
- * @tparam T2
- * @tparam BaseSI Basic SI unit type.
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T1, typename T2, SI BaseSI>
-inline CONSTEXPR Derived<Derived<T1, T2>, Divide<Base<BaseSI>>> operator/(Derived<T1, T2> lhs, Base<BaseSI> rhs) NOEXCEPT
-{
-    return Derived<Derived<T1, T2>, Divide<Base<BaseSI>>>{rhs.value() / lhs.value()};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Dividing operator.
- *
- * @tparam T11
- * @tparam T12
- * @tparam T21
- * @tparam T22
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return Result value.
- */
-template<typename T11, typename T12, typename T21, typename T22>
-inline CONSTEXPR Derived<Derived<T11, T12>, Divide<Derived<T21, T22>>> operator/(Derived<T11, T12> lhs, Derived<T21, T22> rhs) NOEXCEPT
-{
-    return Derived<Derived<T11, T12>, Divide<Derived<T21, T22>>>{rhs.value() / lhs.value()};
+    return Unit<Nominator<Nominators1..., Denominators2...>, Denominator<Denominators1..., Nominators2...>>{
+        rhs.value() / lhs.value()
+    };
 }
 
 /* ************************************************************************ */
@@ -785,21 +550,21 @@ inline CONSTEXPR Derived<Derived<T11, T12>, Divide<Derived<T21, T22>>> operator/
 /**
  * @brief Class for representing distance (meters).
  */
-using Length = Base<SI::Length>;
+using Length = Unit<Nominator<BaseLength>, Denominator<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing mass (kilograms).
  */
-using Mass = Base<SI::Mass>;
+using Mass = Unit<Nominator<BaseMass>, Denominator<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing time (seconds).
  */
-using Time = Base<SI::Time>;
+using Time = Unit<Nominator<BaseTime>, Denominator<>>;
 using Duration = Time;
 
 /* ************************************************************************ */
@@ -807,42 +572,42 @@ using Duration = Time;
 /**
  * @brief Class for representing area.
  */
-using Area = Derived<Length, Length>;
+using Area = Unit<Nominator<BaseLength, BaseLength>, Denominator<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing volume.
  */
-using Volume = Derived<Area, Length>;
+using Volume = Unit<Nominator<BaseLength, BaseLength, BaseLength>, Denominator<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing velocity (micrometers per second).
  */
-using Velocity = Derived<Length, Divide<Time>>;
+using Velocity = Unit<Nominator<BaseLength>, Denominator<BaseTime>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing acceleration (micrometers per second^2).
  */
-using Acceleration = Derived<Velocity, Divide<Time>>;
+using Acceleration = Unit<Nominator<BaseLength>, Denominator<BaseTime, BaseTime>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing force (Newton).
  */
-using Force = Derived<Mass, Acceleration>;
+using Force = Unit<Nominator<BaseMass, BaseLength>, Denominator<BaseTime, BaseTime>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing density.
  */
-using Density = Derived<Mass, Volume>;
+using Density = Unit<Nominator<BaseMass>, Denominator<BaseLength, BaseLength, BaseLength>>;
 
 /* ************************************************************************ */
 
