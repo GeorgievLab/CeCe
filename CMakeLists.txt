@@ -141,7 +141,7 @@ set(DYNAMIC_MODULES ${MODULES})
 
 # Remove missing modules
 foreach (MODULE ${MODULES})
-    if (EXISTS "${CMAKE_SOURCE_DIR}/modules/${MODULE}")
+    if (EXISTS "${CMAKE_SOURCE_DIR}/libraries/${MODULE}")
         message("-- Module '${MODULE}' found, build")
     else ()
         message("-- Module '${MODULE}' not found, ignore")
@@ -173,7 +173,7 @@ add_subdirectory(simulator)
 
 # Modules
 foreach (MODULE ${MODULES})
-    add_subdirectory(modules/${MODULE})
+    add_subdirectory(libraries/${MODULE})
 endforeach ()
 
 # Build GUI project
