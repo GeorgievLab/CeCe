@@ -6,17 +6,17 @@
   <Project Name="render" Path="render/render.project"/>
   <Project Name="cli" Path="cli/cli.project" Active="No"/>
   <Project Name="parser" Path="parser/parser.project" Active="No"/>
-  <Project Name="diffusion" Path="modules/diffusion/diffusion.project" Active="No"/>
-  <Project Name="cell" Path="modules/cell/cell.project" Active="No"/>
+  <Project Name="diffusion" Path="libraries/diffusion/diffusion.project" Active="No"/>
+  <Project Name="cell" Path="libraries/cell/cell.project" Active="No"/>
   <Environment>
     <![CDATA[]]>
   </Environment>
   <Project Name="parser-xml" Path="parser-xml/parser-xml.project" Active="No"/>
-  <Project Name="picture" Path="modules/picture/picture.project" Active="No"/>
+  <Project Name="picture" Path="libraries/picture/picture.project" Active="No"/>
   <Project Name="tool-shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
-  <Project Name="cylinder-streamlines" Path="modules/cylinder-streamlines/cylinder-streamlines.project" Active="No"/>
-  <Project Name="python" Path="modules/python/python.project" Active="No"/>
-  <Project Name="diffusion-cylinder-streamlines" Path="modules/diffusion-cylinder-streamlines/diffusion-cylinder-streamlines.project" Active="No"/>
+  <Project Name="cylinder-streamlines" Path="libraries/cylinder-streamlines/cylinder-streamlines.project" Active="No"/>
+  <Project Name="python" Path="libraries/python/python.project" Active="No"/>
+  <Project Name="diffusion-cylinder-streamlines" Path="libraries/diffusion-cylinder-streamlines/diffusion-cylinder-streamlines.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
