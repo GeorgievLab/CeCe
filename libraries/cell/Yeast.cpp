@@ -28,6 +28,7 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) NO
     : CellBase(simulation, type)
 {
 	setVolume(units::um3(37));
+    // TODO: set density
 
     // Max 2 shapes
     auto& shapes = getMutableShapes();
@@ -59,12 +60,12 @@ void Yeast::update(units::Duration dt)
     {
         m_bud->volume += volumeAdd;
 
-		if (m_bud->volume >= units::um3(35))
+        if (m_bud->volume >= units::um3(35))
         {
             budRelease();
         }
     }
-	else if (getVolume() >= units::um3(42) && dist(eng))
+    else if (getVolume() >= units::um3(42) && dist(eng))
     {
         budCreate();
     }
@@ -100,7 +101,7 @@ void Yeast::budCreate()
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
     m_bud = Bud{};
-	m_bud->rotation = 2 * constants::PI * dist(eng);
+    m_bud->rotation = 2 * constants::PI * dist(eng);
 
     m_shapeForceUpdate = true;
 }
@@ -113,7 +114,7 @@ void Yeast::budRelease()
 
     // Calculate bud position
     const auto angle = getBody()->GetAngle();
-	const auto offset = Vector<float>(m_bud->shape.m_p.x, m_bud->shape.m_p.y);
+    const auto offset = Vector<float>(m_bud->shape.m_p.x, m_bud->shape.m_p.y);
 
     // Get current position
     const auto pos = getPosition() + offset.rotated(angle);
@@ -168,10 +169,10 @@ void Yeast::updateShape()
     auto& shapes = getMutableShapes();
 
     // Calculate new radius
-	const units::Length newRadius = calcSphereRadius(getVolume());
-	const units::Length oldRadius = m_shape.m_radius;
-	const units::Length newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : 0;
-	const units::Length oldBudRadius = m_bud ? m_bud->shape.m_radius : 0;
+    const units::Length newRadius = calcSphereRadius(getVolume());
+    const units::Length oldRadius = m_shape.m_radius;
+    const units::Length newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : 0;
+    const units::Length oldBudRadius = m_bud ? m_bud->shape.m_radius : 0;
 
     const bool needs_update = m_shapeForceUpdate ||
         ((newRadius - oldRadius) > MIN_CHANGE) ||
@@ -188,7 +189,7 @@ void Yeast::updateShape()
         if (shapes.size() != 2)
         {
             shapes.push_back(simulator::Shape::makeCircle(
-				newBudRadius, PositionVector{ 0, newRadius + newBudRadius })
+                newBudRadius, PositionVector{ 0, newRadius + newBudRadius })
             );
         }
         else
@@ -219,7 +220,7 @@ void Yeast::updateShape()
     // Update main yeast shape
     {
         m_shape.m_radius = newRadius;
-        getBody()->CreateFixture(&m_shape, 1.0f);
+        getBody()->CreateFixture(&m_shape, getDensity());
     }
 
     // Update bud shape
@@ -234,7 +235,7 @@ void Yeast::updateShape()
             distance * std::sin(m_bud->rotation),
             distance * std::cos(m_bud->rotation)
         );
-        getBody()->CreateFixture(&m_bud->shape, 1.0f);
+        getBody()->CreateFixture(&m_bud->shape, getDensity());
     }
 
     m_shapeForceUpdate = false;

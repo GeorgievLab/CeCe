@@ -25,11 +25,7 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) NOEX
     b2CircleShape shape;
     shape.m_radius = getRadius();
 
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &shape;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
-    getBody()->CreateFixture(&fixtureDef);
+    getBody()->CreateFixture(&shape, getDensity());
 #endif
 
     // Create initial shape
@@ -52,12 +48,7 @@ void Cell::update(units::Duration dt)
     b2Fixture* fixture = getBody()->GetFixtureList();
     assert(fixture);
     getBody()->DestroyFixture(fixture);
-
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &shape;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.3f;
-    getBody()->CreateFixture(&fixtureDef);
+    getBody()->CreateFixture(&shape, getDensity());
 #endif
 
     // Update shape
