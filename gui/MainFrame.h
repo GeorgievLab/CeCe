@@ -164,7 +164,7 @@ protected:
      *
      * @param event
      */
-    void OnSimulationStop(wxCommandEvent& event) override;
+    void OnSimulationPause(wxCommandEvent& event) override;
 
 
     /**

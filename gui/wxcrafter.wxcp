@@ -891,15 +891,15 @@
          "m_properties": [{
            "type": "winid",
            "m_label": "ID:",
-           "m_winid": "ID_STOP"
+           "m_winid": "ID_PAUSE"
           }, {
            "type": "string",
            "m_label": "Name:",
-           "m_value": "m_menuItemSimulationStop"
+           "m_value": "m_menuItemSimulationPause"
           }, {
            "type": "string",
            "m_label": "Label:",
-           "m_value": "Sto&p"
+           "m_value": "&Pause"
           }, {
            "type": "string",
            "m_label": "Shortcut:",
@@ -933,7 +933,7 @@
            "m_eventName": "wxEVT_COMMAND_MENU_SELECTED",
            "m_eventClass": "wxCommandEvent",
            "m_eventHandler": "wxCommandEventHandler",
-           "m_functionNameAndSignature": "OnSimulationStop(wxCommandEvent& event)",
+           "m_functionNameAndSignature": "OnSimulationPause(wxCommandEvent& event)",
            "m_description": "Menu item has been clicked",
            "m_noBody": false
           }],
@@ -1404,7 +1404,14 @@
          "m_label": "Construct the Dropdown Menu:",
          "m_value": true
         }],
-       "m_events": [],
+       "m_events": [{
+         "m_eventName": "wxEVT_COMMAND_TOOL_CLICKED",
+         "m_eventClass": "wxCommandEvent",
+         "m_eventHandler": "wxCommandEventHandler",
+         "m_functionNameAndSignature": "OnSimulationStart(wxCommandEvent& event)",
+         "m_description": "Process a wxEVT_COMMAND_TOOL_CLICKED event (a synonym for wxEVT_COMMAND_MENU_SELECTED). Pass the id of the tool",
+         "m_noBody": false
+        }],
        "m_children": []
       }, {
        "m_type": 4462,
@@ -1417,15 +1424,15 @@
        "m_properties": [{
          "type": "winid",
          "m_label": "ID:",
-         "m_winid": "ID_STOP"
+         "m_winid": "ID_PAUSE"
         }, {
          "type": "string",
          "m_label": "Name:",
-         "m_value": "m_toolbarItemStop"
+         "m_value": "m_toolbarItemPause"
         }, {
          "type": "string",
          "m_label": "Label:",
-         "m_value": "Stop"
+         "m_value": "Pause"
         }, {
          "type": "multi-string",
          "m_label": "Tooltip:",
@@ -1452,7 +1459,14 @@
          "m_label": "Construct the Dropdown Menu:",
          "m_value": true
         }],
-       "m_events": [],
+       "m_events": [{
+         "m_eventName": "wxEVT_COMMAND_TOOL_CLICKED",
+         "m_eventClass": "wxCommandEvent",
+         "m_eventHandler": "wxCommandEventHandler",
+         "m_functionNameAndSignature": "OnSimulationPause(wxCommandEvent& event)",
+         "m_description": "Process a wxEVT_COMMAND_TOOL_CLICKED event (a synonym for wxEVT_COMMAND_MENU_SELECTED). Pass the id of the tool",
+         "m_noBody": false
+        }],
        "m_children": []
       }, {
        "m_type": 4462,

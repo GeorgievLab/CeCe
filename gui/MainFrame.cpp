@@ -233,7 +233,7 @@ void MainFrame::OnSimulationStart(wxCommandEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnSimulationStop(wxCommandEvent& event)
+void MainFrame::OnSimulationPause(wxCommandEvent& event)
 {
     m_simulatorThread.SendStop();
 }
@@ -523,3 +523,4 @@ int MainFrame::UnsplitCode()
 }
 
 /* ************************************************************************ */
+

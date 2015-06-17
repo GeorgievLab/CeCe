@@ -30,21 +30,15 @@
 #include <wx/statline.h>
 #include <wx/button.h>
 #include <wx/listbox.h>
-#if wxVERSION_NUMBER >= 2900
-#include <wx/persist.h>
-#include <wx/persist/toplevel.h>
-#include <wx/persist/bookctrl.h>
-#include <wx/persist/treebook.h>
-#endif
 
 class MainFrameBaseClass : public wxFrame
 {
 public:
     enum {
-        ID_RESTART = 1001,
-        ID_START = 1002,
-        ID_STEP = 1003,
-        ID_STOP = 1004,
+        ID_PAUSE = 1001,
+        ID_RESTART = 1002,
+        ID_START = 1003,
+        ID_STEP = 1004,
     };
 protected:
     wxMenuBar* m_menuBar;
@@ -64,7 +58,7 @@ protected:
     wxMenuItem* m_menuItemViewCode;
     wxMenu* m_menuSimulation;
     wxMenuItem* m_menuItemSimulationStart;
-    wxMenuItem* m_menuItemSimulationStop;
+    wxMenuItem* m_menuItemSimulationPause;
     wxMenuItem* m_menuItemSimulationStep;
     wxMenuItem* m_menuItemSimulationRestart;
     wxMenuItem* m_menuItemSimulationSep1;
@@ -99,7 +93,7 @@ protected:
     virtual void OnSimulationStart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationNotRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
     virtual void OnSimulationRunningUpdateUi(wxUpdateUIEvent& event) { event.Skip(); }
-    virtual void OnSimulationStop(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnSimulationPause(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationStep(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationRestart(wxCommandEvent& event) { event.Skip(); }
     virtual void OnSimulationScreenshot(wxCommandEvent& event) { event.Skip(); }
@@ -109,18 +103,6 @@ protected:
     virtual void OnCodeChange(wxStyledTextEvent& event) { event.Skip(); }
 
 public:
-    wxMenuBar* GetMenuBar() { return m_menuBar; }
-    wxToolBar* GetMainToolbar() { return m_mainToolbar; }
-    CanvasWidget* GetGlCanvasView() { return m_glCanvasView; }
-    wxPanel* GetSplitterPageView() { return m_splitterPageView; }
-    wxStyledTextCtrl* GetStcCode() { return m_stcCode; }
-    wxPanel* GetSplitterPageCode() { return m_splitterPageCode; }
-    wxSplitterWindow* GetSplitterTop() { return m_splitterTop; }
-    wxPanel* GetSplitterPageTop() { return m_splitterPageTop; }
-    wxTextCtrl* GetTextCtrlLog() { return m_textCtrlLog; }
-    wxPanel* GetSplitterPageBottom() { return m_splitterPageBottom; }
-    wxSplitterWindow* GetSplitterMain() { return m_splitterMain; }
-    wxStatusBar* GetStatusBar() { return m_statusBar; }
     MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Cell simulator"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800,600), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
@@ -143,14 +125,6 @@ protected:
 protected:
 
 public:
-    wxStaticBitmap* GetStaticBitmapHeader() { return m_staticBitmapHeader; }
-    wxStaticText* GetStaticTextAppName() { return m_staticTextAppName; }
-    wxStaticText* GetStaticTextVersion() { return m_staticTextVersion; }
-    wxStaticText* GetStaticTextBuild() { return m_staticTextBuild; }
-    wxStaticText* GetStaticTextCopyright() { return m_staticTextCopyright; }
-    wxHyperlinkCtrl* GetHyperLinkWeb() { return m_hyperLinkWeb; }
-    wxPanel* GetPanelContent() { return m_panelContent; }
-    wxStaticLine* GetStaticLineSeparator() { return m_staticLineSeparator; }
     AboutDialogBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("About"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,400), long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~AboutDialogBaseClass();
 };
@@ -167,7 +141,6 @@ protected:
     virtual void OnInitDialog(wxInitDialogEvent& event) { event.Skip(); }
 
 public:
-    wxListBox* GetListBoxModules() { return m_listBoxModules; }
     ModulesDialogBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Modules"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(500,300), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
     virtual ~ModulesDialogBase();
 };

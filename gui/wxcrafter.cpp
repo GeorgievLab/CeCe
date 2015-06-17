@@ -73,8 +73,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuItemSimulationStart = new wxMenuItem(m_menuSimulation, ID_START, _("&Start\tF5"), wxT(""), wxITEM_NORMAL);
     m_menuSimulation->Append(m_menuItemSimulationStart);
     
-    m_menuItemSimulationStop = new wxMenuItem(m_menuSimulation, ID_STOP, _("Sto&p\tF6"), wxT(""), wxITEM_NORMAL);
-    m_menuSimulation->Append(m_menuItemSimulationStop);
+    m_menuItemSimulationPause = new wxMenuItem(m_menuSimulation, ID_PAUSE, _("&Pause\tF6"), wxT(""), wxITEM_NORMAL);
+    m_menuSimulation->Append(m_menuItemSimulationPause);
     
     m_menuItemSimulationStep = new wxMenuItem(m_menuSimulation, ID_STEP, _("S&tep\tF7"), wxT(""), wxITEM_NORMAL);
     m_menuSimulation->Append(m_menuItemSimulationStep);
@@ -103,7 +103,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_mainToolbar->AddTool(ID_START, _("Start"), wxXmlResource::Get()->LoadBitmap(wxT("play-24")), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     
-    m_mainToolbar->AddTool(ID_STOP, _("Stop"), wxXmlResource::Get()->LoadBitmap(wxT("stop-24")), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
+    m_mainToolbar->AddTool(ID_PAUSE, _("Pause"), wxXmlResource::Get()->LoadBitmap(wxT("stop-24")), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     
     m_mainToolbar->AddTool(ID_STEP, _("Step"), wxXmlResource::Get()->LoadBitmap(wxT("step-24")), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     
@@ -214,13 +214,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
     // Connect events
     this->Connect(m_menuItemFileNew->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileNew), NULL, this);
     this->Connect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
@@ -234,8 +227,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemViewCode->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewCodeChecked), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Connect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
-    this->Connect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
-    this->Connect(m_menuItemSimulationStop->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStop), NULL, this);
+    this->Connect(m_menuItemSimulationPause->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
+    this->Connect(m_menuItemSimulationPause->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationPause), NULL, this);
     this->Connect(m_menuItemSimulationStep->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Connect(m_menuItemSimulationStep->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Connect(m_menuItemSimulationRestart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
@@ -243,6 +236,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemSimulationScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationScreenshot), NULL, this);
     this->Connect(m_menuItemHelpModules->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpModules), NULL, this);
     this->Connect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpAbout), NULL, this);
+    this->Connect(ID_START, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
+    this->Connect(ID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationPause), NULL, this);
     this->Connect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Connect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
     m_stcCode->Connect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnCodeUpdateUi), NULL, this);
@@ -264,8 +259,8 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemViewCode->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnViewCodeChecked), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Disconnect(m_menuItemSimulationStart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
-    this->Disconnect(m_menuItemSimulationStop->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
-    this->Disconnect(m_menuItemSimulationStop->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStop), NULL, this);
+    this->Disconnect(m_menuItemSimulationPause->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationRunningUpdateUi), NULL, this);
+    this->Disconnect(m_menuItemSimulationPause->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationPause), NULL, this);
     this->Disconnect(m_menuItemSimulationStep->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Disconnect(m_menuItemSimulationStep->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Disconnect(m_menuItemSimulationRestart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
@@ -273,6 +268,8 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemSimulationScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationScreenshot), NULL, this);
     this->Disconnect(m_menuItemHelpModules->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpModules), NULL, this);
     this->Disconnect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpAbout), NULL, this);
+    this->Disconnect(ID_START, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
+    this->Disconnect(ID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationPause), NULL, this);
     this->Disconnect(ID_STEP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStep), NULL, this);
     this->Disconnect(ID_RESTART, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
     m_stcCode->Disconnect(wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnCodeUpdateUi), NULL, this);
@@ -357,13 +354,6 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
 }
 
 AboutDialogBaseClass::~AboutDialogBaseClass()
@@ -404,13 +394,6 @@ ModulesDialogBase::ModulesDialogBase(wxWindow* parent, wxWindowID id, const wxSt
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
     // Connect events
     this->Connect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(ModulesDialogBase::OnInitDialog), NULL, this);
     
