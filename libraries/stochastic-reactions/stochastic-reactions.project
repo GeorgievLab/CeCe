@@ -18,17 +18,11 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
-    <File Name="Degradation.cpp"/>
-    <File Name="Expression.cpp"/>
-    <File Name="Assembly.cpp"/>
-    <File Name="Disassembly.cpp"/>
+    <File Name="Reactions.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Library.hpp"/>
-    <File Name="Degradation.hpp"/>
-    <File Name="Expression.hpp"/>
-    <File Name="Assembly.hpp"/>
-    <File Name="Disassembly.hpp"/>
+    <File Name="Reactions.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
