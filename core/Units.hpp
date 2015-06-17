@@ -10,6 +10,9 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <type_traits>
+
 // Simulator
 #include "core/compatibility.hpp"
 
@@ -35,36 +38,20 @@ struct BaseMass {};
 /* ************************************************************************ */
 
 /**
- * @brief Unit nominator.
+ * @brief List of types.
  *
- * @tparam Types A list of nominator types.
+ * @tparam Types A list of types.
  */
 template<typename... Types>
-struct Nominator
-{
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Unit denominator.
- *
- * @tparam Types A list of denominator types.
- */
-template<typename... Types>
-struct Denominator
-{
-
-};
+struct List {};
 
 /* ************************************************************************ */
 
 /**
  * @brief SI Unit.
  *
- * @tparam Nom   Nominator type.
- * @tparam Denom Denominator type.
+ * @tparam Nom   List type.
+ * @tparam Denom List type.
  */
 template<typename Nom, typename Denom>
 struct Unit
@@ -76,10 +63,10 @@ public:
     /// Value type.
     using value_type = float;
 
-    /// Nominator type.
+    /// List type.
     using nominator = Nom;
 
-    /// Denominator type.
+    /// List type.
     using denominator = Denom;
 
 
@@ -225,6 +212,86 @@ private:
 /* ************************************************************************ */
 
 /**
+ * @brief Helper class to simplify units.
+ */
+template<typename Nom, typename Denom>
+struct SimplifyInternal;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to simplify units.
+ *
+ * @tparam T Type in both lists.
+ */
+template<typename T>
+struct SimplifyInternal<List<T>, List<T>>
+{
+    using type = Unit<List<>, List<>>::value_type;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to simplify units.
+ *
+ * @tparam T            Type in both lists.
+ * @tparam Nominators   List types.
+ * @tparam Denominators List types.
+ */
+template<typename T, typename... Nominators, typename... Denominators>
+struct SimplifyInternal<List<T, Nominators...>, List<T, Denominators...>>
+{
+    using type = Unit<List<Nominators...>, List<Denominators...>>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to simplify units.
+ *
+ * @tparam Nominators   List types.
+ * @tparam Denominators List types.
+ */
+template<typename... Nominators, typename... Denominators>
+struct SimplifyInternal<List<Nominators...>, List<Denominators...>>
+{
+    using type = Unit<List<Nominators...>, List<Denominators...>>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to simplify units.
+ *
+ * @tparam Nom   Nominators.
+ * @tparam Denom Denominators.
+ */
+template<typename Nom, typename Denom>
+struct Simplify;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to simplify units.
+ *
+ * Type removes shared types in nominator and denominator.
+ *
+ * @tparam Nominators   List types.
+ * @tparam Denominators List types.
+ */
+template<typename... Nominators, typename... Denominators>
+struct Simplify<List<Nominators...>, List<Denominators...>>
+{
+    using type = typename SimplifyInternal<
+        List<Nominators...>,
+        List<Denominators...>
+    >::type;
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Compare operator.
  *
  * @tparam Nominators   A list of nominators.
@@ -237,8 +304,8 @@ private:
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR bool operator==(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return lhs.value() == rhs.value();
@@ -259,8 +326,8 @@ inline CONSTEXPR bool operator==(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR bool operator!=(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return !operator==(lhs, rhs);
@@ -281,8 +348,8 @@ inline CONSTEXPR bool operator!=(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR bool operator<(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return lhs.value() < rhs.value();
@@ -303,8 +370,8 @@ inline CONSTEXPR bool operator<(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR bool operator<=(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return !operator>(lhs, rhs);
@@ -325,8 +392,8 @@ inline CONSTEXPR bool operator<=(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR bool operator>(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return operator<(rhs, lhs);
@@ -347,8 +414,8 @@ inline CONSTEXPR bool operator>(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR bool operator>=(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return !operator<(lhs, rhs);
@@ -369,9 +436,9 @@ inline CONSTEXPR bool operator>=(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR
-Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator+(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+Unit<List<Nominators...>, List<Denominators...>> operator+(
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return lhs += rhs;
@@ -392,9 +459,9 @@ Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator+(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR
-Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator-(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+Unit<List<Nominators...>, List<Denominators...>> operator-(
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return lhs -= rhs;
@@ -415,9 +482,9 @@ Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator-(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR
-Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator*(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type rhs) NOEXCEPT
+Unit<List<Nominators...>, List<Denominators...>> operator*(
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    typename Unit<List<Nominators...>, List<Denominators...>>::value_type rhs) NOEXCEPT
 {
     return lhs *= rhs;
 }
@@ -437,9 +504,9 @@ Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator*(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR
-Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator*(
-    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+Unit<List<Nominators...>, List<Denominators...>> operator*(
+    typename Unit<List<Nominators...>, List<Denominators...>>::value_type lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return rhs *= lhs;
@@ -462,12 +529,12 @@ Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator*(
  */
 template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
 inline CONSTEXPR
-Unit<Nominator<Nominators1..., Nominators2...>, Denominator<Denominators1..., Denominators2...>> operator*(
-    Unit<Nominator<Nominators1...>, Denominator<Denominators1...>> lhs,
-    Unit<Nominator<Nominators2...>, Denominator<Denominators2...>> rhs
+typename Simplify<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type operator*(
+    Unit<List<Nominators1...>, List<Denominators1...>> lhs,
+    Unit<List<Nominators2...>, List<Denominators2...>> rhs
 ) NOEXCEPT
 {
-    return Unit<Nominator<Nominators1..., Nominators2...>, Denominator<Denominators1..., Denominators2...>>{
+    return typename Simplify<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type{
         rhs.value() * lhs.value()
     };
 }
@@ -487,9 +554,9 @@ Unit<Nominator<Nominators1..., Nominators2...>, Denominator<Denominators1..., De
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR
-Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator/(
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> lhs,
-    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type rhs
+Unit<List<Nominators...>, List<Denominators...>> operator/(
+    Unit<List<Nominators...>, List<Denominators...>> lhs,
+    typename Unit<List<Nominators...>, List<Denominators...>>::value_type rhs
 ) NOEXCEPT
 {
     return lhs /= rhs;
@@ -510,9 +577,9 @@ Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator/(
  */
 template<typename... Nominators, typename... Denominators>
 inline CONSTEXPR
-Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator/(
-    typename Unit<Nominator<Nominators...>, Denominator<Denominators...>>::value_type lhs,
-    Unit<Nominator<Nominators...>, Denominator<Denominators...>> rhs
+Unit<List<Nominators...>, List<Denominators...>> operator/(
+    typename Unit<List<Nominators...>, List<Denominators...>>::value_type lhs,
+    Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
     return rhs /= lhs;
@@ -535,12 +602,12 @@ Unit<Nominator<Nominators...>, Denominator<Denominators...>> operator/(
  */
 template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
 inline CONSTEXPR
-Unit<Nominator<Nominators1..., Denominators2...>, Denominator<Denominators1..., Nominators2...>> operator/(
-    Unit<Nominator<Nominators1...>, Denominator<Denominators1...>> lhs,
-    Unit<Nominator<Nominators2...>, Denominator<Denominators2...>> rhs
+typename Simplify<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type operator/(
+    Unit<List<Nominators1...>, List<Denominators1...>> lhs,
+    Unit<List<Nominators2...>, List<Denominators2...>> rhs
 ) NOEXCEPT
 {
-    return Unit<Nominator<Nominators1..., Denominators2...>, Denominator<Denominators1..., Nominators2...>>{
+    return typename Simplify<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type{
         rhs.value() / lhs.value()
     };
 }
@@ -550,21 +617,21 @@ Unit<Nominator<Nominators1..., Denominators2...>, Denominator<Denominators1..., 
 /**
  * @brief Class for representing distance (meters).
  */
-using Length = Unit<Nominator<BaseLength>, Denominator<>>;
+using Length = Unit<List<BaseLength>, List<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing mass (kilograms).
  */
-using Mass = Unit<Nominator<BaseMass>, Denominator<>>;
+using Mass = Unit<List<BaseMass>, List<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing time (seconds).
  */
-using Time = Unit<Nominator<BaseTime>, Denominator<>>;
+using Time = Unit<List<BaseTime>, List<>>;
 using Duration = Time;
 
 /* ************************************************************************ */
@@ -572,42 +639,42 @@ using Duration = Time;
 /**
  * @brief Class for representing area.
  */
-using Area = Unit<Nominator<BaseLength, BaseLength>, Denominator<>>;
+using Area = Unit<List<BaseLength, BaseLength>, List<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing volume.
  */
-using Volume = Unit<Nominator<BaseLength, BaseLength, BaseLength>, Denominator<>>;
+using Volume = Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing velocity (micrometers per second).
  */
-using Velocity = Unit<Nominator<BaseLength>, Denominator<BaseTime>>;
+using Velocity = Unit<List<BaseLength>, List<BaseTime>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing acceleration (micrometers per second^2).
  */
-using Acceleration = Unit<Nominator<BaseLength>, Denominator<BaseTime, BaseTime>>;
+using Acceleration = Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing force (Newton).
  */
-using Force = Unit<Nominator<BaseMass, BaseLength>, Denominator<BaseTime, BaseTime>>;
+using Force = Unit<List<BaseMass, BaseLength>, List<BaseTime, BaseTime>>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing density.
  */
-using Density = Unit<Nominator<BaseMass>, Denominator<BaseLength, BaseLength, BaseLength>>;
+using Density = Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
 
 /* ************************************************************************ */
 
@@ -1038,6 +1105,35 @@ inline CONSTEXPR Probability precent(float value) NOEXCEPT
 {
     return value / 100.f;
 }
+
+/* ************************************************************************ */
+
+static_assert(std::is_same<
+    Simplify<List<BaseLength>, List<BaseLength>>::type,
+    //Unit<List<>, List<>>::value_type
+    float
+>::value, "");
+
+/* ************************************************************************ */
+
+static_assert(std::is_same<
+    Simplify<List<BaseLength, BaseMass>, List<BaseLength>>::type,
+    Unit<List<BaseMass>, List<>>
+>::value, "");
+
+/* ************************************************************************ */
+
+static_assert(std::is_same<
+    Simplify<List<BaseMass, BaseLength>, List<BaseLength>>::type,
+    Unit<List<BaseMass>, List<>>
+>::value, "");
+
+/* ************************************************************************ */
+
+static_assert(std::is_same<
+    Simplify<List<BaseMass, BaseLength>, List<BaseLength, BaseLength>>::type,
+    Unit<List<BaseMass>, List<BaseLength>>
+>::value, "");
 
 /* ************************************************************************ */
 
