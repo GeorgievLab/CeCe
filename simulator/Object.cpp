@@ -272,10 +272,17 @@ void Object::update(units::Duration dt)
 
 void Object::configure(const Configuration& config, Simulation& simulation)
 {
+    // Set object position
     config.callIfSetString("position", [this](const String& value) {
         setPosition(parser::parse_vector<units::Length>(value));
     });
 
+    // Set object density
+    config.callIfSetString("density", [this](const String& value) {
+        setDensity(parser::parse_value<units::Density>(value));
+    });
+
+    // Set object programs
     config.callIfSetString("programs", [this, &simulation](const String& value) {
         for (const auto& name : split(value, ' '))
         {

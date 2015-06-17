@@ -209,6 +209,17 @@ public:
 
 
     /**
+     * @brief Returns current object density.
+     *
+     * @return
+     */
+    units::Density getDensity() const NOEXCEPT
+    {
+        return m_density;
+    }
+
+
+    /**
      * @brief Returns current position.
      *
      * @return
@@ -292,6 +303,17 @@ public:
      * @return
      */
     void setType(Type type) NOEXCEPT;
+
+
+    /**
+     * @brief Set object density.
+     *
+     * @param density New density value.
+     */
+    void setDensity(units::Density density) NOEXCEPT
+    {
+        m_density = density;
+    }
 
 
     /**
@@ -476,6 +498,9 @@ private:
 
     /// Registered object programs.
     DynamicArray<Program> m_programs;
+
+    /// Object density.
+    units::Density m_density = units::Density(1); // FIXME: use better value
 
 #if ENABLE_PHYSICS
     /// Physics body.
