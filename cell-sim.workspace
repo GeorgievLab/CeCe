@@ -17,7 +17,7 @@
   <Project Name="cylinder-streamlines" Path="libraries/cylinder-streamlines/cylinder-streamlines.project" Active="No"/>
   <Project Name="python" Path="libraries/python/python.project" Active="No"/>
   <Project Name="diffusion-cylinder-streamlines" Path="libraries/diffusion-cylinder-streamlines/diffusion-cylinder-streamlines.project" Active="No"/>
-  <Project Name="streamlines" Path="modules/streamlines/streamlines.project" Active="No"/>
+  <Project Name="streamlines" Path="libraries/streamlines/streamlines.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
