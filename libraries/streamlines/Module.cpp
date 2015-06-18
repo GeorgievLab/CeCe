@@ -152,12 +152,12 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         {
             // Cell alias
             const auto& cell = m_lattice[{x + 1, y + 1}];
-            const Coordinate coord{x, size.getHeight() - y - 1};
-            //const Coordinate coord{x, y};
+            //const Coordinate coord{x, size.getHeight() - y - 1};
+            const Coordinate coord{x, y};
 
             // Background color
-            render::Color color = {1, 1, 1, 1};
-            //render::Color color = {0, 0, 0, 1};
+            //render::Color color = {1, 1, 1, 1};
+            render::Color color = {0, 0, 0, 1};
 
             if (!cell.isObstacle())
             {
@@ -165,7 +165,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
                 const auto velocity = cell.calcVelocityNormalized();// / MAX_LB_SPEED;// * 100;// / getFlowSpeed();
 
                 //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
-                color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
+                //color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
                 //color = {cell.calcRho(), velocity.getLength(), 0, 1};
 
                 velocities[coord] = velocity;
@@ -256,11 +256,11 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
 
         for (const auto& c : coords)
         {
-            const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
+            //const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
 
-            if (m_lattice.inRange(coord))
+            if (m_lattice.inRange(c))
             {
-                auto& data = m_lattice[coord];
+                auto& data = m_lattice[c];
                 data.setDynamicObstacle(true, obj->getVelocity() / v_max);
             }
         }
@@ -320,10 +320,10 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
 
         for (const auto& c : coords)
         {
-            const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
+            //const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
 
             // Sum velocities
-            velocity += lattice[coord].calcVelocityNormalized() * v_max;
+            velocity += lattice[c].calcVelocityNormalized() * v_max;
         }
 
         assert(!coords.empty());
