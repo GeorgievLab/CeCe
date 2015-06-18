@@ -167,11 +167,13 @@ public:
     /**
      * @brief Set if current cell is a dynamic obstacle.
      *
-     * @param flag
+     * @param flag If cell is dynamic obstacle.
+     * @param u    Obstacle velocity.
      */
-    void setDynamicObstacle(bool flag) NOEXCEPT
+    void setDynamicObstacle(bool flag, Vector<ValueType> u = Vector<ValueType>::Zero) NOEXCEPT
     {
         m_dynamicObstacle = flag;
+        m_dynamicObstacleVelocity = std::move(u);
     }
 
 
@@ -293,6 +295,8 @@ public:
     /// If current item is a dynamic obstacle.
     bool m_dynamicObstacle = false;
 
+    // Velocity of dynamic obstacle.
+    Vector<ValueType> m_dynamicObstacleVelocity{Vector<ValueType>::Zero};
 };
 
 /* ************************************************************************ */

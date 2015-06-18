@@ -28,8 +28,9 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 void LatticeData::collide(ValueType omega)
 {
-    if (isObstacle())
+    if (isStaticObstacle())
     {
+        // Static obstacle, bounce all back
         StaticArray<ValueType, SIZE> temp;
 
         // Move updated values into opposite directions
@@ -41,6 +42,40 @@ void LatticeData::collide(ValueType omega)
         // Copy updated values
         m_values = temp;
     }
+    else if (isDynamicObstacle())
+    {
+        // Velocity difference
+        const auto diff = calcVelocityNormalized() - m_dynamicObstacleVelocity;
+
+        if (diff > Vector<ValueType>(Vector<ValueType>::Zero))
+        {
+            // Partial obstacle
+            // Static obstacle, bounce all back
+            StaticArray<ValueType, SIZE> temp;
+
+            // Move updated values into opposite directions
+            for (IndexType i = 0; i < SIZE; ++i)
+            {
+                temp[i] = m_values[DIRECTION_OPPOSITES[i]];
+            }
+
+            // Copy updated values
+            m_values = temp;
+        }
+        else
+        {
+            // No obstacle
+
+            // Calculate
+            const auto feq = LatticeData::calcEquilibrium(calcVelocityNormalized(), calcRho());
+
+            // Update values
+            for (IndexType alpha = 0; alpha < SIZE; ++alpha)
+            {
+                m_values[alpha] += -omega * (m_values[alpha] - feq[alpha]);
+            }
+        }
+    }
     else
     {
         // Calculate
@@ -49,7 +84,7 @@ void LatticeData::collide(ValueType omega)
         // Update values
         for (IndexType alpha = 0; alpha < SIZE; ++alpha)
         {
-            m_values[alpha] = -omega * (m_values[alpha] - feq[alpha]) + m_values[alpha];
+            m_values[alpha] += -omega * (m_values[alpha] - feq[alpha]);
         }
     }
 }

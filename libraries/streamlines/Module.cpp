@@ -78,15 +78,19 @@ void Module::init(Size size)
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    // Physical size of one lattice cell
+    const auto dl = simulation.getWorldSize() / getLattice().getSize();
+
+    // Set maximum flow velocity
+    const VelocityVector v_max = LatticeData::MAX_SPEED * dl / dt;
+
     // Check condition time step condition
     //checkTimeStepCondition(dt, simulation);
 
     // Dynamic obstacles
-    updateDynamicObstacleMap(simulation);
+    updateDynamicObstacleMap(simulation, v_max);
 
     {
-        const auto dl = simulation.getWorldSize() / getLattice().getSize();
-
         // LB viscosity
         const auto nu_lb = (dt / (dl.getX() * dl.getX())) * getViscosity();
 
@@ -101,22 +105,17 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         getLattice().propagate();
 
         ///////////////////
-        applyBoundaryConditions(simulation);
+        applyBoundaryConditions(simulation, v_max);
     }
 
     // Apply streamlines to world objects
-    applyToObjects(simulation);
+    applyToObjects(simulation, v_max);
 }
 
 /* ************************************************************************ */
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
-    // Maximum velocity
-    config.callIfSetString("velocity-max", [this](const String& value) {
-        setVelocityMax(parser::parse_value<units::Velocity>(value));
-    });
-
     // Maximum velocity
     config.callIfSetString("velocity-inflow", [this](const String& value) {
         setVelocityInflow(parser::parse_value<units::Velocity>(value));
@@ -154,6 +153,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             // Cell alias
             const auto& cell = m_lattice[{x + 1, y + 1}];
             const Coordinate coord{x, size.getHeight() - y - 1};
+            //const Coordinate coord{x, y};
 
             // Background color
             render::Color color = {1, 1, 1, 1};
@@ -199,17 +199,19 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
 void Module::checkTimeStepCondition(units::Duration dt, const simulator::Simulation& simulation)
 {
+    /*
     // Steps in all directions
     const auto dl = simulation.getWorldSize() / getLattice().getSize();
     const auto dt_max = dl / getVelocityMax();
 
     if (dt > std::max(dt_max.getX(), dt_max.getY()))
         throw InvalidArgumentException("Time step is to large");
+    */
 }
 
 /* ************************************************************************ */
 
-void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation)
+void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, const VelocityVector& v_max)
 {
     // Clear previous flag
     m_lattice.clearDynamicObstacles();
@@ -257,14 +259,17 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation)
             const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
 
             if (m_lattice.inRange(coord))
-                m_lattice[coord].setDynamicObstacle(true);
+            {
+                auto& data = m_lattice[coord];
+                data.setDynamicObstacle(true, obj->getVelocity() / v_max);
+            }
         }
     }
 }
 
 /* ************************************************************************ */
 
-void Module::applyToObjects(const simulator::Simulation& simulation)
+void Module::applyToObjects(const simulator::Simulation& simulation, const VelocityVector& v_max)
 {
     // Get lattice
     const auto& lattice = getLattice();
@@ -318,7 +323,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
             const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
 
             // Sum velocities
-            velocity += lattice[coord].calcVelocityNormalized() * getVelocityMax();
+            velocity += lattice[coord].calcVelocityNormalized() * v_max;
         }
 
         assert(!coords.empty());
@@ -340,13 +345,13 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::applyBoundaryConditions(const simulator::Simulation& simulation)
+void Module::applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& v_max)
 {
     /**/
     {
         // maximum velocity of the Poiseuille inflow
         const auto grid_size = getLattice().getRealSize();
-        const float lb_speed = getVelocityInflow() / getVelocityMax();
+        const float lb_speed = getVelocityInflow() / v_max.getX();
 
         auto computePoiseuille = [&grid_size, lb_speed](int i) {
             float y = (float) (i - 1);

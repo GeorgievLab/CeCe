@@ -85,17 +85,6 @@ public:
 
 
     /**
-     * @brief Returns maximum flow velocity.
-     *
-     * @return
-     */
-    units::Velocity getVelocityMax() const NOEXCEPT
-    {
-        return m_velocityMax;
-    }
-
-
-    /**
      * @brief Returns inflow velocity.
      *
      * @return
@@ -119,17 +108,6 @@ public:
 
 // Public Mutators
 public:
-
-
-    /**
-     * @brief Set maximum velocity.
-     *
-     * @param velocity
-     */
-    void setVelocityMax(units::Velocity velocity) NOEXCEPT
-    {
-        m_velocityMax = velocity;
-    }
 
 
     /**
@@ -210,16 +188,18 @@ protected:
      * @brief Update dynamic obstacle map from dynamic objects.
      *
      * @param simulation
+     * @param v_max
      */
-    void updateDynamicObstacleMap(const simulator::Simulation& simulation);
+    void updateDynamicObstacleMap(const simulator::Simulation& simulation, const VelocityVector& v_max);
 
 
     /**
      * @brief Apply streamlines to objects.
      *
      * @param simulation
+     * @param v_max
      */
-    void applyToObjects(const simulator::Simulation& simulation);
+    void applyToObjects(const simulator::Simulation& simulation, const VelocityVector& v_max);
 
 
     /**
@@ -227,14 +207,11 @@ protected:
      *
      * @param simulation
      */
-    void applyBoundaryConditions(const simulator::Simulation& simulation);
+    void applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& v_max);
 
 
 // Private Data Members
 private:
-
-    /// Maximum flow velocity.
-    units::Velocity m_velocityMax = 50.f;
 
     /// In-flow velocity.
     units::Velocity m_velocityInflow = 10.f;
