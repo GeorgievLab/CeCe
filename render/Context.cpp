@@ -282,6 +282,27 @@ void Context::frameEnd() NOEXCEPT
 
 /* ************************************************************************ */
 
+void Context::matrixProjection() NOEXCEPT
+{
+    gl(glMatrixMode(GL_PROJECTION));
+}
+
+/* ************************************************************************ */
+
+void Context::matrixView() NOEXCEPT
+{
+    gl(glMatrixMode(GL_MODELVIEW));
+}
+
+/* ************************************************************************ */
+
+void Context::matrixTexture() NOEXCEPT
+{
+    gl(glMatrixMode(GL_TEXTURE));
+}
+
+/* ************************************************************************ */
+
 void Context::matrixPush() NOEXCEPT
 {
     gl(glPushMatrix());

@@ -166,6 +166,24 @@ public:
 
 
     /**
+     * @brief Set matrix projecton mode.
+     */
+    void matrixProjection() NOEXCEPT;
+
+
+    /**
+     * @brief Set matrix view mode.
+     */
+    void matrixView() NOEXCEPT;
+
+
+    /**
+     * @brief Set matrix texture mode.
+     */
+    void matrixTexture() NOEXCEPT;
+
+
+    /**
      * @brief Push transformation matrix.
      */
     void matrixPush() NOEXCEPT;
