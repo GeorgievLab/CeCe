@@ -13,15 +13,4 @@ class Reaction
     
     public:
     void operator()(simulator::Object& object, units::Duration);
-    
-    void addExpression(String id, float rate);
-    
-    void addDegradation(String id, float rate);
-    
-    void addAssemble(String id1, String id2, String complex, float rate);
-    
-    void addDisassemble(String complex, String id1, String id2, float rate);
-    
-    private:
-    int get_index_of(String id);
 };
