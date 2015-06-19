@@ -165,7 +165,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
                 const auto velocity = cell.calcVelocityNormalized();// / MAX_LB_SPEED;// * 100;// / getFlowSpeed();
 
                 //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
-                //color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
+                color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
                 //color = {cell.calcRho(), velocity.getLength(), 0, 1};
 
                 velocities[coord] = velocity;
@@ -239,30 +239,27 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
         const auto& shapes = obj->getShapes();
         auto coordIt = std::back_inserter(coords);
 
+        // TODO: change to something that doesn't require container
+        // function mapShapeToGrid should call function that does
+        // required operation
+
         // Map shapes to grid
         for (const auto& shape : shapes)
         {
             coordIt = mapShapeToGrid(coordIt, shape, step, coord, getLattice().getSize());
         }
 
-        // Sort coordinates
-        // TODO: remove lambdas -> will work in Visual Studio?
-        std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-            return lhs < rhs;
-        });
-        coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-            return lhs == rhs;
-        }), coords.end());
+        // In this case duplicate coordinates doesn't harm and calling
+        // operation multiple times on same coordinate is faster than
+        // sorting and erasing non-unique coordinates.
+
+        // Calculate object velocity in LB
+        const auto velocity = obj->getVelocity() / v_max;
 
         for (const auto& c : coords)
         {
-            //const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
-
-            if (m_lattice.inRange(c))
-            {
-                auto& data = m_lattice[c];
-                data.setDynamicObstacle(true, obj->getVelocity() / v_max);
-            }
+            assert(m_lattice.inRange(c));
+            m_lattice[c].setDynamicObstacle(true, velocity);
         }
     }
 }
@@ -297,49 +294,37 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
         // Get coordinate to lattice
         const auto coord = Coordinate(pos / step);
 
-        coords.clear();
-        const auto& shapes = obj->getShapes();
-        auto coordIt = std::back_inserter(coords);
-
         // Map shapes border to grid
-        for (const auto& shape : shapes)
+        for (const auto& shape : obj->getShapes())
         {
+            coords.clear();
+            auto coordIt = std::back_inserter(coords);
             coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, getLattice().getSize(), {}, 5);
+
+            // NOTE: Function should return only unique coordinates.
+
+            // Sum of the velocities
+            VelocityVector velocity = std::accumulate(coords.begin(), coords.end(),
+                VelocityVector{VelocityVector::Zero},
+                [&v_max, &lattice](VelocityVector& init, const Coordinate& c) {
+                    return init + lattice[c].calcVelocityNormalized() * v_max;
+                }
+            );
+
+            assert(!coords.empty());
+
+            // Average
+            velocity = velocity / coords.size();
+
+            // Difference between velocities
+            const auto dv = velocity - obj->getVelocity();
+
+            // Set object velocity
+            const auto force = 3 * constants::PI * getViscosity() * dv * shape.circle.radius;
+
+            // Apply force
+            obj->applyForce(force, obj->getPosition() + shape.circle.center);
         }
-
-        // Sort coordinates
-        // TODO: remove lambdas -> will work in Visual Studio?
-        std::sort(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-            return lhs < rhs;
-        });
-        coords.erase(std::unique(coords.begin(), coords.end(), [](const decltype(coord)& lhs, const decltype(coord)& rhs) {
-            return lhs == rhs;
-        }), coords.end());
-
-        VelocityVector velocity = VelocityVector::Zero;
-
-        for (const auto& c : coords)
-        {
-            //const Coordinate coord(c.getX(), m_lattice.getSize().getHeight() - c.getY());
-
-            // Sum velocities
-            velocity += lattice[c].calcVelocityNormalized() * v_max;
-        }
-
-        assert(!coords.empty());
-
-        // Average
-        velocity = velocity / coords.size();
-
-        // Difference between velocities
-        const auto dv = velocity - obj->getVelocity();
-
-        // Set object velocity
-        //obj->setVelocity(velocity);
-        const auto force = 3 * constants::PI * getViscosity() * dv * shapes[0].circle.radius;
-
-        // Apply force
-        obj->applyForce(force);
     }
 }
 
