@@ -18,11 +18,11 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
-    <File Name="Reactions.cpp"/>
+    <File Name="Reaction.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Library.hpp"/>
-    <File Name="Reactions.hpp"/>
+    <File Name="Reaction.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

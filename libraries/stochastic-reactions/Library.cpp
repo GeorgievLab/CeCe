@@ -15,10 +15,7 @@
 #include "simulator/LibraryApi.hpp"
 
 // Reactions
-#include "Degradation.hpp"
-#include "Expression.hpp"
-#include "Assembly.hpp"
-#include "Disassembly.hpp"
+#include "Reaction.hpp"
 
 /************************************************************************** */
 
@@ -26,20 +23,16 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
+Reaction par(String code)
+{
+    return Reaction();
+}
+
 class StochasticReactionsApi : public simulator::LibraryApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
-        if (name == "deg")
-            return Degradation();
-        else if (name == "exp")
-            return Expression();
-        else if (name == "asm")
-            return Assembly();
-        else if (name == "das")
-            return Disassembly();
-        else
-            return {};
+        return par(code);
     }
 };
 

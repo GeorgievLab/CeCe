@@ -16,14 +16,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 set(SRCS
     Library.hpp
     Library.cpp
-    Expression.hpp
-    Expression.cpp
-    Degradation.hpp
-    Degradation.cpp
-    Assembly.hpp
-    Assembly.cpp
-    Disassembly.hpp
-    Disassembly.cpp
+    Reaction.hpp
+    Reaction.cpp
 )
 
 # Build static / dynamic
