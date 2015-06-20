@@ -29,11 +29,32 @@ namespace units {
 /* ************************************************************************ */
 
 /**
+ * @brief Basic value.
+ */
+using Value = float;
+
+/* ************************************************************************ */
+
+/**
  * @brief Base SI units.
  */
 struct BaseLength { static CONSTEXPR_CONST int value = 0; };
 struct BaseTime   { static CONSTEXPR_CONST int value = 1; };
 struct BaseMass   { static CONSTEXPR_CONST int value = 2; };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less structure.
+ *
+ * @tparam T1 First type.
+ * @tparam T2 Second type.
+ */
+template<typename T1, typename T2>
+struct Less
+{
+    static CONSTEXPR_CONST bool value = T1::value < T2::value;
+};
 
 /* ************************************************************************ */
 
@@ -100,7 +121,7 @@ struct Unit
 public:
 
     /// Value type.
-    using value_type = float;
+    using value_type = Value;
 
     /// List type.
     using nominator = Nom;
@@ -304,11 +325,6 @@ struct Remove<T, List<Type, Types...>>
     >::type;
 };
 
-static_assert(std::is_same<
-    typename Remove<int, List<int, int, char, int>>::type,
-    List<int, char, int>
->::value, "");
-
 /* ************************************************************************ */
 
 /**
@@ -385,7 +401,108 @@ template<>
 struct ReduceEmpty<List<>, List<>>
 {
     /// Result unit type.
-    using type = float;
+    using type = Value;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Value filter.
+ *
+ * @tparam T     Type to filter.
+ * @tparam neg   Negate less.
+ * @tparam Types Types.
+ */
+template<typename T, bool neg, typename Types>
+struct Filter;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Value filter.
+ *
+ * @tparam T     Type to filter.
+ * @tparam neg   Negate less.
+ * @tparam Type  First type.
+ * @tparam Types Types.
+ */
+template<typename T, bool neg, typename Type, typename... Types>
+struct Filter<T, neg, List<Type, Types...>>
+{
+    // List without the first type.
+    using tail = typename Filter<T, neg, List<Types...>>::type;
+
+    using type = typename std::conditional<
+        neg ^ Less<T, Type>::value,
+        typename Concat<List<Type>, tail>::type,
+        tail
+    >::type;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Value filter.
+ *
+ * @tparam T     Type to filter.
+ * @tparam neg   Negate less.
+ */
+template<typename T, bool neg>
+struct Filter<T, neg, List<>>
+{
+    using type = List<>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief List sorting structure.
+ *
+ * @tparam Types Types.
+ */
+template<typename Types>
+struct Sort;
+
+/* ************************************************************************ */
+
+/**
+ * @brief List sorting structure.
+ *
+ * @tparam Type  First type.
+ * @tparam Types A list of types.
+ */
+template<typename Type, typename... Types>
+struct Sort<List<Type, Types...>>
+{
+    using front = typename Filter<Type, true, List<Types...>>::type;
+    using tail = typename Filter<Type, false, List<Types...>>::type;
+
+    // Sorted list.
+    using type = typename Concat<front, List<Type>, tail>::type;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief List sorting structure.
+ *
+ * @tparam Type Type.
+ */
+template<typename Type>
+struct Sort<List<Type>>
+{
+    using type = List<Type>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief List sorting structure.
+ */
+template<>
+struct Sort<List<>>
+{
+    using type = List<>;
 };
 
 /* ************************************************************************ */
@@ -418,8 +535,8 @@ struct Reduce<List<Nominators...>, List<Denominators...>>
 
     /// Result unit type.
     using type = typename ReduceEmpty<
-        typename inner::nominators,
-        typename inner::denominators
+        typename Sort<typename inner::nominators>::type,
+        typename Sort<typename inner::denominators>::type
     >::type;
 };
 
@@ -801,7 +918,7 @@ using Acceleration = Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
 /**
  * @brief Class for representing force (Newton).
  */
-using Force = Unit<List<BaseMass, BaseLength>, List<BaseTime, BaseTime>>;
+using Force = Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
 
 /* ************************************************************************ */
 
@@ -815,14 +932,14 @@ using Density = Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
 /**
  * @brief Class for representing volume.
  */
-using Angle = float;
+using Angle = Value;
 
 /* ************************************************************************ */
 
 /**
  * @brief Class for representing probability.
  */
-using Probability = float;
+using Probability = Value;
 
 /* ************************************************************************ */
 
@@ -833,7 +950,7 @@ using Probability = float;
  *
  * @return
  */
-inline CONSTEXPR float deg2rad(float value) NOEXCEPT
+inline CONSTEXPR Value deg2rad(Value value) NOEXCEPT
 {
     return value * 0.01745329252f;
 }
@@ -847,7 +964,7 @@ inline CONSTEXPR float deg2rad(float value) NOEXCEPT
  *
  * @return
  */
-inline CONSTEXPR float rad2deg(float value) NOEXCEPT
+inline CONSTEXPR Value rad2deg(Value value) NOEXCEPT
 {
     return value * 57.2957795f;
 }
@@ -859,7 +976,7 @@ inline CONSTEXPR float rad2deg(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Length m(float value) NOEXCEPT
+inline CONSTEXPR Length m(Value value) NOEXCEPT
 {
     // 1m = 1'000'000um
     return Length(1000.f * 1000.f * value);
@@ -872,7 +989,7 @@ inline CONSTEXPR Length m(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Length mm(float value) NOEXCEPT
+inline CONSTEXPR Length mm(Value value) NOEXCEPT
 {
     // 1mm = 1/1'000m
     return m(value / 1000.f);
@@ -885,7 +1002,7 @@ inline CONSTEXPR Length mm(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Length um(float value) NOEXCEPT
+inline CONSTEXPR Length um(Value value) NOEXCEPT
 {
     // 1um = 1/1'000'000m
     return m(value / (1000.f * 1000.f));
@@ -898,7 +1015,7 @@ inline CONSTEXPR Length um(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Mass kg(float value) NOEXCEPT
+inline CONSTEXPR Mass kg(Value value) NOEXCEPT
 {
     // 1mg
     return Mass(value / (1000.f * 1000.f));
@@ -911,7 +1028,7 @@ inline CONSTEXPR Mass kg(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Mass g(float value) NOEXCEPT
+inline CONSTEXPR Mass g(Value value) NOEXCEPT
 {
     // 1kg = 1'000g
     return kg(value * 1000.f);
@@ -924,7 +1041,7 @@ inline CONSTEXPR Mass g(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Mass mg(float value) NOEXCEPT
+inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 {
     // 1g = 1'000mg
     return g(value * 1000.f);
@@ -937,7 +1054,7 @@ inline CONSTEXPR Mass mg(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Mass ug(float value) NOEXCEPT
+inline CONSTEXPR Mass ug(Value value) NOEXCEPT
 {
     // 1mg = 1'000ug
     return mg(value * 1000.f);
@@ -950,7 +1067,7 @@ inline CONSTEXPR Mass ug(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Duration s(float value) NOEXCEPT
+inline CONSTEXPR Duration s(Value value) NOEXCEPT
 {
     // 1s
     return Duration(value);
@@ -963,7 +1080,7 @@ inline CONSTEXPR Duration s(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Duration ms(float value) NOEXCEPT
+inline CONSTEXPR Duration ms(Value value) NOEXCEPT
 {
     // 1s = 1'000ms
     return s(value / 1000.f);
@@ -976,7 +1093,7 @@ inline CONSTEXPR Duration ms(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Duration us(float value) NOEXCEPT
+inline CONSTEXPR Duration us(Value value) NOEXCEPT
 {
     // 1ms = 1'000us
     return ms(value / 1000.f);
@@ -989,7 +1106,7 @@ inline CONSTEXPR Duration us(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Area m2(float value) NOEXCEPT
+inline CONSTEXPR Area m2(Value value) NOEXCEPT
 {
     return m(value) * m(1);
 }
@@ -1001,7 +1118,7 @@ inline CONSTEXPR Area m2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Area mm2(float value) NOEXCEPT
+inline CONSTEXPR Area mm2(Value value) NOEXCEPT
 {
     return mm(value) * mm(1);
 }
@@ -1013,7 +1130,7 @@ inline CONSTEXPR Area mm2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Area um2(float value) NOEXCEPT
+inline CONSTEXPR Area um2(Value value) NOEXCEPT
 {
     return um(value) * um(1);
 }
@@ -1025,7 +1142,7 @@ inline CONSTEXPR Area um2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Volume m3(float value) NOEXCEPT
+inline CONSTEXPR Volume m3(Value value) NOEXCEPT
 {
     return m2(value) * m(1);
 }
@@ -1037,7 +1154,7 @@ inline CONSTEXPR Volume m3(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Volume mm3(float value) NOEXCEPT
+inline CONSTEXPR Volume mm3(Value value) NOEXCEPT
 {
     return mm2(value) * mm(1);
 }
@@ -1049,7 +1166,7 @@ inline CONSTEXPR Volume mm3(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Volume um3(float value) NOEXCEPT
+inline CONSTEXPR Volume um3(Value value) NOEXCEPT
 {
     return um2(value) * um(1);
 }
@@ -1061,7 +1178,7 @@ inline CONSTEXPR Volume um3(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Velocity m_s(float value) NOEXCEPT
+inline CONSTEXPR Velocity m_s(Value value) NOEXCEPT
 {
     return m(value) / s(1);
 }
@@ -1073,7 +1190,7 @@ inline CONSTEXPR Velocity m_s(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Velocity mm_s(float value) NOEXCEPT
+inline CONSTEXPR Velocity mm_s(Value value) NOEXCEPT
 {
     return mm(value) / s(1);
 }
@@ -1085,7 +1202,7 @@ inline CONSTEXPR Velocity mm_s(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Velocity um_s(float value) NOEXCEPT
+inline CONSTEXPR Velocity um_s(Value value) NOEXCEPT
 {
     return um(value) / s(1);
 }
@@ -1097,7 +1214,7 @@ inline CONSTEXPR Velocity um_s(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Acceleration m_s2(float value) NOEXCEPT
+inline CONSTEXPR Acceleration m_s2(Value value) NOEXCEPT
 {
     return m_s(value) / s(1);
 }
@@ -1109,7 +1226,7 @@ inline CONSTEXPR Acceleration m_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Acceleration mm_s2(float value) NOEXCEPT
+inline CONSTEXPR Acceleration mm_s2(Value value) NOEXCEPT
 {
     return mm_s(value) / s(1);
 }
@@ -1121,7 +1238,7 @@ inline CONSTEXPR Acceleration mm_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Acceleration um_s2(float value) NOEXCEPT
+inline CONSTEXPR Acceleration um_s2(Value value) NOEXCEPT
 {
     return um_s(value) / s(1);
 }
@@ -1133,7 +1250,7 @@ inline CONSTEXPR Acceleration um_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Force kgm_s2(float value) NOEXCEPT
+inline CONSTEXPR Force kgm_s2(Value value) NOEXCEPT
 {
     return kg(value) * m_s2(1);
 }
@@ -1145,7 +1262,7 @@ inline CONSTEXPR Force kgm_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Force gm_s2(float value) NOEXCEPT
+inline CONSTEXPR Force gm_s2(Value value) NOEXCEPT
 {
     return g(value) * m_s2(1);
 }
@@ -1157,7 +1274,7 @@ inline CONSTEXPR Force gm_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Force mgm_s2(float value) NOEXCEPT
+inline CONSTEXPR Force mgm_s2(Value value) NOEXCEPT
 {
     return kg(value) * m_s2(1);
 }
@@ -1169,7 +1286,7 @@ inline CONSTEXPR Force mgm_s2(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Force N(float value) NOEXCEPT
+inline CONSTEXPR Force N(Value value) NOEXCEPT
 {
     return kgm_s2(value);
 }
@@ -1181,7 +1298,7 @@ inline CONSTEXPR Force N(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Force mN(float value) NOEXCEPT
+inline CONSTEXPR Force mN(Value value) NOEXCEPT
 {
     return gm_s2(value);
 }
@@ -1193,7 +1310,7 @@ inline CONSTEXPR Force mN(float value) NOEXCEPT
  *
  * @param value
  */
-inline CONSTEXPR Force uN(float value) NOEXCEPT
+inline CONSTEXPR Force uN(Value value) NOEXCEPT
 {
     return mgm_s2(value);
 }
@@ -1207,7 +1324,7 @@ inline CONSTEXPR Force uN(float value) NOEXCEPT
  *
  * @return Angle.
  */
-inline CONSTEXPR Angle rad(float value) NOEXCEPT
+inline CONSTEXPR Angle rad(Value value) NOEXCEPT
 {
     return Angle(value);
 }
@@ -1221,7 +1338,7 @@ inline CONSTEXPR Angle rad(float value) NOEXCEPT
  *
  * @return Angle.
  */
-inline CONSTEXPR Angle deg(float value) NOEXCEPT
+inline CONSTEXPR Angle deg(Value value) NOEXCEPT
 {
     return rad(deg2rad(value));
 }
@@ -1235,7 +1352,7 @@ inline CONSTEXPR Angle deg(float value) NOEXCEPT
  *
  * @return
  */
-inline CONSTEXPR Probability precent(float value) NOEXCEPT
+inline CONSTEXPR Probability precent(Value value) NOEXCEPT
 {
     return value / 100.f;
 }
@@ -1245,7 +1362,7 @@ inline CONSTEXPR Probability precent(float value) NOEXCEPT
 static_assert(std::is_same<
     Reduce<List<BaseLength>, List<BaseLength>>::type,
     //Unit<List<>, List<>>::value_type
-    float
+    Value
 >::value, "");
 
 /* ************************************************************************ */
