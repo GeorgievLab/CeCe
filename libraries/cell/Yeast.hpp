@@ -49,6 +49,9 @@ public:
 #if ENABLE_PHYSICS
         /// Bud shape.
         b2CircleShape shape;
+#else
+        /// Position offset
+        PositionVector offset;
 #endif
     };
 

@@ -103,7 +103,9 @@ void Yeast::budCreate()
     m_bud = Bud{};
     m_bud->rotation = 2 * constants::PI * dist(eng);
 
+#if ENABLE_PHYSICS
     m_shapeForceUpdate = true;
+#endif
 }
 
 /* ************************************************************************ */
@@ -113,8 +115,12 @@ void Yeast::budRelease()
     assert(hasBud());
 
     // Calculate bud position
-    const auto angle = getBody()->GetAngle();
+    const auto angle = getRotation();
+#if ENABLE_PHYSICS
     const auto offset = Vector<float>(m_bud->shape.m_p.x, m_bud->shape.m_p.y);
+#else
+    const auto offset = m_bud->offset;
+#endif
 
     // Get current position
     const auto pos = getPosition() + offset.rotated(angle);
@@ -132,7 +138,9 @@ void Yeast::budRelease()
     // Release bud
     m_bud.reset();
 
+#if ENABLE_PHYSICS
     m_shapeForceUpdate = true;
+#endif
 }
 
 /* ************************************************************************ */
@@ -145,7 +153,7 @@ void Yeast::draw(render::Context& context)
 
     auto pos = getPosition();
     auto radius = calcSphereRadius(getVolume());
-    const auto angle = getBody()->GetAngle() - (m_bud ? m_bud->rotation : 0.0f);
+    const auto angle = getRotation() - (m_bud ? m_bud->rotation : 0.0f);
     const auto budRadius = m_bud ? calcSphereRadius(m_bud->volume) : 0.0f;
 
     // Transform

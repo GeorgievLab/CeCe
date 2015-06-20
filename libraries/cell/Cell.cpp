@@ -80,7 +80,7 @@ void Cell::draw(render::Context& context)
     context.matrixPush();
     context.matrixTranslate(pos);
     context.matrixScale(2 * radius);
-    context.matrixRotate(getBody()->GetAngle());
+    context.matrixRotate(getRotation());
 
     m_renderObject->draw(context, radius);
 
