@@ -73,7 +73,7 @@ public:
      */
     CONSTEXPR Color(ComponentType red, ComponentType green, ComponentType blue, ComponentType alpha = 1.0f) NOEXCEPT
 #ifndef _MSC_VER
-        : m_components{red, green, blue, alpha}
+        : m_components{{red, green, blue, alpha}}
 #endif
     {
 #ifdef _MSC_VER
