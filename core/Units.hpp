@@ -169,6 +169,17 @@ public:
 
 
     /**
+     * @brief Cast to value type.
+     *
+     * @return
+     */
+    explicit operator Value() const NOEXCEPT
+    {
+        return m_value;
+    }
+
+
+    /**
      * @brief Unary plus operator.
      *
      * @return New value.
@@ -786,7 +797,7 @@ typename Reduce<List<Nominators1..., Nominators2...>, List<Denominators1..., Den
 ) NOEXCEPT
 {
     return typename Reduce<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type{
-        rhs.value() * lhs.value()
+        lhs.value() * rhs.value()
     };
 }
 
@@ -859,7 +870,7 @@ typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., N
 ) NOEXCEPT
 {
     return typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type{
-        rhs.value() / lhs.value()
+        lhs.value() / rhs.value()
     };
 }
 
