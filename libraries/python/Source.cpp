@@ -1,12 +1,18 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+
+// Python requires to be included first because it sets some parameters to stdlib
+#include "Python.hpp"
+
+/* ************************************************************************ */
 
 // Declaration
 #include "Source.hpp"
 
-// C++
-#include <stdexcept>
-
 // Module
-#include "Python.hpp"
 #include "Exception.hpp"
 
 /* ************************************************************************ */

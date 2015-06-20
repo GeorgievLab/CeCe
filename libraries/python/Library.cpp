@@ -1,3 +1,11 @@
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+
+// Python requires to be included first because it sets some parameters to stdlib
+#include "Python.hpp"
 
 /* ************************************************************************ */
 
@@ -12,7 +20,6 @@
 #include "simulator/LibraryApi.hpp"
 
 // Module
-#include "Python.hpp"
 #include "Module.hpp"
 #include "Object.hpp"
 #include "Program.hpp"
