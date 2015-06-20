@@ -145,4 +145,8 @@
   </Settings>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="test">
+    <File Name="test/test.cpp"/>
+    <File Name="test/DynamicArrayTest.cpp"/>
+  </VirtualDirectory>
 </CodeLite_Project>

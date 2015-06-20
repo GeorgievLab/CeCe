@@ -62,3 +62,25 @@ add_library(${PROJECT_NAME} OBJECT
 )
 
 # ######################################################################### #
+
+if (BUILD_TESTS)
+    # Create executable
+    add_executable(core_test
+        test/test.cpp
+        test/DynamicArrayTest.cpp
+    )
+    target_link_libraries(core_test
+        ${GTEST_BOTH_LIBRARIES}
+    )
+
+if (UNIX)
+    target_link_libraries(core_test
+        -pthread
+    )
+endif ()
+
+    # Add test
+    add_test(core core_test)
+endif ()
+
+# ######################################################################### #
