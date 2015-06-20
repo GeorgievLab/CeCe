@@ -3,8 +3,6 @@
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
-# Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                   #
-# ######################################################################### #
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -38,6 +36,7 @@ option(ENABLE_SSE                   "Enable SSE instructions" On)
 option(ENABLE_BUILDIN_PHYSICS       "Enable build-in physics engine (Box2D)" On)
 option(ENABLE_MEASUREMENT           "Enable or disable time measurement" Off)
 option(ENABLE_BUILDIN_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
+option(BUILD_TESTS                  "Build simulator part tests (requires GTest)" Off)
 
 option(BUILD_TOOLS                  "Build support tools" Off)
 set(MODULES                         "cylinder-streamlines;diffusion;diffusion-cylinder-streamlines;cell;python" CACHE STRING "A list of build modules")
@@ -83,9 +82,7 @@ endif()
 # ######################################################################### #
 
 # Default include directories
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-)
+include_directories(${CMAKE_SOURCE_DIR})
 
 # Boost libraries
 set(Boost_USE_STATIC_LIBS On)
@@ -132,23 +129,34 @@ if (ENABLE_BUILDIN_PHYSICS)
     endif ()
 endif ()
 
+# Enable time measurement
 if (ENABLE_MEASUREMENT)
     message("-- Time measurement enabled")
     add_definitions(-DENABLE_MEASUREMENT=1)
 endif ()
 
+# Build unit tests
+if (BUILD_TESTS)
+    message("-- Build unit tests")
+    enable_testing()
+    find_package(GTest REQUIRED)
+    include_directories(${GTEST_INCLUDE_DIRS})
+endif ()
+
+# ######################################################################### #
+
 set(DYNAMIC_MODULES ${MODULES})
 
 # Remove missing modules
-foreach (MODULE ${MODULES})
-    if (EXISTS "${CMAKE_SOURCE_DIR}/libraries/${MODULE}")
-        message("-- Module '${MODULE}' found, build")
+foreach (LIBRARY ${MODULES})
+    if (EXISTS "${CMAKE_SOURCE_DIR}/libraries/${LIBRARY}")
+        message("-- Library '${LIBRARY}' found, build")
     else ()
-        message("-- Module '${MODULE}' not found, ignore")
-        list(REMOVE_ITEM MODULES ${MODULE})
-        list(REMOVE_ITEM MODULES_BUILDIN ${MODULE})
+        message("-- Library '${LIBRARY}' not found, ignore")
+        list(REMOVE_ITEM MODULES ${LIBRARY})
+        list(REMOVE_ITEM MODULES_BUILDIN ${LIBRARY})
     endif ()
-    list(REMOVE_ITEM DYNAMIC_MODULES ${MODULE})
+    list(REMOVE_ITEM DYNAMIC_MODULES ${LIBRARY})
 endforeach ()
 
 # ######################################################################### #
@@ -172,8 +180,8 @@ endif ()
 add_subdirectory(simulator)
 
 # Modules
-foreach (MODULE ${MODULES})
-    add_subdirectory(libraries/${MODULE})
+foreach (LIBRARY ${MODULES})
+    add_subdirectory(libraries/${LIBRARY})
 endforeach ()
 
 # Build GUI project
@@ -186,6 +194,7 @@ if (ENABLE_CLI)
     add_subdirectory(cli)
 endif ()
 
+# Build additional tools
 if (BUILD_TOOLS)
     add_subdirectory(tools/shader-convert)
 endif()
