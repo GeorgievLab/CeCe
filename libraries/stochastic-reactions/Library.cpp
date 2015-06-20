@@ -1,4 +1,11 @@
-
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author:                                                                  */  
+/* Václav Pelíšek <pelisekv@students.zcu.cz>                                */
+/* Jiří Fatka <fatkaj@ntis.zcu.cz>                                          */
 /* ************************************************************************ */
 
 // Declaration
@@ -13,6 +20,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/LibraryApi.hpp"
+#include "core/Log.hpp"
 
 // Reactions
 #include "Reaction.hpp"
@@ -23,61 +31,155 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Parse inner XML code of reaction.
+ *
+ * @param String
+ *
+ * @return instance of Reaction
+ */
+ 
 Reaction parseReactionCode(const String code)
 {
+    // initial row of rule matrix
+    DynamicArray<int> local (1);
+    // flag that indicates if the pointer is before, after or in rate area
+    unsigned int position = 0;
+    // flag that indicates if reaction has rate or not
+    bool has_rate = false;
+    // "greater-than-sign" counter
+    int sign_count = 0;
+    // container for current molecule name
+    String id;
+    // flag that indicates if the current reaction is valid or not
+    bool validator = true;
+    
+    // iterate through the string
     Reaction reaction;
     const char* current = code.c_str();
-    DynamicArray<int> local (1);
-    bool flag_minus = true;
-    bool flag_rate = false;
-    String id;
     while (current != current + code.length())
     {
-        if(*current == ' ' || *current == '\n' || *current == '\r' || *current == '\t' || flag_rate)
+        // end of reaction sign
+        if (*current == ';')
+        {
+            if (has_rate)
+            {
+                // save reaction rule
+                reaction.m_rules.push_back(local);
+                // reset variables
+                std::fill(local.begin(), local.end(), 0);
+                validator = true;
+                position = 0;
+                sign_count = 0;
+            }
+            else
+            {
+                validator = false;
+                Log::warning("Reaction has no rate.");
+            }
+            //
+            ++current;
+        }
+        // whitespace or current reaction is not valid
+        else if(*current == ' ' || *current == '\n' || *current == '\r' || *current == '\t' || *current == '\v' || !validator)
         {
             ++current;
         }
-        else if (*current == ';')
-        {
-            reaction.m_rules.push_back(local);
-            std::fill(local.begin(), local.end(), 0);
-            flag_minus = true;
-            ++current;
-        }
+        // reaction rate sign
         else if (*current == '>')
         {
-            if (flag_rate)
+            if (sign_count == 1)
             {
-                flag_rate = false;
-                ++current;
-                continue;
+                ++sign_count;
+                position = 2;
             }
-            local[reaction.get_index_of(id)] -= 1;
-            String id;
-            char* end;
-            float rate = strtof(current, &end);
-            if (current == end)
+            else if (sign_count == 2)
             {
-                throw std::runtime_error("Reaction has no rate");
+                validator = false;
+                Log::warning("Invalid reaction. Too many '>' signs");
             }
-            current = end;
-            reaction.m_rates.push_back(rate);
-            flag_minus = false;
-            flag_rate = true;
+            else
+            {
+                // add last molecule type and reset container
+                if (id.size() == 0)
+                {
+                    validator = false;
+                    Log::warning("Couldnt parse reaction");
+                }
+                else
+                {
+                    unsigned int index = reaction.get_index_of(id);
+                    if (index > local.size())
+                        local.push_back(-1);
+                    else
+                        local[index] -= 1;
+                    id.clear();
+                    // get reaction rate using strtof
+                    char* end;
+                    float rate = strtof(current, &end);
+                    if (current == end)
+                    {
+                        validator = false;
+                        Log::warning("Reaction has invalid rate.");
+                    }
+                    current = end;
+                    // add reaction rate
+                    reaction.m_rates.push_back(rate);
+                    has_rate = true;
+                    ++sign_count;
+                }
+            }
+            //
             ++current;
         }
+        // and sign
         else if (*current == '+')
         {
-            if (flag_minus)
-                local[reaction.get_index_of(id)] -= 1;
+            if (id.size() == 0)
+            {
+                validator = false;
+                Log::warning("Couldnt parse reaction");
+            }
             else
-                local[reaction.get_index_of(id)] += 1;
-            id = "";
+            {
+                // add last molecule type and reset container
+                unsigned int index = reaction.get_index_of(id);
+                if (index > local.size())
+                {
+                    // extend array
+                    if (position == 0)
+                        local.push_back(-1);
+                    else
+                        local.push_back(1);
+                }
+                else
+                {
+                    // edit array
+                    if (position == 0)
+                        local[index] -= 1;
+                    else
+                        local[index] += 1;
+                }
+                id.clear();
+            }
+            //
             ++current;
         }
+        // other characters = names of molecules
         else
         {
-            id += *current;
+            // other characters are located in reaction rate area
+            if (position == 1)
+            {
+                validator = false;
+                Log::warning("Reaction has invalid reaction rate.");
+            }
+            else
+            {
+                id += *current;
+            }
+            //
+            ++current;
         }
     }
     return reaction;

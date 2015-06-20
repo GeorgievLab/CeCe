@@ -17,8 +17,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Library.cpp"/>
     <File Name="Reaction.cpp"/>
+    <File Name="Library.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Library.hpp"/>
