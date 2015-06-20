@@ -99,7 +99,7 @@ void Object::update(units::Duration dt)
         return;
 
     // Call update
-    if (!call(m_updateFn, static_cast<simulator::Object*>(this), dt))
+    if (!call(m_updateFn, static_cast<simulator::Object*>(this), dt.value()))
         throw Exception();
 }
 

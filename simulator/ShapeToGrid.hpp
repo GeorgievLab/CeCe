@@ -79,7 +79,7 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-    const auto radiusSteps = Vector<float>(shape.radius) / steps;
+    const auto radiusSteps = Vector<float>(shape.radius / steps);
     const auto shapeCenter = Vector<Ts>(center + shape.center / steps);
     const auto maxS = Vector<Ts>(max);
     const auto minS = Vector<Ts>(min);

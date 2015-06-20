@@ -75,7 +75,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             Matrix<float, 2> tmp;
             int offset = 0;
 
-            if (velocity.getY() < 0)
+            if (velocity.getY() < units::Velocity(0))
             {
                 tmp = Matrix<float, 2>{{
                     {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() },

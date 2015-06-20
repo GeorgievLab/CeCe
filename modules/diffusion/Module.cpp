@@ -47,16 +47,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     });
 
     // Size of mapping matrix
-#if _MSC_VER
-    const unsigned OFFSET = 1;
-    const unsigned MATRIX_SIZE = 2 * OFFSET + 1;
-#else
     CONSTEXPR_CONST unsigned OFFSET = 1;
     CONSTEXPR_CONST unsigned MATRIX_SIZE = 2 * OFFSET + 1;
-#endif
 
     // Precompute values
-    const auto step = simulation.getWorldSize() / m_grid.getSize();
+    const auto step = simulation.getWorldSize() / units::Length(1) / m_grid.getSize();
 
     //const float A = 1.f / (4 * constants::PI * D * dt);
     const Coefficients A = 1.f / (4 * constants::PI * getCoefficients() * dt.value());

@@ -53,9 +53,9 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
             // Transform i, j coordinates to position
             // Cell center position
-            const auto coord = PositionVector(c) + 0.5f;
+            const auto coordCenter = Vector<float>(c) + 0.5f;
             // Real position in the world
-            const auto pos = start + step * coord - m_object->getPosition();
+            const auto pos = start + step * coordCenter - m_object->getPosition();
 
             // Calculate squared distance from main cell
             const auto distSq = pos.getLengthSquared();
@@ -76,11 +76,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             cell.velocity.x = U * (1 + R2 / distSq - 2 * (xx * R2) / distQuad);
             cell.velocity.y = U * -2 * (R2 * xy) / distQuad;
 */
-            const float theta = atan2(pos.getY(), pos.getX());
+            const float theta = atan2(pos.getY().value(), pos.getX().value());
 
             const auto u = VelocityVector{
-                cosf(theta) * (1 - R2 / distSq),
-                -sinf(theta) * (1 + R2 / distSq)
+                units::Velocity(cosf(theta) * (1 - R2 / distSq)),
+                units::Velocity(-sinf(theta) * (1 + R2 / distSq))
             };
 
             velocity = u.rotated(theta);
@@ -142,7 +142,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     }
 
     context.matrixPush();
-    context.matrixScale(simulation.getWorldSize());
+    context.matrixScale(simulation.getWorldSize() / units::Length(1));
     m_renderObject->draw(context);
     context.matrixPop();
 
