@@ -84,7 +84,7 @@ static PyObject* simulation_getWorldSize(ObjectWrapper<simulator::Simulation*>* 
 {
     assert(self);
     assert(self->value);
-    const Vector<float> pos = self->value->getWorldSize();
+    const auto pos = self->value->getWorldSize();
 
     return makeObject(pos);
 }
@@ -163,7 +163,8 @@ static PyObject* object_getPosition(ObjectWrapper<simulator::Object*>* self, voi
 {
     assert(self);
     assert(self->value);
-    const Vector<float> pos = self->value->getPosition();
+    const auto posOrig = self->value->getPosition();
+    const auto pos = Vector<float>(posOrig.getX().value(), posOrig.getY().value());
 
     return makeObject(pos);
 }
@@ -189,7 +190,7 @@ static int object_setPosition(ObjectWrapper<simulator::Object*>* self, PyObject*
 
     assert(self);
     assert(self->value);
-    self->value->setPosition(val->value);
+    self->value->setPosition(PositionVector(val->value));
 
     return 0;
 }
@@ -234,7 +235,8 @@ static PyObject* object_getVelocity(ObjectWrapper<simulator::Object*>* self, voi
 {
     assert(self);
     assert(self->value);
-    const Vector<float> velocity = self->value->getVelocity();
+    const auto velocityOrig = self->value->getVelocity();
+    const auto velocity = Vector<float>(velocityOrig.getX().value(), velocityOrig.getY().value());
 
     return makeObject(velocity);
 }
@@ -254,7 +256,7 @@ static int object_setVelocity(ObjectWrapper<simulator::Object*>* self, PyObject*
 
     assert(self);
     assert(self->value);
-    self->value->setVelocity(val->value);
+    self->value->setVelocity(VelocityVector(val->value));
 
     return 0;
 }

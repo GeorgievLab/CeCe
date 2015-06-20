@@ -113,14 +113,6 @@ public:
      *
      * @param v Source vector.
      */
-    CONSTEXPR Vector(const Vector& v) = default;
-
-
-    /**
-     * @brief Copy constructor.
-     *
-     * @param v Source vector.
-     */
     template<typename T2>
     explicit CONSTEXPR Vector(const Vector<T2>& v) NOEXCEPT
         : m_x(static_cast<T>(v.getX())), m_y(static_cast<T>(v.getY()))
@@ -129,44 +121,23 @@ public:
     }
 
 
-    /**
-     * @brief Move constructor.
-     *
-     * @param v Source vector.
-     */
-#ifndef _MSC_VER
-    CONSTEXPR Vector(Vector&& v) = default;
-#endif
-
-
 // Public Operators
 public:
 
 
     /**
-     * @brief Assignment operator.
-     *
-     * @param v
+     * @brief Unary plus operator.
      *
      * @return
      */
-    Vector& operator=(const Vector& v) = default;
+    CONSTEXPR Vector operator+() const NOEXCEPT
+    {
+        return *this;
+    }
 
 
     /**
-     * @brief Move assignment operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-#ifndef _MSC_VER
-    Vector& operator=(Vector&& v) = default;
-#endif
-
-
-    /**
-     * @brief Inverse operator.
+     * @brief Unary minus operator.
      *
      * @return
      */
@@ -177,113 +148,109 @@ public:
 
 
     /**
-     * @brief Add operator.
+     * @brief Addition operator.
      *
-     * @param v
+     * @tparam T1 Type of right operand.
      *
-     * @return
+     * @param rhs Right operand.
+     *
+     * @return *this.
      */
-    CONSTEXPR Vector operator+(const Vector& v) const NOEXCEPT
+    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} + T1{}), T>::value>::type* = nullptr>
+    Vector& operator+=(const Vector<T1>& rhs) NOEXCEPT
     {
-        return Vector{getX() + v.getX(), getY() + v.getY()};
-    }
-
-
-    /**
-     * @brief Add operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator+=(const Vector& v) NOEXCEPT
-    {
-        m_x += v.getX();
-        m_y += v.getY();
+        m_x += rhs.getX();
+        m_y += rhs.getY();
         return *this;
     }
 
 
     /**
-     * @brief Substract operator.
+     * @brief Subtraction operator.
      *
-     * @param v
+     * @tparam T1 Type of value in Vector operand.
      *
-     * @return
+     * @param rhs Right operand.
+     *
+     * @return *this.
      */
-    CONSTEXPR Vector operator-(const Vector& v) const NOEXCEPT
+    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} - T1{}), T>::value>::type* = nullptr>
+    Vector& operator-=(const Vector<T1>& rhs) NOEXCEPT
     {
-        return Vector{getX() - v.getX(), getY() - v.getY()};
-    }
-
-
-    /**
-     * @brief Substract operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator-=(const Vector& v) NOEXCEPT
-    {
-        m_x -= v.m_x;
-        m_y -= v.m_y;
+        m_x -= rhs.getX();
+        m_y -= rhs.getY();
         return *this;
     }
 
 
     /**
-     * @brief Multiple operator.
+     * @brief Multiplication operator.
      *
-     * @param v
+     * @tparam T1 Type of right operand.
      *
-     * @return
+     * @param rhs Right operand.
+     *
+     * @return *this.
      */
-    CONSTEXPR Vector operator*(const Vector& val) const NOEXCEPT
+    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
+    Vector& operator*=(T1 rhs) NOEXCEPT
     {
-        return Vector{getX() * val.getX(), getY() * val.getY()};
-    }
-
-
-    /**
-     * @brief Multiple operator.
-     *
-     * @param v
-     *
-     * @return
-     */
-    Vector& operator*=(const Vector& val) NOEXCEPT
-    {
-        m_x *= val.getX();
-        m_y *= val.getY();
+        m_x *= rhs;
+        m_y *= rhs;
         return *this;
     }
 
 
     /**
-     * @brief Divide operator.
+     * @brief Multiplication operator.
      *
-     * @param v
+     * @tparam T1 Type of value in Vector operand.
      *
-     * @return
+     * @param rhs Right operand.
+     *
+     * @return *this.
      */
-    CONSTEXPR Vector operator/(const Vector& val) const NOEXCEPT
+    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
+    Vector& operator*=(const Vector<T1>& rhs) NOEXCEPT
     {
-        return Vector{getX() / val.getX(), getY() / val.getY()};
+        m_x *= rhs.getX();
+        m_y *= rhs.getY();
+        return *this;
     }
 
 
     /**
-     * @brief Divide operator.
+     * @brief Division operator.
      *
-     * @param v
+     * @tparam T1 Type of right operand.
      *
-     * @return
+     * @param rhs Right operand.
+     *
+     * @return *this.
      */
-    Vector& operator/=(const Vector& val) NOEXCEPT
+    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
+    Vector& operator/=(T1 rhs) NOEXCEPT
     {
-        m_x /= val.getX();
-        m_y /= val.getY();
+        m_x /= rhs;
+        m_y /= rhs;
+        return *this;
+    }
+
+
+    /**
+     * @brief Division operator.
+     *
+     * @tparam T1 Type of value in Vector operand.
+     *
+     * @param rhs Right operand.
+     *
+     * @return *this.
+     */
+    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
+    Vector& operator/=(const Vector<T1>& rhs) NOEXCEPT
+    {
+        m_x /= rhs.getX();
+        m_y /= rhs.getY();
         return *this;
     }
 
@@ -449,7 +416,8 @@ public:
      */
     T getLength() const NOEXCEPT
     {
-        return std::sqrt(getLengthSquared());
+        using std::sqrt;
+        return sqrt(getLengthSquared());
     }
 
 
@@ -458,7 +426,7 @@ public:
      *
      * @return
      */
-    T getLengthSquared() const NOEXCEPT
+    decltype(T{} * T{}) getLengthSquared() const NOEXCEPT
     {
         return dot(*this);
     }
@@ -469,9 +437,9 @@ public:
      *
      * @param rhs Second vector.
      *
-     * @return
+     * @return Dot product.
      */
-    CONSTEXPR T dot(const Vector& rhs) const NOEXCEPT
+    CONSTEXPR decltype(T{} * T{}) dot(const Vector& rhs) const NOEXCEPT
     {
         return getX() * rhs.getX() + getY() * rhs.getY();
     }
@@ -564,193 +532,229 @@ extern template class DLL_EXPORT Vector<int>;
 /* ************************************************************************ */
 
 /**
- * @brief Add two vectors.
+ * @brief Addition operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<CT>(lhs).operator+(Vector<CT>(rhs));
+    return {lhs.getX() + rhs.getX(), lhs.getY() + rhs.getY()};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Add single value to vector.
+ * @brief Addition operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of second operand.
  *
- * @return New vector.
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator+(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return operator+(lhs, Vector<T1>(rhs));
+    return {lhs.getX() + rhs, lhs.getY() + rhs};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Add single value to vector.
+ * @brief Addition operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator+(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} + T2{})> operator+(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return operator+(Vector<T1>(lhs), rhs);
+    return {lhs + rhs.getX(), lhs + rhs.getY()};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Substract two vectors.
+ * @brief Substract operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<CT>(lhs).operator-(Vector<CT>(rhs));
+    return {lhs.getX() - rhs.getX(), lhs.getY() - rhs.getY()};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Substract single value from vector.
+ * @brief Substract operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of second operand.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator-(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return operator-<T1, T2>(lhs, Vector<T2>(rhs));
+    return {lhs.getX() - rhs, lhs.getY() - rhs};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Substract single value from vector.
+ * @brief Substract operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator-(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} - T2{})> operator-(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return operator-(Vector<T1>(lhs), rhs);
+    return {lhs - rhs.getX(), lhs - rhs.getY()};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Multiple vectors.
+ * @brief Multiplication operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<CT>(lhs).operator*(Vector<CT>(rhs));
+    return {lhs.getX() * rhs.getX(), lhs.getY() * rhs.getY()};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Multiple single value from vector.
+ * @brief Multiplication operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of second operand.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator*(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return operator*(lhs, Vector<T2>(rhs));
+    return {lhs.getX() * rhs, lhs.getY() * rhs};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Multiple single value from vector.
+ * @brief Multiplication operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator*(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} * T2{})> operator*(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return operator*(Vector<T1>(lhs), rhs);
+    return {lhs * rhs.getX(), lhs * rhs.getY()};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Divide vectors.
+ * @brief Division operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return Vector<CT>(lhs).operator/(Vector<CT>(rhs));
+    return {lhs.getX() / rhs.getX(), lhs.getY() / rhs.getY()};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Divide vector by one value.
+ * @brief Division operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of value in first Vector.
+ * @tparam T2 Type of second operand.
  *
- * @return New vector
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator/(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
 {
-    return operator/(lhs, Vector<T2>(rhs));
+    return {lhs.getX() / rhs, lhs.getY() / rhs};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Divide single value by vector.
+ * @brief Division operator.
  *
- * @param lhs
- * @param rhs
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second Vector.
  *
- * @return New vector.
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline Vector<CT> operator/(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline Vector<decltype(T1{} / T2{})> operator/(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    return operator/(Vector<T1>(lhs), rhs);
+    return {lhs / rhs.getX(), lhs / rhs.getY()};
 }
 
 /* ************************************************************************ */
@@ -803,7 +807,7 @@ inline bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 template<typename T1, typename T2>
 inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
-    using T = typename std::common_type<T1, T2>::type;
+    using T = decltype(T1{} < T2{});
 
     T x1 = lhs.getX();
     T y1 = lhs.getY();
@@ -870,10 +874,10 @@ inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
- * @return
+ * @return Dot product.
  */
-template<typename T1, typename T2, typename CT = typename std::common_type<T1, T2>::type>
-inline CONSTEXPR CT dot(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+template<typename T1, typename T2>
+inline CONSTEXPR decltype(T1{} * T2{}) dot(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
 {
     return lhs.getX() * rhs.getX() + lhs.getY() * rhs.getY();
 }

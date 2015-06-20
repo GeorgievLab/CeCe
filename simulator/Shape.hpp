@@ -75,9 +75,9 @@ struct DLL_EXPORT Shape
      *
      * @return
      */
-    static Shape makeCircle(units::Length radius, PositionVector center = { 0, 0 }) NOEXCEPT
+    static Shape makeCircle(units::Length radius, PositionVector center = PositionVector::Zero) NOEXCEPT
     {
-        return Shape{ShapeType::Circle, ShapeCircle{center, radius}};
+        return Shape{ShapeType::Circle, {ShapeCircle{center, radius}}};
     }
 
 };

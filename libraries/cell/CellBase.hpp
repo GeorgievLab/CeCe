@@ -174,7 +174,7 @@ public:
     static units::Length calcSphereRadius(units::Volume volume) NOEXCEPT
     {
         // 3th root of ((3 / 4 * pi) * volume)
-        return units::Length(0.62035f * std::pow(volume, 0.3333333f));
+        return units::Length(0.62035f * std::pow(volume.value(), 0.3333333f));
     }
 
 
@@ -182,7 +182,7 @@ public:
 private:
 
     /// Cell volume.
-    units::Volume m_volume = units::um(100);
+    units::Volume m_volume = units::um3(100);
 
     /// Number of GFP proteins.
     FluorescentProteinCount m_gfp = 0;

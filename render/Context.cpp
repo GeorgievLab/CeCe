@@ -210,7 +210,7 @@ void Context::setView(int width, int height) NOEXCEPT
     glLoadIdentity();
 
     // Move camera
-    glTranslatef(m_camera.getPosition().getX(), m_camera.getPosition().getY(), 0);
+    glTranslatef(m_camera.getPosition().getX().value(), m_camera.getPosition().getY().value(), 0);
 
     // Apply zoom matrix
     float scale = 1 / m_camera.getZoom();
@@ -326,7 +326,7 @@ void Context::matrixIdentity() NOEXCEPT
 
 void Context::matrixTranslate(const PositionVector& pos) NOEXCEPT
 {
-    gl(glTranslatef(pos.getX(), pos.getY(), 0));
+    gl(glTranslatef(pos.getX().value(), pos.getY().value(), 0));
 }
 
 /* ************************************************************************ */

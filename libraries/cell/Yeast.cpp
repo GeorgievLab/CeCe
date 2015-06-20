@@ -50,11 +50,11 @@ void Yeast::update(units::Duration dt)
     const float RATIO = 5.f;
 
     std::mt19937 eng(g_rd());
-    std::bernoulli_distribution dist(0.1f * dt);
+    std::bernoulli_distribution dist(0.1f * dt.value());
     std::uniform_real_distribution<float> add_coeff(0.1f, 4.f);
 
     // Volume increase
-    auto volumeAdd = dt * RATIO * add_coeff(eng);
+    auto volumeAdd = units::Volume(dt.value() * RATIO * add_coeff(eng));
 
     if (hasBud())
     {
@@ -117,7 +117,7 @@ void Yeast::budRelease()
     // Calculate bud position
     const auto angle = getRotation();
 #if ENABLE_PHYSICS
-    const auto offset = Vector<float>(m_bud->shape.m_p.x, m_bud->shape.m_p.y);
+    const auto offset = PositionVector(units::Length(m_bud->shape.m_p.x), units::Length(m_bud->shape.m_p.y));
 #else
     const auto offset = m_bud->offset;
 #endif
@@ -153,8 +153,8 @@ void Yeast::draw(render::Context& context)
 
     auto pos = getPosition();
     auto radius = calcSphereRadius(getVolume());
-    const auto angle = getRotation() - (m_bud ? m_bud->rotation : 0.0f);
-    const auto budRadius = m_bud ? calcSphereRadius(m_bud->volume) : 0.0f;
+    const auto angle = getRotation() - (m_bud ? m_bud->rotation : units::Angle(0));
+    const auto budRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
 
     // Transform
     context.matrixPush();
@@ -171,16 +171,16 @@ void Yeast::draw(render::Context& context)
 #if ENABLE_PHYSICS
 void Yeast::updateShape()
 {
-    static CONSTEXPR float MIN_CHANGE = 0.2f;
+    static CONSTEXPR_CONST auto MIN_CHANGE = units::Length(0.2f);
 
     // Alias for yeast shapes
     auto& shapes = getMutableShapes();
 
     // Calculate new radius
-    const units::Length newRadius = calcSphereRadius(getVolume());
-    const units::Length oldRadius = m_shape.m_radius;
-    const units::Length newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : 0;
-    const units::Length oldBudRadius = m_bud ? m_bud->shape.m_radius : 0;
+    const auto newRadius = calcSphereRadius(getVolume());
+    const auto oldRadius = units::Length(m_shape.m_radius);
+    const auto newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
+    const auto oldBudRadius = m_bud ? units::Length(m_bud->shape.m_radius) : units::Length(0);
 
     const bool needs_update = m_shapeForceUpdate ||
         ((newRadius - oldRadius) > MIN_CHANGE) ||
@@ -197,7 +197,7 @@ void Yeast::updateShape()
         if (shapes.size() != 2)
         {
             shapes.push_back(simulator::Shape::makeCircle(
-                newBudRadius, PositionVector{ 0, newRadius + newBudRadius })
+                newBudRadius, PositionVector{ units::Length(0), newRadius + newBudRadius })
             );
         }
         else
@@ -227,14 +227,14 @@ void Yeast::updateShape()
 
     // Update main yeast shape
     {
-        m_shape.m_radius = newRadius;
-        getBody()->CreateFixture(&m_shape, getDensity());
+        m_shape.m_radius = newRadius.value();
+        getBody()->CreateFixture(&m_shape, getDensity().value());
     }
 
     // Update bud shape
     if (m_bud)
     {
-        m_bud->shape.m_radius = newBudRadius;
+        m_bud->shape.m_radius = newBudRadius.value();
 
         // Distance between yeast and bud
         const float distance = m_shape.m_radius + m_bud->shape.m_radius;
@@ -243,7 +243,7 @@ void Yeast::updateShape()
             distance * std::sin(m_bud->rotation),
             distance * std::cos(m_bud->rotation)
         );
-        getBody()->CreateFixture(&m_bud->shape, getDensity());
+        getBody()->CreateFixture(&m_bud->shape, getDensity().value());
     }
 
     m_shapeForceUpdate = false;

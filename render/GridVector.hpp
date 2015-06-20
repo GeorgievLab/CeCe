@@ -38,8 +38,27 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param context Render context.
+     * @param size    Grid size.
+     * @param data    Vector data.
      */
     GridVector(Context& context, Size size, const Vector<float>* data);
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param context Render context.
+     * @param size    Grid size.
+     * @param data    Vector data.
+     */
+    template<typename T>
+    GridVector(Context& context, Size size, const Vector<T>* data)
+        : GridVector(context, std::move(size), reinterpret_cast<const Vector<float>*>(data))
+    {
+        static_assert(sizeof(T) == sizeof(float), "T must have same size as float");
+    }
 
 
 // Public Operations
@@ -69,6 +88,21 @@ public:
      * @param data
      */
     void update(const Vector<float>* data) NOEXCEPT;
+
+
+    /**
+     * @brief Update data.
+     *
+     * @tparam T Vector type.
+     *
+     * @param data
+     */
+    template<typename T>
+    void update(const Vector<T>* data) NOEXCEPT
+    {
+        static_assert(sizeof(T) == sizeof(float), "T must have same size as float");
+        update(reinterpret_cast<const Vector<float>*>(data));
+    }
 
 
 // Private Data Members

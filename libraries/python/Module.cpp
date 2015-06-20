@@ -107,7 +107,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         return;
 
     // Call update
-    if (!call(m_updateFn, dt, &simulation))
+    if (!call(m_updateFn, dt.value(), &simulation))
         throw Exception();
 }
 

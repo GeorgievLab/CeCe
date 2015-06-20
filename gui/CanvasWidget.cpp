@@ -73,7 +73,7 @@ void CanvasWidget::ViewReset() NOEXCEPT
 {
     auto& camera = m_renderContext.getCamera();
     camera.setZoom(m_baseZoom);
-    camera.setPosition({0, 0});
+    camera.setPosition(PositionVector::Zero);
 
     // Refresh view
     Update();
@@ -92,8 +92,8 @@ void CanvasWidget::OnResize(wxSizeEvent& event)
     auto size = m_simulator->GetSimulation()->getWorldSize();
 
     m_baseZoom = std::max(
-        size.getWidth() / event.GetSize().GetWidth(),
-        size.getHeight() / event.GetSize().GetHeight()
+        size.getWidth().value() / event.GetSize().GetWidth(),
+        size.getHeight().value() / event.GetSize().GetHeight()
     );
 
     auto& camera = m_renderContext.getCamera();
@@ -153,8 +153,8 @@ void CanvasWidget::OnMouseMotion(wxMouseEvent& event)
     // Change vector
     auto change = event.GetPosition() - m_dragStart;
 
-    pos.x() += change.x;
-    pos.y() -= change.y;
+    pos.x() += units::um(change.x);
+    pos.y() -= units::um(change.y);
 
     camera.setPosition(pos);
 

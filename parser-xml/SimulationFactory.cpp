@@ -23,6 +23,7 @@
 
 // Simulator
 #include "core/Log.hpp"
+#include "core/Units.hpp"
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
@@ -214,7 +215,7 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
     {
         auto size = parser::parse_vector<units::Length>(node.attribute("world-size").value());
 
-        if (size.getWidth() == 0 || size.getHeight() == 0)
+        if (size.getWidth() == units::um(0) || size.getHeight() == units::um(0))
             throw parser::Exception("Width or height is zero!");
 
         simulation.setWorldSize(size);

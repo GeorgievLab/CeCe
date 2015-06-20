@@ -73,8 +73,8 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
 {
     const auto size = getSize();
 
-    CONSTEXPR PositionVector start{-0.5f};
-    const PositionVector step = getSize().inversed<float>();
+    CONSTEXPR Vector<float> start{-0.5f};
+    const Vector<float> step = getSize().inversed<float>();
 
     const auto width = size.getWidth();
     const auto height = size.getHeight();
@@ -106,7 +106,7 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
         {
             // Get vector normalized by max length
             const auto vec = data[i + j * width] / max;
-            const PositionVector pos{
+            const Vector<float> pos{
                     start.getX() + i * step.getX() + step.getX() / 2.f,
                     start.getY() + j * step.getY() + step.getY() / 2.f
             };
@@ -114,7 +114,7 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
             const float green = 5 * std::max(vec.getY(), 0.f);
             const float blue = 5 * std::max(-vec.getY(), 0.f);
 
-            const PositionVector dest = pos + vec * step;
+            const Vector<float> dest = pos + vec * step;
 
             vertices.push_back(Vertex{pos.getX(), pos.getY(), red, green, blue});
             vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});

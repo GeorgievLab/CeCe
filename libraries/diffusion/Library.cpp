@@ -34,14 +34,14 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
     assert(diff);
     auto& grid = diff->getGrid();
 
-    const Vector<float> start = simulation.getWorldSize() * -0.5f;
+    const auto start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-    if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
+    if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
         return;
 
     // Get grid position
@@ -67,7 +67,7 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
     for (const auto& c : coords)
     {
         // Add signal
-        grid[c][signal] += SOURCE_STRENGTH * dt;
+        grid[c][signal] += SOURCE_STRENGTH * dt.value();
     }
 }
 
@@ -81,14 +81,14 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
     assert(diff);
     auto& grid = diff->getGrid();
 
-    const Vector<float> start = simulation.getWorldSize() * -0.5f;
+    const auto start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / grid.getSize();
 
     // Get cell position
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-    if (!pos.inRange(Vector<float>{0}, simulation.getWorldSize()))
+    if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
         return;
 
     // Get grid position
@@ -114,7 +114,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
     for (const auto& c : coords)
     {
         // Add signal
-        grid[c][signal] = std::max(grid[c][signal] - SOURCE_STRENGTH * dt, 0.f);
+        grid[c][signal] = std::max(grid[c][signal] - SOURCE_STRENGTH * dt.value(), 0.f);
     }
 }
 
@@ -122,7 +122,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
 
 class DiffusionApi : public LibraryApi
 {
-    std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT override
+    std::unique_ptr<Module> createModule(Simulation& simulation, const String& name) NOEXCEPT override
     {
         if (name == "generator")
             return std::unique_ptr<Module>(new module::diffusion::Generator{simulation.useModule<module::diffusion::Module>("diffusion")});
@@ -130,7 +130,7 @@ class DiffusionApi : public LibraryApi
         return std::unique_ptr<Module>(new module::diffusion::Module{});
     }
 
-    Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT override
+    Program createProgram(Simulation& simulation, const String& name, String code = {}) NOEXCEPT override
     {
         if (name == "gen1")
             return [&simulation](Object& obj, units::Duration dt) {

@@ -128,7 +128,7 @@ private:
     units::Probability m_probability = 0.5f;
 
     /// Initial object velocity.
-    VelocityVector m_startVelocity = {10.f, 0.f};
+    VelocityVector m_startVelocity = {units::um_s(10), units::um_s(0)};
 
 };
 

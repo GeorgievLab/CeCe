@@ -145,7 +145,7 @@ int main(int argc, char** argv)
             auto size = g_sim.getSimulation()->getWorldSize();
 
             g_sim.getRenderContext().getCamera().setZoom(
-                std::max(size.getWidth() / g_width, size.getHeight() / g_height)
+                std::max(size.getWidth() / g_width, size.getHeight() / g_height).value()
             );
         });
 
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
             switch (key)
             {
             case 'p': case 'P': g_paused = !g_paused; break;
-            case 's': case 'S': if (g_paused) { g_sim.update(0.01f); glutPostRedisplay(); } break;
+            case 's': case 'S': if (g_paused) { g_sim.update(units::Time(0.01f)); glutPostRedisplay(); } break;
             case 'w': case 'W': g_sim.getRenderContext().setWireframe(!g_sim.getRenderContext().isWireframe()); break;
 #if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
             case 'd': case 'D': g_sim.getSimulation()->setDrawPhysics(!g_sim.getSimulation()->isDrawPhysics()); break;
