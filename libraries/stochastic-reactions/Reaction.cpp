@@ -26,7 +26,7 @@ void Reaction::operator()(simulator::Object& object, units::Duration step)
     object.setValue("molecule_count", map);
 }
 
-int Reaction::get_index_of(String id)
+int Reaction::get_index_of(const String id)
 {
     auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
     if (pointer == m_ids.end())

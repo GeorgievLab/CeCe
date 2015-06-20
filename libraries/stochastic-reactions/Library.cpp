@@ -23,15 +23,15 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-Reaction parseReactionCode(String code)
+Reaction parseReactionCode(const String code)
 {
     Reaction reaction;
-    char* current = &*code.begin();
+    const char* current = code.c_str();
     DynamicArray<int> local (1);
     bool flag_minus = true;
     bool flag_rate = false;
-    String id = "";
-    while (current != &*code.end())
+    String id;
+    while (current != current + code.length())
     {
         if(*current == ' ' || *current == '\n' || *current == '\r' || *current == '\t' || flag_rate)
         {
@@ -53,7 +53,7 @@ Reaction parseReactionCode(String code)
                 continue;
             }
             local[reaction.get_index_of(id)] -= 1;
-            id = "";
+            String id;
             char* end;
             float rate = strtof(current, &end);
             if (current == end)
@@ -80,7 +80,7 @@ Reaction parseReactionCode(String code)
             id += *current;
         }
     }
-    return Reaction();
+    return reaction;
 }
 
 /* ************************************************************************ */

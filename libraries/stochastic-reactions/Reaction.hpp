@@ -14,5 +14,5 @@ class Reaction
     
     void operator()(simulator::Object& object, units::Duration);
     
-    int get_index_of(String id);
+    int get_index_of(const String id);
 };
