@@ -23,29 +23,36 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-Reaction par(String code)
+Reaction parseReactionCode(String code)
 {
     Reaction reaction;
-    char* current = code.begin();
-    DynamicArray<int> local (m_ids.size());
+    char* current = &*code.begin();
+    DynamicArray<int> local (1);
     bool flag_minus = true;
+    bool flag_rate = false;
     String id = "";
-    while (current != code.end())
+    while (current != &*code.end())
     {
-        if(*current == " " || *current == "\n" || *current == "\r")
+        if(*current == ' ' || *current == '\n' || *current == '\r' || *current == '\t' || flag_rate)
         {
             ++current;
         }
-        else if (*current == ";")
+        else if (*current == ';')
         {
             reaction.m_rules.push_back(local);
             std::fill(local.begin(), local.end(), 0);
             flag_minus = true;
             ++current;
         }
-        else if (*current == ">")
+        else if (*current == '>')
         {
-            local[get_index_of(id)] -= 1;
+            if (flag_rate)
+            {
+                flag_rate = false;
+                ++current;
+                continue;
+            }
+            local[reaction.get_index_of(id)] -= 1;
             id = "";
             char* end;
             float rate = strtof(current, &end);
@@ -53,16 +60,18 @@ Reaction par(String code)
             {
                 throw std::runtime_error("Reaction has no rate");
             }
+            current = end;
             reaction.m_rates.push_back(rate);
             flag_minus = false;
+            flag_rate = true;
             ++current;
         }
-        else if (*current == "+")
+        else if (*current == '+')
         {
-            if (minus)
-                local[get_index_of(id)] -= 1;
+            if (flag_minus)
+                local[reaction.get_index_of(id)] -= 1;
             else
-                local[get_index_of(id)] += 1;
+                local[reaction.get_index_of(id)] += 1;
             id = "";
             ++current;
         }
@@ -71,24 +80,7 @@ Reaction par(String code)
             id += *current;
         }
     }
-    return reaction();
-}
-
-/* ************************************************************************ */
-
-int get_index_of(String id)
-{
-    auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
-    if (pointer == m_ids.end())
-    {
-        for(auto& rule : m_rules)
-        {
-            rule.push_back(0);
-        }
-        m_ids.push_back(id);
-        return m_ids.size() - 1;
-    }
-    return std::distance(m_ids.begin(), pointer);
+    return Reaction();
 }
 
 /* ************************************************************************ */
@@ -97,7 +89,7 @@ class StochasticReactionsApi : public simulator::LibraryApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
-        return par(code);
+        return parseReactionCode(code);
     }
 };
 

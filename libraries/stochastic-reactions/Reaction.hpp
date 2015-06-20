@@ -7,10 +7,12 @@
 
 class Reaction
 {
+    public:
     DynamicArray<float> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<int>> m_rules;
     
-    public:
     void operator()(simulator::Object& object, units::Duration);
+    
+    int get_index_of(String id);
 };
