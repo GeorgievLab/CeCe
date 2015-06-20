@@ -31,9 +31,9 @@ namespace units {
 /**
  * @brief Base SI units.
  */
-struct BaseLength {};
-struct BaseTime {};
-struct BaseMass {};
+struct BaseLength { static CONSTEXPR_CONST int value = 0; };
+struct BaseTime   { static CONSTEXPR_CONST int value = 1; };
+struct BaseMass   { static CONSTEXPR_CONST int value = 2; };
 
 /* ************************************************************************ */
 
@@ -43,7 +43,46 @@ struct BaseMass {};
  * @tparam Types A list of types.
  */
 template<typename... Types>
-struct List {};
+struct List
+{
+    static CONSTEXPR_CONST unsigned int size = sizeof...(Types);
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Concat lists.
+ */
+template<typename... T>
+struct Concat;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Concat two lists.
+ *
+ * @tparam Types1
+ * @tparam Types2
+ * @tparam Tail
+ */
+template<typename... Types1, typename... Types2, typename... Tail>
+struct Concat<List<Types1...>, List<Types2...>, Tail...>
+{
+    using type = typename Concat<List<Types1..., Types2...>, Tail...>::type;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Stop specialization.
+ *
+ * @tparam Types
+ */
+template<typename... Types>
+struct Concat<List<Types...>>
+{
+    using type = List<Types...>;
+};
 
 /* ************************************************************************ */
 
@@ -212,63 +251,88 @@ private:
 /* ************************************************************************ */
 
 /**
- * @brief Helper class to simplify units.
+ * @brief Remove type element from list.
+ *
+ * @tparam T    Type to remove.
+ * @tparam List List of types.
  */
-template<typename Nom, typename Denom>
-struct SimplifyInternal;
+template<typename T, typename List>
+struct Remove;
 
 /* ************************************************************************ */
 
 /**
- * @brief Helper class to simplify units.
+ * @brief Remove type element from list.
  *
- * @tparam T Type in both lists.
+ * @tparam T Type to remove.
  */
 template<typename T>
-struct SimplifyInternal<List<T>, List<T>>
+struct Remove<T, List<>>
 {
-    using type = Unit<List<>, List<>>::value_type;
+    // Not found
+    static CONSTEXPR_CONST bool value = false;
+
+    // Empty list.
+    using type = List<>;
 };
 
 /* ************************************************************************ */
 
 /**
- * @brief Helper class to simplify units.
+ * @brief Remove type element from list.
  *
- * @tparam T            Type in both lists.
- * @tparam Nominators   List types.
- * @tparam Denominators List types.
+ * @tparam T     Type to remove.
+ * @tparam Type  First type.
+ * @tparam Types List of types.
  */
-template<typename T, typename... Nominators, typename... Denominators>
-struct SimplifyInternal<List<T, Nominators...>, List<T, Denominators...>>
+template<typename T, typename Type, typename... Types>
+struct Remove<T, List<Type, Types...>>
 {
-    using type = Unit<List<Nominators...>, List<Denominators...>>;
+    /// If types match.
+    static CONSTEXPR_CONST bool match = std::is_same<T, Type>::value;
+
+    // Inner remove
+    using remove_inner = Remove<T, List<Types...>>;
+
+    // If type is found.
+    static CONSTEXPR_CONST bool value = match || remove_inner::value;
+
+    /// List type without first T
+    using type = typename std::conditional<match,
+        List<Types...>,
+        typename Concat<List<Type>, typename remove_inner::type>::type
+    >::type;
 };
+
+static_assert(std::is_same<
+    typename Remove<int, List<int, int, char, int>>::type,
+    List<int, char, int>
+>::value, "");
 
 /* ************************************************************************ */
 
 /**
- * @brief Helper class to simplify units.
- *
- * @tparam Nominators   List types.
- * @tparam Denominators List types.
- */
-template<typename... Nominators, typename... Denominators>
-struct SimplifyInternal<List<Nominators...>, List<Denominators...>>
-{
-    using type = Unit<List<Nominators...>, List<Denominators...>>;
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Helper class to simplify units.
+ * @brief Helper class to reduce units.
  *
  * @tparam Nom   Nominators.
  * @tparam Denom Denominators.
  */
 template<typename Nom, typename Denom>
-struct Simplify;
+struct ReduceInner;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to reduce units.
+ *
+ * @tparam Denominators List types.
+ */
+template<typename... Denominators>
+struct ReduceInner<List<>, List<Denominators...>>
+{
+    using nominators = List<>;
+    using denominators = List<Denominators...>;
+};
 
 /* ************************************************************************ */
 
@@ -277,15 +341,85 @@ struct Simplify;
  *
  * Type removes shared types in nominator and denominator.
  *
+ * @tparam Nom          First nominator.
+ * @tparam Nominators   List types.
+ * @tparam Denominators List types.
+ */
+template<typename Nom, typename... Nominators, typename... Denominators>
+struct ReduceInner<List<Nom, Nominators...>, List<Denominators...>>
+{
+    /// Type of removing type.
+    using remove_type = Remove<Nom, List<Denominators...>>;
+
+    // Reduce without the first nominator
+    using reduce_inner = ReduceInner<List<Nominators...>, typename remove_type::type>;
+
+    /// List of nominators
+    using nominators = typename std::conditional<remove_type::value,
+        typename reduce_inner::nominators,
+        typename Concat<List<Nom>, typename reduce_inner::nominators>::type
+    >::type;
+
+    /// List of denominators
+    using denominators = typename reduce_inner::denominators;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Reduce empty lists.
+ */
+template<typename Nominators, typename Denominators>
+struct ReduceEmpty
+{
+    /// Result unit type.
+    using type = Unit<Nominators, Denominators>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Reduce empty lists.
+ */
+template<>
+struct ReduceEmpty<List<>, List<>>
+{
+    /// Result unit type.
+    using type = float;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to reduce units.
+ *
+ * @tparam Nom   Nominators.
+ * @tparam Denom Denominators.
+ */
+template<typename Nom, typename Denom>
+struct Reduce;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to simplify units.
+ *
+ * Type removes shared types in nominator and denominator.
+ *
+ * @tparam Nom          First nominator.
  * @tparam Nominators   List types.
  * @tparam Denominators List types.
  */
 template<typename... Nominators, typename... Denominators>
-struct Simplify<List<Nominators...>, List<Denominators...>>
+struct Reduce<List<Nominators...>, List<Denominators...>>
 {
-    using type = typename SimplifyInternal<
-        List<Nominators...>,
-        List<Denominators...>
+    // Inner reduce
+    using inner = ReduceInner<List<Nominators...>, List<Denominators...>>;
+
+    /// Result unit type.
+    using type = typename ReduceEmpty<
+        typename inner::nominators,
+        typename inner::denominators
     >::type;
 };
 
@@ -529,12 +663,12 @@ Unit<List<Nominators...>, List<Denominators...>> operator*(
  */
 template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
 inline CONSTEXPR
-typename Simplify<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type operator*(
+typename Reduce<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type operator*(
     Unit<List<Nominators1...>, List<Denominators1...>> lhs,
     Unit<List<Nominators2...>, List<Denominators2...>> rhs
 ) NOEXCEPT
 {
-    return typename Simplify<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type{
+    return typename Reduce<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type{
         rhs.value() * lhs.value()
     };
 }
@@ -602,12 +736,12 @@ Unit<List<Nominators...>, List<Denominators...>> operator/(
  */
 template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
 inline CONSTEXPR
-typename Simplify<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type operator/(
+typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type operator/(
     Unit<List<Nominators1...>, List<Denominators1...>> lhs,
     Unit<List<Nominators2...>, List<Denominators2...>> rhs
 ) NOEXCEPT
 {
-    return typename Simplify<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type{
+    return typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type{
         rhs.value() / lhs.value()
     };
 }
@@ -1109,7 +1243,7 @@ inline CONSTEXPR Probability precent(float value) NOEXCEPT
 /* ************************************************************************ */
 
 static_assert(std::is_same<
-    Simplify<List<BaseLength>, List<BaseLength>>::type,
+    Reduce<List<BaseLength>, List<BaseLength>>::type,
     //Unit<List<>, List<>>::value_type
     float
 >::value, "");
@@ -1117,21 +1251,21 @@ static_assert(std::is_same<
 /* ************************************************************************ */
 
 static_assert(std::is_same<
-    Simplify<List<BaseLength, BaseMass>, List<BaseLength>>::type,
+    Reduce<List<BaseLength, BaseMass>, List<BaseLength>>::type,
     Unit<List<BaseMass>, List<>>
 >::value, "");
 
 /* ************************************************************************ */
 
 static_assert(std::is_same<
-    Simplify<List<BaseMass, BaseLength>, List<BaseLength>>::type,
+    Reduce<List<BaseMass, BaseLength>, List<BaseLength>>::type,
     Unit<List<BaseMass>, List<>>
 >::value, "");
 
 /* ************************************************************************ */
 
 static_assert(std::is_same<
-    Simplify<List<BaseMass, BaseLength>, List<BaseLength, BaseLength>>::type,
+    Reduce<List<BaseMass, BaseLength>, List<BaseLength, BaseLength>>::type,
     Unit<List<BaseMass>, List<BaseLength>>
 >::value, "");
 
