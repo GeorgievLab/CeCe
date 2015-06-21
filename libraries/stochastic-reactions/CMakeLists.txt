@@ -1,16 +1,17 @@
 # ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
+
+# Library name
+set(LIBRARY_NAME stochastic-reactions)
 
 # Project name
-set(PROJECT_NAME module-stochastic-reactions)
+set(PROJECT_NAME "module-${LIBRARY_NAME}")
 
 # Create project
 project(${PROJECT_NAME} CXX)
-
-# Find Boost
-find_package(Boost REQUIRED)
-
-# Include directories
-include_directories(${Boost_INCLUDE_DIRS})
 
 # Sources
 set(SRCS
@@ -20,11 +21,11 @@ set(SRCS
     Reaction.cpp
 )
 
-# Build static / dynamic
-list(FIND MODULES_BUILDIN "cell" IS_STATIC)
+# Build static / shared
+list(FIND MODULES_BUILDIN "${LIBRARY_NAME}" IS_STATIC)
 
 if (${IS_STATIC} GREATER -1)
-    message("-- Module ${PROJECT_NAME} is build-in")
+    message("-- Library ${LIBRARY_NAME} is build-in")
 
     if (UNIX)
         add_compile_options(-fPIC)
@@ -37,13 +38,8 @@ if (${IS_STATIC} GREATER -1)
     add_dependencies(${PROJECT_NAME}
         core
     )
-
-    # Link libraries
-    target_link_libraries(${PROJECT_NAME}
-        ${Boost_LIBRARIES}
-    )
 else ()
-    message("-- Module ${PROJECT_NAME} is dynamic")
+    message("-- Library ${LIBRARY_NAME} is shared")
     add_library(${PROJECT_NAME} SHARED ${SRCS})
 
     # Setup dependencies
@@ -55,14 +51,35 @@ else ()
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         simulator
-        ${Boost_LIBRARIES}
     )
 
     # Install
     install(TARGETS ${PROJECT_NAME}
         DESTINATION lib
     )
+endif ()
 
+# ######################################################################### #
+
+if (BUILD_TESTS)
+    # Create executable
+    add_executable("${LIBRARY_NAME}_test"
+        test/test.cpp
+        test/ParserTest.cpp
+    )
+    target_link_libraries("${LIBRARY_NAME}_test"
+        ${PROJECT_NAME}
+        ${GTEST_BOTH_LIBRARIES}
+    )
+
+    if (UNIX)
+        target_link_libraries("${LIBRARY_NAME}_test"
+            -pthread
+        )
+    endif ()
+
+    # Add test
+    add_test(${PROJECT_NAME} "${LIBRARY_NAME}_test")
 endif ()
 
 # ######################################################################### #

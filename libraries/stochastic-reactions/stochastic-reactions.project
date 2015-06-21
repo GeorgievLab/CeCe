@@ -118,4 +118,8 @@
     <Project Name="render"/>
   </Dependencies>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="test">
+    <File Name="test/test.cpp"/>
+    <File Name="test/ParserTest.cpp"/>
+  </VirtualDirectory>
 </CodeLite_Project>
