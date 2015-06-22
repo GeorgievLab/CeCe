@@ -12,7 +12,6 @@
 
 // Simulator
 #include "core/compatibility.hpp"
-#include "core/Iterator.hpp"
 #include "core/Range.hpp"
 #include "core/Vector.hpp"
 

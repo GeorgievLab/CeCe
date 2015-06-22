@@ -55,7 +55,7 @@ add_library(${PROJECT_NAME} OBJECT
     Exception.hpp
     OStream.hpp
     IStream.hpp
-    Iterator.hpp
+    ValueIterator.hpp
     Range.hpp
     VectorRange.hpp
     Any.hpp
@@ -68,6 +68,7 @@ if (BUILD_TESTS)
     add_executable(core_test
         test/test.cpp
         test/DynamicArrayTest.cpp
+        test/IteratorRangeTest.cpp
     )
     target_link_libraries(core_test
         ${GTEST_BOTH_LIBRARIES}
