@@ -42,7 +42,7 @@ void Cell::update(units::Duration dt)
 #if ENABLE_PHYSICS
     // Update cell shape
     b2CircleShape shape;
-    shape.m_radius = getRadius();
+    shape.m_radius = getRadius().value();
 
     // Update fixture
     b2Fixture* fixture = getBody()->GetFixtureList();

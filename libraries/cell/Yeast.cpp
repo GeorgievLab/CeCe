@@ -160,7 +160,7 @@ void Yeast::draw(render::Context& context)
     context.matrixPush();
     context.matrixTranslate(pos);
     context.matrixRotate(angle);
-    context.matrixScale(2 * radius);
+    context.matrixScale(2 * radius.value());
     m_renderObject->draw(context, 0.5f, 0.5f * (budRadius / radius));
     context.matrixPop();
 }
