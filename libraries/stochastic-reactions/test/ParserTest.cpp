@@ -102,8 +102,8 @@ static void test_invalid_impl(int line, const String& code)
 
 TEST(Parser, empty)
 {
-    test("", {}, {}, {{}});
-    test(";", {}, {}, {{}});
+    test("", {}, {}, {});
+    test(";", {}, {}, {});
 }
 
 /* ************************************************************************ */
