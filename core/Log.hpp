@@ -12,7 +12,7 @@
 
 // Simulator
 #include "core/compatibility.hpp"
-#include "core/OStream.hpp"
+#include "core/OutStream.hpp"
 
 /* ************************************************************************ */
 
@@ -47,7 +47,7 @@ public:
      *
      * @param os
      */
-    static void setOutput(OStream* os) NOEXCEPT
+    static void setOutput(OutStream* os) NOEXCEPT
     {
         m_output = os;
     }
@@ -58,7 +58,7 @@ public:
      *
      * @param os
      */
-    static void setError(OStream* os) NOEXCEPT
+    static void setError(OutStream* os) NOEXCEPT
     {
         m_error = os;
     }
@@ -125,7 +125,7 @@ private:
     /**
      * @brief Log message.
      */
-    static void message(OStream* os)
+    static void message(OutStream* os)
     {
         // Nothing to do
     }
@@ -134,7 +134,7 @@ private:
     /**
      * @brief Log message - EOL.
      */
-    static void message(OStream* os, eol_t)
+    static void message(OutStream* os, eol_t)
     {
         if (os)
             *os << std::endl;
@@ -147,7 +147,7 @@ private:
      * @param args
      */
     template<typename Arg, typename... Args>
-    static void message(OStream* os, Arg&& arg, Args&&... args)
+    static void message(OutStream* os, Arg&& arg, Args&&... args)
     {
         if (os)
         {
@@ -161,10 +161,10 @@ private:
 private:
 
     /// Standard output.
-    static OStream* m_output;
+    static OutStream* m_output;
 
     /// Error output.
-    static OStream* m_error;
+    static OutStream* m_error;
 
 };
 

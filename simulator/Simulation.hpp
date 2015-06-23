@@ -642,7 +642,7 @@ struct DLL_EXPORT TimeMeasurementIterationOutput
      * @param name Measurement name.
      * @param dt   Measured time.
      */
-    void operator()(OStream& out, const String& name, Clock::duration dt) const NOEXCEPT
+    void operator()(OutStream& out, const String& name, Clock::duration dt) const NOEXCEPT
     {
         using namespace std::chrono;
         out << name << ";" << m_simulation->getStepNumber() << ";" << duration_cast<microseconds>(dt).count() << "\n";

@@ -24,7 +24,7 @@ inline namespace core {
 /**
  * @brief Input stream type.
  */
-using IStream = std::istream;
+using InStream = std::istream;
 
 /* ************************************************************************ */
 

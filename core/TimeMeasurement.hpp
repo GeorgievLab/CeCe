@@ -15,7 +15,7 @@
 
 // Simulator
 #include "core/compatibility.hpp"
-#include "core/OStream.hpp"
+#include "core/OutStream.hpp"
 #include "core/String.hpp"
 
 /* ************************************************************************ */
@@ -38,7 +38,7 @@ using Clock = std::chrono::high_resolution_clock;
  *
  * @return
  */
-OStream* getMeasureTimeOutput() NOEXCEPT;
+OutStream* getMeasureTimeOutput() NOEXCEPT;
 
 /* ************************************************************************ */
 
@@ -47,7 +47,7 @@ OStream* getMeasureTimeOutput() NOEXCEPT;
  *
  * @param output
  */
-void setMeasureTimeOutput(OStream* output) NOEXCEPT;
+void setMeasureTimeOutput(OutStream* output) NOEXCEPT;
 
 /* ************************************************************************ */
 
@@ -64,7 +64,7 @@ struct DLL_EXPORT DefaultMeasurementOutput
      * @param name Measurement name.
      * @param dt   Measured time.
      */
-    void operator()(OStream& out, const String& name, Clock::duration dt) const NOEXCEPT
+    void operator()(OutStream& out, const String& name, Clock::duration dt) const NOEXCEPT
     {
         using namespace std::chrono;
         out << name << ";" << duration_cast<microseconds>(dt).count() << "\n";

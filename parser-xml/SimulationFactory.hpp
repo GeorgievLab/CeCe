@@ -13,7 +13,7 @@
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/UniquePtr.hpp"
-#include "core/IStream.hpp"
+#include "core/InStream.hpp"
 #include "core/FilePath.hpp"
 #include "parser/SimulationFactory.hpp"
 
@@ -48,13 +48,8 @@ protected:
      *
      * @return
      */
-#ifdef __MINGW32__
-    UniquePtr<simulator::Simulation> fromStream(core::IStream& source,
+    UniquePtr<simulator::Simulation> fromStream(InStream& source,
         const FilePath& filename) const override;
-#else
-    UniquePtr<simulator::Simulation> fromStream(IStream& source,
-        const FilePath& filename) const override;
-#endif
 
 };
 

@@ -15,7 +15,7 @@
 #include "core/String.hpp"
 #include "core/FilePath.hpp"
 #include "core/UniquePtr.hpp"
-#include "core/IStream.hpp"
+#include "core/InStream.hpp"
 #include "simulator/SimulationFactory.hpp"
 
 /* ************************************************************************ */
@@ -69,13 +69,8 @@ protected:
      *
      * @return
      */
-#ifdef __MINGW32__
-    virtual UniquePtr<simulator::Simulation> fromStream(core::IStream& source,
+    virtual UniquePtr<simulator::Simulation> fromStream(InStream& source,
         const String& filename) const = 0;
-#else
-    virtual UniquePtr<simulator::Simulation> fromStream(IStream& source,
-        const String& filename) const = 0;
-#endif
 
 };
 

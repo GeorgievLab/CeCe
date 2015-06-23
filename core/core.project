@@ -50,13 +50,13 @@
     <File Name="Map.hpp"/>
     <File Name="UniquePtr.hpp"/>
     <File Name="Exception.hpp"/>
-    <File Name="OStream.hpp"/>
-    <File Name="IStream.hpp"/>
     <File Name="StaticArray.hpp"/>
     <File Name="Range.hpp"/>
     <File Name="VectorRange.hpp"/>
     <File Name="Any.hpp"/>
     <File Name="ValueIterator.hpp"/>
+    <File Name="OutStream.hpp"/>
+    <File Name="InStream.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -20,18 +20,18 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-OStream* g_output = &std::cout;
+OutStream* g_output = &std::cout;
 
 /* ************************************************************************ */
 
-OStream* getMeasureTimeOutput() NOEXCEPT
+OutStream* getMeasureTimeOutput() NOEXCEPT
 {
     return g_output;
 }
 
 /* ************************************************************************ */
 
-void setMeasureTimeOutput(OStream* output) NOEXCEPT
+void setMeasureTimeOutput(OutStream* output) NOEXCEPT
 {
     g_output = output;
 }

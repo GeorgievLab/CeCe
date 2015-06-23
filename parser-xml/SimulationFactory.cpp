@@ -279,7 +279,7 @@ namespace xml {
 /* ************************************************************************ */
 
 UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
-    IStream& source, const FilePath& filename) const
+    InStream& source, const FilePath& filename) const
 {
     UniquePtr<simulator::Simulation> simulation(new simulator::Simulation());
 

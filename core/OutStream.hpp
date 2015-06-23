@@ -24,7 +24,7 @@ inline namespace core {
 /**
  * @brief Output stream type.
  */
-using OStream = std::ostream;
+using OutStream = std::ostream;
 
 /* ************************************************************************ */
 
