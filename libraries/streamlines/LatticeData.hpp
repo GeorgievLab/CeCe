@@ -69,6 +69,22 @@ public:
     };
 
 
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param velocity Initial velocity.
+     * @param rho      Initial density.
+     */
+    LatticeData(const Vector<ValueType>& velocity = Vector<ValueType>::Zero, ValueType rho = 1.f)
+    {
+        init(velocity, rho);
+    }
+
+
 // Public Operators
 public:
 
