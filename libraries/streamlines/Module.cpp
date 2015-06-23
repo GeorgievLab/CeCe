@@ -42,35 +42,18 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::init(Size size)
+void Module::init()
 {
-    // Resize lattice
-    m_lattice.setSize(std::move(size));
+    // Initialize lattice data
 
-    // Get grid
-    auto& grid = getLattice();
-    const auto grid_size = grid.getRealSize();
-/*
-    auto computePoiseuille = [&grid_size](int i) {
-        float y = (float) (i - 1);
-        float L = (float) (grid_size.getHeight() - 1);
-        return 4.f * MAX_LB_SPEED / (L * L) * (L * y - y * y);
-    };
-*/
-    for (Lattice::SizeType y = 1; y < grid_size.getHeight() - 1; ++y)
-    {
-        for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
-        {
-            //m_lattice[{x, y}].init({computePoiseuille(y), 0.f});
-            //m_lattice[{x, y}].init({MAX_LB_SPEED, 0.f});
-            m_lattice[{x, y}].init({0.f, 0.f});
-        }
-    }
+    const auto& size = m_lattice.getSize();
 
-    for (Lattice::SizeType x = 1; x < grid_size.getWidth() - 1; ++x)
+    // Set border obstacles
+    // TODO: replace by physical obstacles
+    for (Lattice::SizeType x = 1; x < size.getWidth() - 1; ++x)
     {
         m_lattice[{x, 1}].setStaticObstacle(true);
-        m_lattice[{x, grid_size.getHeight() - 2}].setStaticObstacle(true);
+        m_lattice[{x, size.getHeight() - 2}].setStaticObstacle(true);
     }
 }
 
@@ -79,34 +62,26 @@ void Module::init(Size size)
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     // Physical size of one lattice cell
-    const auto dl = simulation.getWorldSize() / getLattice().getSize();
+    const auto dl = simulation.getWorldSize() / m_lattice.getSize();
 
-    // Set maximum flow velocity
+    // Calculate maximum flow velocity
     const VelocityVector v_max = LatticeData::MAX_SPEED * dl / dt;
-
-    // Check condition time step condition
-    //checkTimeStepCondition(dt, simulation);
 
     // Dynamic obstacles
     updateDynamicObstacleMap(simulation, v_max);
 
-    {
-        // LB viscosity
-        const auto nu_lb = (dt / (dl.getX() * dl.getX())) * getViscosity();
+    // Viscosity in LB units
+    const auto viscosity = (dt / (dl.getX() * dl.getX())) * getViscosity();
 
-        // Relaxation parameter
-        const float tau = (3.f * nu_lb + 0.5f);
-        const float omega = 1.f / tau;
+    // Relaxation parameter
+    const float tau = (3.f * viscosity + 0.5f);
+    const float omega = 1.f / tau;
 
-        ///////////////////
+    // Collide and propagate
+    m_lattice.collideAndPropagate(omega);
 
-        // Compute lattice collisions
-        getLattice().collide(omega);
-        getLattice().propagate();
-
-        ///////////////////
-        applyBoundaryConditions(simulation, v_max);
-    }
+    // Apply boundary conditions
+    applyBoundaryConditions(simulation, v_max);
 
     // Apply streamlines to world objects
     applyToObjects(simulation, v_max);
@@ -123,13 +98,16 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
     // Viscosity
     config.callIfSetString("viscosity", [this](const String& value) {
-        setViscosity(parser::parse_value<units::Viscosity>(value.c_str()));
+        setViscosity(parser::parse_value<units::Viscosity>(value));
     });
 
     // Grid size
     config.callString("grid", [this](const String& value) {
-        init(parser::parse_vector_single<Lattice::SizeType>(value));
+        m_lattice.setSize(parser::parse_vector_single<Lattice::SizeType>(value));
     });
+
+    // Initialize lattice
+    init();
 }
 
 /* ************************************************************************ */
@@ -138,11 +116,12 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
 #if OPT_DRAW_VELOCITY
-    const auto size = getLattice().getSize();
+    const auto size = m_lattice.getSize();
 
     if (!m_drawable)
         m_drawable.create(context, size);
 
+    // Temporary for velocities
     Grid<VelocityVector> velocities(size);
 
     // Update texture
@@ -152,7 +131,6 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         {
             // Cell alias
             const auto& cell = m_lattice[{x + 1, y + 1}];
-            //const Coordinate coord{x, size.getHeight() - y - 1};
             const Coordinate coord{x, y};
 
             // Background color
@@ -162,12 +140,12 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             if (!cell.isObstacle())
             {
                 // Calculate velocity vector
-                const auto velocity = cell.calcVelocityNormalized();// / MAX_LB_SPEED;// * 100;// / getFlowSpeed();
+                const auto velocity = cell.calcVelocityNormalized();
 
-                //color = {velocity.getX(), velocity.getY(), velocity.getLength(), 1};
+                // Cell color
                 color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
-                //color = {cell.calcRho(), velocity.getLength(), 0, 1};
 
+                // Cell velocity
                 velocities[coord] = velocity;
             }
             else
@@ -194,20 +172,6 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 #endif
 }
 #endif
-
-/* ************************************************************************ */
-
-void Module::checkTimeStepCondition(units::Duration dt, const simulator::Simulation& simulation)
-{
-    /*
-    // Steps in all directions
-    const auto dl = simulation.getWorldSize() / getLattice().getSize();
-    const auto dt_max = dl / getVelocityMax();
-
-    if (dt > std::max(dt_max.getX(), dt_max.getY()))
-        throw InvalidArgumentException("Time step is to large");
-    */
-}
 
 /* ************************************************************************ */
 
@@ -246,7 +210,7 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
         // Map shapes to grid
         for (const auto& shape : shapes)
         {
-            coordIt = mapShapeToGrid(coordIt, shape, step, coord, getLattice().getSize());
+            coordIt = mapShapeToGrid(coordIt, shape, step, coord, m_lattice.getSize());
         }
 
         // In this case duplicate coordinates doesn't harm and calling
@@ -268,11 +232,8 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
 
 void Module::applyToObjects(const simulator::Simulation& simulation, const VelocityVector& v_max)
 {
-    // Get lattice
-    const auto& lattice = getLattice();
-
     const PositionVector start = simulation.getWorldSize() * -0.5f;
-    const auto step = simulation.getWorldSize() / lattice.getSize();
+    const auto step = simulation.getWorldSize() / m_lattice.getSize();
 
     DynamicArray<Coordinate> coords;
     coords.reserve(256);
@@ -299,15 +260,15 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
         {
             coords.clear();
             auto coordIt = std::back_inserter(coords);
-            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, getLattice().getSize(), {}, 5);
+            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, m_lattice.getSize(), {}, 5);
 
             // NOTE: Function should return only unique coordinates.
 
             // Sum of the velocities
             VelocityVector velocity = std::accumulate(coords.begin(), coords.end(),
                 VelocityVector{VelocityVector::Zero},
-                [&v_max, &lattice](VelocityVector& init, const Coordinate& c) {
-                    return init + lattice[c].calcVelocityNormalized() * v_max;
+                [&v_max, this](VelocityVector& init, const Coordinate& c) {
+                    return init + m_lattice[c].calcVelocityNormalized() * v_max;
                 }
             );
 
@@ -332,65 +293,26 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
 
 void Module::applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& v_max)
 {
-    /**/
+    // maximum velocity of the Poiseuille inflow
+    const auto grid_size = m_lattice.getRealSize();
+    const float lb_speed = getVelocityInflow() / v_max.getX();
+
+    auto computePoiseuille = [&grid_size, lb_speed](int i) {
+        const float y = (float) (i - 1);
+        const float L = (float) (grid_size.getHeight() - 1);
+        return 4.f * lb_speed / (L * L) * (L * y - y * y);
+    };
+
+    // Generate input / output
+    for (Lattice::SizeType y = 0; y < grid_size.getHeight(); ++y)
     {
-        // maximum velocity of the Poiseuille inflow
-        const auto grid_size = getLattice().getRealSize();
-        const float lb_speed = getVelocityInflow() / v_max.getX();
+        // Input
+        m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
 
-        auto computePoiseuille = [&grid_size, lb_speed](int i) {
-            float y = (float) (i - 1);
-            float L = (float) (grid_size.getHeight() - 1);
-            return 4.f * lb_speed / (L * L) * (L * y - y * y);
-        };
-
-        // Generate input / output
-        for (Lattice::SizeType y = 0; y < grid_size.getHeight(); ++y)
-        {
-            m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
-            //m_lattice[{1, y}].init({lb_speed, 0.f});
-            //m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
-            m_lattice[{grid_size.getWidth() - 2, y}].init(
-                m_lattice[{grid_size.getWidth() - 3, y}].calcVelocityNormalized(),
-                m_lattice[{grid_size.getWidth() - 3, y}].calcRho()
-            );
-            m_lattice[{grid_size.getWidth() - 1, y}].clear();
-        }
+        // Output
+        m_lattice[{grid_size.getWidth() - 2, y}] = m_lattice[{grid_size.getWidth() - 3, y}];
+        m_lattice[{grid_size.getWidth() - 1, y}].clear();
     }
-    /**/
-    /*
-    // Make periodic
-    const auto realSize = getLattice().getRealSize();
-    auto width = realSize.getWidth() - 2;
-    auto height = realSize.getHeight() - 2;
-
-    for (decltype(width) x = 1; x <= width; ++x)
-    {
-        m_lattice[{x, height}][4] = m_lattice[{x, 0}][4];
-        m_lattice[{x, height}][7] = m_lattice[{x, 0}][7];
-        m_lattice[{x, height}][8] = m_lattice[{x, 0}][8];
-
-        m_lattice[{x, 1}][2] = m_lattice[{x, height + 1}][2];
-        m_lattice[{x, 1}][5] = m_lattice[{x, height + 1}][5];
-        m_lattice[{x, 1}][6] = m_lattice[{x, height + 1}][6];
-    }
-
-    for (decltype(height) y = 1; y <= height; ++y)
-    {
-        m_lattice[{1, y}][1] = m_lattice[{width + 1, y}][1];
-        m_lattice[{1, y}][5] = m_lattice[{width + 1, y}][5];
-        m_lattice[{1, y}][8] = m_lattice[{width + 1, y}][8];
-
-        m_lattice[{width, y}][3] = m_lattice[{0, y}][3];
-        m_lattice[{width, y}][6] = m_lattice[{0, y}][6];
-        m_lattice[{width, y}][7] = m_lattice[{0, y}][7];
-    }
-
-    m_lattice[{1, 1}][5]   = m_lattice[{width + 1, height + 1}][5];
-    m_lattice[{width, 1}][6]  = m_lattice[{0, height + 1}][6];
-    m_lattice[{width, height}][7] = m_lattice[{0, 0}][7];
-    m_lattice[{1, height}][8]  = m_lattice[{width + 1, 0}][8];
-    */
 }
 
 /* ************************************************************************ */

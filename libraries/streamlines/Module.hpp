@@ -138,10 +138,8 @@ public:
 
     /**
      * @brief Initialize lattice.
-     *
-     * @param size
      */
-    void init(Size size);
+    void init();
 
 
     /**
@@ -173,15 +171,6 @@ public:
 
 // Protected Operations
 protected:
-
-
-    /**
-     * @brief Check time step condition: dt <= dx / u_max.
-     *
-     * @param dt         Time step.
-     * @param simulation Simulation.
-     */
-    void checkTimeStepCondition(units::Duration dt, const simulator::Simulation& simulation);
 
 
     /**
