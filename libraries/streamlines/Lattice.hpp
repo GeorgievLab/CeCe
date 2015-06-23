@@ -58,14 +58,6 @@ public:
     using Size = Vector<SizeType>;
 
 
-// Public Constants
-public:
-
-
-// Public Ctors & Dtors
-public:
-
-
 // Public Operators
 public:
 
@@ -164,6 +156,18 @@ public:
      * @brief Propagate lattice data.
      */
     void propagate();
+
+
+    /**
+     * @brief Call collide and propagate functions.
+     *
+     * @param omega
+     */
+    void collideAndPropagate(LatticeData::ValueType omega)
+    {
+        collide(omega);
+        propagate();
+    }
 
 
     /**
