@@ -196,7 +196,7 @@ public:
     template<typename T>
     T getValue(const String& name, T def = {}) const
     {
-        return AnyCast<T>(getValue(name, std::move(def)));
+        return AnyCast<T>(getValue(name, Any(std::move(def))));
     }
 
 
