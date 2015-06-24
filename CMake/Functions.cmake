@@ -79,7 +79,7 @@ function(build_plugin NAME)
 
         # Install shared library
         install(TARGETS ${FULLNAME}
-            DESTINATION lib
+            DESTINATION ${INSTALL_DIR_PLUGINS}
         )
     endif ()
 endfunction()

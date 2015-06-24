@@ -96,7 +96,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Install
 install(TARGETS ${PROJECT_NAME}
-    DESTINATION lib
+    DESTINATION ${INSTALL_DIR_LIBRARY}
+    FRAMEWORK ${INSTALL_DIR_FRAMEWORK}
 )
 
 # ######################################################################### #

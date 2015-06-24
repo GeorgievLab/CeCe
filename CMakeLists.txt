@@ -8,11 +8,13 @@ cmake_minimum_required(VERSION 2.8)
 
 # ######################################################################### #
 
-# Workspace name
-project(cell-sim)
-
 # Add path to additional modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
+
+# ######################################################################### #
+
+# Name of the simulator
+set(SIMULATOR_NAME "cell-sim")
 
 # Applicatio version
 set(VERSION_MAJOR 0)
@@ -31,6 +33,13 @@ add_definitions(
 # Directory with plugins
 # TODO: change to plugins (after directory rename)
 set(DIR_PLUGINS "libraries")
+
+# ######################################################################### #
+
+# Workspace name
+project(${SIMULATOR_NAME})
+
+# ######################################################################### #
 
 # Options
 option(ENABLE_GUI                   "Enable GUI" On)
@@ -75,6 +84,15 @@ include(Compilers)
 
 # Library of functions
 include(Functions)
+
+# ######################################################################### #
+
+# Install directories
+set(INSTALL_DIR_RUNTIME "bin")
+set(INSTALL_DIR_LIBRARY "lib")
+set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${SIMULATOR_NAME}")
+set(INSTALL_DIR_FRAMEWORK "")
+set(INSTALL_DIR_BUNDLE ".")
 
 # ######################################################################### #
 

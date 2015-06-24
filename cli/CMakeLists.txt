@@ -60,7 +60,8 @@ add_dependencies(${PROJECT_NAME}
 
 # Install
 install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
+    BUNDLE  DESTINATION ${INSTALL_DIR_BUNDLE}
+    RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
 )
 
 # ######################################################################### #
