@@ -70,11 +70,12 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Dynamic obstacles
     updateDynamicObstacleMap(simulation, v_max);
 
+    // FIXME: Match SI units!!
     // Viscosity in LB units
     const auto viscosity = (dt / (dl.getX() * dl.getX())) * getViscosity();
 
     // Relaxation parameter
-    const float tau = (3.f * viscosity + 0.5f);
+    const float tau = (3.f * viscosity.value() + 0.5f);
     const float omega = 1.f / tau;
 
     // Collide and propagate
@@ -122,7 +123,8 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         m_drawable.create(context, size);
 
     // Temporary for velocities
-    Grid<VelocityVector> velocities(size);
+    // TODO: use Lattice velocity units
+    Grid<Vector<float>> velocities(size);
 
     // Update texture
     for (decltype(size.getHeight()) y = 0; y < size.getHeight(); ++y)
@@ -150,7 +152,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             }
             else
             {
-                velocities[coord] = VelocityVector::Zero;
+                velocities[coord] = Vector<float>::Zero;
             }
 
             // Set color
@@ -165,7 +167,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
     // Draw color grid
     context.matrixPush();
-    context.matrixScale(simulation.getWorldSize());
+    context.matrixScale(simulation.getWorldSize() / units::Length(1));
     m_drawable->draw(context);
     m_drawableVector->draw(context);
     context.matrixPop();

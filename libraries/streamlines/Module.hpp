@@ -203,10 +203,10 @@ protected:
 private:
 
     /// In-flow velocity.
-    units::Velocity m_velocityInflow = 10.f;
+    units::Velocity m_velocityInflow = units::um_s(10.f);
 
-    /// Fluid viscosity.
-    units::Viscosity m_viscosity = 1.f;
+    /// Fluid viscosity (of Water).
+    units::Viscosity m_viscosity = units::g_m_s(0.6531);
 
     /// Lattice.
     Lattice m_lattice;
