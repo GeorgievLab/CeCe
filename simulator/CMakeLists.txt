@@ -23,7 +23,7 @@ set(SRCS
     Module.hpp
     Library.hpp
     Library.cpp
-    LibraryApi.hpp
+    PluginApi.hpp
     Configuration.hpp
     Configuration.cpp
     Shape.hpp

@@ -14,7 +14,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/ShapeToGrid.hpp"
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 
 // Module
 #include "Module.hpp"
@@ -120,7 +120,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
 
 /* ************************************************************************ */
 
-class DiffusionApi : public LibraryApi
+class DiffusionApi : public PluginApi
 {
     std::unique_ptr<Module> createModule(Simulation& simulation, const String& name) NOEXCEPT override
     {

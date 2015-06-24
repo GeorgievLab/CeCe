@@ -570,7 +570,7 @@ public:
      *
      * @return
      */
-    LibraryApi* getLibraryApi(const String& name);
+    PluginApi* getLibraryApi(const String& name);
 
 
 // Private Data Members

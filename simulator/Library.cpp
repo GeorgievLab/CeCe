@@ -27,7 +27,7 @@
 #include "core/Log.hpp"
 #include "core/Exception.hpp"
 #include "core/FilePath.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 
 /* ************************************************************************ */
 

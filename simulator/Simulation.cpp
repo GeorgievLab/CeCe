@@ -18,7 +18,7 @@
 #include "core/Log.hpp"
 #include "simulator/Library.hpp"
 #include "simulator/Simulator.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 #include "render/Color.hpp"
 
 /* ************************************************************************ */
@@ -89,7 +89,7 @@ Module* Simulation::useModule(const String& path)
     std::tie(library, name) = splitModulePath(path);
 
     // Get API
-    LibraryApi* api = getLibraryApi(library);
+    PluginApi* api = getLibraryApi(library);
 
     // Load only library
     if (name.empty())
@@ -124,7 +124,7 @@ Object* Simulation::buildObject(const String& name, bool dynamic)
         throw std::invalid_argument("Missing object type");
 
     // Get API
-    LibraryApi* api = getLibraryApi(library);
+    PluginApi* api = getLibraryApi(library);
 
     Log::debug("Create object '", library, ".", type, "'");
 
@@ -152,7 +152,7 @@ Program Simulation::buildProgram(const String& path)
         throw std::invalid_argument("Missing program type");
 
     // Get API
-    LibraryApi* api = getLibraryApi(library);
+    PluginApi* api = getLibraryApi(library);
 
     Log::debug("Create program '", library, ".", type, "'");
 
@@ -330,7 +330,7 @@ Library* Simulation::loadLibrary(const String& name)
 
 /* ************************************************************************ */
 
-LibraryApi* Simulation::getLibraryApi(const String& name)
+PluginApi* Simulation::getLibraryApi(const String& name)
 {
     // Get if library is already loaded
     const bool init = !hasLibrary(name);
@@ -347,7 +347,7 @@ LibraryApi* Simulation::getLibraryApi(const String& name)
     }
 
     // Get API
-    LibraryApi* api = lib->getApi();
+    PluginApi* api = lib->getApi();
     assert(api);
 
     // Initialize simulation

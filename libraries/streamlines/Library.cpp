@@ -14,7 +14,7 @@
 #include "core/UniquePtr.hpp"
 #include "core/String.hpp"
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 
 // Module
 #include "Module.hpp"
@@ -25,7 +25,7 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-class StreamlinesApi : public LibraryApi
+class StreamlinesApi : public PluginApi
 {
     UniquePtr<Module> createModule(Simulation& simulation, const String& name) NOEXCEPT override
     {

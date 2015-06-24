@@ -27,7 +27,7 @@
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Program.hpp"
 
@@ -126,7 +126,7 @@ void process_program_node(const pugi::xml_node& node, simulator::Simulation& sim
     const auto code = configuration.getText();
 
     // Get library by language name
-    simulator::LibraryApi* api = simulation.getLibraryApi(lang);
+    simulator::PluginApi* api = simulation.getLibraryApi(lang);
 
     if (!api)
         throw parser::Exception("Unable to load library for language '" + lang + "'");

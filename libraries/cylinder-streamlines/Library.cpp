@@ -7,14 +7,14 @@
 // Simulator
 #include "core/compatibility.hpp"
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 
 // Module
 #include "Module.hpp"
 
 /* ************************************************************************ */
 
-class CylinderStreamlinesApi : public simulator::LibraryApi
+class CylinderStreamlinesApi : public simulator::PluginApi
 {
     std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) NOEXCEPT override
     {

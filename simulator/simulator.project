@@ -35,8 +35,8 @@
     <File Name="Shape.hpp"/>
     <File Name="ShapeToGrid.hpp"/>
     <File Name="Program.hpp"/>
-    <File Name="LibraryApi.hpp"/>
     <File Name="version.hpp"/>
+    <File Name="PluginApi.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

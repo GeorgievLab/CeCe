@@ -3,7 +3,6 @@
 #include "Module.hpp"
 
 // Simulation
-#include "core/args.hpp"
 #include "core/Log.hpp"
 #include "simulator/Simulation.hpp"
 #include "parser/Parser.hpp"
@@ -17,10 +16,10 @@ namespace picture {
 
 Module::Module()
 {
-    if (!args.empty())
-        Magick::InitializeMagick(args[0].c_str());
-    else
-        Log::warning("Variable args is empty");
+    //if (!args.empty())
+    //    Magick::InitializeMagick(args[0].c_str());
+    //else
+    //    Log::warning("Variable args is empty");
 }
 
 /* ************************************************************************ */

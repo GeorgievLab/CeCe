@@ -31,7 +31,7 @@ class Simulation;
 /**
  * @brief Library API type.
  */
-class DLL_EXPORT LibraryApi
+class DLL_EXPORT PluginApi
 {
 
 // Public Ctors & Dtors
@@ -41,7 +41,7 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~LibraryApi()
+    virtual ~PluginApi()
     {
         // Nothing to do
     }

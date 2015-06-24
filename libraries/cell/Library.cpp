@@ -12,7 +12,7 @@
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 
 // Module
 #include "Generator.hpp"
@@ -21,7 +21,7 @@
 
 /* ************************************************************************ */
 
-class CellApi : public simulator::LibraryApi
+class CellApi : public simulator::PluginApi
 {
     std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) NOEXCEPT override
     {

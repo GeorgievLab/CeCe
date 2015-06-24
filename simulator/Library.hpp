@@ -68,7 +68,7 @@
  * @param name Library name.
  */
 #define LIBRARY_CREATE_PROTOTYPE(name) \
-    extern "C" simulator::LibraryApi* LIBRARY_PROTOTYPE_NAME(create, name)()
+    extern "C" simulator::PluginApi* LIBRARY_PROTOTYPE_NAME(create, name)()
 
 /* ************************************************************************ */
 
@@ -171,7 +171,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class LibraryApi;
+class PluginApi;
 class Simulation;
 
 /* ************************************************************************ */
@@ -187,7 +187,7 @@ public:
 
 
     /// Create API function pointer type.
-    using CreateFn = LibraryApi* (*)();
+    using CreateFn = PluginApi* (*)();
 
     /// API version function pointer type.
     using ApiVersionFn = int (*)();
@@ -236,7 +236,7 @@ public:
      *
      * @return
      */
-    LibraryApi* getApi() const NOEXCEPT
+    PluginApi* getApi() const NOEXCEPT
     {
         return m_api.get();
     }
@@ -302,7 +302,7 @@ private:
     UniquePtr<Impl> m_impl;
 
     /// Object for library API.
-    UniquePtr<LibraryApi> m_api;
+    UniquePtr<PluginApi> m_api;
 
     /// Library paths.
     static DynamicArray<String> s_libraryPaths;

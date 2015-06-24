@@ -17,7 +17,7 @@
 
 // Simulator
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 
 // Module
 #include "Module.hpp"
@@ -51,7 +51,7 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-class PythonApi : public LibraryApi
+class PythonApi : public PluginApi
 {
 
     /**

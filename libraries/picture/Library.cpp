@@ -6,14 +6,14 @@
 
 // Simulator
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 
 // Module
 #include "Module.hpp"
 
 /* ************************************************************************ */
 
-class PictureApi : public simulator::LibraryApi
+class PictureApi : public simulator::PluginApi
 {
     std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
     {
