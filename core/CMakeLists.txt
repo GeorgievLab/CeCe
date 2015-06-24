@@ -53,8 +53,8 @@ add_library(${PROJECT_NAME} OBJECT
     FilePath.hpp
     FilePath.cpp
     Exception.hpp
-    OStream.hpp
-    IStream.hpp
+    OutStream.hpp
+    InStream.hpp
     ValueIterator.hpp
     Range.hpp
     VectorRange.hpp
