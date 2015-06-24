@@ -9,6 +9,8 @@
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/Units.hpp"
+#include "core/Map.hpp"
+#include "core/String.hpp"
 #include "simulator/Object.hpp"
 
 #ifdef ENABLE_RENDER
@@ -23,17 +25,25 @@ namespace cell {
 /* ************************************************************************ */
 
 /**
- * @brief Type for string number of fluorescent proteins.
- */
-using FluorescentProteinCount = unsigned int;
-
-/* ************************************************************************ */
-
-/**
  * @brief Base class for cells.
  */
 class CellBase : public simulator::Object
 {
+
+
+// Public Types
+public:
+
+
+    /**
+     * @brief Type for string number of molecules.
+     */
+    using MoleculeCount = unsigned int;
+
+    /**
+     * @brief Signed version of molecule count.
+     */
+    using MoleculeCountDifference = typename std::make_signed<MoleculeCount>::type;
 
 
 // Public Ctors & Dtors
@@ -70,35 +80,16 @@ public:
 
 
     /**
-     * @brief Returns a number of GFP proteins.
+     * @brief Returns a number moulecules of given name.
      *
-     * @return
-     */
-    FluorescentProteinCount getGfp() const NOEXCEPT
-    {
-        return m_gfp;
-    }
-
-
-    /**
-     * @brief Returns a number of RFP proteins.
+     * @param name Molecule name.
      *
-     * @return
+     * @return Number of molecules.
      */
-    FluorescentProteinCount getRfp() const NOEXCEPT
+    MoleculeCount getMoleculeCount(const String& name) const NOEXCEPT
     {
-        return m_rfp;
-    }
-
-
-    /**
-     * @brief Returns a number of YFP proteins.
-     *
-     * @return
-     */
-    FluorescentProteinCount getYfp() const NOEXCEPT
-    {
-        return m_yfp;
+        auto it = m_molecules.find(name);
+        return it != m_molecules.end() ? it->second : MoleculeCount();
     }
 
 
@@ -118,35 +109,58 @@ public:
 
 
     /**
-     * @brief Set a number of GFP proteins in the cell.
+     * @brief Set a number of molecules of given name.
      *
-     * @param gfp
+     * @param name  Molecule name.
+     * @param count Number of molecules.
      */
-    void setGfp(FluorescentProteinCount gfp) NOEXCEPT
+    void setMoleculeCount(const String& name, MoleculeCount count) NOEXCEPT
     {
-        m_gfp = gfp;
+        m_molecules[name] = count;
     }
 
 
     /**
-     * @brief Set a number of RFP proteins in the cell.
+     * @brief Add molecules of given name.
      *
-     * @param rfp
+     * @param name Molecule name.
+     * @param diff Number of molecules.
      */
-    void setRfp(FluorescentProteinCount rfp) NOEXCEPT
+    void changeMoleculeCount(const String& name, MoleculeCountDifference diff) NOEXCEPT
     {
-        m_rfp = rfp;
+        // Get mutable reference
+        auto& value = m_molecules[name];
+
+        // We need to compare signed versions.
+        // If not, this condition is always true.
+        if (MoleculeCountDifference(value) + diff >= 0)
+            value = MoleculeCount(0);
+        else
+            value += diff;
     }
 
 
     /**
-     * @brief Set a number of YFP proteins in the cell.
+     * @brief Add molecules of given name.
      *
-     * @param yfp
+     * @param name  Molecule name.
+     * @param count Number of molecules to add.
      */
-    void setYfp(FluorescentProteinCount yfp) NOEXCEPT
+    void addMolecules(const String& name, MoleculeCount count) NOEXCEPT
     {
-        m_yfp = yfp;
+        changeMoleculeCount(name, count);
+    }
+
+
+    /**
+     * @brief Remove molecules of given name.
+     *
+     * @param name  Molecule name.
+     * @param count Number of molecules to remove.
+     */
+    void removeMolecules(const String& name, MoleculeCount count) NOEXCEPT
+    {
+        changeMoleculeCount(name, -count);
     }
 
 
@@ -184,14 +198,8 @@ private:
     /// Cell volume.
     units::Volume m_volume = units::um3(100);
 
-    /// Number of GFP proteins.
-    FluorescentProteinCount m_gfp = 0;
-
-    /// Number of RFP proteins.
-    FluorescentProteinCount m_rfp = 0;
-
-    /// Number of YFP proteins.
-    FluorescentProteinCount m_yfp = 0;
+    /// Map of molecules.
+    Map<String, MoleculeCount> m_molecules;
 
 };
 
