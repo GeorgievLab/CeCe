@@ -62,11 +62,11 @@ public:
     }};
 
     /// Direction opposites
-    static CONSTEXPR_CONST StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {
+    static CONSTEXPR_CONST StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {{
         0,
         3, 4, 1, 2,
         7, 8, 5, 6
-    };
+    }};
 
 
 // Public Ctors & Dtors
