@@ -943,7 +943,7 @@ using Density = Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
 /**
  * @brief Class for representing viscosity.
  */
-using Viscosity = float;
+using Viscosity = Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
 
 /* ************************************************************************ */
 
@@ -1331,6 +1331,30 @@ inline CONSTEXPR Force mN(Value value) NOEXCEPT
 inline CONSTEXPR Force uN(Value value) NOEXCEPT
 {
     return mgm_s2(value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Kilogram per meter and second value.
+ *
+ * @param value
+ */
+inline CONSTEXPR Viscosity kg_m_s(Value value) NOEXCEPT
+{
+    return kg(value) / (m(1) * s(1));
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Kilogram per meter and second value.
+ *
+ * @param value
+ */
+inline CONSTEXPR Viscosity g_m_s(Value value) NOEXCEPT
+{
+    return g(value) / (m(1) * s(1));
 }
 
 /* ************************************************************************ */
