@@ -33,29 +33,22 @@ endif ()
 # Create program
 add_executable(${PROJECT_NAME} ${SRCS})
 
-set(MODULES_LIBS "")
-set(MODULES_SHARED ${MODULES})
-
-# Remove buildin
-foreach (MODULE ${MODULES_BUILDIN})
-    list(REMOVE_ITEM MODULES_SHARED ${MODULE})
-endforeach ()
-
-foreach (MODULE ${MODULES_SHARED})
-    message("-- Shared module: ${MODULE}")
-    set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
-endforeach ()
-
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "cell-sim-cli"
 )
 
+set(PLUGINS_TO_LINK "")
+
+if (ENABLE_PLUGINS_DIRECT_LINK)
+    plugin_project_names("${PLUGINS_BUILD}" PLUGINS_TO_LINK)
+endif ()
+
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    ${MODULES_LIBS}
     simulator
     parser-xml
+    ${PLUGINS_TO_LINK}
     ${RENDER_LIBS}
     -pthread
 )

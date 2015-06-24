@@ -1,4 +1,8 @@
 # ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
 
 # Project name
 set(PROJECT_NAME gui)
@@ -36,39 +40,26 @@ set(SRCS
 )
 
 # Create program
-if (WIN32)
-    add_executable(${PROJECT_NAME} WIN32
-        ${SRCS}
-    )
-    else ()
-    add_executable(${PROJECT_NAME}
-        ${SRCS}
-    )
-endif ()
+add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
+    ${SRCS}
+)
 
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "cell-sim-gui"
 )
 
-set(MODULES_LIBS "")
-set(MODULES_SHARED ${MODULES})
+set(PLUGINS_TO_LINK "")
 
-# Remove buildin
-foreach (MODULE ${MODULES_BUILDIN})
-    list(REMOVE_ITEM MODULES_SHARED ${MODULE})
-endforeach ()
-
-foreach (MODULE ${MODULES_SHARED})
-    message("-- Shared module: ${MODULE}")
-    set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
-endforeach ()
+if (ENABLE_PLUGINS_DIRECT_LINK)
+    plugin_project_names("${PLUGINS_BUILD}" PLUGINS_TO_LINK)
+endif ()
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    ${MODULES_LIBS}
     simulator
     parser-xml
+    ${PLUGINS_TO_LINK}
     ${wxWidgets_LIBRARIES}
 )
 
@@ -83,5 +74,13 @@ install(TARGETS ${PROJECT_NAME}
     BUNDLE  DESTINATION .   COMPONENT Runtime
     RUNTIME DESTINATION bin COMPONENT Runtime
 )
+
+# Fixup bundle on MacOS X
+if (APPLE)
+    install(CODE "
+        include(BundleUtilities)
+        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/cell-sim-gui.app\" \"\" \"/usr/local/lib\")
+    " COMPONENT Runtime)
+endif ()
 
 # ######################################################################### #

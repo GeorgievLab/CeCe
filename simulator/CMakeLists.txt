@@ -1,4 +1,8 @@
 # ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
 
 # Project name
 set(PROJECT_NAME simulator)
@@ -40,15 +44,16 @@ if (ENABLE_RENDER)
 endif ()
 
 # Include build-in libraries
-set(MODULES_LIBS "")
+set(PLUGINS_LIBS "")
 set(BUILDIN_LIBRARIES "")
 
-foreach (MODULE ${MODULES_BUILDIN})
-    message("-- Build-in module: ${MODULE}")
-    set(MODULES_LIBS ${MODULES_LIBS} module-${MODULE})
+# Foreach build-in plugins
+foreach (PLUGIN ${PLUGINS_BUILDIN})
+    message("-- Build-in plugin: ${PLUGIN}")
+    set(PLUGINS_LIBS ${PLUGINS_LIBS} module-${PLUGIN})
     # Fix module name: replace '-' by '_'
-    string(REPLACE "-" "_" FIXED_MODULE ${MODULE})
-    set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${MODULE},${FIXED_MODULE})")
+    string(REPLACE "-" "_" FIXED_PLUGIN ${PLUGIN})
+    set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${PLUGIN},${FIXED_PLUGIN})")
 endforeach ()
 
 # Pass build-in libraries list
@@ -67,7 +72,7 @@ add_library(${PROJECT_NAME} SHARED
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    ${MODULES_LIBS}
+    ${PLUGINS_LIBS}
     ${RENDER_LIBS}
 )
 

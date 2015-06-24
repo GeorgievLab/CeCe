@@ -15,9 +15,9 @@
 ## Function uses PLUGINS_BUILDIN_${NAME} variable.
 ##
 function(build_plugin NAME)
-    # TODO: change to plugin
-    set(PREFIX "module-")
-    set(FULLNAME "${PREFIX}${NAME}")
+
+    # Get project name
+    plugin_project_name(${NAME} FULLNAME)
 
     cmake_parse_arguments(ARG "" "" "SOURCES;LIBRARIES;DEPENDENCIES;PLUGINS_REQUIRED" ${ARGN})
 
@@ -56,8 +56,12 @@ function(build_plugin NAME)
             ${ARG_LIBRARIES}
         )
     else ()
-        # Shared library
-        add_library(${FULLNAME} SHARED ${ARG_SOURCES})
+        # Shared library/module
+        if (ENABLE_PLUGINS_DIRECT_LINK)
+            add_library(${FULLNAME} SHARED ${ARG_SOURCES})
+        else ()
+            add_library(${FULLNAME} MODULE ${ARG_SOURCES})
+        endif ()
 
         # Setup dependencies
         add_dependencies(${FULLNAME}
@@ -79,5 +83,28 @@ function(build_plugin NAME)
         )
     endif ()
 endfunction()
+
+# ######################################################################### #
+
+# Get plugin project name.
+function(plugin_project_name PLUGIN_NAME PROJECT_NAME)
+    # TODO: change to plugin
+    set(${PROJECT_NAME} "module-${PLUGIN_NAME}" PARENT_SCOPE)
+endfunction ()
+
+# ######################################################################### #
+
+# Get plugins project names.
+function(plugin_project_names PLUGIN_NAMES PROJECT_NAMES)
+
+    set(NAMES "")
+
+    foreach (PLUGIN_NAME ${PLUGIN_NAMES})
+        plugin_project_name(${PLUGIN_NAME} PROJECT_NAME)
+        list(APPEND NAMES ${PROJECT_NAME})
+    endforeach ()
+
+    set(${PROJECT_NAMES} ${NAMES} PARENT_SCOPE)
+endfunction ()
 
 # ######################################################################### #

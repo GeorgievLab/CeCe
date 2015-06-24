@@ -40,6 +40,7 @@ option(ENABLE_SSE                   "Enable SSE instructions" On)
 option(ENABLE_BUILDIN_PHYSICS       "Enable build-in physics engine (Box2D)" On)
 option(ENABLE_MEASUREMENT           "Enable or disable time measurement" Off)
 option(ENABLE_BUILDIN_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
+option(ENABLE_PLUGINS_DIRECT_LINK   "Enable or disable plugins direct linking into executables (useful for testing)" Off)
 option(BUILD_TESTS                  "Build simulator part tests (requires GTest)" Off)
 option(BUILD_TOOLS                  "Build support tools" Off)
 
@@ -66,10 +67,6 @@ foreach(PLUGIN_DIR ${PLUGINS_DIRECTORIES})
         endif ()
     endif()
 endforeach()
-
-# TODO: remove
-set(MODULES ${PLUGINS_BUILD})
-set(MODULES_BUILDIN ${PLUGINS_BUILDIN})
 
 # ######################################################################### #
 
@@ -142,23 +139,6 @@ if (BUILD_TESTS)
     find_package(GTest REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
 endif ()
-
-# ######################################################################### #
-
-# TODO: Remove after changes in CLI/GUI
-set(DYNAMIC_MODULES ${MODULES})
-
-# Remove missing modules
-foreach (LIBRARY ${MODULES})
-    if (EXISTS "${CMAKE_SOURCE_DIR}/libraries/${LIBRARY}")
-        message("-- Library '${LIBRARY}' found, build")
-    else ()
-        message("-- Library '${LIBRARY}' not found, ignore")
-        list(REMOVE_ITEM MODULES ${LIBRARY})
-        list(REMOVE_ITEM MODULES_BUILDIN ${LIBRARY})
-    endif ()
-    list(REMOVE_ITEM DYNAMIC_MODULES ${LIBRARY})
-endforeach ()
 
 # ######################################################################### #
 
