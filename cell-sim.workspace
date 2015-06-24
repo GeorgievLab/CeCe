@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="cell-sim" Database="">
-  <Project Name="gui" Path="gui/gui.project" Active="Yes"/>
+  <Project Name="gui" Path="gui/gui.project" Active="No"/>
   <Project Name="core" Path="core/core.project" Active="No"/>
   <Project Name="simulator" Path="simulator/simulator.project"/>
   <Project Name="render" Path="render/render.project"/>
-  <Project Name="cli" Path="cli/cli.project" Active="No"/>
+  <Project Name="cli" Path="cli/cli.project" Active="Yes"/>
   <Project Name="parser" Path="parser/parser.project" Active="No"/>
   <Project Name="diffusion" Path="libraries/diffusion/diffusion.project" Active="No"/>
   <Project Name="cell" Path="libraries/cell/cell.project" Active="No"/>
@@ -17,6 +17,7 @@
   <Project Name="cylinder-streamlines" Path="libraries/cylinder-streamlines/cylinder-streamlines.project" Active="No"/>
   <Project Name="python" Path="libraries/python/python.project" Active="No"/>
   <Project Name="diffusion-cylinder-streamlines" Path="libraries/diffusion-cylinder-streamlines/diffusion-cylinder-streamlines.project" Active="No"/>
+  <Project Name="streamlines" Path="libraries/streamlines/streamlines.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -33,6 +34,7 @@
       <Project Name="module-cylinder-streamlines" ConfigName="Debug"/>
       <Project Name="module-python" ConfigName="Debug"/>
       <Project Name="module-diffusion-cylinder-streamlines" ConfigName="Debug"/>
+      <Project Name="module-streamlines" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -49,6 +51,7 @@
       <Project Name="module-cylinder-streamlines" ConfigName="Release"/>
       <Project Name="module-python" ConfigName="Release"/>
       <Project Name="module-diffusion-cylinder-streamlines" ConfigName="Release"/>
+      <Project Name="module-streamlines" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

@@ -941,6 +941,13 @@ using Density = Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
 /* ************************************************************************ */
 
 /**
+ * @brief Class for representing viscosity.
+ */
+using Viscosity = float;
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing volume.
  */
 using Angle = Value;
