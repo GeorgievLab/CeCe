@@ -1401,35 +1401,6 @@ inline CONSTEXPR Probability precent(Value value) NOEXCEPT
 
 /* ************************************************************************ */
 
-static_assert(std::is_same<
-    Reduce<List<BaseLength>, List<BaseLength>>::type,
-    //Unit<List<>, List<>>::value_type
-    Value
->::value, "");
-
-/* ************************************************************************ */
-
-static_assert(std::is_same<
-    Reduce<List<BaseLength, BaseMass>, List<BaseLength>>::type,
-    Unit<List<BaseMass>, List<>>
->::value, "");
-
-/* ************************************************************************ */
-
-static_assert(std::is_same<
-    Reduce<List<BaseMass, BaseLength>, List<BaseLength>>::type,
-    Unit<List<BaseMass>, List<>>
->::value, "");
-
-/* ************************************************************************ */
-
-static_assert(std::is_same<
-    Reduce<List<BaseMass, BaseLength>, List<BaseLength, BaseLength>>::type,
-    Unit<List<BaseMass>, List<BaseLength>>
->::value, "");
-
-/* ************************************************************************ */
-
 }
 
 /* ************************************************************************ */
