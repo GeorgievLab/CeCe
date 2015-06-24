@@ -1,18 +1,14 @@
 # ######################################################################### #
-
-# Project name
-set(PROJECT_NAME module-python)
-
-# Create project
-project(${PROJECT_NAME} CXX)
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
 
 # Include Python API
 find_package(PythonLibs REQUIRED)
 
 # Include directories
-include_directories(
-    ${PYTHON_INCLUDE_DIRS}
-)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 # Sources
 set(SRCS
@@ -41,49 +37,10 @@ set(SRCS
     wrapper_simulator.cpp
 )
 
-# Build static / dynamic
-list(FIND MODULES_BUILDIN "cell" IS_STATIC)
-
-if (${IS_STATIC} GREATER -1)
-    message("-- Module ${PROJECT_NAME} is build-in")
-
-    if (UNIX)
-        add_compile_options(-fPIC)
-    endif ()
-
-    add_definitions(-DLIBRARY_BUILDIN=1)
-    add_library(${PROJECT_NAME} ${SRCS})
-
-    # Setup dependencies
-    add_dependencies(${PROJECT_NAME}
-        core
-    )
-
-    # Link libraries
-    target_link_libraries(${PROJECT_NAME}
-        ${PYTHON_LIBRARIES}
-    )
-else ()
-    message("-- Module ${PROJECT_NAME} is dynamic")
-    add_library(${PROJECT_NAME} SHARED ${SRCS})
-
-    # Setup dependencies
-    add_dependencies(${PROJECT_NAME}
-        core
-        simulator
-    )
-
-    # Link libraries
-    target_link_libraries(${PROJECT_NAME}
-        simulator
-        ${PYTHON_LIBRARIES}
-    )
-
-    # Install
-    install(TARGETS ${PROJECT_NAME}
-        DESTINATION lib
-    )
-
-endif ()
+# Build plugin
+build_plugin(python
+    SOURCES ${SRCS}
+    LIBRARIES ${PYTHON_LIBRARIES}
+)
 
 # ######################################################################### #

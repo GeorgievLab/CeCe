@@ -1,13 +1,8 @@
 # ######################################################################### #
-
-# Project name
-set(PROJECT_NAME module-streamlines)
-
-# Create project
-project(${PROJECT_NAME} CXX)
-
-#find_package(ImageMagick REQUIRED COMPONENTS Magick++)
-#include_directories(${ImageMagick_INCLUDE_DIRS})
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
 
 # Sources
 set(SRCS
@@ -23,51 +18,17 @@ set(SRCS
     ObstacleMap.cpp
 )
 
-add_definitions(-DOPT_DRAW_VELOCITY=1)
+# Options
+option(DEBUG_streamlines_RENDER "Enable or disable streamlines rendering" Off)
 
-# Build static / dynamic
-list(FIND MODULES_BUILDIN "streamlines" IS_STATIC)
-
-if (${IS_STATIC} GREATER -1)
-    message("-- Module ${PROJECT_NAME} is build-in")
-
-    if (UNIX)
-        add_compile_options(-fPIC)
-    endif ()
-
-    add_definitions(-DLIBRARY_BUILDIN=1)
-    add_library(${PROJECT_NAME} ${SRCS})
-
-    # Setup dependencies
-    add_dependencies(${PROJECT_NAME}
-        core
-    )
-
-    # Link libraries
-    target_link_libraries(${PROJECT_NAME}
-        #${ImageMagick_LIBRARIES}
-    )
-else ()
-    message("-- Module ${PROJECT_NAME} is dynamic")
-    add_library(${PROJECT_NAME} SHARED ${SRCS})
-
-    # Setup dependencies
-    add_dependencies(${PROJECT_NAME}
-        core
-        simulator
-    )
-
-    # Link libraries
-    target_link_libraries(${PROJECT_NAME}
-        simulator
-        #${ImageMagick_LIBRARIES}
-    )
-
-    # Install
-    install(TARGETS ${PROJECT_NAME}
-        DESTINATION lib
-    )
-
+# Enable debug rendering
+if (DEBUG_streamlines_RENDER)
+    add_definitions(-DOPT_DRAW_VELOCITY=1)
 endif ()
+
+# Build plugin
+build_plugin(streamlines
+    SOURCES ${SRCS}
+)
 
 # ######################################################################### #

@@ -28,6 +28,10 @@ add_definitions(
     -DVERSION_SPECIAL="${VERSION_SPECIAL}"
 )
 
+# Directory with plugins
+# TODO: change to plugins (after directory rename)
+set(DIR_PLUGINS "libraries")
+
 # Options
 option(ENABLE_GUI                   "Enable GUI" On)
 option(ENABLE_CLI                   "Enable CLI" Off)
@@ -37,47 +41,43 @@ option(ENABLE_BUILDIN_PHYSICS       "Enable build-in physics engine (Box2D)" On)
 option(ENABLE_MEASUREMENT           "Enable or disable time measurement" Off)
 option(ENABLE_BUILDIN_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
 option(BUILD_TESTS                  "Build simulator part tests (requires GTest)" Off)
-
 option(BUILD_TOOLS                  "Build support tools" Off)
-set(MODULES                         "cylinder-streamlines;diffusion;diffusion-cylinder-streamlines;cell;python" CACHE STRING "A list of build modules")
-set(MODULES_BUILDIN                 "" CACHE STRING "A list of build-in modules")
 
-# Options specific for different compilers
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    # using Clang
-    option(CLANG_ASAN               "If address sanitizer should be used" Off)
-    option(CLANG_MSAN               "If memory sanitizer should be used" Off)
-    option(CLANG_USE_LIBCPP         "If libc++ should be used" Off)
+# List of plugins values
+set(PLUGINS_AVAILABLE "")
+set(PLUGINS_BUILD "")
+set(PLUGINS_BUILDIN "")
 
-    # C++11 required
-    add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
+# Get list of available plugins
+file(GLOB PLUGINS_DIRECTORIES RELATIVE "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}" "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}/*")
+foreach(PLUGIN_DIR ${PLUGINS_DIRECTORIES})
+    if (IS_DIRECTORY "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}/${PLUGIN_DIR}")
+        list(APPEND PLUGINS_AVAILABLE ${PLUGIN_DIR})
+        option(PLUGINS_BUILD_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}'" On)
+        option(PLUGINS_BUILDIN_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}' as build-in plugin" Off)
 
-    # Use libc++
-    if (CLANG_USE_LIBCPP)
-        add_compile_options(-stdlib=libc++)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+        if (PLUGINS_BUILDIN_${PLUGIN_DIR})
+            list(APPEND PLUGINS_BUILDIN ${PLUGIN_DIR})
+            set(PLUGINS_BUILD_${PLUGIN_DIR} On)
+        endif ()
+
+        if (PLUGINS_BUILD_${PLUGIN_DIR})
+            list(APPEND PLUGINS_BUILD ${PLUGIN_DIR})
+        endif ()
     endif()
+endforeach()
 
-    # Debug flags
-    if (CLANG_ASAN)
-        message("-- Using address sanitizer")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
-        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
-    elseif (CLANG_MSAN)
-        message("-- Using memory sanitizer")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
-        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
-    endif ()
-elseif (CMAKE_COMPILER_IS_GNUCXX)
-    # using GCC
+# TODO: remove
+set(MODULES ${PLUGINS_BUILD})
+set(MODULES_BUILDIN ${PLUGINS_BUILDIN})
 
-    # C++11 required
-    add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
+# ######################################################################### #
 
-elseif (MSVC)
-    # using Visual Studio C++
-    add_compile_options(/W3)
-endif()
+# Setup compiler specific things
+include(Compilers)
+
+# Library of functions
+include(Functions)
 
 # ######################################################################### #
 
@@ -145,6 +145,7 @@ endif ()
 
 # ######################################################################### #
 
+# TODO: Remove after changes in CLI/GUI
 set(DYNAMIC_MODULES ${MODULES})
 
 # Remove missing modules
@@ -161,7 +162,7 @@ endforeach ()
 
 # ######################################################################### #
 
-# Default libraries
+# Core libraries
 add_subdirectory(core)
 add_subdirectory(parser)
 add_subdirectory(parser-xml)
@@ -171,17 +172,12 @@ if (ENABLE_RENDER)
     add_subdirectory(render)
 endif ()
 
-if (ENABLE_BUILDIN_PHYSICS)
-    # Link libraries
-    link_directories(${Box2D_LIBRARIES})
-endif ()
-
-# Main simulator project
+# Main simulator library
 add_subdirectory(simulator)
 
-# Modules
-foreach (LIBRARY ${MODULES})
-    add_subdirectory(libraries/${LIBRARY})
+# Add plugins that should be built
+foreach (PLUGIN_NAME ${PLUGINS_BUILD})
+    add_subdirectory(${DIR_PLUGINS}/${PLUGIN_NAME})
 endforeach ()
 
 # Build GUI project
@@ -201,46 +197,7 @@ endif()
 
 # ######################################################################### #
 
-# CPACK
-include(InstallRequiredSystemLibraries)
-
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cell simulator")
-set(CPACK_PACKAGE_VENDOR "Georgiev Lab")
-#set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
-#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
-set(CPACK_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
-set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "Simulator ${VERSION_MAJOR}.${VERSION_MINOR}")
-set(CPACK_PACKAGE_NAME "Simulator")
-set(CPACK_PACKAGE_CONTACT "fatkaj@ntis.zcu.cz")
-
-if (WIN32 AND NOT UNIX)
-    # There is a bug in NSI that does not handle full unix paths properly. Make
-    # sure there is at least one set of four (4) backlasshes.
-    #set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
-    #set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Cell simulator")
-    #set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.my-project-home-page.org")
-    #set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.my-personal-home-page.com")
-    #set(CPACK_NSIS_CONTACT "me@my-personal-home-page.com")
-    set(CPACK_NSIS_MODIFY_PATH ON)
-elseif (APPLE)
-    configure_file(${CMAKE_SOURCE_DIR}/Info.plist.in "${PROJECT_BINARY_DIR}/Info.plist" @ONLY)
-    set(CPACK_BUNDLE_NAME "${CPACK_PACKAGE_NAME}")
-    set(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/icons/icon.icns")
-    set(CPACK_BUNDLE_PLIST "${PROJECT_BINARY_DIR}/Info.plist")
-    set(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}/bundle.sh")
-else ()
-    set(CPACK_STRIP_FILES "bin/cell-sim-gui")
-    set(CPACK_SOURCE_STRIP_FILES "")
-    # autogenerate dependency information
-    set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-endif ()
-
-set(CPACK_PACKAGE_EXECUTABLES "Cell Simulator" "Cell Simulator")
-
-INCLUDE(CPack)
+# Setup packages creation
+include(Package)
 
 # ######################################################################### #
