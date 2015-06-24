@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="tool-shader-convert" InternalType="GUI">
+<CodeLite_Project Name="tool_shader-convert" InternalType="GUI">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{

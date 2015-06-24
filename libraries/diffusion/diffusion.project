@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="module-diffusion" InternalType="Library">
+<CodeLite_Project Name="plugin_diffusion" InternalType="Library">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{

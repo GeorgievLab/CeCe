@@ -88,8 +88,7 @@ endfunction()
 
 # Get plugin project name.
 function(plugin_project_name PLUGIN_NAME PROJECT_NAME)
-    # TODO: change to plugin
-    set(${PROJECT_NAME} "module-${PLUGIN_NAME}" PARENT_SCOPE)
+    set(${PROJECT_NAME} "plugin-${PLUGIN_NAME}" PARENT_SCOPE)
 endfunction ()
 
 # ######################################################################### #
