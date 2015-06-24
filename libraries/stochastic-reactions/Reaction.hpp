@@ -7,10 +7,17 @@
 
 class Reaction
 {
+    struct ReqProd
+    {
+        int requirement = 0;
+        int product = 0;
+    };
+    
+    
     public:
     DynamicArray<float> m_rates;
     DynamicArray<String> m_ids;
-    DynamicArray<DynamicArray<int>> m_rules;
+    DynamicArray<DynamicArray<ReqProd>> m_rules;
     
     void operator()(simulator::Object& object, units::Duration);
     
