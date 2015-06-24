@@ -19,10 +19,12 @@
   <VirtualDirectory Name="src">
     <File Name="Reaction.cpp"/>
     <File Name="Library.cpp"/>
+    <File Name="ReactionParser.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Library.hpp"/>
     <File Name="Reaction.hpp"/>
+    <File Name="ReactionParser.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -1,6 +1,7 @@
 #include "Reaction.hpp"
 #include "simulator/Object.hpp"
 #include "core/Units.hpp"
+#include "core/Log.hpp"
 
 void Reaction::operator()(simulator::Object& object, units::Duration step)
 {
@@ -24,19 +25,52 @@ void Reaction::operator()(simulator::Object& object, units::Duration step)
         }
     }
     object.setValue("molecule_count", map);
+    for (const auto& value : map)
+    {
+        Log::info(value.first, ": ", value.second);
+    }
 }
 
-int Reaction::get_index_of(const String id)
+int Reaction::get_index_of(const String& id)
 {
     auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
     if (pointer == m_ids.end())
     {
-        for(auto& rule : m_rules)
+        for (unsigned int i = 0; i < m_rules.size(); i++)
         {
-            rule.push_back(0);
+            m_rules[i].push_back(0);
         }
         m_ids.push_back(id);
         return m_ids.size() - 1;
     }
     return std::distance(m_ids.begin(), pointer);
+}
+
+void Reaction::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float& rate)
+{
+    m_rates.push_back(rate);
+    DynamicArray<int> array;
+    if (m_rules.size() > 0)
+        array.resize(m_rules[0].size());
+    for (unsigned int i = 0; i < ids_minus.size(); i++)
+    {
+        unsigned int index = get_index_of(ids_minus[i]);
+        if (index == array.size())
+        {
+            array.push_back(-1);
+            continue;
+        }
+        array[i] -= 1;
+    }
+    for (unsigned int i = 0; i < ids_plus.size(); i++)
+    {
+        unsigned int index = get_index_of(ids_plus[i]);
+        if (index == array.size())
+        {
+            array.push_back(1);
+            continue;
+        }
+        array[i] += 1;
+    }
+    m_rules.push_back(array);
 }

@@ -14,5 +14,7 @@ class Reaction
     
     void operator()(simulator::Object& object, units::Duration);
     
-    int get_index_of(const String id);
+    int get_index_of(const String& id);
+    
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float& rate);
 };

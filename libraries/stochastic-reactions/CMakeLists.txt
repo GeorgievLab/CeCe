@@ -19,6 +19,8 @@ set(SRCS
     Library.cpp
     Reaction.hpp
     Reaction.cpp
+    ReactionParser.hpp
+    ReactionParser.cpp
 )
 
 # Build static / shared

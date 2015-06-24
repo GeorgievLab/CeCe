@@ -13,12 +13,8 @@
 #include <gtest/gtest.h>
 
 // Module
-#include "../Reaction.hpp"
+#include "../ReactionParser.hpp"
 
-/* ************************************************************************ */
-
-// Function has no public interface, but it is not statit at least.
-extern Reaction parseReactionCode(const String code);
 
 /* ************************************************************************ */
 
@@ -37,7 +33,7 @@ static void test_impl(int line, const String& code, std::initializer_list<String
     std::cout << "@" << line << ": `" << code << "`\n";
 
     // Parse code
-    auto reaction = parseReactionCode(code);
+    auto reaction = ReactionParser().parseReactionCode(code);
 
     // Reaction IDs
     ASSERT_EQ(names.size(), reaction.m_ids.size());
@@ -78,7 +74,7 @@ static void test_invalid_impl(int line, const String& code)
     std::cout << "@" << line << ": `" << code << "`\n";
 
     // Parse code
-    auto reaction = parseReactionCode(code);
+    auto reaction = ReactionParser().parseReactionCode(code);
 
     // Reaction IDs
     EXPECT_EQ(0, reaction.m_ids.size());
