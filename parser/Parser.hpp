@@ -223,6 +223,29 @@ struct value_constructor<units::Force>
 
 /* ************************************************************************ */
 
+template<>
+struct value_constructor<units::Viscosity>
+{
+    static units::Viscosity construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return units::Viscosity(val);
+
+        if (suffix == "Ns/m2")
+            return units::Ns_m2(val);
+
+        if (suffix == "Pas")
+            return units::Pas(val);
+
+        if (suffix == "mPas")
+            return units::mPas(val);
+
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
 /**
  * @brief Parse float value from string.
  *

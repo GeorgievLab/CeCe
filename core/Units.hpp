@@ -992,7 +992,9 @@ inline CONSTEXPR Value rad2deg(Value value) NOEXCEPT
 /**
  * @brief Meter value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Length value.
  */
 inline CONSTEXPR Length m(Value value) NOEXCEPT
 {
@@ -1005,7 +1007,9 @@ inline CONSTEXPR Length m(Value value) NOEXCEPT
 /**
  * @brief Millimeter value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Length value.
  */
 inline CONSTEXPR Length mm(Value value) NOEXCEPT
 {
@@ -1018,7 +1022,9 @@ inline CONSTEXPR Length mm(Value value) NOEXCEPT
 /**
  * @brief Micrometer value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Length value.
  */
 inline CONSTEXPR Length um(Value value) NOEXCEPT
 {
@@ -1031,7 +1037,9 @@ inline CONSTEXPR Length um(Value value) NOEXCEPT
 /**
  * @brief Kilograms value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Mass value.
  */
 inline CONSTEXPR Mass kg(Value value) NOEXCEPT
 {
@@ -1044,7 +1052,9 @@ inline CONSTEXPR Mass kg(Value value) NOEXCEPT
 /**
  * @brief Grams value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Mass value.
  */
 inline CONSTEXPR Mass g(Value value) NOEXCEPT
 {
@@ -1057,7 +1067,9 @@ inline CONSTEXPR Mass g(Value value) NOEXCEPT
 /**
  * @brief Milligrams value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Mass value.
  */
 inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 {
@@ -1070,7 +1082,9 @@ inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 /**
  * @brief Micrograms value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Mass value.
  */
 inline CONSTEXPR Mass ug(Value value) NOEXCEPT
 {
@@ -1083,7 +1097,9 @@ inline CONSTEXPR Mass ug(Value value) NOEXCEPT
 /**
  * @brief Seconds value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Duration value.
  */
 inline CONSTEXPR Duration s(Value value) NOEXCEPT
 {
@@ -1096,7 +1112,9 @@ inline CONSTEXPR Duration s(Value value) NOEXCEPT
 /**
  * @brief Milliseconds value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Duration value.
  */
 inline CONSTEXPR Duration ms(Value value) NOEXCEPT
 {
@@ -1109,7 +1127,9 @@ inline CONSTEXPR Duration ms(Value value) NOEXCEPT
 /**
  * @brief Microseconds value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Duration value.
  */
 inline CONSTEXPR Duration us(Value value) NOEXCEPT
 {
@@ -1122,7 +1142,9 @@ inline CONSTEXPR Duration us(Value value) NOEXCEPT
 /**
  * @brief Meters^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Area value.
  */
 inline CONSTEXPR Area m2(Value value) NOEXCEPT
 {
@@ -1134,7 +1156,9 @@ inline CONSTEXPR Area m2(Value value) NOEXCEPT
 /**
  * @brief Millimeters^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Area value.
  */
 inline CONSTEXPR Area mm2(Value value) NOEXCEPT
 {
@@ -1146,7 +1170,9 @@ inline CONSTEXPR Area mm2(Value value) NOEXCEPT
 /**
  * @brief Micrometers^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Area value.
  */
 inline CONSTEXPR Area um2(Value value) NOEXCEPT
 {
@@ -1158,7 +1184,9 @@ inline CONSTEXPR Area um2(Value value) NOEXCEPT
 /**
  * @brief Meters^3 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Volume value.
  */
 inline CONSTEXPR Volume m3(Value value) NOEXCEPT
 {
@@ -1170,7 +1198,9 @@ inline CONSTEXPR Volume m3(Value value) NOEXCEPT
 /**
  * @brief Millimeters^3 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Volume value.
  */
 inline CONSTEXPR Volume mm3(Value value) NOEXCEPT
 {
@@ -1182,7 +1212,9 @@ inline CONSTEXPR Volume mm3(Value value) NOEXCEPT
 /**
  * @brief Micrometers^3 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Volume value.
  */
 inline CONSTEXPR Volume um3(Value value) NOEXCEPT
 {
@@ -1194,7 +1226,9 @@ inline CONSTEXPR Volume um3(Value value) NOEXCEPT
 /**
  * @brief Meters per second value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Velocity value.
  */
 inline CONSTEXPR Velocity m_s(Value value) NOEXCEPT
 {
@@ -1206,7 +1240,9 @@ inline CONSTEXPR Velocity m_s(Value value) NOEXCEPT
 /**
  * @brief Millimeters per second value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Velocity value.
  */
 inline CONSTEXPR Velocity mm_s(Value value) NOEXCEPT
 {
@@ -1218,7 +1254,9 @@ inline CONSTEXPR Velocity mm_s(Value value) NOEXCEPT
 /**
  * @brief Micrometers per second value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Velocity value.
  */
 inline CONSTEXPR Velocity um_s(Value value) NOEXCEPT
 {
@@ -1230,7 +1268,9 @@ inline CONSTEXPR Velocity um_s(Value value) NOEXCEPT
 /**
  * @brief Meters per second^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Acceleration value.
  */
 inline CONSTEXPR Acceleration m_s2(Value value) NOEXCEPT
 {
@@ -1242,7 +1282,9 @@ inline CONSTEXPR Acceleration m_s2(Value value) NOEXCEPT
 /**
  * @brief Millimeters per second^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Acceleration value.
  */
 inline CONSTEXPR Acceleration mm_s2(Value value) NOEXCEPT
 {
@@ -1254,7 +1296,9 @@ inline CONSTEXPR Acceleration mm_s2(Value value) NOEXCEPT
 /**
  * @brief Micrometers per second^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Acceleration value.
  */
 inline CONSTEXPR Acceleration um_s2(Value value) NOEXCEPT
 {
@@ -1266,7 +1310,9 @@ inline CONSTEXPR Acceleration um_s2(Value value) NOEXCEPT
 /**
  * @brief Kilogram meter per second^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Force value.
  */
 inline CONSTEXPR Force kgm_s2(Value value) NOEXCEPT
 {
@@ -1278,7 +1324,9 @@ inline CONSTEXPR Force kgm_s2(Value value) NOEXCEPT
 /**
  * @brief Gram meter per second^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Force value.
  */
 inline CONSTEXPR Force gm_s2(Value value) NOEXCEPT
 {
@@ -1290,7 +1338,9 @@ inline CONSTEXPR Force gm_s2(Value value) NOEXCEPT
 /**
  * @brief Milligram meter per second^2 value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Force value.
  */
 inline CONSTEXPR Force mgm_s2(Value value) NOEXCEPT
 {
@@ -1302,7 +1352,9 @@ inline CONSTEXPR Force mgm_s2(Value value) NOEXCEPT
 /**
  * @brief Newton value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Force value.
  */
 inline CONSTEXPR Force N(Value value) NOEXCEPT
 {
@@ -1314,7 +1366,9 @@ inline CONSTEXPR Force N(Value value) NOEXCEPT
 /**
  * @brief Millinewton value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Force value.
  */
 inline CONSTEXPR Force mN(Value value) NOEXCEPT
 {
@@ -1326,7 +1380,9 @@ inline CONSTEXPR Force mN(Value value) NOEXCEPT
 /**
  * @brief Micronewton value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Force value.
  */
 inline CONSTEXPR Force uN(Value value) NOEXCEPT
 {
@@ -1338,7 +1394,9 @@ inline CONSTEXPR Force uN(Value value) NOEXCEPT
 /**
  * @brief Kilogram per meter and second value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Viscosity value.
  */
 inline CONSTEXPR Viscosity kg_m_s(Value value) NOEXCEPT
 {
@@ -1350,11 +1408,55 @@ inline CONSTEXPR Viscosity kg_m_s(Value value) NOEXCEPT
 /**
  * @brief Kilogram per meter and second value.
  *
- * @param value
+ * @param value Value.
+ *
+ * @return Viscosity value.
  */
 inline CONSTEXPR Viscosity g_m_s(Value value) NOEXCEPT
 {
     return g(value) / (m(1) * s(1));
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Newton second per meter square value.
+ *
+ * @param value Value.
+ *
+ * @return Viscosity value.
+ */
+inline CONSTEXPR Viscosity Ns_m2(Value value) NOEXCEPT
+{
+    return N(value) * s(1) / m2(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Newton second per meter square value.
+ *
+ * @param value Value.
+ *
+ * @return Viscosity value.
+ */
+inline CONSTEXPR Viscosity Pas(Value value) NOEXCEPT
+{
+    return N(value) * s(1) / m2(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Newton second per meter square value.
+ *
+ * @param value Value.
+ *
+ * @return Viscosity value.
+ */
+inline CONSTEXPR Viscosity mPas(Value value) NOEXCEPT
+{
+    return mN(value) * s(1) / m2(1);
 }
 
 /* ************************************************************************ */
