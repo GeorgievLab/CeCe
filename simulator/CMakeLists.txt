@@ -50,7 +50,8 @@ set(BUILDIN_LIBRARIES "")
 # Foreach build-in plugins
 foreach (PLUGIN ${PLUGINS_BUILDIN})
     message("-- Build-in plugin: ${PLUGIN}")
-    set(PLUGINS_LIBS ${PLUGINS_LIBS} module-${PLUGIN})
+    plugin_project_name(${PLUGIN} PLUGIN_PROJECT)
+    set(PLUGINS_LIBS ${PLUGINS_LIBS} ${PLUGIN_PROJECT})
     # Fix module name: replace '-' by '_'
     string(REPLACE "-" "_" FIXED_PLUGIN ${PLUGIN})
     set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${PLUGIN},${FIXED_PLUGIN})")

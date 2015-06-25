@@ -67,7 +67,7 @@ DynamicArray<String> Library::s_libraryPaths;
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) extern "C" simulator::LibraryApi* LIBRARY_PROTOTYPE_NAME_BUILDIN(create, validname)();
+#define ITEM(name, validname) extern "C" simulator::PluginApi* LIBRARY_PROTOTYPE_NAME_BUILDIN(create, validname)();
 BUILDIN_LIBRARIES
 #undef ITEM
 
