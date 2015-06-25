@@ -29,6 +29,7 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) NO
 {
 	setVolume(units::um3(37));
     // TODO: set density
+    setDensity(units::kg(1200) / units::m3(1));
 
     // Max 2 shapes
     auto& shapes = getMutableShapes();
