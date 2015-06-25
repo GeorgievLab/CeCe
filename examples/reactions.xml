@@ -1,0 +1,24 @@
+<simulation world-size="100um 100um" iterations="10000">
+	<program name="1" language="stochastic-reactions">
+		a+b+c+d>5>e+f;
+		a>5>null;
+		null>10>a+b+c+d;
+	</program>
+	<object class="cell.Yeast" programs="1" />
+</simulation>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
