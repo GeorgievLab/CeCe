@@ -44,6 +44,12 @@ struct BaseMass   { static CONSTEXPR_CONST int value = 2; };
 
 /* ************************************************************************ */
 
+static CONSTEXPR_CONST Value LENGTH_COEFFICIENT = 1e6f;
+static CONSTEXPR_CONST Value TIME_COEFFICIENT = 1e0f;
+static CONSTEXPR_CONST Value MASS_COEFFICIENT = 1e9f;
+
+/* ************************************************************************ */
+
 /**
  * @brief Less structure.
  *
@@ -998,8 +1004,8 @@ inline CONSTEXPR Value rad2deg(Value value) NOEXCEPT
  */
 inline CONSTEXPR Length m(Value value) NOEXCEPT
 {
-    // 1m = 1'000'000um
-    return Length(1000.f * 1000.f * value);
+    // 1m = 1'000mm
+    return Length(LENGTH_COEFFICIENT * value);
 }
 
 /* ************************************************************************ */
@@ -1014,7 +1020,7 @@ inline CONSTEXPR Length m(Value value) NOEXCEPT
 inline CONSTEXPR Length mm(Value value) NOEXCEPT
 {
     // 1mm = 1/1'000m
-    return m(value / 1000.f);
+    return m(value * 1e-3);
 }
 
 /* ************************************************************************ */
@@ -1029,7 +1035,7 @@ inline CONSTEXPR Length mm(Value value) NOEXCEPT
 inline CONSTEXPR Length um(Value value) NOEXCEPT
 {
     // 1um = 1/1'000'000m
-    return m(value / (1000.f * 1000.f));
+    return m(value * 1e-6);
 }
 
 /* ************************************************************************ */
@@ -1043,8 +1049,8 @@ inline CONSTEXPR Length um(Value value) NOEXCEPT
  */
 inline CONSTEXPR Mass kg(Value value) NOEXCEPT
 {
-    // 1mg
-    return Mass(value / (1000.f * 1000.f));
+    // 1pg
+    return Mass(MASS_COEFFICIENT * value);
 }
 
 /* ************************************************************************ */
@@ -1059,7 +1065,7 @@ inline CONSTEXPR Mass kg(Value value) NOEXCEPT
 inline CONSTEXPR Mass g(Value value) NOEXCEPT
 {
     // 1kg = 1'000g
-    return kg(value * 1000.f);
+    return kg(value * 1e-3);
 }
 
 /* ************************************************************************ */
@@ -1074,7 +1080,7 @@ inline CONSTEXPR Mass g(Value value) NOEXCEPT
 inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 {
     // 1g = 1'000mg
-    return g(value * 1000.f);
+    return g(value * 1e-3);
 }
 
 /* ************************************************************************ */
@@ -1089,7 +1095,7 @@ inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 inline CONSTEXPR Mass ug(Value value) NOEXCEPT
 {
     // 1mg = 1'000ug
-    return mg(value * 1000.f);
+    return mg(value * 1e-3);
 }
 
 /* ************************************************************************ */
@@ -1099,12 +1105,12 @@ inline CONSTEXPR Mass ug(Value value) NOEXCEPT
  *
  * @param value Value.
  *
- * @return Duration value.
+ * @return Time value.
  */
-inline CONSTEXPR Duration s(Value value) NOEXCEPT
+inline CONSTEXPR Time s(Value value) NOEXCEPT
 {
     // 1s
-    return Duration(value);
+    return Time(TIME_COEFFICIENT * value);
 }
 
 /* ************************************************************************ */
@@ -1114,9 +1120,9 @@ inline CONSTEXPR Duration s(Value value) NOEXCEPT
  *
  * @param value Value.
  *
- * @return Duration value.
+ * @return Time value.
  */
-inline CONSTEXPR Duration ms(Value value) NOEXCEPT
+inline CONSTEXPR Time ms(Value value) NOEXCEPT
 {
     // 1s = 1'000ms
     return s(value / 1000.f);
@@ -1129,9 +1135,9 @@ inline CONSTEXPR Duration ms(Value value) NOEXCEPT
  *
  * @param value Value.
  *
- * @return Duration value.
+ * @return Time value.
  */
-inline CONSTEXPR Duration us(Value value) NOEXCEPT
+inline CONSTEXPR Time us(Value value) NOEXCEPT
 {
     // 1ms = 1'000us
     return ms(value / 1000.f);
