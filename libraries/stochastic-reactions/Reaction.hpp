@@ -3,10 +3,14 @@
 #include "simulator/Object.hpp"
 #include "core/Units.hpp"
 #include "core/DynamicArray.hpp"
-#include "core/Grid.hpp"
+#include "core/Log.hpp"
+#include "core/Exception.hpp"
+#include "../cell/CellBase.hpp"
 
 class Reaction
 {
+private: 
+
     struct ReqProd
     {
         ReqProd() = default;
@@ -20,16 +24,30 @@ class Reaction
         int requirement = 0;
         int product = 0;
     };
-    
-    
-    public:
+    DynamicArray<float> propensities;
     DynamicArray<float> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<ReqProd>> m_rules;
+    module::cell::CellBase* cell;
     
+    int getIndexOf(const String& id);
+    
+    float computePropensity(unsigned int index);
+    
+    void refreshPropensities(unsigned int index);
+    
+    void initializePropensities();
+    
+public:
+
     void operator()(simulator::Object& object, units::Duration);
     
-    int get_index_of(const String& id);
-    
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate);
+    
+    unsigned int getNumberOfReactions() const NOEXCEPT
+    {
+        return m_rules.size();
+    }
+    
+    bool containsMolecule(String id);
 };
