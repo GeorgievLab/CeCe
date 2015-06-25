@@ -54,7 +54,7 @@
       <Project Name="plugin_python" ConfigName="Release"/>
       <Project Name="plugin_diffusion-cylinder-streamlines" ConfigName="Release"/>
       <Project Name="plugin_streamlines" ConfigName="Release"/>
-      <Project Name="lib-stochastic-reactions" ConfigName="Release"/>    
+      <Project Name="lib-stochastic-reactions" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

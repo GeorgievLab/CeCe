@@ -2,13 +2,17 @@
 #include "simulator/Object.hpp"
 #include "core/Units.hpp"
 #include "core/Log.hpp"
+#include "core/Exception.hpp"
+#include "../cell/CellBase.hpp"
 
 void Reaction::operator()(simulator::Object& object, units::Duration step)
 {
     // TODO dependency graph
-    // TODO map as reference
     
-    auto map = object.getValue<Map<String, int>>("molecule_count");
+    if (!object.is<module::cell::CellBase>())
+        throw RuntimeException("Only object type cell is allowed to have a reaction.");
+        
+    module::cell::CellBase* cell = object.cast<module::cell::CellBase>();
     DynamicArray<unsigned int> propensities;
     
     // compute propensities
@@ -23,7 +27,7 @@ void Reaction::operator()(simulator::Object& object, units::Duration step)
             }
             else
             {
-                local *= map[m_ids[j]];
+                local *= cell->getMoleculeCount(m_ids[j]);
             }
         }
         propensities.push_back(local);
@@ -36,24 +40,17 @@ void Reaction::operator()(simulator::Object& object, units::Duration step)
     std::discrete_distribution<> distr(propensities.begin(), propensities.end());
     
     // tau-leaping
-    units::Duration time = 0;
+    units::Duration time = units::Duration(0);
     float sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
     while(time < step)
     {
-        float delta_time = (1 / sum) * std::log(rand(gen));
+        auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
         time -= delta_time;
         int index = distr(gen);
         for (unsigned int i = 0; i < m_ids.size(); i++)
         {
-            map[m_ids[i]] += m_rules[index][i].product - m_rules[index][i].requirement;
+            cell->addMolecules(m_ids[i], m_rules[index][i].product - m_rules[index][i].requirement);
         }
-    }
-    object.setValue("molecule_count", map);
-    
-    // TO-REMOVE output log
-    for (const auto& value : map)
-    {
-        Log::info(value.first, ": ", value.second);
     }
 }
 

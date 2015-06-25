@@ -9,6 +9,14 @@ class Reaction
 {
     struct ReqProd
     {
+        ReqProd() = default;
+        
+        ReqProd(int req, int prod) NOEXCEPT
+        : requirement(req), product(prod)
+        {
+            // Nothing to do
+        }
+        
         int requirement = 0;
         int product = 0;
     };
@@ -23,5 +31,5 @@ class Reaction
     
     int get_index_of(const String& id);
     
-    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float& rate);
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate);
 };

@@ -19,7 +19,7 @@
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Library.hpp"
-#include "simulator/LibraryApi.hpp"
+#include "simulator/PluginApi.hpp"
 #include "core/Log.hpp"
 
 // Reactions
@@ -32,7 +32,7 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-class StochasticReactionsApi : public simulator::LibraryApi
+class StochasticReactionsApi : public simulator::PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
