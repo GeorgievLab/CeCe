@@ -107,3 +107,34 @@ function(plugin_project_names PLUGIN_NAMES PROJECT_NAMES)
 endfunction ()
 
 # ######################################################################### #
+
+# Build tests
+function(build_test PROJECT_NAME)
+
+    # Only if tests are enabled
+    if (BUILD_TESTS)
+        # Test name
+        set(TEST_NAME "${PROJECT_NAME}_test")
+
+        # Create executable
+        add_executable(${TEST_NAME}
+            ${ARGN}
+        )
+
+        # Link GTest libraries
+        target_link_libraries(${TEST_NAME}
+            ${GTEST_BOTH_LIBRARIES}
+        )
+
+        if (UNIX AND NOT APPLE)
+            target_link_libraries(${TEST_NAME}
+                -pthread
+            )
+        endif ()
+
+        # Add test
+        add_test(${PROJECT_NAME} ${TEST_NAME})
+    endif ()
+endfunction ()
+
+# ######################################################################### #
