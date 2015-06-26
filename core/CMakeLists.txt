@@ -1,9 +1,9 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
-# ######################################################################### #
-# Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                   #
 # ######################################################################### #
 
 cmake_minimum_required(VERSION 2.8.8)
@@ -63,26 +63,12 @@ add_library(${PROJECT_NAME} OBJECT
 
 # ######################################################################### #
 
-if (BUILD_TESTS)
-    # Create executable
-    add_executable(core_test
-        test/test.cpp
-        test/DynamicArrayTest.cpp
-        test/IteratorRangeTest.cpp
-        test/UnitsTest.cpp
-    )
-    target_link_libraries(core_test
-        ${GTEST_BOTH_LIBRARIES}
-    )
-
-    if (UNIX)
-        target_link_libraries(core_test
-            -pthread
-        )
-    endif ()
-
-    # Add test
-    add_test(core core_test)
-endif ()
+# Add tests
+build_test(core
+    test/test.cpp
+    test/DynamicArrayTest.cpp
+    test/IteratorRangeTest.cpp
+    test/UnitsTest.cpp
+)
 
 # ######################################################################### #
