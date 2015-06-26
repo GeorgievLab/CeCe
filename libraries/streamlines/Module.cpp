@@ -45,7 +45,6 @@ Module::~Module()
 void Module::init()
 {
     // Initialize lattice data
-/*
     const auto& size = m_lattice.getSize();
 
     // Set border obstacles
@@ -55,7 +54,6 @@ void Module::init()
         m_lattice[{x, 1}].setStaticObstacle(true);
         m_lattice[{x, size.getHeight() - 2}].setStaticObstacle(true);
     }
-*/
 }
 
 /* ************************************************************************ */
@@ -71,7 +69,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Dynamic obstacles
     updateDynamicObstacleMap(simulation, v_max);
 
-    // FIXME: Match SI units!!
     // Viscosity in LB units
     const auto viscosity = (dt / (dl.getX() * dl.getX())) * getKinematicViscosity();
 
