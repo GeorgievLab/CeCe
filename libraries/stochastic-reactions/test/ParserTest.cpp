@@ -35,6 +35,9 @@ static void test_impl(int line, const String& code, std::initializer_list<String
     // Parse code
     auto reaction = ReactionParser().parseReactionCode(code);
 
+    // TODO: Waiting for usable Reaction API.
+    ASSERT_TRUE(false);
+/*
     // Reaction IDs
     ASSERT_EQ(names.size(), reaction.m_ids.size());
 
@@ -57,8 +60,8 @@ static void test_impl(int line, const String& code, std::initializer_list<String
 
         for (auto it2 = it->begin(); it2 != it->end(); ++it2)
             EXPECT_EQ(*it2, row[it2 - it->begin()]);
-
     }
+*/
 }
 
 /* ************************************************************************ */
@@ -76,6 +79,9 @@ static void test_invalid_impl(int line, const String& code)
     // Parse code
     auto reaction = ReactionParser().parseReactionCode(code);
 
+    // TODO: Waiting for usable Reaction API.
+    ASSERT_TRUE(false);
+/*
     // Reaction IDs
     EXPECT_EQ(0, reaction.m_ids.size());
 
@@ -84,6 +90,7 @@ static void test_invalid_impl(int line, const String& code)
 
     // Reaction table
     ASSERT_EQ(0, reaction.m_rules.size());
+*/
 }
 
 /* ************************************************************************ */
