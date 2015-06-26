@@ -29,6 +29,7 @@
 #include "simulator/Library.hpp"
 #include "simulator/PluginApi.hpp"
 #include "simulator/Object.hpp"
+#include "simulator/Obstacle.hpp"
 #include "simulator/Program.hpp"
 
 // Parser
@@ -173,6 +174,28 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
 /* ************************************************************************ */
 
 /**
+ * @brief Process obstacle node.
+ *
+ * @param node
+ * @param simulation
+ */
+void process_obstacle_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+{
+    assert(!strcmp(node.name(), "obstacle"));
+
+    // Create configuration
+    const parser::xml::ImmutableConfiguration configuration(node, filename);
+
+    // Create object
+    simulator::Object* object = simulation.createObject<simulator::Obstacle>();
+
+    if (object)
+        object->configure(configuration, simulation);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Process module node.
  *
  * @param node
@@ -263,6 +286,12 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
     for (const auto& object : node.children("object"))
     {
         process_object_node(object, simulation, filename);
+    }
+
+    // Parse obstacles
+    for (const auto& obstacle : node.children("obstacle"))
+    {
+        process_obstacle_node(obstacle, simulation, filename);
     }
 
 }
