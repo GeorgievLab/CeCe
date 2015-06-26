@@ -45,7 +45,7 @@ Module::~Module()
 void Module::init()
 {
     // Initialize lattice data
-
+/*
     const auto& size = m_lattice.getSize();
 
     // Set border obstacles
@@ -55,6 +55,7 @@ void Module::init()
         m_lattice[{x, 1}].setStaticObstacle(true);
         m_lattice[{x, size.getHeight() - 2}].setStaticObstacle(true);
     }
+*/
 }
 
 /* ************************************************************************ */
@@ -72,7 +73,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
     // FIXME: Match SI units!!
     // Viscosity in LB units
-    const auto viscosity = (dt / (dl.getX() * dl.getX())) * getViscosity();
+    const auto viscosity = 1e3 * (dt / (dl.getX() * dl.getX())) * getViscosity();
 
     // Relaxation parameter
     const float tau = (3.f * viscosity.value() + 0.5f);
@@ -94,7 +95,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 {
     // Maximum velocity
     config.callIfSetString("velocity-inflow", [this](const String& value) {
-        setVelocityInflow(parser::parse_value<units::Velocity>(value));
+        setVelocityInflow(parser::parse_vector<units::Velocity>(value));
     });
 
     // Viscosity
@@ -296,25 +297,78 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
 void Module::applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& v_max)
 {
     // maximum velocity of the Poiseuille inflow
-    const auto grid_size = m_lattice.getRealSize();
-    const float lb_speed = getVelocityInflow() / v_max.getX();
+    const auto size = m_lattice.getRealSize();
+    // Velocity in LB
+    const auto velocity = getVelocityInflow() / v_max;
 
-    auto computePoiseuille = [&grid_size, lb_speed](int i) {
+    auto computePoiseuille = [&size, velocity](int i) {
         const float y = (float) (i - 1);
-        const float L = (float) (grid_size.getHeight() - 1);
-        return 4.f * lb_speed / (L * L) * (L * y - y * y);
+        const float L = (float) (size.getHeight() - 1);
+        return 4.f * velocity.getX() / (L * L) * (L * y - y * y);
     };
 
-    // Generate input / output
-    for (Lattice::SizeType y = 0; y < grid_size.getHeight(); ++y)
+    // Left & Right active only if velocity has X-coordinate speed.
+    if (velocity.getX() != 0)
     {
-        // Input
-        m_lattice[{1, y}].init({computePoiseuille(y), 0.f});
+        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
+        {
+            Lattice::CoordinateType in;
+            Lattice::CoordinateType out;
+            Lattice::CoordinateType outPrev;
 
-        // Output
-        m_lattice[{grid_size.getWidth() - 2, y}] = m_lattice[{grid_size.getWidth() - 3, y}];
-        m_lattice[{grid_size.getWidth() - 1, y}].clear();
+            if (velocity.getX() < 0)
+            {
+                in = {size.getWidth() - 2, y};
+                out = {1, y};
+                outPrev = {2, y};
+            }
+            else if (velocity.getX() > 0)
+            {
+                in = {1, y};
+                out = {size.getWidth() - 2, y};
+                outPrev = {out.getX() - 1, y};
+            }
+
+            // Input
+            //m_lattice[{in, y}].init(velocity);
+            m_lattice[in].init({computePoiseuille(y), 0});
+
+            // Output
+            m_lattice[out] = m_lattice[outPrev];
+            //m_lattice[{grid_size.getWidth() - 1, y}].clear();
+        }
     }
+/*
+    if (velocity.getY() != 0)
+    {
+        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
+        {
+            Lattice::CoordinateType::value_type in;
+            Lattice::CoordinateType::value_type out;
+            Lattice::CoordinateType::value_type outPrev;
+
+            if (velocity.getY() < 0)
+            {
+                in = size.getHeight() - 2;
+                out = 1;
+                outPrev = 2;
+            }
+            else if (velocity.getY() > 0)
+            {
+                in = 1;
+                out = size.getHeight() - 2;
+                outPrev = out - 1;
+            }
+
+            // Input
+            m_lattice[{x, in}].init(velocity);
+
+            // Output
+            m_lattice[{x, out}] = m_lattice[{x, outPrev}];
+            //m_lattice[{grid_size.getWidth() - 1, y}].clear();
+        }
+    }
+*/
 }
 
 /* ************************************************************************ */
