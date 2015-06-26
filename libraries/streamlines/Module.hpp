@@ -96,13 +96,13 @@ public:
 
 
     /**
-     * @brief Returns fluid viscosity.
+     * @brief Returns fluid kinematic viscosity.
      *
      * @return
      */
-    units::Viscosity getViscosity() const NOEXCEPT
+    units::KinematicViscosity getKinematicViscosity() const NOEXCEPT
     {
-        return m_viscosity;
+        return m_kinematicViscosity;
     }
 
 
@@ -126,9 +126,9 @@ public:
      *
      * @param viscosity
      */
-    void setViscosity(units::Viscosity viscosity) NOEXCEPT
+    void setKinematicViscosity(units::KinematicViscosity viscosity) NOEXCEPT
     {
-        m_viscosity = viscosity;
+        m_kinematicViscosity = viscosity;
     }
 
 
@@ -206,7 +206,7 @@ private:
     VelocityVector m_velocityInflow{units::um_s(10.f), units::um_s(0)};
 
     /// Fluid viscosity (of Water).
-    units::Viscosity m_viscosity = units::g_m_s(0.6531);
+    units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
 
     /// Lattice.
     Lattice m_lattice;

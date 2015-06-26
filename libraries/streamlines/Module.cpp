@@ -73,10 +73,10 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
     // FIXME: Match SI units!!
     // Viscosity in LB units
-    const auto viscosity = 1e3 * (dt / (dl.getX() * dl.getX())) * getViscosity();
+    const auto viscosity = (dt / (dl.getX() * dl.getX())) * getKinematicViscosity();
 
     // Relaxation parameter
-    const float tau = (3.f * viscosity.value() + 0.5f);
+    const float tau = (3.f * viscosity + 0.5f);
     const float omega = 1.f / tau;
 
     // Collide and propagate
@@ -99,8 +99,8 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     });
 
     // Viscosity
-    config.callIfSetString("viscosity", [this](const String& value) {
-        setViscosity(parser::parse_value<units::Viscosity>(value));
+    config.callIfSetString("kinematic-viscosity", [this](const String& value) {
+        setKinematicViscosity(parser::parse_value<units::KinematicViscosity>(value));
     });
 
     // Grid size
@@ -284,7 +284,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             const auto dv = velocity - obj->getVelocity();
 
             // Set object velocity
-            const auto force = 3 * constants::PI * getViscosity() * dv * shape.circle.radius;
+            const auto force = 3 * constants::PI * getKinematicViscosity() * obj->getDensity() * dv * shape.circle.radius;
 
             // Apply force
             obj->applyForce(force, obj->getPosition() + shape.circle.center);
