@@ -29,6 +29,8 @@ set(SRCS
     Shape.hpp
     ShapeToGrid.hpp
     Program.hpp
+    Obstacle.hpp
+    Obstacle.cpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>

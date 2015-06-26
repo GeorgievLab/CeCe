@@ -23,6 +23,7 @@
     <File Name="SimulationFactory.cpp"/>
     <File Name="Library.cpp"/>
     <File Name="Configuration.cpp"/>
+    <File Name="Obstacle.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
@@ -37,6 +38,7 @@
     <File Name="Program.hpp"/>
     <File Name="version.hpp"/>
     <File Name="PluginApi.hpp"/>
+    <File Name="Obstacle.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
