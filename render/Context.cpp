@@ -69,9 +69,10 @@ static GLenum convert(PrimitiveType type) NOEXCEPT
 {
     switch (type)
     {
-    case PrimitiveType::Lines:      return GL_LINES;
-    case PrimitiveType::Triangles:  return GL_TRIANGLES;
-    case PrimitiveType::Quads:      return GL_QUADS;
+    case PrimitiveType::Lines:          return GL_LINES;
+    case PrimitiveType::Triangles:      return GL_TRIANGLES;
+    case PrimitiveType::Quads:          return GL_QUADS;
+    case PrimitiveType::TriangleFan:    return GL_TRIANGLE_FAN;
     }
 
     return 0;

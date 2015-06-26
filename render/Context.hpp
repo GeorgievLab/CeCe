@@ -41,7 +41,8 @@ enum class PrimitiveType
 {
     Lines,
     Triangles,
-    Quads
+    Quads,
+    TriangleFan
 };
 
 /* ************************************************************************ */
