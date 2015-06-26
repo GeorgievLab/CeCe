@@ -22,25 +22,10 @@ build_plugin(stochastic-reactions
 
 # ######################################################################### #
 
-if (BUILD_TESTS)
-    # Create executable
-    add_executable("${LIBRARY_NAME}_test"
-        test/test.cpp
-        test/ParserTest.cpp
-    )
-    target_link_libraries("${LIBRARY_NAME}_test"
-        ${PROJECT_NAME}
-        ${GTEST_BOTH_LIBRARIES}
-    )
-
-    if (UNIX)
-        target_link_libraries("${LIBRARY_NAME}_test"
-            -pthread
-        )
-    endif ()
-
-    # Add test
-    add_test(${PROJECT_NAME} "${LIBRARY_NAME}_test")
-endif ()
+# Add tests
+build_test(stochastic-reactions
+    test/test.cpp
+    test/ParserTest.cpp
+)
 
 # ######################################################################### #
