@@ -36,7 +36,6 @@
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
     <File Name="Vector.hpp"/>
-    <File Name="Matrix.hpp"/>
     <File Name="constants.hpp"/>
     <File Name="AlignedAllocator.hpp"/>
     <File Name="Log.hpp"/>
@@ -57,6 +56,7 @@
     <File Name="ValueIterator.hpp"/>
     <File Name="OutStream.hpp"/>
     <File Name="InStream.hpp"/>
+    <File Name="StaticMatrix.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

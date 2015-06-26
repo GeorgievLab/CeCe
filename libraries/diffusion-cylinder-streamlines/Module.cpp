@@ -10,7 +10,7 @@
 #include <algorithm>
 
 // Simulator
-#include "core/Matrix.hpp"
+#include "core/StaticMatrix.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 
@@ -72,12 +72,12 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             dij.x() = std::abs(dij.getX());
             dij.y() = std::abs(dij.getY());
 
-            Matrix<float, 2> tmp;
+            StaticMatrix<float, 2> tmp;
             int offset = 0;
 
             if (velocity.getY() < units::Velocity(0))
             {
-                tmp = Matrix<float, 2>{{
+                tmp = StaticMatrix<float, 2>{{
                     {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() },
                     {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())}
                 }};
@@ -85,7 +85,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             }
             else
             {
-                tmp = Matrix<float, 2>{{
+                tmp = StaticMatrix<float, 2>{{
                     {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())},
                     {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() }
                 }};

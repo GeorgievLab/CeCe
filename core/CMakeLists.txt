@@ -36,7 +36,7 @@ add_library(${PROJECT_NAME} OBJECT
     constants.hpp
     DynamicArray.hpp
     StaticArray.hpp
-    Matrix.hpp
+    StaticMatrix.hpp
     Units.hpp
     Vector.hpp
     Vector.cpp

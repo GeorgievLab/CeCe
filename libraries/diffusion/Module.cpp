@@ -7,7 +7,7 @@
 #include <functional>
 
 // Simulator
-#include "core/Matrix.hpp"
+#include "core/StaticMatrix.hpp"
 #include "core/constants.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
@@ -57,19 +57,19 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const Coefficients A = 1.f / (4 * constants::PI * getCoefficients() * dt.value());
 
     // Offset coefficients for matrix
-    static const auto DISTANCES = Matrix<int, MATRIX_SIZE>::makeDistances();
+    static const auto DISTANCES = StaticMatrix<int, MATRIX_SIZE>::makeDistances();
 
     // Sizes must match
     assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(m_gridBack.begin(), m_gridBack.end()));
 
     // Generate matrix with coefficients based on distance
     // TODO: precompute matrix
-    const auto q = Matrix<float, MATRIX_SIZE>::generate([&step](size_t i, size_t j) {
+    const auto q = StaticMatrix<float, MATRIX_SIZE>::generate([&step](size_t i, size_t j) {
         return (step * DISTANCES[i][j]).getLengthSquared();
     });
 
     // Create distribution matrix
-    const auto M = Matrix<Coefficients, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
+    const auto M = StaticMatrix<Coefficients, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
         using std::exp;
         return A * exp(-q[i][j] / (4.f * getCoefficients() * dt.value()));
         //return A * exp(-q[i][j] / (4.f * D * dt));
@@ -99,7 +99,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const int width = m_grid.getSize().getWidth();
     const int height = m_grid.getSize().getHeight();
 
-    const Matrix<int, 3> MAPPING_MATRIX{ {
+    const StaticMatrix<int, 3> MAPPING_MATRIX{ {
         {-width - 1, -width, -width + 1},
         {       - 1,      0,        + 1},
         {+width - 1, +width, +width + 1}
