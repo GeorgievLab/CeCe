@@ -27,6 +27,7 @@ if (BUILD_TESTS)
     add_executable("${LIBRARY_NAME}_test"
         test/test.cpp
         test/ParserTest.cpp
+        test/ReactionTest.cpp
     )
     target_link_libraries("${LIBRARY_NAME}_test"
         ${PROJECT_NAME}
