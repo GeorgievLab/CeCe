@@ -950,9 +950,16 @@ using Density = Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
 /* ************************************************************************ */
 
 /**
- * @brief Class for representing viscosity.
+ * @brief Class for representing dynamic viscosity.
  */
-using Viscosity = Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+using DynamicViscosity = Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Class for representing kinematic viscosity.
+ */
+using KinematicViscosity = Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
 
 /* ************************************************************************ */
 
@@ -1436,7 +1443,7 @@ inline CONSTEXPR Force uN(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR Viscosity kg_m_s(Value value) NOEXCEPT
+inline CONSTEXPR DynamicViscosity kg_m_s(Value value) NOEXCEPT
 {
     return kg(value) / (m(1) * s(1));
 }
@@ -1450,7 +1457,7 @@ inline CONSTEXPR Viscosity kg_m_s(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR Viscosity g_m_s(Value value) NOEXCEPT
+inline CONSTEXPR DynamicViscosity g_m_s(Value value) NOEXCEPT
 {
     return g(value) / (m(1) * s(1));
 }
@@ -1464,7 +1471,7 @@ inline CONSTEXPR Viscosity g_m_s(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR Viscosity Ns_m2(Value value) NOEXCEPT
+inline CONSTEXPR DynamicViscosity Ns_m2(Value value) NOEXCEPT
 {
     return N(value) * s(1) / m2(1);
 }
@@ -1478,7 +1485,7 @@ inline CONSTEXPR Viscosity Ns_m2(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR Viscosity Pas(Value value) NOEXCEPT
+inline CONSTEXPR DynamicViscosity Pas(Value value) NOEXCEPT
 {
     return N(value) * s(1) / m2(1);
 }
@@ -1492,9 +1499,51 @@ inline CONSTEXPR Viscosity Pas(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR Viscosity mPas(Value value) NOEXCEPT
+inline CONSTEXPR DynamicViscosity mPas(Value value) NOEXCEPT
 {
     return mN(value) * s(1) / m2(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Meter square per second.
+ *
+ * @param value Value.
+ *
+ * @return Viscosity value.
+ */
+inline CONSTEXPR KinematicViscosity m2_s(Value value) NOEXCEPT
+{
+    return m2(value) / s(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Millimeter square per second.
+ *
+ * @param value Value.
+ *
+ * @return Viscosity value.
+ */
+inline CONSTEXPR KinematicViscosity mm2_s(Value value) NOEXCEPT
+{
+    return mm2(value) / s(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Micrometer square per second.
+ *
+ * @param value Value.
+ *
+ * @return Viscosity value.
+ */
+inline CONSTEXPR KinematicViscosity um2_s(Value value) NOEXCEPT
+{
+    return um2(value) / s(1);
 }
 
 /* ************************************************************************ */

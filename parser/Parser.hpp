@@ -224,12 +224,12 @@ struct value_constructor<units::Force>
 /* ************************************************************************ */
 
 template<>
-struct value_constructor<units::Viscosity>
+struct value_constructor<units::DynamicViscosity>
 {
-    static units::Viscosity construct(float val, const String& suffix)
+    static units::DynamicViscosity construct(float val, const String& suffix)
     {
         if (suffix.empty())
-            return units::Viscosity(val);
+            return units::DynamicViscosity(val);
 
         if (suffix == "Ns/m2")
             return units::Ns_m2(val);
@@ -239,6 +239,29 @@ struct value_constructor<units::Viscosity>
 
         if (suffix == "mPas")
             return units::mPas(val);
+
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<units::KinematicViscosity>
+{
+    static units::KinematicViscosity construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return units::KinematicViscosity(val);
+
+        if (suffix == "m2/s")
+            return units::m2_s(val);
+
+        if (suffix == "mm2/s")
+            return units::mm2_s(val);
+
+        if (suffix == "um2/s")
+            return units::um2_s(val);
 
         throw Exception("Unsupported suffix: " + suffix);
     }
