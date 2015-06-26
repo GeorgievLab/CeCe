@@ -69,16 +69,17 @@ if (BUILD_TESTS)
         test/test.cpp
         test/DynamicArrayTest.cpp
         test/IteratorRangeTest.cpp
+        test/UnitsTest.cpp
     )
     target_link_libraries(core_test
         ${GTEST_BOTH_LIBRARIES}
     )
 
-if (UNIX)
-    target_link_libraries(core_test
-        -pthread
-    )
-endif ()
+    if (UNIX)
+        target_link_libraries(core_test
+            -pthread
+        )
+    endif ()
 
     # Add test
     add_test(core core_test)

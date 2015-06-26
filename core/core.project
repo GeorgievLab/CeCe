@@ -149,5 +149,6 @@
     <File Name="test/test.cpp"/>
     <File Name="test/DynamicArrayTest.cpp"/>
     <File Name="test/IteratorRangeTest.cpp"/>
+    <File Name="test/UnitsTest.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

@@ -11,6 +11,8 @@
 /* ************************************************************************ */
 
 // C++
+#include <cmath>
+#include <limits>
 #include <type_traits>
 
 // Simulator
@@ -576,7 +578,8 @@ inline CONSTEXPR bool operator==(
     Unit<List<Nominators...>, List<Denominators...>> rhs
 ) NOEXCEPT
 {
-    return lhs.value() == rhs.value();
+    return std::abs(lhs.value() - rhs.value()) < std::numeric_limits<Value>::epsilon();
+    //return lhs.value() == rhs.value();
 }
 
 /* ************************************************************************ */
@@ -1049,7 +1052,6 @@ inline CONSTEXPR Length um(Value value) NOEXCEPT
  */
 inline CONSTEXPR Mass kg(Value value) NOEXCEPT
 {
-    // 1pg
     return Mass(MASS_COEFFICIENT * value);
 }
 
@@ -1064,7 +1066,7 @@ inline CONSTEXPR Mass kg(Value value) NOEXCEPT
  */
 inline CONSTEXPR Mass g(Value value) NOEXCEPT
 {
-    // 1kg = 1'000g
+    // 1g = 1/1'000 kg
     return kg(value * 1e-3);
 }
 
@@ -1079,7 +1081,7 @@ inline CONSTEXPR Mass g(Value value) NOEXCEPT
  */
 inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 {
-    // 1g = 1'000mg
+    // 1mg = 1/1'000 g
     return g(value * 1e-3);
 }
 
@@ -1094,8 +1096,38 @@ inline CONSTEXPR Mass mg(Value value) NOEXCEPT
  */
 inline CONSTEXPR Mass ug(Value value) NOEXCEPT
 {
-    // 1mg = 1'000ug
+    // 1ug = 1/1'000 mg
     return mg(value * 1e-3);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Nanograms value.
+ *
+ * @param value Value.
+ *
+ * @return Mass value.
+ */
+inline CONSTEXPR Mass ng(Value value) NOEXCEPT
+{
+    // 1ng = 1/1'000 ug
+    return ug(value * 1e-3);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Micrograms value.
+ *
+ * @param value Value.
+ *
+ * @return Mass value.
+ */
+inline CONSTEXPR Mass pg(Value value) NOEXCEPT
+{
+    // 1pg = 1/1'000 ng
+    return ng(value * 1e-3);
 }
 
 /* ************************************************************************ */
