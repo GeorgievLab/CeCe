@@ -38,6 +38,13 @@ using Value = float;
 /* ************************************************************************ */
 
 /**
+ * @brief Zero helper struct.
+ */
+static CONSTEXPR_CONST struct Zero_t {} Zero{};
+
+/* ************************************************************************ */
+
+/**
  * @brief Base SI units.
  */
 struct BaseLength { static CONSTEXPR_CONST int value = 0; };
@@ -156,6 +163,16 @@ public:
      */
     explicit CONSTEXPR Unit(value_type value) NOEXCEPT
         : m_value(value)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Zero constructor.
+     */
+    CONSTEXPR Unit(Zero_t) NOEXCEPT
+        : m_value(0)
     {
         // Nothing to do
     }
