@@ -8,7 +8,6 @@
 set(SRCS
     Module.hpp
     Module.cpp
-    Library.hpp
     Library.cpp
     Lattice.hpp
     Lattice.cpp

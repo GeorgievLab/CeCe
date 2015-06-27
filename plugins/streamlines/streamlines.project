@@ -25,7 +25,6 @@
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
-    <File Name="Library.hpp"/>
     <File Name="Lattice.hpp"/>
     <File Name="LatticeData.hpp"/>
     <File Name="ObstacleMap.hpp"/>
