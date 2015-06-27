@@ -33,8 +33,8 @@ namespace simulator {
  * @tparam StepT Step type.
  *
  * @param out    Output iterator. It's required to be valid for all incrementations.
- * @param shape  Circle shape
- * @param center Circle center in grid coordinates.
+ * @param shape  Shape
+ * @param center Center in grid coordinates.
  * @param max    Maximum coordinates.
  * @param mim    Minimum coordinates (default is {0, 0}).
  */
@@ -50,6 +50,9 @@ OutIt mapShapeToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
 
     case ShapeType::Circle:
         return mapShapeToGrid(out, shape.circle, steps, center, max, min);
+
+    case ShapeType::Rectangle:
+        return mapShapeToGrid(out, shape.rectangle, steps, center, max, min);
     }
 
     return out;
@@ -99,6 +102,55 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
 
             // Calculate grid coordinates
             const Vector<Ts> coord = shapeCenter + Vector<Ts>(xyVec);
+
+            // Check if coordinates are in range
+            if (!coord.inRange(minS, maxS))
+                continue;
+
+            // Insert coordinates into output iterator
+            *out++ = Vector<T>(coord);
+        }
+    }
+
+    return out;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Map rectangle shape to grid.
+ *
+ * @tparam OutIt Output iterator type.
+ * @tparam T     Coordinate value type.
+ * @tparam StepT Step type.
+ *
+ * @param out    Output iterator. It's required to be valid for all incrementations.
+ * @param shape  Rectangle shape
+ * @param center Rectangle center in grid coordinates.
+ * @param max    Maximum coordinates.
+ * @param mim    Minimum coordinates (default is {0, 0}).
+ */
+template<typename OutIt, typename T, typename StepT>
+OutIt mapShapeToGrid(OutIt out, const ShapeRectangle& shape, const Vector<StepT>& steps,
+    const Vector<T>& center, const Vector<T>& max,
+    const Vector<T>& min = {})
+{
+    // Get signed type
+    using Ts = typename std::make_signed<T>::type;
+
+    // Radius steps in grid
+    const auto sizeSteps = Vector<float>(shape.size / steps / 2.f);
+    const auto shapeCenter = Vector<Ts>(center + shape.center / steps);
+    const auto maxS = Vector<Ts>(max);
+    const auto minS = Vector<Ts>(min);
+
+    // Foreach grid given by radius steps
+    for (Ts x = Ts(-sizeSteps.getX()); x < Ts(sizeSteps.getX()); ++x)
+    {
+        for (Ts y = Ts(-sizeSteps.getY()); y < Ts(sizeSteps.getY()); ++y)
+        {
+            // Calculate grid coordinates
+            const auto coord = shapeCenter + Vector<Ts>{x, y};
 
             // Check if coordinates are in range
             if (!coord.inRange(minS, maxS))
