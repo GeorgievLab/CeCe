@@ -203,7 +203,7 @@ protected:
 private:
 
     /// In-flow velocity.
-    VelocityVector m_velocityInflow{units::um_s(10.f), units::um_s(0)};
+    VelocityVector m_velocityInflow{units::um_s(10.f), units::Zero};
 
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
@@ -216,7 +216,7 @@ private:
     render::ObjectPtr<render::GridColor> m_drawable;
 #endif
 
-#if ENABLE_RENDER
+#if ENABLE_RENDER && OPT_DRAW_VELOCITY
     /// Render grid for velocities
     render::ObjectPtr<render::GridVector> m_drawableVector;
 #endif
