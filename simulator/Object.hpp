@@ -174,7 +174,7 @@ public:
      *
      * @return
      */
-    const Any& getValue(const String& name, const Any& def = {}) const NOEXCEPT
+    Any getValue(const String& name, const Any& def = {}) const NOEXCEPT
     {
         auto it = m_values.find(name);
         return it != m_values.end() ? it->second : def;
