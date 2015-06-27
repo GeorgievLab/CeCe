@@ -31,8 +31,7 @@ add_definitions(
 )
 
 # Directory with plugins
-# TODO: change to plugins (after directory rename)
-set(DIR_PLUGINS "libraries")
+set(DIR_PLUGINS "plugins")
 
 # ######################################################################### #
 
