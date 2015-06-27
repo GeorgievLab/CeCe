@@ -27,8 +27,8 @@ namespace {
 
 /* ************************************************************************ */
 
-CONSTEXPR_CONST unsigned PARTS = 4;
-CONSTEXPR_CONST unsigned VERTEX_COUNT = PARTS + 1;
+CONSTEXPR_CONST unsigned PARTS = 32;
+CONSTEXPR_CONST unsigned VERTEX_COUNT = PARTS + 2;
 
 /* ************************************************************************ */
 
@@ -52,7 +52,7 @@ StaticArray<Vertex, VERTEX_COUNT> generateVertices()
 
     res[0] = Vertex{0.f, 0.f};
 
-    for (unsigned i = 1; i < VERTEX_COUNT; ++i)
+    for (unsigned i = 1; i <= VERTEX_COUNT; ++i)
     {
         const float angle = step * i;
         res[i] = Vertex{std::cos(angle), std::sin(angle)};
