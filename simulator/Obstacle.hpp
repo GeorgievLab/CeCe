@@ -18,6 +18,7 @@
 #ifdef ENABLE_RENDER
 #include "render/Object.hpp"
 #include "render/Circle.hpp"
+#include "render/Rectangle.hpp"
 #endif
 
 #if ENABLE_PHYSICS
@@ -102,6 +103,7 @@ private:
 
 #if ENABLE_RENDER
     render::ObjectPtr<render::Circle> m_drawCircle;
+    render::ObjectPtr<render::Rectangle> m_drawRectangle;
 #endif
 };
 

@@ -35,6 +35,8 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
     config.callString("type", [&shape](const String& value) {
         if (value == "circle")
             shape.type = ShapeType::Circle;
+        else if (value == "rectangle")
+            shape.type = ShapeType::Rectangle;
         // TODO: other shapes
     });
 
@@ -44,6 +46,12 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
     case ShapeType::Circle:
         config.callString("radius", [&shape](const String& value) {
             shape.circle.radius = parser::parse_value<units::Length>(value);
+        });
+        break;
+
+    case ShapeType::Rectangle:
+        config.callString("size", [&shape](const String& value) {
+            shape.rectangle.size = parser::parse_vector<units::Length>(value);
         });
         break;
     }
@@ -69,8 +77,19 @@ void Obstacle::draw(render::Context& context)
 
             context.matrixPush();
             context.matrixTranslate(getPosition());
-            context.matrixScale(shape.circle.radius.value());
+            context.matrixScale(shape.circle.radius / units::Length(1));
             m_drawCircle->draw(context);
+            context.matrixPop();
+            break;
+
+        case ShapeType::Rectangle:
+            if (!m_drawRectangle)
+                m_drawRectangle.create(context);
+
+            context.matrixPush();
+            context.matrixTranslate(getPosition());
+            context.matrixScale(shape.rectangle.size / units::Length(1));
+            m_drawRectangle->draw(context);
             context.matrixPop();
             break;
         }
@@ -95,6 +114,15 @@ void Obstacle::initShapes()
         {
             auto* s = new b2CircleShape{};
             s->m_radius = shape.circle.radius.value();
+            m_bodyShapes.emplace_back(s);
+            getBody()->CreateFixture(s, 1);
+            break;
+        }
+        case ShapeType::Rectangle:
+        {
+            const auto sh = shape.rectangle.size / 2.f;
+            auto* s = new b2PolygonShape{};
+            s->SetAsBox(sh.getWidth().value(), sh.getHeight().value());
             m_bodyShapes.emplace_back(s);
             getBody()->CreateFixture(s, 1);
             break;

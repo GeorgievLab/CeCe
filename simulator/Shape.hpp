@@ -33,7 +33,8 @@ class Simulation;
  */
 enum class ShapeType
 {
-    Circle
+    Circle,
+    Rectangle
 };
 
 /* ************************************************************************ */
@@ -53,6 +54,20 @@ struct DLL_EXPORT ShapeCircle
 /* ************************************************************************ */
 
 /**
+ * @brief Structure for rectangle shape.
+ */
+struct DLL_EXPORT ShapeRectangle
+{
+    /// Shape center.
+    PositionVector center;
+
+    /// Rectangle size.
+    SizeVector size;
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Structure for storing shape.
  */
 struct DLL_EXPORT Shape
@@ -64,6 +79,7 @@ struct DLL_EXPORT Shape
     union
     {
         ShapeCircle circle;
+        ShapeRectangle rectangle;
     };
 
 
@@ -78,6 +94,23 @@ struct DLL_EXPORT Shape
     static Shape makeCircle(units::Length radius, PositionVector center = PositionVector::Zero) NOEXCEPT
     {
         return Shape{ShapeType::Circle, {ShapeCircle{center, radius}}};
+    }
+
+
+    /**
+     * @brief Create rectangle shape.
+     *
+     * @param size   Rectangle size.
+     * @param center Rectangle center (position offset).
+     *
+     * @return
+     */
+    static Shape makeRectangle(SizeVector size, PositionVector center = PositionVector::Zero) NOEXCEPT
+    {
+        Shape shape{ShapeType::Rectangle};
+        shape.rectangle = ShapeRectangle{center, size};
+
+        return shape;
     }
 
 };

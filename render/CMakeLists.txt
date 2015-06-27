@@ -79,6 +79,8 @@ add_library(${PROJECT_NAME} OBJECT
     Texture.cpp
     Circle.hpp
     Circle.cpp
+    Rectangle.hpp
+    Rectangle.cpp
     ImageData.hpp
     glext.h
 )

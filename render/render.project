@@ -30,6 +30,7 @@
     <File Name="Texture.cpp"/>
     <File Name="GridColorSmooth.cpp"/>
     <File Name="Circle.cpp"/>
+    <File Name="Rectangle.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
@@ -54,6 +55,7 @@
     <File Name="VertexElement.hpp"/>
     <File Name="VertexFormat.hpp"/>
     <File Name="Circle.hpp"/>
+    <File Name="Rectangle.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
