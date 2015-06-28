@@ -17,6 +17,8 @@
 
 // Simulation
 #include "simulator/Simulation.hpp"
+#include "simulator/Object.hpp"
+#include "simulator/Module.hpp"
 #include "simulator/Configuration.hpp"
 
 // Module
@@ -64,12 +66,34 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
         {NULL}  /* Sentinel */
     };
 
+    static PyMethodDef fns[] = {
+        defineMemberFunction<1, type>("useModule",
+            static_cast<simulator::Module*(simulator::Simulation::*)(const String&)>(&simulator::Simulation::useModule)
+        ),
+        {NULL}  /* Sentinel */
+    };
+
     type_def::init("simulator.Simulation");
     type_def::definition.tp_getset = properties;
+    type_def::definition.tp_methods = fns;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);
     PyModule_AddObject(module, "Simulation", reinterpret_cast<PyObject*>(&type_def::definition));
+}
+
+/* ************************************************************************ */
+
+static void python_wrapper_simulator_Module(PyObject* module)
+{
+    using type = simulator::Module*;
+    using type_def = TypeDefinition<type>;
+
+    type_def::init("simulator.Module");
+    type_def::ready();
+
+    Py_INCREF(&type_def::definition);
+    PyModule_AddObject(module, "Module", reinterpret_cast<PyObject*>(&type_def::definition));
 }
 
 /* ************************************************************************ */
@@ -103,6 +127,7 @@ void python_wrapper_simulator()
 
     python_wrapper_simulator_Configuration(module);
     python_wrapper_simulator_Simulation(module);
+    python_wrapper_simulator_Module(module);
     python_wrapper_simulator_Object(module);
 }
 
