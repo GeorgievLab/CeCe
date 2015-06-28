@@ -23,37 +23,16 @@ namespace python {
 /* ************************************************************************ */
 
 /**
- * @brief Create object from integral types.
+ * @brief Create object from basic types types.
  *
  * @param value
  *
  * @return
  */
-template<
-    typename T,
-    typename std::enable_if<std::is_integral<typename std::remove_reference<T>::type>::value>::type* = nullptr
->
+template<typename T>
 Handle<PyObject> makeObject(T value) NOEXCEPT
 {
-    return makeHandle(PyInt_FromLong(value));
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from floating point types.
- *
- * @param value
- *
- * @return
- */
-template<
-    typename T,
-    typename std::enable_if<std::is_floating_point<typename std::remove_reference<T>::type>::value>::type* = nullptr
->
-Handle<PyObject> makeObject(T value) NOEXCEPT
-{
-    return makeHandle(PyFloat_FromDouble(value));
+    return TypeConvertor<T>::convert(value);
 }
 
 /* ************************************************************************ */
@@ -66,7 +45,7 @@ Handle<PyObject> makeObject(T value) NOEXCEPT
  * @return
  */
 inline
-const Handle<PyObject>& makeObject(Handle<PyObject>& value) NOEXCEPT
+Handle<PyObject>& makeObject(Handle<PyObject>& value) NOEXCEPT
 {
     return value;
 }
@@ -99,43 +78,6 @@ inline
 Handle<PyObject> makeObject(Handle<PyObject>&& value) NOEXCEPT
 {
     return value;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from value.
- *
- * @param value
- *
- * @return
- */
-template<
-    typename T,
-    typename std::enable_if<!std::is_scalar<typename std::remove_reference<T>::type>::value>::type* = nullptr
->
-Handle<PyObject> makeObject(T value) NOEXCEPT
-{
-    using TC = typename std::remove_const<T>::type;
-    assert(TypeDefinition<TC>::definition.tp_name);
-    return TypeDefinition<TC>::wrap(value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from pointer.
- *
- * @param value
- *
- * @return
- */
-template<typename T>
-Handle<PyObject> makeObject(T* value) NOEXCEPT
-{
-    using TC = typename std::remove_const<T>::type*;
-    assert(TypeDefinition<TC>::definition.tp_name);
-    return TypeDefinition<TC>::wrap(const_cast<TC>(value));
 }
 
 /* ************************************************************************ */

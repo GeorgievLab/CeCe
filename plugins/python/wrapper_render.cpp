@@ -37,64 +37,21 @@ static void python_wrapper_render_Color(PyObject* module)
 
 /* ************************************************************************ */
 
-static PyObject* Context_matrixPush(ObjectWrapper<render::Context*>* self)
-{
-    assert(self);
-    assert(self->value);
-
-    // Get value
-    self->value->matrixPush();
-
-    // Return value
-    return Py_BuildValue("");
-}
-
-/* ************************************************************************ */
-
-static PyObject* Context_matrixPop(ObjectWrapper<render::Context*>* self)
-{
-    assert(self);
-    assert(self->value);
-
-    // Get value
-    self->value->matrixPop();
-
-    // Return value
-    return Py_BuildValue("");
-}
-
-/* ************************************************************************ */
-
-static PyObject* Context_matrixIdentity(ObjectWrapper<render::Context*>* self)
-{
-    assert(self);
-    assert(self->value);
-
-    // Get value
-    self->value->matrixIdentity();
-
-    // Return value
-    return Py_BuildValue("");
-}
-
-/* ************************************************************************ */
-
-static PyMethodDef g_contextMethods[] = {
-    {"matrixPush", (PyCFunction) Context_matrixPush, METH_NOARGS, nullptr},
-    {"matrixPop", (PyCFunction) Context_matrixPop, METH_NOARGS, nullptr},
-    {"matrixIdentity", (PyCFunction) Context_matrixIdentity, METH_NOARGS, nullptr},
-    {nullptr}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
 static void python_wrapper_render_Context(PyObject* module)
 {
 #if ENABLE_RENDER
-    using type_def = TypeDefinition<render::Context*>;
+    using type = render::Context*;
+    using type_def = TypeDefinition<type>;
+
+    static PyMethodDef fns[] = {
+        defineMemberFunction<1, type>("matrixPush", &render::Context::matrixPush),
+        defineMemberFunction<2, type>("matrixPop", &render::Context::matrixPop),
+        defineMemberFunction<3, type>("matrixIdentity", &render::Context::matrixIdentity),
+        {NULL}  /* Sentinel */
+    };
 
     type_def::init("render.Context");
-    type_def::definition.tp_methods = g_contextMethods;
+    type_def::definition.tp_methods = fns;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);

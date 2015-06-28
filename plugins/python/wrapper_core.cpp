@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -14,9 +16,11 @@
 
 // Core
 #include "core/Vector.hpp"
+#include "core/Units.hpp"
 
 // Module
 #include "wrapper.hpp"
+#include "Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -24,176 +28,28 @@ using namespace module::python;
 
 /* ************************************************************************ */
 
-static PyObject* vectorFloat_getX(ObjectWrapper<Vector<float>>* self, void* closure)
+template<typename T>
+static void python_wrapper_core_Vector(const char* fullname, PyObject* module)
 {
-    assert(self);
-    const float x = self->value.getX();
+    const char* name = fullname + 5;
 
-    return Py_BuildValue("f", x);
-}
+    using type = Vector<T>;
+    using type_def = TypeDefinition<type>;
 
-/* ************************************************************************ */
+    static PyGetSetDef properties[] = {
+        defineProperty<1, type>("x", &type::getX, &type::setX),
+        defineProperty<2, type>("y", &type::getY, &type::setY),
+        defineProperty<3, type>("width", &type::getWidth),
+        defineProperty<4, type>("height", &type::getHeight),
+        {NULL}  /* Sentinel */
+    };
 
-static int vectorFloat_setX(ObjectWrapper<Vector<float>>* self, PyObject* value, void* closure)
-{
-    if (value == nullptr)
-    {
-        PyErr_SetString(PyExc_TypeError, "X value cannot be NULL");
-        return -1;
-    }
-
-    if (!PyFloat_Check(value))
-    {
-        PyErr_SetString(PyExc_TypeError, "X value must be float");
-        return -1;
-    }
-
-    assert(self);
-    self->value.setX(PyFloat_AsDouble(value));
-
-    return 0;
-}
-
-/* ************************************************************************ */
-
-static PyObject* vectorFloat_getY(ObjectWrapper<Vector<float>>* self, void* closure)
-{
-    assert(self);
-    const float y = self->value.getY();
-
-    return Py_BuildValue("f", y);
-}
-
-/* ************************************************************************ */
-
-static int vectorFloat_setY(ObjectWrapper<Vector<float>>* self, PyObject* value, void* closure)
-{
-    if (value == nullptr)
-    {
-        PyErr_SetString(PyExc_TypeError, "X value cannot be NULL");
-        return -1;
-    }
-
-    if (!PyFloat_Check(value))
-    {
-        PyErr_SetString(PyExc_TypeError, "X value must be float");
-        return -1;
-    }
-
-    assert(self);
-    self->value.setY(PyFloat_AsDouble(value));
-
-    return 0;
-}
-
-/* ************************************************************************ */
-
-static PyGetSetDef g_vectorFloatGettersSeters[] = {
-    {const_cast<char*>("x"), (getter)vectorFloat_getX, (setter)vectorFloat_setX, nullptr, nullptr },
-    {const_cast<char*>("y"), (getter)vectorFloat_getY, (setter)vectorFloat_setY, nullptr, nullptr },
-    {const_cast<char*>("width"), (getter)vectorFloat_getX, (setter)vectorFloat_setX, nullptr, nullptr },
-    {const_cast<char*>("height"), (getter)vectorFloat_getY, (setter)vectorFloat_setY, nullptr, nullptr },
-    {NULL}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
-static void python_wrapper_core_VectorFloat(PyObject* module)
-{
-    using type_def = TypeDefinition<Vector<float>>;
-
-    type_def::init("core.VectorFloat");
-    type_def::definition.tp_getset = g_vectorFloatGettersSeters;
+    type_def::init(fullname);
+    type_def::definition.tp_getset = properties;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "VectorFloat", reinterpret_cast<PyObject*>(&type_def::definition));
-}
-
-/* ************************************************************************ */
-
-static PyObject* vectorInt_getX(ObjectWrapper<Vector<int>>* self, void* closure)
-{
-    assert(self);
-    const int x = self->value.getX();
-
-    return Py_BuildValue("i", x);
-}
-
-/* ************************************************************************ */
-
-static int vectorInt_setX(ObjectWrapper<Vector<int>>* self, PyObject* value, void* closure)
-{
-    if (value == nullptr)
-    {
-        PyErr_SetString(PyExc_TypeError, "X value cannot be NULL");
-        return -1;
-    }
-
-    if (!PyLong_Check(value))
-    {
-        PyErr_SetString(PyExc_TypeError, "X value must be int");
-        return -1;
-    }
-
-    assert(self);
-    self->value.setX(PyLong_AsLong(value));
-
-    return 0;
-}
-
-/* ************************************************************************ */
-
-static PyObject* vectorInt_getY(ObjectWrapper<Vector<int>>* self, void* closure)
-{
-    assert(self);
-    const int y = self->value.getY();
-
-    return Py_BuildValue("i", y);
-}
-
-/* ************************************************************************ */
-
-static int vectorInt_setY(ObjectWrapper<Vector<int>>* self, PyObject* value, void* closure)
-{
-    if (value == nullptr)
-    {
-        PyErr_SetString(PyExc_TypeError, "X value cannot be NULL");
-        return -1;
-    }
-
-    if (!PyLong_Check(value))
-    {
-        PyErr_SetString(PyExc_TypeError, "X value must be float");
-        return -1;
-    }
-
-    assert(self);
-    self->value.setY(PyLong_AsLong(value));
-
-    return 0;
-}
-
-/* ************************************************************************ */
-
-static PyGetSetDef g_vectorIntGettersSeters[] = {
-    {const_cast<char*>("x"), (getter)vectorInt_getX, (setter)vectorInt_setX, nullptr, nullptr },
-    {const_cast<char*>("y"), (getter)vectorInt_getY, (setter)vectorInt_setY, nullptr, nullptr },
-    {NULL}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
-static void python_wrapper_core_VectorInt(PyObject* module)
-{
-    using type_def = TypeDefinition<Vector<int>>;
-
-    type_def::init("core.VectorInt");
-    type_def::definition.tp_getset = g_vectorIntGettersSeters;
-    type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "VectorInt", reinterpret_cast<PyObject*>(&type_def::definition));
+    PyModule_AddObject(module, name, reinterpret_cast<PyObject*>(&type_def::definition));
 }
 
 /* ************************************************************************ */
@@ -202,8 +58,11 @@ void python_wrapper_core()
 {
     PyObject* module = Py_InitModule3("core", nullptr, nullptr);
 
-    python_wrapper_core_VectorFloat(module);
-    python_wrapper_core_VectorInt(module);
+    python_wrapper_core_Vector<float>("core.VectorFloat", module);
+    python_wrapper_core_Vector<int>("core.VectorInt", module);
+    python_wrapper_core_Vector<unsigned int>("core.VectorUint", module);
+    python_wrapper_core_Vector<units::Length>("core.PositionVector", module);
+    python_wrapper_core_Vector<units::Velocity>("core.VelocityVector", module);
 }
 
 /* ************************************************************************ */

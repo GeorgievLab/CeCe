@@ -29,49 +29,18 @@ using namespace module::python;
 
 /* ************************************************************************ */
 
-/**
- * @brief Configuration::getString function.
- *
- * @param self
- * @param args
- * @param kwds
- *
- * @return
- */
-static PyObject* Configuration_get(ObjectWrapper<simulator::Configuration*>* self, PyObject* args)
-{
-    char* name;
-
-    // Get argument
-    if (!PyArg_ParseTuple(args, "s", &name))
-        return nullptr;
-
-    assert(self);
-    assert(self->value);
-    assert(name);
-
-    // Get value
-    auto value = self->value->getString(name);
-
-    // Return value
-    return Py_BuildValue("s#", value.c_str(), value.length());
-}
-
-/* ************************************************************************ */
-
-static PyMethodDef g_configurationMethods[] = {
-    {"get", (PyCFunction) Configuration_get, METH_VARARGS, nullptr},
-    {nullptr}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
 static void python_wrapper_simulator_Configuration(PyObject* module)
 {
-    using type_def = TypeDefinition<simulator::Configuration*>;
+    using type = const simulator::Configuration*;
+    using type_def = TypeDefinition<type>;
+
+    static PyMethodDef fns[] = {
+        defineMemberFunction<1, type>("get", &simulator::Configuration::getString),
+        {NULL}  /* Sentinel */
+    };
 
     type_def::init("simulator.Configuration");
-    type_def::definition.tp_methods = g_configurationMethods;
+    type_def::definition.tp_methods = fns;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);
@@ -80,66 +49,23 @@ static void python_wrapper_simulator_Configuration(PyObject* module)
 
 /* ************************************************************************ */
 
-static PyObject* simulation_getWorldSize(ObjectWrapper<simulator::Simulation*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const auto pos = self->value->getWorldSize();
-
-    return makeObject(pos);
-}
-
-/* ************************************************************************ */
-
-static PyObject* simulation_getObjectsCount(ObjectWrapper<simulator::Simulation*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const unsigned long count = self->value->getObjects().size();
-
-    return Py_BuildValue("k", count);
-}
-
-/* ************************************************************************ */
-
-static PyObject* simulation_getIteration(ObjectWrapper<simulator::Simulation*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const unsigned long step = self->value->getStepNumber();
-
-    return Py_BuildValue("k", step);
-}
-
-/* ************************************************************************ */
-
-static PyObject* simulation_getIterations(ObjectWrapper<simulator::Simulation*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const unsigned long step = self->value->getIterations();
-
-    return Py_BuildValue("k", step);
-}
-
-/* ************************************************************************ */
-
-static PyGetSetDef g_simulationGettersSeters[] = {
-    {const_cast<char*>("worldSize"), (getter)simulation_getWorldSize, nullptr, nullptr, nullptr },
-    {const_cast<char*>("objectsCount"), (getter)simulation_getObjectsCount, nullptr, nullptr, nullptr },
-    {const_cast<char*>("iteration"), (getter)simulation_getIteration, nullptr, nullptr, nullptr },
-    {const_cast<char*>("iterations"), (getter)simulation_getIterations, nullptr, nullptr, nullptr },
-    {NULL}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
 static void python_wrapper_simulator_Simulation(PyObject* module)
 {
-    using type_def = TypeDefinition<simulator::Simulation*>;
+    using type = simulator::Simulation*;
+    using type_def = TypeDefinition<type>;
+
+    static PyGetSetDef properties[] = {
+        defineProperty<1, type>("worldSize", &simulator::Simulation::getWorldSize),
+        defineProperty<2, type>("iteration", &simulator::Simulation::getStepNumber),
+        defineProperty<3, type>("iterations", &simulator::Simulation::getIterations),
+        defineProperty<4, type>("objectsCount", +[](type obj) {
+            return obj->getObjects().size();
+        }),
+        {NULL}  /* Sentinel */
+    };
 
     type_def::init("simulator.Simulation");
-    type_def::definition.tp_getset = g_simulationGettersSeters;
+    type_def::definition.tp_getset = properties;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);
@@ -148,137 +74,21 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
 
 /* ************************************************************************ */
 
-static PyObject* object_getId(ObjectWrapper<simulator::Object*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const unsigned long count = self->value->getId();
-
-    return Py_BuildValue("k", count);
-}
-
-/* ************************************************************************ */
-
-static PyObject* object_getPosition(ObjectWrapper<simulator::Object*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const auto posOrig = self->value->getPosition();
-    const auto pos = Vector<float>(posOrig.getX().value(), posOrig.getY().value());
-
-    return makeObject(pos);
-}
-
-/* ************************************************************************ */
-
-static int object_setPosition(ObjectWrapper<simulator::Object*>* self, PyObject* value, void* closure)
-{
-    if (value == nullptr)
-    {
-        PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-        return -1;
-    }
-
-    if (!PyObject_TypeCheck(value, &TypeDefinition<Vector<float>>::definition))
-    {
-        PyErr_SetString(PyExc_TypeError, "Position must have VectorFloat type");
-        return -1;
-    }
-
-    using value_type = TypeDefinition<Vector<float>>::type;
-    value_type* val = reinterpret_cast<value_type*>(value);
-
-    assert(self);
-    assert(self->value);
-    self->value->setPosition(PositionVector(val->value));
-
-    return 0;
-}
-
-/* ************************************************************************ */
-
-static PyObject* object_getRotation(ObjectWrapper<simulator::Object*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const float rotation = self->value->getRotation();
-
-    return Py_BuildValue("f", rotation);
-}
-
-/* ************************************************************************ */
-
-static int object_setRotation(ObjectWrapper<simulator::Object*>* self, PyObject* value, void* closure)
-{
-    if (value == nullptr)
-    {
-        PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-        return -1;
-    }
-
-    if (!PyFloat_Check(value))
-    {
-        PyErr_SetString(PyExc_TypeError, "Value must be float");
-        return -1;
-    }
-
-    assert(self);
-    assert(self->value);
-    self->value->setRotation(PyFloat_AsDouble(value));
-
-    return 0;
-}
-
-/* ************************************************************************ */
-
-static PyObject* object_getVelocity(ObjectWrapper<simulator::Object*>* self, void* closure)
-{
-    assert(self);
-    assert(self->value);
-    const auto velocityOrig = self->value->getVelocity();
-    const auto velocity = Vector<float>(velocityOrig.getX().value(), velocityOrig.getY().value());
-
-    return makeObject(velocity);
-}
-
-/* ************************************************************************ */
-
-static int object_setVelocity(ObjectWrapper<simulator::Object*>* self, PyObject* value, void* closure)
-{
-    if (!PyObject_TypeCheck(value, &TypeDefinition<Vector<float>>::definition))
-    {
-        PyErr_SetString(PyExc_TypeError, "Position must have VectorFloat type");
-        return -1;
-    }
-
-    using value_type = TypeDefinition<Vector<float>>::type;
-    value_type* val = reinterpret_cast<value_type*>(value);
-
-    assert(self);
-    assert(self->value);
-    self->value->setVelocity(VelocityVector(val->value));
-
-    return 0;
-}
-
-/* ************************************************************************ */
-
-static PyGetSetDef g_objectGettersSeters[] = {
-    {const_cast<char*>("id"), (getter)object_getId, nullptr, nullptr, nullptr },
-    {const_cast<char*>("position"), (getter)object_getPosition, (setter)object_setPosition, nullptr, nullptr },
-    {const_cast<char*>("rotation"), (getter)object_getRotation, (setter)object_setRotation, nullptr, nullptr },
-    {const_cast<char*>("velocity"), (getter)object_getVelocity, (setter)object_setVelocity, nullptr, nullptr },
-    {NULL}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
 static void python_wrapper_simulator_Object(PyObject* module)
 {
-    using type_def = TypeDefinition<simulator::Object*>;
+    using type = simulator::Object*;
+    using type_def = TypeDefinition<type>;
+
+    static PyGetSetDef properties[] = {
+        defineProperty<1, type>("id", &simulator::Object::getId),
+        defineProperty<2, type>("position", &simulator::Object::getPosition, &simulator::Object::setPosition),
+        defineProperty<3, type>("rotation", &simulator::Object::getRotation, &simulator::Object::setRotation),
+        defineProperty<4, type>("velocity", &simulator::Object::getVelocity, &simulator::Object::setVelocity),
+        {NULL}  /* Sentinel */
+    };
 
     type_def::init("simulator.Object");
-    type_def::definition.tp_getset = g_objectGettersSeters;
+    type_def::definition.tp_getset = properties;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);

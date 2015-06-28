@@ -168,6 +168,23 @@ public:
 #endif
 
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Release stored pointer.
+     *
+     * @return Pointer.
+     */
+    T* release() NOEXCEPT
+    {
+        T* tmp = m_ptr;
+        m_ptr = nullptr;
+        return tmp;
+    }
+
+
 // Private Data Members
 private:
 
