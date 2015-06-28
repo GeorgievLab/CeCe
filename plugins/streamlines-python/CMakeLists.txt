@@ -15,6 +15,8 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 # Sources
 set(SRCS
     Library.cpp
+    wrapper_module.hpp
+    wrapper_module.cpp
 )
 
 # Build plugin

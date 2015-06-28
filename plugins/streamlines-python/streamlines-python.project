@@ -18,8 +18,11 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
+    <File Name="wrapper_module.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="include"/>
+  <VirtualDirectory Name="include">
+    <File Name="wrapper_module.hpp"/>
+  </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">

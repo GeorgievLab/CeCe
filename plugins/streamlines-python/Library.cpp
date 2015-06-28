@@ -14,8 +14,8 @@
 #include "simulator/Library.hpp"
 #include "simulator/PluginApi.hpp"
 
-// Python
-#include "../python/Python.hpp"
+// Plugin
+#include "wrapper_module.hpp"
 
 /* ************************************************************************ */
 
@@ -27,7 +27,7 @@ class StreamlinesPythonApi : public PluginApi
 {
     void initSimulation(Simulation& simulation) override
     {
-        // Nothing to do
+        python_wrapper_module();
     }
 };
 
