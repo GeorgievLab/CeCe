@@ -31,7 +31,6 @@
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
-    <File Name="Library.hpp"/>
     <File Name="wrapper_core.hpp"/>
     <File Name="wrapper_simulator.hpp"/>
     <File Name="wrapper_render.hpp"/>

@@ -9,9 +9,6 @@
 
 /* ************************************************************************ */
 
-// Declaration
-#include "Library.hpp"
-
 // Simulator
 #include "core/Log.hpp"
 
