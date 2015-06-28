@@ -59,6 +59,8 @@ add_library(${PROJECT_NAME} OBJECT
     Range.hpp
     VectorRange.hpp
     Any.hpp
+    IntegerSequence.hpp
+    Tuple.hpp
 )
 
 # ######################################################################### #

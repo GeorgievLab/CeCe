@@ -57,6 +57,8 @@
     <File Name="OutStream.hpp"/>
     <File Name="InStream.hpp"/>
     <File Name="StaticMatrix.hpp"/>
+    <File Name="Tuple.hpp"/>
+    <File Name="IntegerSequence.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
