@@ -36,8 +36,8 @@ CONSTEXPR_CONST unsigned VERTEX_COUNT = PARTS + 2;
 struct Vertex
 {
     float x, y;
+    float r, g, b;
 };
-
 
 /* ************************************************************************ */
 
@@ -50,12 +50,12 @@ StaticArray<Vertex, VERTEX_COUNT> generateVertices()
 
     CONSTEXPR_CONST float step = 2 * constants::PI / PARTS;
 
-    res[0] = Vertex{0.f, 0.f};
+    res[0] = Vertex{0.f, 0.f, 0.8f, 0.8f, 0.8f};
 
     for (unsigned i = 1; i <= VERTEX_COUNT; ++i)
     {
         const float angle = step * i;
-        res[i] = Vertex{std::cos(angle), std::sin(angle)};
+        res[i] = Vertex{std::cos(angle), std::sin(angle), 0.8f, 0.8f, 0.8f};
     }
 
     return res;
@@ -63,7 +63,14 @@ StaticArray<Vertex, VERTEX_COUNT> generateVertices()
 
 /* ************************************************************************ */
 
-static const StaticArray<Vertex, VERTEX_COUNT> g_vertices = generateVertices();
+const StaticArray<Vertex, VERTEX_COUNT> g_vertices = generateVertices();
+
+/* ************************************************************************ */
+
+const render::VertexFormat g_vformat{
+    render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
+    render::VertexElement(render::VertexElementType::Color, render::DataType::Float, 3)
+};
 
 /* ************************************************************************ */
 
@@ -81,13 +88,9 @@ Circle::Circle(Context& context)
 
 void Circle::draw(Context& context) NOEXCEPT
 {
-    static render::VertexFormat vformat{
-        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2)
-    };
-
     // Set parameters
     context.setVertexBuffer(&m_buffer);
-    context.setVertexFormat(&vformat);
+    context.setVertexFormat(&g_vformat);
 
     // Draw
     context.draw(PrimitiveType::TriangleFan, VERTEX_COUNT);
