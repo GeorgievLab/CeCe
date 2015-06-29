@@ -28,12 +28,6 @@ using namespace plugin::python;
 
 void python_wrapper_module()
 {
-    // Get simulator module
-    auto simulatorModule = makeHandle(PyImport_ImportModule("simulator"));
-    auto dict = PyModule_GetDict(simulatorModule);
-    auto moduleClass = makeHandle(PyMapping_GetItemString(dict, "Module"));
-    assert(PyType_Check(moduleClass));
-
     PyObject* module = Py_InitModule3("streamlines", nullptr, nullptr);
 
     using type = plugin::streamlines::Module*;
@@ -44,9 +38,8 @@ void python_wrapper_module()
         {NULL}  /* Sentinel */
     };
 
-    type_def::init("streamlines.Module");
+    type_def::init("streamlines.Module", "simulator.Module");
     type_def::definition.tp_getset = properties;
-    type_def::definition.tp_base = (PyTypeObject*) moduleClass.release();
     type_def::ready();
 
     Py_INCREF(&type_def::definition);

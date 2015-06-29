@@ -955,10 +955,11 @@ struct TypeDefinition
      * @brief Define type object.
      *
      * @param name
+     * @param base
      *
      * @return
      */
-    static void init(const char* name) NOEXCEPT
+    static void init(const char* name, const char* base = nullptr) NOEXCEPT
     {
         definition = {
             PyObject_HEAD_INIT(NULL)
@@ -984,6 +985,23 @@ struct TypeDefinition
             Py_TPFLAGS_DEFAULT,             // tp_flags
             nullptr,                        // tp_doc
         };
+
+        if (base)
+        {
+            const String baseFullName(base);
+            const auto sep = baseFullName.find('.');
+            String module = baseFullName.substr(0, sep);
+            String baseName = baseFullName.substr(sep + 1);
+
+            // Get simulator module
+            auto simulatorModule = makeHandle(PyImport_ImportModule(module.c_str()));
+            auto dict = PyModule_GetDict(simulatorModule);
+            auto moduleClass = makeHandle(PyMapping_GetItemString(dict, const_cast<char*>(baseName.c_str())));
+            assert(PyType_Check(moduleClass));
+
+            // Base class
+            definition.tp_base = (PyTypeObject*) moduleClass.release();
+        }
     }
 
 
