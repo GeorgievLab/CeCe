@@ -12,6 +12,7 @@
 // Simulator
 #include "core/compatibility.hpp"
 #include "simulator/Library.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/PluginApi.hpp"
 
 // Plugin
@@ -27,6 +28,9 @@ class StreamlinesPythonApi : public PluginApi
 {
     void initSimulation(Simulation& simulation) override
     {
+        // TODO: change to 'requirePlugin("python")'
+        simulation.useModule("python");
+
         python_wrapper_module();
     }
 };

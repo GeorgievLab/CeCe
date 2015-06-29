@@ -1,0 +1,15 @@
+<simulation world-size="100um 100um" dt="1ms" iterations="10000">
+    <module name="streamlines" grid="100" velocity-inflow="200um/s" kinematic-viscosity="658um2/s" />
+    <module name="streamlines-python" />
+    <object class="cell.Cell" type="static" volume="2000um3" />
+    <object class="cell.Yeast" position="-20um 0" />
+    <object class="cell.Yeast" position="-20um 30um" />
+    <module name="python:shake">
+def update(dt, simulation):
+    module = simulation.useModule("streamlines")
+    #module.velocityInflow = core.VelocityVector(-200, 0)
+    vel = module.velocityInflow
+    print "[", vel.x, ",", vel.y, "]"
+    </module>
+</simulation>
+
