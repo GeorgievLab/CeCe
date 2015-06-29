@@ -45,6 +45,8 @@
     <File Name="wrapper_stdout.hpp"/>
     <File Name="wrapper.hpp"/>
     <File Name="Python.hpp"/>
+    <File Name="View.hpp"/>
+    <File Name="ValueCast.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

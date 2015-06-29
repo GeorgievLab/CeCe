@@ -14,6 +14,7 @@
 #include "Python.hpp"
 #include "wrapper.hpp"
 #include "Handle.hpp"
+#include "ValueCast.hpp"
 
 /* ************************************************************************ */
 
@@ -32,7 +33,7 @@ namespace python {
 template<typename T>
 Handle<PyObject> makeObject(T value) NOEXCEPT
 {
-    return TypeConvertor<T>::convert(value);
+    return cast<T>(value);
 }
 
 /* ************************************************************************ */

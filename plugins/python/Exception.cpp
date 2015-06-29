@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -26,7 +28,16 @@ namespace python {
 
 /* ************************************************************************ */
 
-Exception::Exception()
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns python formatted error message.
+ *
+ * @return Formatted error message.
+ */
+String get_message() NOEXCEPT
 {
     assert(PyErr_Occurred());
 
@@ -60,19 +71,38 @@ Exception::Exception()
             auto format_exception = makeHandle(PyObject_GetAttrString(traceback, "format_exception"));
             auto formatted_list = call(format_exception, hexc, hval, htb);
             auto formatted = makeHandle(PyUnicode_Join(str(""), formatted_list));
-            m_message = PyString_AsString(formatted);
+            return PyString_AsString(formatted);
         }
         else
         {
             auto str = makeHandle(PyObject_Str(hval));
-            m_message = PyString_AsString(str);
+            return PyString_AsString(str);
         }
     }
     else
     {
         auto str = makeHandle(PyObject_Str(hexc));
-        m_message = PyString_AsString(str);
+        return PyString_AsString(str);
     }
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+Exception::Exception()
+{
+    m_message = get_message();
+}
+
+/* ************************************************************************ */
+
+Exception::Exception(const char* error)
+{
+    PyErr_SetString(PyExc_TypeError, error);
+    m_message = get_message();
 }
 
 /* ************************************************************************ */

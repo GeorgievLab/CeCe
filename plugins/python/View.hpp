@@ -10,10 +10,11 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <utility>
+
 // Simulator
 #include "core/compatibility.hpp"
-#include "core/String.hpp"
-#include "core/Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -23,9 +24,10 @@ namespace python {
 /* ************************************************************************ */
 
 /**
- * @brief Python plugin exception.
+ * @brief RAII wrapper around Python API borrowed objects.
  */
-class Exception : public core::Exception
+template<typename T>
+class View
 {
 
 // Public Ctors & Dtors
@@ -33,17 +35,43 @@ public:
 
 
     /**
-     * @brief Constructor.
+     * @brief Default constructor.
      */
-    Exception();
+    View() = default;
 
 
     /**
      * @brief Constructor.
      *
-     * @param error Error message.
+     * @param ptr Object pointer.
      */
-    explicit Exception(const char* error);
+    View(T* ptr) NOEXCEPT
+        : m_ptr(ptr)
+    {
+        // Nothing to do
+    }
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Returns if handle is set.
+     */
+    explicit operator bool() const NOEXCEPT
+    {
+        return m_ptr != nullptr;
+    }
+
+
+    /**
+     * @brief Implicit cast to operator.
+     */
+    operator T*() const NOEXCEPT
+    {
+        return m_ptr;
+    }
 
 
 // Public Accessors
@@ -51,22 +79,48 @@ public:
 
 
     /**
-     * @brief Returns the explanatory string.
+     * @brief Returns stored pointer.
      */
-    const char* what() const NOEXCEPT
+    T* get() const NOEXCEPT
     {
-        return m_message.c_str();
+        return m_ptr;
     }
+
+
+    /**
+     * @brief Returns mutable stored pointer.
+     */
+#ifndef _MSC_VER
+    T*& getRef()& NOEXCEPT
+    {
+        return m_ptr;
+    }
+#endif
 
 
 // Private Data Members
 private:
 
 
-    /// Error message.
-    String m_message;
+    /// Object pointer.
+    T* m_ptr = nullptr;
 
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create view from pointer.
+ *
+ * @param ptr Pointer.
+ *
+ * @return
+ */
+template<typename T>
+View<T> makeView(T* ptr) NOEXCEPT
+{
+    return View<T>(ptr);
+}
 
 /* ************************************************************************ */
 

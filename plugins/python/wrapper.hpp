@@ -14,9 +14,12 @@
 #include "core/String.hpp"
 #include "core/IntegerSequence.hpp"
 
-// Module
+// Plugin
 #include "Python.hpp"
 #include "Handle.hpp"
+#include "View.hpp"
+#include "ValueCast.hpp"
+#include "Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -93,271 +96,6 @@ T& ref(T* obj) NOEXCEPT
 /* ************************************************************************ */
 
 /**
- * @brief Object type convertor - base.
- *
- * @tparam T
- */
-template<typename Base, typename T, char... Seq>
-struct TypeConvertorBase;
-
-/* ************************************************************************ */
-
-/**
- * @brief Integer base type convertor.
- *
- * @tparam T
- * @tparam Seq
- */
-template<typename T, char... Seq>
-struct TypeConvertorBase<long, T, Seq...>
-{
-    static bool check(PyObject* value)
-    {
-        if (value == nullptr)
-        {
-            PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-            return false;
-        }
-
-        if (!PyLong_Check(value))
-        {
-            PyErr_SetString(PyExc_TypeError, "Value type must be long");
-            return false;
-        }
-
-        return true;
-    }
-
-    static Handle<PyObject> convert(T value) NOEXCEPT
-    {
-        static char seq[] = {Seq..., '\0'};
-        return Py_BuildValue(seq, value);
-    }
-
-    static T convert(PyObject* value) NOEXCEPT
-    {
-        assert(value);
-        assert(PyLong_Check(value));
-        return PyLong_AsLong(value);
-    }
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Double base type convertor.
- *
- * @tparam T
- * @tparam Seq
- */
-template<typename T, char... Seq>
-struct TypeConvertorBase<double, T, Seq...>
-{
-    static bool check(PyObject* value)
-    {
-        if (value == nullptr)
-        {
-            PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-            return false;
-        }
-
-        if (!PyFloat_Check(value))
-        {
-            PyErr_SetString(PyExc_TypeError, "Value type must be double");
-            return false;
-        }
-
-        return true;
-    }
-
-    static Handle<PyObject> convert(T value) NOEXCEPT
-    {
-        static char seq[] = {Seq..., '\0'};
-        return Py_BuildValue(seq, value);
-    }
-
-    static T convert(PyObject* value) NOEXCEPT
-    {
-        assert(value);
-        assert(PyFloat_Check(value));
-        return PyFloat_AsDouble(value);
-    }
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Object type convertor.
- *
- * @tparam T
- */
-template<typename T>
-struct TypeConvertor;
-
-/* ************************************************************************ */
-
-/**
- * @brief Void type convertor.
- */
-template<>
-struct TypeConvertor<void>
-{
-    static bool check(PyObject* value)
-    {
-        if (value == nullptr)
-        {
-            PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-            return false;
-        }
-
-        if (value != Py_None)
-        {
-            PyErr_SetString(PyExc_TypeError, "Value type must None");
-            return false;
-        }
-
-        return true;
-    }
-
-    static Handle<PyObject> convert(void) NOEXCEPT
-    {
-        Py_RETURN_NONE;
-    }
-
-    static void convert(PyObject* value) NOEXCEPT
-    {
-        assert(value);
-        assert(value == Py_None);
-    }
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Integer type convertor.
- */
-template<>
-struct TypeConvertor<int> : public TypeConvertorBase<long, int, 'i'>
-{
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Unsigned integer type convertor.
- */
-template<>
-struct TypeConvertor<unsigned int> : public TypeConvertorBase<long, unsigned int, 'I'>
-{
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Unsigned long type convertor.
- */
-template<>
-struct TypeConvertor<unsigned long> : public TypeConvertorBase<long, unsigned long, 'k'>
-{
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Long long type convertor.
- */
-template<>
-struct TypeConvertor<long long> : public TypeConvertorBase<long, long long, 'L'>
-{
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Unsigned long long type convertor.
- */
-template<>
-struct TypeConvertor<unsigned long long> : public TypeConvertorBase<long, unsigned long long, 'K'>
-{
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Float type convertor.
- */
-template<>
-struct TypeConvertor<float> : public TypeConvertorBase<double, float, 'f'>
-{
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief String type convertor.
- */
-template<>
-struct TypeConvertor<String>
-{
-    static bool check(PyObject* value)
-    {
-        if (value == nullptr)
-        {
-            PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-            return false;
-        }
-
-        if (!PyString_Check(value))
-        {
-            PyErr_SetString(PyExc_TypeError, "Value type must None");
-            return false;
-        }
-
-        return true;
-    }
-
-    static Handle<PyObject> convert(const String& value) NOEXCEPT
-    {
-        return PyString_FromString(value.c_str());
-    }
-
-    static String convert(PyObject* value) NOEXCEPT
-    {
-        return PyString_AsString(value);
-    }
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Units type convertor.
- *
- * @tparam Nom
- * @tparam Denom
- */
-template<typename Nom, typename Denom>
-struct TypeConvertor<units::Unit<Nom, Denom>> : public TypeConvertor<units::Value>
-{
-    static Handle<PyObject> convert(units::Unit<Nom, Denom> value) NOEXCEPT
-    {
-        return TypeConvertor<units::Value>::convert(value.value());
-    }
-
-    static units::Unit<Nom, Denom> convert(PyObject* value) NOEXCEPT
-    {
-        return units::Unit<Nom, Denom>(TypeConvertor<units::Value>::convert(value));
-    }
-};
-
-/* ************************************************************************ */
-
-/**
  * @brief Constructor wrapper.
  *
  * @tparam T    Object type.
@@ -401,7 +139,7 @@ struct Constructor
 
         // Tuple of args
         const Tuple<RemoveConstRef<Args>...> tupleArgs{
-            TypeConvertor<RemoveConstRef<Args>>::convert(PyTuple_GetItem(args, I))...
+            cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
         void* ptr = &ref(self->value);
@@ -480,7 +218,7 @@ struct Property
     {
         assert(self);
         assert(getFn);
-        return TypeConvertor<Val>::convert((ref(self->value).*getFn)()).release();
+        return cast((ref(self->value).*getFn)()).release();
     }
 
 
@@ -494,12 +232,12 @@ struct Property
      */
     static int set(ObjectWrapper<T>* self, PyObject* value, void* closure)
     {
-        if (!TypeConvertor<Val>::check(value))
-            throw Exception{};
+        if (!check<Val>(value))
+            throw Exception("Cannot convert value");
 
         assert(self);
         assert(setFn);
-        (ref(self->value).*setFn)(TypeConvertor<Val>::convert(value));
+        (ref(self->value).*setFn)(cast<Val>(value));
 
         return 0;
     }
@@ -559,7 +297,7 @@ struct PropertyAlt
     {
         assert(self);
         assert(getFn);
-        return TypeConvertor<Val>::convert(getFn(self->value)).release();
+        return cast<Val>(getFn(self->value)).release();
     }
 
 
@@ -573,12 +311,12 @@ struct PropertyAlt
      */
     static int set(ObjectWrapper<T>* self, PyObject* value, void* closure)
     {
-        if (!TypeConvertor<Val>::check(value))
-            throw Exception{};
+        if (!check<Val>(value))
+            throw Exception("Cannot convert value");
 
         assert(self);
         assert(setFn);
-        setFn(self->value, TypeConvertor<Val>::convert(value));
+        setFn(self->value, cast<Val>(value));
 
         return 0;
     }
@@ -688,10 +426,10 @@ struct MemberFunction
 
         // Tuple of args
         const Tuple<RemoveConstRef<Args>...> tupleArgs{
-            TypeConvertor<RemoveConstRef<Args>>::convert(PyTuple_GetItem(args, I))...
+            cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
-        return TypeConvertor<Ret>::convert((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
+        return cast<Ret>((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
     }
 
 
@@ -768,11 +506,11 @@ struct MemberFunction<Hash, T, void, Args...>
 
         // Tuple of args
         const Tuple<RemoveConstRef<Args>...> tupleArgs{
-            TypeConvertor<RemoveConstRef<Args>>::convert(PyTuple_GetItem(args, I))...
+            cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
         (ref(self->value).*fn)(std::get<I>(tupleArgs)...);
-        return TypeConvertor<void>::convert().release();
+        return cast().release();
     }
 
 
@@ -791,7 +529,7 @@ struct MemberFunction<Hash, T, void, Args...>
         assert(fn);
 
         (ref(self->value).*fn)();
-        return TypeConvertor<void>::convert().release();
+        return cast().release();
     }
 
 
@@ -868,10 +606,10 @@ struct MemberFunctionConst
 
         // Tuple of args
         const Tuple<RemoveConstRef<Args>...> tupleArgs{
-            TypeConvertor<RemoveConstRef<Args>>::convert(PyTuple_GetItem(args, I))...
+            cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
-        return TypeConvertor<Ret>::convert((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
+        return cast<Ret>((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
     }
 
 
@@ -1018,6 +756,17 @@ struct TypeDefinition
 
 
     /**
+     * @brief Check if definition is valid.
+     *
+     * @return
+     */
+    static bool valid() NOEXCEPT
+    {
+        return definition.tp_name != nullptr;
+    }
+
+
+    /**
      * @brief Wrap value.
      *
      * @param value
@@ -1047,7 +796,7 @@ struct TypeDefinition
      *
      * @return
      */
-    static T unwrap(Handle<PyObject> value) NOEXCEPT
+    static T unwrap(View<PyObject> value) NOEXCEPT
     {
         assert(PyObject_TypeCheck(value, &definition));
 
@@ -1055,74 +804,6 @@ struct TypeDefinition
         ObjectWrapper<T>* obj = reinterpret_cast<ObjectWrapper<T>*>(value.get());
 
         return obj->value;
-    }
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Object type convertor.
- *
- * @tparam T
- */
-template<typename T>
-struct TypeConvertor
-{
-    static bool check(PyObject* value)
-    {
-        if (value == nullptr)
-        {
-            PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-            return false;
-        }
-
-        return true;
-    }
-
-    static Handle<PyObject> convert(T value) NOEXCEPT
-    {
-        assert(TypeDefinition<T>::definition.tp_name);
-        return TypeDefinition<T>::wrap(value);
-    }
-
-    static T convert(PyObject* value) NOEXCEPT
-    {
-        assert(TypeDefinition<T>::definition.tp_name);
-        return TypeDefinition<T>::unwrap(value);
-    }
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Object type convertor.
- *
- * @tparam T
- */
-template<typename T>
-struct TypeConvertor<const T&>
-{
-    static bool check(PyObject* value)
-    {
-        if (value == nullptr)
-        {
-            PyErr_SetString(PyExc_TypeError, "Value cannot be NULL");
-            return false;
-        }
-
-        return true;
-    }
-
-    static Handle<PyObject> convert(const T& value) NOEXCEPT
-    {
-        assert(TypeDefinition<T>::definition.tp_name);
-        return TypeDefinition<T>::wrap(value);
-    }
-
-    static T convert(PyObject* value) NOEXCEPT
-    {
-        assert(TypeDefinition<T>::definition.tp_name);
-        return TypeDefinition<T>::unwrap(value);
     }
 };
 
