@@ -45,6 +45,7 @@ static void python_wrapper_core_Vector(const char* fullname, PyObject* module)
     };
 
     type_def::init(fullname);
+    type_def::definition.tp_init = Constructor<type, T, T>::to();
     type_def::definition.tp_getset = properties;
     type_def::ready();
 

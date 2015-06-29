@@ -28,6 +28,7 @@
     <File Name="Exception.cpp"/>
     <File Name="Object.cpp"/>
     <File Name="wrapper_stdout.cpp"/>
+    <File Name="wrapper.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>

@@ -26,6 +26,8 @@ set(SRCS
     Object.hpp
     Object.cpp
     Library.cpp
+    wrapper.hpp
+    wrapper.cpp
     wrapper_stdout.hpp
     wrapper_stdout.cpp
     wrapper_core.hpp

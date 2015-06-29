@@ -3,6 +3,9 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <typeindex>
+
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/Exception.hpp"
@@ -35,6 +38,57 @@ struct ObjectWrapper
     PyObject_HEAD
     T value;
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Register dynamic type.
+ *
+ * @param info Type info.
+ * @param type Python type.
+ */
+void registerDynamic(const std::type_info& info, PyTypeObject* type);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Find dynamic type.
+ *
+ * @param info Type info.
+ *
+ * @return Dynamic type or nullptr.
+ */
+PyTypeObject* findDynamic(const std::type_info& info);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns reference to object.
+ *
+ * @param obj Reference to object.
+ *
+ * @return
+ */
+template<typename T>
+T& ref(T& obj) NOEXCEPT
+{
+    return obj;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns reference to object.
+ *
+ * @param obj Pointer to object.
+ *
+ * @return
+ */
+template<typename T>
+T& ref(T* obj) NOEXCEPT
+{
+    return *obj;
+}
 
 /* ************************************************************************ */
 
@@ -304,6 +358,77 @@ struct TypeConvertor<units::Unit<Nom, Denom>> : public TypeConvertor<units::Valu
 /* ************************************************************************ */
 
 /**
+ * @brief Constructor wrapper.
+ *
+ * @tparam T    Object type.
+ * @tparam Args Argument types.
+ */
+template<typename T, typename... Args>
+struct Constructor
+{
+    /// Plain object type.
+    using ObjectType = typename std::remove_pointer<T>::type;
+
+    /// Remove const reference.
+    template<typename Type>
+    using RemoveConstRef = typename std::remove_const<typename std::remove_reference<Type>::type>::type;
+
+
+    /**
+     * @brief Convert to PyMethodDef.
+     *
+     * @return
+     */
+    static initproc to() NOEXCEPT
+    {
+        return (initproc) &construct;
+    }
+
+
+    /**
+     * @brief Calls constructor (helper).
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    template<int... I>
+    static int construct_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<I...>) NOEXCEPT
+    {
+        assert(self);
+        assert(args);
+
+        // Tuple of args
+        const Tuple<RemoveConstRef<Args>...> tupleArgs{
+            TypeConvertor<RemoveConstRef<Args>>::convert(PyTuple_GetItem(args, I))...
+        };
+
+        void* ptr = &ref(self->value);
+        new (ptr) T(std::get<I>(tupleArgs)...);
+
+        return 0;
+    }
+
+
+    /**
+     * @brief Calls constructor.
+     *
+     * @param self
+     * @param args
+     * @param kwds
+     *
+     * @return
+     */
+    static int construct(ObjectWrapper<T>* self, PyObject* args, PyObject* kwds)
+    {
+        return construct_inner(self, args, MakeIntegerSequence<0, sizeof...(Args)>{});
+    }
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Property wrapper.
  *
  * @tparam T    Object type.
@@ -340,32 +465,6 @@ struct Property
     static PyGetSetDef to() NOEXCEPT
     {
         return {const_cast<char*>(name), (getter) get, (setter) set, nullptr, nullptr};
-    }
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Reference to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType& obj) NOEXCEPT
-    {
-        return obj;
-    }
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Pointer to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType* obj) NOEXCEPT
-    {
-        return *obj;
     }
 
 
@@ -573,32 +672,6 @@ struct MemberFunction
 
 
     /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Reference to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType& obj) NOEXCEPT
-    {
-        return obj;
-    }
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Pointer to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType* obj) NOEXCEPT
-    {
-        return *obj;
-    }
-
-
-    /**
      * @brief Calls object function (helper).
      *
      * @param self
@@ -679,32 +752,6 @@ struct MemberFunction<Hash, T, void, Args...>
 
 
     /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Reference to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType& obj) NOEXCEPT
-    {
-        return obj;
-    }
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Pointer to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType* obj) NOEXCEPT
-    {
-        return *obj;
-    }
-
-
-    /**
      * @brief Calls object function (helper).
      *
      * @param self
@@ -762,6 +809,7 @@ struct MemberFunction<Hash, T, void, Args...>
         return call_inner(self, args, MakeIntegerSequence<0, sizeof...(Args)>{});
     }
 };
+
 /* ************************************************************************ */
 
 /**
@@ -800,32 +848,6 @@ struct MemberFunctionConst
     static PyMethodDef to() NOEXCEPT
     {
         return {name, (PyCFunction) call, METH_VARARGS, nullptr};
-    }
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Reference to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType& obj) NOEXCEPT
-    {
-        return obj;
-    }
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Pointer to object.
-     *
-     * @return
-     */
-    static ObjectType& ref(ObjectType* obj) NOEXCEPT
-    {
-        return *obj;
     }
 
 
@@ -986,8 +1008,13 @@ struct TypeDefinition
      */
     static Handle<PyObject> wrap(T value) NOEXCEPT
     {
+        auto type = findDynamic(typeid(ref(value)));
+
+        if (!type)
+            type = &definition;
+
         // Create new object
-        ObjectWrapper<T>* obj = PyObject_New(ObjectWrapper<T>, &definition);
+        ObjectWrapper<T>* obj = PyObject_New(ObjectWrapper<T>, type);
 
         obj->value = std::move(value);
 
