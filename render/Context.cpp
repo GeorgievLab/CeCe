@@ -366,7 +366,7 @@ void Context::setVertexBuffer(Buffer* buffer) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setVertexFormat(VertexFormat* format) NOEXCEPT
+void Context::setVertexFormat(const VertexFormat* format) NOEXCEPT
 {
     if (format)
     {

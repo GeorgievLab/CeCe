@@ -258,7 +258,7 @@ public:
     *
     * @param format A pointer to vertex buffer format.
     */
-    void setVertexFormat(VertexFormat* format) NOEXCEPT;
+    void setVertexFormat(const VertexFormat* format) NOEXCEPT;
 
 
     /**
