@@ -97,7 +97,7 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
     }
 
     // Maximum value
-    const float max = std::sqrt(max_squared);
+    const float max = std::sqrt(max_squared) * 0.4;
 
     // Draw grid vectors
     for (Size::value_type j = 0; j < height; ++j)
@@ -107,12 +107,12 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
             // Get vector normalized by max length
             const auto vec = data[i + j * width] / max;
             const Vector<float> pos{
-                    start.getX() + i * step.getX() + step.getX() / 2.f,
-                    start.getY() + j * step.getY() + step.getY() / 2.f
+                start.getX() + i * step.getX() + step.getX() / 2.f,
+                start.getY() + j * step.getY() + step.getY() / 2.f
             };
             const float red = 5 * fabs(vec.getX());
-            const float green = 5 * std::max(vec.getY(), 0.f);
-            const float blue = 5 * std::max(-vec.getY(), 0.f);
+            const float green = 5 * fabs(vec.getY());
+            const float blue = 0;//5 * vec.getLength();
 
             const Vector<float> dest = pos + vec * step;
 
