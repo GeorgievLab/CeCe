@@ -7,8 +7,12 @@
     <module name="python:shake">
 def update(dt, simulation):
     module = simulation.useModule("streamlines")
-    #module.velocityInflow = core.VelocityVector(-200, 0)
     vel = module.velocityInflow
+    
+    if (simulation.iteration % 500 == 0):
+        vel.x = -1.0 * vel.x
+        module.velocityInflow = vel
+        
     print "[", vel.x, ",", vel.y, "]"
     </module>
 </simulation>
