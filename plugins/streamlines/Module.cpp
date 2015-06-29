@@ -222,8 +222,8 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
 
         for (const auto& c : coords)
         {
-            assert(m_lattice.inRange(c));
-            m_lattice[c].setDynamicObstacle(true, velocity);
+            assert(m_lattice.inRange(c + 1));
+            m_lattice[c + 1].setDynamicObstacle(true, velocity);
         }
     }
 }
@@ -268,7 +268,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             VelocityVector velocity = std::accumulate(coords.begin(), coords.end(),
                 VelocityVector{VelocityVector::Zero},
                 [&v_max, this](VelocityVector& init, const Coordinate& c) {
-                    return init + m_lattice[c].calcVelocityNormalized() * v_max;
+                    return init + m_lattice[c + 1].calcVelocityNormalized() * v_max;
                 }
             );
 
