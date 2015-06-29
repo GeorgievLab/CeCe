@@ -9,7 +9,7 @@
 
 /* ************************************************************************ */
 
-namespace module {
+namespace plugin {
 namespace diffusion {
 
 /* ************************************************************************ */
@@ -33,7 +33,7 @@ public:
      *
      * @param module A pointer to diffusion module.
      */
-    explicit Generator(module::diffusion::Module* module) NOEXCEPT
+    explicit Generator(plugin::diffusion::Module* module) NOEXCEPT
         : m_diffusionModule(module)
     {
         // Nothing to do
@@ -57,7 +57,7 @@ public:
 private:
 
     /// A pointer to diffusion module.
-    module::diffusion::Module* m_diffusionModule;
+    plugin::diffusion::Module* m_diffusionModule;
 
 };
 

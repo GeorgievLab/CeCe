@@ -89,7 +89,7 @@ class PythonApi : public PluginApi
     {
         try
         {
-            return std::unique_ptr<Module>(new module::python::Module{name});
+            return std::unique_ptr<Module>(new plugin::python::Module{name});
         }
         catch (const std::exception& e)
         {
@@ -113,7 +113,7 @@ class PythonApi : public PluginApi
     {
         try
         {
-            return std::unique_ptr<Object>(new module::python::Object{simulation, name});
+            return std::unique_ptr<Object>(new plugin::python::Object{simulation, name});
         }
         catch (const std::exception& e)
         {
@@ -137,7 +137,7 @@ class PythonApi : public PluginApi
     {
         try
         {
-            module::python::Program program;
+            plugin::python::Program program;
 
             if (code.empty())
             {

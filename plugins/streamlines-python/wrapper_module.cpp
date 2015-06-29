@@ -22,7 +22,7 @@
 
 /* ************************************************************************ */
 
-using namespace module::python;
+using namespace plugin::python;
 
 /* ************************************************************************ */
 
@@ -36,11 +36,11 @@ void python_wrapper_module()
 
     PyObject* module = Py_InitModule3("streamlines", nullptr, nullptr);
 
-    using type = module::streamlines::Module*;
+    using type = plugin::streamlines::Module*;
     using type_def = TypeDefinition<type>;
 
     static PyGetSetDef properties[] = {
-        defineProperty<1, type>("velocityInflow", &module::streamlines::Module::getVelocityInflow, &module::streamlines::Module::setVelocityInflow),
+        defineProperty<1, type>("velocityInflow", &plugin::streamlines::Module::getVelocityInflow, &plugin::streamlines::Module::setVelocityInflow),
         {NULL}  /* Sentinel */
     };
 
@@ -53,7 +53,7 @@ void python_wrapper_module()
     PyModule_AddObject(module, "Module", reinterpret_cast<PyObject*>(&type_def::definition));
 
     // Register dynamic type
-    registerDynamic(typeid(module::streamlines::Module), &type_def::definition);
+    registerDynamic(typeid(plugin::streamlines::Module), &type_def::definition);
 }
 
 /* ************************************************************************ */

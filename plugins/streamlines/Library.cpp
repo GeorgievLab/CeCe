@@ -29,7 +29,7 @@ class StreamlinesApi : public PluginApi
 {
     UniquePtr<Module> createModule(Simulation& simulation, const String& name) NOEXCEPT override
     {
-        return makeUniquePtr<module::streamlines::Module>();
+        return makeUniquePtr<plugin::streamlines::Module>();
     }
 };
 

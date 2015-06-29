@@ -30,7 +30,7 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
 {
     CONSTEXPR float SOURCE_STRENGTH = 0.2f;
 
-    auto diff = simulation.useModule<module::diffusion::Module>("diffusion");
+    auto diff = simulation.useModule<plugin::diffusion::Module>("diffusion");
     assert(diff);
     auto& grid = diff->getGrid();
 
@@ -77,7 +77,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
 {
     CONSTEXPR float SOURCE_STRENGTH = 0.2f;
 
-    auto diff = simulation.useModule<module::diffusion::Module>("diffusion");
+    auto diff = simulation.useModule<plugin::diffusion::Module>("diffusion");
     assert(diff);
     auto& grid = diff->getGrid();
 
@@ -125,9 +125,9 @@ class DiffusionApi : public PluginApi
     std::unique_ptr<Module> createModule(Simulation& simulation, const String& name) NOEXCEPT override
     {
         if (name == "generator")
-            return std::unique_ptr<Module>(new module::diffusion::Generator{simulation.useModule<module::diffusion::Module>("diffusion")});
+            return std::unique_ptr<Module>(new plugin::diffusion::Generator{simulation.useModule<plugin::diffusion::Module>("diffusion")});
 
-        return std::unique_ptr<Module>(new module::diffusion::Module{});
+        return std::unique_ptr<Module>(new plugin::diffusion::Module{});
     }
 
     Program createProgram(Simulation& simulation, const String& name, String code = {}) NOEXCEPT override

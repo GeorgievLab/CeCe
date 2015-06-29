@@ -12,13 +12,13 @@
 
 /* ************************************************************************ */
 
-namespace module {
+namespace plugin {
 namespace python {
 
 /* ************************************************************************ */
 
 /**
- * @brief Python module exception.
+ * @brief Python plugin exception.
  */
 class Exception : public std::exception
 {

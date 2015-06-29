@@ -21,27 +21,32 @@
 
 /* ************************************************************************ */
 
-class CellApi : public simulator::PluginApi
+using namespace simulator;
+using namespace plugin::cell;
+
+/* ************************************************************************ */
+
+class CellApi : public PluginApi
 {
-    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) NOEXCEPT override
+    std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT override
     {
         if (name == "generator")
-            return std::unique_ptr<simulator::Module>(new module::cell::Generator{});
+            return std::unique_ptr<Module>(new Generator{});
 
         return nullptr;
     }
 
-    std::unique_ptr<simulator::Object> createObject(simulator::Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT override
+    std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT override
     {
-        auto type = dynamic ? simulator::Object::Type::Dynamic : simulator::Object::Type::Static;
+        auto type = dynamic ? Object::Type::Dynamic : Object::Type::Static;
 
         if (name == "Yeast")
         {
-            return std::unique_ptr<simulator::Object>(new module::cell::Yeast{simulation, type});
+            return std::unique_ptr<Object>(new Yeast{simulation, type});
         }
         else if (name == "Cell")
         {
-            return std::unique_ptr<simulator::Object>(new module::cell::Cell{simulation, type});
+            return std::unique_ptr<Object>(new Cell{simulation, type});
         }
 
         return nullptr;
