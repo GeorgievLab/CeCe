@@ -4,16 +4,19 @@
     <object class="cell.Cell" type="static" volume="2000um3" />
     <object class="cell.Yeast" position="-20um 0" />
     <object class="cell.Yeast" position="-20um 30um" />
+    <obstacle type="rectangle" position="0 45um" size="100um 10um" />
+    <obstacle type="rectangle" position="0 -45um" size="100um 10um" />
+    <obstacle type="circle" position="0 40um" radius="15um" />
+    <obstacle type="circle" position="0 -40um" radius="15um" />
     <module name="python:shake">
 def update(dt, simulation):
     module = simulation.useModule("streamlines")
     vel = module.velocityInflow
-    
+
     if (simulation.iteration % 500 == 0):
         vel.x = -1.0 * vel.x
+        print "Change"
         module.velocityInflow = vel
-        
-    print "[", vel.x, ",", vel.y, "]"
     </module>
 </simulation>
 
