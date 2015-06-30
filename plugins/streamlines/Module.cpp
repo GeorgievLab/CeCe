@@ -325,6 +325,10 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
                 out = {size.getWidth() - 2, y};
                 outPrev = {out.getX() - 1, y};
             }
+            else
+            {
+                continue;
+            }
 
             // Input
             //m_lattice[{in, y}].init(velocity);
