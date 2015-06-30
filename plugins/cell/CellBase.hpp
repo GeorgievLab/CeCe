@@ -133,7 +133,7 @@ public:
 
         // We need to compare signed versions.
         // If not, this condition is always true.
-        if (MoleculeCountDifference(value) + diff >= 0)
+        if (MoleculeCountDifference(value) + diff < 0)
             value = MoleculeCount(0);
         else
             value += diff;
