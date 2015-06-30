@@ -8,13 +8,13 @@
 void Reaction::operator()(simulator::Object& object, units::Duration step)
 {
     // TODO dependency graph
-    
-    if (!object.is<module::cell::CellBase>())
+
+    if (!object.is<plugin::cell::CellBase>())
         throw RuntimeException("Only object type cell is allowed to have a reaction.");
-        
-    module::cell::CellBase* cell = object.cast<module::cell::CellBase>();
     DynamicArray<unsigned int> propensities;
-    
+
+    auto* cell = object.cast<plugin::cell::CellBase>();
+
     // compute propensities
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {
@@ -32,13 +32,13 @@ void Reaction::operator()(simulator::Object& object, units::Duration step)
         }
         propensities.push_back(local);
     }
-    
+
     // initialize random generators
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> rand(0, 1);
     std::discrete_distribution<> distr(propensities.begin(), propensities.end());
-    
+
     // tau-leaping
     units::Duration time = units::Duration(0);
     float sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
