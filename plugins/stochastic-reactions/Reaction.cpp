@@ -11,15 +11,15 @@ void Reaction::operator()(simulator::Object& object, units::Duration step)
 
     if (!object.is<plugin::cell::CellBase>())
         throw RuntimeException("Only object type cell is allowed to have a reaction.");
-    DynamicArray<unsigned int> propensities;
 
     auto* cell = object.cast<plugin::cell::CellBase>();
+    DynamicArray<float> propensities;
 
     // compute propensities
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {
         float local = m_rates[i];
-        for (unsigned int j = 0; i < m_rules[i].size(); j++)
+        for (unsigned int j = 0; j < m_rules[i].size(); j++)
         {
             if (m_rules[i][j].requirement == 0)
             {
