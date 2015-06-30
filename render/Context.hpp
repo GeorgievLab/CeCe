@@ -315,6 +315,15 @@ public:
 
 
     /**
+    * @brief Set shader program parameter.
+    *
+    * @param id    Parameter ID.
+    * @param color Color value.
+    */
+    void setProgramParam(Program::UniformId id, const render::Color& color) NOEXCEPT;
+
+
+    /**
      * @brief Draw primitives from current buffer.
      *
      * @param type   Primitive type.

@@ -50,6 +50,7 @@ static PFNGLUSEPROGRAMPROC glUseProgram = nullptr;
 static PFNGLUNIFORM1IPROC glUniform1i = nullptr;
 static PFNGLUNIFORM2IPROC glUniform2i = nullptr;
 static PFNGLUNIFORM1FPROC glUniform1f = nullptr;
+static PFNGLUNIFORM4FPROC glUniform4f = nullptr;
 #endif
 
 /* ************************************************************************ */
@@ -487,6 +488,18 @@ void Context::setProgramParam(Program::UniformId id, float value) NOEXCEPT
 #endif
 
     gl(glUniform1f(id, value));
+}
+
+/* ************************************************************************ */
+
+void Context::setProgramParam(Program::UniformId id, const render::Color& color) NOEXCEPT
+{
+#ifdef _WIN32
+    if (!glUniform4f)
+        glUniform4f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform4f");
+#endif
+
+    gl(glUniform4f(id, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 }
 
 /* ************************************************************************ */
