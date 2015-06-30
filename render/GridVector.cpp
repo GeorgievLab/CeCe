@@ -116,7 +116,7 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
 
             const Vector<float> dest = pos + vec * step;
 
-            vertices.push_back(Vertex{pos.getX(), pos.getY(), red, green, blue});
+            vertices.push_back(Vertex{pos.getX(), pos.getY(), 0, 0, 0});
             vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});
         }
     }
