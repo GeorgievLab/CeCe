@@ -52,11 +52,12 @@ DrawableYeast::DrawableYeast(render::Context& context)
     m_uniformHasBud = m_program.getUniformId("g_hasBud");
     m_uniformSizeMain = m_program.getUniformId("g_sizeMain");
     m_uniformSizeBud = m_program.getUniformId("g_sizeBud");
+    m_uniformColor = m_program.getUniformId("g_color");
 }
 
 /* ************************************************************************ */
 
-void DrawableYeast::draw(render::Context& context, float size, float budSize) NOEXCEPT
+void DrawableYeast::draw(render::Context& context, float size, float budSize, const render::Color& color) NOEXCEPT
 {
     static render::VertexFormat vformat{
         render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
@@ -71,6 +72,7 @@ void DrawableYeast::draw(render::Context& context, float size, float budSize) NO
     context.setProgramParam(m_uniformHasBud, budSize != 0.0f);
     context.setProgramParam(m_uniformSizeMain, size);
     context.setProgramParam(m_uniformSizeBud, budSize);
+    context.setProgramParam(m_uniformColor, color);
 
     // Draw circle
     context.draw(render::PrimitiveType::Quads, 4);

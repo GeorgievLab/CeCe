@@ -13,6 +13,10 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/Shape.hpp"
 
+#if ENABLE_RENDER
+#include "render/Color.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace plugin {
@@ -157,12 +161,21 @@ void Yeast::draw(render::Context& context)
     const auto angle = getRotation() - (m_bud ? m_bud->rotation : units::Angle(0));
     const auto budRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
 
+    // Yeast color
+    // TODO: compute better
+    const auto color = render::Color{
+        getMoleculeCount("RFP") / 1000.f,
+        getMoleculeCount("GFP") / 1000.f,
+        0,
+        1,
+    };
+
     // Transform
     context.matrixPush();
     context.matrixTranslate(pos);
     context.matrixRotate(angle);
     context.matrixScale(2 * radius.value());
-    m_renderObject->draw(context, 0.5f, 0.5f * (budRadius / radius));
+    m_renderObject->draw(context, 0.5f, 0.5f * (budRadius / radius), color);
     context.matrixPop();
 }
 #endif

@@ -10,8 +10,8 @@ uniform bool g_hasBud = true;
 uniform vec2 g_centerMain = vec2(0.5, 0.5);
 uniform float g_sizeMain = 0.45;
 uniform float g_sizeBud = 0.25;
+uniform vec4 g_color = vec4(0.5, 0.5, 0.5, 0.5);
 
-const vec4 g_color = vec4(0.5, 0.5, 0.5, 0.5);
 const vec4 g_backgroundColor = vec4(0, 0, 0, 0);
 const vec4 g_membraneColor = vec4(0.5, 0.5, 0.5, 0.7);
 //const vec4 nucleusColor = vec4(0.5, 0.5, 0.5, 0.5);
@@ -41,6 +41,9 @@ vec4 draw_circle(vec4 curColor, vec4 color, vec2 center, float size, vec2 center
 			float alpha = smoothstep(size - SMOOTH * size, size, dist);
 			curColor = mix(curColor, color, base + alpha * alpha);
 		}
+		
+		curColor = mix(curColor, g_color, 0.5);
+	
 	}
 	else if (dist2 > size2 || !g_hasBud)
 	{
@@ -82,7 +85,8 @@ void main()
 	gl_FragColor = color;
 }
 [Parameters]
-vec2 g_centerMain = vec2(0.5, 0.5);
 bool g_hasBud = true;
-float g_sizeBud = 0.25;
+vec2 g_centerMain = vec2(0.5, 0.5);
 float g_sizeMain = 0.5;
+float g_sizeBud = 0.25;
+vec4 g_color = vec4(0.1, 1.0, 1, 1);

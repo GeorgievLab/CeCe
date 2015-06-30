@@ -1,6 +1,6 @@
 #include <array>
 
-// 2015-05-10 12:16:11 CEST
+// 2015-06-30 14:04:26 CEST
 // #12303580371704255946
 static const std::array<char, 102> g_vertexShader = {
   0x76, 0x6f, 0x69, 0x64, 0x20, 0x6d, 0x61, 0x69, 
