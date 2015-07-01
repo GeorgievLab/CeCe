@@ -90,7 +90,7 @@ Module* Simulation::useModule(const String& path)
     std::tie(library, name) = splitModulePath(path);
 
     // Get API
-    PluginApi* api = getLibraryApi(library);
+    PluginApi* api = requirePlugin(library);
 
     // Load only library
     if (name.empty())
@@ -125,7 +125,7 @@ Object* Simulation::buildObject(const String& name, bool dynamic)
         throw std::invalid_argument("Missing object type");
 
     // Get API
-    PluginApi* api = getLibraryApi(library);
+    PluginApi* api = requirePlugin(library);
 
     Log::debug("Create object '", library, ".", type, "'");
 
@@ -153,7 +153,7 @@ Program Simulation::buildProgram(const String& path)
         throw std::invalid_argument("Missing program type");
 
     // Get API
-    PluginApi* api = getLibraryApi(library);
+    PluginApi* api = requirePlugin(library);
 
     Log::debug("Create program '", library, ".", type, "'");
 
@@ -288,61 +288,51 @@ void Simulation::draw(render::Context& context)
 
 ViewPtr<PluginApi> Simulation::requirePlugin(const String& name)
 {
+    // Load plugin
+    auto api = loadPlugin(name);
+
+    if (api)
+        return api;
+
     throw InvalidArgumentException("Plugin '" + name + "' not found");
 }
 
 /* ************************************************************************ */
 
-Plugin* Simulation::loadLibrary(const String& name)
+ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
 {
-    // Try to find library in cache
-    auto it = m_libraries.find(name);
-
-    // Not found
-    if (it == m_libraries.end())
+    try
     {
-        // Insert into cache
-        auto ptr = m_libraries.emplace(std::make_pair(
-            name,
-            std::unique_ptr<Plugin>{new Plugin(name)}
-        ));
-        it = std::get<0>(ptr);
+        // Try to find library in cache
+        auto it = m_plugins.find(name);
+
+        ViewPtr<PluginApi> api;
+
+        // Not found
+        if (it == m_plugins.end())
+        {
+            // Insert into cache
+            auto ptr = m_plugins.emplace(std::piecewise_construct,
+                std::forward_as_tuple(name),
+                std::forward_as_tuple(name)
+            );
+            api = std::get<1>(*std::get<0>(ptr)).getApi();
+            api->initSimulation(*this);
+        }
+        else
+        {
+            api = std::get<1>(*it).getApi();
+        }
+
+        // Return pointer
+        return api;
+    }
+    catch (const Exception& e)
+    {
+        Log::warning(e.what());
     }
 
-    // Return pointer
-    return std::get<1>(*it).get();
-}
-
-/* ************************************************************************ */
-
-PluginApi* Simulation::getLibraryApi(const String& name)
-{
-    // Get if library is already loaded
-    const bool init = !hasLibrary(name);
-
-    // Load library
-    Plugin* lib = loadLibrary(name);
-    assert(lib);
-
-    // Unable to load library
-    if (!lib->isLoaded())
-    {
-        Log::warning("Unable to load library: ", name, "(", lib->getError(), ")");
-        return nullptr;
-    }
-
-    // Get API
-    PluginApi* api = lib->getApi();
-    assert(api);
-
-    // Initialize simulation
-    if (init)
-    {
-        Log::debug("Initialize simulation '", name, "'");
-        api->initSimulation(*this);
-    }
-
-    return api;
+    return nullptr;
 }
 
 /* ************************************************************************ */

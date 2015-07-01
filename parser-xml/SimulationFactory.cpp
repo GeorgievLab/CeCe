@@ -127,7 +127,7 @@ void process_program_node(const pugi::xml_node& node, simulator::Simulation& sim
     const auto code = configuration.getText();
 
     // Get library by language name
-    simulator::PluginApi* api = simulation.getLibraryApi(lang);
+    auto api = simulation.loadPlugin(lang);
 
     if (!api)
         throw parser::Exception("Unable to load library for language '" + lang + "'");

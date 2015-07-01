@@ -196,6 +196,7 @@ private:
 /* ************************************************************************ */
 
 Plugin::Plugin(const String& name)
+    : m_name(name)
 {
     // Try to find in build-in libraries
     auto it = s_buildinLibraries.find(name);
@@ -212,7 +213,7 @@ Plugin::Plugin(const String& name)
         m_impl.reset(new Impl{name});
 
         if (!m_impl->isLoaded())
-            throw RuntimeException("Library is not loaded");
+            throw RuntimeException("Library is not loaded: " + m_impl->getError());
 
         // Check API version
         auto apiVerFn = m_impl->getAddr<ApiVersionFn>("api_version");
@@ -238,25 +239,6 @@ Plugin::Plugin(const String& name)
 Plugin::~Plugin()
 {
     // Nothing to do
-}
-
-/* ************************************************************************ */
-
-bool Plugin::isLoaded() const NOEXCEPT
-{
-    if (!m_impl)
-        return true;
-
-    return m_impl->isLoaded();
-}
-/* ************************************************************************ */
-
-String Plugin::getError() const NOEXCEPT
-{
-    if (!m_impl)
-        return {};
-
-    return m_impl->getError();
 }
 
 /* ************************************************************************ */

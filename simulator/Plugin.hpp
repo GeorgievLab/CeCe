@@ -15,6 +15,7 @@
 #include "core/String.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Map.hpp"
+#include "core/ViewPtr.hpp"
 #include "core/UniquePtr.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/Module.hpp"
@@ -183,7 +184,14 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param name Library name.
+     * Constructor search plugin in buildin plugins and if there is none
+     * with given name it will look for shared library file in the plugins
+     * directory. In case the shared library doesn't have exported
+     * required functions an exception is thrown.
+     *
+     * @param name Plugin name.
+     *
+     * @throw In case valid plugin cannot be created.
      */
     explicit Plugin(const String& name);
 
@@ -199,19 +207,14 @@ public:
 
 
     /**
-     * @brief Returns if library is loaded.
+     * @brief Returns plugin name.
      *
      * @return
      */
-    bool isLoaded() const NOEXCEPT;
-
-
-    /**
-     * @brief Returns loading library error.
-     *
-     * @return
-     */
-    String getError() const NOEXCEPT;
+    const String& getName() const NOEXCEPT
+    {
+        return m_name;
+    }
 
 
     /**
@@ -219,9 +222,9 @@ public:
      *
      * @return
      */
-    PluginApi* getApi() const NOEXCEPT
+    ViewPtr<PluginApi> getApi() const NOEXCEPT
     {
-        return m_api.get();
+        return m_api;
     }
 
 
@@ -280,11 +283,14 @@ public:
 // Private Data Members
 private:
 
+    /// Plugin name.
+    String m_name;
+
     /// Implementation
     struct Impl;
     UniquePtr<Impl> m_impl;
 
-    /// Object for library API.
+    /// Plugin API.
     UniquePtr<PluginApi> m_api;
 
     /// Library paths.

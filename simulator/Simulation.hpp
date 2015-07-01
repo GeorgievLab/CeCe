@@ -68,7 +68,7 @@ public:
 
 
     /// Loaded library container.
-    using LibraryContainer = Map<String, UniquePtr<Plugin>>;
+    using PluginContainer = Map<String, Plugin>;
 
     /// Module container type.
     using ModuleContainer = Map<String, UniquePtr<Module>>;
@@ -167,15 +167,15 @@ public:
 
 
     /**
-     * @brief Returns if library with given name is loaded.
+     * @brief Returns if plugin with given name is loaded.
      *
-     * @param name
+     * @param name Plugin name.
      *
-     * @return
+     * @return If plugin is loaded.
      */
-    bool hasLibrary(const String& name) const NOEXCEPT
+    bool isPluginLoaded(const String& name) const NOEXCEPT
     {
-        return m_libraries.find(name) != m_libraries.end();
+        return m_plugins.find(name) != m_plugins.end();
     }
 
 
@@ -553,37 +553,29 @@ public:
 
 
     /**
-     * @brief Loads plugin with given name.
+     * @brief Loads required plugin with given name.
      *
      * @param name Plugin name.
      *
-     * @return Plugin view.
+     * @return API to loaded plugin.
      *
-     * @throw In case the plugin doesn't exists.
+     * @throw In case the plugin cannot be loaded.
      */
     ViewPtr<PluginApi> requirePlugin(const String& name);
 
 
     /**
-     * @brief Load library into cache and return pointer.
+     * @brief Loads plugin with given name.
      *
      * In case the library was loaded before, it't not loaded again.
      *
-     * @param name Library name.
+     * @param name Plugin name.
      *
-     * @return
+     * @return Pointer to plugin API or nullptr if plugin cannot be loaded.
+     *
+     * @see requirePlugin
      */
-    Plugin* loadLibrary(const String& name);
-
-
-    /**
-     * @brief Returns library API for required library.
-     *
-     * @param name  Library name.
-     *
-     * @return
-     */
-    PluginApi* getLibraryApi(const String& name);
+    ViewPtr<PluginApi> loadPlugin(const String& name) NOEXCEPT;
 
 
 // Private Data Members
@@ -605,7 +597,7 @@ private:
     SizeVector m_worldSize{ units::um(400), units::um(400) };
 
     /// Cache for loaded libraries.
-    LibraryContainer m_libraries;
+    PluginContainer m_plugins;
 
     /// Simulation modules.
     ModuleContainer m_modules;
