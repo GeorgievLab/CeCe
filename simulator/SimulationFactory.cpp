@@ -23,7 +23,7 @@ namespace simulator {
 
 UniquePtr<Simulation> SimulationFactory::createSimulation() const
 {
-    return makeUniquePtr<Simulation>();
+    return makeUnique<Simulation>();
 }
 
 /* ************************************************************************ */

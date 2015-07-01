@@ -401,7 +401,7 @@ public:
     template<typename T, typename... Args>
     T* createModule(String name, Args&&... args)
     {
-        return addModule(std::move(name), makeUniquePtr<T>(std::forward<Args>(args)...));
+        return addModule(std::move(name), makeUnique<T>(std::forward<Args>(args)...));
     }
 
 
@@ -466,7 +466,7 @@ public:
     template<typename T, typename... Args>
     T* createObject(Args&&... args)
     {
-        return addObject(makeUniquePtr<T>(*this, std::forward<Args>(args)...));
+        return addObject(makeUnique<T>(*this, std::forward<Args>(args)...));
     }
 
 

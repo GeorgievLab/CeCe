@@ -37,7 +37,7 @@ using UniquePtr = std::unique_ptr<T>;
  * @return
  */
 template<typename T, typename... Args>
-UniquePtr<T> makeUniquePtr(Args&&... args)
+UniquePtr<T> makeUnique(Args&&... args)
 {
     return UniquePtr<T>(new T{std::forward<Args>(args)...});
 }
