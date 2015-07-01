@@ -1,9 +1,6 @@
 
 /* ************************************************************************ */
 
-// Declaration
-#include "Library.hpp"
-
 // C++
 #include <cassert>
 #include <cstring>
@@ -11,7 +8,7 @@
 // Simulator
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
 // Module

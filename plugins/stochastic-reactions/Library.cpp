@@ -3,13 +3,10 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author:                                                                  */  
+/* Author:                                                                  */
 /* Václav Pelíšek <pelisekv@students.zcu.cz>                                */
 /* Jiří Fatka <fatkaj@ntis.zcu.cz>                                          */
 /* ************************************************************************ */
-
-// Declaration
-#include "Library.hpp"
 
 // C++
 #include <cassert>
@@ -18,7 +15,7 @@
 // Simulator
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 #include "core/Log.hpp"
 

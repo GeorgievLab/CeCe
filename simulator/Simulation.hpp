@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -22,11 +22,12 @@
 #include "core/String.hpp"
 #include "core/Map.hpp"
 #include "core/UniquePtr.hpp"
+#include "core/ViewPtr.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/Program.hpp"
 
 #if ENABLE_RENDER
@@ -552,6 +553,18 @@ public:
 
 
     /**
+     * @brief Loads plugin with given name.
+     *
+     * @param name Plugin name.
+     *
+     * @return Plugin view.
+     *
+     * @throw In case the plugin doesn't exists.
+     */
+    ViewPtr<PluginApi> requirePlugin(const String& name);
+
+
+    /**
      * @brief Load library into cache and return pointer.
      *
      * In case the library was loaded before, it't not loaded again.
@@ -620,7 +633,7 @@ private:
 struct DLL_EXPORT TimeMeasurementIterationOutput
 {
     /// Simulation.
-    Simulation* m_simulation;
+    ViewPtr<Simulation> m_simulation;
 
 
     /**
@@ -628,7 +641,7 @@ struct DLL_EXPORT TimeMeasurementIterationOutput
      *
      * @param sim
      */
-    explicit TimeMeasurementIterationOutput(Simulation* sim)
+    explicit TimeMeasurementIterationOutput(ViewPtr<Simulation> sim)
         : m_simulation(sim)
     {
         // Nothing to do

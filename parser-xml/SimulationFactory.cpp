@@ -26,7 +26,7 @@
 #include "core/Units.hpp"
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Obstacle.hpp"

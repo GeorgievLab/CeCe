@@ -1,12 +1,9 @@
 
 /* ************************************************************************ */
 
-// Declaration
-#include "Library.hpp"
-
 // Simulator
 #include "core/compatibility.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
 // Module
@@ -18,7 +15,7 @@ class CylinderStreamlinesApi : public simulator::PluginApi
 {
     std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) NOEXCEPT override
     {
-        return std::unique_ptr<simulator::Module>(new module::cylinder_streamlines::Module{});
+        return std::unique_ptr<simulator::Module>(new plugin::cylinder_streamlines::Module{});
     }
 };
 

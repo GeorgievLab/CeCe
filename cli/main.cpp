@@ -22,7 +22,7 @@
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/Module.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 

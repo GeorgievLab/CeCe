@@ -55,7 +55,7 @@ void Yeast::update(units::Duration dt)
     const float RATIO = 5.f;
 
     std::mt19937 eng(g_rd());
-    std::bernoulli_distribution dist(0.1f * dt.value());
+    std::bernoulli_distribution dist(0.01f * dt.value());
     std::uniform_real_distribution<float> add_coeff(0.1f, 4.f);
 
     // Volume increase
@@ -72,7 +72,7 @@ void Yeast::update(units::Duration dt)
     }
     else if (getVolume() >= units::um3(42) && dist(eng))
     {
-        budCreate();
+        //budCreate();
     }
     else
     {

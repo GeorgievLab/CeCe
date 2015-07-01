@@ -1,4 +1,6 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
@@ -21,8 +23,8 @@ set(SRCS
     Simulator.hpp
     Simulator.cpp
     Module.hpp
-    Library.hpp
-    Library.cpp
+    Plugin.hpp
+    Plugin.cpp
     PluginApi.hpp
     Configuration.hpp
     Configuration.cpp

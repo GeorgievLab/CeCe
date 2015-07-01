@@ -6,14 +6,11 @@
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
 
-// Declaration
-#include "simulator/Library.hpp"
-
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/String.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
 // Module

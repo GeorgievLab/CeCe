@@ -1,4 +1,6 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
@@ -8,7 +10,6 @@
 set(SRCS
     Module.hpp
     Module.cpp
-    Library.hpp
     Library.cpp
 )
 

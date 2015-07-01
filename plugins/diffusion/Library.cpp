@@ -1,9 +1,6 @@
 
 /* ************************************************************************ */
 
-// Declaration
-#include "Library.hpp"
-
 // C++
 #include <cassert>
 #include <cstring>
@@ -13,7 +10,7 @@
 #include "core/Units.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/ShapeToGrid.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
 // Module

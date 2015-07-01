@@ -29,7 +29,6 @@
     <File Name="Cell.hpp"/>
     <File Name="Yeast.hpp"/>
     <File Name="Generator.hpp"/>
-    <File Name="Library.hpp"/>
     <File Name="DrawableCell.hpp"/>
     <File Name="CellBase.hpp"/>
     <File Name="DrawableYeast.hpp"/>

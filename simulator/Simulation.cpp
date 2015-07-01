@@ -16,8 +16,9 @@
 
 // Simulator
 #include "core/Log.hpp"
-#include "simulator/Library.hpp"
+#include "core/Exception.hpp"
 #include "simulator/Simulator.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 #include "render/Color.hpp"
 
@@ -268,29 +269,6 @@ void Simulation::draw(render::Context& context)
     for (auto& module : getModules())
         module.second->draw(context, *this);
 
-/*
-    // Draw lines around world
-    {
-        const auto hw = getWorldSize().getWidth() * 0.5f;
-        const auto hh = getWorldSize().getHeight() * 0.5f;
-        const auto sw = getWorldSize().getWidth() / 16.f;
-        const auto sh = getWorldSize().getHeight() / 16.f;
-
-        const render::Color color = {0.3, 0.3, 0.3, 0.2};
-
-        context.drawLine({-hw, -hh}, {0, sh}, color);
-        context.drawLine({-hw, -hh}, {sw, 0}, color);
-
-        context.drawLine({hw, -hh}, {0, sh}, color);
-        context.drawLine({hw, -hh}, {-sw, 0}, color);
-
-        context.drawLine({-hw, hh}, {0, -sh}, color);
-        context.drawLine({-hw, hh}, {sw, 0}, color);
-
-        context.drawLine({hw, hh}, {0, -sh}, color);
-        context.drawLine({hw, hh}, {-sw, 0}, color);
-    }
-*/
     // Draw objects
     for (const auto& obj : getObjects())
     {
@@ -305,6 +283,13 @@ void Simulation::draw(render::Context& context)
 
 }
 #endif
+
+/* ************************************************************************ */
+
+ViewPtr<PluginApi> Simulation::requirePlugin(const String& name)
+{
+    throw InvalidArgumentException("Plugin '" + name + "' not found");
+}
 
 /* ************************************************************************ */
 

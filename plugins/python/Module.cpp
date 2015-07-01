@@ -21,7 +21,7 @@
 #include "core/FilePath.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Configuration.hpp"
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 
 // Module
 #include "Exception.hpp"

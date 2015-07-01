@@ -22,7 +22,6 @@
     <File Name="ReactionParser.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Library.hpp"/>
     <File Name="Reaction.hpp"/>
     <File Name="ReactionParser.hpp"/>
   </VirtualDirectory>

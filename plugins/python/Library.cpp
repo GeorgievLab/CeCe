@@ -13,7 +13,7 @@
 #include "core/Log.hpp"
 
 // Simulator
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
 // Module
