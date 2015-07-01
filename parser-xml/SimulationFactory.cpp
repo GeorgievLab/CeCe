@@ -225,6 +225,31 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
 /* ************************************************************************ */
 
 /**
+ * @brief Process plugin node.
+ *
+ * @param node
+ * @param simulation
+ */
+void process_plugin_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+{
+    assert(!strcmp(node.name(), "plugin"));
+
+    // Create configuration
+    const parser::xml::ImmutableConfiguration configuration(node, filename);
+
+    // Module name
+    {
+        if (!configuration.hasValue("name"))
+            throw parser::Exception("Missing attribute 'name' in 'plugin' element");
+
+        // Load plugin
+        simulation.requirePlugin(configuration.getString("name"));
+    }
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Process simulation node.
  *
  * @param node
@@ -268,6 +293,12 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
 
         if (!attr.empty())
             simulation.setIterations(attr.as_ullong());
+    }
+
+    // Parse plugins
+    for (const auto& plugin : node.children("plugin"))
+    {
+        process_plugin_node(plugin, simulation, filename);
     }
 
     // Parse modules
