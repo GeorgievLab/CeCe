@@ -12,6 +12,7 @@
 
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/UniquePtr.hpp"
 
 /* ************************************************************************ */
 
@@ -45,6 +46,18 @@ public:
      */
     ViewPtr(T* ptr) NOEXCEPT
         : m_ptr(ptr)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param ptr Unique pointer.
+     */
+    ViewPtr(const UniquePtr<T>& ptr) NOEXCEPT
+        : m_ptr(ptr.get())
     {
         // Nothing to do
     }
