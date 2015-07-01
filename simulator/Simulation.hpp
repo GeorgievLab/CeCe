@@ -68,7 +68,7 @@ public:
 
 
     /// Loaded library container.
-    using LibraryContainer = Map<String, UniquePtr<Library>>;
+    using LibraryContainer = Map<String, UniquePtr<Plugin>>;
 
     /// Module container type.
     using ModuleContainer = Map<String, UniquePtr<Module>>;
@@ -573,7 +573,7 @@ public:
      *
      * @return
      */
-    Library* loadLibrary(const String& name);
+    Plugin* loadLibrary(const String& name);
 
 
     /**

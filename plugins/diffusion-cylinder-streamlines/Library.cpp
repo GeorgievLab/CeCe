@@ -29,6 +29,6 @@ class DiffusionCylinderStreamlinesApi : public simulator::PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(diffusion_cylinder_streamlines, DiffusionCylinderStreamlinesApi)
+DEFINE_PLUGIN(diffusion_cylinder_streamlines, DiffusionCylinderStreamlinesApi)
 
 /* ************************************************************************ */

@@ -48,7 +48,7 @@ Object::Object(simulator::Simulation& simulation, const std::string& name, Type 
         std::string foundPath;
 
         // Foreach possible paths
-        for (const auto& p : simulator::Library::getLibraryPaths())
+        for (const auto& p : simulator::Plugin::getLibraryPaths())
         {
             auto path = p + "/" + name;
 

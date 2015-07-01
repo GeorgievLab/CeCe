@@ -293,7 +293,7 @@ ViewPtr<PluginApi> Simulation::requirePlugin(const String& name)
 
 /* ************************************************************************ */
 
-Library* Simulation::loadLibrary(const String& name)
+Plugin* Simulation::loadLibrary(const String& name)
 {
     // Try to find library in cache
     auto it = m_libraries.find(name);
@@ -304,7 +304,7 @@ Library* Simulation::loadLibrary(const String& name)
         // Insert into cache
         auto ptr = m_libraries.emplace(std::make_pair(
             name,
-            std::unique_ptr<Library>{new Library(name)}
+            std::unique_ptr<Plugin>{new Plugin(name)}
         ));
         it = std::get<0>(ptr);
     }
@@ -321,7 +321,7 @@ PluginApi* Simulation::getLibraryApi(const String& name)
     const bool init = !hasLibrary(name);
 
     // Load library
-    Library* lib = loadLibrary(name);
+    Plugin* lib = loadLibrary(name);
     assert(lib);
 
     // Unable to load library

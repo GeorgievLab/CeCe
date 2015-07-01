@@ -34,6 +34,6 @@ class StreamlinesPythonApi : public PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(streamlines_python, StreamlinesPythonApi)
+DEFINE_PLUGIN(streamlines_python, StreamlinesPythonApi)
 
 /* ************************************************************************ */

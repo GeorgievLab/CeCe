@@ -39,7 +39,7 @@ function(build_plugin NAME)
 
         # Pass macro to inform about build-in version
         # TODO: change to plugin
-        add_definitions(-DLIBRARY_BUILDIN=1)
+        add_definitions(-DPLUGIN_BUILDIN=1)
 
         # Static library
         add_library(${FULLNAME} ${ARG_SOURCES})

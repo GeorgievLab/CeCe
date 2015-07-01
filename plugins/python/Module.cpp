@@ -47,7 +47,7 @@ Module::Module(const std::string& name)
         std::string foundPath;
 
         // Foreach possible paths
-        for (const auto& p : simulator::Library::getLibraryPaths())
+        for (const auto& p : simulator::Plugin::getLibraryPaths())
         {
             auto path = p + "/" + name;
 

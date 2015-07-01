@@ -162,6 +162,6 @@ class PythonApi : public PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(python, PythonApi)
+DEFINE_PLUGIN(python, PythonApi)
 
 /* ************************************************************************ */

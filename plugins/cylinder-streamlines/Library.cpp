@@ -21,6 +21,6 @@ class CylinderStreamlinesApi : public simulator::PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(cylinder_streamlines, CylinderStreamlinesApi)
+DEFINE_PLUGIN(cylinder_streamlines, CylinderStreamlinesApi)
 
 /* ************************************************************************ */

@@ -176,6 +176,6 @@ class DiffusionApi : public PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(diffusion, DiffusionApi)
+DEFINE_PLUGIN(diffusion, DiffusionApi)
 
 /* ************************************************************************ */

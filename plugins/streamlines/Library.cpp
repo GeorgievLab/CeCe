@@ -32,6 +32,6 @@ class StreamlinesApi : public PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(streamlines, StreamlinesApi)
+DEFINE_PLUGIN(streamlines, StreamlinesApi)
 
 /* ************************************************************************ */

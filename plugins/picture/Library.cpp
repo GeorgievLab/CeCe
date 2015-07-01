@@ -23,6 +23,6 @@ class PictureApi : public simulator::PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(picture, PictureApi)
+DEFINE_PLUGIN(picture, PictureApi)
 
 /* ************************************************************************ */

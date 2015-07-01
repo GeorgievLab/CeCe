@@ -63,18 +63,18 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-DynamicArray<String> Library::s_libraryPaths;
+DynamicArray<String> Plugin::s_libraryPaths;
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) extern "C" simulator::PluginApi* LIBRARY_PROTOTYPE_NAME_BUILDIN(create, validname)();
+#define ITEM(name, validname) extern "C" simulator::PluginApi* PLUGIN_PROTOTYPE_NAME_BUILDIN(create, validname)();
 BUILDIN_LIBRARIES
 #undef ITEM
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) { # name, LIBRARY_PROTOTYPE_NAME_BUILDIN(create, validname) },
-const Map<String, Library::CreateFn> Library::s_buildinLibraries{
+#define ITEM(name, validname) { # name, PLUGIN_PROTOTYPE_NAME_BUILDIN(create, validname) },
+const Map<String, Plugin::CreateFn> Plugin::s_buildinLibraries{
     BUILDIN_LIBRARIES
 };
 #undef ITEM
@@ -84,7 +84,7 @@ const Map<String, Library::CreateFn> Library::s_buildinLibraries{
 /**
  * @brief OS dependent library implementation.
  */
-struct Library::Impl
+struct Plugin::Impl
 {
 // Public Ctors & Dtors
 public:
@@ -195,7 +195,7 @@ private:
 
 /* ************************************************************************ */
 
-Library::Library(const String& name)
+Plugin::Plugin(const String& name)
 {
     // Try to find in build-in libraries
     auto it = s_buildinLibraries.find(name);
@@ -220,7 +220,7 @@ Library::Library(const String& name)
         if (!apiVerFn)
             throw RuntimeException("Library doesn't contains 'api_version' function");
 
-        if (apiVerFn() != LIBRARY_API_VERSION)
+        if (apiVerFn() != PLUGIN_API_VERSION)
             throw RuntimeException("Library API version is different from the simulator");
 
         auto fn = m_impl->getAddr<CreateFn>("create");
@@ -235,14 +235,14 @@ Library::Library(const String& name)
 
 /* ************************************************************************ */
 
-Library::~Library()
+Plugin::~Plugin()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-bool Library::isLoaded() const NOEXCEPT
+bool Plugin::isLoaded() const NOEXCEPT
 {
     if (!m_impl)
         return true;
@@ -251,7 +251,7 @@ bool Library::isLoaded() const NOEXCEPT
 }
 /* ************************************************************************ */
 
-String Library::getError() const NOEXCEPT
+String Plugin::getError() const NOEXCEPT
 {
     if (!m_impl)
         return {};
@@ -261,7 +261,7 @@ String Library::getError() const NOEXCEPT
 
 /* ************************************************************************ */
 
-void Library::addLibraryPath(String path)
+void Plugin::addLibraryPath(String path)
 {
 #if __linux__ || __APPLE__ && __MACH__
     // Get previous paths
@@ -287,7 +287,7 @@ void Library::addLibraryPath(String path)
 
 /* ************************************************************************ */
 
-DynamicArray<String> Library::getBuildInNames() NOEXCEPT
+DynamicArray<String> Plugin::getBuildInNames() NOEXCEPT
 {
     DynamicArray<String> names;
     names.reserve(s_buildinLibraries.size());

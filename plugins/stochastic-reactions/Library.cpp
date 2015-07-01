@@ -39,6 +39,6 @@ class StochasticReactionsApi : public simulator::PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_LIBRARY(stochastic_reactions, StochasticReactionsApi)
+DEFINE_PLUGIN(stochastic_reactions, StochasticReactionsApi)
 
 /* ************************************************************************ */

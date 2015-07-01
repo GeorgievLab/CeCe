@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -23,81 +23,72 @@
 /* ************************************************************************ */
 
 /**
- * @brief Library API version.
+ * @brief Plugin API version.
  */
-#define LIBRARY_API_VERSION 1
+#define PLUGIN_API_VERSION 1
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function name for dynamic libraries.
+ * @brief Define function name for extern plugins.
  *
  * @param prefix Function prefix.
- * @param name   Library name.
+ * @param name   Plugin name.
  */
-#define LIBRARY_PROTOTYPE_NAME_DYNAMIC(prefix, name) prefix
+#define PLUGIN_PROTOTYPE_NAME_EXTERN(prefix, name) prefix
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function name for build-in libraries.
+ * @brief Define function name for buildin plugins.
  *
  * @param prefix Function prefix.
- * @param name   Library name.
+ * @param name   Plugin name.
  */
-#define LIBRARY_PROTOTYPE_NAME_BUILDIN(prefix, name) prefix ## _ ## name
+#define PLUGIN_PROTOTYPE_NAME_BUILDIN(prefix, name) prefix ## _ ## name
 
 /* ************************************************************************ */
 
 /**
  * @brief Function name.
  *
- * @param name Library name.
+ * @param name Plugin name.
  */
-#if LIBRARY_BUILDIN
-#define LIBRARY_PROTOTYPE_NAME(prefix, name) LIBRARY_PROTOTYPE_NAME_BUILDIN(prefix, name)
+#if PLUGIN_BUILDIN
+#define PLUGIN_PROTOTYPE_NAME(prefix, name) PLUGIN_PROTOTYPE_NAME_BUILDIN(prefix, name)
 #else
-#define LIBRARY_PROTOTYPE_NAME(prefix, name) LIBRARY_PROTOTYPE_NAME_DYNAMIC(prefix, name)
+#define PLUGIN_PROTOTYPE_NAME(prefix, name) PLUGIN_PROTOTYPE_NAME_EXTERN(prefix, name)
 #endif
 
 /* ************************************************************************ */
 
 /**
- * @brief Prototype of function for creating library object.
+ * @brief Prototype of function for creating plugin API object.
  *
- * @param name Library name.
+ * @param name Plugin name.
  */
-#define LIBRARY_CREATE_PROTOTYPE(name) \
-    extern "C" simulator::PluginApi* LIBRARY_PROTOTYPE_NAME(create, name)()
+#define PLUGIN_CREATE_PROTOTYPE(name) \
+    extern "C" simulator::PluginApi* PLUGIN_PROTOTYPE_NAME(create, name)()
 
 /* ************************************************************************ */
 
 /**
- * @brief Declare function for creating library object.
+ * @brief Declare function for creating plugin API object.
  *
- * @param name Library name.
+ * @param name Plugin name.
  */
-#define DECLARE_LIBRARY_CREATE(name) LIBRARY_CREATE_PROTOTYPE(name)
+#define DECLARE_PLUGIN_CREATE(name) PLUGIN_CREATE_PROTOTYPE(name)
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function for creating library object.
+ * @brief Define function for creating plugin API object.
  *
- * @param name Library name.
+ * @param name      Plugin name.
+ * @param className Plugin API class name.
  */
-#define DEFINE_LIBRARY_CREATE(name) LIBRARY_CREATE_PROTOTYPE(name)
-
-/* ************************************************************************ */
-
-/**
- * @brief Define function for creating library object.
- *
- * @param name      Library name.
- * @param className
- */
-#define DEFINE_LIBRARY_CREATE_IMPL(name, className) \
-    LIBRARY_CREATE_PROTOTYPE(name) \
+#define DEFINE_PLUGIN_CREATE(name, className) \
+    PLUGIN_CREATE_PROTOTYPE(name) \
     { \
         return new className{}; \
     }
@@ -105,65 +96,57 @@
 /* ************************************************************************ */
 
 /**
- * @brief Prototype of function for returning library API version.
+ * @brief Prototype of function for returning plugin API version.
  *
- * @param name Library name.
+ * @param name Plugin name.
  */
-#define LIBRARY_API_VERSION_PROTOTYPE(name) \
-    extern "C" int LIBRARY_PROTOTYPE_NAME(api_version, name)()
+#define PLUGIN_API_VERSION_PROTOTYPE(name) \
+    extern "C" int PLUGIN_PROTOTYPE_NAME(api_version, name)()
 
 /* ************************************************************************ */
 
 /**
- * @brief Declare function for returning library API version.
+ * @brief Declare function for returning plugin API version.
  *
- * @param name Library name.
+ * @param name Plugin name.
  */
-#define DECLARE_LIBRARY_API_VERSION(name) LIBRARY_API_VERSION_PROTOTYPE(name)
+#define DECLARE_PLUGIN_API_VERSION(name) PLUGIN_API_VERSION_PROTOTYPE(name)
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function for returning library API version.
+ * @brief Define function for returning plugin API version.
  *
- * @param name Library name.
+ * @param name Plugin name.
  */
-#define DEFINE_LIBRARY_API_VERSION(name) LIBRARY_API_VERSION_PROTOTYPE(name)
-
-/* ************************************************************************ */
-
-/**
- * @brief Define function for returning library API version.
- *
- * @param name Library name.
- */
-#define DEFINE_LIBRARY_API_VERSION_IMPL(name) \
-    LIBRARY_API_VERSION_PROTOTYPE(name) \
+#define DEFINE_PLUGIN_API_VERSION(name) \
+    PLUGIN_API_VERSION_PROTOTYPE(name) \
     { \
-        return LIBRARY_API_VERSION; \
+        return PLUGIN_API_VERSION; \
     }
 
 /* ************************************************************************ */
 
 /**
- * @brief Declare library functions.
+ * @brief Declare plugin functions.
  *
- * @param name Library name.
+ * @param name Plugin name.
  */
-#define DECLARE_LIBRARY(name) \
-    DECLARE_LIBRARY_CREATE(name); \
-    DECLARE_LIBRARY_API_VERSION(name)
+#define DECLARE_PLUGIN(name) \
+    DECLARE_PLUGIN_CREATE(name); \
+    DECLARE_PLUGIN_API_VERSION(name)
 
 /* ************************************************************************ */
 
 /**
- * @brief Define library functions.
+ * @brief Define plugin functions.
  *
- * @param name Library name.
+ * @param name      Plugin name.
+ * @param className Plugin API class name.
  */
-#define DEFINE_LIBRARY(name, className) \
-    DEFINE_LIBRARY_CREATE_IMPL(name, className) \
-    DEFINE_LIBRARY_API_VERSION_IMPL(name)
+#define DEFINE_PLUGIN(name, className) \
+    DEFINE_PLUGIN_CREATE(name, className) \
+    DEFINE_PLUGIN_API_VERSION(name)
 
 /* ************************************************************************ */
 
@@ -177,9 +160,9 @@ class Simulation;
 /* ************************************************************************ */
 
 /**
- * @brief Class for loading module libraries into simulation.
+ * @brief Helper class for wrapping plugin.
  */
-class DLL_EXPORT Library final
+class DLL_EXPORT Plugin final
 {
 
 // Public Types
@@ -202,13 +185,13 @@ public:
      *
      * @param name Library name.
      */
-    explicit Library(const String& name);
+    explicit Plugin(const String& name);
 
 
     /**
      * @brief Destructor.
      */
-    ~Library();
+    ~Plugin();
 
 
 // Public Accessors
