@@ -61,6 +61,8 @@ add_library(${PROJECT_NAME} OBJECT
     Any.hpp
     IntegerSequence.hpp
     Tuple.hpp
+    UniquePtr.hpp
+    ViewPtr.hpp
 )
 
 # ######################################################################### #

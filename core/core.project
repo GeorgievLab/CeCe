@@ -59,6 +59,7 @@
     <File Name="StaticMatrix.hpp"/>
     <File Name="Tuple.hpp"/>
     <File Name="IntegerSequence.hpp"/>
+    <File Name="ViewPtr.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
