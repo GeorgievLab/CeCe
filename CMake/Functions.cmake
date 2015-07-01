@@ -12,7 +12,7 @@
 ## param: LIBRARIES A list of required libraries.
 ## param: PLUGINS_REQUIRED A list of required plugins.
 ##
-## Function uses PLUGINS_BUILDIN_${NAME} variable.
+## Function uses PLUGINS_BUILTIN_${NAME} variable.
 ##
 function(build_plugin NAME)
 
@@ -31,7 +31,7 @@ function(build_plugin NAME)
     project(${FULLNAME} CXX)
 
     # If plugin will be build-in
-    if (PLUGINS_BUILDIN_${NAME})
+    if (PLUGINS_BUILTIN_${NAME})
         # Required for Linux
         if (UNIX AND NOT APPLE)
             add_compile_options(-fPIC)
@@ -39,7 +39,7 @@ function(build_plugin NAME)
 
         # Pass macro to inform about build-in version
         # TODO: change to plugin
-        add_definitions(-DPLUGIN_BUILDIN=1)
+        add_definitions(-DPLUGIN_BUILTIN=1)
 
         # Static library
         add_library(${FULLNAME} ${ARG_SOURCES})

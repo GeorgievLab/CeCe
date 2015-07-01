@@ -24,7 +24,7 @@ ModulesDialog::ModulesDialog(wxWindow* parent)
 
 void ModulesDialog::OnInitDialog(wxInitDialogEvent& event)
 {
-    for (auto&& name : simulator::Plugin::getBuildInNames())
+    for (auto&& name : simulator::Plugin::getBuiltInNames())
     {
         m_listBoxModules->Append(wxString(name));
     }

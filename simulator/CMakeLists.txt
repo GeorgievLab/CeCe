@@ -49,20 +49,20 @@ endif ()
 
 # Include build-in libraries
 set(PLUGINS_LIBS "")
-set(BUILDIN_LIBRARIES "")
+set(BUILTIN_PLUGINS "")
 
 # Foreach build-in plugins
-foreach (PLUGIN ${PLUGINS_BUILDIN})
-    message("-- Build-in plugin: ${PLUGIN}")
+foreach (PLUGIN ${PLUGINS_BUILTIN})
+    message("-- Builtin plugin: ${PLUGIN}")
     plugin_project_name(${PLUGIN} PLUGIN_PROJECT)
     set(PLUGINS_LIBS ${PLUGINS_LIBS} ${PLUGIN_PROJECT})
     # Fix module name: replace '-' by '_'
     string(REPLACE "-" "_" FIXED_PLUGIN ${PLUGIN})
-    set(BUILDIN_LIBRARIES "${BUILDIN_LIBRARIES}ITEM(${PLUGIN},${FIXED_PLUGIN})")
+    set(BUILTIN_PLUGINS "${BUILTIN_PLUGINS}ITEM(${PLUGIN},${FIXED_PLUGIN})")
 endforeach ()
 
 # Pass build-in libraries list
-add_definitions(-DBUILDIN_LIBRARIES=${BUILDIN_LIBRARIES})
+add_definitions(-DBUILTIN_PLUGINS=${BUILTIN_PLUGINS})
 
 if (WIN32)
     add_definitions(-DSIMULATOR_DLL_EXPORT=1)
@@ -81,7 +81,7 @@ target_link_libraries(${PROJECT_NAME}
     ${RENDER_LIBS}
 )
 
-if (ENABLE_BUILDIN_PHYSICS)
+if (ENABLE_BUILTIN_PHYSICS)
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         ${BOX2D_LIBRARIES}

@@ -41,12 +41,12 @@
 /* ************************************************************************ */
 
 /**
- * @brief Define function name for buildin plugins.
+ * @brief Define function name for builtin plugins.
  *
  * @param prefix Function prefix.
  * @param name   Plugin name.
  */
-#define PLUGIN_PROTOTYPE_NAME_BUILDIN(prefix, name) prefix ## _ ## name
+#define PLUGIN_PROTOTYPE_NAME_BUILTIN(prefix, name) prefix ## _ ## name
 
 /* ************************************************************************ */
 
@@ -55,8 +55,8 @@
  *
  * @param name Plugin name.
  */
-#if PLUGIN_BUILDIN
-#define PLUGIN_PROTOTYPE_NAME(prefix, name) PLUGIN_PROTOTYPE_NAME_BUILDIN(prefix, name)
+#if PLUGIN_BUILTIN
+#define PLUGIN_PROTOTYPE_NAME(prefix, name) PLUGIN_PROTOTYPE_NAME_BUILTIN(prefix, name)
 #else
 #define PLUGIN_PROTOTYPE_NAME(prefix, name) PLUGIN_PROTOTYPE_NAME_EXTERN(prefix, name)
 #endif
@@ -184,7 +184,7 @@ public:
     /**
      * @brief Constructor.
      *
-     * Constructor search plugin in buildin plugins and if there is none
+     * Constructor search plugin in builtin plugins and if there is none
      * with given name it will look for shared library file in the plugins
      * directory. In case the shared library doesn't have exported
      * required functions an exception is thrown.
@@ -193,7 +193,7 @@ public:
      *
      * @throw In case valid plugin cannot be created.
      */
-    explicit Plugin(const String& name);
+    explicit Plugin(String name);
 
 
     /**
@@ -240,24 +240,24 @@ public:
 
 
     /**
-     * @brief Check if given library name is build-in.
+     * @brief Check if given library name is builtin.
      *
      * @param name Library name.
      *
      * @return
      */
-    static bool isBuildin(const String& name) NOEXCEPT
+    static bool isBuiltin(const String& name) NOEXCEPT
     {
-        return s_buildinLibraries.find(name) != s_buildinLibraries.end();
+        return s_builtinLibraries.find(name) != s_builtinLibraries.end();
     }
 
 
     /**
-     * @brief Return a list of build-in extension libraries.
+     * @brief Return a list of builtin extension libraries.
      *
-     * @return An array of build-in library names.
+     * @return An array of builtin library names.
      */
-    static DynamicArray<String> getBuildInNames() NOEXCEPT;
+    static DynamicArray<String> getBuiltInNames() NOEXCEPT;
 
 
     /**
@@ -296,8 +296,8 @@ private:
     /// Library paths.
     static DynamicArray<String> s_libraryPaths;
 
-    /// Build-in static library builders.
-    static const Map<String, CreateFn> s_buildinLibraries;
+    /// Builin plugins create API functions.
+    static const Map<String, CreateFn> s_builtinLibraries;
 
 };
 

@@ -36,11 +36,11 @@ namespace {
 /* ************************************************************************ */
 
 #if __linux__
-const String g_prefix = "libmodule-";
+const String g_prefix = "libplugin-";
 #elif _WIN32
-const String g_prefix = "libmodule-";
+const String g_prefix = "libplugin-";
 #elif __APPLE__ && __MACH__
-const String g_prefix = "libmodule-";
+const String g_prefix = "libplugin-";
 #endif
 
 /* ************************************************************************ */
@@ -67,15 +67,15 @@ DynamicArray<String> Plugin::s_libraryPaths;
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) extern "C" simulator::PluginApi* PLUGIN_PROTOTYPE_NAME_BUILDIN(create, validname)();
-BUILDIN_LIBRARIES
+#define ITEM(name, validname) extern "C" simulator::PluginApi* PLUGIN_PROTOTYPE_NAME_BUILTIN(create, validname)();
+BUILTIN_PLUGINS
 #undef ITEM
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) { # name, PLUGIN_PROTOTYPE_NAME_BUILDIN(create, validname) },
-const Map<String, Plugin::CreateFn> Plugin::s_buildinLibraries{
-    BUILDIN_LIBRARIES
+#define ITEM(name, validname) { # name, PLUGIN_PROTOTYPE_NAME_BUILTIN(create, validname) },
+const Map<String, Plugin::CreateFn> Plugin::s_builtinLibraries{
+    BUILTIN_PLUGINS
 };
 #undef ITEM
 
@@ -195,22 +195,26 @@ private:
 
 /* ************************************************************************ */
 
-Plugin::Plugin(const String& name)
-    : m_name(name)
+Plugin::Plugin(String name)
+    : m_name(std::move(name))
 {
-    // Try to find in build-in libraries
-    auto it = s_buildinLibraries.find(name);
+    // Try to find in builtin libraries
+    auto it = s_builtinLibraries.find(getName());
 
-    // Required library is build-in
-    if (it != s_buildinLibraries.end())
+    // Required library is builtin
+    if (it != s_builtinLibraries.end())
     {
+        Log::debug("Loading builtin plugin `", getName(), "`...");
+
         // Create library API
         m_api.reset(it->second());
     }
     else
     {
+        Log::debug("Loading external plugin `", getName(), "`...");
+
         // Create dynamic implementation
-        m_impl.reset(new Impl{name});
+        m_impl.reset(new Impl{getName()});
 
         if (!m_impl->isLoaded())
             throw RuntimeException("Library is not loaded: " + m_impl->getError());
@@ -232,13 +236,15 @@ Plugin::Plugin(const String& name)
         // Create extension object
         m_api.reset(fn());
     }
+
+    Log::debug("Done");
 }
 
 /* ************************************************************************ */
 
 Plugin::~Plugin()
 {
-    // Nothing to do
+    Log::debug("Plugin released `", getName(), "`");
 }
 
 /* ************************************************************************ */
@@ -269,12 +275,12 @@ void Plugin::addLibraryPath(String path)
 
 /* ************************************************************************ */
 
-DynamicArray<String> Plugin::getBuildInNames() NOEXCEPT
+DynamicArray<String> Plugin::getBuiltInNames() NOEXCEPT
 {
     DynamicArray<String> names;
-    names.reserve(s_buildinLibraries.size());
+    names.reserve(s_builtinLibraries.size());
 
-    for (const auto& p : s_buildinLibraries)
+    for (const auto& p : s_builtinLibraries)
         names.push_back(p.first);
 
     return names;
