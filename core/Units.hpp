@@ -1202,6 +1202,36 @@ inline CONSTEXPR Time us(Value value) NOEXCEPT
 /* ************************************************************************ */
 
 /**
+ * @brief Minutes value.
+ *
+ * @param value Value.
+ *
+ * @return Time value.
+ */
+inline CONSTEXPR Time min(Value value) NOEXCEPT
+{
+    // 60s = 1min
+    return s(60 * value);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Hours value.
+ *
+ * @param value Value.
+ *
+ * @return Time value.
+ */
+inline CONSTEXPR Time h(Value value) NOEXCEPT
+{
+    // 60min = 1h
+    return min(60 * value);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Meters^2 value.
  *
  * @param value Value.

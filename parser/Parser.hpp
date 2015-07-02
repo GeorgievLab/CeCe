@@ -116,6 +116,12 @@ struct value_constructor<units::Time>
         if (suffix.empty())
             return units::Time(val);
 
+        if (suffix == "h")
+            return units::h(val);
+
+        if (suffix == "min")
+            return units::min(val);
+
         if (suffix == "s")
             return units::s(val);
 
