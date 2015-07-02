@@ -6,6 +6,7 @@
 // Simulator
 #include "core/Units.hpp"
 #include "simulator/Object.hpp"
+#include "simulator/Simulation.hpp"
 
 // Module
 #include "Python.hpp"
@@ -49,7 +50,7 @@ public:
      *
      * @param source Source code.
      */
-    void initSource(const std::string& source)
+    void initSource(const String& source)
     {
         m_source.initSource(source);
         m_call = m_source.getFunction("call");
@@ -61,7 +62,7 @@ public:
      *
      * @param filename Path to source file.
      */
-    void initFile(const std::string& filename)
+    void initFile(const FilePath& filename)
     {
         m_source.initFile(filename);
         m_call = m_source.getFunction("call");
@@ -71,10 +72,11 @@ public:
     /**
      * @brief Call program.
      *
-     * @param object Simulation object.
-     * @param dt     Simulation time step.
+     * @param object     Simulation object.
+     * @param simulation Current simulation.
+     * @param dt         Simulation time step.
      */
-    void operator()(simulator::Object& object, units::Duration dt) const;
+    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration dt) const;
 
 
 // Private Data Members

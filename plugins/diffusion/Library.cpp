@@ -130,42 +130,42 @@ class DiffusionApi : public PluginApi
     Program createProgram(Simulation& simulation, const String& name, String code = {}) NOEXCEPT override
     {
         if (name == "gen1")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 0);
             };
 
         if (name == "gen2")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 1);
             };
 
         if (name == "gen3")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 2);
             };
 
         if (name == "gen4")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 generate_signal(simulation, obj, dt, 3);
             };
 
         if (name == "rem1")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 0);
             };
 
         if (name == "rem2")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 1);
             };
 
         if (name == "rem3")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 2);
             };
 
         if (name == "rem4")
-            return [&simulation](Object& obj, units::Duration dt) {
+            return [](Object& obj, Simulation& simulation, units::Duration dt) {
                 remove_signal(simulation, obj, dt, 3);
             };
 

@@ -5,7 +5,7 @@
 #include "core/Exception.hpp"
 #include "../cell/CellBase.hpp"
 
-void Reaction::operator()(simulator::Object& object, units::Duration step)
+void Reaction::operator()(simulator::Object& object, simulator::Simulation&, units::Time step)
 {
     // TODO dependency graph
 

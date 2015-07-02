@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -23,13 +23,14 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Object;
+class Simulation;
 
 /* ************************************************************************ */
 
 /**
  * @brief Program for objects.
  */
-using Program = std::function<void(Object&, units::Duration)>;
+using Program = std::function<void(Object&, Simulation&, units::Time)>;
 
 /* ************************************************************************ */
 

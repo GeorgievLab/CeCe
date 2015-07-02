@@ -265,7 +265,7 @@ void Object::update(units::Duration dt)
 
     // Call object programs
     for (auto& program : getPrograms())
-        program(*this, dt);
+        program(*this, getSimulation(), dt);
 }
 
 /* ************************************************************************ */

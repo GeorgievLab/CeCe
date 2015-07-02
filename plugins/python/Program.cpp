@@ -37,13 +37,13 @@ Program::~Program()
 
 /* ************************************************************************ */
 
-void Program::operator()(simulator::Object& object, units::Duration dt) const
+void Program::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Time dt) const
 {
     if (!m_call)
         return;
 
     // Call function
-    if (!call(m_call, &object, dt.value()))
+    if (!call(m_call, &object, &simulation, dt.value()))
         throw Exception();
 }
 
