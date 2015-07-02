@@ -1,21 +1,40 @@
 <simulation world-size="100um 100um" dt="1min" iterations="10000">
     <plugin name="python" />
-    <!--
-        alpha = -log(0.5) / 20.0;
-        k1 = 100 * alpha; // 1.505149978
-    -->
     <program name="make-gfp" language="stochastic-reactions">
+        <!--
+            alpha = -log(0.5) / 20.0;
+            k1 = 100 * alpha; // 1.505149978
+        -->
         null > 1.505149978 > GFP;
         GFP > 0.001 > null;
     </program>
     <program name="store-gfp" language="python">
+# Open CSV file writer for storing GFP data
 import csv
-def call(object, dt):
-    with open("gfp.csv", 'ab') as csvfile:
-        writer = csv.writer(csvfile, delimiter = ';')
-        writer.writerow([object.id, object.moleculeCount("GFP")])
+file = open("gfp.csv", 'wb')
+writer = csv.writer(file, delimiter = ';')
+writer.writerow(["iteration", "totalTime", "id", "gfp", "gfp/volume"])
+
+# Program code
+def call(object, simulation, dt):
+    writer.writerow([simulation.iteration, simulation.totalTime, object.id, object.moleculeCount("GFP"), object.moleculeCount("GFP") / object.volume])
     </program>
     <module name="cell-python" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
     <object class="cell.Yeast" programs="make-gfp store-gfp" />
 </simulation>
 
