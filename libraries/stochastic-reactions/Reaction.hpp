@@ -20,17 +20,24 @@ private:
         {
             // Nothing to do
         }
+        bool operator ==(const ReqProd& rhs) const
+        {
+            return requirement == rhs.requirement && product == rhs.product;
+        }
+        bool operator !=(const ReqProd& rhs) const
+        {
+            return !operator ==(rhs);
+        }
         
         int requirement = 0;
         int product = 0;
     };
-    DynamicArray<float> propensities;
+    
     DynamicArray<float> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<ReqProd>> m_rules;
+    DynamicArray<float> propensities;
     module::cell::CellBase* cell;
-    
-    int getIndexOf(const String& id);
     
     float computePropensity(unsigned int index);
     
@@ -39,8 +46,9 @@ private:
     void initializePropensities();
     
 public:
-
     void operator()(simulator::Object& object, units::Duration);
+    
+    int getIndexOf(const String& id);
     
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate);
     
@@ -49,5 +57,7 @@ public:
         return m_rules.size();
     }
     
-    bool containsMolecule(String id);
+    bool operator ==(const Reaction& rhs);
+    
+    bool areEqualReactions(const Reaction& rhs, unsigned int index1, unsigned int index2);
 };

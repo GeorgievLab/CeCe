@@ -119,12 +119,45 @@ void Reaction::extend(const DynamicArray<String>& ids_plus, const DynamicArray<S
     m_rules.push_back(array);
 }
 
-bool Reaction::containsMolecule(String id)
+bool Reaction::operator ==(const Reaction& rhs)
 {
-    auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
-    if (pointer == m_ids.end())
-    {
+    if (rhs.m_rates.size() != m_rates.size() && rhs.m_ids.size() != m_ids.size())
         return false;
+    DynamicArray<unsigned int> skip;
+    bool valid;
+    for (unsigned int i = 0; i < m_rates.size(); i++)
+    {
+        valid = false;
+        for (unsigned int j = 0; j < rhs.m_rates.size(); i++)
+        {
+            if (std::find(skip.begin(), skip.end(), j) != skip.end())
+                continue;
+            if (areEqualReactions(rhs, i, j))
+            {
+                valid = true;
+                skip.push_back(j);
+                break;
+            }
+            continue;
+        }
+        if (!valid)
+            return false;
+    }
+    return true;
+}
+
+bool Reaction::areEqualReactions(const Reaction& rhs, unsigned int index1, unsigned int index2)
+{
+    if (m_rates[index1] != rhs.m_rates[index2])
+        return false;
+    for (unsigned int i = 0; i < m_ids.size(); i++)
+    {
+        auto pointer = std::find(rhs.m_ids.begin(), rhs.m_ids.end(), m_ids[i]);
+        if (pointer == rhs.m_ids.end())
+            return false;
+        unsigned int index = std::distance(rhs.m_ids.begin(), pointer);
+        if (rhs.m_ids[index] != m_ids[i] || rhs.m_rules[index2][index] != m_rules[index1][i])
+            return false;
     }
     return true;
 }
