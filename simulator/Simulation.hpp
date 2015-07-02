@@ -50,9 +50,9 @@ class Configuration;
 /* ************************************************************************ */
 
 /**
- * @brief Type for step number.
+ * @brief Type for iteration number.
  */
-using StepNumber = unsigned long long;
+using IterationNumber = unsigned long long;
 
 /* ************************************************************************ */
 
@@ -101,13 +101,13 @@ public:
 
 
     /**
-     * @brief Returns step number.
+     * @brief Returns current iteration.
      *
      * @return
      */
-    StepNumber getStepNumber() const NOEXCEPT
+    IterationNumber getIteration() const NOEXCEPT
     {
-        return m_stepNumber;
+        return m_iteration;
     }
 
 
@@ -116,7 +116,7 @@ public:
      *
      * @return
      */
-    StepNumber getIterations() const NOEXCEPT
+    IterationNumber getIterations() const NOEXCEPT
     {
         return m_iterations;
     }
@@ -149,9 +149,20 @@ public:
      *
      * @return
      */
-    units::Duration getTimeStep() const NOEXCEPT
+    units::Time getTimeStep() const NOEXCEPT
     {
         return m_timeStep;
+    }
+
+
+    /**
+     * @brief Returns total simulation time.
+     *
+     * @return
+     */
+    units::Time getTotalTime() const NOEXCEPT
+    {
+        return m_totalTime;
     }
 
 
@@ -162,7 +173,7 @@ public:
      */
     bool isTimeStepRealTime() const NOEXCEPT
     {
-        return m_timeStepRealTime;
+        return m_timeStep == units::Time(units::Zero);
     }
 
 
@@ -345,7 +356,7 @@ public:
      * @param iterations Number of iterations. If value is 0, there is
      *                   unlimited number of iterations.
      */
-    void setIterations(StepNumber iterations) NOEXCEPT
+    void setIterations(IterationNumber iterations) NOEXCEPT
     {
         m_iterations = iterations;
     }
@@ -354,22 +365,11 @@ public:
     /**
      * @brief Set simulation time step.
      *
-     * @param dt
+     * @param dt Time step. If value is units::Zero, real-time step is enabled.
      */
-    void setTimeStep(units::Duration dt) NOEXCEPT
+    void setTimeStep(units::Time dt) NOEXCEPT
     {
         m_timeStep = dt;
-    }
-
-
-    /**
-     * @brief Enable or disable real-time time step.
-     *
-     * @param flag
-     */
-    void setTimeStepRealTime(bool flag) NOEXCEPT
-    {
-        m_timeStepRealTime = flag;
     }
 
 
@@ -582,16 +582,16 @@ public:
 private:
 
     /// Number of simulation steps.
-    StepNumber m_stepNumber = 0;
+    IterationNumber m_iteration = 0;
 
     /// Number of iterations.
-    StepNumber m_iterations = 0;
+    IterationNumber m_iterations = 0;
 
     /// Simulation step.
-    units::Duration m_timeStep;
+    units::Time m_timeStep;
 
-    /// Real-time time step
-    bool m_timeStepRealTime = true;
+    /// Total simulation time.
+    units::Time m_totalTime;
 
     /// World size.
     SizeVector m_worldSize{ units::um(400), units::um(400) };
@@ -650,7 +650,7 @@ struct DLL_EXPORT TimeMeasurementIterationOutput
     void operator()(OutStream& out, const String& name, Clock::duration dt) const NOEXCEPT
     {
         using namespace std::chrono;
-        out << name << ";" << m_simulation->getStepNumber() << ";" << duration_cast<microseconds>(dt).count() << "\n";
+        out << name << ";" << m_simulation->getIteration() << ";" << duration_cast<microseconds>(dt).count() << "\n";
     }
 
 };

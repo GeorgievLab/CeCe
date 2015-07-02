@@ -45,7 +45,7 @@ void Module::configure(const simulator::Configuration& config)
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    const auto stepNumber = simulation.getStepNumber();
+    const auto stepNumber = simulation.getIteration();
 
     // Skip first image, because it's not rendered yet
     if (stepNumber <= 1)
@@ -73,7 +73,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
     // Skip first image, because it's not rendered yet
-    if (simulation.getStepNumber() == 0)
+    if (simulation.getIteration() == 0)
         return;
 
     // Get pixel data

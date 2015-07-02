@@ -24,7 +24,7 @@ namespace diffusion_cylinder_streamlines {
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("diffusion-cylinder-streamlines", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
-        out << name << ";" << simulation.getStepNumber() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
+        out << name << ";" << simulation.getIteration() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
     });
 
     assert(m_streamlines);

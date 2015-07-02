@@ -165,7 +165,8 @@ Program Simulation::buildProgram(const String& path)
 
 void Simulation::reset()
 {
-    m_stepNumber = 0;
+    m_iteration = 0;
+    m_totalTime = units::Zero;
 }
 
 /* ************************************************************************ */
@@ -173,7 +174,8 @@ void Simulation::reset()
 bool Simulation::update(units::Duration dt)
 {
     // Increase step number
-    m_stepNumber++;
+    m_iteration++;
+    m_totalTime += dt;
 
     // Update modules
     {
@@ -226,7 +228,7 @@ bool Simulation::update(units::Duration dt)
     }
 #endif
 
-    return (hasUnlimitedIterations() || getStepNumber() <= getIterations());
+    return (hasUnlimitedIterations() || getIteration() <= getIterations());
 }
 
 /* ************************************************************************ */

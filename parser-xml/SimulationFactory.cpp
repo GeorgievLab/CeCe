@@ -276,14 +276,13 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         // Real-time time step
         if (dtStr.empty() || dtStr == "auto")
         {
-            simulation.setTimeStepRealTime(true);
+            simulation.setTimeStep(units::Zero);
         }
         else
         {
             // Parse time step
             auto dt = parser::parse_value<units::Duration>(dtStr);
             simulation.setTimeStep(dt);
-            simulation.setTimeStepRealTime(false);
         }
     }
 
