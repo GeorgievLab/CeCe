@@ -3,15 +3,15 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <string>
-
 // Simulator
 #include "core/compatibility.hpp"
+#include "core/String.hpp"
+#include "core/FilePath.hpp"
 
 // Module
 #include "Python.hpp"
 #include "Handle.hpp"
+#include "View.hpp"
 
 /* ************************************************************************ */
 
@@ -43,7 +43,7 @@ public:
     /**
      * @brief Returns if source is initialized.
      *
-     * @param source
+     * @return
      */
     bool isInitialized() const NOEXCEPT
     {
@@ -72,7 +72,7 @@ public:
      *
      * @return Pointer to function or nullptr.
      */
-    Handle<PyObject> getFunction(const std::string& name) const NOEXCEPT
+    Handle<PyObject> getFunction(const String& name) const NOEXCEPT
     {
         return getFunction(name.c_str());
     }
@@ -87,7 +87,7 @@ public:
      *
      * @param source Source code.
      */
-    void initSource(const std::string& source);
+    void initSource(const String& source);
 
 
     /**
@@ -95,7 +95,7 @@ public:
      *
      * @param filename Path to source file.
      */
-    void initFile(const std::string& filename);
+    void initFile(const FilePath& filename);
 
 
 // Private Data Members

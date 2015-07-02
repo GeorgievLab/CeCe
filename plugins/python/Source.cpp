@@ -25,7 +25,17 @@ namespace python {
 Source::Source()
     : m_dictionary(PyDict_New())
 {
-    // Nothing to do
+    auto main = makeView(PyImport_AddModule("__main__"));
+    assert(main);
+
+    auto main_dict = makeHandle(PyObject_GetAttrString(main, "__dict__"));
+    assert(main_dict);
+
+    auto main_builtins = makeView(PyDict_GetItemString(main_dict, "__builtins__"));
+    assert(main_builtins);
+
+    // Set buildins
+    PyDict_SetItemString(m_dictionary, "__builtins__", main_builtins);
 }
 
 /* ************************************************************************ */
@@ -33,15 +43,15 @@ Source::Source()
 Handle<PyObject> Source::getFunction(const char* name) const NOEXCEPT
 {
     // Attribute not found
-    if (!PyMapping_HasKeyString(m_dictionary.get(), const_cast<char*>(name)))
+    if (!PyMapping_HasKeyString(m_dictionary, const_cast<char*>(name)))
         return nullptr;
 
-    return PyMapping_GetItemString(m_dictionary.get(), const_cast<char*>(name));
+    return PyMapping_GetItemString(m_dictionary, const_cast<char*>(name));
 }
 
 /* ************************************************************************ */
 
-void Source::initSource(const std::string& source)
+void Source::initSource(const String& source)
 {
     makeHandle(PyImport_ImportModule("cppout"));
     makeHandle(PyImport_ImportModule("core"));
@@ -49,7 +59,7 @@ void Source::initSource(const std::string& source)
     makeHandle(PyImport_ImportModule("simulator"));
 
     // Execute given module file
-    if (!makeHandle(PyRun_String(source.c_str(), Py_file_input, m_dictionary.get(), nullptr)))
+    if (!makeHandle(PyRun_String(source.c_str(), Py_file_input, m_dictionary, nullptr)))
         throw Exception();
 
     m_initialized = true;
@@ -57,7 +67,7 @@ void Source::initSource(const std::string& source)
 
 /* ************************************************************************ */
 
-void Source::initFile(const std::string& filename)
+void Source::initFile(const FilePath& filename)
 {
     makeHandle(PyImport_ImportModule("cppout"));
 
