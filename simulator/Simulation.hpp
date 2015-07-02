@@ -29,6 +29,7 @@
 #include "simulator/Object.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/Program.hpp"
+#include "simulator/SimulationEventHandler.hpp"
 
 #if ENABLE_RENDER
 #include "render/Context.hpp"
@@ -59,7 +60,7 @@ using IterationNumber = unsigned long long;
 /**
  * @brief Simulation class.
  */
-class DLL_EXPORT Simulation
+class DLL_EXPORT Simulation // TODO: add generic event handler
 {
 
 

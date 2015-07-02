@@ -33,6 +33,7 @@ set(SRCS
     Program.hpp
     Obstacle.hpp
     Obstacle.cpp
+    SimulationEventHandler.hpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>

@@ -39,6 +39,7 @@
     <File Name="PluginApi.hpp"/>
     <File Name="Obstacle.hpp"/>
     <File Name="Plugin.hpp"/>
+    <File Name="SimulationEventHandler.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
