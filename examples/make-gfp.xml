@@ -1,0 +1,21 @@
+<simulation world-size="100um 100um" dt="1min" iterations="10000">
+    <plugin name="python" />
+    <!--
+        alpha = -log(0.5) / 20.0;
+        k1 = 100 * alpha; // 1.505149978
+    -->
+    <program name="make-gfp" language="stochastic-reactions">
+        null > 1.505149978 > GFP;
+        GFP > 0.001 > null;
+    </program>
+    <program name="store-gfp" language="python">
+import csv
+def call(object, dt):
+    with open("gfp.csv", 'ab') as csvfile:
+        writer = csv.writer(csvfile, delimiter = ';')
+        writer.writerow([object.id, object.moleculeCount("GFP")])
+    </program>
+    <module name="cell-python" />
+    <object class="cell.Yeast" programs="make-gfp store-gfp" />
+</simulation>
+
