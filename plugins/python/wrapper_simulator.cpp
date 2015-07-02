@@ -58,9 +58,11 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
 
     static PyGetSetDef properties[] = {
         defineProperty<1, type>("worldSize", &simulator::Simulation::getWorldSize),
-        defineProperty<2, type>("iteration", &simulator::Simulation::getStepNumber),
+        defineProperty<2, type>("iteration", &simulator::Simulation::getIteration),
         defineProperty<3, type>("iterations", &simulator::Simulation::getIterations),
-        defineProperty<4, type>("objectsCount", +[](type obj) {
+        defineProperty<4, type>("timeStep", &simulator::Simulation::getTimeStep),
+        defineProperty<5, type>("totalTime", &simulator::Simulation::getTotalTime),
+        defineProperty<6, type>("objectsCount", +[](type obj) {
             return obj->getObjects().size();
         }),
         {NULL}  /* Sentinel */
