@@ -39,8 +39,14 @@ void python_wrapper_cell_CellBase()
         {NULL}  /* Sentinel */
     };
 
+    static PyMethodDef fns[] = {
+        defineMemberFunction<1, type>("moleculeCount", &CellBase::getMoleculeCount),
+        {NULL}  /* Sentinel */
+    };
+
     type_def::init("cell.CellBase", "simulator.Object");
     type_def::definition.tp_getset = properties;
+    type_def::definition.tp_methods = fns;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);
