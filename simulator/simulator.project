@@ -39,7 +39,6 @@
     <File Name="PluginApi.hpp"/>
     <File Name="Obstacle.hpp"/>
     <File Name="Plugin.hpp"/>
-    <File Name="ListenerContainer.hpp"/>
     <File Name="SimulationListener.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">

@@ -63,6 +63,7 @@ add_library(${PROJECT_NAME} OBJECT
     Tuple.hpp
     UniquePtr.hpp
     ViewPtr.hpp
+    ListenerContainer.hpp
 )
 
 # ######################################################################### #

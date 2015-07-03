@@ -60,6 +60,7 @@
     <File Name="Tuple.hpp"/>
     <File Name="IntegerSequence.hpp"/>
     <File Name="ViewPtr.hpp"/>
+    <File Name="ListenerContainer.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
