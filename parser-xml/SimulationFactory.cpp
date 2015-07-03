@@ -24,6 +24,7 @@
 // Simulator
 #include "core/Log.hpp"
 #include "core/Units.hpp"
+#include "core/FilePath.hpp"
 #include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Plugin.hpp"
@@ -98,12 +99,40 @@ void parse_attribute_value(simulator::Object& object, const String& name, const 
 /* ************************************************************************ */
 
 /**
+ * @brief Process parameter node.
+ *
+ * @param node
+ * @param simulation
+ */
+void process_parameter_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
+{
+    assert(!strcmp(node.name(), "parameter"));
+
+    // Create configuration
+    const parser::xml::ImmutableConfiguration configuration(node, filename);
+
+    // Module name
+    {
+        if (!configuration.hasValue("name"))
+            throw parser::Exception("Missing attribute 'name' in 'parameter' element");
+
+        if (!configuration.hasValue("value"))
+            throw parser::Exception("Missing attribute 'value' in 'parameter' element");
+
+        // Load plugin
+        simulation.setParameter(configuration.getString("name"), configuration.getFloat("value"));
+    }
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Process program node.
  *
  * @param node
  * @param simulation
  */
-void process_program_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+void process_program_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
 {
     assert(!strcmp(node.name(), "program"));
 
@@ -144,7 +173,7 @@ void process_program_node(const pugi::xml_node& node, simulator::Simulation& sim
  * @param node
  * @param simulation
  */
-void process_object_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+void process_object_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
 {
     assert(!strcmp(node.name(), "object"));
 
@@ -179,7 +208,7 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
  * @param node
  * @param simulation
  */
-void process_obstacle_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+void process_obstacle_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
 {
     assert(!strcmp(node.name(), "obstacle"));
 
@@ -201,7 +230,7 @@ void process_obstacle_node(const pugi::xml_node& node, simulator::Simulation& si
  * @param node
  * @param simulation
  */
-void process_module_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+void process_module_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
 {
     assert(!strcmp(node.name(), "module"));
 
@@ -230,7 +259,7 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
  * @param node
  * @param simulation
  */
-void process_plugin_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+void process_plugin_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
 {
     assert(!strcmp(node.name(), "plugin"));
 
@@ -255,7 +284,7 @@ void process_plugin_node(const pugi::xml_node& node, simulator::Simulation& simu
  * @param node
  * @param simulation
  */
-void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& simulation, const std::string& filename)
+void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
 {
     assert(!strcmp(node.name(), "simulation"));
 
@@ -271,7 +300,7 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
 
     // Time step
     {
-        std::string dtStr = node.attribute("dt").value();
+        String dtStr = node.attribute("dt").value();
 
         // Real-time time step
         if (dtStr.empty() || dtStr == "auto")
@@ -292,6 +321,12 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
 
         if (!attr.empty())
             simulation.setIterations(attr.as_ullong());
+    }
+
+    // Parse parameters
+    for (const auto& parameter : node.children("parameter"))
+    {
+        process_parameter_node(parameter, simulation, filename);
     }
 
     // Parse plugins
@@ -346,7 +381,7 @@ UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
     pugi::xml_parse_result result = doc.load(source);
 
     if (!result)
-        throw Exception("XML parse error: " + std::string(result.description()));
+        throw Exception("XML parse error: " + String(result.description()));
 
     {
         char buffer[1024];
