@@ -15,6 +15,12 @@
 
 /* ************************************************************************ */
 
+#ifndef _MSC_VER
+inline namespace core {
+#endif
+
+/* ************************************************************************ */
+
 /**
  * @brief Sequence of integers.
  *
@@ -72,5 +78,11 @@ static_assert(std::is_same<typename IntegerSequenceGenerator<5, 10>::type, Integ
  */
 template<int S, int E>
 using MakeIntegerSequence = typename IntegerSequenceGenerator<S, E>::type;
+
+/* ************************************************************************ */
+
+#ifndef _MSC_VER
+}
+#endif
 
 /* ************************************************************************ */
