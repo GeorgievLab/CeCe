@@ -51,8 +51,10 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Grid for changes
     diffusion::SignalGrid signalGridNew(signalGrid.getSize());
 
-    // Sizes must match
-    assert(std::distance(signalGrid.begin(), signalGrid.end()) == std::distance(signalGridNew.begin(), signalGridNew.end()));
+    // Scale grids to [0, 1]
+    const auto signalScale = 1.f / signalGrid.getSize();
+    const auto velocityScale = 1.f / velocityGrid.getSize();
+    const auto scale = signalScale / velocityScale;
 
     // Foreach all combination in range [0, 0] - signalGrid.getSize()
     for (auto&& c : range(signalGrid.getSize()))
@@ -64,9 +66,12 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         if (!signal)
             continue;
 
+        // Calculate velocity scale
+        const auto vc = Vector<unsigned>(c * scale);
+
         // Get velocity
-        assert(velocityGrid.inRange(c + 1));
-        const auto& velocity = velocityGrid[c + 1].calcVelocity() * v_max;
+        assert(velocityGrid.inRange(vc + 1));
+        const auto& velocity = velocityGrid[vc + 1].calcVelocity() * v_max;
 
         // Calculate coordinate change
         Vector<float> dij = velocity * dt / step;
@@ -98,9 +103,9 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         {
             const auto ab2 = c + ab - Vector<unsigned>(0, offset);
 
-            // TODO: StaticMatrix coordinate
+            // Update signal
             if (signalGridNew.inRange(ab2))
-                signalGridNew[ab2] += signal * tmp[ab.getY()][ab.getX()];
+                signalGridNew[ab2] += signal * tmp[ab];
         }
     }
 
