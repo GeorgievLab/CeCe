@@ -19,7 +19,6 @@ writer.writerow(["iteration", "totalTime", "id", "gfp", "gfp/volume"])
 def call(object, simulation, dt):
     writer.writerow([simulation.iteration, simulation.totalTime, object.id, object.moleculeCount("GFP"), object.moleculeCount("GFP") / object.volume])
     </program>
-    <module name="cell-python" />
     <object class="cell.Yeast" programs="make-gfp store-gfp" />
     <object class="cell.Yeast" programs="make-gfp store-gfp" />
     <object class="cell.Yeast" programs="make-gfp store-gfp" />
