@@ -318,6 +318,10 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
                 std::forward_as_tuple(name),
                 std::forward_as_tuple(name)
             );
+
+            // Plugin loaded
+            invoke(&SimulationListener::onPluginLoad, *this, name);
+
             api = std::get<1>(*std::get<0>(ptr)).getApi();
             api->initSimulation(*this);
         }

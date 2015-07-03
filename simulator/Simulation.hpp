@@ -25,6 +25,7 @@
 #include "core/ViewPtr.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/TimeMeasurement.hpp"
+#include "core/ListenerContainer.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Plugin.hpp"
@@ -60,7 +61,8 @@ using IterationNumber = unsigned long long;
 /**
  * @brief Simulation class.
  */
-class DLL_EXPORT Simulation // TODO: add generic event handler
+class DLL_EXPORT Simulation
+    : public ListenerContainer<SimulationListener>
 {
 
 

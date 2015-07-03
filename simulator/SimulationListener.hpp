@@ -50,9 +50,10 @@ public:
     /**
      * @brief New plugin is loaded.
      *
-     * @param name Plugin name.
+     * @param simulation Current simulation.
+     * @param name       Plugin name.
      */
-    virtual void onPluginLoad(const String& name)
+    virtual void onPluginLoad(Simulation& simulation, const String& name)
     {
         // Nothing to do
     }
