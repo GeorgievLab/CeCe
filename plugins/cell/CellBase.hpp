@@ -35,15 +35,14 @@ class CellBase : public simulator::Object
 public:
 
 
-    /**
-     * @brief Type for string number of molecules.
-     */
+    /// Type for string number of molecules.
     using MoleculeCount = unsigned int;
 
-    /**
-     * @brief Signed version of molecule count.
-     */
+    /// Signed version of molecule count.
     using MoleculeCountDifference = typename std::make_signed<MoleculeCount>::type;
+
+    /// Cell growth rate type.
+    using GrowthRate = typename units::Delta<units::Volume, units::Time>::type;
 
 
 // Public Ctors & Dtors
@@ -52,16 +51,15 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param simulation
+     * @param type
      */
-#if _MSC_VER
-	explicit CellBase(simulator::Simulation& simulation, simulator::Object::Type type = simulator::Object::Type::Static)
-		: simulator::Object(simulation, type)
-	{
-		// Nothing to do
-	}
-#else
-    using simulator::Object::Object;
-#endif
+    explicit CellBase(simulator::Simulation& simulation, simulator::Object::Type type = simulator::Object::Type::Dynamic)
+        : simulator::Object(simulation, type)
+    {
+        // Nothing to do
+    }
 
 
 // Public Accessors
@@ -76,6 +74,17 @@ public:
     units::Volume getVolume() const NOEXCEPT
     {
         return m_volume;
+    }
+
+
+    /**
+     * @brief Returns cell growth rate.
+     *
+     * @return
+     */
+    GrowthRate getGrowthRate() const NOEXCEPT
+    {
+        return m_growthRate;
     }
 
 
@@ -105,6 +114,17 @@ public:
     void setVolume(units::Volume volume) NOEXCEPT
     {
         m_volume = volume;
+    }
+
+
+    /**
+     * @brief Set cell growth rate.
+     *
+     * @param rate
+     */
+    void setGrowthRate(GrowthRate rate) NOEXCEPT
+    {
+        m_growthRate = rate;
     }
 
 
@@ -197,6 +217,9 @@ private:
 
     /// Cell volume.
     units::Volume m_volume = units::um3(100);
+
+    /// Cell growth rate.
+    GrowthRate m_growthRate = GrowthRate(1e-3);
 
     /// Map of molecules.
     Map<String, MoleculeCount> m_molecules;
