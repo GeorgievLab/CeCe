@@ -903,6 +903,20 @@ typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., N
 /* ************************************************************************ */
 
 /**
+ * @brief Delta type - used for change nominator per denominator.
+ *
+ * @tparam Nom
+ * @tparam Denom
+ */
+template<typename Nom, typename Denom>
+struct Delta
+{
+    using type = decltype(Nom{} / Denom{});
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing distance (meters).
  */
 using Length = Unit<List<BaseLength>, List<>>;
