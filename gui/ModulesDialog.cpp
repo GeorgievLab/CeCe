@@ -1,16 +1,16 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
 #include "ModulesDialog.h"
 
 // Simulator
-#include "simulator/Library.hpp"
+#include "simulator/Plugin.hpp"
 
 /* ************************************************************************ */
 
