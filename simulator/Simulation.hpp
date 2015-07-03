@@ -686,16 +686,28 @@ private:
 struct DLL_EXPORT TimeMeasurementIterationOutput
 {
     /// Simulation.
-    ViewPtr<Simulation> m_simulation;
+    ViewPtr<const Simulation> m_simulation;
 
 
     /**
      * @brief Constructor.
      *
-     * @param sim
+     * @param sim Simulation.
      */
-    explicit TimeMeasurementIterationOutput(ViewPtr<Simulation> sim)
+    explicit TimeMeasurementIterationOutput(ViewPtr<const Simulation> sim)
         : m_simulation(sim)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param sim Simulation
+     */
+    explicit TimeMeasurementIterationOutput(const Simulation& sim)
+        : m_simulation(&sim)
     {
         // Nothing to do
     }
