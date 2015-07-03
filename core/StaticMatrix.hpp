@@ -121,6 +121,32 @@ public:
 
 
     /**
+     * @brief Access operator.
+     *
+     * @param coord Coordinates.
+     *
+     * @return
+     */
+    T& operator[](Vector<decltype(Height)> coord) NOEXCEPT
+    {
+        return m_data[coord.getY()][coord.getX()];
+    }
+
+
+    /**
+     * @brief Access operator.
+     *
+     * @param coord Coordinates.
+     *
+     * @return
+     */
+    const T& operator[](Vector<decltype(Height)> coord) const NOEXCEPT
+    {
+        return m_data[coord.getY()][coord.getX()];
+    }
+
+
+    /**
      * @brief Addition operator.
      *
      * @param rhs Right operand.
