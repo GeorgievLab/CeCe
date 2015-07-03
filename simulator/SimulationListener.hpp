@@ -25,9 +25,9 @@ class Simulation;
 /* ************************************************************************ */
 
 /**
- * @brief Event handler class for events in simulation.
+ * @brief Event listener class for events in simulation.
  */
-class DLL_EXPORT SimulationEventHandler
+class DLL_EXPORT SimulationListener
 {
 
 // Public Ctors & Dtors
@@ -37,7 +37,7 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~SimulationEventHandler()
+    virtual ~SimulationListener()
     {
         // Nothing to do
     }

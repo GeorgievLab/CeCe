@@ -29,7 +29,7 @@
 #include "simulator/Object.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/Program.hpp"
-#include "simulator/SimulationEventHandler.hpp"
+#include "simulator/SimulationListener.hpp"
 
 #if ENABLE_RENDER
 #include "render/Context.hpp"
