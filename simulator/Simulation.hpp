@@ -70,6 +70,9 @@ class DLL_EXPORT Simulation
 public:
 
 
+    /// Type of simulation parameter value.
+    using ParameterValueType = float;
+
     /// Loaded library container.
     using PluginContainer = Map<String, Plugin>;
 
@@ -81,6 +84,9 @@ public:
 
     /// Container type for programs.
     using ProgramContainer = Map<String, Program>;
+
+    /// Parameter container.
+    using ParameterContainer = Map<String, ParameterValueType>;
 
 
 // Public Ctors
@@ -267,6 +273,31 @@ public:
     }
 
 
+    /**
+     * @brief Returns simulation parameters.
+     *
+     * @return
+     */
+    const ParameterContainer& getParameters() const NOEXCEPT
+    {
+        return m_parameters;
+    }
+
+
+    /**
+     * @brief Returns parameter by name.
+     *
+     * @param name Parameter name.
+     *
+     * @return
+     */
+    ParameterValueType getParameter(const String& name) const NOEXCEPT
+    {
+        auto it = m_parameters.find(name);
+        return it != m_parameters.end() ? it->second : 0;
+    }
+
+
 #if ENABLE_PHYSICS
     /**
      * @brief Returns physics world.
@@ -373,6 +404,29 @@ public:
     void setTimeStep(units::Time dt) NOEXCEPT
     {
         m_timeStep = dt;
+    }
+
+
+    /**
+     * @brief Sets simulation parameters.
+     *
+     * @param parameters
+     */
+    void setParameters(ParameterContainer parameters) NOEXCEPT
+    {
+        m_parameters = std::move(parameters);
+    }
+
+
+    /**
+     * @brief Sets simulation parameter by name.
+     *
+     * @param name  Parameter name.
+     * @param value Parameter value.
+     */
+    void setParameter(const String& name, ParameterValueType value) NOEXCEPT
+    {
+        m_parameters[name] = value;
     }
 
 
@@ -598,6 +652,9 @@ private:
 
     /// World size.
     SizeVector m_worldSize{ units::um(400), units::um(400) };
+
+    /// Parameters.
+    ParameterContainer m_parameters;
 
     /// Cache for loaded libraries.
     PluginContainer m_plugins;
