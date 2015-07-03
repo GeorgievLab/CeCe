@@ -15,6 +15,7 @@
 // Simulator
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
+#include "simulator/SimulationListener.hpp"
 
 // Module
 #include "Module.hpp"
@@ -48,7 +49,7 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-class PythonApi : public PluginApi
+class PythonApi : public PluginApi, public SimulationListener
 {
 
     /**
@@ -63,6 +64,9 @@ class PythonApi : public PluginApi
 
         // Initialize Python interpreter
         Py_Initialize();
+
+        // Register listener
+        simulation.addListener(this);
     }
 
 
@@ -156,6 +160,33 @@ class PythonApi : public PluginApi
         }
 
         return {};
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief New plugin is loaded.
+     *
+     * @param simulation Current simulation.
+     * @param name       Plugin name.
+     */
+    void onPluginLoad(Simulation& simulation, const String& name) override
+    {
+        // Plugin name contains python suffix - do not load
+        if (name.find("-python") != String::npos)
+            return;
+
+        const String pluginName = name + "-python";
+
+        Log::debug("[python] Trying to load plugin: ", pluginName);
+
+        // TODO: check if plugin exists
+
+        // Test if plugin with suffix -python exists.
+        simulation.loadPlugin(pluginName);
     }
 
 };
