@@ -288,13 +288,14 @@ public:
      * @brief Returns parameter by name.
      *
      * @param name Parameter name.
+     * @param def  Default value if parameter is not set.
      *
-     * @return
+     * @return Parameter value or default value.
      */
-    ParameterValueType getParameter(const String& name) const NOEXCEPT
+    ParameterValueType getParameter(const String& name, ParameterValueType def = {}) const NOEXCEPT
     {
         auto it = m_parameters.find(name);
-        return it != m_parameters.end() ? it->second : 0;
+        return it != m_parameters.end() ? it->second : def;
     }
 
 
