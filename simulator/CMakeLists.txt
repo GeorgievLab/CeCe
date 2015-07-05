@@ -12,6 +12,17 @@ set(PROJECT_NAME simulator)
 # Create project
 project(${PROJECT_NAME} CXX)
 
+# Include Python API
+if (UNIX AND NOT APPLE)
+    # Link boost dynamically on Linux
+    set(Boost_USE_STATIC_LIBS Off)
+endif ()
+
+find_package(Boost REQUIRED filesystem system)
+
+# Include directories
+include_directories(${Boost_INCLUDE_DIRS})
+
 # Sources
 set(SRCS
     Object.hpp
@@ -80,6 +91,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
     ${PLUGINS_LIBS}
     ${RENDER_LIBS}
+    ${Boost_LIBRARIES}
 )
 
 if (ENABLE_BUILTIN_PHYSICS)

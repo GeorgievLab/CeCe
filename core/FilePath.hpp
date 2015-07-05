@@ -1,17 +1,17 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <string>
+// Boost
+#include <boost/filesystem/path.hpp>
 
 // Simulator
 #include "core/compatibility.hpp"
@@ -27,7 +27,7 @@ inline namespace core {
 /**
  * @brief File path type.
  */
-using FilePath = std::string;
+using FilePath = boost::filesystem::path;
 
 /* ************************************************************************ */
 

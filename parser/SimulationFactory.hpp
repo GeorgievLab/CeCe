@@ -70,7 +70,7 @@ protected:
      * @return
      */
     virtual UniquePtr<simulator::Simulation> fromStream(InStream& source,
-        const String& filename) const = 0;
+        const FilePath& filename) const = 0;
 
 };
 

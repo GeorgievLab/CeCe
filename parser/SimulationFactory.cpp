@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -24,7 +24,7 @@ namespace parser {
 
 UniquePtr<simulator::Simulation> SimulationFactory::fromFile(const FilePath& filename) const
 {
-    std::ifstream file(filename, std::ios::in);
+    std::ifstream file(filename.string(), std::ios::in);
     return fromStream(file, filename);
 }
 

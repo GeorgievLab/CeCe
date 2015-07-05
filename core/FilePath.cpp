@@ -1,16 +1,16 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
 #include "core/FilePath.hpp"
 
-// C++
-#include <fstream>
+// Boost
+#include <boost/filesystem/operations.hpp>
 
 /* ************************************************************************ */
 
@@ -22,8 +22,7 @@ inline namespace core {
 
 bool fileExists(const FilePath& path) NOEXCEPT
 {
-    std::ifstream f(path.c_str());
-    return f.good();
+    return boost::filesystem::exists(path);
 }
 
 /* ************************************************************************ */

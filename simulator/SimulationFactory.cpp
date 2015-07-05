@@ -33,7 +33,7 @@ UniquePtr<Simulation> SimulationFactory::fromFile(const FilePath& filename) cons
     String source;
 
     {
-        std::ifstream file(filename, std::ios::in);
+        std::ifstream file(filename.string(), std::ios::in);
 
         String line;
         while (std::getline(file, line))

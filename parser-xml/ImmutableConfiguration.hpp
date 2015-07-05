@@ -59,7 +59,7 @@ public:
      *
      * @return
      */
-    const String& getSourcePath() const NOEXCEPT override
+    const FilePath& getSourcePath() const NOEXCEPT override
     {
         return m_sourcePath;
     }
