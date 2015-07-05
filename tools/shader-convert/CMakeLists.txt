@@ -1,10 +1,13 @@
 # ######################################################################### #
-
-# Project name
-set(PROJECT_NAME tool-shader-convert)
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
 
 # Create project
-project(${PROJECT_NAME} CXX)
+project(tool-shader-convert CXX)
 
 # Sources
 set(SRCS

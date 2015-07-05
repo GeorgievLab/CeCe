@@ -17,7 +17,7 @@ set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Simulator ${VERSION_MAJOR}.${VERSION_MINOR}")
 set(CPACK_PACKAGE_NAME "Simulator")
-set(CPACK_PACKAGE_CONTACT "fatkaj@ntis.zcu.cz")
+set(CPACK_PACKAGE_CONTACT "Jiří Fatka <fatkaj@ntis.zcu.cz>")
 
 if (WIN32 AND NOT UNIX)
     # There is a bug in NSI that does not handle full unix paths properly. Make

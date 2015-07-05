@@ -10,11 +10,8 @@ cmake_minimum_required(VERSION 2.8.8)
 
 # ######################################################################### #
 
-# Project name
-set(PROJECT_NAME core)
-
 # Create project
-project(${PROJECT_NAME} CXX)
+project(core CXX)
 
 # ######################################################################### #
 

@@ -1,3 +1,0 @@
-
- - Simulace difuse signálních molekul.
- - Simulace HeLa buněk - přichycení kvasicek na stěnu buňky.

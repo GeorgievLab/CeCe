@@ -1,4 +1,6 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
@@ -13,8 +15,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
 
 # ######################################################################### #
 
-# Name of the simulator
-set(SIMULATOR_NAME "cell-sim")
+# Workspace name
+project(cell-sim)
+
+# ######################################################################### #
 
 # Applicatio version
 set(VERSION_MAJOR 0)
@@ -35,11 +39,6 @@ set(DIR_PLUGINS "plugins")
 
 # ######################################################################### #
 
-# Workspace name
-project(${SIMULATOR_NAME})
-
-# ######################################################################### #
-
 # Options
 option(ENABLE_GUI                   "Enable GUI" On)
 option(ENABLE_CLI                   "Enable CLI" Off)
@@ -48,7 +47,7 @@ option(ENABLE_SSE                   "Enable SSE instructions" On)
 option(ENABLE_BUILTIN_PHYSICS       "Enable builtin physics engine (Box2D)" On)
 option(ENABLE_MEASUREMENT           "Enable or disable time measurement" Off)
 option(ENABLE_BUILTIN_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
-option(ENABLE_PLUGINS_DIRECT_LINK   "Enable or disable plugins direct linking into executables (useful for testing)" Off)
+
 option(BUILD_TESTS                  "Build simulator part tests (requires GTest)" Off)
 option(BUILD_TOOLS                  "Build support tools" Off)
 
@@ -89,7 +88,7 @@ include(Functions)
 # Install directories
 set(INSTALL_DIR_RUNTIME "bin")
 set(INSTALL_DIR_LIBRARY "lib")
-set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${SIMULATOR_NAME}")
+set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${CMAKE_PROJECT_NAME}")
 set(INSTALL_DIR_FRAMEWORK "")
 set(INSTALL_DIR_BUNDLE ".")
 
@@ -103,9 +102,11 @@ set(Boost_USE_STATIC_LIBS On)
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+# ######################################################################### #
+
 # GUI enabled
 if (ENABLE_GUI)
-    message("-- Build GUI application")
+    message(STATUS "Build GUI application")
     set(ENABLE_RENDER 1)
 else ()
     # If GUI is disabled build CLI
@@ -114,44 +115,44 @@ endif ()
 
 # CLI enabled
 if (ENABLE_CLI)
-    message("-- Build CLI application")
+    message(STATUS "Build CLI application")
 endif ()
 
 # Rendering enabled
 if (ENABLE_RENDER)
-    message("-- OpenGL rendering support")
+    message(STATUS "OpenGL rendering support")
     add_definitions(-DENABLE_RENDER=1)
 endif ()
 
 if (ENABLE_SSE)
     # TODO: detect SSE support
-    message("-- Use SSE instructions")
+    message(STATUS "Use SSE instructions")
     add_definitions(-DENABLE_SSE=1)
 endif ()
 
 # Build-in physics enabled
 if (ENABLE_BUILTIN_PHYSICS)
-    message("-- Using build-in physics (Box2D)")
+    message(STATUS "Using build-in physics (Box2D)")
     find_package(BOX2D REQUIRED)
     include_directories(${BOX2D_INCLUDE_DIR})
 
     add_definitions(-DENABLE_PHYSICS=1)
 
     if (ENABLE_BUILTIN_PHYSICS_DEBUG)
-        message("-- Physics engine debugging enabled")
+        message(STATUS "Physics engine debugging enabled")
         add_definitions(-DENABLE_PHYSICS_DEBUG=1)
     endif ()
 endif ()
 
 # Enable time measurement
 if (ENABLE_MEASUREMENT)
-    message("-- Time measurement enabled")
+    message(STATUS "Time measurement enabled")
     add_definitions(-DENABLE_MEASUREMENT=1)
 endif ()
 
 # Build unit tests
 if (BUILD_TESTS)
-    message("-- Build unit tests")
+    message(STATUS "Build unit tests")
     enable_testing()
     find_package(GTest REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})

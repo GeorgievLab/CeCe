@@ -42,29 +42,25 @@ function(build_plugin NAME)
         add_definitions(-DPLUGIN_BUILTIN=1)
 
         # Static library
-        add_library(${FULLNAME} ${ARG_SOURCES})
+        add_library(${PROJECT_NAME} ${ARG_SOURCES})
 
         # Setup dependencies
-        add_dependencies(${FULLNAME}
+        add_dependencies(${PROJECT_NAME}
             core
             ${DEPENDENCIES}
             ${PLUGINS_DEPENDENCIES}
         )
 
         # Link libraries
-        target_link_libraries(${FULLNAME}
+        target_link_libraries(${PROJECT_NAME}
             ${ARG_LIBRARIES}
         )
     else ()
-        # Shared library/module
-        if (ENABLE_PLUGINS_DIRECT_LINK)
-            add_library(${FULLNAME} SHARED ${ARG_SOURCES})
-        else ()
-            add_library(${FULLNAME} MODULE ${ARG_SOURCES})
-        endif ()
+        # Shared module
+        add_library(${PROJECT_NAME} MODULE ${ARG_SOURCES})
 
         # Setup dependencies
-        add_dependencies(${FULLNAME}
+        add_dependencies(${PROJECT_NAME}
             core
             simulator
             ${DEPENDENCIES}
@@ -72,13 +68,13 @@ function(build_plugin NAME)
         )
 
         # Link libraries
-        target_link_libraries(${FULLNAME}
+        target_link_libraries(${PROJECT_NAME}
             simulator
             ${ARG_LIBRARIES}
         )
 
         # Install shared library
-        install(TARGETS ${FULLNAME}
+        install(TARGETS ${PROJECT_NAME}
             DESTINATION ${INSTALL_DIR_PLUGINS}
         )
     endif ()

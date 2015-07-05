@@ -6,11 +6,8 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
-# Project name
-set(PROJECT_NAME simulator)
-
 # Create project
-project(${PROJECT_NAME} CXX)
+project(simulator CXX)
 
 # Include Python API
 if (UNIX AND NOT APPLE)
@@ -109,7 +106,7 @@ endif ()
 
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "cell-sim-core"
+    OUTPUT_NAME "${CMAKE_PROJECT_NAME}"
 )
 
 # Install

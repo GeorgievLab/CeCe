@@ -1,13 +1,13 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
 # Project name
-set(PROJECT_NAME gui)
-
-project(${PROJECT_NAME} CXX)
+project(gui CXX)
 
 # wxWidgets
 if (WIN32)
@@ -46,7 +46,7 @@ add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
 
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "cell-sim-gui"
+    OUTPUT_NAME "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}"
 )
 
 set(PLUGINS_TO_LINK "")

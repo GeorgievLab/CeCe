@@ -123,10 +123,10 @@ int main(int argc, char** argv)
         // Create world
         g_sim.setSimulation(simFactory.fromFile(argv[1]));
 
+#if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
         // Get simulation
         auto simulation = g_sim.getSimulation();
 
-#if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
         DebugDraw debugDraw;
         debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
         simulation->getWorld().SetDebugDraw(&debugDraw);

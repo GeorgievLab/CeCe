@@ -1,9 +1,9 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
-# ######################################################################### #
-# Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                   #
 # ######################################################################### #
 
 cmake_minimum_required(VERSION 2.8.8)
@@ -16,11 +16,8 @@ endif ()
 
 # ######################################################################### #
 
-# Project name
-set(PROJECT_NAME render)
-
 # Create project
-project(${PROJECT_NAME} CXX)
+project(render CXX)
 
 # ######################################################################### #
 

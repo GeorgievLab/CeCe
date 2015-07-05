@@ -1,9 +1,13 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
 
-# Project name
-set(PROJECT_NAME cli)
-
-project(${PROJECT_NAME} CXX)
+# Project
+project(cli CXX)
 
 if (ENABLE_RENDER)
     find_package(GLUT REQUIRED)
@@ -35,7 +39,7 @@ add_executable(${PROJECT_NAME} ${SRCS})
 
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "cell-sim-cli"
+    OUTPUT_NAME "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}"
 )
 
 set(PLUGINS_TO_LINK "")
