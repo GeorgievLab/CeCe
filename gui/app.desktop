@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Simulator
+Exec=${CMAKE_PROJECT_NAME}-${PROJECT_NAME} %f
+Icon=${INSTALL_PREFIX}/share/${CMAKE_PROJECT_NAME}/icons/icon_128x128.png
+Terminal=false
+Type=Application
+Categories=Science;
+StartupNotify=true

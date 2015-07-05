@@ -225,6 +225,14 @@ endif()
 
 # ######################################################################### #
 
+# Install examples
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples"
+    DESTINATION "${INSTALL_DIR_DATA}"
+    FILES_MATCHING PATTERN "*.xml"
+)
+
+# ######################################################################### #
+
 # Setup packages creation
 include(Package)
 

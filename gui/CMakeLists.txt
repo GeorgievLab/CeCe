@@ -62,17 +62,32 @@ if (UNIX)
     )
 endif ()
 
+if (UNIX AND NOT APPLE)
+    # Configure desktop entry
+    configure_file(app.desktop ${PROJECT_NAME}.desktop)
+
+    # Install desktop entry
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.desktop
+        DESTINATION /usr/share/applications
+    )
+endif ()
+
 # Install
 install(TARGETS ${PROJECT_NAME}
     BUNDLE  DESTINATION ${INSTALL_DIR_BUNDLE}
     RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
 )
 
+# Install icons
+install(FILES ${CMAKE_SOURCE_DIR}/icons/icon_128x128.png
+    DESTINATION ${INSTALL_DIR_DATA}/icons
+)
+
 # Fixup bundle on MacOS X
 if (APPLE)
     install(CODE "
         include(BundleUtilities)
-        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/cell-sim-gui.app\" \"\" \"/usr/local/lib\")
+        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app\" \"\" \"/usr/local/lib\")
     " COMPONENT Runtime)
 endif ()
 
