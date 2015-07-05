@@ -389,7 +389,7 @@ UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
 
         // Register file path as module library
 #if __linux__
-        simulator::Plugin::addLibraryPath(dirname(buffer));
+        simulator::Plugin::addDirectory(dirname(buffer));
 #endif
     }
 

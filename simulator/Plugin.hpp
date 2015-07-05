@@ -233,39 +233,73 @@ public:
      *
      * @return
      */
-    static const DynamicArray<String>& getLibraryPaths() NOEXCEPT
+    static const DynamicArray<String>& getDirectories() NOEXCEPT
     {
-        return s_libraryPaths;
+        return s_directories;
     }
 
 
     /**
-     * @brief Check if given library name is builtin.
+     * @brief Check if builtin plugin with given name exists.
      *
-     * @param name Library name.
+     * @param name Plugin name.
      *
-     * @return
+     * @return If builtin plugin exists.
      */
-    static bool isBuiltin(const String& name) NOEXCEPT
+    static bool isAvailableBuiltin(const String& name) NOEXCEPT
     {
-        return s_builtinLibraries.find(name) != s_builtinLibraries.end();
+        return s_builtinPlugins.find(name) != s_builtinPlugins.end();
     }
 
 
     /**
-     * @brief Return a list of builtin extension libraries.
+     * @brief Check if extern plugin with given name exists.
      *
-     * @return An array of builtin library names.
+     * @param name Plugin name.
+     *
+     * @return If extern plugin exists.
      */
-    static DynamicArray<String> getBuiltInNames() NOEXCEPT;
+    static bool isAvailableExtern(const String& name) NOEXCEPT
+    {
+        return s_externPlugins.find(name) != s_externPlugins.end();
+    }
 
 
     /**
-     * @brief Return a list of extern extension libraries.
+     * @brief Check if plugin with given name exists.
      *
-     * @return An array of extern library names.
+     * @param name Plugin name.
+     *
+     * @return If plugin exists.
      */
-    static DynamicArray<String> getExternNames() NOEXCEPT;
+    static bool isAvailable(const String& name) NOEXCEPT
+    {
+        return isAvailableBuiltin(name) || isAvailableExtern(name);
+    }
+
+
+    /**
+     * @brief Return a list of builtin plugins.
+     *
+     * @return An array of builtin plugins names.
+     */
+    static DynamicArray<String> getNamesBuiltin() NOEXCEPT;
+
+
+    /**
+     * @brief Return a list of extern plugins.
+     *
+     * @return An array of extern plugin names.
+     */
+    static DynamicArray<String> getNamesExtern() NOEXCEPT;
+
+
+    /**
+     * @brief Return a list of plugins.
+     *
+     * @return An array of plugin names.
+     */
+    static DynamicArray<String> getNames() NOEXCEPT;
 
 
 // Public Mutators
@@ -273,11 +307,43 @@ public:
 
 
     /**
-     * @brief Add path where are libraries stored.
+     * @brief Add directory where the plugins are stored.
      *
      * @param path
      */
-    static void addLibraryPath(String path);
+    static void addDirectory(String path);
+
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Scan directory for plugins.
+     *
+     * @param directory Plugins directory.
+     *
+     * @return
+     */
+    static Map<String, FilePath> scanDirectory(const FilePath& directory) NOEXCEPT;
+
+
+    /**
+     * @brief Scan plugins directories for plugins.
+     *
+     * @return
+     */
+    static Map<String, FilePath> scanDirectories() NOEXCEPT;
+
+
+    /**
+     * @brief Rescan directories for extern plugins.
+     */
+    static void rescanDirectories() NOEXCEPT
+    {
+        s_externPlugins = scanDirectories();
+    }
 
 
 // Private Data Members
@@ -293,11 +359,14 @@ private:
     /// Plugin API.
     UniquePtr<PluginApi> m_api;
 
-    /// Library paths.
-    static DynamicArray<String> s_libraryPaths;
+    /// Plugins directory paths.
+    static DynamicArray<String> s_directories;
 
-    /// Builin plugins create API functions.
-    static const Map<String, CreateFn> s_builtinLibraries;
+    /// Builtin plugins create API functions.
+    static const Map<String, CreateFn> s_builtinPlugins;
+
+    /// Extern plugins paths.
+    static Map<String, FilePath> s_externPlugins;
 
 };
 

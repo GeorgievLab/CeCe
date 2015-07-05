@@ -86,11 +86,33 @@ include(Functions)
 # ######################################################################### #
 
 # Install directories
+set(INSTALL_PREFIX "/usr") # CPack with DEB ignores CMAKE_INSTALL_PREFIX
 set(INSTALL_DIR_RUNTIME "bin")
 set(INSTALL_DIR_LIBRARY "lib")
 set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${CMAKE_PROJECT_NAME}")
+set(INSTALL_DIR_PLUGINS_FULL "${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}")
 set(INSTALL_DIR_FRAMEWORK "")
 set(INSTALL_DIR_BUNDLE ".")
+set(INSTALL_DIR_DATA ".")
+
+# Linux installation directories
+if (UNIX AND NOT APPLE)
+    include(GNUInstallDirs)
+    set(INSTALL_DIR_RUNTIME ${CMAKE_INSTALL_BINDIR})
+    set(INSTALL_DIR_LIBRARY ${CMAKE_INSTALL_LIBDIR})
+    set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${CMAKE_PROJECT_NAME}/${DIR_PLUGINS}")
+    set(INSTALL_DIR_DATA "${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_PROJECT_NAME}")
+endif ()
+
+message(STATUS "Runtime directory: ${INSTALL_DIR_RUNTIME}")
+message(STATUS "Library directory: ${INSTALL_DIR_LIBRARY}")
+message(STATUS "Framework directory: ${INSTALL_DIR_FRAMEWORK}")
+message(STATUS "Bundle directory: ${INSTALL_DIR_BUNDLE}")
+message(STATUS "Data directory: ${INSTALL_DIR_DATA}")
+
+# Default plugins directory
+set(PLUGINS_DIRECTORY "${INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}")
+
 
 # ######################################################################### #
 
