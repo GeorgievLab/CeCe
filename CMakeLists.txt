@@ -51,6 +51,10 @@ option(ENABLE_BUILTIN_PHYSICS_DEBUG "Enable or disable physics engine debugging"
 option(BUILD_TESTS                  "Build simulator part tests (requires GTest)" Off)
 option(BUILD_TOOLS                  "Build support tools" Off)
 
+option(DEV_PLUGINS                  "Enable special mode for developers that helps develop plugins (doesn't require installation)" Off)
+
+# ######################################################################### #
+
 # List of plugins values
 set(PLUGINS_AVAILABLE "")
 set(PLUGINS_BUILD "")
@@ -113,6 +117,10 @@ message(STATUS "Data directory: ${INSTALL_DIR_DATA}")
 # Default plugins directory
 set(PLUGINS_DIRECTORY "${INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}")
 
+if (DEV_PLUGINS)
+    # Directory is in build directory
+    set(PLUGINS_DIRECTORY "${PROJECT_BINARY_DIR}/${DIR_PLUGINS}")
+endif ()
 
 # ######################################################################### #
 

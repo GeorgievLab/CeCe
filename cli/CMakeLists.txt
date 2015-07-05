@@ -42,17 +42,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}"
 )
 
-set(PLUGINS_TO_LINK "")
-
-if (ENABLE_PLUGINS_DIRECT_LINK)
-    plugin_project_names("${PLUGINS_BUILD}" PLUGINS_TO_LINK)
-endif ()
-
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     simulator
     parser-xml
-    ${PLUGINS_TO_LINK}
     ${RENDER_LIBS}
     -pthread
 )
