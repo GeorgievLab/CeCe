@@ -21,7 +21,7 @@ namespace units {
 
 /* ************************************************************************ */
 
-#if !_MSC_VER
+#if !_MSC_VER && 0
 template class Unit<List<BaseLength>, List<>>;
 template class Unit<List<BaseMass>, List<>>;
 template class Unit<List<BaseTime>, List<>>;

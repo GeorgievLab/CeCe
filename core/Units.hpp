@@ -1020,7 +1020,7 @@ DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseMass>, Lis
 DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
 DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
 DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
-#else
+#elif 0
 extern template class Unit<List<BaseLength>, List<>>;
 extern template class Unit<List<BaseMass>, List<>>;
 extern template class Unit<List<BaseTime>, List<>>;
