@@ -1,6 +1,8 @@
 #pragma once
 
 #include "core/Range.hpp"
+#include "core/Map.hpp"
+#include "core/String.hpp"
 
 float parseExpression(IteratorRange<const char*>& range, const Map<String, float>& parameters);
 

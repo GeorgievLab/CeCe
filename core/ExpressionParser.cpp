@@ -20,14 +20,14 @@ private:
         float value = multiply();
         while (true)
         {
-            if (*current == '+')
+            if (*iterator == '+')
             {
-                ++current;
+                ++iterator;
                 value = value + multiply();
             }
-            else if(*current == '-')
+            else if(*iterator == '-')
             {
-                ++current;
+                ++iterator;
                 value = value - multiply();
             }
             else
@@ -41,14 +41,14 @@ private:
         float value = power();
         while (true)
         {
-            if (*current == '*')
+            if (*iterator == '*')
             {
-                ++current;
+                ++iterator;
                 value = value * power();
             }
-            else if(*current == '/')
+            else if(*iterator == '/')
             {
-                ++current;
+                ++iterator;
                 value = value * power();
             }
             else
@@ -62,9 +62,9 @@ private:
         float value = parenthesis();
         while (true)
         {
-            if (*current == '^')
+            if (*iterator == '^')
             {
-                ++current;
+                ++iterator;
                 float exp = parenthesis();
                 if (value == 0 && exp == 0)
                     return NAN;
@@ -79,13 +79,13 @@ private:
 
     float parenthesis()
     {
-        if (*current == '(')
+        if (*iterator == '(')
         {
-            ++current;
+            ++iterator;
             float value = add();
-            if (*current == ')')
+            if (*iterator == ')')
             {
-                ++current;
+                ++iterator;
                 return value;
             }
             else
@@ -99,9 +99,9 @@ private:
     {
         const char* end;
         float value = strtof(iterator, &end);
-        if (current != end)
+        if (iterator != end)
         {
-            current = end;
+            iterator = end;
             return value;
         }
         std::string local = "";
@@ -157,7 +157,7 @@ public:
     }
 }
 
-float parseExpression(const String& expression, const Map<String, float>& parameters)
+float parseExpression(const String& expression, const Map<String,float>& parameters)
 {
     return ExpressionParser(parameters, makeRange(expression)).parse();
 }
