@@ -24,11 +24,9 @@ function(build_plugin NAME)
     # Modify list of plugins (add prefixes)
     set(PLUGINS_DEPENDENCIES "")
 
-    if (ARG_PLUGINS_REQUIRED)
-        foreach (PLUGIN ARG_PLUGINS_REQUIRED)
-            list(APPEND PLUGINS_DEPENDENCIES "${PREFIX}${PLUGIN}")
-        endforeach ()
-    endif ()
+    foreach (PLUGIN ARG_PLUGINS_REQUIRED)
+        list(APPEND PLUGINS_DEPENDENCIES "${PREFIX}${PLUGIN}")
+    endforeach ()
 
     # Create project
     project(${FULLNAME} CXX)
@@ -50,7 +48,7 @@ function(build_plugin NAME)
         # Setup dependencies
         add_dependencies(${PROJECT_NAME}
             core
-            ${DEPENDENCIES}
+            ${ARG_DEPENDENCIES}
             ${PLUGINS_DEPENDENCIES}
         )
 
@@ -66,7 +64,7 @@ function(build_plugin NAME)
         add_dependencies(${PROJECT_NAME}
             core
             simulator
-            ${DEPENDENCIES}
+            ${ARG_DEPENDENCIES}
             ${PLUGINS_DEPENDENCIES}
         )
 
