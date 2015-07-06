@@ -1,4 +1,6 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
@@ -24,8 +26,9 @@ function(build_plugin NAME)
     # Modify list of plugins (add prefixes)
     set(PLUGINS_DEPENDENCIES "")
 
-    foreach (PLUGIN ARG_PLUGINS_REQUIRED)
-        list(APPEND PLUGINS_DEPENDENCIES "${PREFIX}${PLUGIN}")
+    foreach (PLUGIN ${ARG_PLUGINS_REQUIRED})
+        plugin_project_name(${PLUGIN} PLUGIN_NAME)
+        list(APPEND PLUGINS_DEPENDENCIES "${PLUGIN_NAME}")
     endforeach ()
 
     # Create project
