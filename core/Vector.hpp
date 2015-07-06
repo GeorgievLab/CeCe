@@ -508,11 +508,14 @@ using Coordinate = Vector<unsigned int>;
 
 /* ************************************************************************ */
 
-// TODO: GCC have problem with =default constructor in linking stage.
-#ifndef __GNUC__
-extern template class DLL_EXPORT Vector<float>;
-extern template class DLL_EXPORT Vector<unsigned int>;
-extern template class DLL_EXPORT Vector<int>;
+#if _MSC_VER
+DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<float>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<unsigned int>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<int>;
+#elif !defined(__GNUC__) // NOTE: GCC have problem with =default constructor in linking stage.
+extern template class Vector<float>;
+extern template class Vector<unsigned int>;
+extern template class Vector<int>;
 #endif
 
 /* ************************************************************************ */

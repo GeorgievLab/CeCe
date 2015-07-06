@@ -1008,17 +1008,31 @@ using Probability = Value;
 
 /* ************************************************************************ */
 
-extern template class DLL_EXPORT Unit<List<BaseLength>, List<>>;
-extern template class DLL_EXPORT Unit<List<BaseMass>, List<>>;
-extern template class DLL_EXPORT Unit<List<BaseTime>, List<>>;
-extern template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
-extern template class DLL_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
-extern template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
-extern template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
-extern template class DLL_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
-extern template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
-extern template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
-extern template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+#if _MSC_VER
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength>, List<>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseTime>, List<>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+#else
+extern template class Unit<List<BaseLength>, List<>>;
+extern template class Unit<List<BaseMass>, List<>>;
+extern template class Unit<List<BaseTime>, List<>>;
+extern template class Unit<List<BaseLength, BaseLength>, List<>>;
+extern template class Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+extern template class Unit<List<BaseLength>, List<BaseTime>>;
+extern template class Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+extern template class Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
+extern template class Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
+extern template class Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+extern template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+#endif
 
 /* ************************************************************************ */
 

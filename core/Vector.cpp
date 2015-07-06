@@ -17,10 +17,10 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-#ifndef __GNUC__
-template class DLL_EXPORT Vector<float>;
-template class DLL_EXPORT Vector<unsigned int>;
-template class DLL_EXPORT Vector<int>;
+#if !_MSC_VER && !defined(__GNUC__)
+template class Vector<float>;
+template class Vector<unsigned int>;
+template class Vector<int>;
 #endif
 
 /* ************************************************************************ */

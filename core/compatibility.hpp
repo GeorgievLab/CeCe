@@ -18,16 +18,13 @@
 
 /* ************************************************************************ */
 
-// Disable DLL export warning
-#pragma warning(disable : 4910)
-
-/* ************************************************************************ */
-
 #if defined (_WIN32) && defined(_MSC_VER)
     #if defined(SIMULATOR_DLL_EXPORT)
         #define DLL_EXPORT __declspec(dllexport)
+        #define DLL_EXPORT_EXTERN
     #else
         #define DLL_EXPORT __declspec(dllimport)
+        #define DLL_EXPORT_EXTERN extern
     #endif
 #else
 #define DLL_EXPORT

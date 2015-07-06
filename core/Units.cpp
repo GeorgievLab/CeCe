@@ -21,17 +21,19 @@ namespace units {
 
 /* ************************************************************************ */
 
-template class DLL_EXPORT Unit<List<BaseLength>, List<>>;
-template class DLL_EXPORT Unit<List<BaseMass>, List<>>;
-template class DLL_EXPORT Unit<List<BaseTime>, List<>>;
-template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
-template class DLL_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
-template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
-template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
-template class DLL_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
-template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
-template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
-template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+#if !_MSC_VER
+template class Unit<List<BaseLength>, List<>>;
+template class Unit<List<BaseMass>, List<>>;
+template class Unit<List<BaseTime>, List<>>;
+template class Unit<List<BaseLength, BaseLength>, List<>>;
+template class Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+template class Unit<List<BaseLength>, List<BaseTime>>;
+template class Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+template class Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
+template class Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
+template class Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+#endif
 
 /* ************************************************************************ */
 

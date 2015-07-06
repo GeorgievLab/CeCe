@@ -17,11 +17,11 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-#ifndef __GNUC__
-template class DLL_EXPORT Vector<units::Length>;
-template class DLL_EXPORT Vector<units::Velocity>;
-template class DLL_EXPORT Vector<units::Acceleration>;
-template class DLL_EXPORT Vector<units::Force>;
+#if !_MSC_VER && !defined(__GNUC__)
+template class Vector<units::Length>;
+template class Vector<units::Velocity>;
+template class Vector<units::Acceleration>;
+template class Vector<units::Force>;
 #endif
 
 /* ************************************************************************ */

@@ -64,11 +64,16 @@ using SizeVector = Vector<units::Length>;
 
 /* ************************************************************************ */
 
-#ifndef __GNUC__
-extern template class DLL_EXPORT Vector<units::Length>;
-extern template class DLL_EXPORT Vector<units::Velocity>;
-extern template class DLL_EXPORT Vector<units::Acceleration>;
-extern template class DLL_EXPORT Vector<units::Force>;
+#if _MSC_VER
+DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Length>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Velocity>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Acceleration>;
+DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Force>;
+#elif !defined(__GNUC__) // NOTE: GCC have problem with =default constructor in linking stage.
+extern template class Vector<units::Length>;
+extern template class Vector<units::Velocity>;
+extern template class Vector<units::Acceleration>;
+extern template class Vector<units::Force>;
 #endif
 
 /* ************************************************************************ */
