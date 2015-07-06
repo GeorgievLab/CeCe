@@ -18,19 +18,19 @@ inline namespace core {
 /* ************************************************************************ */
 
 #ifndef __GNUC__
-template class Vector<float>;
+template class DLL_EXPORT Vector<float>;
 #endif
 
 /* ************************************************************************ */
 
 #ifndef __GNUC__
-template class Vector<unsigned int>;
+template class DLL_EXPORT Vector<unsigned int>;
 #endif
 
 /* ************************************************************************ */
 
 #ifndef __GNUC__
-template class Vector<int>;
+template class DLL_EXPORT Vector<int>;
 #endif
 
 /* ************************************************************************ */

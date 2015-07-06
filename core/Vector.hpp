@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -45,7 +45,7 @@ public:
 
 
     /// Zero value initializer type.
-    struct Zero_t {};
+    struct DLL_EXPORT Zero_t { constexpr Zero_t() {} };
 
 
 // Public Constants
@@ -55,7 +55,7 @@ public:
     /**
      * @brief Placeholder for zero vector.
      */
-    static CONSTEXPR_CONST Zero_t Zero{};
+    static constexpr Zero_t Zero{};
 
 
 // Public Ctors
@@ -65,7 +65,11 @@ public:
     /**
      * @brief Default constructor.
      */
-    CONSTEXPR Vector() = default;
+    CONSTEXPR Vector()
+        : m_x(), m_y()
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -102,7 +106,7 @@ public:
      * @brief Zero value constructor.
      */
     CONSTEXPR Vector(Zero_t) NOEXCEPT
-        : Vector(T{})
+        : m_x(), m_y()
     {
         // Nothing to do
     }
@@ -141,6 +145,7 @@ public:
      *
      * @return
      */
+    template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = 0>
     CONSTEXPR Vector operator-() const NOEXCEPT
     {
         return Vector{-getX(), -getY()};
@@ -417,7 +422,7 @@ public:
     T getLength() const NOEXCEPT
     {
         using std::sqrt;
-        return sqrt(getLengthSquared());
+        return static_cast<T>(sqrt(getLengthSquared()));
     }
 
 
@@ -478,8 +483,8 @@ public:
     Vector rotated(units::Angle angle) const NOEXCEPT
     {
         return Vector(
-            getX() * cos(angle) - getY() * sin(angle),
-            getX() * sin(angle) + getY() * cos(angle)
+            static_cast<T>(getX() * cos(angle) - getY() * sin(angle)),
+            static_cast<T>(getX() * sin(angle) + getY() * cos(angle))
         );
     }
 
@@ -514,19 +519,19 @@ using Coordinate = Vector<unsigned int>;
 
 // TODO: GCC have problem with =default constructor in linking stage.
 #ifndef __GNUC__
-extern template class DLL_EXPORT Vector<float>;
+extern template class Vector<float>;
 #endif
 
 /* ************************************************************************ */
 
 #ifndef __GNUC__
-extern template class DLL_EXPORT Vector<unsigned int>;
+extern template class Vector<unsigned int>;
 #endif
 
 /* ************************************************************************ */
 
 #ifndef __GNUC__
-extern template class DLL_EXPORT Vector<int>;
+extern template class Vector<int>;
 #endif
 
 /* ************************************************************************ */
