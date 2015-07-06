@@ -62,7 +62,7 @@ set(BUILTIN_PLUGINS "")
 
 # Foreach build-in plugins
 foreach (PLUGIN ${PLUGINS_BUILTIN})
-    message("-- Builtin plugin: ${PLUGIN}")
+    message(STATUS "Builtin plugin: ${PLUGIN}")
     plugin_project_name(${PLUGIN} PLUGIN_PROJECT)
     set(PLUGINS_LIBS ${PLUGINS_LIBS} ${PLUGIN_PROJECT})
     # Fix module name: replace '-' by '_'
@@ -80,7 +80,7 @@ if (WIN32)
     add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()
 
-message("-- Build simulator library as shared")
+message(STATUS "Build simulator library as shared")
 
 # Create library
 add_library(${PROJECT_NAME} SHARED
