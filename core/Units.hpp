@@ -1061,7 +1061,7 @@ inline CONSTEXPR Length m(Value value) NOEXCEPT
 inline CONSTEXPR Length mm(Value value) NOEXCEPT
 {
     // 1mm = 1/1'000m
-    return m(value * 1e-3);
+    return m(value * 1e-3f);
 }
 
 /* ************************************************************************ */
@@ -1076,7 +1076,7 @@ inline CONSTEXPR Length mm(Value value) NOEXCEPT
 inline CONSTEXPR Length um(Value value) NOEXCEPT
 {
     // 1um = 1/1'000'000m
-    return m(value * 1e-6);
+    return m(value * 1e-6f);
 }
 
 /* ************************************************************************ */
@@ -1105,7 +1105,7 @@ inline CONSTEXPR Mass kg(Value value) NOEXCEPT
 inline CONSTEXPR Mass g(Value value) NOEXCEPT
 {
     // 1g = 1/1'000 kg
-    return kg(value * 1e-3);
+    return kg(value * 1e-3f);
 }
 
 /* ************************************************************************ */
@@ -1120,7 +1120,7 @@ inline CONSTEXPR Mass g(Value value) NOEXCEPT
 inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 {
     // 1mg = 1/1'000 g
-    return g(value * 1e-3);
+    return g(value * 1e-3f);
 }
 
 /* ************************************************************************ */
@@ -1135,7 +1135,7 @@ inline CONSTEXPR Mass mg(Value value) NOEXCEPT
 inline CONSTEXPR Mass ug(Value value) NOEXCEPT
 {
     // 1ug = 1/1'000 mg
-    return mg(value * 1e-3);
+    return mg(value * 1e-3f);
 }
 
 /* ************************************************************************ */
@@ -1150,7 +1150,7 @@ inline CONSTEXPR Mass ug(Value value) NOEXCEPT
 inline CONSTEXPR Mass ng(Value value) NOEXCEPT
 {
     // 1ng = 1/1'000 ug
-    return ug(value * 1e-3);
+    return ug(value * 1e-3f);
 }
 
 /* ************************************************************************ */
@@ -1165,7 +1165,7 @@ inline CONSTEXPR Mass ng(Value value) NOEXCEPT
 inline CONSTEXPR Mass pg(Value value) NOEXCEPT
 {
     // 1pg = 1/1'000 ng
-    return ng(value * 1e-3);
+    return ng(value * 1e-3f);
 }
 
 /* ************************************************************************ */
