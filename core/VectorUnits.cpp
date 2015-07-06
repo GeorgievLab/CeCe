@@ -7,7 +7,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "core/Vector.hpp"
+#include "core/VectorUnits.hpp"
 
 /* ************************************************************************ */
 
@@ -18,9 +18,10 @@ inline namespace core {
 /* ************************************************************************ */
 
 #ifndef __GNUC__
-template class DLL_EXPORT Vector<float>;
-template class DLL_EXPORT Vector<unsigned int>;
-template class DLL_EXPORT Vector<int>;
+template class DLL_EXPORT Vector<units::Length>;
+template class DLL_EXPORT Vector<units::Velocity>;
+template class DLL_EXPORT Vector<units::Acceleration>;
+template class DLL_EXPORT Vector<units::Force>;
 #endif
 
 /* ************************************************************************ */

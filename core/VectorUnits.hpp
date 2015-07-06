@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -61,6 +61,15 @@ using ScaleVector = Vector<float>;
  * @brief Size vector.
  */
 using SizeVector = Vector<units::Length>;
+
+/* ************************************************************************ */
+
+#ifndef __GNUC__
+extern template class DLL_EXPORT Vector<units::Length>;
+extern template class DLL_EXPORT Vector<units::Velocity>;
+extern template class DLL_EXPORT Vector<units::Acceleration>;
+extern template class DLL_EXPORT Vector<units::Force>;
+#endif
 
 /* ************************************************************************ */
 

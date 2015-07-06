@@ -47,9 +47,9 @@ static CONSTEXPR_CONST struct Zero_t {} Zero{};
 /**
  * @brief Base SI units.
  */
-struct BaseLength { static CONSTEXPR_CONST int value = 0; };
-struct BaseTime   { static CONSTEXPR_CONST int value = 1; };
-struct BaseMass   { static CONSTEXPR_CONST int value = 2; };
+struct DLL_EXPORT BaseLength { static CONSTEXPR_CONST int value = 0; };
+struct DLL_EXPORT BaseTime   { static CONSTEXPR_CONST int value = 1; };
+struct DLL_EXPORT BaseMass   { static CONSTEXPR_CONST int value = 2; };
 
 /* ************************************************************************ */
 
@@ -129,7 +129,7 @@ struct Concat<List<Types...>>
  * @tparam Denom List type.
  */
 template<typename Nom, typename Denom>
-struct Unit
+class Unit
 {
 
 // Public Types
@@ -1005,6 +1005,20 @@ using Angle = Value;
  * @brief Class for representing probability.
  */
 using Probability = Value;
+
+/* ************************************************************************ */
+
+extern template class DLL_EXPORT Unit<List<BaseLength>, List<>>;
+extern template class DLL_EXPORT Unit<List<BaseMass>, List<>>;
+extern template class DLL_EXPORT Unit<List<BaseTime>, List<>>;
+extern template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
+extern template class DLL_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+extern template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
+extern template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+extern template class DLL_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
+extern template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
+extern template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+extern template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
 
 /* ************************************************************************ */
 

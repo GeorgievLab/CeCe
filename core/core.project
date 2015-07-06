@@ -32,6 +32,8 @@
     <File Name="TimeMeasurement.cpp"/>
     <File Name="Grid.cpp"/>
     <File Name="FilePath.cpp"/>
+    <File Name="VectorUnits.cpp"/>
+    <File Name="Units.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>

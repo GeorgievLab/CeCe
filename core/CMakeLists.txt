@@ -35,9 +35,11 @@ add_library(${PROJECT_NAME} OBJECT
     StaticArray.hpp
     StaticMatrix.hpp
     Units.hpp
+    Units.cpp
     Vector.hpp
     Vector.cpp
     VectorUnits.hpp
+    VectorUnits.cpp
     Grid.hpp
     Grid.cpp
     AlignedAllocator.hpp

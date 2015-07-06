@@ -145,7 +145,7 @@ public:
      *
      * @return
      */
-    template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = 0>
+    template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = nullptr>
     CONSTEXPR Vector operator-() const NOEXCEPT
     {
         return Vector{-getX(), -getY()};
@@ -419,6 +419,7 @@ public:
      *
      * @return
      */
+    template<typename T1, typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
     T getLength() const NOEXCEPT
     {
         using std::sqrt;
@@ -455,17 +456,6 @@ public:
      *
      * @return
      */
-    Vector inversed() const NOEXCEPT
-    {
-        return Vector(T(1) / getX(), T(1) / getY());
-    }
-
-
-    /**
-     * @brief Inverse current vector (1 / *this).
-     *
-     * @return
-     */
     template<typename T2>
     Vector<T2> inversed() const NOEXCEPT
     {
@@ -480,6 +470,7 @@ public:
      *
      * @return
      */
+    template<typename T1, typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
     Vector rotated(units::Angle angle) const NOEXCEPT
     {
         return Vector(
@@ -519,19 +510,9 @@ using Coordinate = Vector<unsigned int>;
 
 // TODO: GCC have problem with =default constructor in linking stage.
 #ifndef __GNUC__
-extern template class Vector<float>;
-#endif
-
-/* ************************************************************************ */
-
-#ifndef __GNUC__
-extern template class Vector<unsigned int>;
-#endif
-
-/* ************************************************************************ */
-
-#ifndef __GNUC__
-extern template class Vector<int>;
+extern template class DLL_EXPORT Vector<float>;
+extern template class DLL_EXPORT Vector<unsigned int>;
+extern template class DLL_EXPORT Vector<int>;
 #endif
 
 /* ************************************************************************ */
