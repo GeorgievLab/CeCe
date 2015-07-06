@@ -466,11 +466,10 @@ public:
     /**
      * @brief Rotate current vector and return rotated version.
      *
-     * @param angle
+     * @param angle Rotation angle.
      *
      * @return
      */
-    template<typename T1, typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
     Vector rotated(units::Angle angle) const NOEXCEPT
     {
         return Vector(
