@@ -39,8 +39,8 @@
 
 /* ************************************************************************ */
 
-/// Visual Studio doesn't support constexpr
-#ifdef _MSC_VER
+/// Visual Studio doesn't support constexpr until 2015
+#if _MSC_VER && _MSC_VER < 1900
 #define CONSTEXPR
 #else
 #define CONSTEXPR constexpr
@@ -49,7 +49,7 @@
 /* ************************************************************************ */
 
 /// Visual Studio doesn't support constexpr (fallback to const)
-#ifdef _MSC_VER
+#if _MSC_VER && _MSC_VER < 1900
 #define CONSTEXPR_CONST const
 #else
 #define CONSTEXPR_CONST constexpr
