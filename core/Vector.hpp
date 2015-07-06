@@ -419,7 +419,7 @@ public:
      *
      * @return
      */
-    template<typename T1, typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
+    template<typename T1 = decltype(T{} * T{}), typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
     T getLength() const NOEXCEPT
     {
         using std::sqrt;
