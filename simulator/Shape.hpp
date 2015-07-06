@@ -33,6 +33,7 @@ class Simulation;
  */
 enum class ShapeType
 {
+    Undefined,
     Circle,
     Rectangle
 };
@@ -84,6 +85,43 @@ struct DLL_EXPORT Shape
 
 
     /**
+     * @brief Default constructor. 
+     */
+    Shape() NOEXCEPT
+        : type(ShapeType::Undefined)
+        , circle()
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     * 
+     * @param circle
+     */
+    Shape(ShapeCircle circle) NOEXCEPT
+        : type(ShapeType::Circle)
+        , circle(std::move(circle))
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     * 
+     * @param rectangle
+     */
+    Shape(ShapeRectangle rectangle) NOEXCEPT
+        : type(ShapeType::Rectangle)
+        , rectangle(std::move(rectangle))
+    {
+        // Nothing to do
+    }
+
+
+    /**
      * @brief Create circle shape.
      *
      * @param radius Circle radius.
@@ -93,7 +131,7 @@ struct DLL_EXPORT Shape
      */
     static Shape makeCircle(units::Length radius, PositionVector center = PositionVector::Zero) NOEXCEPT
     {
-        return Shape{ShapeType::Circle, {ShapeCircle{center, radius}}};
+        return Shape{ShapeCircle{center, radius}};
     }
 
 
@@ -107,10 +145,7 @@ struct DLL_EXPORT Shape
      */
     static Shape makeRectangle(SizeVector size, PositionVector center = PositionVector::Zero) NOEXCEPT
     {
-        Shape shape{ShapeType::Rectangle};
-        shape.rectangle = ShapeRectangle{center, size};
-
-        return shape;
+        return Shape{ShapeRectangle{center, size}};
     }
 
 };
