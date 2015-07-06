@@ -115,6 +115,9 @@ int main(int argc, char** argv)
 
     try
     {
+        // Initialize plugins
+        simulator::Plugin::rescanDirectories();
+
         setMeasureTimeOutput(&time_file);
 
         // Create javascript world factory

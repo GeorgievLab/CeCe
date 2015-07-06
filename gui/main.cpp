@@ -28,6 +28,9 @@ public:
         if (!wxApp::OnInit())
             return false;
 
+        // Initialize plugins
+        simulator::Plugin::rescanDirectories();
+
         // Add the common image handlers
         wxImage::AddHandler(new wxPNGHandler);
         wxImage::AddHandler(new wxJPEGHandler);

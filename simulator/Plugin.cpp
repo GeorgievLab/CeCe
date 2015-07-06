@@ -86,7 +86,7 @@ const Map<String, Plugin::CreateFn> Plugin::s_builtinPlugins{
 
 /* ************************************************************************ */
 
-Map<String, FilePath> Plugin::s_externPlugins = Plugin::scanDirectories();
+Map<String, FilePath> Plugin::s_externPlugins;
 
 /* ************************************************************************ */
 
