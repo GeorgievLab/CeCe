@@ -61,7 +61,7 @@ function(build_plugin NAME)
         )
     else ()
         # Shared module
-        add_library(${PROJECT_NAME} MODULE ${ARG_SOURCES})
+        add_library(${PROJECT_NAME} SHARED ${ARG_SOURCES})
 
         # Setup dependencies
         add_dependencies(${PROJECT_NAME}
@@ -75,6 +75,7 @@ function(build_plugin NAME)
         target_link_libraries(${PROJECT_NAME}
             simulator
             ${ARG_LIBRARIES}
+            ${PLUGINS_DEPENDENCIES}
         )
 
         # Create symbolic link
