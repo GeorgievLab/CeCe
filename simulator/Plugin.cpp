@@ -111,7 +111,7 @@ public:
 #if __linux__ || __APPLE__ && __MACH__
         m_ptr = dlopen(m_path.c_str(), RTLD_LAZY);
 #elif _WIN32
-        m_ptr = LoadLibrary(m_path.c_str());
+        m_ptr = LoadLibraryW(m_path.c_str());
 #endif
     }
 

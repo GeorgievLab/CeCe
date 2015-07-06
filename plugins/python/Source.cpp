@@ -71,8 +71,10 @@ void Source::initFile(const FilePath& filename)
 {
     makeHandle(PyImport_ImportModule("cppout"));
 
+    const auto path = filename.string();
+
     // Execute given module file
-    if (!makeHandle(PyRun_FileEx(fopen(filename.c_str(), "r"), filename.c_str(), Py_file_input, m_dictionary, nullptr, 1)))
+    if (!makeHandle(PyRun_FileEx(fopen(path.c_str(), "r"), path.c_str(), Py_file_input, m_dictionary, nullptr, 1)))
         throw Exception();
 
     m_initialized = true;

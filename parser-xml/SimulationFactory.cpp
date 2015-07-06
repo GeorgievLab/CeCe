@@ -384,11 +384,11 @@ UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
         throw Exception("XML parse error: " + String(result.description()));
 
     {
+        // Register file path as module library
+#if __linux__
         char buffer[1024];
         strcpy(buffer, filename.c_str());
 
-        // Register file path as module library
-#if __linux__
         simulator::Plugin::addDirectory(dirname(buffer));
 #endif
     }
