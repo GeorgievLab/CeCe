@@ -4,7 +4,9 @@
 /* ************************************************************************ */
 
 // C++
-#include <algorithm>
+#include <numeric>
+#include <iterator>
+#include <initializer_list>
 
 // Simulator
 #include "core/compatibility.hpp"
