@@ -496,7 +496,7 @@ void Context::setProgramParam(Program::UniformId id, const render::Color& color)
 {
 #ifdef _WIN32
     if (!glUniform4f)
-        glUniform4f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform4f");
+        glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
 #endif
 
     gl(glUniform4f(id, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
