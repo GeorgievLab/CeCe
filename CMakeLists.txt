@@ -108,19 +108,23 @@ if (UNIX AND NOT APPLE)
     set(INSTALL_DIR_DATA "${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_PROJECT_NAME}")
 endif ()
 
-message(STATUS "Runtime directory: ${INSTALL_DIR_RUNTIME}")
-message(STATUS "Library directory: ${INSTALL_DIR_LIBRARY}")
-message(STATUS "Framework directory: ${INSTALL_DIR_FRAMEWORK}")
-message(STATUS "Bundle directory: ${INSTALL_DIR_BUNDLE}")
-message(STATUS "Data directory: ${INSTALL_DIR_DATA}")
-
 # Default plugins directory
 set(PLUGINS_DIRECTORY "${INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}")
 
 if (DEV_PLUGINS)
     # Directory is in build directory
     set(PLUGINS_DIRECTORY "${PROJECT_BINARY_DIR}/${DIR_PLUGINS}")
+elseif (WIN32)
+    # Path to current directory
+    set(PLUGINS_DIRECTORY "./${DIR_PLUGINS}")
 endif ()
+
+message(STATUS "Runtime directory: ${INSTALL_DIR_RUNTIME}")
+message(STATUS "Library directory: ${INSTALL_DIR_LIBRARY}")
+message(STATUS "Framework directory: ${INSTALL_DIR_FRAMEWORK}")
+message(STATUS "Bundle directory: ${INSTALL_DIR_BUNDLE}")
+message(STATUS "Data directory: ${INSTALL_DIR_DATA}")
+message(STATUS "Plugins directory: ${PLUGINS_DIRECTORY}")
 
 # ######################################################################### #
 
