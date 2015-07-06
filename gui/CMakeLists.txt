@@ -12,9 +12,9 @@ project(gui CXX)
 # wxWidgets
 if (WIN32)
     # On Windows the scintilla library is required
-    find_package(wxWidgets REQUIRED core base scintilla stc gl xml xrc adv)
+    find_package(wxWidgets REQUIRED xrc xml adv gl stc scintilla core base)
 else ()
-    find_package(wxWidgets REQUIRED core base stc gl xml xrc adv)
+    find_package(wxWidgets REQUIRED xrc xml adv gl stc core base)
 endif ()
 
 include(${wxWidgets_USE_FILE})
@@ -51,8 +51,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    simulator
     parser-xml
+    simulator
     ${wxWidgets_LIBRARIES}
 )
 

@@ -16,6 +16,9 @@
 // GUI
 #include "MainFrame.h"
 
+// Simulator
+#include "simulator/Plugin.hpp"
+
 /* ************************************************************************ */
 
 // Define the MainApp
