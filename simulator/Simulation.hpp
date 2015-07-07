@@ -285,6 +285,19 @@ public:
 
 
     /**
+     * @brief Check if simulation parameter exists.
+     *
+     * @param name Parameter name.
+     *
+     * @return
+     */
+    bool hasParameters(const String& name) const NOEXCEPT
+    {
+        return m_parameters.find(name) != m_parameters.end();
+    }
+
+
+    /**
      * @brief Returns parameter by name.
      *
      * @param name Parameter name.
