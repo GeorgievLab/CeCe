@@ -313,6 +313,10 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
         // Not found
         if (it == m_plugins.end())
         {
+            // Find if plugin exists
+            if (!Plugin::isAvailable(name))
+                return nullptr;
+
             // Insert into cache
             auto ptr = m_plugins.emplace(std::piecewise_construct,
                 std::forward_as_tuple(name),
