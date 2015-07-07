@@ -14,6 +14,7 @@
 
 // Simulator
 #include "core/Map.hpp"
+#include "core/Log.hpp"
 
 /* ************************************************************************ */
 
@@ -37,7 +38,8 @@ Map<std::type_index, PyTypeObject*> g_dynamicTypes;
 void registerDynamic(const std::type_info& info, PyTypeObject* type)
 {
     // Type is registered
-    assert(g_dynamicTypes.find(std::type_index(info)) == g_dynamicTypes.end());
+    if (g_dynamicTypes.find(std::type_index(info)) != g_dynamicTypes.end())
+        Log::warning("Replacing python type object: ", type->tp_name);
 
     g_dynamicTypes.emplace(info, type);
 }
