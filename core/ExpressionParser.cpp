@@ -1,12 +1,16 @@
-#include "ExpressionParser.hpp"
+#include "core/ExpressionParser.hpp"
 #include "core/Range.hpp"
 #include "core/Log.hpp"
+
+#include <cmath>
+#include <algorithm>
 
 class ExpressionParser
 {
     
 private:
 
+    const String operators = "+-*/^();<> \t\v\r\n\b";
     Map<String, float> parameters;
     IteratorRange<const char*> iterator;
     
@@ -20,14 +24,14 @@ private:
         float value = multiply();
         while (true)
         {
-            if (*iterator == '+')
+            if (iterator.front() == '+')
             {
-                ++iterator;
+                iterator.advanceBegin();
                 value = value + multiply();
             }
-            else if(*iterator == '-')
+            else if(iterator.front() == '-')
             {
-                ++iterator;
+                iterator.advanceBegin();
                 value = value - multiply();
             }
             else
@@ -41,14 +45,14 @@ private:
         float value = power();
         while (true)
         {
-            if (*iterator == '*')
+            if (iterator.front() == '*')
             {
-                ++iterator;
+                iterator.advanceBegin();
                 value = value * power();
             }
-            else if(*iterator == '/')
+            else if(iterator.front() == '/')
             {
-                ++iterator;
+                iterator.advanceBegin();
                 value = value * power();
             }
             else
@@ -62,14 +66,14 @@ private:
         float value = parenthesis();
         while (true)
         {
-            if (*iterator == '^')
+            if (iterator.front() == '^')
             {
-                ++iterator;
+                iterator.advanceBegin();
                 float exp = parenthesis();
                 if (value == 0 && exp == 0)
                     return NAN;
                 else
-                    value = pow(value, exp);
+                    value = std::pow(value, exp);
             }
             else
                 break;
@@ -79,13 +83,13 @@ private:
 
     float parenthesis()
     {
-        if (*iterator == '(')
+        if (iterator.front() == '(')
         {
-            ++iterator;
+            iterator.advanceBegin();
             float value = add();
-            if (*iterator == ')')
+            if (iterator.front() == ')')
             {
-                ++iterator;
+                iterator.advanceBegin();
                 return value;
             }
             else
@@ -97,18 +101,18 @@ private:
 
     float function()
     {
-        const char* end;
-        float value = strtof(iterator, &end);
-        if (iterator != end)
+        char* end;
+        float value = strtof(iterator.begin(), &end);
+        if (iterator.begin() != end)
         {
-            iterator = end;
+            iterator = makeRange<const char*>(end, iterator.end());
             return value;
         }
-        std::string local = "";
-        while (std::find(operators.begin(), operators.end(), *iterator) == operators.end() && iterator != iterator.end());
+        String local;
+        while (std::find(std::begin(operators), std::end(operators), iterator.front()) == std::end(operators) && iterator.isEmpty());
         {
-            ++iterator;
-            local += *iterator;
+            local += iterator.front();
+            iterator.advanceBegin();
         }
         if (local == "Sin" || local == "sin")
             return std::sin(parenthesis());
@@ -145,7 +149,7 @@ private:
     
 public:
 
-    ExpressionParser(Map<String, float>& param, InteratorRange<const char*> range) NOEXCEPT
+    ExpressionParser(const Map<String, float>& param, IteratorRange<const char*> range) NOEXCEPT
     : parameters(param), iterator(range)
     {
         // Nothing to do
@@ -155,9 +159,9 @@ public:
     {
         return add();
     }
-}
+};
 
-float parseExpression(const String& expression, const Map<String,float>& parameters)
+float parseExpression(IteratorRange<const char*>& range, const Map<String,float>& parameters)
 {
-    return ExpressionParser(parameters, makeRange(expression)).parse();
+    return ExpressionParser(parameters, range).parse();
 }

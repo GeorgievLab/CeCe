@@ -95,7 +95,7 @@ public:
      *
      * @return
      */
-    ValueType& front() const NOEXCEPT
+    const ValueType& front() const NOEXCEPT
     {
         return *m_begin;
     }
