@@ -22,7 +22,7 @@ set(SRCS
 # Build plugin
 build_plugin(streamlines-python
     SOURCES ${SRCS}
-    PLUGINS_REQUIRED python
+    PLUGINS_REQUIRED streamlines python
     LIBRARIES ${PYTHON_LIBRARIES}
 )
 
