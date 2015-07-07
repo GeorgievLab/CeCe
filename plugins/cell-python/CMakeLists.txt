@@ -24,7 +24,7 @@ set(SRCS
 # Build plugin
 build_plugin(cell-python
     SOURCES ${SRCS}
-    PLUGINS_REQUIRED python
+    PLUGINS_REQUIRED cell python
     LIBRARIES ${PYTHON_LIBRARIES}
 )
 
