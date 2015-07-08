@@ -34,7 +34,7 @@
     <File Name="FilePath.cpp"/>
     <File Name="VectorUnits.cpp"/>
     <File Name="Units.cpp"/>
-    <File Name="ExpressionParser.cpp" />
+    <File Name="ExpressionParser.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
@@ -158,5 +158,6 @@
     <File Name="test/DynamicArrayTest.cpp"/>
     <File Name="test/IteratorRangeTest.cpp"/>
     <File Name="test/UnitsTest.cpp"/>
+    <File Name="test/ExpressionParserTest.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>
