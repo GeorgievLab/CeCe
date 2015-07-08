@@ -21,6 +21,7 @@
   <Project Name="stochastic-reactions" Path="plugins/stochastic-reactions/stochastic-reactions.project" Active="No"/>
   <Project Name="streamlines-python" Path="plugins/streamlines-python/streamlines-python.project" Active="No"/>
   <Project Name="cell-python" Path="plugins/cell-python/cell-python.project" Active="No"/>
+  <Project Name="diffusion-python" Path="plugins/diffusion-python/diffusion-python.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -41,6 +42,7 @@
       <Project Name="lib-stochastic-reactions" ConfigName="Debug"/>
       <Project Name="plugin_streamlines-python" ConfigName="Debug"/>
       <Project Name="plugin_cell-python" ConfigName="Debug"/>
+      <Project Name="plugin_diffusion-python" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -61,6 +63,7 @@
       <Project Name="lib-stochastic-reactions" ConfigName="Release"/>
       <Project Name="plugin_streamlines-python" ConfigName="Release"/>
       <Project Name="plugin_cell-python" ConfigName="Release"/>
+      <Project Name="plugin_diffusion-python" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
