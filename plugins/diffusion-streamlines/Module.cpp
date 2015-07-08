@@ -37,7 +37,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     assert(m_streamlines);
     assert(m_diffusion);
 
-    auto& signalGrid = m_diffusion->getGrid();
+    const auto signalGridSize = m_diffusion->getGridSize();
     auto& velocityGrid = m_streamlines->getLattice();
 
     // Physical size of one lattice cell
@@ -46,71 +46,74 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const VelocityVector v_max = plugin::streamlines::LatticeData::MAX_SPEED * dl / dt;
 
     // Precompute values
-    const auto step = simulation.getWorldSize() / signalGrid.getSize();
-
-    // Grid for changes
-    diffusion::SignalGrid signalGridNew(signalGrid.getSize());
+    const auto step = simulation.getWorldSize() / m_diffusion->getGridSize();
 
     // Scale grids to [0, 1]
-    const auto signalScale = 1.f / signalGrid.getSize();
+    const auto signalScale = 1.f / signalGridSize;
     const auto velocityScale = 1.f / velocityGrid.getSize();
     const auto scale = signalScale / velocityScale;
 
-    // Foreach all combination in range [0, 0] - signalGrid.getSize()
-    for (auto&& c : range(signalGrid.getSize()))
+    // Foreach signals
+    for (auto id : m_diffusion->getSignalIds())
     {
-        // Get current signal
-        auto& signal = signalGrid[c];
+        m_diffusion->clearBack(id);
 
-        // No signal to send
-        if (!signal)
-            continue;
-
-        // Calculate velocity scale
-        const auto vc = Vector<unsigned>(c * scale);
-
-        // Get velocity
-        assert(velocityGrid.inRange(vc + 1));
-        const auto& velocity = velocityGrid[vc + 1].calcVelocity() * v_max;
-
-        // Calculate coordinate change
-        Vector<float> dij = velocity * dt / step;
-        dij.x() = std::abs(dij.getX());
-        dij.y() = std::abs(dij.getY());
-
-        StaticMatrix<float, 2> tmp;
-        int offset = 0;
-
-        if (velocity.getY() < units::Velocity(0))
+        // Foreach all combination in range [0, 0] - signalGrid.getSize()
+        for (auto&& c : range(signalGridSize))
         {
-            tmp = StaticMatrix<float, 2>{{
-                {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() },
-                {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())}
-            }};
-            offset = 1;
-        }
-        else
-        {
-            tmp = StaticMatrix<float, 2>{{
-                {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())},
-                {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() }
-            }};
-            offset = 0;
+            // Get current signal
+            auto& signal = m_diffusion->getSignal(id, c);
+
+            // No signal to send
+            if (!signal)
+                continue;
+
+            // Calculate velocity scale
+            const auto vc = Vector<unsigned>(c * scale);
+
+            // Get velocity
+            assert(velocityGrid.inRange(vc + 1));
+            const auto& velocity = velocityGrid[vc + 1].calcVelocity() * v_max;
+
+            // Calculate coordinate change
+            Vector<float> dij = velocity * dt / step;
+            dij.x() = std::abs(dij.getX());
+            dij.y() = std::abs(dij.getY());
+
+            StaticMatrix<float, 2> tmp;
+            int offset = 0;
+
+            if (velocity.getY() < units::Velocity(0))
+            {
+                tmp = StaticMatrix<float, 2>{{
+                    {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() },
+                    {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())}
+                }};
+                offset = 1;
+            }
+            else
+            {
+                tmp = StaticMatrix<float, 2>{{
+                    {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())},
+                    {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() }
+                }};
+                offset = 0;
+            }
+
+            // Apply matrix
+            for (auto&& ab : range(Vector<unsigned>(2)))
+            {
+                const auto ab2 = c + ab - Vector<unsigned>(0, offset);
+
+                // Update signal
+                if (m_diffusion->inRange(ab2))
+                    m_diffusion->getSignalBack(id, ab2) += signal * tmp[ab];
+            }
         }
 
-        // Apply matrix
-        for (auto&& ab : range(Vector<unsigned>(2)))
-        {
-            const auto ab2 = c + ab - Vector<unsigned>(0, offset);
-
-            // Update signal
-            if (signalGridNew.inRange(ab2))
-                signalGridNew[ab2] += signal * tmp[ab];
-        }
+        // Swap buffers
+        m_diffusion->swap(id);
     }
-
-    // Replace the old grid with the new one
-    signalGrid = std::move(signalGridNew);
 }
 
 /* ************************************************************************ */
