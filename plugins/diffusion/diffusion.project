@@ -23,9 +23,7 @@
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
-    <File Name="Signal.hpp"/>
     <File Name="Generator.hpp"/>
-    <File Name="SignalGrid.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

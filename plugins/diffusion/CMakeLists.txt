@@ -9,12 +9,10 @@
 # Sources
 set(SRCS
     Library.cpp
-    Signal.hpp
     Module.hpp
     Module.cpp
     Generator.hpp
     Generator.cpp
-    SignalGrid.hpp
 )
 
 # Build plugin
