@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -15,6 +15,7 @@
 #include "core/String.hpp"
 #include "core/FilePath.hpp"
 #include "core/Exception.hpp"
+#include "core/DynamicArray.hpp"
 
 /* ************************************************************************ */
 
@@ -117,6 +118,32 @@ public:
      * @return
      */
     virtual String getText() const = 0;
+
+
+    /**
+     * @brief Returns configuration subconfiguration.
+     *
+     * @param name Configuration name.
+     *
+     * @return Configuration or nullptr.
+     */
+    virtual Configuration* getConfiguration(const String& name) const noexcept
+    {
+        return nullptr;
+    }
+
+
+    /**
+     * @brief Returns configuration subconfigurations.
+     *
+     * @param name Configuration name.
+     *
+     * @return List of valid subconfigurations.
+     */
+    virtual DynamicArray<Configuration*> getConfigurations(const String& name) const noexcept
+    {
+        return {};
+    }
 
 
 // Public Mutators
