@@ -71,10 +71,14 @@ add_library(${PROJECT_NAME} OBJECT
 
 # Add tests
 build_test(core
-    test/test.cpp
-    test/DynamicArrayTest.cpp
-    test/IteratorRangeTest.cpp
-    test/UnitsTest.cpp
+    SOURCES
+        test/test.cpp
+        test/DynamicArrayTest.cpp
+        test/IteratorRangeTest.cpp
+        test/UnitsTest.cpp
+        test/ExpressionParserTest.cpp
+        ExpressionParser.hpp
+        ExpressionParser.cpp
 )
 
 # ######################################################################### #

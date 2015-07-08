@@ -124,16 +124,30 @@ function(build_test PROJECT_NAME)
 
     # Only if tests are enabled
     if (BUILD_TESTS)
+
+        # Parse arguments
+        cmake_parse_arguments(ARG "" "" "SOURCES;LIBRARIES;DEPENDENCIES;PLUGINS_REQUIRED" ${ARGN})
+
+        # Modify list of plugins (add prefixes)
+        set(PLUGINS_DEPENDENCIES "")
+
+        foreach (PLUGIN ${ARG_PLUGINS_REQUIRED})
+            plugin_project_name(${PLUGIN} PLUGIN_NAME)
+            list(APPEND PLUGINS_DEPENDENCIES "${PLUGIN_NAME}")
+        endforeach ()
+
         # Test name
         set(TEST_NAME "${PROJECT_NAME}_test")
 
         # Create executable
         add_executable(${TEST_NAME}
-            ${ARGN}
+            ${ARG_SOURCES}
         )
 
         # Link GTest libraries
         target_link_libraries(${TEST_NAME}
+            ${ARG_LIBRARIES}
+            ${PLUGINS_DEPENDENCIES}
             ${GTEST_BOTH_LIBRARIES}
         )
 
