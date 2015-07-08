@@ -34,6 +34,7 @@
     <File Name="FilePath.cpp"/>
     <File Name="VectorUnits.cpp"/>
     <File Name="Units.cpp"/>
+    <File Name="ExpressionParser.cpp" />
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
@@ -63,6 +64,7 @@
     <File Name="IntegerSequence.hpp"/>
     <File Name="ViewPtr.hpp"/>
     <File Name="ListenerContainer.hpp"/>
+    <File Name="ExpressionParser.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

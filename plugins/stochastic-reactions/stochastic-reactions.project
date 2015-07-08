@@ -122,5 +122,6 @@
   <VirtualDirectory Name="test">
     <File Name="test/test.cpp"/>
     <File Name="test/ParserTest.cpp"/>
+    <File Name="test/ReactionTest.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

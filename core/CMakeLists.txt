@@ -44,6 +44,8 @@ add_library(${PROJECT_NAME} OBJECT
     Grid.cpp
     AlignedAllocator.hpp
     AlignedAllocator.cpp
+    ExpressionParser.hpp
+    ExpressionParser.cpp
     Log.hpp
     Log.cpp
     TimeMeasurement.hpp

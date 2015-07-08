@@ -1,6 +1,5 @@
 #include "ReactionParser.hpp"
-#include "Reaction.hpp"
-#include "core/DynamicArray.hpp"
+#include "core/ExpressionParser.hpp"
 #include "core/Log.hpp"
 
 void ReactionParser::check_push(String& id, DynamicArray<String>& array)
@@ -8,7 +7,7 @@ void ReactionParser::check_push(String& id, DynamicArray<String>& array)
     if (id.size() == 0)
     {
         validator = false;
-        Log::warning("Couldnt parse reaction");
+        Log::warning("I cannot accept empty molecule name. You may want to use 'null' molecule in degradation/expression reactions.");
     }
     else if (id == "null")
     {
@@ -23,14 +22,23 @@ void ReactionParser::check_push(String& id, DynamicArray<String>& array)
 
 DynamicArray<String> ReactionParser::parseList()
 {
+    if (!validator)
+        return DynamicArray<String> ();
     DynamicArray<String> array;
     String id;
-    while (current != end_of_string && validator)
+    while (current != end_of_string)
     {
         if (*current == ';' || *current == '>')
         {
             check_push(id, array);
             ++current;
+            return array;
+        }
+        if (*current == '<')
+        {
+            check_push(id, array);
+            ++current;
+            reversible = true;
             return array;
         }
         else if (*current == '+')
@@ -49,39 +57,29 @@ DynamicArray<String> ReactionParser::parseList()
         }
     }
     validator = false;
-    return array;
+    Log::warning("Reaction has no end. This may be caused by missing semicolon.");
+    return DynamicArray<String> ();
 }
 
-float ReactionParser::parseRate()
+float ReactionParser::parseRate(const char end_char)
 {
     if (!validator)
         return 0;
     if (current != end_of_string)
     {
-        char* end;
-        float rate = strtof(current, &end);
-        if (current == end)
-        {
-            validator = false;
-            Log::warning("Reaction has invalid rate.");
-            return 0;
-        }
-        current = end;
-        while (*current == ' ' || *current == '\n' || *current == '\r' || *current == '\t' || *current == '\v')
-        {
-            ++current;
-        }
-        if (*current == '>')
+        auto range = makeRange(current, end_of_string);
+        float rate = parseExpression(range, {});
+        if (*current == end_char)
         {
             ++current;
             return rate;
         }
         validator = false;
-        Log::warning("Reaction rate area has no end.");
+        Log::warning("Rate area is either invalid or has no end.");
         return 0;
     }
     validator = false;
-    Log::warning("Reaction has no reaction rate.");
+    Log::warning("Reaction has no rate area.");
     return 0;
 }
 
@@ -93,12 +91,25 @@ Reaction ReactionParser::parseReactionCode(const String& code)
     while (current != end_of_string)
     {
         validator = true;
+        reversible = false;
         auto ids_minus = parseList();
-        float rate = parseRate();
+        float rate;
+        float rateR;
+        if (reversible)
+        {
+            rate = parseRate(',');
+            rateR = parseRate('>');
+        }
+        else
+        {
+            rate = parseRate('>');
+        }
         auto ids_plus = parseList();
         if (validator)
         {
             reaction.extend(ids_plus, ids_minus, rate);
+            if (reversible)
+                reaction.extend(ids_minus, ids_plus, rateR);
         }
     }
     return reaction;
