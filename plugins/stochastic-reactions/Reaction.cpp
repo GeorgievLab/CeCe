@@ -5,13 +5,13 @@
 #include "core/Exception.hpp"
 #include "../cell/CellBase.hpp"
 
-void Reaction::operator()(simulator::Object& object, units::Duration step)
+void Reaction::operator()(simulator::Object& object, simulator::Simulation&, units::Duration step)
 {
     // initialize cell
     if (!object.is<plugin::cell::CellBase>())
         throw RuntimeException("Only object type cell is allowed to have a reaction.");
     cell = object.cast<plugin::cell::CellBase>();
-    
+
     // initialize random generators
     std::random_device rd;
     std::mt19937 gen(rd());
