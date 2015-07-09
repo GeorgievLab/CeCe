@@ -6,18 +6,24 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
+# Include Python API
+find_package(PythonLibs REQUIRED)
+
+# Include directories
+include_directories(${PYTHON_INCLUDE_DIRS})
+
 # Sources
 set(SRCS
     Library.cpp
-    Module.hpp
-    Module.cpp
-    Generator.hpp
-    Generator.cpp
+    wrapper_module.hpp
+    wrapper_module.cpp
 )
 
 # Build plugin
-build_plugin(diffusion
+build_plugin(diffusion-python
     SOURCES ${SRCS}
+    PLUGINS_REQUIRED diffusion python
+    LIBRARIES ${PYTHON_LIBRARIES}
 )
 
 # ######################################################################### #

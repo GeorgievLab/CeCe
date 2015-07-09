@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="plugin_diffusion" InternalType="Library">
+<CodeLite_Project Name="plugin_diffusion-python" InternalType="Library">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -17,13 +17,11 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Module.cpp"/>
-    <File Name="Generator.cpp"/>
     <File Name="Library.cpp"/>
+    <File Name="wrapper_module.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Module.hpp"/>
-    <File Name="Generator.hpp"/>
+    <File Name="wrapper_module.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

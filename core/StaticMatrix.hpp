@@ -252,7 +252,7 @@ public:
      *
      * @return
      */
-    StaticMatrix normalized() NOEXCEPT
+    StaticMatrix<decltype(T{} / T{}), Width, Height> normalized() NOEXCEPT
     {
         return *this / sum();
     }
@@ -368,7 +368,13 @@ inline StaticMatrix<decltype(T1{} * T2{}), Width, Height> operator*(
     StaticMatrix<T1, Width, Height> lhs, T2 rhs
 ) NOEXCEPT
 {
-    return lhs *= rhs;
+    StaticMatrix<decltype(T1{} / T2{}), Width, Height> res;
+
+    for (decltype(Width) i = 0; i < Width; ++i)
+        for (decltype(Height) j = 0; j < Height; ++j)
+            res[i][j] = lhs[i][j] * rhs;
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -389,7 +395,13 @@ inline StaticMatrix<decltype(T1{} / T2{}), Width, Height> operator/(
     StaticMatrix<T1, Width, Height> lhs, T2 rhs
 ) NOEXCEPT
 {
-    return lhs /= rhs;
+    StaticMatrix<decltype(T1{} / T2{}), Width, Height> res;
+
+    for (decltype(Width) i = 0; i < Width; ++i)
+        for (decltype(Height) j = 0; j < Height; ++j)
+            res[i][j] = lhs[i][j] / rhs;
+
+    return res;
 }
 
 /* ************************************************************************ */

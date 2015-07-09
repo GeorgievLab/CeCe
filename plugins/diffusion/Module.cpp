@@ -1,3 +1,10 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
 
 // Declaration
 #include "Module.hpp"
@@ -10,8 +17,34 @@
 #include "core/StaticMatrix.hpp"
 #include "core/constants.hpp"
 #include "core/TimeMeasurement.hpp"
+#include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"
 #include "parser/Parser.hpp"
+
+/* ************************************************************************ */
+
+namespace parser {
+
+/* ************************************************************************ */
+
+template<>
+struct value_constructor<plugin::diffusion::Module::DegradationRate>
+{
+    static plugin::diffusion::Module::DegradationRate construct(float val, const String& suffix)
+    {
+        if (suffix.empty())
+            return plugin::diffusion::Module::DegradationRate(val);
+
+        if (suffix == "/s")
+            return units::Unit<units::List<>, units::List<>>(val) / units::s(1);
+
+        throw Exception("Unsupported suffix: " + suffix);
+    }
+};
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 
@@ -22,13 +55,13 @@ namespace diffusion {
 
 Module::Module()
 {
-	m_colors.push_back(render::colors::CYAN);
-	m_colors.push_back(render::colors::MAGENTA);
-	m_colors.push_back(render::colors::YELLOW);
-	m_colors.push_back(render::colors::BLUE);
-	m_colors.push_back(render::colors::RED);
-	m_colors.push_back(render::colors::GREEN);
-	m_colors.push_back(render::Color{ 1, 0.894f, 0.769f });
+    m_colors.push_back(render::colors::CYAN);
+    m_colors.push_back(render::colors::MAGENTA);
+    m_colors.push_back(render::colors::YELLOW);
+    m_colors.push_back(render::colors::BLUE);
+    m_colors.push_back(render::colors::RED);
+    m_colors.push_back(render::colors::GREEN);
+    m_colors.push_back(render::Color{ 1, 0.894f, 0.769f });
 }
 
 /* ************************************************************************ */
@@ -40,118 +73,47 @@ Module::~Module()
 
 /* ************************************************************************ */
 
+void Module::setGridSize(SizeType size)
+{
+    m_gridSize = std::move(size);
+
+    // Resize current grids
+    for (SignalId id = 0; id < getSignalCount(); ++id)
+    {
+        m_gridsFront[id].resize(m_gridSize + 2 * OFFSET);
+        m_gridsBack[id].resize(m_gridSize + 2 * OFFSET);
+    }
+}
+
+/* ************************************************************************ */
+
+void Module::registerSignal(String name, DiffusionRate rate, DegradationRate degRate)
+{
+    m_names.push_back(std::move(name));
+    m_diffusionRates.push_back(rate);
+    m_degradationRates.push_back(degRate);
+    m_gridsFront.emplace_back(m_gridSize + 2 * OFFSET);
+    m_gridsBack.emplace_back(m_gridSize + 2 * OFFSET);
+
+    // TODO: generate signal colour
+}
+
+/* ************************************************************************ */
+
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    auto _ = measure_time("diffusion", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
-        out << name << ";" << simulation.getIteration() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
-    });
+    if (getGridSize() == SizeType(SizeType::Zero))
+        throw RuntimeException("Diffusion grid size is not set!");
 
-    // Size of mapping matrix
-    CONSTEXPR_CONST unsigned OFFSET = 1;
-    CONSTEXPR_CONST unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+    auto _ = measure_time("diffusion", simulator::TimeMeasurementIterationOutput(simulation));
 
     // Precompute values
-    const auto step = simulation.getWorldSize() / units::Length(1) / m_grid.getSize();
+    const auto step = simulation.getWorldSize() / getGridSize();
 
-    //const float A = 1.f / (4 * constants::PI * D * dt);
-    const Coefficients A = 1.f / (4 * constants::PI * getCoefficients() * dt.value());
-
-    // Offset coefficients for matrix
-    static const auto DISTANCES = StaticMatrix<int, MATRIX_SIZE>::makeDistances();
-
-    // Sizes must match
-    assert(std::distance(m_grid.begin(), m_grid.end()) == std::distance(m_gridBack.begin(), m_gridBack.end()));
-
-    // Generate matrix with coefficients based on distance
-    // TODO: precompute matrix
-    const auto q = StaticMatrix<float, MATRIX_SIZE>::generate([&step](size_t i, size_t j) {
-        return (step * DISTANCES[i][j]).getLengthSquared();
-    });
-
-    // Create distribution matrix
-    const auto M = StaticMatrix<Coefficients, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
-        using std::exp;
-        return A * exp(-q[i][j] / (4.f * getCoefficients() * dt.value()));
-        //return A * exp(-q[i][j] / (4.f * D * dt));
-        //return A * exp(-q[i][j] / dt);
-    }).normalize();
-
-
-    // Clear back grid
-    std::fill(m_gridBack.begin(), m_gridBack.end(), Signal{});
-
-    /*
-     * Algorithm:
-     * Foreach whole grid in single for loop - grid storage is 1D array.
-     * This solution remove requirements for computation array offset each time
-     * for reading and writing.
-     * Diffusion mapping matrix contains offsets from current position to
-     * the coresponding positions. Mapping matrix can be constructed as:
-     * to right: +1; to left: -1; up: -width; down: +width. For 3x3 it looks:
-     *   | -width - 1, -width, -width + 1 |
-     *   |         -1       0,         +1 |
-     *   | +width - 1, +width, +width + 1 |
-     *
-     * This solutions improve range checking as well. Because range is just
-     * [0, width * height), only one range check is required.
-     */
-
-    const int width = m_grid.getSize().getWidth();
-    const int height = m_grid.getSize().getHeight();
-
-    const StaticMatrix<int, 3> MAPPING_MATRIX{ {
-        {-width - 1, -width, -width + 1},
-        {       - 1,      0,        + 1},
-        {+width - 1, +width, +width + 1}
-    }};
-
-    // Current column
-    int column = 0;
-    int row = 0;
-
-    // Foreach grid cells
-    auto gridPtr = m_grid.cbegin();
-    auto gridEndPtr = m_grid.cend();
-    auto gridNewPtr = m_gridBack.begin();
-
-    // Grid sizes are same, so we don't have to check both ranges
-    for (; gridPtr != gridEndPtr; ++gridPtr, ++gridNewPtr)
-    {
-        // Get current signal
-        const auto signal = *gridPtr;
-
-        // No signal to send
-        if (signal)
-        {
-            // TODO: optimize
-            for (unsigned a = row < OFFSET ? OFFSET - row : 0;
-                 a < ((height - row) <= OFFSET ? MATRIX_SIZE - (height - row) : MATRIX_SIZE);
-                 ++a)
-            {
-                for (unsigned b = column < OFFSET ? OFFSET - column : 0;
-                     b < ((width - column) <= OFFSET ? MATRIX_SIZE - (width - column) : MATRIX_SIZE);
-                     ++b)
-                {
-                    auto ptr = gridNewPtr + MAPPING_MATRIX[a][b];
-
-                    assert(ptr >= m_gridBack.begin() && ptr < m_gridBack.end());
-                    *ptr += signal * M[a][b];
-                }
-            }
-        }
-
-        if (++column == width)
-        {
-            column = 0;
-            ++row;
-        }
-
-    }
-
-    {
-        // Swap grids
-        std::swap(m_grid, m_gridBack);
-    }
+    // Update all signals
+    // TODO: use OpenMP
+    for (auto id : getSignalIds())
+        updateSignal(step, dt, id);
 }
 
 /* ************************************************************************ */
@@ -159,28 +121,23 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Grid size
-    config.callIfSetString("grid", [this](const std::string& value) {
-        setSize(parser::parse_vector_single<unsigned int>(value));
+    config.callIfSetString("grid", [this](const String& value) {
+        setGridSize(parser::parse_vector_single<unsigned int>(value));
     });
 
-    // Diffusion coefficients
-    config.callIfSetString("coefficients", [this](const std::string& value) {
-        const auto coefficients = parser::parse_array<float, Signal::COUNT>(value, parser::parse_number);
-
-        for (unsigned int i = 0; i < Signal::COUNT; ++i)
-            setCoefficient(i, coefficients[i]);
-    });
+    // Foreach signal configurations
+    for (auto signal : config.getConfigurations("signal"))
+    {
+        registerSignal(
+            signal->getString("name"),
+            parser::parse_value<DiffusionRate>(signal->getString("diffusion-rate")),
+            parser::parse_value<DegradationRate>(signal->getString("degradation-rate"))
+        );
+    }
 
 #if ENABLE_RENDER
-    config.callIfSetString("background", [this](const std::string& value) {
+    config.callIfSetString("background", [this](const String& value) {
         m_background = parser::parse_color(value);
-    });
-
-    config.callIfSetString("colors", [this](const std::string& value) {
-        const auto colors = parser::parse_array<render::Color, Signal::COUNT>(value, parser::parse_color);
-
-        for (unsigned int i = 0; i < Signal::COUNT; ++i)
-            m_colors[i] = colors[i];
     });
 #endif
 }
@@ -190,9 +147,13 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 #if ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
-    if (!m_drawable)
-        m_drawable.create(context, m_grid.getSize());
+    if (getGridSize() == SizeType(SizeType::Zero))
+        throw RuntimeException("Diffusion grid size is not set!");
 
+    if (!m_drawable)
+        m_drawable.create(context, getGridSize());
+
+    // Update drawable
     updateDrawable();
 
     context.matrixPush();
@@ -205,33 +166,79 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-void Module::updateDrawable()
+void Module::updateDrawable() const
 {
-    assert(m_grid.getSize() == m_drawable->getSize());
+    assert(getGridSize() == m_drawable->getSize());
 
-    const auto size = m_grid.getSize();
-
-    for (unsigned int y = 0u; y < size.getHeight(); ++y)
+    // Foreach grid
+    for (auto&& c : range(getGridSize()))
     {
-        for (unsigned int x = 0u; x < size.getWidth(); ++x)
+        // Initial pixel colour
+        auto pixel = m_background;
+
+        // Mixup signal colors
+        for (auto id : getSignalIds())
         {
-            const auto& signal = m_grid[{x, y}];
-            auto pixel = m_drawable->get({x, y});
-            // Clear pixel
-            pixel = m_background;
+            const auto signal = getSignal(id, c);
 
-            // Mixup signal colors
-            for (unsigned int i = 0; i < Signal::COUNT; ++i)
-            {
-                pixel *= (1 - signal[i]);
-                pixel += m_colors[i % m_colors.size()] * signal[i];
-            }
-
-            m_drawable->set({x, y}, pixel);
+            pixel *= (1 - signal);
+            pixel += m_colors[id] * signal;
         }
+
+        m_drawable->set(c, pixel);
     }
 }
 #endif
+
+/* ************************************************************************ */
+
+void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId id)
+{
+    // Size of mapping matrix
+    constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+
+    // Clear back grid
+    clearBack(id);
+
+    // Amplitude
+    const auto A = 1.f / (4 * constants::PI * getDiffusionRate(id) * dt);
+
+    // Offset coefficients for matrix
+    static const auto DISTANCES = StaticMatrix<int, MATRIX_SIZE>::makeDistances();
+
+    // Generate matrix with coefficients based on distance
+    const auto q = StaticMatrix<units::Area, MATRIX_SIZE>::generate([&step](size_t i, size_t j) {
+        return (step * DISTANCES[i][j]).getLengthSquared();
+    });
+
+    // Create distribution matrix
+    const auto M = StaticMatrix<units::Area, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
+        return A * std::exp(-q[i][j] / (4.f * getDiffusionRate(id) * dt));
+    }).normalized();
+
+    // Forech grid without borders
+    for (auto&& c : range(getGridSize()))
+    {
+        // Get current signal
+        auto signal = getSignalFront(id, c);
+
+        // Nothing to diffuse
+        if (signal < std::numeric_limits<Signal>::epsilon())
+            continue;
+
+        // Degrade signal
+        signal *= 1 - getDegradationRate(id) * dt;
+
+        // Diffuse signal
+        for (auto&& ab : range(Coordinate{2 * OFFSET + 1}))
+        {
+            getSignalBack(id, c + ab - OFFSET) += signal * M[ab];
+        }
+    }
+
+    // Swap grids
+    swap(id);
+}
 
 /* ************************************************************************ */
 
