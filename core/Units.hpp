@@ -38,15 +38,30 @@ using Value = float;
 /* ************************************************************************ */
 
 /**
+ * @brief Defines base unit.
+ *
+ * @param name Unit Name.
+ * @param ord  Unit order.
+ * @param ...
+ */
+#define DEFINE_BASE_UNIT(name, ord, ...) \
+    struct Base ## name {\
+        static constexpr int order = ord;\
+        static constexpr char symbol[] = {__VA_ARGS__};\
+    }
+
+/* ************************************************************************ */
+
+/**
  * @brief Base SI units.
  */
-struct BaseLength                   { static constexpr int order = 0; };
-struct BaseTime                     { static constexpr int order = 1; };
-struct BaseMass                     { static constexpr int order = 2; };
-struct BaseElectricCurrent          { static constexpr int order = 3; };
-struct BaseThermodynamicTemperature { static constexpr int order = 4; };
-struct BaseAmountOfSubstance        { static constexpr int order = 5; };
-struct BaseLuminousIntensity        { static constexpr int order = 6; };
+DEFINE_BASE_UNIT(Length,                    0, 'm');
+DEFINE_BASE_UNIT(Time,                      1, 's');
+DEFINE_BASE_UNIT(Mass,                      2, 'g');
+DEFINE_BASE_UNIT(ElectricCurrent,           3, 'A');
+DEFINE_BASE_UNIT(ThermodynamicTemperature,  4, 'K');
+DEFINE_BASE_UNIT(AmountOfSubstance,         5, 'm', 'o', 'l');
+DEFINE_BASE_UNIT(LuminousIntensity,         6, 'c', 'd');
 
 /* ************************************************************************ */
 
