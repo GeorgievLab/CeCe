@@ -51,6 +51,7 @@ add_library(${PROJECT_NAME} OBJECT
     TimeMeasurement.hpp
     TimeMeasurement.cpp
     String.hpp
+    StringView.hpp
     FilePath.hpp
     FilePath.cpp
     Exception.hpp
@@ -77,6 +78,7 @@ build_test(core
         test/DynamicArrayTest.cpp
         test/IteratorRangeTest.cpp
         test/UnitsTest.cpp
+        test/StringViewTest.cpp
         test/ExpressionParserTest.cpp
         ExpressionParser.hpp
         ExpressionParser.cpp

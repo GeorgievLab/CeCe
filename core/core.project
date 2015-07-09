@@ -66,6 +66,7 @@
     <File Name="ListenerContainer.hpp"/>
     <File Name="ExpressionParser.hpp"/>
     <File Name="Zero.hpp"/>
+    <File Name="StringView.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -160,5 +161,6 @@
     <File Name="test/IteratorRangeTest.cpp"/>
     <File Name="test/UnitsTest.cpp"/>
     <File Name="test/ExpressionParserTest.cpp"/>
+    <File Name="test/StringViewTest.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>
