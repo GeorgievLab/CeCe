@@ -102,6 +102,9 @@ void Module::registerSignal(String name, DiffusionRate rate, DegradationRate deg
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    if (getGridSize() == SizeType(SizeType::Zero))
+        throw RuntimeException("Diffusion grid size is not set!");
+
     auto _ = measure_time("diffusion", simulator::TimeMeasurementIterationOutput(simulation));
 
     // Precompute values
@@ -144,6 +147,9 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 #if ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
+    if (getGridSize() == SizeType(SizeType::Zero))
+        throw RuntimeException("Diffusion grid size is not set!");
+
     if (!m_drawable)
         m_drawable.create(context, getGridSize());
 
