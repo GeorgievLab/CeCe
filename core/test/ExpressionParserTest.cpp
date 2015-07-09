@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 
 // Simulator
+#include "core/Range.hpp"
 #include "core/ExpressionParser.hpp"
 
 /* ************************************************************************ */
@@ -18,6 +19,8 @@ TEST(ExpressionParser, basic)
 {
     EXPECT_FLOAT_EQ(15.f, parseExpression("15", {}));
     EXPECT_FLOAT_EQ(15.f, parseExpression("15.f", {}));
+    EXPECT_FLOAT_EQ(10.f, parseExpression("2*5", {}));
+    EXPECT_FLOAT_EQ(4.f, parseExpression("2*6/3", {}));
     EXPECT_FLOAT_EQ(10.f, parseExpression("2 * 5", {}));
     EXPECT_FLOAT_EQ(9.f, parseExpression("3 * (1 + 2)", {}));
     EXPECT_FLOAT_EQ(-3.f, parseExpression("3 * (1 - 2)", {}));
@@ -42,6 +45,19 @@ TEST(ExpressionParser, variables)
     EXPECT_FLOAT_EQ(7.f, parseExpression("v1 * v2 + v3", {
         {"v1", 5.f}, {"v2", 2.f}, {"v3", -3.f}
     }));
+}
+
+/* ************************************************************************ */
+
+TEST(ExpressionParser, inner)
+{
+    {
+        const char str[] = "15 + 3 hello";
+        auto range = makeRange(str);
+
+        EXPECT_FLOAT_EQ(18.f, parseExpression(range, {}));
+        EXPECT_EQ(str + 8, range.begin());
+    }
 }
 
 /* ************************************************************************ */
