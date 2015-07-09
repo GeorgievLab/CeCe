@@ -43,6 +43,24 @@ static PyObject* get_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyO
 
 /* ************************************************************************ */
 
+static PyObject* set_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args, void*) NOEXCEPT
+{
+    int id;
+    int x;
+    int y;
+    float value;
+
+    if(!PyArg_ParseTuple(args, "iiif", &id, &x, &y, &value))
+        return NULL;
+
+    // Set signal value
+    self->value->setSignal(id, plugin::diffusion::Module::Coordinate(x, y), value);
+
+    Py_RETURN_NONE;
+}
+
+/* ************************************************************************ */
+
 void python_wrapper_module()
 {
     PyObject* module = Py_InitModule3("diffusion", nullptr, nullptr);
@@ -61,6 +79,7 @@ void python_wrapper_module()
     static PyMethodDef fns[] = {
         defineMemberFunction<1, type_ptr>("getSignalId", &type::getSignalId),
         {"getSignal", (PyCFunction) get_signal, METH_VARARGS, NULL},
+        {"setSignal", (PyCFunction) set_signal, METH_VARARGS, NULL},
         //defineMemberFunction<2, type_ptr>("getSignal", +[](type_ptr ptr, type::SignalId id, int x, int y) {
         //    return ptr->getSignal(id, type::Coordinate(x, y));
         //}),
