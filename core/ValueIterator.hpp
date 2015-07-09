@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -10,14 +12,14 @@
 
 /* ************************************************************************ */
 
-// Simulator
-#include "core/compatibility.hpp"
+// C++
+#include <cstddef>
+#include <iterator>
+#include <utility>
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -58,7 +60,7 @@ public:
          *
          * @param iter
          */
-        ReferenceProxy(const ValueIterator& iter) NOEXCEPT
+        ReferenceProxy(const ValueIterator& iter) noexcept
           : m_iter(iter)
         {
             // Nothing to do
@@ -72,7 +74,7 @@ public:
         /**
          * @brief Cast to reference operator.
          */
-        operator reference() const NOEXCEPT
+        operator reference() const noexcept
         {
             return *m_iter;
         }
@@ -110,7 +112,7 @@ public:
      *
      * @param value.
      */
-    explicit ValueIterator(value_type value) NOEXCEPT
+    explicit ValueIterator(value_type value) noexcept
         : m_value(std::move(value))
     {
         // Nothing to do
@@ -128,7 +130,7 @@ public:
      *
      * @return Are iterators equal?
      */
-    bool operator==(const ValueIterator& rhs) const NOEXCEPT
+    bool operator==(const ValueIterator& rhs) const noexcept
     {
         return m_value == rhs.m_value;
     }
@@ -141,7 +143,7 @@ public:
      *
      * @return Aren't iterators equal?
      */
-    bool operator!=(const ValueIterator& rhs) const NOEXCEPT
+    bool operator!=(const ValueIterator& rhs) const noexcept
     {
         return !operator==(rhs);
     }
@@ -154,7 +156,7 @@ public:
      *
      * @return
      */
-    bool operator<(const ValueIterator& rhs) const NOEXCEPT
+    bool operator<(const ValueIterator& rhs) const noexcept
     {
         return m_value < rhs.m_value;
     }
@@ -167,7 +169,7 @@ public:
      *
      * @return
      */
-    bool operator<=(const ValueIterator& rhs) const NOEXCEPT
+    bool operator<=(const ValueIterator& rhs) const noexcept
     {
         return !operator>(rhs);
     }
@@ -180,7 +182,7 @@ public:
      *
      * @return
      */
-    bool operator>(const ValueIterator& rhs) const NOEXCEPT
+    bool operator>(const ValueIterator& rhs) const noexcept
     {
         return rhs.operator<(*this);
     }
@@ -193,7 +195,7 @@ public:
      *
      * @return
      */
-    bool operator>=(const ValueIterator& rhs) const NOEXCEPT
+    bool operator>=(const ValueIterator& rhs) const noexcept
     {
         return !operator<(rhs);
     }
@@ -206,7 +208,7 @@ public:
      *
      * @return *this.
      */
-    ValueIterator& operator+=(difference_type n) NOEXCEPT
+    ValueIterator& operator+=(difference_type n) noexcept
     {
         m_value += n;
         return *this;
@@ -220,7 +222,7 @@ public:
      *
      * @return Copy of *this.
      */
-    ValueIterator operator+(difference_type n) const NOEXCEPT
+    ValueIterator operator+(difference_type n) const noexcept
     {
         return ValueIterator(m_value + n);
     }
@@ -233,7 +235,7 @@ public:
      *
      * @return *this.
      */
-    ValueIterator& operator-=(difference_type n) NOEXCEPT
+    ValueIterator& operator-=(difference_type n) noexcept
     {
         m_value -= n;
         return *this;
@@ -247,7 +249,7 @@ public:
      *
      * @return Copy of *this.
      */
-    ValueIterator operator-(difference_type n) const NOEXCEPT
+    ValueIterator operator-(difference_type n) const noexcept
     {
         return ValueIterator(m_value - n);
     }
@@ -260,7 +262,7 @@ public:
      *
      * @return Distance.
      */
-    difference_type operator-(const ValueIterator& rhs) const NOEXCEPT
+    difference_type operator-(const ValueIterator& rhs) const noexcept
     {
         return m_value - rhs.m_value;
     }
@@ -284,7 +286,7 @@ public:
      *
      * @return A reference to the current token.
      */
-    reference operator*() NOEXCEPT
+    reference operator*() noexcept
     {
         return m_value;
     }
@@ -295,7 +297,7 @@ public:
      *
      * @return A pointer to the current token.
      */
-    pointer operator->() const NOEXCEPT
+    pointer operator->() const noexcept
     {
         return &m_value;
     }
@@ -358,8 +360,6 @@ private:
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */
