@@ -63,7 +63,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             // Cell is in main cell, ignore
             if (distSq <= R2)
             {
-                velocity = VelocityVector::Zero;
+                velocity = Zero;
                 continue;
             }
 /*
@@ -171,7 +171,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation)
         const auto pos = obj->getPosition() - start;
 
         // Check if object is in range
-        if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+        if (!pos.inRange(Zero, simulation.getWorldSize()))
             continue;
 
         // Get grid position

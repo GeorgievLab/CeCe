@@ -150,7 +150,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             }
             else
             {
-                velocities[coord] = Vector<float>::Zero;
+                velocities[coord] = Zero;
             }
 
             // Set color

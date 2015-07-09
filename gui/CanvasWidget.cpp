@@ -73,7 +73,7 @@ void CanvasWidget::ViewReset() NOEXCEPT
 {
     auto& camera = m_renderContext.getCamera();
     camera.setZoom(m_baseZoom);
-    camera.setPosition(PositionVector::Zero);
+    camera.setPosition(Zero);
 
     // Refresh view
     Update();
