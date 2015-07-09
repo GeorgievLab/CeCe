@@ -65,6 +65,7 @@
     <File Name="ViewPtr.hpp"/>
     <File Name="ListenerContainer.hpp"/>
     <File Name="ExpressionParser.hpp"/>
+    <File Name="Zero.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
