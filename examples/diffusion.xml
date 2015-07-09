@@ -1,6 +1,21 @@
 <simulation world-size="20um 20um" dt="1s" iterations="20">
     <plugin name="python" />
-    <program name="store" language="python">
+    <module name="python:generate">
+<![CDATA[
+import math
+
+radius = 5
+
+def update(dt, simulation):
+    diffusion = simulation.useModule("diffusion")
+
+    for x in range(-radius, radius + 1):
+        for y in range(-radius, radius + 1):
+            if (math.sqrt(x * x + y * y) <= radius):
+                diffusion.setSignal(0, 50 + x, 50 + y, 100)
+]]>
+    </module>
+    <module name="python:store">
 #import csv
 file = open("data.csv", 'wb')
 #writer = csv.writer(file, delimiter = ';')
@@ -8,7 +23,7 @@ file = open("data.csv", 'wb')
 file.write("iteration;totalTime;x;y;value\n");
 
 # Program code
-def call(object, simulation, dt):
+def update(dt, simulation):
     diffusion = simulation.useModule("diffusion")
     size = diffusion.gridSize
 
@@ -17,8 +32,7 @@ def call(object, simulation, dt):
             value = diffusion.getSignal(0, x, y)
             #writer.writerow([simulation.iteration, simulation.totalTime, x, y, diffusion.getSignal(0, x, y)])
             file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(x) + ";" + str(y) + ";" + str(value) + "\n");
-    </program>
-    <object class="cell.Yeast" programs="diffusion.gen1 store" />
+    </module>
     <module name="diffusion" grid="100">
         <signal name="gfp" diffusion-rate="35um2/s" degradation-rate="0.1/s" color="green" />
     </module>
