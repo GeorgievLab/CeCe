@@ -61,7 +61,8 @@ namespace {
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-constexpr StaticArray<render::Color, 5> g_colors = {
+constexpr StaticArray<render::Color, 6> g_colors = {
+    render::colors::CYAN,
     render::colors::MAGENTA,
     render::colors::YELLOW,
     render::colors::BLUE,
@@ -81,7 +82,7 @@ void Module::setGridSize(SizeType size)
     m_gridSize = std::move(size);
 
     // Resize current grids
-    for (SignalId id = 0; id < getSignalCount(); ++id)
+    for (auto id : getSignalIds())
     {
         m_gridsFront[id].resize(m_gridSize + 2 * OFFSET);
         m_gridsBack[id].resize(m_gridSize + 2 * OFFSET);
