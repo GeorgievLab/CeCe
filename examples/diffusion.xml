@@ -1,18 +1,18 @@
-<simulation world-size="20um 20um" dt="1s" iterations="20">
+<simulation world-size="20um 20um" dt="1s" iterations="50">
     <plugin name="python" />
     <module name="python:generate">
 <![CDATA[
 import math
 
-radius = 5
-
 def update(dt, simulation):
     diffusion = simulation.useModule("diffusion")
+    size = diffusion.gridSize
+    radius = size.x / 20
 
     for x in range(-radius, radius + 1):
         for y in range(-radius, radius + 1):
             if (math.sqrt(x * x + y * y) <= radius):
-                diffusion.setSignal(0, 50 + x, 50 + y, 100)
+                diffusion.setSignal(0, size.x / 2 + x, size.y / 2 + y, 1)
 ]]>
     </module>
     <module name="python:store">
@@ -33,8 +33,8 @@ def update(dt, simulation):
             #writer.writerow([simulation.iteration, simulation.totalTime, x, y, diffusion.getSignal(0, x, y)])
             file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(x) + ";" + str(y) + ";" + str(value) + "\n");
     </module>
-    <module name="diffusion" grid="100">
-        <signal name="gfp" diffusion-rate="35um2/s" degradation-rate="0.1/s" color="green" />
+    <module name="diffusion" grid="200">
+        <signal name="gfp" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="green" />
     </module>
 </simulation>
 
