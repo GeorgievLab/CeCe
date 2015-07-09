@@ -44,7 +44,7 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-    if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+    if (!pos.inRange(Zero, simulation.getWorldSize()))
         return;
 
     // Get grid position
@@ -86,7 +86,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
     const auto pos = obj.getPosition() - start;
 
     // Check if position is in range
-    if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+    if (!pos.inRange(Zero, simulation.getWorldSize()))
         return;
 
     // Get grid position

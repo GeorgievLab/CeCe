@@ -47,7 +47,7 @@ void LatticeData::collide(ValueType omega)
         // Velocity difference
         const auto diff = calcVelocityNormalized() - m_dynamicObstacleVelocity;
 
-        if (diff > Vector<ValueType>(Vector<ValueType>::Zero))
+        if (diff > Zero)
         {
             // Partial obstacle
             // Static obstacle, bounce all back

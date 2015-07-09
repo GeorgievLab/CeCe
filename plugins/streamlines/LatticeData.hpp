@@ -81,7 +81,7 @@ public:
      * @param velocity Initial velocity.
      * @param rho      Initial density.
      */
-    LatticeData(const Vector<ValueType>& velocity = Vector<ValueType>::Zero, ValueType rho = 1.f)
+    LatticeData(const Vector<ValueType>& velocity = Zero, ValueType rho = 1.f)
     {
         init(velocity, rho);
     }
@@ -188,7 +188,7 @@ public:
      * @param flag If cell is dynamic obstacle.
      * @param u    Obstacle velocity.
      */
-    void setDynamicObstacle(bool flag, Vector<ValueType> u = Vector<ValueType>::Zero) NOEXCEPT
+    void setDynamicObstacle(bool flag, Vector<ValueType> u = Zero) NOEXCEPT
     {
         m_dynamicObstacle = flag;
         m_dynamicObstacleVelocity = std::move(u);
@@ -314,7 +314,7 @@ public:
     bool m_dynamicObstacle = false;
 
     // Velocity of dynamic obstacle.
-    Vector<ValueType> m_dynamicObstacleVelocity{Vector<ValueType>::Zero};
+    Vector<ValueType> m_dynamicObstacleVelocity;
 };
 
 /* ************************************************************************ */

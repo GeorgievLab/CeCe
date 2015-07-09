@@ -85,7 +85,7 @@ struct DLL_EXPORT Shape
 
 
     /**
-     * @brief Default constructor. 
+     * @brief Default constructor.
      */
     Shape() NOEXCEPT
         : type(ShapeType::Undefined)
@@ -97,7 +97,7 @@ struct DLL_EXPORT Shape
 
     /**
      * @brief Constructor.
-     * 
+     *
      * @param circle
      */
     Shape(ShapeCircle circle) NOEXCEPT
@@ -110,7 +110,7 @@ struct DLL_EXPORT Shape
 
     /**
      * @brief Constructor.
-     * 
+     *
      * @param rectangle
      */
     Shape(ShapeRectangle rectangle) NOEXCEPT
@@ -129,7 +129,7 @@ struct DLL_EXPORT Shape
      *
      * @return
      */
-    static Shape makeCircle(units::Length radius, PositionVector center = PositionVector::Zero) NOEXCEPT
+    static Shape makeCircle(units::Length radius, PositionVector center = Zero) NOEXCEPT
     {
         return Shape{ShapeCircle{center, radius}};
     }
@@ -143,7 +143,7 @@ struct DLL_EXPORT Shape
      *
      * @return
      */
-    static Shape makeRectangle(SizeVector size, PositionVector center = PositionVector::Zero) NOEXCEPT
+    static Shape makeRectangle(SizeVector size, PositionVector center = Zero) NOEXCEPT
     {
         return Shape{ShapeRectangle{center, size}};
     }

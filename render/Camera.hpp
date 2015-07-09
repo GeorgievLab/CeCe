@@ -92,7 +92,7 @@ public:
 private:
 
     /// Camera position.
-    PositionVector m_position{PositionVector::Zero};
+    PositionVector m_position;
 
     /// Zoom value.
     float m_zoom = 1.0f;

@@ -193,7 +193,7 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
         const auto pos = obj->getPosition() - start;
 
         // Check if position is in range
-        if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+        if (!pos.inRange(Zero, simulation.getWorldSize()))
             continue;
 
         // Get grid position
@@ -249,7 +249,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
         const auto pos = obj->getPosition() - start;
 
         // Check if position is in range
-        if (!pos.inRange(PositionVector::Zero, simulation.getWorldSize()))
+        if (!pos.inRange(Zero, simulation.getWorldSize()))
             continue;
 
         // Get coordinate to lattice
@@ -266,7 +266,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
 
             // Sum of the velocities
             VelocityVector velocity = std::accumulate(coords.begin(), coords.end(),
-                VelocityVector{VelocityVector::Zero},
+                VelocityVector{Zero},
                 [&v_max, this](VelocityVector& init, const Coordinate& c) {
                     return init + m_lattice[c + 1].calcVelocityNormalized() * v_max;
                 }

@@ -5,6 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -16,21 +18,17 @@
 #include <type_traits>
 
 // Simulator
+#include "core/Zero.hpp"
 #include "core/Units.hpp"
-
-// Simulator
-#include "core/compatibility.hpp"
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
 /**
- * @brief 2D vector.
+ * @brief Two dimensional vector.
  */
 template<typename T>
 class Vector
@@ -44,20 +42,6 @@ public:
     using value_type = T;
 
 
-    /// Zero value initializer type.
-    struct DLL_EXPORT Zero_t { constexpr Zero_t() {} };
-
-
-// Public Constants
-public:
-
-
-    /**
-     * @brief Placeholder for zero vector.
-     */
-    static constexpr Zero_t Zero{};
-
-
 // Public Ctors
 public:
 
@@ -65,7 +49,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    CONSTEXPR Vector()
+    constexpr Vector()
         : m_x(), m_y()
     {
         // Nothing to do
@@ -79,9 +63,9 @@ public:
      */
 #if __APPLE__ && __MACH__
     /// NOTE: On Mac OS X explicit keyword causes problem with free operators deduction.
-    CONSTEXPR Vector(T val) NOEXCEPT
+    constexpr Vector(T val) noexcept
 #else
-    explicit CONSTEXPR Vector(T val) NOEXCEPT
+    explicit constexpr Vector(T val) noexcept
 #endif
         : m_x(val), m_y(val)
     {
@@ -95,7 +79,7 @@ public:
      * @param x
      * @param y
      */
-    CONSTEXPR Vector(T x, T y) NOEXCEPT
+    constexpr Vector(T x, T y) noexcept
         : m_x(x), m_y(y)
     {
         // Nothing to do
@@ -105,7 +89,7 @@ public:
     /**
      * @brief Zero value constructor.
      */
-    CONSTEXPR Vector(Zero_t) NOEXCEPT
+    constexpr Vector(Zero_t) noexcept
         : m_x(), m_y()
     {
         // Nothing to do
@@ -118,7 +102,7 @@ public:
      * @param v Source vector.
      */
     template<typename T2>
-    explicit CONSTEXPR Vector(const Vector<T2>& v) NOEXCEPT
+    explicit constexpr Vector(const Vector<T2>& v) noexcept
         : m_x(static_cast<T>(v.getX())), m_y(static_cast<T>(v.getY()))
     {
         // Nothing to do
@@ -134,7 +118,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR Vector operator+() const NOEXCEPT
+    constexpr Vector operator+() const noexcept
     {
         return *this;
     }
@@ -146,7 +130,7 @@ public:
      * @return
      */
     template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = nullptr>
-    CONSTEXPR Vector operator-() const NOEXCEPT
+    constexpr Vector operator-() const noexcept
     {
         return Vector{-getX(), -getY()};
     }
@@ -162,7 +146,7 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} + T1{}), T>::value>::type* = nullptr>
-    Vector& operator+=(const Vector<T1>& rhs) NOEXCEPT
+    Vector& operator+=(const Vector<T1>& rhs) noexcept
     {
         m_x += rhs.getX();
         m_y += rhs.getY();
@@ -180,7 +164,7 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} - T1{}), T>::value>::type* = nullptr>
-    Vector& operator-=(const Vector<T1>& rhs) NOEXCEPT
+    Vector& operator-=(const Vector<T1>& rhs) noexcept
     {
         m_x -= rhs.getX();
         m_y -= rhs.getY();
@@ -198,7 +182,7 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
-    Vector& operator*=(T1 rhs) NOEXCEPT
+    Vector& operator*=(T1 rhs) noexcept
     {
         m_x *= rhs;
         m_y *= rhs;
@@ -216,7 +200,7 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
-    Vector& operator*=(const Vector<T1>& rhs) NOEXCEPT
+    Vector& operator*=(const Vector<T1>& rhs) noexcept
     {
         m_x *= rhs.getX();
         m_y *= rhs.getY();
@@ -234,7 +218,7 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
-    Vector& operator/=(T1 rhs) NOEXCEPT
+    Vector& operator/=(T1 rhs) noexcept
     {
         m_x /= rhs;
         m_y /= rhs;
@@ -252,7 +236,7 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
-    Vector& operator/=(const Vector<T1>& rhs) NOEXCEPT
+    Vector& operator/=(const Vector<T1>& rhs) noexcept
     {
         m_x /= rhs.getX();
         m_y /= rhs.getY();
@@ -269,7 +253,7 @@ public:
      *
      * @return
      */
-    T& x() NOEXCEPT
+    T& x() noexcept
     {
         return m_x;
     }
@@ -280,7 +264,7 @@ public:
      *
      * @return
      */
-    T getX() const NOEXCEPT
+    T getX() const noexcept
     {
         return m_x;
     }
@@ -291,7 +275,7 @@ public:
      *
      * @return
      */
-    T& y() NOEXCEPT
+    T& y() noexcept
     {
         return m_y;
     }
@@ -302,7 +286,7 @@ public:
      *
      * @return
      */
-    T getY() const NOEXCEPT
+    T getY() const noexcept
     {
         return m_y;
     }
@@ -313,7 +297,7 @@ public:
      *
      * @return
      */
-    T& width() NOEXCEPT
+    T& width() noexcept
     {
         return m_x;
     }
@@ -324,7 +308,7 @@ public:
      *
      * @return
      */
-    T getWidth() const NOEXCEPT
+    T getWidth() const noexcept
     {
         return m_x;
     }
@@ -335,7 +319,7 @@ public:
      *
      * @return
      */
-    T& height() NOEXCEPT
+    T& height() noexcept
     {
         return m_y;
     }
@@ -346,7 +330,7 @@ public:
      *
      * @return
      */
-    T getHeight() const NOEXCEPT
+    T getHeight() const noexcept
     {
         return m_y;
     }
@@ -361,7 +345,7 @@ public:
      *
      * @return
      */
-    static bool inRange(T value, T low, T high) NOEXCEPT
+    static constexpr bool inRange(T value, T low, T high) noexcept
     {
         return value >= low && value < high;
     }
@@ -375,7 +359,7 @@ public:
      *
      * @return
      */
-    bool inRange(const Vector& low, const Vector& high) const NOEXCEPT
+    constexpr bool inRange(const Vector& low, const Vector& high) const noexcept
     {
         return (
             inRange(getX(), low.getX(), high.getX()) &&
@@ -393,7 +377,7 @@ public:
      *
      * @param x
      */
-    void setX(T x) NOEXCEPT
+    void setX(T x) noexcept
     {
         m_x = x;
     }
@@ -404,7 +388,7 @@ public:
      *
      * @param y
      */
-    void setY(T y) NOEXCEPT
+    void setY(T y) noexcept
     {
         m_y = y;
     }
@@ -420,7 +404,7 @@ public:
      * @return
      */
     template<typename T1 = decltype(T{} * T{}), typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
-    T getLength() const NOEXCEPT
+    T getLength() const noexcept
     {
         using std::sqrt;
         return static_cast<T>(sqrt(getLengthSquared()));
@@ -432,7 +416,7 @@ public:
      *
      * @return
      */
-    decltype(T{} * T{}) getLengthSquared() const NOEXCEPT
+    decltype(T{} * T{}) getLengthSquared() const noexcept
     {
         return dot(*this);
     }
@@ -445,7 +429,7 @@ public:
      *
      * @return Dot product.
      */
-    CONSTEXPR decltype(T{} * T{}) dot(const Vector& rhs) const NOEXCEPT
+    constexpr decltype(T{} * T{}) dot(const Vector& rhs) const noexcept
     {
         return getX() * rhs.getX() + getY() * rhs.getY();
     }
@@ -457,7 +441,7 @@ public:
      * @return
      */
     template<typename T2>
-    Vector<T2> inversed() const NOEXCEPT
+    Vector<T2> inversed() const noexcept
     {
         return Vector<T2>(T2(1) / getX(), T2(1) / getY());
     }
@@ -470,7 +454,7 @@ public:
      *
      * @return
      */
-    Vector rotated(units::Angle angle) const NOEXCEPT
+    Vector rotated(units::Angle angle) const noexcept
     {
         return Vector(
             static_cast<T>(getX() * cos(angle) - getY() * sin(angle)),
@@ -507,11 +491,8 @@ using Coordinate = Vector<unsigned int>;
 
 /* ************************************************************************ */
 
-#if _MSC_VER
-DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<float>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<unsigned int>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<int>;
-#elif !defined(__GNUC__) // NOTE: GCC have problem with =default constructor in linking stage.
+// NOTE: GCC have problem with =default constructor in linking stage.
+#if !defined(__GNUC__)
 extern template class Vector<float>;
 extern template class Vector<unsigned int>;
 extern template class Vector<int>;
@@ -531,7 +512,7 @@ extern template class Vector<int>;
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs.getX() + rhs.getX(), lhs.getY() + rhs.getY()};
 }
@@ -550,7 +531,7 @@ inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, const Vect
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, T2 rhs) noexcept
 {
     return {lhs.getX() + rhs, lhs.getY() + rhs};
 }
@@ -569,7 +550,7 @@ inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, T2 rhs) NO
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} + T2{})> operator+(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} + T2{})> operator+(T1 lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs + rhs.getX(), lhs + rhs.getY()};
 }
@@ -588,7 +569,7 @@ inline Vector<decltype(T1{} + T2{})> operator+(T1 lhs, const Vector<T2>& rhs) NO
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs.getX() - rhs.getX(), lhs.getY() - rhs.getY()};
 }
@@ -607,7 +588,7 @@ inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, const Vect
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, T2 rhs) noexcept
 {
     return {lhs.getX() - rhs, lhs.getY() - rhs};
 }
@@ -626,7 +607,7 @@ inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, T2 rhs) NO
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} - T2{})> operator-(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} - T2{})> operator-(T1 lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs - rhs.getX(), lhs - rhs.getY()};
 }
@@ -645,7 +626,7 @@ inline Vector<decltype(T1{} - T2{})> operator-(T1 lhs, const Vector<T2>& rhs) NO
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs.getX() * rhs.getX(), lhs.getY() * rhs.getY()};
 }
@@ -664,7 +645,7 @@ inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, const Vect
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, T2 rhs) noexcept
 {
     return {lhs.getX() * rhs, lhs.getY() * rhs};
 }
@@ -683,7 +664,7 @@ inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, T2 rhs) NO
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} * T2{})> operator*(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} * T2{})> operator*(T1 lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs * rhs.getX(), lhs * rhs.getY()};
 }
@@ -702,7 +683,7 @@ inline Vector<decltype(T1{} * T2{})> operator*(T1 lhs, const Vector<T2>& rhs) NO
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs.getX() / rhs.getX(), lhs.getY() / rhs.getY()};
 }
@@ -721,7 +702,7 @@ inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, const Vect
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, T2 rhs) NOEXCEPT
+inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, T2 rhs) noexcept
 {
     return {lhs.getX() / rhs, lhs.getY() / rhs};
 }
@@ -740,7 +721,7 @@ inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, T2 rhs) NO
  * @return Result vector.
  */
 template<typename T1, typename T2>
-inline Vector<decltype(T1{} / T2{})> operator/(T1 lhs, const Vector<T2>& rhs) NOEXCEPT
+inline Vector<decltype(T1{} / T2{})> operator/(T1 lhs, const Vector<T2>& rhs) noexcept
 {
     return {lhs / rhs.getX(), lhs / rhs.getY()};
 }
@@ -756,7 +737,7 @@ inline Vector<decltype(T1{} / T2{})> operator/(T1 lhs, const Vector<T2>& rhs) NO
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     auto x1 = lhs.getX();
     auto y1 = lhs.getY();
@@ -776,8 +757,72 @@ inline bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
  *
  * @return
  */
+template<typename T1>
+inline bool operator==(const Vector<T1>& lhs, Zero_t rhs) noexcept
+{
+    return lhs == Vector<T1>(Zero);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator==(Zero_t lhs, const Vector<T1>& rhs) noexcept
+{
+    return Vector<T1>(Zero) == rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
 template<typename T1, typename T2>
-inline bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator!=(const Vector<T1>& lhs, Zero_t rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator!=(Zero_t lhs, const Vector<T1>& rhs) noexcept
 {
     return !operator==(lhs, rhs);
 }
@@ -793,7 +838,7 @@ inline bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     using T = decltype(T1{} < T2{});
 
@@ -815,8 +860,72 @@ inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
  *
  * @return
  */
+template<typename T1>
+inline bool operator<(const Vector<T1>& lhs, Zero_t rhs) noexcept
+{
+    return lhs < Vector<T1>{Zero};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator<(Zero_t lhs, const Vector<T1>& rhs) noexcept
+{
+    return Vector<T1>{Zero} < rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
 template<typename T1, typename T2>
-inline bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator<=(const Vector<T1>& lhs, Zero_t rhs) noexcept
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator<=(Zero_t lhs, const Vector<T1>& rhs) noexcept
 {
     return !operator>(lhs, rhs);
 }
@@ -832,7 +941,41 @@ inline bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+{
+    // Reversed operands
+    return operator<(rhs, lhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator>(const Vector<T1>& lhs, Zero_t rhs) noexcept
+{
+    // Reversed operands
+    return operator<(rhs, lhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator>(Zero_t lhs, const Vector<T1>& rhs) noexcept
 {
     // Reversed operands
     return operator<(rhs, lhs);
@@ -849,7 +992,39 @@ inline bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
  * @return
  */
 template<typename T1, typename T2>
-inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+{
+    return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator>=(const Vector<T1>& lhs, Zero_t rhs) noexcept
+{
+    return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1>
+inline bool operator>=(Zero_t lhs, const Vector<T1>& rhs) noexcept
 {
     return !operator<(lhs, rhs);
 }
@@ -865,15 +1040,13 @@ inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
  * @return Dot product.
  */
 template<typename T1, typename T2>
-inline CONSTEXPR decltype(T1{} * T2{}) dot(const Vector<T1>& lhs, const Vector<T2>& rhs) NOEXCEPT
+inline constexpr decltype(T1{} * T2{}) dot(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return lhs.getX() * rhs.getX() + lhs.getY() * rhs.getY();
 }
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

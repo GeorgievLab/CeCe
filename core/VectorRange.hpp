@@ -201,7 +201,7 @@ CONSTEXPR IteratorRange<IteratorVector<T>> range(Vector<T> begin, Vector<T> end)
 template<typename T>
 CONSTEXPR IteratorRange<IteratorVector<T>> range(Vector<T> end) NOEXCEPT
 {
-    return range(Vector<T>(Vector<T>::Zero), end);
+    return range(Vector<T>(Zero), end);
 }
 
 /* ************************************************************************ */
