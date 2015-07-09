@@ -22,7 +22,7 @@ set(SRCS
 # Build plugin
 build_plugin(diffusion-python
     SOURCES ${SRCS}
-    PLUGINS_REQUIRED streamlines python
+    PLUGINS_REQUIRED diffusion python
     LIBRARIES ${PYTHON_LIBRARIES}
 )
 
