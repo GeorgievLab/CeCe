@@ -5,6 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -22,6 +24,7 @@
 #include "simulator/Module.hpp"
 
 #if ENABLE_RENDER
+#include "render/Color.hpp"
 #include "render/Context.hpp"
 #include "render/Object.hpp"
 #include "render/GridColorSmooth.hpp"
@@ -79,22 +82,6 @@ public:
 
     /// Invalid signal ID.
     static constexpr SignalId INVALID_SIGNAL_ID = -1;
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-    * @brief Constructor.
-    */
-    Module();
-
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~Module();
 
 
 // Public Accessors
@@ -368,6 +355,34 @@ public:
     }
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Get signal color.
+     *
+     * @param id Signal identifier.
+     *
+     * @return Signal color.
+     */
+    const render::Color& getSignalColor(SignalId id) const noexcept
+    {
+        return m_colors[id];
+    }
+
+
+    /**
+     * @brief Get signal color.
+     *
+     * @param name Signal name.
+     *
+     * @return Signal color.
+     */
+    const render::Color& getSignalColor(const String& name) const noexcept
+    {
+        return getSignalColor(getSignalId(name));
+    }
+#endif
+
+
     /**
      * @brief Check if coordinates are in range.
      *
@@ -399,8 +414,10 @@ public:
      * @param name    Signal name.
      * @param rate    Diffusion rate.
      * @param degRate Degradation rate.
+     *
+     * @return Signal identifier.
      */
-    void registerSignal(String name, DiffusionRate rate, DegradationRate degRate = {});
+    SignalId registerSignal(String name, DiffusionRate rate, DegradationRate degRate = {});
 
 
     /**
@@ -513,7 +530,7 @@ public:
      */
     void setDiffusionRate(const String& name, DiffusionRate rate) noexcept
     {
-        m_diffusionRates[getSignalId(name)] = rate;
+        setDiffusionRate(getSignalId(name), rate);
     }
 
 
@@ -537,8 +554,34 @@ public:
      */
     void setDegradationRate(const String& name, DegradationRate rate) noexcept
     {
-        m_degradationRates[getSignalId(name)] = rate;
+        setDegradationRate(getSignalId(name), rate);
     }
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Set signal color.
+     *
+     * @param id    Signal identifier.
+     * @param color New signal color.
+     */
+    void setSignalColor(SignalId id, render::Color color) noexcept
+    {
+        m_colors[id] = color;
+    }
+
+
+    /**
+     * @brief Set signal color.
+     *
+     * @param name  Signal name.
+     * @param color New signal color.
+     */
+    void setSignalColor(const String& name, render::Color color) noexcept
+    {
+        setSignalColor(getSignalId(name), color);
+    }
+#endif
 
 
 // Public Operations
@@ -571,10 +614,8 @@ public:
      * @param world
      */
     void draw(render::Context& context, const simulator::Simulation& simulation) override;
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Update drawable.
      */
@@ -651,13 +692,13 @@ private:
     /// Back signal grids.
     DynamicArray<GridType> m_gridsBack;
 
-    /// Signal colors.
-    DynamicArray<render::Color> m_colors;
-
+#if ENABLE_RENDER
     /// Background color.
     render::Color m_background = render::colors::BLACK;
 
-#if ENABLE_RENDER
+    /// Signal colors.
+    DynamicArray<render::Color> m_colors;
+
     /// Drawable signal grid.
     render::ObjectPtr<render::GridColorSmooth> m_drawable;
 #endif

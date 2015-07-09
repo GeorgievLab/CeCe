@@ -5,25 +5,30 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 #include "simulator/Simulation.hpp"
 
-// Module
+// Plugin
 #include "Module.hpp"
 
-// Modules
+// Plugins
 #include "plugins/diffusion/Module.hpp"
 #include "plugins/streamlines/Module.hpp"
 
 /* ************************************************************************ */
 
-class DiffusionStreamlinesApi : public simulator::PluginApi
+using namespace simulator;
+
+/* ************************************************************************ */
+
+class DiffusionStreamlinesApi : public PluginApi
 {
-    UniquePtr<simulator::Module> createModule(simulator::Simulation& simulation, const String& name) NOEXCEPT override
+    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
         return makeUnique<plugin::diffusion_streamlines::Module>(
             simulation.useModule<plugin::diffusion::Module>("diffusion"),

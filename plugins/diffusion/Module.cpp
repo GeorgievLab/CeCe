@@ -5,6 +5,9 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* Author: Hynek Kasl <hkasl@students.zcu.cz>                               */
+/* ************************************************************************ */
 
 // Declaration
 #include "Module.hpp"
@@ -53,22 +56,22 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-Module::Module()
-{
-    m_colors.push_back(render::colors::CYAN);
-    m_colors.push_back(render::colors::MAGENTA);
-    m_colors.push_back(render::colors::YELLOW);
-    m_colors.push_back(render::colors::BLUE);
-    m_colors.push_back(render::colors::RED);
-    m_colors.push_back(render::colors::GREEN);
-    m_colors.push_back(render::Color{ 1, 0.894f, 0.769f });
-}
+namespace {
 
 /* ************************************************************************ */
 
-Module::~Module()
-{
-    // Nothing to do
+#if ENABLE_RENDER
+constexpr StaticArray<render::Color, 5> g_colors = {
+    render::colors::MAGENTA,
+    render::colors::YELLOW,
+    render::colors::BLUE,
+    render::colors::RED,
+    render::colors::GREEN
+};
+#endif
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
@@ -87,15 +90,21 @@ void Module::setGridSize(SizeType size)
 
 /* ************************************************************************ */
 
-void Module::registerSignal(String name, DiffusionRate rate, DegradationRate degRate)
+Module::SignalId Module::registerSignal(String name, DiffusionRate rate, DegradationRate degRate)
 {
+    const SignalId id = m_names.size();
+
     m_names.push_back(std::move(name));
     m_diffusionRates.push_back(rate);
     m_degradationRates.push_back(degRate);
     m_gridsFront.emplace_back(m_gridSize + 2 * OFFSET);
     m_gridsBack.emplace_back(m_gridSize + 2 * OFFSET);
 
-    // TODO: generate signal colour
+#if ENABLE_RENDER
+    m_colors.push_back(g_colors[id]);
+#endif
+
+    return id;
 }
 
 /* ************************************************************************ */
