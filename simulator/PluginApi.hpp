@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -17,14 +19,11 @@
 #include "simulator/Program.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
+#include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
 namespace simulator {
-
-/* ************************************************************************ */
-
-class Simulation;
 
 /* ************************************************************************ */
 
@@ -70,6 +69,20 @@ public:
     virtual void finalizeSimulation(Simulation& simulation)
     {
         // Nothing to do
+    }
+
+
+    /**
+     * @brief Create initializer.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param code       Program code.
+     *
+     * @return Created initializer.
+     */
+    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
+    {
+        return {};
     }
 
 

@@ -127,6 +127,37 @@ void process_parameter_node(const pugi::xml_node& node, simulator::Simulation& s
 /* ************************************************************************ */
 
 /**
+ * @brief Process init node.
+ *
+ * @param node
+ * @param simulation
+ */
+void process_init_node(const pugi::xml_node& node, simulator::Simulation& simulation, const FilePath& filename)
+{
+    assert(!strcmp(node.name(), "init"));
+
+    // Create configuration
+    const parser::xml::ImmutableConfiguration configuration(node, filename);
+
+    if (!configuration.hasValue("language"))
+        throw parser::Exception("Missing attribute 'language' in 'init' element");
+
+    const auto lang = configuration.getString("language");
+    const auto code = configuration.getText();
+
+    // Get library by language name
+    auto api = simulation.loadPlugin(lang);
+
+    if (!api)
+        throw parser::Exception("Unable to load library for language '" + lang + "'");
+
+    // Register program
+    simulation.addInitializer(api->createInitializer(simulation, code));
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Process program node.
  *
  * @param node
@@ -327,6 +358,12 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
     for (const auto& parameter : node.children("parameter"))
     {
         process_parameter_node(parameter, simulation, filename);
+    }
+
+    // Parse init
+    for (const auto& init : node.children("init"))
+    {
+        process_init_node(init, simulation, filename);
     }
 
     // Parse plugins

@@ -25,6 +25,8 @@ set(SRCS
     Module.cpp
     Program.hpp
     Program.cpp
+    Initializer.hpp
+    Initializer.cpp
     Object.hpp
     Object.cpp
     Library.cpp

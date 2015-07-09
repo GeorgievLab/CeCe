@@ -72,7 +72,12 @@ Simulation::Simulation() NOEXCEPT
 
 Simulation::~Simulation()
 {
-    // Nothing to do
+    // Call finalize simulations for all plugins
+    for (auto it = m_plugins.rbegin(); it != m_plugins.rend(); ++it)
+    {
+        assert(it->second.getApi());
+        it->second.getApi()->finalizeSimulation(*this);
+    }
 }
 
 /* ************************************************************************ */
@@ -173,6 +178,10 @@ void Simulation::reset()
 
 bool Simulation::update(units::Duration dt)
 {
+    // Initialize simulation
+    if (!isInitialized())
+        initialize();
+
     // Increase step number
     m_iteration++;
     m_totalTime += dt;
@@ -229,6 +238,18 @@ bool Simulation::update(units::Duration dt)
 #endif
 
     return (hasUnlimitedIterations() || getIteration() <= getIterations());
+}
+
+/* ************************************************************************ */
+
+void Simulation::initialize()
+{
+    assert(!isInitialized());
+
+    for (auto& init : m_initializers)
+        init(*this);
+
+    m_initialized = true;
 }
 
 /* ************************************************************************ */

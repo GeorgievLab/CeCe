@@ -29,6 +29,7 @@
     <File Name="Object.cpp"/>
     <File Name="wrapper_stdout.cpp"/>
     <File Name="wrapper.cpp"/>
+    <File Name="Initializer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
@@ -47,6 +48,7 @@
     <File Name="Python.hpp"/>
     <File Name="View.hpp"/>
     <File Name="ValueCast.hpp"/>
+    <File Name="Initializer.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

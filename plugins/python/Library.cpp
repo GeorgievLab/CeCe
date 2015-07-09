@@ -11,8 +11,7 @@
 
 // Simulator
 #include "core/Log.hpp"
-
-// Simulator
+#include "core/Exception.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 #include "simulator/SimulationListener.hpp"
@@ -21,6 +20,7 @@
 #include "Module.hpp"
 #include "Object.hpp"
 #include "Program.hpp"
+#include "Initializer.hpp"
 
 // Wrappers
 #include "wrapper_stdout.hpp"
@@ -82,6 +82,32 @@ class PythonApi : public PluginApi, public SimulationListener
 
 
     /**
+     * @brief Create initializer.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param code       Program code.
+     *
+     * @return Created initializer.
+     */
+    Simulation::Initializer createInitializer(Simulation& simulation, String code) override
+    {
+        try
+        {
+            plugin::python::Initializer init;
+            init.initSource(code);
+
+            return init;
+        }
+        catch (const Exception& e)
+        {
+            Log::warning(e.what());
+        }
+
+        return {};
+    }
+
+
+    /**
      * @brief Create module from current library.
      *
      * @param simulation Simulation for that module is created.
@@ -89,7 +115,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created module.
      */
-    std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT override
+    std::unique_ptr<Module> createModule(Simulation& simulation, const String& name) NOEXCEPT override
     {
         try
         {
@@ -113,7 +139,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created object.
      */
-    std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT override
+    std::unique_ptr<Object> createObject(Simulation& simulation, const String& name, bool dynamic = true) NOEXCEPT override
     {
         try
         {
@@ -137,7 +163,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created object.
      */
-    Program createProgram(Simulation& simulation, const std::string& name, std::string code = {}) NOEXCEPT override
+    Program createProgram(Simulation& simulation, const String& name, String code = {}) NOEXCEPT override
     {
         try
         {

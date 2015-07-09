@@ -88,6 +88,12 @@ public:
     /// Parameter container.
     using ParameterContainer = Map<String, ParameterValueType>;
 
+    /// Initialization function.
+    using Initializer = std::function<void(Simulation&)>;
+
+    /// Initializer container type.
+    using InitializerContainer = DynamicArray<Initializer>;
+
 
 // Public Ctors
 public:
@@ -107,6 +113,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns if simulation is initialized.
+     *
+     * @return
+     */
+    bool isInitialized() const noexcept
+    {
+        return m_initialized;
+    }
 
 
     /**
@@ -399,6 +416,17 @@ public:
 
 
     /**
+     * @brief Register initializer.
+     *
+     * @param init Initializer function.
+     */
+    void addInitializer(Initializer init)
+    {
+        m_initializers.push_back(std::move(init));
+    }
+
+
+    /**
      * @brief Set total number of simulation iterations.
      *
      * @param iterations Number of iterations. If value is 0, there is
@@ -596,6 +624,12 @@ public:
 
 
     /**
+     * @brief Initialize simulation.
+     */
+    void initialize();
+
+
+    /**
      * @brief Update simulation.
      *
      * @param dt
@@ -651,6 +685,12 @@ public:
 
 // Private Data Members
 private:
+
+    /// If simulation is initialized.
+    bool m_initialized = false;
+
+    /// A list of simulation initializers.
+    InitializerContainer m_initializers;
 
     /// Number of simulation steps.
     IterationNumber m_iteration = 0;
