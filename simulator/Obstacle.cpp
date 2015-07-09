@@ -54,6 +54,9 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
             shape.rectangle.size = parser::parse_vector<units::Length>(value);
         });
         break;
+
+    case ShapeType::Undefined:
+        throw RuntimeException("Unknown shape type");
     }
 
 #if ENABLE_PHYSICS
@@ -92,6 +95,10 @@ void Obstacle::draw(render::Context& context)
             m_drawRectangle->draw(context);
             context.matrixPop();
             break;
+
+        case ShapeType::Undefined:
+            assert(false || "This shouldn't happend");
+            break;
         }
     }
 }
@@ -127,6 +134,10 @@ void Obstacle::initShapes()
             getBody()->CreateFixture(s, 1);
             break;
         }
+
+        case ShapeType::Undefined:
+            assert(false || "This shouldn't happend");
+            break;
         }
     }
 }
