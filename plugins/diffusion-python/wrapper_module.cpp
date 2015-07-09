@@ -16,6 +16,7 @@
 
 // Python
 #include "plugins/python/wrapper.hpp"
+#include "plugins/python/Utils.hpp"
 
 // Streamlines
 #include "plugins/diffusion/Module.hpp"
@@ -23,6 +24,22 @@
 /* ************************************************************************ */
 
 using namespace plugin::python;
+
+/* ************************************************************************ */
+
+static PyObject* get_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args, void*) NOEXCEPT
+{
+    int id;
+    int x;
+    int y;
+
+    if(!PyArg_ParseTuple(args, "iii", &id, &x, &y))
+        return NULL;
+
+    const float value = self->value->getSignal(id, plugin::diffusion::Module::Coordinate(x, y));
+
+    return Py_BuildValue("f", value);
+}
 
 /* ************************************************************************ */
 
@@ -36,12 +53,14 @@ void python_wrapper_module()
 
     static PyGetSetDef properties[] = {
         defineProperty<1, type_ptr>("signalCount", &type::getSignalCount),
+        defineProperty<2, type_ptr>("gridSize", &type::getGridSize),
         //defineProperty<2, type_ptr>("diffusionRate", &type::getDiffusionRate, &type::setDiffusionRate),
         {NULL}  /* Sentinel */
     };
 
     static PyMethodDef fns[] = {
         defineMemberFunction<1, type_ptr>("getSignalId", &type::getSignalId),
+        {"getSignal", (PyCFunction) get_signal, METH_VARARGS, NULL},
         //defineMemberFunction<2, type_ptr>("getSignal", +[](type_ptr ptr, type::SignalId id, int x, int y) {
         //    return ptr->getSignal(id, type::Coordinate(x, y));
         //}),
