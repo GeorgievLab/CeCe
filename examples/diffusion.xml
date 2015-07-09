@@ -1,0 +1,26 @@
+<simulation world-size="20um 20um" dt="1s" iterations="20">
+    <plugin name="python" />
+    <program name="store" language="python">
+#import csv
+file = open("data.csv", 'wb')
+#writer = csv.writer(file, delimiter = ';')
+#writer.writerow(["iteration", "totalTime", "x", "y", "value"])
+file.write("iteration;totalTime;x;y;value");
+
+# Program code
+def call(object, simulation, dt):
+    diffusion = simulation.useModule("diffusion")
+    size = diffusion.gridSize
+
+    for x in range(0, size.width):
+        for y in range(0, size.height):
+            value = diffusion.getSignal(0, x, y)
+            #writer.writerow([simulation.iteration, simulation.totalTime, x, y, diffusion.getSignal(0, x, y)])
+            file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(x) + ";" + str(y) + ";" + str(value));
+    </program>
+    <object class="cell.Yeast" programs="diffusion.gen1 store" />
+    <module name="diffusion" grid="100">
+        <signal name="gfp" diffusion-rate="35um2/s" degradation-rate="0.1/s" color="green" />
+    </module>
+</simulation>
+
