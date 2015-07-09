@@ -5,7 +5,7 @@
 file = open("data.csv", 'wb')
 #writer = csv.writer(file, delimiter = ';')
 #writer.writerow(["iteration", "totalTime", "x", "y", "value"])
-file.write("iteration;totalTime;x;y;value");
+file.write("iteration;totalTime;x;y;value\n");
 
 # Program code
 def call(object, simulation, dt):
@@ -16,7 +16,7 @@ def call(object, simulation, dt):
         for y in range(0, size.height):
             value = diffusion.getSignal(0, x, y)
             #writer.writerow([simulation.iteration, simulation.totalTime, x, y, diffusion.getSignal(0, x, y)])
-            file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(x) + ";" + str(y) + ";" + str(value));
+            file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(x) + ";" + str(y) + ";" + str(value) + "\n");
     </program>
     <object class="cell.Yeast" programs="diffusion.gen1 store" />
     <module name="diffusion" grid="100">
