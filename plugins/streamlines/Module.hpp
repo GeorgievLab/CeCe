@@ -203,7 +203,7 @@ protected:
 private:
 
     /// In-flow velocity.
-    VelocityVector m_velocityInflow{units::um_s(10.f), units::Zero};
+    VelocityVector m_velocityInflow{units::um_s(10.f), Zero};
 
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);

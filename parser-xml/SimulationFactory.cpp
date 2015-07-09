@@ -336,7 +336,7 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         // Real-time time step
         if (dtStr.empty() || dtStr == "auto")
         {
-            simulation.setTimeStep(units::Zero);
+            simulation.setTimeStep(Zero);
         }
         else
         {

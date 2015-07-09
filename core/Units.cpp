@@ -5,15 +5,15 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 // Declaration
 #include "core/Units.hpp"
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -21,7 +21,7 @@ namespace units {
 
 /* ************************************************************************ */
 
-#if !_MSC_VER && 0
+#if 0
 template class Unit<List<BaseLength>, List<>>;
 template class Unit<List<BaseMass>, List<>>;
 template class Unit<List<BaseTime>, List<>>;
@@ -41,8 +41,6 @@ template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

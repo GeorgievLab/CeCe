@@ -199,7 +199,7 @@ public:
      */
     bool isTimeStepRealTime() const NOEXCEPT
     {
-        return m_timeStep == units::Time(units::Zero);
+        return m_timeStep == Zero;
     }
 
 

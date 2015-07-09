@@ -171,7 +171,8 @@ Program Simulation::buildProgram(const String& path)
 void Simulation::reset()
 {
     m_iteration = 0;
-    m_totalTime = units::Zero;
+    m_totalTime = Zero;
+    m_initialized = false;
 }
 
 /* ************************************************************************ */

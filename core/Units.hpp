@@ -18,13 +18,11 @@
 #include <type_traits>
 
 // Simulator
-#include "core/compatibility.hpp"
+#include "core/Zero.hpp"
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -40,24 +38,21 @@ using Value = float;
 /* ************************************************************************ */
 
 /**
- * @brief Zero helper struct.
- */
-static CONSTEXPR_CONST struct Zero_t {} Zero{};
-
-/* ************************************************************************ */
-
-/**
  * @brief Base SI units.
  */
-struct DLL_EXPORT BaseLength { static CONSTEXPR_CONST int value = 0; };
-struct DLL_EXPORT BaseTime   { static CONSTEXPR_CONST int value = 1; };
-struct DLL_EXPORT BaseMass   { static CONSTEXPR_CONST int value = 2; };
+struct BaseLength                   { static constexpr int order = 0; };
+struct BaseTime                     { static constexpr int order = 1; };
+struct BaseMass                     { static constexpr int order = 2; };
+struct BaseElectricCurrent          { static constexpr int order = 3; };
+struct BaseThermodynamicTemperature { static constexpr int order = 4; };
+struct BaseAmountOfSubstance        { static constexpr int order = 5; };
+struct BaseLuminousIntensity        { static constexpr int order = 6; };
 
 /* ************************************************************************ */
 
-static CONSTEXPR_CONST Value LENGTH_COEFFICIENT = 1e6f;
-static CONSTEXPR_CONST Value TIME_COEFFICIENT = 1e0f;
-static CONSTEXPR_CONST Value MASS_COEFFICIENT = 1e9f;
+static constexpr Value LENGTH_COEFFICIENT = 1e6f;
+static constexpr Value TIME_COEFFICIENT = 1e0f;
+static constexpr Value MASS_COEFFICIENT = 1e9f;
 
 /* ************************************************************************ */
 
@@ -70,7 +65,7 @@ static CONSTEXPR_CONST Value MASS_COEFFICIENT = 1e9f;
 template<typename T1, typename T2>
 struct Less
 {
-    static CONSTEXPR_CONST bool value = T1::value < T2::value;
+    static constexpr bool value = T1::order < T2::order;
 };
 
 /* ************************************************************************ */
@@ -83,7 +78,7 @@ struct Less
 template<typename... Types>
 struct List
 {
-    static CONSTEXPR_CONST unsigned int size = sizeof...(Types);
+    static constexpr unsigned int size = sizeof...(Types);
 };
 
 /* ************************************************************************ */
@@ -163,7 +158,7 @@ public:
      *
      * @param value Init value.
      */
-    explicit CONSTEXPR Unit(value_type value) NOEXCEPT
+    explicit constexpr Unit(value_type value) noexcept
         : m_value(value)
     {
         // Nothing to do
@@ -173,7 +168,7 @@ public:
     /**
      * @brief Zero constructor.
      */
-    CONSTEXPR Unit(Zero_t) NOEXCEPT
+    constexpr Unit(Zero_t) noexcept
         : m_value(0)
     {
         // Nothing to do
@@ -189,7 +184,7 @@ public:
      *
      * @return
      */
-    explicit operator bool() const NOEXCEPT
+    explicit operator bool() const noexcept
     {
         return m_value != 0;
     }
@@ -200,7 +195,7 @@ public:
      *
      * @return
      */
-    explicit operator Value() const NOEXCEPT
+    explicit operator Value() const noexcept
     {
         return m_value;
     }
@@ -211,7 +206,7 @@ public:
      *
      * @return New value.
      */
-    Unit operator+() const NOEXCEPT
+    Unit operator+() const noexcept
     {
         return Unit(m_value);
     }
@@ -222,7 +217,7 @@ public:
      *
      * @return New value.
      */
-    Unit operator-() const NOEXCEPT
+    Unit operator-() const noexcept
     {
         return Unit(-m_value);
     }
@@ -235,7 +230,7 @@ public:
      *
      * @return *this.
      */
-    Unit& operator+=(Unit rhs) NOEXCEPT
+    Unit& operator+=(Unit rhs) noexcept
     {
         m_value += rhs.m_value;
         return *this;
@@ -249,7 +244,7 @@ public:
      *
      * @return *this.
      */
-    Unit& operator-=(Unit rhs) NOEXCEPT
+    Unit& operator-=(Unit rhs) noexcept
     {
         m_value -= rhs.m_value;
         return *this;
@@ -263,7 +258,7 @@ public:
      *
      * @return *this.
      */
-    Unit& operator*=(value_type rhs) NOEXCEPT
+    Unit& operator*=(value_type rhs) noexcept
     {
         m_value *= rhs;
         return *this;
@@ -277,7 +272,7 @@ public:
      *
      * @return *this.
      */
-    Unit& operator/=(value_type rhs) NOEXCEPT
+    Unit& operator/=(value_type rhs) noexcept
     {
         m_value /= rhs;
         return *this;
@@ -293,7 +288,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR value_type value() const NOEXCEPT
+    constexpr value_type value() const noexcept
     {
         return m_value;
     }
@@ -329,7 +324,7 @@ template<typename T>
 struct Remove<T, List<>>
 {
     // Not found
-    static CONSTEXPR_CONST bool value = false;
+    static constexpr bool value = false;
 
     // Empty list.
     using type = List<>;
@@ -348,13 +343,13 @@ template<typename T, typename Type, typename... Types>
 struct Remove<T, List<Type, Types...>>
 {
     /// If types match.
-    static CONSTEXPR_CONST bool match = std::is_same<T, Type>::value;
+    static constexpr bool match = std::is_same<T, Type>::value;
 
     // Inner remove
     using remove_inner = Remove<T, List<Types...>>;
 
     // If type is found.
-    static CONSTEXPR_CONST bool value = match || remove_inner::value;
+    static constexpr bool value = match || remove_inner::value;
 
     /// List type without first T
     using type = typename std::conditional<match,
@@ -592,10 +587,10 @@ struct Reduce<List<Nominators...>, List<Denominators...>>
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR bool operator==(
+inline constexpr bool operator==(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return std::abs(lhs.value() - rhs.value()) < std::numeric_limits<Value>::epsilon();
     //return lhs.value() == rhs.value();
@@ -615,10 +610,94 @@ inline CONSTEXPR bool operator==(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR bool operator!=(
+inline constexpr bool operator==(
+    Unit<List<Nominators...>, List<Denominators...>> lhs, Zero_t rhs
+) noexcept
+{
+    return lhs == Unit<List<Nominators...>, List<Denominators...>>(Zero);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator==(
+    Zero_t lhs, Unit<List<Nominators...>, List<Denominators...>> rhs
+) noexcept
+{
+    return Unit<List<Nominators...>, List<Denominators...>>(Zero) == rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator!=(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator!=(
+    Unit<List<Nominators...>, List<Denominators...>> lhs, Zero_t rhs
+) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator!=(
+    Zero_t lhs, Unit<List<Nominators...>, List<Denominators...>> rhs
+) noexcept
 {
     return !operator==(lhs, rhs);
 }
@@ -637,10 +716,10 @@ inline CONSTEXPR bool operator!=(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR bool operator<(
+inline constexpr bool operator<(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return lhs.value() < rhs.value();
 }
@@ -659,10 +738,10 @@ inline CONSTEXPR bool operator<(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR bool operator<=(
+inline constexpr bool operator<=(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return !operator>(lhs, rhs);
 }
@@ -681,10 +760,10 @@ inline CONSTEXPR bool operator<=(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR bool operator>(
+inline constexpr bool operator>(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return operator<(rhs, lhs);
 }
@@ -703,10 +782,10 @@ inline CONSTEXPR bool operator>(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR bool operator>=(
+inline constexpr bool operator>=(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return !operator<(lhs, rhs);
 }
@@ -725,11 +804,11 @@ inline CONSTEXPR bool operator>=(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR
+inline constexpr
 Unit<List<Nominators...>, List<Denominators...>> operator+(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return lhs += rhs;
 }
@@ -748,11 +827,11 @@ Unit<List<Nominators...>, List<Denominators...>> operator+(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR
+inline constexpr
 Unit<List<Nominators...>, List<Denominators...>> operator-(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return lhs -= rhs;
 }
@@ -771,10 +850,10 @@ Unit<List<Nominators...>, List<Denominators...>> operator-(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR
+inline constexpr
 Unit<List<Nominators...>, List<Denominators...>> operator*(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
-    typename Unit<List<Nominators...>, List<Denominators...>>::value_type rhs) NOEXCEPT
+    typename Unit<List<Nominators...>, List<Denominators...>>::value_type rhs) noexcept
 {
     return lhs *= rhs;
 }
@@ -793,11 +872,11 @@ Unit<List<Nominators...>, List<Denominators...>> operator*(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR
+inline constexpr
 Unit<List<Nominators...>, List<Denominators...>> operator*(
     typename Unit<List<Nominators...>, List<Denominators...>>::value_type lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return rhs *= lhs;
 }
@@ -818,11 +897,11 @@ Unit<List<Nominators...>, List<Denominators...>> operator*(
  * @return Result value.
  */
 template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
-inline CONSTEXPR
+inline constexpr
 typename Reduce<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type operator*(
     Unit<List<Nominators1...>, List<Denominators1...>> lhs,
     Unit<List<Nominators2...>, List<Denominators2...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return typename Reduce<List<Nominators1..., Nominators2...>, List<Denominators1..., Denominators2...>>::type{
         lhs.value() * rhs.value()
@@ -843,11 +922,11 @@ typename Reduce<List<Nominators1..., Nominators2...>, List<Denominators1..., Den
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR
+inline constexpr
 Unit<List<Nominators...>, List<Denominators...>> operator/(
     Unit<List<Nominators...>, List<Denominators...>> lhs,
     typename Unit<List<Nominators...>, List<Denominators...>>::value_type rhs
-) NOEXCEPT
+) noexcept
 {
     return lhs /= rhs;
 }
@@ -866,11 +945,11 @@ Unit<List<Nominators...>, List<Denominators...>> operator/(
  * @return Result value.
  */
 template<typename... Nominators, typename... Denominators>
-inline CONSTEXPR
+inline constexpr
 Unit<List<Nominators...>, List<Denominators...>> operator/(
     typename Unit<List<Nominators...>, List<Denominators...>>::value_type lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return rhs /= lhs;
 }
@@ -891,11 +970,11 @@ Unit<List<Nominators...>, List<Denominators...>> operator/(
  * @return Result value.
  */
 template<typename... Nominators1, typename... Denominators1, typename... Nominators2, typename... Denominators2>
-inline CONSTEXPR
+inline constexpr
 typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type operator/(
     Unit<List<Nominators1...>, List<Denominators1...>> lhs,
     Unit<List<Nominators2...>, List<Denominators2...>> rhs
-) NOEXCEPT
+) noexcept
 {
     return typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., Nominators2...>>::type{
         lhs.value() / rhs.value()
@@ -1010,19 +1089,7 @@ using Probability = Value;
 
 /* ************************************************************************ */
 
-#if _MSC_VER
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength>, List<>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseTime>, List<>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
-#elif 0
+#if 0
 extern template class Unit<List<BaseLength>, List<>>;
 extern template class Unit<List<BaseMass>, List<>>;
 extern template class Unit<List<BaseTime>, List<>>;
@@ -1045,7 +1112,7 @@ extern template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
  *
  * @return
  */
-inline CONSTEXPR Value deg2rad(Value value) NOEXCEPT
+inline constexpr Value deg2rad(Value value) noexcept
 {
     return value * 0.01745329252f;
 }
@@ -1059,7 +1126,7 @@ inline CONSTEXPR Value deg2rad(Value value) NOEXCEPT
  *
  * @return
  */
-inline CONSTEXPR Value rad2deg(Value value) NOEXCEPT
+inline constexpr Value rad2deg(Value value) noexcept
 {
     return value * 57.2957795f;
 }
@@ -1073,7 +1140,7 @@ inline CONSTEXPR Value rad2deg(Value value) NOEXCEPT
  *
  * @return Length value.
  */
-inline CONSTEXPR Length m(Value value) NOEXCEPT
+inline constexpr Length m(Value value) noexcept
 {
     // 1m = 1'000mm
     return Length(LENGTH_COEFFICIENT * value);
@@ -1088,7 +1155,7 @@ inline CONSTEXPR Length m(Value value) NOEXCEPT
  *
  * @return Length value.
  */
-inline CONSTEXPR Length mm(Value value) NOEXCEPT
+inline constexpr Length mm(Value value) noexcept
 {
     // 1mm = 1/1'000m
     return m(value * 1e-3f);
@@ -1103,7 +1170,7 @@ inline CONSTEXPR Length mm(Value value) NOEXCEPT
  *
  * @return Length value.
  */
-inline CONSTEXPR Length um(Value value) NOEXCEPT
+inline constexpr Length um(Value value) noexcept
 {
     // 1um = 1/1'000'000m
     return m(value * 1e-6f);
@@ -1118,7 +1185,7 @@ inline CONSTEXPR Length um(Value value) NOEXCEPT
  *
  * @return Mass value.
  */
-inline CONSTEXPR Mass kg(Value value) NOEXCEPT
+inline constexpr Mass kg(Value value) noexcept
 {
     return Mass(MASS_COEFFICIENT * value);
 }
@@ -1132,7 +1199,7 @@ inline CONSTEXPR Mass kg(Value value) NOEXCEPT
  *
  * @return Mass value.
  */
-inline CONSTEXPR Mass g(Value value) NOEXCEPT
+inline constexpr Mass g(Value value) noexcept
 {
     // 1g = 1/1'000 kg
     return kg(value * 1e-3f);
@@ -1147,7 +1214,7 @@ inline CONSTEXPR Mass g(Value value) NOEXCEPT
  *
  * @return Mass value.
  */
-inline CONSTEXPR Mass mg(Value value) NOEXCEPT
+inline constexpr Mass mg(Value value) noexcept
 {
     // 1mg = 1/1'000 g
     return g(value * 1e-3f);
@@ -1162,7 +1229,7 @@ inline CONSTEXPR Mass mg(Value value) NOEXCEPT
  *
  * @return Mass value.
  */
-inline CONSTEXPR Mass ug(Value value) NOEXCEPT
+inline constexpr Mass ug(Value value) noexcept
 {
     // 1ug = 1/1'000 mg
     return mg(value * 1e-3f);
@@ -1177,7 +1244,7 @@ inline CONSTEXPR Mass ug(Value value) NOEXCEPT
  *
  * @return Mass value.
  */
-inline CONSTEXPR Mass ng(Value value) NOEXCEPT
+inline constexpr Mass ng(Value value) noexcept
 {
     // 1ng = 1/1'000 ug
     return ug(value * 1e-3f);
@@ -1192,7 +1259,7 @@ inline CONSTEXPR Mass ng(Value value) NOEXCEPT
  *
  * @return Mass value.
  */
-inline CONSTEXPR Mass pg(Value value) NOEXCEPT
+inline constexpr Mass pg(Value value) noexcept
 {
     // 1pg = 1/1'000 ng
     return ng(value * 1e-3f);
@@ -1207,7 +1274,7 @@ inline CONSTEXPR Mass pg(Value value) NOEXCEPT
  *
  * @return Time value.
  */
-inline CONSTEXPR Time s(Value value) NOEXCEPT
+inline constexpr Time s(Value value) noexcept
 {
     // 1s
     return Time(TIME_COEFFICIENT * value);
@@ -1222,7 +1289,7 @@ inline CONSTEXPR Time s(Value value) NOEXCEPT
  *
  * @return Time value.
  */
-inline CONSTEXPR Time ms(Value value) NOEXCEPT
+inline constexpr Time ms(Value value) noexcept
 {
     // 1s = 1'000ms
     return s(value / 1000.f);
@@ -1237,7 +1304,7 @@ inline CONSTEXPR Time ms(Value value) NOEXCEPT
  *
  * @return Time value.
  */
-inline CONSTEXPR Time us(Value value) NOEXCEPT
+inline constexpr Time us(Value value) noexcept
 {
     // 1ms = 1'000us
     return ms(value / 1000.f);
@@ -1252,7 +1319,7 @@ inline CONSTEXPR Time us(Value value) NOEXCEPT
  *
  * @return Time value.
  */
-inline CONSTEXPR Time min(Value value) NOEXCEPT
+inline constexpr Time min(Value value) noexcept
 {
     // 60s = 1min
     return s(60 * value);
@@ -1267,7 +1334,7 @@ inline CONSTEXPR Time min(Value value) NOEXCEPT
  *
  * @return Time value.
  */
-inline CONSTEXPR Time h(Value value) NOEXCEPT
+inline constexpr Time h(Value value) noexcept
 {
     // 60min = 1h
     return min(60 * value);
@@ -1282,7 +1349,7 @@ inline CONSTEXPR Time h(Value value) NOEXCEPT
  *
  * @return Area value.
  */
-inline CONSTEXPR Area m2(Value value) NOEXCEPT
+inline constexpr Area m2(Value value) noexcept
 {
     return m(value) * m(1);
 }
@@ -1296,7 +1363,7 @@ inline CONSTEXPR Area m2(Value value) NOEXCEPT
  *
  * @return Area value.
  */
-inline CONSTEXPR Area mm2(Value value) NOEXCEPT
+inline constexpr Area mm2(Value value) noexcept
 {
     return mm(value) * mm(1);
 }
@@ -1310,7 +1377,7 @@ inline CONSTEXPR Area mm2(Value value) NOEXCEPT
  *
  * @return Area value.
  */
-inline CONSTEXPR Area um2(Value value) NOEXCEPT
+inline constexpr Area um2(Value value) noexcept
 {
     return um(value) * um(1);
 }
@@ -1324,7 +1391,7 @@ inline CONSTEXPR Area um2(Value value) NOEXCEPT
  *
  * @return Volume value.
  */
-inline CONSTEXPR Volume m3(Value value) NOEXCEPT
+inline constexpr Volume m3(Value value) noexcept
 {
     return m2(value) * m(1);
 }
@@ -1338,7 +1405,7 @@ inline CONSTEXPR Volume m3(Value value) NOEXCEPT
  *
  * @return Volume value.
  */
-inline CONSTEXPR Volume mm3(Value value) NOEXCEPT
+inline constexpr Volume mm3(Value value) noexcept
 {
     return mm2(value) * mm(1);
 }
@@ -1352,7 +1419,7 @@ inline CONSTEXPR Volume mm3(Value value) NOEXCEPT
  *
  * @return Volume value.
  */
-inline CONSTEXPR Volume um3(Value value) NOEXCEPT
+inline constexpr Volume um3(Value value) noexcept
 {
     return um2(value) * um(1);
 }
@@ -1366,7 +1433,7 @@ inline CONSTEXPR Volume um3(Value value) NOEXCEPT
  *
  * @return Velocity value.
  */
-inline CONSTEXPR Velocity m_s(Value value) NOEXCEPT
+inline constexpr Velocity m_s(Value value) noexcept
 {
     return m(value) / s(1);
 }
@@ -1380,7 +1447,7 @@ inline CONSTEXPR Velocity m_s(Value value) NOEXCEPT
  *
  * @return Velocity value.
  */
-inline CONSTEXPR Velocity mm_s(Value value) NOEXCEPT
+inline constexpr Velocity mm_s(Value value) noexcept
 {
     return mm(value) / s(1);
 }
@@ -1394,7 +1461,7 @@ inline CONSTEXPR Velocity mm_s(Value value) NOEXCEPT
  *
  * @return Velocity value.
  */
-inline CONSTEXPR Velocity um_s(Value value) NOEXCEPT
+inline constexpr Velocity um_s(Value value) noexcept
 {
     return um(value) / s(1);
 }
@@ -1408,7 +1475,7 @@ inline CONSTEXPR Velocity um_s(Value value) NOEXCEPT
  *
  * @return Acceleration value.
  */
-inline CONSTEXPR Acceleration m_s2(Value value) NOEXCEPT
+inline constexpr Acceleration m_s2(Value value) noexcept
 {
     return m_s(value) / s(1);
 }
@@ -1422,7 +1489,7 @@ inline CONSTEXPR Acceleration m_s2(Value value) NOEXCEPT
  *
  * @return Acceleration value.
  */
-inline CONSTEXPR Acceleration mm_s2(Value value) NOEXCEPT
+inline constexpr Acceleration mm_s2(Value value) noexcept
 {
     return mm_s(value) / s(1);
 }
@@ -1436,7 +1503,7 @@ inline CONSTEXPR Acceleration mm_s2(Value value) NOEXCEPT
  *
  * @return Acceleration value.
  */
-inline CONSTEXPR Acceleration um_s2(Value value) NOEXCEPT
+inline constexpr Acceleration um_s2(Value value) noexcept
 {
     return um_s(value) / s(1);
 }
@@ -1450,7 +1517,7 @@ inline CONSTEXPR Acceleration um_s2(Value value) NOEXCEPT
  *
  * @return Force value.
  */
-inline CONSTEXPR Force kgm_s2(Value value) NOEXCEPT
+inline constexpr Force kgm_s2(Value value) noexcept
 {
     return kg(value) * m_s2(1);
 }
@@ -1464,7 +1531,7 @@ inline CONSTEXPR Force kgm_s2(Value value) NOEXCEPT
  *
  * @return Force value.
  */
-inline CONSTEXPR Force gm_s2(Value value) NOEXCEPT
+inline constexpr Force gm_s2(Value value) noexcept
 {
     return g(value) * m_s2(1);
 }
@@ -1478,7 +1545,7 @@ inline CONSTEXPR Force gm_s2(Value value) NOEXCEPT
  *
  * @return Force value.
  */
-inline CONSTEXPR Force mgm_s2(Value value) NOEXCEPT
+inline constexpr Force mgm_s2(Value value) noexcept
 {
     return kg(value) * m_s2(1);
 }
@@ -1492,7 +1559,7 @@ inline CONSTEXPR Force mgm_s2(Value value) NOEXCEPT
  *
  * @return Force value.
  */
-inline CONSTEXPR Force N(Value value) NOEXCEPT
+inline constexpr Force N(Value value) noexcept
 {
     return kgm_s2(value);
 }
@@ -1506,7 +1573,7 @@ inline CONSTEXPR Force N(Value value) NOEXCEPT
  *
  * @return Force value.
  */
-inline CONSTEXPR Force mN(Value value) NOEXCEPT
+inline constexpr Force mN(Value value) noexcept
 {
     return gm_s2(value);
 }
@@ -1520,7 +1587,7 @@ inline CONSTEXPR Force mN(Value value) NOEXCEPT
  *
  * @return Force value.
  */
-inline CONSTEXPR Force uN(Value value) NOEXCEPT
+inline constexpr Force uN(Value value) noexcept
 {
     return mgm_s2(value);
 }
@@ -1534,7 +1601,7 @@ inline CONSTEXPR Force uN(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR DynamicViscosity kg_m_s(Value value) NOEXCEPT
+inline constexpr DynamicViscosity kg_m_s(Value value) noexcept
 {
     return kg(value) / (m(1) * s(1));
 }
@@ -1548,7 +1615,7 @@ inline CONSTEXPR DynamicViscosity kg_m_s(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR DynamicViscosity g_m_s(Value value) NOEXCEPT
+inline constexpr DynamicViscosity g_m_s(Value value) noexcept
 {
     return g(value) / (m(1) * s(1));
 }
@@ -1562,7 +1629,7 @@ inline CONSTEXPR DynamicViscosity g_m_s(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR DynamicViscosity Ns_m2(Value value) NOEXCEPT
+inline constexpr DynamicViscosity Ns_m2(Value value) noexcept
 {
     return N(value) * s(1) / m2(1);
 }
@@ -1576,7 +1643,7 @@ inline CONSTEXPR DynamicViscosity Ns_m2(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR DynamicViscosity Pas(Value value) NOEXCEPT
+inline constexpr DynamicViscosity Pas(Value value) noexcept
 {
     return N(value) * s(1) / m2(1);
 }
@@ -1590,7 +1657,7 @@ inline CONSTEXPR DynamicViscosity Pas(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR DynamicViscosity mPas(Value value) NOEXCEPT
+inline constexpr DynamicViscosity mPas(Value value) noexcept
 {
     return mN(value) * s(1) / m2(1);
 }
@@ -1604,7 +1671,7 @@ inline CONSTEXPR DynamicViscosity mPas(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR KinematicViscosity m2_s(Value value) NOEXCEPT
+inline constexpr KinematicViscosity m2_s(Value value) noexcept
 {
     return m2(value) / s(1);
 }
@@ -1618,7 +1685,7 @@ inline CONSTEXPR KinematicViscosity m2_s(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR KinematicViscosity mm2_s(Value value) NOEXCEPT
+inline constexpr KinematicViscosity mm2_s(Value value) noexcept
 {
     return mm2(value) / s(1);
 }
@@ -1632,7 +1699,7 @@ inline CONSTEXPR KinematicViscosity mm2_s(Value value) NOEXCEPT
  *
  * @return Viscosity value.
  */
-inline CONSTEXPR KinematicViscosity um2_s(Value value) NOEXCEPT
+inline constexpr KinematicViscosity um2_s(Value value) noexcept
 {
     return um2(value) / s(1);
 }
@@ -1646,7 +1713,7 @@ inline CONSTEXPR KinematicViscosity um2_s(Value value) NOEXCEPT
  *
  * @return Angle.
  */
-inline CONSTEXPR Angle rad(Value value) NOEXCEPT
+inline constexpr Angle rad(Value value) noexcept
 {
     return Angle(value);
 }
@@ -1660,7 +1727,7 @@ inline CONSTEXPR Angle rad(Value value) NOEXCEPT
  *
  * @return Angle.
  */
-inline CONSTEXPR Angle deg(Value value) NOEXCEPT
+inline constexpr Angle deg(Value value) noexcept
 {
     return rad(deg2rad(value));
 }
@@ -1674,7 +1741,7 @@ inline CONSTEXPR Angle deg(Value value) NOEXCEPT
  *
  * @return
  */
-inline CONSTEXPR Probability precent(Value value) NOEXCEPT
+inline constexpr Probability precent(Value value) noexcept
 {
     return value / 100.f;
 }
@@ -1685,8 +1752,6 @@ inline CONSTEXPR Probability precent(Value value) NOEXCEPT
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */
