@@ -70,7 +70,7 @@ void Yeast::update(units::Duration dt)
     }
     else if (getVolume() >= units::um3(42) && dist(eng))
     {
-        //budCreate();
+        budCreate();
     }
     else
     {
@@ -134,6 +134,8 @@ void Yeast::budRelease()
     bud->setPosition(pos);
     bud->setVelocity(getVelocity());
     bud->setPrograms(getPrograms());
+    bud->setDensity(getDensity());
+    bud->setGrowthRate(getGrowthRate());
 
     // TODO: When yeast is rotating and bud is released it should be throw
     // away by some force.
@@ -206,16 +208,16 @@ void Yeast::updateShape()
     // If bud shape is missing, create one.
     if (hasBud())
     {
+        const auto center = PositionVector(Zero, 0.9 * (newRadius + newBudRadius)).rotated(-m_bud->rotation);
+
         if (shapes.size() != 2)
         {
-            shapes.push_back(simulator::Shape::makeCircle(
-                newBudRadius, PositionVector{ units::Length(0), newRadius + newBudRadius })
-            );
+            shapes.push_back(simulator::Shape::makeCircle(newBudRadius, center));
         }
         else
         {
             shapes[1].circle.radius = newBudRadius;
-            shapes[1].circle.center.y() = newRadius + newBudRadius;
+            shapes[1].circle.center = center;
         }
     }
     else
@@ -249,7 +251,7 @@ void Yeast::updateShape()
         m_bud->shape.m_radius = newBudRadius.value();
 
         // Distance between yeast and bud
-        const float distance = m_shape.m_radius + m_bud->shape.m_radius;
+        const float distance = 0.9 * (m_shape.m_radius + m_bud->shape.m_radius);
 
         m_bud->shape.m_p = b2Vec2(
             distance * std::sin(m_bud->rotation),
