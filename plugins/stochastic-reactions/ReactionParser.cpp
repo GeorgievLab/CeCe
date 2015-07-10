@@ -18,6 +18,14 @@ void ReactionParser::check_push(String& id, DynamicArray<String>& array)
     }
 }
 
+void ReactionParser::skipComments()
+{
+    while(!range.isEmpty() && (range.front() != '\n' || range.front() != '\r'))
+    {
+        range.advanceBegin();
+    }
+}
+
 DynamicArray<String> ReactionParser::parseList()
 {
     if (!validator)
@@ -26,13 +34,18 @@ DynamicArray<String> ReactionParser::parseList()
     String id;
     while (!range.isEmpty())
     {
-        if (range.front() == ';' || range.front() == '>')
+        if (range.front() == '#')
+        {
+            range.advanceBegin();
+            skipComments();
+        }
+        else if (range.front() == ';' || range.front() == '>')
         {
             check_push(id, array);
             range.advanceBegin();
             return array;
         }
-        if (range.front() == '<')
+        else if (range.front() == '<')
         {
             check_push(id, array);
             range.advanceBegin();

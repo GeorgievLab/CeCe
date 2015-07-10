@@ -14,7 +14,9 @@ class ReactionParser
     bool reversible;
     
     void check_push(String& id, DynamicArray<String>& array);
-    
+
+    void skipComments();
+
     DynamicArray<String> parseList();
 
     float parseRate(const char end_char);
