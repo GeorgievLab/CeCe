@@ -22,6 +22,7 @@
   <Project Name="streamlines-python" Path="plugins/streamlines-python/streamlines-python.project" Active="No"/>
   <Project Name="cell-python" Path="plugins/cell-python/cell-python.project" Active="No"/>
   <Project Name="diffusion-python" Path="plugins/diffusion-python/diffusion-python.project" Active="No"/>
+  <Project Name="diffusion-streamlines" Path="plugins/diffusion-streamlines/diffusion-streamlines.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -43,6 +44,7 @@
       <Project Name="plugin_streamlines-python" ConfigName="Debug"/>
       <Project Name="plugin_cell-python" ConfigName="Debug"/>
       <Project Name="plugin_diffusion-python" ConfigName="Debug"/>
+      <Project Name="plugin_diffusion-streamlines" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -64,6 +66,7 @@
       <Project Name="plugin_streamlines-python" ConfigName="Release"/>
       <Project Name="plugin_cell-python" ConfigName="Release"/>
       <Project Name="plugin_diffusion-python" ConfigName="Release"/>
+      <Project Name="plugin_diffusion-streamlines" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
