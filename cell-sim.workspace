@@ -36,9 +36,7 @@
       <Project Name="parser-xml" ConfigName="Debug"/>
       <Project Name="plugin_picture" ConfigName="Debug"/>
       <Project Name="tool_shader-convert" ConfigName="Debug"/>
-      <Project Name="plugin_cylinder-streamlines" ConfigName="Debug"/>
       <Project Name="plugin_python" ConfigName="Debug"/>
-      <Project Name="plugin_diffusion-cylinder-streamlines" ConfigName="Debug"/>
       <Project Name="plugin_streamlines" ConfigName="Debug"/>
       <Project Name="lib-stochastic-reactions" ConfigName="Debug"/>
       <Project Name="plugin_streamlines-python" ConfigName="Debug"/>
@@ -58,9 +56,7 @@
       <Project Name="parser-xml" ConfigName="Release"/>
       <Project Name="plugin_picture" ConfigName="Release"/>
       <Project Name="tool_shader-convert" ConfigName="Release"/>
-      <Project Name="plugin_cylinder-streamlines" ConfigName="Release"/>
       <Project Name="plugin_python" ConfigName="Release"/>
-      <Project Name="plugin_diffusion-cylinder-streamlines" ConfigName="Release"/>
       <Project Name="plugin_streamlines" ConfigName="Release"/>
       <Project Name="lib-stochastic-reactions" ConfigName="Release"/>
       <Project Name="plugin_streamlines-python" ConfigName="Release"/>
