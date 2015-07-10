@@ -1,5 +1,13 @@
 <simulation world-size="100um 100um" dt="1min" iterations="10000">
-    <plugin name="python" />
+    <init language="python">
+<![CDATA[
+def call(simulation):
+    for i in range(0, 16):
+        object = simulation.buildObject("cell.Yeast");
+        object.useProgram("make-gfp")
+        object.useProgram("store-gfp")
+]]>
+    </init>
     <program name="make-gfp" language="stochastic-reactions">
         <!--
             alpha = -log(0.5) / 20.0;
@@ -9,6 +17,7 @@
         GFP > 0.001 > null;
     </program>
     <program name="store-gfp" language="python">
+<![CDATA[
 # Open CSV file writer for storing GFP data
 import csv
 file = open("gfp.csv", 'wb')
@@ -18,22 +27,7 @@ writer.writerow(["iteration", "totalTime", "id", "gfp", "gfp/volume"])
 # Program code
 def call(object, simulation, dt):
     writer.writerow([simulation.iteration, simulation.totalTime, object.id, object.moleculeCount("GFP"), object.moleculeCount("GFP") / object.volume])
+]]>
     </program>
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
-    <object class="cell.Yeast" programs="make-gfp store-gfp" />
 </simulation>
 
