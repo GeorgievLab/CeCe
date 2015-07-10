@@ -81,6 +81,7 @@ build_test(core
         test/UnitsTest.cpp
         test/StringViewTest.cpp
         test/ExpressionParserTest.cpp
+        test/TokenizerTest.cpp
         ExpressionParser.hpp
         ExpressionParser.cpp
 )

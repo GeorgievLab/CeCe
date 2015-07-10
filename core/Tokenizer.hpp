@@ -13,6 +13,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/Log.hpp"
 #include "core/Range.hpp"
 #include "core/Exception.hpp"
 #include "core/StringView.hpp"
@@ -180,8 +181,8 @@ public:
 template<typename Tokenizer>
 class BasicTokenizerIterator
 {
-    template<typename, typename>
-    friend class BasicTokenizerIterator;
+    template<typename, typename, typename>
+    friend class BasicTokenizer;
 
 
 // Public Types
@@ -308,7 +309,7 @@ protected:
         if (m_tokenizer->isEof())
         {
             // Make invalid token
-            m_token = TokenType{};
+            m_token = value_type{};
             m_ok = false;
         }
         else
@@ -323,7 +324,7 @@ protected:
 private:
 
     /// Pointer to tokenizer.
-    Tokenizer * const m_tokenizer;
+    Tokenizer * const m_tokenizer = nullptr;
 
     /// Current token.
     value_type m_token;
@@ -345,6 +346,8 @@ template<
 >
 class BasicTokenizer
 {
+    template<typename>
+    friend class BasicTokenizerIterator;
 
 
 // Public Types
@@ -356,6 +359,9 @@ public:
 
     /// Output iterator type.
     using IteratorType = BasicTokenizerIterator<Derived>;
+
+    /// Input value type.
+    using ValueType = typename std::iterator_traits<InputIterator>::value_type;
 
 
 // Public Ctors & Dtors
@@ -381,7 +387,7 @@ public:
      */
     template<typename Source>
     explicit BasicTokenizer(Source&& source) noexcept
-        : m_range{makeRange(std::forward<Source>(source))}
+        : m_range(makeRange(std::forward<Source>(source)))
     {
         // Nothing to do
     }
@@ -425,6 +431,17 @@ public:
 
 
     /**
+     * @brief Returns current value.
+     *
+     * @return
+     */
+    ValueType value() const noexcept
+    {
+        return m_range.front();
+    }
+
+
+    /**
      * @brief Test if current source value match the given value.
      *
      * This operation requires Value to be comparable with source value_type.
@@ -438,7 +455,7 @@ public:
     template<typename Value>
     bool is(Value&& val) const noexcept
     {
-        return (m_range.front() == val);
+        return (value() == val);
     }
 
 
@@ -501,7 +518,7 @@ public:
     /**
      * @brief Read next value from input range.
      */
-    void next() noexcept(noexcept(m_range.advanceBegin()))
+    void next() noexcept
     {
         m_range.advanceBegin();
     }
@@ -526,7 +543,7 @@ protected:
             "Function Derived::tokenize required");
 
         // End of source -> return invalid token
-        if (eof())
+        if (isEof())
             return TokenType{};
 
         // Call parent's member function
@@ -856,6 +873,140 @@ operator!=(const BasicToken<Code, Value, Position>& lhs, const T& value) noexcep
 {
     return !operator==(lhs, Value{value});
 }
+
+/* ************************************************************************ */
+
+/**
+ * @brief Expression token codes.
+ */
+enum class ExpressionTokenCode
+{
+    Invalid,
+    Identifier,
+    Number,
+    Operator
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Expression tokenizer.
+ *
+ * @tparam InputIterator Input iterator type.
+ */
+template<typename InputIterator>
+class ExpressionTokenizer
+    : public BasicTokenizer<
+        ExpressionTokenizer<InputIterator>,
+        BasicToken<ExpressionTokenCode, String>,
+        InputIterator
+    >
+{
+
+// Public Types
+public:
+
+
+    // Parent type
+    using ParentType = BasicTokenizer<
+        ExpressionTokenizer<InputIterator>,
+        BasicToken<ExpressionTokenCode, String>,
+        InputIterator
+    >;
+
+    /// Token type
+    using TokenType = typename ParentType::TokenType;
+
+
+// Public Ctors & Dtors
+public:
+
+
+    using ParentType::ParentType;
+
+
+// Public Operation
+public:
+
+
+    using ParentType::value;
+    using ParentType::next;
+    using ParentType::is;
+    using ParentType::match;
+
+
+    /**
+     * @brief Tokenize number.
+     *
+     * @return
+     */
+    TokenType tokenizeNumber()
+    {
+        TokenType token{ExpressionTokenCode::Number};
+
+        while (isDigit() || is('.'))
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        // Suffix
+        if (is('f'))
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        return token;
+    }
+
+
+    /**
+     * @brief Tokenize source.
+     *
+     * @return
+     */
+    TokenType tokenize()
+    {
+        // Skip whitespaces
+        while (value() <= 0x20)
+            next();
+
+        if (isDigit())
+            return tokenizeNumber();
+
+        switch (value())
+        {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        {
+            auto val = value();
+            next();
+            return TokenType{ExpressionTokenCode::Operator, String(1, val)};
+        }
+        }
+
+        return TokenType{};
+    }
+
+
+// Protected Operation
+protected:
+
+
+    /**
+     * @brief Check if current value is digit.
+     *
+     * @return
+     */
+    bool isDigit() const noexcept
+    {
+        return value() >= '0' && value() <= '9';
+    }
+
+};
 
 /* ************************************************************************ */
 
