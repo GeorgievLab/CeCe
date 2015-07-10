@@ -20,6 +20,8 @@
     <File Name="Library.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
+    <File Name="ReactionDiffusive.hpp"/>
+    <File Name="ReactionParserDiffusive.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

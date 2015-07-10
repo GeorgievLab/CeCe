@@ -13,6 +13,9 @@
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
+// Reactions
+#include "ReactionParserDiffusive.hpp"
+
 /************************************************************************** */
 
 using namespace simulator;
@@ -23,7 +26,7 @@ class StochasticReactionsDiffusiveApi : public PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
-        return {};
+        return ReactionParserDiffusive(code).parse();
     }
 };
 

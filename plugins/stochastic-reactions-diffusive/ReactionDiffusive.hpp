@@ -6,8 +6,9 @@
 #include "core/Log.hpp"
 #include "core/Exception.hpp"
 #include "../cell/CellBase.hpp"
+#include "../stochastic-reactions/Reaction.hpp"
 
-class Reaction
+class ReactionDiffusive: public Reaction
 {
 private:
 

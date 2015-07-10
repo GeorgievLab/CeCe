@@ -137,7 +137,7 @@ bool Reaction::operator ==(const Reaction& rhs)
         {
             if (std::find(skip.begin(), skip.end(), j) != skip.end())
                 continue;
-            if (areEqualReactions(rhs, i, j))
+            if (areEqualRules(rhs, i, j))
             {
                 valid = true;
                 skip.push_back(j);
@@ -151,7 +151,7 @@ bool Reaction::operator ==(const Reaction& rhs)
     return true;
 }
 
-bool Reaction::areEqualReactions(const Reaction& rhs, unsigned int index1, unsigned int index2)
+bool Reaction::areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2)
 {
     if (m_rates[index1] != rhs.m_rates[index2])
         return false;
