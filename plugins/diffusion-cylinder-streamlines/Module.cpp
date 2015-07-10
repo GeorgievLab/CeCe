@@ -1,4 +1,12 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* Author: Hynek Kasl <hkasl@students.zcu.cz>                               */
 /* ************************************************************************ */
 
 // Declaration
@@ -6,12 +14,11 @@
 
 // C++
 #include <cassert>
-#include <limits>
-#include <algorithm>
 
 // Simulator
 #include "core/StaticMatrix.hpp"
 #include "core/TimeMeasurement.hpp"
+#include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -23,49 +30,35 @@ namespace diffusion_cylinder_streamlines {
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    auto _ = measure_time("diffusion-cylinder-streamlines", [&simulation](std::ostream& out, const std::string& name, Clock::duration dt) {
-        out << name << ";" << simulation.getIteration() << ";" << std::chrono::duration_cast<std::chrono::microseconds>(dt).count() << "\n";
-    });
+    auto _ = measure_time("diffusion-cylinder-streamlines", simulator::TimeMeasurementIterationOutput(simulation));
 
     assert(m_streamlines);
     assert(m_diffusion);
 
-    auto& signalGrid = m_diffusion->getGrid();
+    const auto signalGridSize = m_diffusion->getGridSize();
     auto& velocityGrid = m_streamlines->getGrid();
 
     // Precompute values
-    const auto start = simulation.getWorldSize() * 0.5f;
-    const auto step = simulation.getWorldSize() / signalGrid.getSize();
+    const auto step = simulation.getWorldSize() / signalGridSize;
 
-    // Grid for changes
-    diffusion::SignalGrid signalGridNew(signalGrid.getSize());
-
-    // Sizes must match
-    assert(std::distance(signalGrid.begin(), signalGrid.end()) == std::distance(signalGridNew.begin(), signalGridNew.end()));
-
-    // Transform i, j coordinates to position
-    auto getPosition = [&start, &step](const Vector<unsigned int>& pos) {
-        // Cell center position
-        const auto coord = Vector<float>(pos) + 0.5f;
-        // Real position
-        return start + step * coord;
-    };
-
-    for (decltype(signalGrid.getSize().getHeight()) j = 0; j < signalGrid.getSize().getHeight(); ++j)
+    // Foreach signals
+    for (auto id : m_diffusion->getSignalIds())
     {
-        for (decltype(signalGrid.getSize().getWidth()) i = 0; i < signalGrid.getSize().getWidth(); ++i)
-        {
-            const Vector<unsigned> ij(i, j);
+        m_diffusion->clearBack(id);
 
-            auto& signal = signalGrid[ij];
+        // Foreach all combination in range [0, 0] - signalGrid.getSize()
+        for (auto&& c : range(signalGridSize))
+        {
+            // Get current signal
+            auto& signal = m_diffusion->getSignal(id, c);
 
             // No signal to send
             if (!signal)
                 continue;
 
             // Get velocity
-            assert(velocityGrid.inRange(ij));
-            auto& velocity = velocityGrid[ij];
+            assert(velocityGrid.inRange(c));
+            auto& velocity = velocityGrid[c];
 
             // Calculate coordinate change
             Vector<float> dij = velocity * dt * m_streamlines->getFlowSpeed() / step;
@@ -92,25 +85,20 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 offset = 0;
             }
 
-            // TODO: optimize
-            for (unsigned a = 0; a < 2; ++a)
+            // Apply matrix
+            for (auto&& ab : range(Vector<unsigned>(2)))
             {
-                for (unsigned b = 0; b < 2; ++b)
-                {
-                    Vector<unsigned int> ab(
-                        ij.getX() + b,
-                        ij.getY() - offset + a
-                    );
+                const auto ab2 = c + ab - Vector<unsigned>(0, offset);
 
-                    if (signalGridNew.inRange(ab))
-                        signalGridNew[ab] += signal * tmp[a][b];
-                }
+                // Update signal
+                if (m_diffusion->inRange(ab2))
+                    m_diffusion->getSignalBack(id, ab2) += signal * tmp[ab];
             }
         }
-    }
 
-    // Replace the old grid with the new one
-    signalGrid = std::move(signalGridNew);
+        // Swap buffers
+        m_diffusion->swap(id);
+    }
 }
 
 /* ************************************************************************ */

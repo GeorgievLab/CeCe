@@ -5,14 +5,15 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* Author: Hynek Kasl <hkasl@students.zcu.cz>                               */
+/* ************************************************************************ */
 
 // Declaration
 #include "Module.hpp"
 
 // C++
 #include <cassert>
-#include <limits>
-#include <algorithm>
 
 // Simulator
 #include "core/StaticMatrix.hpp"
