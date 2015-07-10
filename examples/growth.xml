@@ -1,0 +1,3 @@
+<simulation world-size="50um 50um" dt="1min" iterations="10000">
+    <object class="cell.Yeast" growth-rate="0.0003um3/s" />
+</simulation>
