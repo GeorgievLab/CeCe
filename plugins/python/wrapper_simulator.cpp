@@ -72,6 +72,7 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
         defineMemberFunction<1, type>("useModule",
             static_cast<simulator::Module*(simulator::Simulation::*)(const String&)>(&simulator::Simulation::useModule)
         ),
+        defineMemberFunction<2, type>("buildObject", &simulator::Simulation::buildObject),
         {NULL}  /* Sentinel */
     };
 
@@ -100,6 +101,21 @@ static void python_wrapper_simulator_Module(PyObject* module)
 
 /* ************************************************************************ */
 
+static PyObject* useProgram(ObjectWrapper<simulator::Object*>* self, PyObject* args, void*) NOEXCEPT
+{
+    char* name;
+
+    if(!PyArg_ParseTuple(args, "s", &name))
+        return NULL;
+
+    // Add program
+    self->value->addProgram(self->value->getSimulation().buildProgram(name));
+
+    return Py_BuildValue("");
+}
+
+/* ************************************************************************ */
+
 static void python_wrapper_simulator_Object(PyObject* module)
 {
     using type = simulator::Object*;
@@ -113,8 +129,14 @@ static void python_wrapper_simulator_Object(PyObject* module)
         {NULL}  /* Sentinel */
     };
 
+    static PyMethodDef fns[] = {
+        {"useProgram", (PyCFunction) useProgram, METH_VARARGS, NULL},
+        {NULL}  /* Sentinel */
+    };
+
     type_def::init("simulator.Object");
     type_def::definition.tp_getset = properties;
+    type_def::definition.tp_methods = fns;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);
