@@ -15,7 +15,7 @@ if (ENABLE_RENDER)
 
     set(RENDER_LIBS ${GLUT_LIBRARIES})
 
-    if (ENABLE_PHYSICS_DEBUG)
+    if (ENABLE_BUILTIN_PHYSICS_DEBUG)
         find_package(OpenGL)
         include_directories(${OPENGL_INCLUDE_DIR})
 
@@ -27,7 +27,7 @@ set(SRCS
     main.cpp
 )
 
-if (ENABLE_PHYSICS_DEBUG)
+if (ENABLE_BUILTIN_PHYSICS_DEBUG)
     set(SRCS ${SRCS}
         Render.hpp
         Render.cpp

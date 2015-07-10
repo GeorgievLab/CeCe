@@ -159,7 +159,7 @@ int main(int argc, char** argv)
 
             auto start = clock_type::now();
             auto diff = start - g_start;
-            float dt = std::chrono::duration<float, std::chrono::seconds::period>(diff).count();
+            //float dt = std::chrono::duration<float, std::chrono::seconds::period>(diff).count();
             static decltype(diff) s_diff;
             static unsigned int s_count = 0;
 
