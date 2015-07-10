@@ -210,7 +210,7 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
         // Map shapes to grid
         for (const auto& shape : shapes)
         {
-            coordIt = mapShapeToGrid(coordIt, shape, step, coord, m_lattice.getSize());
+            coordIt = mapShapeToGrid(coordIt, shape, step, coord, obj->getRotation(), m_lattice.getSize());
         }
 
         // In this case duplicate coordinates doesn't harm and calling

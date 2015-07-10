@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -15,8 +17,8 @@
 #include <type_traits>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
+#include "core/Units.hpp"
 #include "simulator/Shape.hpp"
 
 /* ************************************************************************ */
@@ -40,7 +42,7 @@ namespace simulator {
  */
 template<typename OutIt, typename T, typename StepT>
 OutIt mapShapeToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
-    const Vector<T>& center, const Vector<T>& max,
+    const Vector<T>& center, units::Angle rotation, const Vector<T>& max,
     const Vector<T>& min = {})
 {
     switch (shape.type)
@@ -49,10 +51,10 @@ OutIt mapShapeToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
         break;
 
     case ShapeType::Circle:
-        return mapShapeToGrid(out, shape.circle, steps, center, max, min);
+        return mapShapeToGrid(out, shape.circle, steps, center, rotation, max, min);
 
     case ShapeType::Rectangle:
-        return mapShapeToGrid(out, shape.rectangle, steps, center, max, min);
+        return mapShapeToGrid(out, shape.rectangle, steps, center, rotation, max, min);
     }
 
     return out;
@@ -75,7 +77,7 @@ OutIt mapShapeToGrid(OutIt out, const Shape& shape, const Vector<StepT>& steps,
  */
 template<typename OutIt, typename T, typename StepT>
 OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& steps,
-    const Vector<T>& center, const Vector<T>& max,
+    const Vector<T>& center, units::Angle rotation, const Vector<T>& max,
     const Vector<T>& min = {})
 {
     // Get signed type
@@ -83,7 +85,7 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
 
     // Radius steps in grid
     const auto radiusSteps = Vector<float>(shape.radius / steps);
-    const auto shapeCenter = Vector<Ts>(center + shape.center / steps);
+    const auto shapeCenter = Vector<Ts>(center + shape.center.rotated(rotation) / steps);
     const auto maxS = Vector<Ts>(max);
     const auto minS = Vector<Ts>(min);
 
@@ -132,7 +134,7 @@ OutIt mapShapeToGrid(OutIt out, const ShapeCircle& shape, const Vector<StepT>& s
  */
 template<typename OutIt, typename T, typename StepT>
 OutIt mapShapeToGrid(OutIt out, const ShapeRectangle& shape, const Vector<StepT>& steps,
-    const Vector<T>& center, const Vector<T>& max,
+    const Vector<T>& center, units::Angle rotation, const Vector<T>& max,
     const Vector<T>& min = {})
 {
     // Get signed type

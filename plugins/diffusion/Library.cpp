@@ -56,7 +56,7 @@ static void generate_signal(Simulation& simulation, Object& obj, units::Duration
 
     for (const auto& shape : shapes)
     {
-        coordIt = mapShapeToGrid(coordIt, shape, step, coord, size);
+        coordIt = mapShapeToGrid(coordIt, shape, step, coord, obj.getRotation(), size);
     }
 
     std::sort(coords.begin(), coords.end());
@@ -99,7 +99,7 @@ static void remove_signal(Simulation& simulation, Object& obj, units::Duration d
 
     for (const auto& shape : shapes)
     {
-        coordIt = mapShapeToGrid(coordIt, shape, step, coord, size);
+        coordIt = mapShapeToGrid(coordIt, shape, step, coord, obj.getRotation(), size);
     }
 
     std::sort(coords.begin(), coords.end());
