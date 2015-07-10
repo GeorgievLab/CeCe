@@ -2,11 +2,14 @@
 
 #include "Reaction.hpp"
 #include "core/DynamicArray.hpp"
+#include "core/ExpressionParser.hpp"
+#include "core/Log.hpp"
+#include "core/Range.hpp"
 
 class ReactionParser
 {
-    const char* current;
-    const char* end_of_string;
+    IteratorRange<const char*> range;
+    const String whitespace = " \n\r\t\v\b";
     bool validator;
     bool reversible;
     
@@ -16,6 +19,13 @@ class ReactionParser
 
     float parseRate(const char end_char);
     
-    public:
-    Reaction parseReactionCode(const String& code);
+public:
+
+    ReactionParser(const String& code) NOEXCEPT
+    : range(makeRange(code.c_str(), code.c_str() + code.size()))
+    {
+        // Nothing to do.
+    }
+
+    Reaction parse();
 };

@@ -12,6 +12,7 @@
 // Simulator
 #include "core/Range.hpp"
 #include "core/ExpressionParser.hpp"
+#include "core/constants.hpp"
 
 /* ************************************************************************ */
 
@@ -26,6 +27,8 @@ TEST(ExpressionParser, basic)
     EXPECT_FLOAT_EQ(-3.f, parseExpression("3 * (1 - 2)", {}));
     EXPECT_FLOAT_EQ(13.f, parseExpression("2 * 5 + 3", {}));
     EXPECT_FLOAT_EQ(11.f, parseExpression("5 + 2 * 3", {}));
+    EXPECT_FLOAT_EQ(constants::PI, parseExpression("pi", {}));
+    EXPECT_FLOAT_EQ(constants::E, parseExpression("e", {}));
 }
 
 /* ************************************************************************ */
@@ -36,6 +39,11 @@ TEST(ExpressionParser, functions)
     EXPECT_FLOAT_EQ(10.f, parseExpression("abs(10)", {}));
     EXPECT_FLOAT_EQ(10.f, parseExpression("abs(-10)", {}));
     EXPECT_FLOAT_EQ(0.f, parseExpression("log(1)", {}));
+    EXPECT_FLOAT_EQ(0.f, parseExpression("log    (1)", {}));
+    EXPECT_FLOAT_EQ(0.f, parseExpression("sin(0)", {}));
+    EXPECT_FLOAT_EQ(2.f, parseExpression("ln(E^2)", {}));
+    EXPECT_FLOAT_EQ(0.f, parseExpression("sin(atan(1)*4)", {}));
+    EXPECT_FLOAT_EQ(1.f, parseExpression("cos(2*pi)", {}));
 }
 
 /* ************************************************************************ */
@@ -56,8 +64,21 @@ TEST(ExpressionParser, inner)
         auto range = makeRange(str);
 
         EXPECT_FLOAT_EQ(18.f, parseExpression(range, {}));
-        EXPECT_EQ(str + 8, range.begin());
+        EXPECT_EQ(str + 7, range.begin());
     }
+}
+
+/* ************************************************************************ */
+
+TEST(ExpressionParser, invalid)
+{
+    EXPECT_THROW(parseExpression("45-    10 + lol", {}), UnknownConstantException);
+    EXPECT_THROW(parseExpression("sin()", {}), UnknownConstantException);
+    EXPECT_THROW(parseExpression(" 9 * cos ( 5", {}), MissingParenthesisException);
+    EXPECT_THROW(parseExpression(" 9 * cos ( ", {}), UnknownConstantException);
+    EXPECT_THROW(parseExpression("5 + (10 * (6)", {}), MissingParenthesisException);
+    EXPECT_THROW(parseExpression("\t\b\b\v", {}), EmptyExpressionException);
+    EXPECT_THROW(parseExpression(" ", {}), EmptyExpressionException);
 }
 
 /* ************************************************************************ */
