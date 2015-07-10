@@ -10,9 +10,30 @@ class ExpressionParser
     
 private:
 
-    const String operators = "+-*/^();<> \t\v\r\n\b";
+    const String operators = "+-*/^();<> \n\r\t\v\b";
+    const String whitespace = " \n\r\t\v\b";
     Map<String, float> parameters;
     IteratorRange<const char*> iterator;
+    
+    void skipWhitespace()
+    {
+        while(!iterator.isEmpty() && std::find(std::begin(whitespace), std::end(whitespace), iterator.front()) == std::end(whitespace))
+        {
+            iterator.advanceBegin();
+        }
+    }
+    
+    String readConstant()
+    {
+        String local;
+        while(!iterator.isEmpty() && std::find(std::begin(operators), std::end(operators), iterator.front()) == std::end(operators))
+        {
+            local += iterator.front();
+            iterator.advanceBegin();
+        }
+        return local;
+    }
+    
     
     float signum(float source)
     {
@@ -27,11 +48,13 @@ private:
             if (iterator.front() == '+')
             {
                 iterator.advanceBegin();
+                skipWhitespace();
                 value = value + multiply();
             }
             else if(iterator.front() == '-')
             {
                 iterator.advanceBegin();
+                skipWhitespace();
                 value = value - multiply();
             }
             else
@@ -48,12 +71,14 @@ private:
             if (iterator.front() == '*')
             {
                 iterator.advanceBegin();
+                skipWhitespace();
                 value = value * power();
             }
             else if(iterator.front() == '/')
             {
                 iterator.advanceBegin();
-                value = value * power();
+                skipWhitespace();
+                value = value / power();
             }
             else
                 break;
@@ -69,6 +94,7 @@ private:
             if (iterator.front() == '^')
             {
                 iterator.advanceBegin();
+                skipWhitespace();
                 float exp = parenthesis();
                 if (value == 0 && exp == 0)
                     return NAN;
@@ -86,20 +112,22 @@ private:
         if (iterator.front() == '(')
         {
             iterator.advanceBegin();
+            skipWhitespace();
             float value = add();
             if (iterator.front() == ')')
             {
                 iterator.advanceBegin();
+                skipWhitespace();
                 return value;
             }
             else
                 throw std::runtime_error("Parenthesis error.");
         }
         else
-            return function();
+            return constant();
     }
 
-    float function()
+    float constant()
     {
         char* end;
         float value = strtof(iterator.begin(), &end);
@@ -108,12 +136,18 @@ private:
             iterator = makeRange<const char*>(end, iterator.end());
             return value;
         }
-        String local;
-        while (std::find(std::begin(operators), std::end(operators), iterator.front()) == std::end(operators) && iterator.isEmpty());
+        String local = readConstant();
+        auto search = parameters.find(local);
+        if (search == parameters.end())
         {
-            local += iterator.front();
-            iterator.advanceBegin();
+            return function(local);
         }
+        skipWhitespace();
+        return search->second;
+    }
+
+    float function(String local)
+    {
         if (local == "Sin" || local == "sin")
             return std::sin(parenthesis());
         else if (local == "Cos" || local == "cos")
