@@ -13,20 +13,24 @@ def call(simulation):
             alpha = -log(0.5) / 20.0;
             k1 = 100 * alpha; // 1.505149978
         -->
-        null > 1.505149978 > GFP;
-        GFP > 0.001 > null;
+<![CDATA[
+        null < 1.505149978, 0.001 > GFP;
+]]>
+        <!-- GFP > 0.001 > null;-->
     </program>
     <program name="store-gfp" language="python">
 <![CDATA[
 # Open CSV file writer for storing GFP data
-import csv
+#import csv
 file = open("gfp.csv", 'wb')
-writer = csv.writer(file, delimiter = ';')
-writer.writerow(["iteration", "totalTime", "id", "gfp", "gfp/volume"])
+#writer = csv.writer(file, delimiter = ';')
+#writer.writerow(["iteration", "totalTime", "id", "gfp", "gfp/volume"])
+file.write("iteration;totalTime;id;gfp;gfp/volume\n");
 
 # Program code
 def call(object, simulation, dt):
-    writer.writerow([simulation.iteration, simulation.totalTime, object.id, object.moleculeCount("GFP"), object.moleculeCount("GFP") / object.volume])
+    #writer.writerow([simulation.iteration, simulation.totalTime, object.id, object.moleculeCount("GFP"), object.moleculeCount("GFP") / object.volume])
+    file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(object.id) + ";" + str(object.moleculeCount("GFP")) + ";" + str(object.moleculeCount("GFP") / object.volume) + "\n")
 ]]>
     </program>
 </simulation>

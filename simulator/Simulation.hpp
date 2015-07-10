@@ -699,10 +699,10 @@ private:
     IterationNumber m_iterations = 0;
 
     /// Simulation step.
-    units::Time m_timeStep;
+    units::Time m_timeStep = Zero;
 
     /// Total simulation time.
-    units::Time m_totalTime;
+    units::Time m_totalTime = Zero;
 
     /// World size.
     SizeVector m_worldSize{ units::um(400), units::um(400) };
