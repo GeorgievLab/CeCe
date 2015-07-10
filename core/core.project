@@ -67,6 +67,7 @@
     <File Name="ExpressionParser.hpp"/>
     <File Name="Zero.hpp"/>
     <File Name="StringView.hpp"/>
+    <File Name="Tokenizer.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
