@@ -1,23 +1,33 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
-// Declaration
-#include "Library.hpp"
-
 // Simulator
-#include "simulator/Library.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/String.hpp"
+#include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
-// Module
+// Plugin
 #include "Module.hpp"
 
 /* ************************************************************************ */
 
-class PictureApi : public simulator::PluginApi
+using namespace simulator;
+
+/* ************************************************************************ */
+
+class PictureApi : public PluginApi
 {
-    std::unique_ptr<simulator::Module> createModule(simulator::Simulation& simulation, const std::string& name) noexcept override
+    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
-        return std::unique_ptr<simulator::Module>(new module::picture::Module{});
+        return makeUnique<plugin::picture::Module>();
     }
 };
 

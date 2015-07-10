@@ -1,14 +1,23 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// Magick++
-#include <Magick++.h>
-
 // Simulator
+#include "core/String.hpp"
+#include "core/FilePath.hpp"
 #include "simulator/Module.hpp"
 #include "render/Context.hpp"
+#include "render/ImageData.hpp"
 
 /* ************************************************************************ */
 
@@ -23,17 +32,6 @@ namespace picture {
 class Module : public simulator::Module
 {
 
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    Module();
-
-
 // Public Accessors
 public:
 
@@ -43,20 +41,20 @@ public:
      *
      * @return
      */
-    const std::string& getFileName() const noexcept
+    const String& getFilePattern() const noexcept
     {
-        return m_fileName;
+        return m_filePattern;
     }
 
 
     /**
-     * @brief Get number of step when image should be saved.
+     * @brief Get number of iteration when image should be saved.
      *
      * @return
      */
-    unsigned int getEachStep() const noexcept
+    unsigned int getSaveIteration() const noexcept
     {
-        return m_eachStep;
+        return m_saveIteration;
     }
 
 
@@ -68,22 +66,22 @@ public:
      * @brief Set file name pattern. Currently is supported only with
      * placeholder $1 that is replaced by step number.
      *
-     * @param fileName
+     * @param fileName Pattern to destination file.
      */
-    void setFileName(std::string fileName) noexcept
+    void setFilePattern(String fileName) noexcept
     {
-        m_fileName = std::move(fileName);
+        m_filePattern = std::move(fileName);
     }
 
 
     /**
      * @brief Set number of step when image should be saved.
      *
-     * @param eachStep
+     * @param iteration
      */
-    void setEachStep(unsigned int eachStep) noexcept
+    void setSaveIteration(unsigned int iteration) noexcept
     {
-        m_eachStep = eachStep;
+        m_saveIteration = iteration;
     }
 
 
@@ -95,8 +93,9 @@ public:
      * @brief Configure module.
      *
      * @param config
+     * @param simulation
      */
-    void configure(const simulator::Configuration& config) override;
+    void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
 
 
     /**
@@ -117,19 +116,28 @@ public:
     void draw(render::Context& context, const simulator::Simulation& simulation) override;
 
 
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Save image-
+     */
+    void save(const FilePath& filename);
+
+
 // Private Data Members
 private:
 
 
     /// Pattern for file name.
-    std::string m_fileName = "image_%ul.png";
+    String m_filePattern = "image_$1.png";
 
     /// Save image each n-th step.
-    unsigned int m_eachStep = 1;
+    unsigned int m_saveIteration = 1;
 
-    /// Last image.
-    Magick::Image m_image;
-
+    /// Image data.
+    render::ImageData m_image;
 };
 
 /* ************************************************************************ */
