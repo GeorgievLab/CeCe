@@ -26,7 +26,7 @@ class StochasticReactionsApi : public PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
-        return ReactionParser().parseReactionCode(code);
+        return ReactionParser(code).parse();
     }
 };
 

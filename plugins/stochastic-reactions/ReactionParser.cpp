@@ -1,6 +1,4 @@
 #include "ReactionParser.hpp"
-#include "core/ExpressionParser.hpp"
-#include "core/Log.hpp"
 
 void ReactionParser::check_push(String& id, DynamicArray<String>& array)
 {
@@ -20,40 +18,53 @@ void ReactionParser::check_push(String& id, DynamicArray<String>& array)
     }
 }
 
+void ReactionParser::skipComments()
+{
+    while(!range.isEmpty() && (range.front() != '\n' || range.front() != '\r'))
+    {
+        range.advanceBegin();
+    }
+}
+
 DynamicArray<String> ReactionParser::parseList()
 {
     if (!validator)
         return DynamicArray<String> ();
     DynamicArray<String> array;
     String id;
-    while (current != end_of_string)
+    while (!range.isEmpty())
     {
-        if (*current == ';' || *current == '>')
+        if (range.front() == '#')
+        {
+            range.advanceBegin();
+            skipComments();
+        }
+        else if (range.front() == ';' || range.front() == '>')
         {
             check_push(id, array);
-            ++current;
+            range.advanceBegin();
             return array;
         }
-        if (*current == '<')
+        else if (range.front() == '<')
         {
             check_push(id, array);
-            ++current;
+            range.advanceBegin();
             reversible = true;
             return array;
         }
-        else if (*current == '+')
+        else if (range.front() == '+')
         {
             check_push(id, array);
-            ++current;
+            range.advanceBegin();
         }
-        else if(*current == ' ' || *current == '\n' || *current == '\r' || *current == '\t' || *current == '\v')
+        else if (range.front() <= ' ')
         {
-            ++current;
+            range.advanceBegin();
         }
         else
         {
-            id += *current;
-            ++current;
+            id += range.front();
+            range.advanceBegin();
         }
     }
     validator = false;
@@ -65,13 +76,22 @@ float ReactionParser::parseRate(const char end_char)
 {
     if (!validator)
         return 0;
-    if (current != end_of_string)
+    if (!range.isEmpty())
     {
-        auto range = makeRange(current, end_of_string);
-        float rate = parseExpression(range, {});
-        if (*current == end_char)
+        float rate;
+        try
         {
-            ++current;
+            rate = parseExpression(range, {});
+        }
+        catch (const ExpressionParserException& ex)
+        {
+            validator = false;
+            Log::warning(ex.what());
+            return 0;
+        }
+        if (range.front() == end_char)
+        {
+            range.advanceBegin();
             return rate;
         }
         validator = false;
@@ -83,12 +103,10 @@ float ReactionParser::parseRate(const char end_char)
     return 0;
 }
 
-Reaction ReactionParser::parseReactionCode(const String& code)
+Reaction ReactionParser::parse()
 {
     Reaction reaction;
-    current = code.c_str();
-    end_of_string = current + code.length();
-    while (current != end_of_string)
+    while (!range.isEmpty())
     {
         validator = true;
         reversible = false;

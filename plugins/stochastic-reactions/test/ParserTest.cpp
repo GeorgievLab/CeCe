@@ -33,7 +33,7 @@ static void test_impl(int line, const String& code, std::initializer_list<String
     std::cout << "@" << line << ": `" << code << "`\n";
 
     // Parse code
-    auto reaction = ReactionParser().parseReactionCode(code);
+    auto reaction = ReactionParser(code).parse();
 
     // TODO: Waiting for usable Reaction API.
     ASSERT_TRUE(false);
@@ -77,7 +77,7 @@ static void test_invalid_impl(int line, const String& code)
     std::cout << "@" << line << ": `" << code << "`\n";
 
     // Parse code
-    auto reaction = ReactionParser().parseReactionCode(code);
+    auto reaction = ReactionParser(code).parse();
 
     // TODO: Waiting for usable Reaction API.
     ASSERT_TRUE(false);
