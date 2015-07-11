@@ -214,13 +214,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
     // Connect events
     this->Connect(m_menuItemFileNew->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileNew), NULL, this);
     this->Connect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
@@ -297,7 +290,7 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
     wxBoxSizer* boxSizerMain = new wxBoxSizer(wxVERTICAL);
     this->SetSizer(boxSizerMain);
     
-    m_panelContent = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTAB_TRAVERSAL);
+    m_panelContent = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(300,-1), wxTAB_TRAVERSAL);
     m_panelContent->SetBackgroundColour(wxColour(wxT("rgb(255,255,255)")));
     
     boxSizerMain->Add(m_panelContent, 1, wxEXPAND, 5);
@@ -307,8 +300,7 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
     
     m_staticBitmapHeader = new wxStaticBitmap(m_panelContent, wxID_ANY, wxXmlResource::Get()->LoadBitmap(wxT("logo")), wxDefaultPosition, wxSize(-1,-1), 0 );
     
-    boxSizerContent->Add(m_staticBitmapHeader, 0, wxALL|wxEXPAND, 5);
-    m_staticBitmapHeader->SetMinSize(wxSize(300,-1));
+    boxSizerContent->Add(m_staticBitmapHeader, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     
     wxBoxSizer* boxSizerInfo = new wxBoxSizer(wxVERTICAL);
     
@@ -340,7 +332,8 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
     m_hyperLinkWeb->SetHoverColour(wxColour(wxT("#0000FF")));
     m_hyperLinkWeb->SetVisitedColour(wxColour(wxT("#FF0000")));
     
-    boxSizerInfo->Add(m_hyperLinkWeb, 0, wxEXPAND|wxALIGN_LEFT, 5);
+    boxSizerInfo->Add(m_hyperLinkWeb, 0, wxLEFT|wxRIGHT|wxEXPAND|wxALIGN_LEFT, 5);
+    m_panelContent->SetMinSize(wxSize(300,-1));
     
     m_staticLineSeparator = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxLI_HORIZONTAL);
     
@@ -361,13 +354,6 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
 }
 
 AboutDialogBaseClass::~AboutDialogBaseClass()
@@ -412,13 +398,6 @@ PluginsDialogBase::PluginsDialogBase(wxWindow* parent, wxWindowID id, const wxSt
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
-#if wxVERSION_NUMBER >= 2900
-    if(!wxPersistenceManager::Get().Find(this)) {
-        wxPersistenceManager::Get().RegisterAndRestore(this);
-    } else {
-        wxPersistenceManager::Get().Restore(this);
-    }
-#endif
     // Connect events
     this->Connect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(PluginsDialogBase::OnInitDialog), NULL, this);
     

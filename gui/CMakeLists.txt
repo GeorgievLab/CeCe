@@ -56,7 +56,7 @@ target_link_libraries(${PROJECT_NAME}
     ${wxWidgets_LIBRARIES}
 )
 
-if (UNIX)
+if (UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME}
         -pthread
     )
