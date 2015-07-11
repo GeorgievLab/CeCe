@@ -1,6 +1,7 @@
 #include "core/ExpressionParser.hpp"
 
 #include <cmath>
+#include <cstdlib>
 #include <algorithm>
 #include <exception>
 
