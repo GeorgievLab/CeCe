@@ -40,7 +40,7 @@ set(SRCS
 )
 
 # Create program
-add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
+add_executable(${PROJECT_NAME} WIN32
     ${SRCS}
 )
 
@@ -74,21 +74,33 @@ endif ()
 
 # Install
 install(TARGETS ${PROJECT_NAME}
-    BUNDLE  DESTINATION ${INSTALL_DIR_BUNDLE}
     RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
+    COMPONENT RUNTIME
 )
 
 # Install icons
-install(FILES ${CMAKE_SOURCE_DIR}/icons/icon_128x128.png
-    DESTINATION ${INSTALL_DIR_DATA}/icons
-)
+if (NOT APPLE)
+    install(FILES ${CMAKE_SOURCE_DIR}/icons/icon_128x128.png
+        DESTINATION ${INSTALL_DIR_DATA}/icons
+    )
+endif ()
 
-# Fixup bundle on MacOS X
+# Fixup shared libraries for bundle
 if (APPLE)
     install(CODE "
-        include(BundleUtilities)
-        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app\" \"\" \"/usr/local/lib\")
+        execute_process(COMMAND
+            ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle.sh
+            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
+        )
     " COMPONENT Runtime)
 endif ()
+
+# Fixup bundle on MacOS X
+#if (APPLE)
+#    install(CODE "
+#        include(BundleUtilities)
+#        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app\" \"\" \"/usr/local/lib\")
+#    " COMPONENT Runtime)
+#endif ()
 
 # ######################################################################### #
