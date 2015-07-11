@@ -192,11 +192,11 @@ protected:
 
 
     /**
-     * @brief On modules info event.
+     * @brief On plugins info event.
      *
      * @param event
      */
-    void OnHelpModules(wxCommandEvent& event) override;
+    void OnHelpPlugins(wxCommandEvent& event) override;
 
 
     /**

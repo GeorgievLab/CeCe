@@ -37,7 +37,7 @@
     <File Name="SimulatorThread.cpp"/>
     <File Name="Logger.cpp"/>
     <File Name="AboutDialog.cpp"/>
-    <File Name="ModulesDialog.cpp"/>
+    <File Name="PluginsDialog.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="SimulatorThread.hpp"/>
@@ -46,7 +46,7 @@
     <File Name="wxcrafter.h"/>
     <File Name="Logger.hpp"/>
     <File Name="AboutDialog.h"/>
-    <File Name="ModulesDialog.h"/>
+    <File Name="PluginsDialog.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>

@@ -5,29 +5,36 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 // Declaration
-#include "ModulesDialog.h"
+#include "PluginsDialog.h"
 
 // Simulator
 #include "simulator/Plugin.hpp"
 
 /* ************************************************************************ */
 
-ModulesDialog::ModulesDialog(wxWindow* parent)
-    : ModulesDialogBase(parent)
+PluginsDialog::PluginsDialog(wxWindow* parent)
+    : PluginsDialogBase(parent)
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-void ModulesDialog::OnInitDialog(wxInitDialogEvent& event)
+void PluginsDialog::OnInitDialog(wxInitDialogEvent& event)
 {
     for (auto&& name : simulator::Plugin::getNames())
     {
-        m_listBoxModules->Append(wxString(name));
+        m_listBoxPlugins->Append(wxString(name));
     }
+
+    const auto& directories = simulator::Plugin::getDirectories();
+
+    if (!directories.empty())
+        m_staticTextPath->SetLabel(directories[0]);
 }
 
 /* ************************************************************************ */

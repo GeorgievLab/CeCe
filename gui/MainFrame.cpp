@@ -17,7 +17,7 @@
 
 // GUI
 #include "AboutDialog.h"
-#include "ModulesDialog.h"
+#include "PluginsDialog.h"
 
 /* ************************************************************************ */
 
@@ -322,9 +322,9 @@ void MainFrame::OnSimulationScreenshot(wxCommandEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnHelpModules(wxCommandEvent& event)
+void MainFrame::OnHelpPlugins(wxCommandEvent& event)
 {
-    ModulesDialog(this).ShowModal();
+    PluginsDialog(this).ShowModal();
 }
 
 /* ************************************************************************ */
@@ -523,4 +523,3 @@ int MainFrame::UnsplitCode()
 }
 
 /* ************************************************************************ */
-

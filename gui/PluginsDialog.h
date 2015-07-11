@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -16,9 +18,9 @@
 /* ************************************************************************ */
 
 /**
- * @brief Modules dialog.
+ * @brief Plugins dialog.
  */
-class ModulesDialog : public ModulesDialogBase
+class PluginsDialog : public PluginsDialogBase
 {
 
 // Public Ctors & Dtors
@@ -30,7 +32,7 @@ public:
      *
      * @param parent
      */
-    explicit ModulesDialog(wxWindow* parent);
+    explicit PluginsDialog(wxWindow* parent);
 
 
 // Protected Events

@@ -26,8 +26,8 @@ set(SRCS
     MainFrame.cpp
     AboutDialog.h
     AboutDialog.cpp
-    ModulesDialog.h
-    ModulesDialog.cpp
+    PluginsDialog.h
+    PluginsDialog.cpp
     wxcrafter.h
     wxcrafter.cpp
     wxcrafter_bitmaps.cpp

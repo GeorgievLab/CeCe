@@ -90,8 +90,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuHelp = new wxMenu();
     m_menuBar->Append(m_menuHelp, _("&Help"));
     
-    m_menuItemHelpModules = new wxMenuItem(m_menuHelp, wxID_ANY, _("Modules..."), _("Show a list of build-in modules"), wxITEM_NORMAL);
-    m_menuHelp->Append(m_menuItemHelpModules);
+    m_menuItemHelpPlugins = new wxMenuItem(m_menuHelp, wxID_ANY, _("Plugins..."), _("Show a list of available plugins"), wxITEM_NORMAL);
+    m_menuHelp->Append(m_menuItemHelpPlugins);
     
     m_menuHelp->AppendSeparator();
     
@@ -214,6 +214,13 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
     // Connect events
     this->Connect(m_menuItemFileNew->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileNew), NULL, this);
     this->Connect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
@@ -234,7 +241,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemSimulationRestart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
     this->Connect(m_menuItemSimulationRestart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Connect(m_menuItemSimulationScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationScreenshot), NULL, this);
-    this->Connect(m_menuItemHelpModules->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpModules), NULL, this);
+    this->Connect(m_menuItemHelpPlugins->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpPlugins), NULL, this);
     this->Connect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpAbout), NULL, this);
     this->Connect(ID_START, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Connect(ID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationPause), NULL, this);
@@ -266,7 +273,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemSimulationRestart->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationRestart), NULL, this);
     this->Disconnect(m_menuItemSimulationRestart->GetId(), wxEVT_UPDATE_UI, wxUpdateUIEventHandler(MainFrameBaseClass::OnSimulationNotRunningUpdateUi), NULL, this);
     this->Disconnect(m_menuItemSimulationScreenshot->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationScreenshot), NULL, this);
-    this->Disconnect(m_menuItemHelpModules->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpModules), NULL, this);
+    this->Disconnect(m_menuItemHelpPlugins->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpPlugins), NULL, this);
     this->Disconnect(m_menuItemAbout->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnHelpAbout), NULL, this);
     this->Disconnect(ID_START, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationStart), NULL, this);
     this->Disconnect(ID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSimulationPause), NULL, this);
@@ -354,13 +361,20 @@ AboutDialogBaseClass::AboutDialogBaseClass(wxWindow* parent, wxWindowID id, cons
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
 }
 
 AboutDialogBaseClass::~AboutDialogBaseClass()
 {
 }
 
-ModulesDialogBase::ModulesDialogBase(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+PluginsDialogBase::PluginsDialogBase(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style)
 {
     if ( !bBitmapLoaded ) {
@@ -373,10 +387,14 @@ ModulesDialogBase::ModulesDialogBase(wxWindow* parent, wxWindowID id, const wxSt
     wxBoxSizer* boxSizerMain = new wxBoxSizer(wxVERTICAL);
     this->SetSizer(boxSizerMain);
     
-    wxArrayString m_listBoxModulesArr;
-    m_listBoxModules = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), m_listBoxModulesArr, wxLB_SINGLE);
+    m_staticTextPath = new wxStaticText(this, wxID_ANY, _("Path"), wxDefaultPosition, wxSize(-1,-1), 0);
     
-    boxSizerMain->Add(m_listBoxModules, 1, wxALL|wxEXPAND, 5);
+    boxSizerMain->Add(m_staticTextPath, 0, wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5);
+    
+    wxArrayString m_listBoxPluginsArr;
+    m_listBoxPlugins = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), m_listBoxPluginsArr, wxLB_SINGLE);
+    
+    boxSizerMain->Add(m_listBoxPlugins, 1, wxALL|wxEXPAND, 5);
     
     m_stdBtnSizerMain = new wxStdDialogButtonSizer();
     
@@ -387,20 +405,27 @@ ModulesDialogBase::ModulesDialogBase(wxWindow* parent, wxWindowID id, const wxSt
     m_stdBtnSizerMain->AddButton(m_buttonOk);
     m_stdBtnSizerMain->Realize();
     
-    SetName(wxT("ModulesDialogBase"));
+    SetName(wxT("PluginsDialogBase"));
     SetMinSize( wxSize(300,100) );
     SetSizeHints(500,300);
     if ( GetSizer() ) {
          GetSizer()->Fit(this);
     }
     CentreOnParent(wxBOTH);
+#if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(this)) {
+        wxPersistenceManager::Get().RegisterAndRestore(this);
+    } else {
+        wxPersistenceManager::Get().Restore(this);
+    }
+#endif
     // Connect events
-    this->Connect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(ModulesDialogBase::OnInitDialog), NULL, this);
+    this->Connect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(PluginsDialogBase::OnInitDialog), NULL, this);
     
 }
 
-ModulesDialogBase::~ModulesDialogBase()
+PluginsDialogBase::~PluginsDialogBase()
 {
-    this->Disconnect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(ModulesDialogBase::OnInitDialog), NULL, this);
+    this->Disconnect(wxEVT_INIT_DIALOG, wxInitDialogEventHandler(PluginsDialogBase::OnInitDialog), NULL, this);
     
 }
