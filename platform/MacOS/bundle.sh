@@ -11,81 +11,90 @@
 # ######################################################################### #
 
 FRAMEWORKS=../Frameworks
-SOURCE_DIR=/usr/local
+SOURCE_DIR=/usr/local/lib
 
 # Directory of the binary
 DIRECTORY=`dirname $1`
 
+#
 # Get dependency of given library
+#
+# $1: Path to binary.
+#
 function get_dependency()
 {
     otool -L $1 | grep -oE "([^ ]*).dylib"
 }
 
-# Fix binary libraries
+#
+# Fix libraries
+#
+# $1: Path to original binary/library.
+# $2: Path to copy binary/library.
+# $3: Path to library that needs to be fixed.
+#
 function fix_libraries()
 {
+    local BUNDLE_PATH="${DIRECTORY}/${FRAMEWORKS}"
+
     local BINARY=$1
-    local LIBRARY=1
+    local BINARY_COPY=$2
 
-    echo "Binary: '${BINARY}'"
-
+    # Foreach binary dependencies
     for LIBRARY in `get_dependency $BINARY`
     do
-        fix_library $BINARY $LIBRARY
-    done
-
-    echo "----------"
-}
-
-# Fix library
-function fix_library()
-{
-    local BINARY=$1
-    local LIBRARY=$2
-
-    if [[ $LIBRARY == *"/"* ]]
-    then
-        local BASENAME=`basename ${LIBRARY}`
-        local BUNDLE_PATH="${DIRECTORY}/${FRAMEWORKS}"
-        local FILEPATH="${BUNDLE_PATH}/${BASENAME}"
-
-        # Only libraries from sources
-        if [[ $LIBRARY == *"${SOURCE_DIR}"* ]]
+        if [[ $LIBRARY == *"@executable_path"* ]]
         then
+            # Skip paths with @executable_path
+            continue
+        fi
 
-            echo "Library: '${LIBRARY}'"
+        # If library contains separator is from system
+        if [[ $LIBRARY == *"/"* ]]
+        then
+            local BASENAME=`basename ${LIBRARY}`
+            local FILEPATH="${BUNDLE_PATH}/${BASENAME}"
 
-            if [[ ! -f "${FILEPATH}" ]]
+            # Only libraries from sources
+            # /usr/local/lib
+            if [[ $LIBRARY == *"${SOURCE_DIR}"* ]]
             then
-                # Copy library into bundle
-                #echo "Copy '${LIBRARY}' to '${BUNDLE_PATH}'"
-                cp "${LIBRARY}" "${BUNDLE_PATH}"
 
-                # Recursive fix
-                fix_libraries $FILEPATH
+                echo "Library: '${LIBRARY}'"
+
+                if [[ ! -f "${FILEPATH}" ]]
+                then
+                    # Copy library into bundle
+                    #echo "Copy '${LIBRARY}' to '${BUNDLE_PATH}'"
+                    cp "${LIBRARY}" "${BUNDLE_PATH}"
+
+                    # Recursive fix
+                    fix_libraries $LIBRARY $FILEPATH
+                fi
+
+                echo "Update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
+                chmod a+w ${BINARY}
+                install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
+                chmod a-w ${BINARY}
+
+                echo "----------"
             fi
+        else
+            echo "Local library: '${LIBRARY}'"
 
-            echo "Update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
-            chmod a+w ${BINARY}
-            install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY}
-            chmod a-w ${BINARY}
+            # Local
+            echo "Local update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
+            install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY_COPY}
+
+            # Recursive fix
+            fix_libraries $LIBRARY $BUNDLE_PATH/$LIBRARY
 
             echo "----------"
         fi
-    else
-
-        echo "Local library: '${LIBRARY}'"
-
-        # Local
-        echo "Local update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
-        install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY}
-
-        echo "----------"
-    fi
+    done
 }
 
 # Source binary
-fix_libraries $1
+fix_libraries $1 $1
 
 # ######################################################################### #
