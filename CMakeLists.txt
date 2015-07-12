@@ -110,6 +110,10 @@ elseif (APPLE)
     set(INSTALL_DIR_RUNTIME "../MacOS")
     set(INSTALL_DIR_LIBRARY "../Frameworks")
     set(INSTALL_DIR_PLUGINS "../PlugIns")
+elseif (WIN32)
+    set(INSTALL_DIR_RUNTIME ".")
+    set(INSTALL_DIR_LIBRARY ".")
+    set(INSTALL_DIR_PLUGINS "plugins")
 endif ()
 
 # Default plugins directory
@@ -235,6 +239,7 @@ endif()
 
 # Install examples
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples"
+    COMPONENT Examples
     DESTINATION "${INSTALL_DIR_DATA}"
     FILES_MATCHING PATTERN "*.xml"
 )

@@ -75,7 +75,6 @@ endif ()
 # Install
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
-    COMPONENT RUNTIME
 )
 
 # Install icons

@@ -79,19 +79,29 @@ function(build_plugin NAME)
         )
 
         # Create symbolic link
-        # TODO: something on Windows?
-        if (DEV_PLUGINS AND UNIX)
-            add_custom_command(
-                TARGET ${PROJECT_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E
-                    create_symlink $<TARGET_FILE:${PROJECT_NAME}> ${PLUGINS_DIRECTORY}/$<TARGET_FILE_NAME:${PROJECT_NAME}>
-            )
+        if (DEV_PLUGINS)
+            if (UNIX)
+                add_custom_command(
+                    TARGET ${PROJECT_NAME} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E
+                        create_symlink $<TARGET_FILE:${PROJECT_NAME}> ${PLUGINS_DIRECTORY}/$<TARGET_FILE_NAME:${PROJECT_NAME}>
+                )
+            elseif (WIN32)
+                # Permission issue
+                #add_custom_command(
+                #    TARGET ${PROJECT_NAME} POST_BUILD
+                #    COMMAND mklink ${PLUGINS_DIRECTORY}/$<TARGET_FILE_NAME:${PROJECT_NAME}> $<TARGET_FILE:${PROJECT_NAME}>
+                #)
+            endif ()
         endif ()
 
         # Install shared library
         install(TARGETS ${PROJECT_NAME}
             DESTINATION ${INSTALL_DIR_PLUGINS}
+            COMPONENT Plugins
         )
+
+        #set(CPACK_COMPONENT_${NAME}_GROUP "Plugins")
     endif ()
 endfunction()
 
