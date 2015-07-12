@@ -23,17 +23,16 @@ float ReactionIntracellular::computePropensity(const unsigned int index)
     float local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[i].size(); i++)
     {
-        if (m_rules[index][i].requirement == 0)
-        {
+        if (m_rules[index][i].requirement = 0)
             continue;
-        }
-        else
-        {
-            local *= cell->getMoleculeCount(m_ids[i]);
-        }
+        if (m_rules[index][i].requirement > cell->getMoleculeCount(m_ids[i]))
+            return 0;
+        local *= cell->getMoleculeCount(m_ids[i]);
     }
     return local;
 }
+
+/* ************************************************************************ */
 
 void ReactionIntracellular::executeReaction(const unsigned int index)
 {
@@ -48,9 +47,10 @@ void ReactionIntracellular::executeReaction(const unsigned int index)
     }
 }
 
-void ReactionIntracellular::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const loat rate)
+/* ************************************************************************ */
+
+void ReactionIntracellular::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate)
 {
-    m_rates.push_back(rate);
     DynamicArray<ReqProd> array;
     if (m_rules.size() > 0)
         array.resize(m_rules[0].size());
@@ -74,6 +74,7 @@ void ReactionIntracellular::extend(const DynamicArray<String>& ids_plus, const D
         }
         array[index].product += 1;
     }
+    m_rates.push_back(rate);
     m_rules.push_back(array);
 }
 

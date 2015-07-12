@@ -48,7 +48,6 @@ private:
             return !operator ==(rhs);
         }
     };
-
     DynamicArray<float> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<ReqProd>> m_rules;
@@ -64,6 +63,7 @@ private:
     void initializePropensities();
 
 public:
+
     void operator()(simulator::Object& object, simulator::Simulation&, units::Duration);
 
 /* ************************************************************************ */

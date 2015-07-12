@@ -55,6 +55,8 @@ void Reaction::operator()(simulator::Object& object, simulator::Simulation&, uni
     }
 }
 
+/* ************************************************************************ */
+
 void Reaction::initializePropensities()
 {
     for (unsigned int i = 0; i < m_rules.size(); i++)
@@ -62,6 +64,8 @@ void Reaction::initializePropensities()
         propensities.push_back(computePropensity(i));
     }
 }
+
+/* ************************************************************************ */
 
 void Reaction::refreshPropensities(unsigned int index)
 {
@@ -91,6 +95,8 @@ int Reaction::getIndexOf(const String& id)
     return std::distance(m_ids.begin(), pointer);
 }
 
+/* ************************************************************************ */
+
 bool Reaction::operator ==(const Reaction& rhs)
 {
     if (rhs.m_rates.size() != m_rates.size() || rhs.m_ids.size() != m_ids.size())
@@ -117,6 +123,8 @@ bool Reaction::operator ==(const Reaction& rhs)
     }
     return true;
 }
+
+/* ************************************************************************ */
 
 bool Reaction::areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2)
 {

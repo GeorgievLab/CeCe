@@ -24,20 +24,24 @@ float ReactionIntercellular::computePropensity(const unsigned int index)
     for (unsigned int i = 0; i < m_rules[i].size(); i++)
     {
         if (m_rules[index][i].requirement == 0)
-        {
             continue;
-        }
-        else if (i % 2 == 0)
+        if (i % 2 == 0)
         {
+            if (m_rules[index][i].requirement > cell->getMoleculeCount(m_ids[i]))
+                return 0;
             local *= cell->getMoleculeCount(m_ids[i]);
         }
         else
         {
-            local *= 1;// TODO: počet molekul typu i-1
+            if (m_rules[index][i].requirement > /* todo počet molekul i-1*/ )
+                return 0;
+            local *= ; // TODO počet molekul i-1
         }
     }
     return local;
 }
+
+/* ************************************************************************ */
 
 void ReactionIntercellular::executeReaction(const unsigned int index)
 {
@@ -54,14 +58,33 @@ void ReactionIntercellular::executeReaction(const unsigned int index)
     }
 }
 
+/* ************************************************************************ */
+
 void ReactionIntercellular::changeMoleculesInEnvironment(const String id, const int change)
 {
-    
+    // TODO
 }
 
-void ReactionIntercellular::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const loat rate)
+/* ************************************************************************ */
+
+void ReactionIntercellular::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate)
 {
-    m_rates.push_back(rate);
+    if (std::find(ids_minus.begin(), ids_minus.end(), "env") != ids_minus.end())
+    {
+        if (ids_minus.size() == 1)
+            extendAbsorption(const DynamicArray<String>& ids_plus, const float rate);
+        else
+            Log::warning("This reaction is not valid. ENV tag must be alone.");
+        return;
+    }
+    if (std::find(ids_plus.begin(), ids_plus.end(), "env") != ids_plus.end())
+    {
+        if (ids_plus.size() == 1)
+            extendExpression(const DynamicArray<String>& ids_minus, const float rate);
+        else
+            Log::warning("This reaction is not valid. ENV tag must be alone.");
+        return;
+    }
     DynamicArray<ReqProd> array;
     if (m_rules.size() > 0)
         array.resize(m_rules[0].size());
@@ -85,6 +108,7 @@ void ReactionIntercellular::extend(const DynamicArray<String>& ids_plus, const D
         }
         array[index].product += 1;
     }
+    m_rates.push_back(rate);
     m_rules.push_back(array);
 }
 

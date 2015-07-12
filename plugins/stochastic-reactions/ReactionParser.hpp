@@ -1,3 +1,14 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
+/* ************************************************************************ */
+
 #pragma once
 
 #include "Reaction.hpp"
@@ -6,6 +17,13 @@
 #include "core/Log.hpp"
 #include "core/Range.hpp"
 
+/* ************************************************************************ */
+
+namespace plugin {
+namespace stochasticreactions {
+
+/* ************************************************************************ */
+
 class ReactionParser
 {
     IteratorRange<const char*> range;
@@ -13,7 +31,7 @@ class ReactionParser
     bool validator;
     bool reversible;
     
-    void check_push(String& id, DynamicArray<String>& array);
+    virtual void check_push(String& id, DynamicArray<String>& array);
 
     void skipComments();
 
@@ -31,3 +49,10 @@ public:
 
     Reaction parse();
 };
+
+/* ************************************************************************ */
+
+}
+}
+
+/* ************************************************************************ */
