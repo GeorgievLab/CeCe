@@ -14,7 +14,7 @@ FRAMEWORKS=../Frameworks
 SOURCE_DIR=/usr/local
 
 # Directory of the binary
-DIRECTORY=`dirname $BINARY`
+DIRECTORY=`dirname $1`
 
 # Get dependency of given library
 function get_dependency()
@@ -25,45 +25,63 @@ function get_dependency()
 # Fix binary libraries
 function fix_libraries()
 {
-    BINARY=$1
+    local BINARY=$1
+    local LIBRARY=1
+
+    echo "Binary: '${BINARY}'"
 
     for LIBRARY in `get_dependency $BINARY`
     do
         fix_library $BINARY $LIBRARY
     done
+
+    echo "----------"
 }
 
 # Fix library
 function fix_library()
 {
-    BINARY=$1
-    LIBRARY=$2
+    local BINARY=$1
+    local LIBRARY=$2
 
     if [[ $LIBRARY == *"/"* ]]
     then
-        BASENAME=`basename ${LIBRARY}`
-        BUNDLE_PATH="${DIRECTORY}/${FRAMEWORKS}"
-        PATH="${BUNDLE_PATH}/${BASENAME}"
+        local BASENAME=`basename ${LIBRARY}`
+        local BUNDLE_PATH="${DIRECTORY}/${FRAMEWORKS}"
+        local FILEPATH="${BUNDLE_PATH}/${BASENAME}"
 
         # Only libraries from sources
-        if [[ $LIBRARY == "${SOURCE_DIR}"* ]]
+        if [[ $LIBRARY == *"${SOURCE_DIR}"* ]]
         then
-            if [[ ! -f "${PATH}" ]]
+
+            echo "Library: '${LIBRARY}'"
+
+            if [[ ! -f "${FILEPATH}" ]]
             then
                 # Copy library into bundle
+                #echo "Copy '${LIBRARY}' to '${BUNDLE_PATH}'"
                 cp "${LIBRARY}" "${BUNDLE_PATH}"
 
                 # Recursive fix
-                fix_libraries $PATH
+                fix_libraries $FILEPATH
             fi
 
-            echo "Update '${BINARY}' for '${LIBRARY}'"
+            echo "Update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
+            chmod a+w ${BINARY}
             install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY}
+            chmod a-w ${BINARY}
+
+            echo "----------"
         fi
     else
+
+        echo "Local library: '${LIBRARY}'"
+
         # Local
-        echo "Update '${BINARY}' for '${LIBRARY}'"
+        echo "Local update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
         install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY}
+
+        echo "----------"
     fi
 }
 
