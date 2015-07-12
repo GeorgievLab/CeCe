@@ -14,9 +14,7 @@
   <Project Name="parser-xml" Path="parser-xml/parser-xml.project" Active="No"/>
   <Project Name="picture" Path="plugins/picture/picture.project" Active="No"/>
   <Project Name="tool_shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
-  <Project Name="cylinder-streamlines" Path="plugins/cylinder-streamlines/cylinder-streamlines.project" Active="No"/>
   <Project Name="python" Path="plugins/python/python.project" Active="No"/>
-  <Project Name="diffusion-cylinder-streamlines" Path="plugins/diffusion-cylinder-streamlines/diffusion-cylinder-streamlines.project" Active="No"/>
   <Project Name="streamlines" Path="plugins/streamlines/streamlines.project" Active="No"/>
   <Project Name="stochastic-reactions" Path="plugins/stochastic-reactions/stochastic-reactions.project" Active="No"/>
   <Project Name="streamlines-python" Path="plugins/streamlines-python/streamlines-python.project" Active="No"/>

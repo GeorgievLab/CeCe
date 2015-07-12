@@ -1,3 +1,14 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
+/* ************************************************************************ */
+
 #pragma once
 
 #include "simulator/Object.hpp"
@@ -7,6 +18,13 @@
 #include "core/Exception.hpp"
 #include "../cell/CellBase.hpp"
 
+/* ************************************************************************ */
+
+namespace plugin {
+namespace stochasticreactions {
+
+/* ************************************************************************ */
+    
 class Reaction
 {
 private:
@@ -14,7 +32,8 @@ private:
     struct ReqProd
     {
         ReqProd() = default;
-
+        int requirement = 0;
+        int product = 0;
         ReqProd(int req, int prod) NOEXCEPT
         : requirement(req), product(prod)
         {
@@ -28,9 +47,6 @@ private:
         {
             return !operator ==(rhs);
         }
-
-        int requirement = 0;
-        int product = 0;
     };
 
     DynamicArray<float> m_rates;
@@ -39,7 +55,9 @@ private:
     DynamicArray<float> propensities;
     plugin::cell::CellBase* cell;
 
-    float computePropensity(unsigned int index);
+    virtual float computePropensity(unsigned int index);
+    
+    virtual void executeReaction(unsigned int index);
 
     void refreshPropensities(unsigned int index);
 
@@ -48,9 +66,11 @@ private:
 public:
     void operator()(simulator::Object& object, simulator::Simulation&, units::Duration);
 
-    int getIndexOf(const String& id);
+/* ************************************************************************ */
 
-    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate);
+    virtual void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate);
+    
+    int getIndexOf(const String& id);
 
     unsigned int getNumberOfReactions() const NOEXCEPT
     {
@@ -61,3 +81,10 @@ public:
 
     bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
 };
+
+/* ************************************************************************ */
+
+}
+}
+
+/* ************************************************************************ */

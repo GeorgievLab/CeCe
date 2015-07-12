@@ -18,10 +18,10 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
+    <File Name="ReactionIntercellular.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="ReactionDiffusive.hpp"/>
-    <File Name="ReactionParserDiffusive.hpp"/>
+    <File Name="ReactionIntercellular.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

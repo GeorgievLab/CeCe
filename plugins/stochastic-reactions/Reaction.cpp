@@ -1,10 +1,23 @@
-#include "Reaction.hpp"
-#include "simulator/Object.hpp"
-#include "core/Units.hpp"
-#include "core/Log.hpp"
-#include "core/Exception.hpp"
-#include "../cell/CellBase.hpp"
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
+/* ************************************************************************ */
 
+#include "Reaction.hpp"
+
+/* ************************************************************************ */
+
+namespace plugin {
+namespace stochasticreactions {
+
+/* ************************************************************************ */
+    
 void Reaction::operator()(simulator::Object& object, simulator::Simulation&, units::Duration step)
 {
     // initialize cell
@@ -18,29 +31,27 @@ void Reaction::operator()(simulator::Object& object, simulator::Simulation&, uni
     std::uniform_real_distribution<> rand(0, 1);
     std::discrete_distribution<> distr(propensities.begin(), propensities.end());
 
-    // tau-leaping
+    // initialize time units and propenties
     units::Duration time = units::Duration(0);
     if (propensities.size() == 0)
     {
         initializePropensities();
     }
+    
+    // Gillespie algorithm
     float sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
     if (sum == 0)
         return;
+    // tau-leaping
     while(time < step)
     {
+        // time of reaction
         auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
         time -= delta_time;
+        // which reaction happened
         int index = distr(gen);
-        for (unsigned int i = 0; i < m_ids.size(); i++)
-        {
-            int change = m_rules[index][i].product - m_rules[index][i].requirement;
-            if (change != 0)
-            {
-                cell->addMolecules(m_ids[i], change);
-                refreshPropensities(i);
-            }
-        }
+        // execute reaction
+        executeReaction(index);
     }
 }
 
@@ -63,22 +74,7 @@ void Reaction::refreshPropensities(unsigned int index)
     }
 }
 
-float Reaction::computePropensity(unsigned int index)
-{
-    float local = m_rates[index];
-    for (unsigned int i = 0; i < m_rules[i].size(); i++)
-    {
-        if (m_rules[index][i].requirement == 0)
-        {
-            continue;
-        }
-        else
-        {
-            local *= cell->getMoleculeCount(m_ids[i]);
-        }
-    }
-    return local;
-}
+/* ************************************************************************ */
 
 int Reaction::getIndexOf(const String& id)
 {
@@ -95,38 +91,9 @@ int Reaction::getIndexOf(const String& id)
     return std::distance(m_ids.begin(), pointer);
 }
 
-void Reaction::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate)
-{
-    m_rates.push_back(rate);
-    DynamicArray<ReqProd> array;
-    if (m_rules.size() > 0)
-        array.resize(m_rules[0].size());
-    for (unsigned int i = 0; i < ids_minus.size(); i++)
-    {
-        unsigned int index = getIndexOf(ids_minus[i]);
-        if (index == array.size())
-        {
-            array.push_back(ReqProd{1,0});
-            continue;
-        }
-        array[index].requirement += 1;
-    }
-    for (unsigned int i = 0; i < ids_plus.size(); i++)
-    {
-        unsigned int index = getIndexOf(ids_plus[i]);
-        if (index == array.size())
-        {
-            array.push_back(ReqProd{0,1});
-            continue;
-        }
-        array[index].product += 1;
-    }
-    m_rules.push_back(array);
-}
-
 bool Reaction::operator ==(const Reaction& rhs)
 {
-    if (rhs.m_rates.size() != m_rates.size() && rhs.m_ids.size() != m_ids.size())
+    if (rhs.m_rates.size() != m_rates.size() || rhs.m_ids.size() != m_ids.size())
         return false;
     DynamicArray<unsigned int> skip;
     bool valid;
@@ -166,3 +133,10 @@ bool Reaction::areEqualRules(const Reaction& rhs, unsigned int index1, unsigned 
     }
     return true;
 }
+
+/* ************************************************************************ */
+
+}
+}
+
+/* ************************************************************************ */

@@ -11,6 +11,8 @@ set(SRCS
     Library.cpp
     Reaction.hpp
     Reaction.cpp
+    ReactionIntracellular.hpp
+    ReactionIntracellular.cpp
     ReactionParser.hpp
     ReactionParser.cpp
 )

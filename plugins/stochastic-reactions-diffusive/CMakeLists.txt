@@ -9,6 +9,8 @@
 # Sources
 set(SRCS
     Library.cpp
+    ReactionIntercellular.hpp
+    ReactionIntercellular.cpp
 )
 
 # Build plugin

@@ -20,10 +20,12 @@
     <File Name="Reaction.cpp"/>
     <File Name="Library.cpp"/>
     <File Name="ReactionParser.cpp"/>
+    <File Name="ReactionIntracellular.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Reaction.hpp"/>
     <File Name="ReactionParser.hpp"/>
+    <File Name="ReactionIntracellular.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
