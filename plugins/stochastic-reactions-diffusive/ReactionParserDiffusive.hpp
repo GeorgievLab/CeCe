@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Reaction.hpp"
+#include "ReactionDiffusive.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/ExpressionParser.hpp"
 #include "core/Log.hpp"
 #include "core/Range.hpp"
 
-class ReactionParser
+class ReactionParserDiffusive
 {
     IteratorRange<const char*> range;
     const String whitespace = " \n\r\t\v\b";
@@ -23,7 +23,7 @@ class ReactionParser
 
 public:
 
-    ReactionParser(const String& code) NOEXCEPT
+    ReactionParserDiffusive(const String& code) noexcept
     : range(makeRange(code.c_str(), code.c_str() + code.size()))
     {
         // Nothing to do.

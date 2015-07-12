@@ -9,6 +9,7 @@
 # Sources
 set(SRCS
     Library.cpp
+    Reaction.cpp
 )
 
 # Build plugin
