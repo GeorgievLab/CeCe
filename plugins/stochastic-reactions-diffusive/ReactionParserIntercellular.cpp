@@ -18,7 +18,7 @@ namespace stochasticreactions {
 
 /* ************************************************************************ */
 
-void ReactionParserIntracellular::check_push(String& id, DynamicArray<String>& array)
+void ReactionParserIntercellular::check_push(String& id, DynamicArray<String>& array)
 {
     if (id.size() == 0)
     {
@@ -31,14 +31,51 @@ void ReactionParserIntracellular::check_push(String& id, DynamicArray<String>& a
     }
     else if (id == "env" || id == "environment")
     {
-        array.push_back("env");
-        id.clear();
+        if (array.size() == 0)
+            array.push_back("env");
+        else
+        {
+            validator = false;
+            Log::warning("This reaction is not valid. ENV tag must be alone.");
+        }
     }
     else
     {
         array.push_back(id);
         id.clear();
     }
+}
+
+/* ************************************************************************ */
+
+simulator::Program ReactionParserIntercellular::parse()
+{
+    ReactionIntercellular reaction;
+    while (!range.isEmpty())
+    {
+        validator = true;
+        reversible = false;
+        auto ids_minus = parseList();
+        float rate;
+        float rateR;
+        if (reversible)
+        {
+            rateR = parseRate(',');
+            rate = parseRate('>');
+        }
+        else
+        {
+            rate = parseRate('>');
+        }
+        auto ids_plus = parseList();
+        if (validator)
+        {
+            reaction.extend(ids_plus, ids_minus, rate);
+            if (reversible)
+                reaction.extend(ids_minus, ids_plus, rateR);
+        }
+    }
+    return simulator::Program(reaction);
 }
 
 /* ************************************************************************ */

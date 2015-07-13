@@ -15,6 +15,8 @@ set(SRCS
     ReactionIntracellular.cpp
     ReactionParser.hpp
     ReactionParser.cpp
+    ReactionParserIntracellular.hpp
+    ReactionParserIntracellular.cpp
 )
 
 # Build plugin

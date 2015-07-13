@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../stochastic-reactions/Reaction.hpp"
+//#include "../diffusion/Diffusion.hpp"
 
 /* ************************************************************************ */
 
@@ -22,10 +23,7 @@ namespace stochasticreactions {
 
 class ReactionIntercellular: public Reaction
 {
-private:
-    
-    DynamicArray<DynamicArray<ReqProd>> m_rules_inter;
-    DynamicArray<String> m_ids_inter;
+protected:
     
     float computePropensity(const unsigned int index) override;
 
@@ -33,13 +31,17 @@ private:
     
     void changeMoleculesInEnvironment(const String id, const int change);
     
-    void extendAbsorbtion(const DynamicArray<String>& ids_plus, const float rate);
+    void extendAbsorption(const DynamicArray<String>& ids_plus, const float rate);
     
     void extendExpression(const DynamicArray<String>& ids_minus, const float rate);
     
 public:
     
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate) override;
+    
+    int getIndexOf(const String& id) override;
+    
+    bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
 };
 
 /* ************************************************************************ */

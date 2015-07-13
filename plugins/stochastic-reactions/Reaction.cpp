@@ -80,24 +80,7 @@ void Reaction::refreshPropensities(unsigned int index)
 
 /* ************************************************************************ */
 
-int Reaction::getIndexOf(const String& id)
-{
-    auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
-    if (pointer == m_ids.end())
-    {
-        for (unsigned int i = 0; i < m_rules.size(); i++)
-        {
-            m_rules[i].emplace_back();
-        }
-        m_ids.push_back(id);
-        return m_ids.size() - 1;
-    }
-    return std::distance(m_ids.begin(), pointer);
-}
-
-/* ************************************************************************ */
-
-bool Reaction::operator ==(const Reaction& rhs)
+/*bool Reaction::operator ==(const Reaction& rhs)
 {
     if (rhs.m_rates.size() != m_rates.size() || rhs.m_ids.size() != m_ids.size())
         return false;
@@ -122,25 +105,7 @@ bool Reaction::operator ==(const Reaction& rhs)
             return false;
     }
     return true;
-}
-
-/* ************************************************************************ */
-
-bool Reaction::areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2)
-{
-    if (m_rates[index1] != rhs.m_rates[index2])
-        return false;
-    for (unsigned int i = 0; i < m_ids.size(); i++)
-    {
-        auto pointer = std::find(rhs.m_ids.begin(), rhs.m_ids.end(), m_ids[i]);
-        if (pointer == rhs.m_ids.end())
-            return false;
-        unsigned int index = std::distance(rhs.m_ids.begin(), pointer);
-        if (rhs.m_ids[index] != m_ids[i] || rhs.m_rules[index2][index] != m_rules[index1][i])
-            return false;
-    }
-    return true;
-}
+}*/
 
 /* ************************************************************************ */
 

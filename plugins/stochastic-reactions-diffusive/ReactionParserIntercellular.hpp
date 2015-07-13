@@ -1,3 +1,4 @@
+/* ************************************************************************ */
 /* Georgiev Lab (c) 2015                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
@@ -11,6 +12,7 @@
 #pragma once
 
 #include "../stochastic-reactions/ReactionParser.hpp"
+#include "ReactionIntercellular.hpp"
 
 /* ************************************************************************ */
 
@@ -21,10 +23,16 @@ namespace stochasticreactions {
 
 class ReactionParserIntercellular: public ReactionParser
 {
-private:
+using ReactionParser::ReactionParser;
+
+protected:
 
     void check_push(String& id, DynamicArray<String>& array) override;
-}
+    
+public:
+
+    simulator::Program parse() override;
+};
 
 /* ************************************************************************ */
 

@@ -38,6 +38,38 @@ void ReactionParserIntracellular::check_push(String& id, DynamicArray<String>& a
 
 /* ************************************************************************ */
 
+simulator::Program ReactionParserIntracellular::parse()
+{
+    ReactionIntracellular reaction;
+    while (!range.isEmpty())
+    {
+        validator = true;
+        reversible = false;
+        auto ids_minus = parseList();
+        float rate;
+        float rateR;
+        if (reversible)
+        {
+            rateR = parseRate(',');
+            rate = parseRate('>');
+        }
+        else
+        {
+            rate = parseRate('>');
+        }
+        auto ids_plus = parseList();
+        if (validator)
+        {
+            reaction.extend(ids_plus, ids_minus, rate);
+            if (reversible)
+                reaction.extend(ids_minus, ids_plus, rateR);
+        }
+    }
+    return simulator::Program(reaction);
+}
+
+/* ************************************************************************ */
+
 }
 }
 

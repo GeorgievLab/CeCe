@@ -26,12 +26,14 @@ namespace stochasticreactions {
 
 class ReactionParser
 {
+protected:
+
     IteratorRange<const char*> range;
     const String whitespace = " \n\r\t\v\b";
     bool validator;
     bool reversible;
     
-    virtual void check_push(String& id, DynamicArray<String>& array);
+    virtual void check_push(String& id, DynamicArray<String>& array) = 0;
 
     void skipComments();
 
@@ -40,14 +42,14 @@ class ReactionParser
     float parseRate(const char end_char);
     
 public:
-
+    
+    virtual simulator::Program parse() = 0;
+    
     ReactionParser(const String& code) NOEXCEPT
     : range(makeRange(code.c_str(), code.c_str() + code.size()))
     {
         // Nothing to do.
     }
-
-    Reaction parse();
 };
 
 /* ************************************************************************ */

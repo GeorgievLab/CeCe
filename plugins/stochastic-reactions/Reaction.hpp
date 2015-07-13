@@ -27,13 +27,19 @@ namespace stochasticreactions {
     
 class Reaction
 {
-private:
+friend class ReactionParser;
+friend class ReactionParserIntracellular;
+friend class ReactionParserIntercellular;
+friend class ReactionIntercellular;
+friend class ReactionIntracellular;
+
+protected:
 
     struct ReqProd
     {
         ReqProd() = default;
-        int requirement = 0;
-        int product = 0;
+        unsigned int requirement = 0;
+        unsigned int product = 0;
         ReqProd(int req, int prod) NOEXCEPT
         : requirement(req), product(prod)
         {
@@ -54,13 +60,13 @@ private:
     DynamicArray<float> propensities;
     plugin::cell::CellBase* cell;
 
-    virtual float computePropensity(unsigned int index);
+    virtual float computePropensity(unsigned int index) = 0;
     
-    virtual void executeReaction(unsigned int index);
-
-    void refreshPropensities(unsigned int index);
+    virtual void executeReaction(unsigned int index) = 0;
 
     void initializePropensities();
+    
+    void refreshPropensities(unsigned int index);
 
 public:
 
@@ -68,18 +74,18 @@ public:
 
 /* ************************************************************************ */
 
-    virtual void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate);
+    virtual void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate) = 0;
     
-    int getIndexOf(const String& id);
+    virtual int getIndexOf(const String& id) = 0;
 
     unsigned int getNumberOfReactions() const NOEXCEPT
     {
         return m_rules.size();
     }
 
-    bool operator ==(const Reaction& rhs);
+    //bool operator ==(const Reaction& rhs);
 
-    bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
+    //virtual bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
 };
 
 /* ************************************************************************ */

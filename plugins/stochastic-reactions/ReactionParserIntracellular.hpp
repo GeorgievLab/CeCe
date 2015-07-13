@@ -12,6 +12,7 @@
 #pragma once
 
 #include "ReactionParser.hpp"
+#include "ReactionIntracellular.hpp"
 
 /* ************************************************************************ */
 
@@ -22,10 +23,16 @@ namespace stochasticreactions {
 
 class ReactionParserIntracellular: public ReactionParser
 {
-private:
+using ReactionParser::ReactionParser;
+
+protected:
 
     void check_push(String& id, DynamicArray<String>& array) override;
-}
+
+public:
+    
+    simulator::Program parse() override;
+};
 
 /* ************************************************************************ */
 
