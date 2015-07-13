@@ -17,9 +17,11 @@ namespace plugin {
 namespace stochasticreactions {
 
 /* ************************************************************************ */
-    
-void Reaction::operator()(simulator::Object& object, simulator::Simulation&, units::Duration step)
+
+void Reaction::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step)
 {
+    m_simulation = &simulation;
+
     // initialize cell
     if (!object.is<plugin::cell::CellBase>())
         throw RuntimeException("Only object type cell is allowed to have a reaction.");
@@ -37,7 +39,7 @@ void Reaction::operator()(simulator::Object& object, simulator::Simulation&, uni
     {
         initializePropensities();
     }
-    
+
     // Gillespie algorithm
     float sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
     if (sum == 0)

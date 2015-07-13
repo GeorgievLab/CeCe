@@ -11,11 +11,13 @@
 
 #pragma once
 
-#include "simulator/Object.hpp"
 #include "core/Units.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Log.hpp"
 #include "core/Exception.hpp"
+#include "simulator/Object.hpp"
+#include "simulator/Simulation.hpp"
+
 #include "../cell/CellBase.hpp"
 
 /* ************************************************************************ */
@@ -24,7 +26,7 @@ namespace plugin {
 namespace stochasticreactions {
 
 /* ************************************************************************ */
-    
+
 class Reaction
 {
 friend class ReactionParser;
@@ -58,14 +60,17 @@ protected:
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<ReqProd>> m_rules;
     DynamicArray<float> propensities;
+
+    // TODO: Remove, it's not a good idea to store pointer here (pass it as argument).
     plugin::cell::CellBase* cell;
+    simulator::Simulation* m_simulation;
 
     virtual float computePropensity(unsigned int index) = 0;
-    
+
     virtual void executeReaction(unsigned int index) = 0;
 
     void initializePropensities();
-    
+
     void refreshPropensities(unsigned int index);
 
 public:
@@ -75,7 +80,7 @@ public:
 /* ************************************************************************ */
 
     virtual void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, float rate) = 0;
-    
+
     virtual int getIndexOf(const String& id) = 0;
 
     unsigned int getNumberOfReactions() const NOEXCEPT

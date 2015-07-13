@@ -1,0 +1,27 @@
+<simulation world-size="20um 20um" dt="1s" iterations="500">
+    <module name="diffusion" grid="200">
+        <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="green" />
+        <signal name="RFP" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="red" />
+    </module>
+    <program name="make-xfp" language="stochastic-reactions-diffusive">
+        <!--
+            alpha = -log(0.5) / 20.0;
+            k1 = 100 * alpha; // 1.505149978
+        null < 1.505149978, 0.001 > RFP;
+        RFP > 0.1 > env;
+        -->
+<![CDATA[
+        null < 50, 0.001 > GFP;
+        GFP > 100 > env;
+]]>
+    </program>
+    <program name="take-gfp" language="stochastic-reactions-diffusive">
+<![CDATA[
+        env > 1 > GFP;
+        GFP > 0.001 > null;
+]]>
+    </program>
+    <object class="cell.Yeast" programs="make-xfp" />
+    <aobject class="cell.Yeast" position="-3um -3um" programs="take-gfp" />
+</simulation>
+

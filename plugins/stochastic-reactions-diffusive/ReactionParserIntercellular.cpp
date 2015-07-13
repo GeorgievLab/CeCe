@@ -75,7 +75,8 @@ simulator::Program ReactionParserIntercellular::parse()
                 reaction.extend(ids_minus, ids_plus, rateR);
         }
     }
-    return simulator::Program(reaction);
+
+    return reaction;
 }
 
 /* ************************************************************************ */
