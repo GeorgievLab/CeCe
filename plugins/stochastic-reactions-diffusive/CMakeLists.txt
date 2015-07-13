@@ -9,7 +9,8 @@
 # Sources
 set(SRCS
     Library.cpp
-    Reaction.cpp
+    Diffusion.hpp
+    Diffusion.cpp
 )
 
 # Build plugin
