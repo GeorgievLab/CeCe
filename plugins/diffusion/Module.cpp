@@ -14,6 +14,7 @@
 
 // C++
 #include <limits>
+#include <algorithm>
 #include <functional>
 
 // Simulator
@@ -196,7 +197,7 @@ void Module::updateDrawable() const
         // Mixup signal colors
         for (auto id : getSignalIds())
         {
-            const auto signal = getSignal(id, c);
+            const auto signal = std::min(getSignal(id, c), 1.f);
 
             pixel *= (1 - signal);
             pixel += m_colors[id] * signal;
