@@ -79,8 +79,12 @@ void changeMolecules(
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
     plugin::diffusion::Module::SignalId id, int change)
 {
+    // No coordinates
+    if (coords.empty())
+        return;
+
     // Select random coordinate
-    std::uniform_int_distribution<> distribution(0, coords.size());
+    std::uniform_int_distribution<> distribution(0, coords.size() - 1);
     const auto idx = distribution(g_randomEngine);
 
     // Change molecules
