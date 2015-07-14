@@ -17,18 +17,18 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochasticreactions {
+namespace stochastic_reactions_diffusive {
 
 /* ************************************************************************ */
 
-class ReactionParserIntercellular: public ReactionParser
+class ReactionParserIntercellular: public stochastic_reactions::ReactionParser
 {
 using ReactionParser::ReactionParser;
 
 protected:
 
     void check_push(String& id, DynamicArray<String>& array) override;
-    
+
 public:
 
     simulator::Program parse() override;

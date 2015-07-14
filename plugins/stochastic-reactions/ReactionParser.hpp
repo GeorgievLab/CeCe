@@ -20,7 +20,7 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochasticreactions {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
@@ -32,7 +32,7 @@ protected:
     const String whitespace = " \n\r\t\v\b";
     bool validator;
     bool reversible;
-    
+
     virtual void check_push(String& id, DynamicArray<String>& array) = 0;
 
     void skipComments();
@@ -40,11 +40,11 @@ protected:
     DynamicArray<String> parseList();
 
     float parseRate(const char end_char);
-    
+
 public:
-    
+
     virtual simulator::Program parse() = 0;
-    
+
     ReactionParser(const String& code) NOEXCEPT
     : range(makeRange(code.c_str(), code.c_str() + code.size()))
     {

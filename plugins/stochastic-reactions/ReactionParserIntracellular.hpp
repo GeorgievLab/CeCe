@@ -17,7 +17,7 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochasticreactions {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
@@ -30,7 +30,7 @@ protected:
     void check_push(String& id, DynamicArray<String>& array) override;
 
 public:
-    
+
     simulator::Program parse() override;
 };
 

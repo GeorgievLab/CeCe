@@ -16,14 +16,14 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochasticreactions {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
 class ReactionIntracellular: public Reaction
 {
 protected:
-    
+
     float computePropensity(const unsigned int index) override;
 
     void executeReaction(const unsigned int index) override;
@@ -31,9 +31,9 @@ protected:
 public:
 
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate) override;
-    
+
     int getIndexOf(const String& id) override;
-    
+
     bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
 };
 

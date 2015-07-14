@@ -26,7 +26,7 @@ class StochasticReactionsDiffusiveApi : public PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
-        return plugin::stochasticreactions::ReactionParserIntercellular(code).parse();
+        return plugin::stochastic_reactions_diffusive::ReactionParserIntercellular(code).parse();
     }
 };
 

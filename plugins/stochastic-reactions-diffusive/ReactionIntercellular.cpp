@@ -20,7 +20,7 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochasticreactions {
+namespace stochastic_reactions_diffusive {
 
 /* ************************************************************************ */
 

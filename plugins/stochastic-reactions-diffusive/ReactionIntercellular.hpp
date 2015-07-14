@@ -16,11 +16,11 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochasticreactions {
+namespace stochastic_reactions_diffusive {
 
 /* ************************************************************************ */
 
-class ReactionIntercellular: public Reaction
+class ReactionIntercellular: public stochastic_reactions::Reaction
 {
 protected:
 
