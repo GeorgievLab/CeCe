@@ -12,10 +12,6 @@
 #pragma once
 
 #include "Reaction.hpp"
-#include "core/DynamicArray.hpp"
-#include "core/ExpressionParser.hpp"
-#include "core/Log.hpp"
-#include "core/Range.hpp"
 
 /* ************************************************************************ */
 
@@ -24,32 +20,21 @@ namespace stochasticreactions {
 
 /* ************************************************************************ */
 
-class ReactionParser
+class ReactionIntracellular: public Reaction
 {
 protected:
-
-    IteratorRange<const char*> range;
-    const String whitespace = " \n\r\t\v\b";
-    bool validator;
-    bool reversible;
     
-    virtual void check_push(String& id, DynamicArray<String>& array) = 0;
+    float computePropensity(const unsigned int index) override;
 
-    void skipComments();
+    void executeReaction(const unsigned int index) override;
 
-    DynamicArray<String> parseList();
-
-    float parseRate(const char end_char);
-    
 public:
+
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate) override;
     
-    virtual simulator::Program parse() = 0;
+    int getIndexOf(const String& id) override;
     
-    ReactionParser(const String& code) NOEXCEPT
-    : range(makeRange(code.c_str(), code.c_str() + code.size()))
-    {
-        // Nothing to do.
-    }
+    bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
 };
 
 /* ************************************************************************ */

@@ -11,11 +11,8 @@
 
 #pragma once
 
-#include "Reaction.hpp"
-#include "core/DynamicArray.hpp"
-#include "core/ExpressionParser.hpp"
-#include "core/Log.hpp"
-#include "core/Range.hpp"
+#include "ReactionParser.hpp"
+#include "ReactionIntracellular.hpp"
 
 /* ************************************************************************ */
 
@@ -24,32 +21,17 @@ namespace stochasticreactions {
 
 /* ************************************************************************ */
 
-class ReactionParser
+class ReactionParserIntracellular: public ReactionParser
 {
+using ReactionParser::ReactionParser;
+
 protected:
 
-    IteratorRange<const char*> range;
-    const String whitespace = " \n\r\t\v\b";
-    bool validator;
-    bool reversible;
-    
-    virtual void check_push(String& id, DynamicArray<String>& array) = 0;
+    void check_push(String& id, DynamicArray<String>& array) override;
 
-    void skipComments();
-
-    DynamicArray<String> parseList();
-
-    float parseRate(const char end_char);
-    
 public:
     
-    virtual simulator::Program parse() = 0;
-    
-    ReactionParser(const String& code) NOEXCEPT
-    : range(makeRange(code.c_str(), code.c_str() + code.size()))
-    {
-        // Nothing to do.
-    }
+    simulator::Program parse() override;
 };
 
 /* ************************************************************************ */

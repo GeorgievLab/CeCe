@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 // Module
-#include "../ReactionParser.hpp"
+#include "../ReactionParserIntracellular.hpp"
 
 
 /* ************************************************************************ */
@@ -33,7 +33,7 @@ static void test_impl(int line, const String& code, std::initializer_list<String
     std::cout << "@" << line << ": `" << code << "`\n";
 
     // Parse code
-    auto reaction = ReactionParser(code).parse();
+    auto reaction = ReactionParserIntracellular(code).parse();
 
     // TODO: Waiting for usable Reaction API.
     ASSERT_TRUE(false);
@@ -77,7 +77,7 @@ static void test_invalid_impl(int line, const String& code)
     std::cout << "@" << line << ": `" << code << "`\n";
 
     // Parse code
-    auto reaction = ReactionParser(code).parse();
+    auto reaction = ReactionParserIntracellular(code).parse();
 
     // TODO: Waiting for usable Reaction API.
     ASSERT_TRUE(false);

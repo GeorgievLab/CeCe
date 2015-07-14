@@ -11,11 +11,7 @@
 
 #pragma once
 
-#include "Reaction.hpp"
-#include "core/DynamicArray.hpp"
-#include "core/ExpressionParser.hpp"
-#include "core/Log.hpp"
-#include "core/Range.hpp"
+#include "../stochastic-reactions/Reaction.hpp"
 
 /* ************************************************************************ */
 
@@ -24,32 +20,27 @@ namespace stochasticreactions {
 
 /* ************************************************************************ */
 
-class ReactionParser
+class ReactionIntercellular: public Reaction
 {
 protected:
 
-    IteratorRange<const char*> range;
-    const String whitespace = " \n\r\t\v\b";
-    bool validator;
-    bool reversible;
-    
-    virtual void check_push(String& id, DynamicArray<String>& array) = 0;
+    float computePropensity(const unsigned int index) override;
 
-    void skipComments();
+    void executeReaction(const unsigned int index) override;
 
-    DynamicArray<String> parseList();
+    void changeMoleculesInEnvironment(const String id, const int change);
 
-    float parseRate(const char end_char);
-    
+    void extendAbsorption(const DynamicArray<String>& ids_plus, const float rate);
+
+    void extendExpression(const DynamicArray<String>& ids_minus, const float rate);
+
 public:
-    
-    virtual simulator::Program parse() = 0;
-    
-    ReactionParser(const String& code) NOEXCEPT
-    : range(makeRange(code.c_str(), code.c_str() + code.size()))
-    {
-        // Nothing to do.
-    }
+
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate) override;
+
+    int getIndexOf(const String& id) override;
+
+    bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
 };
 
 /* ************************************************************************ */
