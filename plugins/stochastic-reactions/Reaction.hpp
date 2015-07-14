@@ -29,11 +29,6 @@ namespace stochastic_reactions {
 
 class Reaction
 {
-friend class ReactionParser;
-friend class ReactionParserIntracellular;
-friend class ReactionParserIntercellular;
-friend class ReactionIntercellular;
-friend class ReactionIntracellular;
 
 protected:
 
