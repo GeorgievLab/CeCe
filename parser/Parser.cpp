@@ -25,9 +25,34 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif
 
+// Simulator
+#include "core/Map.hpp"
+
 /* ************************************************************************ */
 
 namespace parser {
+
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
+// Predefined colors
+const Map<String, render::Color> g_colors{{
+    {"black", render::colors::BLACK},
+    {"white", render::colors::WHITE},
+    {"red", render::colors::RED},
+    {"green", render::colors::GREEN},
+    {"blue", render::colors::BLUE},
+    {"yellow", render::colors::YELLOW},
+    {"cyan", render::colors::CYAN},
+    {"magenta", render::colors::MAGENTA}
+}};
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 
@@ -72,6 +97,11 @@ bool parse_bool(const char* str, const char** end)
  */
 render::Color parse_color(const char* str, const char** end)
 {
+    // Find color by name
+    auto it = g_colors.find(str);
+    if (it != g_colors.end())
+        return it->second;
+
     if (*str != '#')
         throw InvalidArgumentException("Invalid color value");
 
