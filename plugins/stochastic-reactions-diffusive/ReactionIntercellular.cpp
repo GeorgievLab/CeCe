@@ -102,7 +102,8 @@ void ReactionIntercellular::changeMoleculesInEnvironment(const String& name, con
     const auto coords = getCoordinates(diffusion->getGridSize(), worldSize, *cell);
 
     // Change amount of molecules
-    changeMolecules(*diffusion, coords, id, change);
+    // FIXME: #36
+    changeMolecules(*diffusion, coords, id, 100 * change);
 }
 
 /* ************************************************************************ */
