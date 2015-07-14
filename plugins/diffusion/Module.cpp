@@ -145,9 +145,11 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
             parser::parse_value<DegradationRate>(signal->getString("degradation-rate"))
         );
 
+#if ENABLE_RENDER
         signal->callIfSetString("color", [this, id] (const String& value) {
             setSignalColor(id, parser::parse_color(value));
         });
+#endif
     }
 
 #if ENABLE_RENDER
