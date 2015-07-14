@@ -1,0 +1,43 @@
+<simulation world-size="100um 100um" dt="0.5ms" iterations="10000">
+    <program name="make-gfp" language="stochastic-reactions-diffusive">
+<![CDATA[
+        null < 50, 0.001 > GFP;
+        GFP > 5 > env;
+]]>
+    </program>
+    <program name="make-rfp" language="stochastic-reactions-diffusive">
+<![CDATA[
+        null < 50, 0.001 > RFP;
+        RFP > 5 > env;
+]]>
+    </program>
+    <program name="make-yfp" language="stochastic-reactions-diffusive">
+<![CDATA[
+        null < 50, 0.001 > YFP;
+        YFP > 5 > env;
+]]>
+    </program>
+    <module name="diffusion" grid="200">
+        <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" />
+        <signal name="RFP" diffusion-rate="50um2/s" color="red" />
+        <signal name="YFP" diffusion-rate="50um2/s" color="yellow" />
+    </module>
+    <module name="cell.generator" object="cell.Yeast" probability="0.01" program="make-gfp" />
+    <module name="streamlines" grid="100" velocity-inflow="200um/s" kinematic-viscosity="6.58um2/s" />
+    <module name="diffusion-streamlines" />
+    <object class="cell.Cell" type="static" volume="2000um3" />
+
+    <object class="cell.Yeast" position="-20um 0" programs="make-gfp" />
+    <object class="cell.Yeast" position="-20um 30um" programs="make-rfp" />
+    <object class="cell.Yeast" position="-20um -30um" programs="make-yfp" />
+    <object class="cell.Yeast" position="-20um 15um" programs="make-rfp" />
+    <object class="cell.Yeast" position="-20um -15um" programs="make-yfp" />
+
+    <object class="cell.Yeast" position="-40um 0" programs="make-gfp" />
+    <object class="cell.Yeast" position="-40um 30um" programs="make-rfp" />
+    <object class="cell.Yeast" position="-40um -30um" programs="make-yfp" />
+
+    <obstacle type="rectangle" position="0 45um" size="100um 10um" />
+    <obstacle type="rectangle" position="0 -45um" size="100um 10um" />
+</simulation>
+
