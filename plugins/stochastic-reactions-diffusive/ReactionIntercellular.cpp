@@ -44,9 +44,17 @@ float ReactionIntercellular::computePropensity(const unsigned int index)
             auto diffusion = m_simulation->useModule<plugin::diffusion::Module>("diffusion");
             assert(diffusion);
 
+            // Get coordinates
             const auto& worldSize = m_simulation->getWorldSize();
+            const auto coords = getCoordinates(diffusion->getGridSize(), worldSize, *cell);
 
-            unsigned int number = stochastic_reactions::getAmountOfMolecules(*diffusion, worldSize, *cell, m_ids[i / 2]);
+            // Get signal ID
+            auto id = diffusion->getSignalId(m_ids[i / 2]);
+
+            if (id == plugin::diffusion::Module::INVALID_SIGNAL_ID)
+                throw InvalidArgumentException("Unknown signal molecule '" + m_ids[i / 2] + "' in diffusion");
+
+            unsigned int number = getAmountOfMolecules(*diffusion, coords, id);
             if (m_rules[index][i].requirement > number)
                 return 0;
             local *= number;
@@ -74,7 +82,7 @@ void ReactionIntercellular::executeReaction(const unsigned int index)
 
 /* ************************************************************************ */
 
-void ReactionIntercellular::changeMoleculesInEnvironment(const String id, const int change)
+void ReactionIntercellular::changeMoleculesInEnvironment(const String& name, const int change)
 {
     /* todo: přidat počet molekul typu m_ids[i-1] na pozici kolem bunky (random device? - will be added later)*/
     assert(change != 0);
@@ -83,13 +91,18 @@ void ReactionIntercellular::changeMoleculesInEnvironment(const String id, const 
     auto diffusion = m_simulation->useModule<plugin::diffusion::Module>("diffusion");
     assert(diffusion);
 
-    const auto& worldSize = m_simulation->getWorldSize();
+    // Get signal ID
+    auto id = diffusion->getSignalId(name);
 
-    // TODO: remove namespace prefix after namespace sync
-    if (change > 0)
-        stochastic_reactions::addMolecules(*diffusion, worldSize, *cell, id, change);
-    else
-        stochastic_reactions::removeMolecules(*diffusion, worldSize, *cell, id, change);
+    if (id == plugin::diffusion::Module::INVALID_SIGNAL_ID)
+        throw InvalidArgumentException("Unknown signal molecule '" + name + "' in diffusion");
+
+    // Get coordinates
+    const auto& worldSize = m_simulation->getWorldSize();
+    const auto coords = getCoordinates(diffusion->getGridSize(), worldSize, *cell);
+
+    // Change amount of molecules
+    changeMolecules(*diffusion, coords, id, change);
 }
 
 /* ************************************************************************ */

@@ -74,51 +74,28 @@ DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
 
 /* ************************************************************************ */
 
-void addMolecules(plugin::diffusion::Module& diffusion,
-    const SizeVector& worldSize, plugin::cell::CellBase& cell,
-    const String& name, unsigned int amount)
+void changeMolecules(
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id, int change)
 {
-    // Get coordinates
-    const auto coords = getCoordinates(diffusion.getGridSize(), worldSize, cell);
-
     // Select random coordinate
     std::uniform_int_distribution<> distribution(0, coords.size());
     const auto idx = distribution(g_randomEngine);
 
-    // Add molecules
-    diffusion.getSignal(name, coords[idx]) += amount;
+    // Change molecules
+    diffusion.getSignal(id, coords[idx]) += change;
 }
 
 /* ************************************************************************ */
 
-void removeMolecules(plugin::diffusion::Module& diffusion,
-    const SizeVector& worldSize, plugin::cell::CellBase& cell,
-    const String& name, unsigned int amount)
-{
-    // Get coordinates
-    const auto coords = getCoordinates(diffusion.getGridSize(), worldSize, cell);
-
-    // Select random coordinate
-    std::uniform_int_distribution<> distribution(0, coords.size());
-    const auto idx = distribution(g_randomEngine);
-
-    // Add molecules
-    diffusion.getSignal(name, coords[idx]) -= amount;
-}
-
-/* ************************************************************************ */
-
-unsigned int getAmountOfMolecules(plugin::diffusion::Module& diffusion,
-    const SizeVector& worldSize, plugin::cell::CellBase& cell,
-    const String& name)
+unsigned int getAmountOfMolecules(
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id
+)
 {
     unsigned int amount = 0u;
-
-    // Get coordinates
-    const auto coords = getCoordinates(diffusion.getGridSize(), worldSize, cell);
-
-    // Get signal id (improve performance)
-    const auto id = diffusion.getSignalId(name);
 
     // Foreach all coordinates and calculate amount of molecules
     for (const auto& coord : coords)

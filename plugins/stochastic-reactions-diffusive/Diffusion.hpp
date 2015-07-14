@@ -38,46 +38,71 @@ DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
 /* ************************************************************************ */
 
 /**
+ * @brief Change amount of molecules outside of cell.
+ *
+ * @param diffusion Diffusion module.
+ * @param coords    Coordinates.
+ * @param id        Molecule signal identifier.
+ * @param change    Number of molecules to change. Positive to add and negative to remove.
+ */
+void changeMolecules(
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id, int change
+);
+
+/* ************************************************************************ */
+
+/**
  * @brief Increase amount of molecules outside of cell.
  *
- * @param diffusion Diffusion module. Obtained by <code>simulation.useModule<plugin::diffusion::Module>("diffusion");</code>
- * @param worldSize Simulation world size. <code>simulation.getWorldSize();</code>
- * @param cell      Cell object.
- * @param name      Molecule name.
+ * @param diffusion Diffusion module.
+ * @param coords    Coordinates.
+ * @param id        Molecule signal identifier.
  * @param amount    Number of molecules to add.
  */
-void addMolecules(plugin::diffusion::Module& diffusion,
-    const SizeVector& worldSize, plugin::cell::CellBase& cell,
-    const String& name, unsigned int amount = 1);
+inline void addMolecules(
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id, unsigned int amount = 1
+)
+{
+    changeMolecules(diffusion, coords, id, amount);
+}
 
 /* ************************************************************************ */
 
 /**
  * @brief Decrease amount of molecules outside of cell.
  *
- * @param diffusion Diffusion module. Obtained by <code>simulation.useModule<plugin::diffusion::Module>("diffusion");</code>
- * @param worldSize Simulation world size. <code>simulation.getWorldSize();</code>
- * @param cell      Cell object.
- * @param name      Molecule name.
- * @param amount    Number of molecules to add.
+ * @param diffusion Diffusion module.
+ * @param coords    Coordinates.
+ * @param id        Molecule signal identifier.
+ * @param amount    Number of molecules to remove.
  */
-void removeMolecules(plugin::diffusion::Module& diffusion,
-    const SizeVector& worldSize, plugin::cell::CellBase& cell,
-    const String& name, unsigned int amount = 1);
+inline void removeMolecules(
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id, unsigned int amount = 1
+)
+{
+    changeMolecules(diffusion, coords, id, -amount);
+}
 
 /* ************************************************************************ */
 
 /**
  * @brief Receive amount of molecules outside of cell.
  *
- * @param diffusion Diffusion module. Obtained by <code>simulation.useModule<plugin::diffusion::Module>("diffusion");</code>
- * @param worldSize Simulation world size. <code>simulation.getWorldSize();</code>
- * @param cell      Cell object.
- * @param name      Molecule name.
+ * @param diffusion Diffusion module.
+ * @param coords    Coordinates.
+ * @param id        Molecule signal identifier.
  */
-unsigned int getAmountOfMolecules(plugin::diffusion::Module& diffusion,
-    const SizeVector& worldSize, plugin::cell::CellBase& cell,
-    const String& name);
+unsigned int getAmountOfMolecules(
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id
+);
 
 /* ************************************************************************ */
 

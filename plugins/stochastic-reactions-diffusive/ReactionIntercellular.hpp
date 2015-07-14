@@ -28,7 +28,7 @@ protected:
 
     void executeReaction(const unsigned int index) override;
 
-    void changeMoleculesInEnvironment(const String id, const int change);
+    void changeMoleculesInEnvironment(const String& id, int change);
 
     void extendAbsorption(const DynamicArray<String>& ids_plus, const float rate);
 
