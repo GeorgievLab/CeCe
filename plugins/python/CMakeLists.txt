@@ -15,6 +15,7 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 # Sources
 set(SRCS
     Handle.hpp
+    Handle.cpp
     View.hpp
     Exception.hpp
     Exception.cpp

@@ -30,6 +30,7 @@
     <File Name="wrapper_stdout.cpp"/>
     <File Name="wrapper.cpp"/>
     <File Name="Initializer.cpp"/>
+    <File Name="Handle.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>

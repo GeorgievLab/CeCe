@@ -1,18 +1,22 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
-// C++
-#include <type_traits>
-#include <string>
-
 // Simulator
-#include "core/compatibility.hpp"
+#include "core/String.hpp"
 
-// Module
-#include "Python.hpp"
-#include "wrapper.hpp"
+// Plugin
+#include "wrapper.hpp" // FIXME: not required, but it solve some inclusion issue
 #include "Handle.hpp"
 #include "ValueCast.hpp"
 
@@ -26,27 +30,41 @@ namespace python {
 /**
  * @brief Create object from basic types types.
  *
- * @param value
+ * @param value Source value.
  *
- * @return
+ * @return Python object handle.
  */
 template<typename T>
-Handle<PyObject> makeObject(T value) NOEXCEPT
+ObjectHandle makeObject(T value) noexcept
 {
+    // Use ValueCast to create python object from value.
     return cast<T>(value);
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Create object from const handle.
+ * @brief Create object from object handle.
  *
- * @param value
+ * @param value Python object handle.
  *
- * @return
+ * @return Python object handle.
  */
-inline
-Handle<PyObject>& makeObject(Handle<PyObject>& value) NOEXCEPT
+inline ObjectHandle& makeObject(ObjectHandle& value) noexcept
+{
+    return value;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create object from const object handle.
+ *
+ * @param value Python object handle.
+ *
+ * @return Python object handle.
+ */
+inline const Handle<PyObject>& makeObject(const ObjectHandle& value) noexcept
 {
     return value;
 }
@@ -56,27 +74,11 @@ Handle<PyObject>& makeObject(Handle<PyObject>& value) NOEXCEPT
 /**
  * @brief Create object from handle.
  *
- * @param value
+ * @param value Python object handle.
  *
- * @return
+ * @return Python object handle.
  */
-inline
-const Handle<PyObject>& makeObject(const Handle<PyObject>& value) NOEXCEPT
-{
-    return value;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Create object from handle.
- *
- * @param value
- *
- * @return
- */
-inline
-Handle<PyObject> makeObject(Handle<PyObject>&& value) NOEXCEPT
+inline ObjectHandle makeObject(ObjectHandle&& value) noexcept
 {
     return value;
 }
@@ -91,12 +93,24 @@ Handle<PyObject> makeObject(Handle<PyObject>&& value) NOEXCEPT
  * @param fn   Function object.
  * @param args Function arguments.
  *
- * @return
+ * @return Result object.
+ *
+ * @throw In case the function call failed.
  */
 template<typename... Args>
-Handle<PyObject> call(const Handle<PyObject>& fn, Args&&... args) NOEXCEPT
+ObjectHandle call(const ObjectHandle& fn, Args&&... args)
 {
-    return makeHandle(PyObject_CallFunctionObjArgs(fn, makeObject(args).get()..., nullptr));
+    // Variadic templates expand each argument into makeObject that creates
+    // PyObject managed handle and pass plain PyObject pointer to function as argument
+    // and after call it release the "temporary" PyObject.
+
+    auto res = makeHandle(PyObject_CallFunctionObjArgs(fn, makeObject(args).get()..., nullptr));
+
+    // Function call failed.
+    if (!res)
+        throw Exception{};
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -104,11 +118,11 @@ Handle<PyObject> call(const Handle<PyObject>& fn, Args&&... args) NOEXCEPT
 /**
  * @brief Create string handle from string.
  *
- * @param str String.
+ * @param str Source string.
  *
- * @return
+ * @return Python string object.
  */
-inline Handle<PyObject> str(const char* s) NOEXCEPT
+inline ObjectHandle str(const char* s) noexcept
 {
     return makeHandle(PyString_FromString(s));
 }
@@ -118,11 +132,11 @@ inline Handle<PyObject> str(const char* s) NOEXCEPT
 /**
  * @brief Create string handle from string.
  *
- * @param str String.
+ * @param str Source string.
  *
- * @return
+ * @return Python string object.
  */
-inline Handle<PyObject> str(const std::string& s) NOEXCEPT
+inline ObjectHandle str(const String& s) noexcept
 {
     return makeHandle(PyString_FromString(s.c_str()));
 }

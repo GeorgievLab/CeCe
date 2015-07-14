@@ -5,16 +5,18 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
+// Plugin
+#include "Python.hpp"
+
 // C++
 #include <utility>
-
-// Simulator
-#include "core/compatibility.hpp"
 
 /* ************************************************************************ */
 
@@ -25,6 +27,8 @@ namespace python {
 
 /**
  * @brief RAII wrapper around Python API objects.
+ *
+ * @tparam T Type of managed object, mostly PyObject.
  */
 template<typename T>
 class Handle
@@ -37,7 +41,11 @@ public:
     /**
      * @brief Default constructor.
      */
-    Handle() = default;
+    Handle() noexcept
+        : m_ptr(nullptr)
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -45,7 +53,7 @@ public:
      *
      * @param ptr Object pointer.
      */
-    Handle(T* ptr) NOEXCEPT
+    Handle(T* ptr) noexcept
         : m_ptr(ptr)
     {
         // Nothing to do
@@ -57,7 +65,7 @@ public:
      *
      * @param src Source handle.
      */
-    Handle(const Handle& src) NOEXCEPT
+    Handle(const Handle& src) noexcept
         : m_ptr(src.m_ptr)
     {
         Py_XINCREF(m_ptr);
@@ -69,7 +77,7 @@ public:
      *
      * @param src Source handle.
      */
-    Handle(Handle&& src) NOEXCEPT
+    Handle(Handle&& src) noexcept
         : m_ptr(src.m_ptr)
     {
         src.m_ptr = nullptr;
@@ -96,7 +104,7 @@ public:
      *
      * @return *this
      */
-    Handle& operator=(T* ptr) NOEXCEPT
+    Handle& operator=(T* ptr) noexcept
     {
         m_ptr = ptr;
         return *this;
@@ -110,7 +118,7 @@ public:
      *
      * @return *this
      */
-    Handle& operator=(const Handle& src) NOEXCEPT
+    Handle& operator=(const Handle& src) noexcept
     {
         m_ptr = src.m_ptr;
         Py_XINCREF(m_ptr);
@@ -123,7 +131,7 @@ public:
      *
      * @param src Source handle.
      */
-    Handle& operator=(Handle&& src) NOEXCEPT
+    Handle& operator=(Handle&& src) noexcept
     {
         std::swap(m_ptr, src.m_ptr);
         return *this;
@@ -133,16 +141,16 @@ public:
     /**
      * @brief Returns if handle is set.
      */
-    explicit operator bool() const NOEXCEPT
+    explicit operator bool() const noexcept
     {
         return m_ptr != nullptr;
     }
 
 
     /**
-     * @brief Implicit cast to operator.
+     * @brief Implicit cast to value operator.
      */
-    operator T*() const NOEXCEPT
+    operator T*() const noexcept
     {
         return m_ptr;
     }
@@ -154,8 +162,10 @@ public:
 
     /**
      * @brief Returns stored pointer.
+     *
+     * @return Stored pointer.
      */
-    T* get() const NOEXCEPT
+    T* get() const noexcept
     {
         return m_ptr;
     }
@@ -163,13 +173,13 @@ public:
 
     /**
      * @brief Returns mutable stored pointer.
+     *
+     * @return
      */
-#ifndef _MSC_VER
-    T*& getRef()& NOEXCEPT
+    T*& getRef()& noexcept
     {
         return m_ptr;
     }
-#endif
 
 
 // Public Accessors
@@ -181,7 +191,7 @@ public:
      *
      * @return Pointer.
      */
-    T* release() NOEXCEPT
+    T* release() noexcept
     {
         T* tmp = m_ptr;
         m_ptr = nullptr;
@@ -194,24 +204,36 @@ private:
 
 
     /// Object pointer.
-    T* m_ptr = nullptr;
+    T* m_ptr;
 
 };
 
 /* ************************************************************************ */
 
 /**
- * @brief Create handle from pointer.
+ * @brief Create handle from pointer. It doesn't increase object counter.
  *
  * @param ptr Pointer.
  *
- * @return
+ * @return Handle object.
  */
 template<typename T>
-Handle<T> makeHandle(T* ptr) NOEXCEPT
+Handle<T> makeHandle(T* ptr) noexcept
 {
     return Handle<T>(ptr);
 }
+
+/* ************************************************************************ */
+
+/// Implicit instantiation of this template (mostly used).
+extern template class Handle<PyObject>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type alias for handle to PyObject.
+ */
+using ObjectHandle = Handle<PyObject>;
 
 /* ************************************************************************ */
 
