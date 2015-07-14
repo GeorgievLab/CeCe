@@ -22,6 +22,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/Configuration.hpp"
 #include "simulator/Plugin.hpp"
+#include "simulator/PluginManager.hpp"
 
 // Module
 #include "Utils.hpp"
@@ -48,7 +49,7 @@ Object::Object(simulator::Simulation& simulation, const std::string& name, Type 
         std::string foundPath;
 
         // Foreach possible paths
-        for (const auto& p : simulator::Plugin::getDirectories())
+        for (const auto& p : simulator::PluginManager::getDirectories())
         {
             auto path = p + "/" + name;
 

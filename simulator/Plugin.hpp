@@ -168,6 +168,17 @@ class Simulation;
 class DLL_EXPORT Plugin final
 {
 
+// Public Constants
+public:
+
+
+    /// Plugin file prefix
+    static const String FILE_PREFIX;
+
+    /// Plugin file extension
+    static const String FILE_EXTENSION;
+
+
 // Public Types
 public:
 
@@ -186,16 +197,19 @@ public:
     /**
      * @brief Constructor.
      *
-     * Constructor search plugin in builtin plugins and if there is none
-     * with given name it will look for shared library file in the plugins
-     * directory. In case the shared library doesn't have exported
-     * required functions an exception is thrown.
+     * @param name Plugin name.
+     * @param api  Plugin builtin api.
+     */
+    Plugin(String name, UniquePtr<PluginApi> api);
+
+
+    /**
+     * @brief Constructor.
      *
      * @param name Plugin name.
-     *
-     * @throw In case valid plugin cannot be created.
+     * @param path Path to plugin.
      */
-    explicit Plugin(String name);
+    Plugin(String name, FilePath path);
 
 
     /**
@@ -213,7 +227,7 @@ public:
      *
      * @return
      */
-    const String& getName() const NOEXCEPT
+    const String& getName() const noexcept
     {
         return m_name;
     }
@@ -224,156 +238,9 @@ public:
      *
      * @return
      */
-    ViewPtr<PluginApi> getApi() const NOEXCEPT
+    ViewPtr<PluginApi> getApi() const noexcept
     {
         return m_api;
-    }
-
-
-    /**
-     * @brief Returns library paths.
-     *
-     * @return
-     */
-    static const DynamicArray<String>& getDirectories() NOEXCEPT
-    {
-        return s_directories;
-    }
-
-
-    /**
-     * @brief Check if builtin plugin with given name exists.
-     *
-     * @param name Plugin name.
-     *
-     * @return If builtin plugin exists.
-     */
-    static bool isAvailableBuiltin(const String& name) NOEXCEPT
-    {
-        return s_builtinPlugins.find(name) != s_builtinPlugins.end();
-    }
-
-
-    /**
-     * @brief Check if extern plugin with given name exists.
-     *
-     * @param name Plugin name.
-     *
-     * @return If extern plugin exists.
-     */
-    static bool isAvailableExtern(const String& name) NOEXCEPT
-    {
-        return s_externPlugins.find(name) != s_externPlugins.end();
-    }
-
-
-    /**
-     * @brief Check if plugin with given name exists.
-     *
-     * @param name Plugin name.
-     *
-     * @return If plugin exists.
-     */
-    static bool isAvailable(const String& name) NOEXCEPT
-    {
-        return isAvailableBuiltin(name) || isAvailableExtern(name);
-    }
-
-
-    /**
-     * @brief Return a list of builtin plugins.
-     *
-     * @return An array of builtin plugins names.
-     */
-    static DynamicArray<String> getNamesBuiltin() NOEXCEPT;
-
-
-    /**
-     * @brief Return a list of extern plugins.
-     *
-     * @return An array of extern plugin names.
-     */
-    static DynamicArray<String> getNamesExtern() NOEXCEPT;
-
-
-    /**
-     * @brief Return a list of plugins.
-     *
-     * @return An array of plugin names.
-     */
-    static DynamicArray<String> getNames() NOEXCEPT;
-
-
-    /**
-     * @brief Check if plugin is loaded.
-     *
-     * @param name Plugin name.
-     *
-     * @return
-     */
-    static bool isLoaded(const String& name) noexcept;
-
-
-    /**
-     * @brief Returns plugin API of loaded plugin.
-     *
-     * @param name Plugin name.
-     *
-     * @return Pointer to API or nullptr, if plugin is not loaded.
-     */
-    static ViewPtr<PluginApi> getApi(const String& name) noexcept;
-
-
-    /**
-     * @brief Load plugin.
-     *
-     * @param name Plugin name.
-     *
-     * @return Pointer to API or nullptr, if plugin is not loaded.
-     */
-    static ViewPtr<PluginApi> load(const String& name);
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Add directory where the plugins are stored.
-     *
-     * @param path
-     */
-    static void addDirectory(String path);
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Scan directory for plugins.
-     *
-     * @param directory Plugins directory.
-     *
-     * @return
-     */
-    static Map<String, FilePath> scanDirectory(const FilePath& directory) NOEXCEPT;
-
-
-    /**
-     * @brief Scan plugins directories for plugins.
-     *
-     * @return
-     */
-    static Map<String, FilePath> scanDirectories() NOEXCEPT;
-
-
-    /**
-     * @brief Rescan directories for extern plugins.
-     */
-    static void rescanDirectories() NOEXCEPT
-    {
-        s_externPlugins = scanDirectories();
     }
 
 
@@ -389,18 +256,6 @@ private:
 
     /// Plugin API.
     UniquePtr<PluginApi> m_api;
-
-    /// Plugins directory paths.
-    static DynamicArray<String> s_directories;
-
-    /// Builtin plugins create API functions.
-    static const Map<String, CreateFn> s_builtinPlugins;
-
-    /// Extern plugins paths.
-    static Map<String, FilePath> s_externPlugins;
-
-    /// Loaded plugin libraries.
-    static Map<String, Plugin> s_plugins;
 
 };
 

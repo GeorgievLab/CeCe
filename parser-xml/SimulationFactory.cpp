@@ -29,6 +29,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
+#include "simulator/PluginManager.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Obstacle.hpp"
 #include "simulator/Program.hpp"
@@ -426,7 +427,7 @@ UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
         char buffer[1024];
         strcpy(buffer, filename.c_str());
 
-        simulator::Plugin::addDirectory(dirname(buffer));
+        simulator::PluginManager::addDirectory(dirname(buffer));
 #endif
     }
 

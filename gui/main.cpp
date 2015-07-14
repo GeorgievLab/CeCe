@@ -17,7 +17,7 @@
 #include "MainFrame.h"
 
 // Simulator
-#include "simulator/Plugin.hpp"
+#include "simulator/PluginManager.hpp"
 
 /* ************************************************************************ */
 
@@ -32,7 +32,7 @@ public:
             return false;
 
         // Initialize plugins
-        simulator::Plugin::rescanDirectories();
+        simulator::PluginManager::rescanDirectories();
 
         // Add the common image handlers
         wxImage::AddHandler(new wxPNGHandler);

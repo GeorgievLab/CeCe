@@ -211,7 +211,7 @@ public:
      */
     bool isPluginLoaded(const String& name) const NOEXCEPT
     {
-        return Plugin::isLoaded(name);
+        return m_plugins.find(name) != m_plugins.end();
     }
 
 

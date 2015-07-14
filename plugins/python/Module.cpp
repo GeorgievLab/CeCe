@@ -22,6 +22,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/Configuration.hpp"
 #include "simulator/Plugin.hpp"
+#include "simulator/PluginManager.hpp"
 
 // Module
 #include "Exception.hpp"
@@ -47,7 +48,7 @@ Module::Module(const std::string& name)
         std::string foundPath;
 
         // Foreach possible paths
-        for (const auto& p : simulator::Plugin::getDirectories())
+        for (const auto& p : simulator::PluginManager::getDirectories())
         {
             auto path = p + "/" + name;
 

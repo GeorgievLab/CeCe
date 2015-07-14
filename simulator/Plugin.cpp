@@ -36,63 +36,27 @@
 
 /* ************************************************************************ */
 
-namespace {
-
-/* ************************************************************************ */
-
-#if __linux__
-const String g_prefix = "libplugin-";
-#elif _WIN32
-const String g_prefix = "libplugin-";
-#elif __APPLE__ && __MACH__
-const String g_prefix = "libplugin-";
-#endif
-
-/* ************************************************************************ */
-
-#if __linux__
-const String g_extension = ".so";
-#elif _WIN32
-const String g_extension = ".dll";
-#elif __APPLE__ && __MACH__
-const String g_extension = ".dylib";
-#endif
-
-/* ************************************************************************ */
-
-}
-
-/* ************************************************************************ */
-
 namespace simulator {
 
 /* ************************************************************************ */
 
-DynamicArray<String> Plugin::s_directories{
-    DIR_PLUGINS
-};
+#if __linux__
+const String Plugin::FILE_PREFIX = "libplugin-";
+#elif _WIN32
+const String Plugin::FILE_PREFIX = "libplugin-";
+#elif __APPLE__ && __MACH__
+const String Plugin::FILE_PREFIX = "libplugin-";
+#endif
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) extern "C" simulator::PluginApi* PLUGIN_PROTOTYPE_NAME_BUILTIN(create, validname)();
-BUILTIN_PLUGINS
-#undef ITEM
-
-/* ************************************************************************ */
-
-#define ITEM(name, validname) { # name, PLUGIN_PROTOTYPE_NAME_BUILTIN(create, validname) },
-const Map<String, Plugin::CreateFn> Plugin::s_builtinPlugins{
-    BUILTIN_PLUGINS
-};
-#undef ITEM
-
-/* ************************************************************************ */
-
-Map<String, FilePath> Plugin::s_externPlugins;
-
-/* ************************************************************************ */
-
-Map<String, Plugin> Plugin::s_plugins;
+#if __linux__
+const String Plugin::FILE_EXTENSION = ".so";
+#elif _WIN32
+const String Plugin::FILE_EXTENSION = ".dll";
+#elif __APPLE__ && __MACH__
+const String Plugin::FILE_EXTENSION = ".dylib";
+#endif
 
 /* ************************************************************************ */
 
@@ -146,7 +110,7 @@ public:
      *
      * @return
      */
-    bool isLoaded() const NOEXCEPT
+    bool isLoaded() const noexcept
     {
         return m_ptr != nullptr;
     }
@@ -157,7 +121,7 @@ public:
      *
      * @return
      */
-    String getError() const NOEXCEPT
+    String getError() const noexcept
     {
 #if __linux__ || __APPLE__ && __MACH__
         return dlerror();
@@ -172,7 +136,7 @@ public:
      *
      * @param name
      */
-    void* getAddr(const char* name) const NOEXCEPT
+    void* getAddr(const char* name) const noexcept
     {
 #if __linux__ || __APPLE__ && __MACH__
         return dlsym(m_ptr, name);
@@ -188,7 +152,7 @@ public:
      * @param name
      */
     template<typename T>
-    T getAddr(const char* name) const NOEXCEPT
+    T getAddr(const char* name) const noexcept
     {
         return reinterpret_cast<T>(reinterpret_cast<std::intptr_t>(getAddr(name)));
     }
@@ -210,54 +174,40 @@ private:
 
 /* ************************************************************************ */
 
-Plugin::Plugin(String name)
+Plugin::Plugin(String name, UniquePtr<PluginApi> api)
+    : m_name(std::move(name))
+    , m_api(std::move(api))
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+Plugin::Plugin(String name, FilePath path)
     : m_name(std::move(name))
 {
-    // Try to find in builtin libraries
-    auto it = s_builtinPlugins.find(getName());
+    // Create dynamic implementation
+    m_impl.reset(new Impl{std::move(path)});
 
-    // Required library is builtin
-    if (it != s_builtinPlugins.end())
-    {
-        Log::debug("Loading builtin plugin `", getName(), "`...");
+    if (!m_impl->isLoaded())
+        throw RuntimeException("Plugin is not loaded: " + m_impl->getError());
 
-        // Create library API
-        m_api.reset(it->second());
-    }
-    else
-    {
-        Log::debug("Loading external plugin `", getName(), "`...");
+    // Check API version
+    auto apiVerFn = m_impl->getAddr<ApiVersionFn>("api_version");
 
-        auto it = s_externPlugins.find(getName());
+    if (!apiVerFn)
+        throw RuntimeException("Plugin doesn't contains 'api_version' function");
 
-        if (it == s_externPlugins.end())
-            throw RuntimeException("Plugin cannot be found");
+    if (apiVerFn() != PLUGIN_API_VERSION)
+        throw RuntimeException("Plugin API version is different from the simulator");
 
-        // Create dynamic implementation
-        m_impl.reset(new Impl{it->second});
+    auto fn = m_impl->getAddr<CreateFn>("create");
 
-        if (!m_impl->isLoaded())
-            throw RuntimeException("Plugin is not loaded: " + m_impl->getError());
+    if (!fn)
+        throw RuntimeException("Plugin doesn't contains 'create' function");
 
-        // Check API version
-        auto apiVerFn = m_impl->getAddr<ApiVersionFn>("api_version");
-
-        if (!apiVerFn)
-            throw RuntimeException("Plugin doesn't contains 'api_version' function");
-
-        if (apiVerFn() != PLUGIN_API_VERSION)
-            throw RuntimeException("Plugin API version is different from the simulator");
-
-        auto fn = m_impl->getAddr<CreateFn>("create");
-
-        if (!fn)
-            throw RuntimeException("Plugin doesn't contains 'create' function");
-
-        // Create extension object
-        m_api.reset(fn());
-    }
-
-    Log::debug("Done");
+    // Create extension object
+    m_api.reset(fn());
 }
 
 /* ************************************************************************ */
@@ -265,168 +215,6 @@ Plugin::Plugin(String name)
 Plugin::~Plugin()
 {
     Log::debug("Plugin released `", getName(), "`");
-}
-
-/* ************************************************************************ */
-
-void Plugin::addDirectory(String path)
-{
-    Log::debug("New plugins directory: `", path, "`");
-
-    s_directories.push_back(std::move(path));
-}
-
-/* ************************************************************************ */
-
-DynamicArray<String> Plugin::getNamesBuiltin() NOEXCEPT
-{
-    DynamicArray<String> names;
-    names.reserve(s_builtinPlugins.size());
-
-    for (const auto& p : s_builtinPlugins)
-        names.push_back(p.first);
-
-    return names;
-}
-
-/* ************************************************************************ */
-
-DynamicArray<String> Plugin::getNamesExtern() NOEXCEPT
-{
-    DynamicArray<String> names;
-    names.reserve(s_externPlugins.size());
-
-    for (const auto& p : s_externPlugins)
-        names.push_back(p.first);
-
-    return names;
-}
-
-/* ************************************************************************ */
-
-DynamicArray<String> Plugin::getNames() NOEXCEPT
-{
-    auto names = getNamesBuiltin();
-    auto namesExtern = getNamesExtern();
-    names.reserve(names.size() + namesExtern.size());
-
-    std::move(namesExtern.begin(), namesExtern.end(), std::back_inserter(names));
-
-    return names;
-}
-
-/* ************************************************************************ */
-
-bool Plugin::isLoaded(const String& name) noexcept
-{
-    return s_plugins.find(name) != s_plugins.end();
-}
-
-/* ************************************************************************ */
-
-ViewPtr<PluginApi> Plugin::getApi(const String& name) noexcept
-{
-    // Try to find library
-    auto it = s_plugins.find(name);
-
-    if (it == s_plugins.end())
-        return nullptr;
-
-    return std::get<1>(*it).getApi();
-}
-
-/* ************************************************************************ */
-
-ViewPtr<PluginApi> Plugin::load(const String& name)
-{
-    // Try to find library in cache
-    auto it = s_plugins.find(name);
-
-    ViewPtr<PluginApi> api;
-
-    // Not found
-    if (it == s_plugins.end())
-    {
-        // Find if plugin exists
-        if (!Plugin::isAvailable(name))
-            return nullptr;
-
-        // Insert into cache
-        auto ptr = s_plugins.emplace(std::piecewise_construct,
-            std::forward_as_tuple(name),
-            std::forward_as_tuple(name)
-        );
-
-        api = std::get<1>(*std::get<0>(ptr)).getApi();
-    }
-    else
-    {
-        api = std::get<1>(*it).getApi();
-    }
-
-    // Return pointer
-    return api;
-}
-
-/* ************************************************************************ */
-
-Map<String, FilePath> Plugin::scanDirectory(const FilePath& directory) NOEXCEPT
-{
-    using namespace boost::filesystem;
-
-    Map<String, FilePath> result;
-
-    // Regular expression
-    const String pattern = g_prefix + "(.*)" + g_extension;
-    std::regex regex(pattern);
-    std::smatch matches;
-
-    Log::debug("Scanning `", directory.string(), "` for plugins with pattern `", pattern, "`");
-
-    if (!is_directory(directory))
-    {
-        Log::warning("Directory `", directory.string(), "` doesn't exists");
-        return result;
-    }
-
-    // Foreach directory
-    for (const auto& entry : makeRange(directory_iterator(directory), directory_iterator()))
-    {
-        // Only files
-        if (!is_regular_file(entry))
-            continue;
-
-        // Get path
-        auto path = entry.path();
-        const auto filename = path.filename();
-
-        // Match file name
-        if (!std::regex_match(filename.string(), matches, regex))
-            continue;
-
-        if (matches.size() == 2)
-            result.emplace(matches[1].str(), std::move(path));
-    }
-
-    return result;
-}
-
-/* ************************************************************************ */
-
-Map<String, FilePath> Plugin::scanDirectories() NOEXCEPT
-{
-    using namespace boost::filesystem;
-
-    Map<String, FilePath> result;
-
-    // Foreach directories
-    for (const auto& dirName : getDirectories())
-    {
-        auto tmp = scanDirectory(dirName);
-        result.insert(make_move_iterator(tmp.begin()), make_move_iterator(tmp.end()));
-    }
-
-    return result;
 }
 
 /* ************************************************************************ */

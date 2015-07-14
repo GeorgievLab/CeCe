@@ -22,7 +22,7 @@
 #include "simulator/Simulator.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
-#include "render/Color.hpp"
+#include "simulator/PluginManager.hpp"
 
 /* ************************************************************************ */
 
@@ -337,7 +337,7 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
             return it->second;
 
         // Load plugin
-        ViewPtr<PluginApi> api = Plugin::load(name);
+        ViewPtr<PluginApi> api = PluginManager::load(name);
 
         if (!api)
             return nullptr;

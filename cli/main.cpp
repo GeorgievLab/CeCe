@@ -22,7 +22,7 @@
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
-#include "simulator/Plugin.hpp"
+#include "simulator/PluginManager.hpp"
 #include "simulator/Module.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
     try
     {
         // Initialize plugins
-        simulator::Plugin::rescanDirectories();
+        simulator::PluginManager::rescanDirectories();
 
         setMeasureTimeOutput(&time_file);
 

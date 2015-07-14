@@ -12,7 +12,7 @@
 #include "PluginsDialog.h"
 
 // Simulator
-#include "simulator/Plugin.hpp"
+#include "simulator/PluginManager.hpp"
 
 /* ************************************************************************ */
 
@@ -26,12 +26,12 @@ PluginsDialog::PluginsDialog(wxWindow* parent)
 
 void PluginsDialog::OnInitDialog(wxInitDialogEvent& event)
 {
-    for (auto&& name : simulator::Plugin::getNames())
+    for (auto&& name : simulator::PluginManager::getNames())
     {
         m_listBoxPlugins->Append(wxString(name));
     }
 
-    const auto& directories = simulator::Plugin::getDirectories();
+    const auto& directories = simulator::PluginManager::getDirectories();
 
     if (!directories.empty())
         m_staticTextPath->SetLabel(directories[0]);
