@@ -5,6 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -72,9 +74,6 @@ public:
 
     /// Type of simulation parameter value.
     using ParameterValueType = float;
-
-    /// Loaded library container.
-    using PluginContainer = Map<String, Plugin>;
 
     /// Module container type.
     using ModuleContainer = Map<String, UniquePtr<Module>>;
@@ -212,7 +211,7 @@ public:
      */
     bool isPluginLoaded(const String& name) const NOEXCEPT
     {
-        return m_plugins.find(name) != m_plugins.end();
+        return Plugin::isLoaded(name);
     }
 
 
@@ -710,8 +709,8 @@ private:
     /// Parameters.
     ParameterContainer m_parameters;
 
-    /// Cache for loaded libraries.
-    PluginContainer m_plugins;
+    /// Used plugins.
+    Map<String, ViewPtr<PluginApi>> m_plugins;
 
     /// Simulation modules.
     ModuleContainer m_modules;

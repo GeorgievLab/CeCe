@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -75,8 +77,8 @@ Simulation::~Simulation()
     // Call finalize simulations for all plugins
     for (auto it = m_plugins.rbegin(); it != m_plugins.rend(); ++it)
     {
-        assert(it->second.getApi());
-        it->second.getApi()->finalizeSimulation(*this);
+        assert(it->second);
+        it->second->finalizeSimulation(*this);
     }
 }
 
@@ -327,36 +329,25 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
 {
     try
     {
-        // Try to find library in cache
+        // Test if plugin is used
         auto it = m_plugins.find(name);
 
-        ViewPtr<PluginApi> api;
+        // Found
+        if (it != m_plugins.end())
+            return it->second;
 
-        // Not found
-        if (it == m_plugins.end())
-        {
-            // Find if plugin exists
-            if (!Plugin::isAvailable(name))
-                return nullptr;
+        // Load plugin
+        ViewPtr<PluginApi> api = Plugin::load(name);
 
-            // Insert into cache
-            auto ptr = m_plugins.emplace(std::piecewise_construct,
-                std::forward_as_tuple(name),
-                std::forward_as_tuple(name)
-            );
+        if (!api)
+            return nullptr;
 
-            // Plugin loaded
-            invoke(&SimulationListener::onPluginLoad, *this, name);
+        // Register API
+        m_plugins.emplace(name, api);
 
-            api = std::get<1>(*std::get<0>(ptr)).getApi();
-            api->initSimulation(*this);
-        }
-        else
-        {
-            api = std::get<1>(*it).getApi();
-        }
+        // Init simulation
+        api->initSimulation(*this);
 
-        // Return pointer
         return api;
     }
     catch (const Exception& e)

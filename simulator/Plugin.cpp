@@ -5,6 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 // Declaration
 #include "Plugin.hpp"
@@ -87,6 +89,10 @@ const Map<String, Plugin::CreateFn> Plugin::s_builtinPlugins{
 /* ************************************************************************ */
 
 Map<String, FilePath> Plugin::s_externPlugins;
+
+/* ************************************************************************ */
+
+Map<String, Plugin> Plugin::s_plugins;
 
 /* ************************************************************************ */
 
@@ -307,6 +313,59 @@ DynamicArray<String> Plugin::getNames() NOEXCEPT
     std::move(namesExtern.begin(), namesExtern.end(), std::back_inserter(names));
 
     return names;
+}
+
+/* ************************************************************************ */
+
+bool Plugin::isLoaded(const String& name) noexcept
+{
+    return s_plugins.find(name) != s_plugins.end();
+}
+
+/* ************************************************************************ */
+
+ViewPtr<PluginApi> Plugin::getApi(const String& name) noexcept
+{
+    // Try to find library
+    auto it = s_plugins.find(name);
+
+    if (it == s_plugins.end())
+        return nullptr;
+
+    return std::get<1>(*it).getApi();
+}
+
+/* ************************************************************************ */
+
+ViewPtr<PluginApi> Plugin::load(const String& name)
+{
+    // Try to find library in cache
+    auto it = s_plugins.find(name);
+
+    ViewPtr<PluginApi> api;
+
+    // Not found
+    if (it == s_plugins.end())
+    {
+        // Find if plugin exists
+        if (!Plugin::isAvailable(name))
+            return nullptr;
+
+        // Insert into cache
+        auto ptr = s_plugins.emplace(std::piecewise_construct,
+            std::forward_as_tuple(name),
+            std::forward_as_tuple(name)
+        );
+
+        api = std::get<1>(*std::get<0>(ptr)).getApi();
+    }
+    else
+    {
+        api = std::get<1>(*it).getApi();
+    }
+
+    // Return pointer
+    return api;
 }
 
 /* ************************************************************************ */

@@ -5,6 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -302,6 +304,36 @@ public:
     static DynamicArray<String> getNames() NOEXCEPT;
 
 
+    /**
+     * @brief Check if plugin is loaded.
+     *
+     * @param name Plugin name.
+     *
+     * @return
+     */
+    static bool isLoaded(const String& name) noexcept;
+
+
+    /**
+     * @brief Returns plugin API of loaded plugin.
+     *
+     * @param name Plugin name.
+     *
+     * @return Pointer to API or nullptr, if plugin is not loaded.
+     */
+    static ViewPtr<PluginApi> getApi(const String& name) noexcept;
+
+
+    /**
+     * @brief Load plugin.
+     *
+     * @param name Plugin name.
+     *
+     * @return Pointer to API or nullptr, if plugin is not loaded.
+     */
+    static ViewPtr<PluginApi> load(const String& name);
+
+
 // Public Mutators
 public:
 
@@ -312,7 +344,6 @@ public:
      * @param path
      */
     static void addDirectory(String path);
-
 
 
 // Public Operations
@@ -367,6 +398,9 @@ private:
 
     /// Extern plugins paths.
     static Map<String, FilePath> s_externPlugins;
+
+    /// Loaded plugin libraries.
+    static Map<String, Plugin> s_plugins;
 
 };
 
