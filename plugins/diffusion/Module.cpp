@@ -138,11 +138,16 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Foreach signal configurations
     for (auto signal : config.getConfigurations("signal"))
     {
-        registerSignal(
+        // Register signal
+        auto id = registerSignal(
             signal->getString("name"),
             parser::parse_value<DiffusionRate>(signal->getString("diffusion-rate")),
             parser::parse_value<DegradationRate>(signal->getString("degradation-rate"))
         );
+
+        signal->callIfSetString("color", [this, id] (const String& value) {
+            setSignalColor(id, parser::parse_color(value));
+        });
     }
 
 #if ENABLE_RENDER
