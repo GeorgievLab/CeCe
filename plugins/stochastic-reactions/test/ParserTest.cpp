@@ -32,12 +32,12 @@ static void test_impl(int line, const String& code, std::initializer_list<String
 {
     std::cout << "@" << line << ": `" << code << "`\n";
 
-    // Parse code
-    auto reaction = ReactionParserIntracellular(code).parse();
-
     // TODO: Waiting for usable Reaction API.
     ASSERT_TRUE(false);
 /*
+    // Parse code
+    auto reaction = ReactionParserIntracellular(code).parse();
+
     // Reaction IDs
     ASSERT_EQ(names.size(), reaction.m_ids.size());
 
@@ -76,12 +76,13 @@ static void test_invalid_impl(int line, const String& code)
 {
     std::cout << "@" << line << ": `" << code << "`\n";
 
+    // TODO: Waiting for usable Reaction API.
+    ASSERT_TRUE(false);
+
+/*
     // Parse code
     auto reaction = ReactionParserIntracellular(code).parse();
 
-    // TODO: Waiting for usable Reaction API.
-    ASSERT_TRUE(false);
-/*
     // Reaction IDs
     EXPECT_EQ(0, reaction.m_ids.size());
 

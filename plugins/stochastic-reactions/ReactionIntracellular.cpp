@@ -21,7 +21,7 @@ namespace stochastic_reactions {
 float ReactionIntracellular::computePropensity(const unsigned int index)
 {
     float local = m_rates[index];
-    for (unsigned int i = 0; i < m_rules[i].size(); i++)
+    for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
         if (m_rules[index][i].requirement == 0u)
             continue;
