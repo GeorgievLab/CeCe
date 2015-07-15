@@ -197,7 +197,7 @@ void Module::updateDrawable() const
         // Mixup signal colors
         for (auto id : getSignalIds())
         {
-            const auto signal = std::min(getSignal(id, c), 1.f);
+            const auto signal = std::min(getSignal(id, c), Signal(1));
 
             pixel *= (1 - signal);
             pixel += m_colors[id] * signal;
