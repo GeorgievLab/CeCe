@@ -59,15 +59,22 @@ DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
     DynamicArray<plugin::diffusion::Module::Coordinate> coords;
     auto coordIt = std::inserter(coords, coords.end());
 
-    // Get coordinates
-    for (const auto& shape : cell.getShapes())
+    // Get shapes
+    const auto& shapes = cell.getShapes();
+
+    // Get coordinates from shapes
+    for (const auto& shape : shapes)
     {
         coordIt = mapShapeToGrid(coordIt, shape, step, coord, cell.getRotation(), gridSize);
     }
 
-    // Only unique coordinates
-    std::sort(coords.begin(), coords.end());
-    coords.erase(std::unique(coords.begin(), coords.end()), coords.end());
+    // In case of single shape, all coordinates are unique
+    if (shapes.size() > 1)
+    {
+        // Only unique coordinates
+        std::sort(coords.begin(), coords.end());
+        coords.erase(std::unique(coords.begin(), coords.end()), coords.end());
+    }
 
     return coords;
 }
