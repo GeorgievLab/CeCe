@@ -138,8 +138,6 @@ public:
         {
             m_value.x() = m_min.x();
             ++m_value.y();
-
-            assert(m_value.y() <= m_max.y());
         }
         else
         {
@@ -189,7 +187,7 @@ constexpr IteratorRange<IteratorVector<T>> range(Vector<T> begin, Vector<T> end)
 {
     return makeRange(
         IteratorVector<T>{begin, end - T{1}, begin},
-        IteratorVector<T>{end - T{1}, end - T{1}, begin}
+        IteratorVector<T>{Vector<T>{0, end.getY()}, Zero, Zero}
     );
 }
 

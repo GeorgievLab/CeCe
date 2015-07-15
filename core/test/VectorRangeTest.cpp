@@ -21,15 +21,15 @@ TEST(VectorRangeTest, loop)
 {
     {
         // Test range [0, 0] -> (0, 0)
-        // TODO: [0, 0] -> [-1, -1] ??
-        //auto rng = range(Vector<int>(0, 0), Vector<int>(0, 0));
+        auto rng = range(Vector<int>(0, 0), Vector<int>(0, 0));
 
-        //EXPECT_TRUE(rng.isEmpty());
+        EXPECT_TRUE(rng.isEmpty());
     }
 
     {
         // Test range [0, 0] -> (1, 1)
         auto rng = range(Vector<int>(0, 0), Vector<int>(1, 1));
+        rng.advanceBegin();
 
         EXPECT_TRUE(rng.isEmpty());
     }
@@ -45,6 +45,7 @@ TEST(VectorRangeTest, loop)
         EXPECT_EQ(Vector<int>(0, 1), rng.front());
         rng.advanceBegin();
         EXPECT_EQ(Vector<int>(1, 1), rng.front());
+        rng.advanceBegin();
 
         EXPECT_TRUE(rng.isEmpty());
     }
@@ -62,8 +63,8 @@ TEST(VectorRangeTest, loop)
         EXPECT_EQ(Vector<int>(3, 0), rng.front());
         rng.advanceBegin();
         EXPECT_EQ(Vector<int>(4, 0), rng.front());
-
         rng.advanceBegin();
+
         EXPECT_EQ(Vector<int>(0, 1), rng.front());
         rng.advanceBegin();
         EXPECT_EQ(Vector<int>(1, 1), rng.front());
@@ -73,8 +74,8 @@ TEST(VectorRangeTest, loop)
         EXPECT_EQ(Vector<int>(3, 1), rng.front());
         rng.advanceBegin();
         EXPECT_EQ(Vector<int>(4, 1), rng.front());
-
         rng.advanceBegin();
+
         EXPECT_EQ(Vector<int>(0, 2), rng.front());
         rng.advanceBegin();
         EXPECT_EQ(Vector<int>(1, 2), rng.front());
@@ -84,6 +85,7 @@ TEST(VectorRangeTest, loop)
         EXPECT_EQ(Vector<int>(3, 2), rng.front());
         rng.advanceBegin();
         EXPECT_EQ(Vector<int>(4, 2), rng.front());
+        rng.advanceBegin();
 
         EXPECT_TRUE(rng.isEmpty());
     }
