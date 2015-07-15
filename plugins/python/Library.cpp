@@ -14,6 +14,7 @@
 #include "core/Exception.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
+#include "simulator/PluginManager.hpp"
 #include "simulator/SimulationListener.hpp"
 
 // Module
@@ -209,10 +210,9 @@ public:
 
         Log::debug("[python] Trying to load plugin: ", pluginName);
 
-        // TODO: check if plugin exists
-
         // Test if plugin with suffix -python exists.
-        simulation.loadPlugin(pluginName);
+        if (PluginManager::isAvailable(pluginName))
+            simulation.loadPlugin(pluginName);
     }
 
 };
