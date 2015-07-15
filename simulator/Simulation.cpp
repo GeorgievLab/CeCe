@@ -345,6 +345,9 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
         // Register API
         m_plugins.emplace(name, api);
 
+        // Plugin loaded
+        invoke(&SimulationListener::onPluginLoad, *this, name);
+
         // Init simulation
         api->initSimulation(*this);
 
