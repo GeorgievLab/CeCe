@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -14,14 +16,11 @@
 #include <iterator>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/ValueIterator.hpp"
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -56,7 +55,7 @@ public:
      * @param begin
      * @param end
      */
-    CONSTEXPR IteratorRange(IteratorType begin, IteratorType end) NOEXCEPT
+    constexpr IteratorRange(IteratorType begin, IteratorType end) noexcept
         : m_begin(begin)
         , m_end(end)
     {
@@ -73,7 +72,7 @@ public:
      *
      * @return
      */
-    bool isEmpty() const NOEXCEPT
+    bool isEmpty() const noexcept
     {
         return m_begin == m_end;
     }
@@ -84,7 +83,7 @@ public:
      *
      * @return
      */
-    unsigned long getSize() const NOEXCEPT
+    unsigned long getSize() const noexcept
     {
         return std::distance(m_begin, m_end);
     }
@@ -95,7 +94,7 @@ public:
      *
      * @return
      */
-    const ValueType& front() const NOEXCEPT
+    const ValueType& front() const noexcept
     {
         return *m_begin;
     }
@@ -110,7 +109,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR IteratorType begin() const NOEXCEPT
+    constexpr IteratorType begin() const noexcept
     {
         return m_begin;
     }
@@ -121,7 +120,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR IteratorType end() const NOEXCEPT
+    constexpr IteratorType end() const noexcept
     {
         return m_end;
     }
@@ -134,7 +133,7 @@ public:
      *
      * @return *this.
      */
-    IteratorRange& advanceBegin(DifferenceType n = 1) NOEXCEPT
+    IteratorRange& advanceBegin(DifferenceType n = 1) noexcept
     {
         std::advance(m_begin, n);
         return *this;
@@ -148,7 +147,7 @@ public:
      *
      * @return *this.
      */
-    IteratorRange& advanceEnd(DifferenceType n = 1) NOEXCEPT
+    IteratorRange& advanceEnd(DifferenceType n = 1) noexcept
     {
         std::advance(m_end, n);
         return *this;
@@ -162,7 +161,7 @@ public:
      *
      * @return *this.
      */
-    IteratorRange& advanceBoth(DifferenceType n = 1) NOEXCEPT
+    IteratorRange& advanceBoth(DifferenceType n = 1) noexcept
     {
         advanceBegin(n);
         advanceEnd(n);
@@ -193,7 +192,7 @@ private:
  * @return Iterator range for given range.
  */
 template<typename Iter>
-CONSTEXPR IteratorRange<Iter> makeRange(Iter begin, Iter end) NOEXCEPT
+constexpr IteratorRange<Iter> makeRange(Iter begin, Iter end) noexcept
 {
     return IteratorRange<Iter>{begin, end};
 }
@@ -210,7 +209,7 @@ CONSTEXPR IteratorRange<Iter> makeRange(Iter begin, Iter end) NOEXCEPT
  * @return Iterator range for whole container data.
  */
 template<typename Container>
-CONSTEXPR auto makeRange(Container& c) NOEXCEPT -> IteratorRange<decltype(std::begin(c))>
+constexpr auto makeRange(Container& c) noexcept -> IteratorRange<decltype(std::begin(c))>
 {
     using std::begin;
     using std::end;
@@ -231,15 +230,13 @@ CONSTEXPR auto makeRange(Container& c) NOEXCEPT -> IteratorRange<decltype(std::b
  * @return
  */
 template<typename T>
-CONSTEXPR IteratorRange<ValueIterator<T>> range(T begin, T end) NOEXCEPT
+constexpr IteratorRange<ValueIterator<T>> range(T begin, T end) noexcept
 {
     return IteratorRange<ValueIterator<T>>{ValueIterator<T>{begin}, ValueIterator<T>{end}};
 }
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

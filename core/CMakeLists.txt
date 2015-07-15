@@ -77,6 +77,7 @@ build_test(core
         test/test.cpp
         test/DynamicArrayTest.cpp
         test/IteratorRangeTest.cpp
+        test/VectorRangeTest.cpp
         test/UnitsTest.cpp
         test/StringViewTest.cpp
         test/ExpressionParserTest.cpp
