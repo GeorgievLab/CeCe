@@ -60,6 +60,16 @@ void CellBase::configure(const simulator::Configuration& config,
     config.callIfSetString("growth-rate", [this](const String& value) {
         setGrowthRate(parser::parse_value<GrowthRate>(value));
     });
+
+    // Molecule initializations
+    for (auto cfg : config.getConfigurations("molecule"))
+    {
+        auto name = cfg->getString("name");
+        auto amount = cfg->getInteger("amount");
+
+        // Set molecules
+        setMoleculeCount(name, amount);
+    }
 }
 
 /* ************************************************************************ */
