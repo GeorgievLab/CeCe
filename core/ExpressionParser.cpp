@@ -1,21 +1,240 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
+
+// Declaration
 #include "core/ExpressionParser.hpp"
 
+// C++
 #include <cmath>
 #include <algorithm>
-#include <exception>
+
+// Simulator
+#include "core/constants.hpp"
+#include "core/Tokenizer.hpp"
+
+/* ************************************************************************ */
+
+inline namespace core {
+
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Expression token codes.
+ */
+enum class ExpressionTokenCode
+{
+    Invalid,
+    Identifier,
+    Number,
+    Plus,
+    Minus,
+    Multiply,
+    Divide,
+    Power,
+    ParenOpen,
+    ParenClose
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Expression tokenizer.
+ */
+class ExpressionTokenizer
+    : public BasicTokenizer<
+        ExpressionTokenizer,
+        BasicToken<ExpressionTokenCode, String>,
+        const char*
+    >
+{
+
+// Public Types
+public:
+
+
+    // Parent type
+    using ParentType = BasicTokenizer<
+        ExpressionTokenizer,
+        BasicToken<ExpressionTokenCode, String>,
+        const char*
+    >;
+
+    /// Token type
+    using TokenType = typename ParentType::TokenType;
+
+
+// Public Ctors & Dtors
+public:
+
+
+    using ParentType::ParentType;
+
+
+// Public Operation
+public:
+
+
+    /**
+     * @brief Tokenize number.
+     *
+     * @return
+     */
+    TokenType tokenizeNumber() noexcept
+    {
+        TokenType token{ExpressionTokenCode::Number};
+
+        while (isDigit() || is('.'))
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        // Suffix
+        if (is('f'))
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        return token;
+    }
+
+
+    /**
+     * @brief Tokenize identifier.
+     *
+     * @return
+     */
+    TokenType tokenizeIdentifier() noexcept
+    {
+        TokenType token{TestTokenCode::Identifier};
+
+        assert(isIdentifierBegin());
+
+        token.value.push_back(value());
+        next();
+
+        while (isIdentifierRest())
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        return token;
+    }
+
+
+    /**
+     * @brief Tokenize source.
+     *
+     * @return
+     */
+    TokenType tokenize()
+    {
+        // Skip whitespaces
+        while (isRange('\0', ' '))
+            next();
+
+        if (isDigit())
+            return tokenizeNumber();
+
+        if (isIdentifierBegin())
+            return tokenizeIdentifier();
+
+        switch (value())
+        {
+        case '+':
+            return TokenType{ExpressionTokenCode::Plus, "+"};
+
+        case '-':
+            return TokenType{ExpressionTokenCode::Minus, "-"};
+
+        case '*':
+            return TokenType{ExpressionTokenCode::Multiply, "*"};
+
+        case '/':
+            return TokenType{ExpressionTokenCode::Divide, "/"};
+
+        case '^':
+            return TokenType{ExpressionTokenCode::Power, "^"};
+
+        case '(':
+            return TokenType{ExpressionTokenCode::ParenOpen, "("};
+
+        case ')':
+            return TokenType{ExpressionTokenCode::ParenClose, ")"};
+        }
+
+        return TokenType{};
+    }
+
+
+// Protected Operation
+protected:
+
+
+    /**
+     * @brief Check if current value is digit.
+     *
+     * @return
+     */
+    bool isDigit() const noexcept
+    {
+        return isRange('0', '9');
+    }
+
+
+    /**
+     * @brief Check if current value is identifier begin.
+     *
+     * @return
+     */
+    bool isIdentifierBegin() const noexcept
+    {
+        return isRange('a', 'z') || isRange('A', 'Z');
+    }
+
+
+    /**
+     * @brief Check if current value is identifier rest.
+     *
+     * @return
+     */
+    bool isIdentifierRest() const noexcept
+    {
+        return isIdentifierBegin() || isDigit() || is('_');
+    }
+
+};
+
+/* ************************************************************************ */
+
+}
 
 /******************************************************************************************************/
 
 class ExpressionParser
 {
-    
+
 private:
 
     const String operators = "+-*/^();<> \n\r\t\v\b";
     const String whitespace = " \n\r\t\v\b";
     Map<String, float> parameters;
     IteratorRange<const char*>& iterator;
-    
+
     void skipWhitespace()
     {
         while(!iterator.isEmpty() && std::find(std::begin(whitespace), std::end(whitespace), iterator.front()) != std::end(whitespace))
@@ -23,7 +242,7 @@ private:
             iterator.advanceBegin();
         }
     }
-    
+
     String readConstant()
     {
         String local;
@@ -34,12 +253,12 @@ private:
         }
         return local;
     }
-    
+
     float signum(float source)
     {
         return (0 < source) - (source < 0);
     }
-    
+
     float add()
     {
         float value = multiply();
@@ -61,7 +280,7 @@ private:
                 return value;
         }
     }
-        
+
     float multiply()
     {
         float value = power();
@@ -191,7 +410,7 @@ private:
         else
             throw UnknownFunctionException();
     }
-    
+
 public:
 
     ExpressionParser(IteratorRange<const char*>& range, const Map<String, float>& param) NOEXCEPT
@@ -199,7 +418,7 @@ public:
     {
         // Nothing to do
     }
-    
+
     float parse()
     {
         skipWhitespace();
@@ -209,7 +428,15 @@ public:
     }
 };
 
+/* ************************************************************************ */
+
 float parseExpression(IteratorRange<const char*>& range, const Map<String,float>& parameters)
 {
     return ExpressionParser(range, parameters).parse();
 }
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
