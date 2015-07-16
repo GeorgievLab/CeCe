@@ -14,6 +14,7 @@
 
 // C++
 #include <cmath>
+#include <cassert>
 #include <algorithm>
 
 // Simulator
@@ -119,7 +120,7 @@ public:
      */
     TokenType tokenizeIdentifier() noexcept
     {
-        TokenType token{TestTokenCode::Identifier};
+        TokenType token{ExpressionTokenCode::Identifier};
 
         assert(isIdentifierBegin());
 
