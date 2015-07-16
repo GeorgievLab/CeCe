@@ -1,0 +1,240 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
+
+// GTest
+#include <gtest/gtest.h>
+
+// C++
+#include <cstring>
+
+// Simulator
+#include "core/String.hpp"
+#include "core/Tokenizer.hpp"
+
+/* ************************************************************************ */
+
+/**
+ * @brief Test token codes.
+ */
+enum class TestTokenCode
+{
+    Invalid,
+    Identifier,
+    Number,
+    Operator,
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Test tokenizer.
+ */
+class TestTokenizer
+    : public BasicTokenizer<
+        TestTokenizer,
+        BasicToken<TestTokenCode, String>,
+        const char*
+    >
+{
+
+// Public Types
+public:
+
+
+    // Parent type
+    using ParentType = BasicTokenizer<
+        TestTokenizer,
+        BasicToken<TestTokenCode, String>,
+        const char*
+    >;
+
+    /// Token type
+    using TokenType = typename ParentType::TokenType;
+
+
+// Public Ctors & Dtors
+public:
+
+
+    using ParentType::ParentType;
+
+
+// Public Operation
+public:
+
+
+    /**
+     * @brief Tokenize number.
+     *
+     * @return
+     */
+    TokenType tokenizeNumber() noexcept
+    {
+        TokenType token{TestTokenCode::Number};
+
+        while (isDigit() || is('.'))
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        // Suffix
+        if (is('f'))
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        return token;
+    }
+
+
+    /**
+     * @brief Tokenize identifier.
+     *
+     * @return
+     */
+    TokenType tokenizeIdentifier() noexcept
+    {
+        TokenType token{TestTokenCode::Identifier};
+
+        assert(isIdentifierBegin());
+
+        token.value.push_back(value());
+        next();
+
+        while (isIdentifierRest())
+        {
+            token.value.push_back(value());
+            next();
+        }
+
+        return token;
+    }
+
+
+    /**
+     * @brief Tokenize source.
+     *
+     * @return Tokenized token.
+     */
+    TokenType tokenize() noexcept
+    {
+        // Skip whitespaces
+        while (value() <= 0x20)
+            next();
+
+        if (isEof())
+            return {};
+
+        if (isDigit())
+            return tokenizeNumber();
+
+        if (isIdentifierBegin())
+            return tokenizeIdentifier();
+
+        switch (value())
+        {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        {
+            auto val = value();
+            next();
+            return TokenType{TestTokenCode::Operator, String(1, val)};
+        }
+        }
+
+        return {};
+    }
+
+
+// Protected Operation
+protected:
+
+
+    /**
+     * @brief Check if current value is digit.
+     *
+     * @return
+     */
+    bool isDigit() const noexcept
+    {
+        return isRange('0', '9');
+    }
+
+
+    /**
+     * @brief Check if current value is identifier begin.
+     *
+     * @return
+     */
+    bool isIdentifierBegin() const noexcept
+    {
+        return isRange('a', 'z') || isRange('A', 'Z');
+    }
+
+
+    /**
+     * @brief Check if current value is identifier rest.
+     *
+     * @return
+     */
+    bool isIdentifierRest() const noexcept
+    {
+        return isIdentifierBegin() || isDigit() || is('_');
+    }
+
+};
+
+/* ************************************************************************ */
+
+TEST(Tokenizer, expression)
+{
+    {
+        const char* str = "10 13.f + - * hello im_2";
+
+        TestTokenizer tokenizer(str, str + strlen(str));
+
+        auto it = tokenizer.begin();
+        ASSERT_EQ(TestTokenCode::Number, *it);
+        ASSERT_EQ("10", *it);
+
+        ++it;
+        ASSERT_EQ(TestTokenCode::Number, *it);
+        ASSERT_EQ("13.f", *it);
+
+        ++it;
+        ASSERT_EQ(TestTokenCode::Operator, *it);
+        ASSERT_EQ("+", *it);
+
+        ++it;
+        ASSERT_EQ(TestTokenCode::Operator, *it);
+        ASSERT_EQ("-", *it);
+
+        ++it;
+        ASSERT_EQ(TestTokenCode::Operator, *it);
+        ASSERT_EQ("*", *it);
+
+        ++it;
+        ASSERT_EQ(TestTokenCode::Identifier, *it);
+        ASSERT_EQ("hello", *it);
+
+        ++it;
+        ASSERT_EQ(TestTokenCode::Identifier, *it);
+        ASSERT_EQ("im_2", *it);
+
+        ++it;
+        ASSERT_EQ(tokenizer.end(), it);
+    }
+}
+
+/* ************************************************************************ */

@@ -67,6 +67,7 @@ add_library(${PROJECT_NAME} OBJECT
     ViewPtr.hpp
     ListenerContainer.hpp
     Zero.hpp
+    Tokenizer.hpp
 )
 
 # ######################################################################### #
@@ -81,6 +82,7 @@ build_test(core
         test/UnitsTest.cpp
         test/StringViewTest.cpp
         test/ExpressionParserTest.cpp
+        test/TokenizerTest.cpp
         ExpressionParser.hpp
         ExpressionParser.cpp
 )

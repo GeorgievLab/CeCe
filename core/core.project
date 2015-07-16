@@ -67,6 +67,8 @@
     <File Name="ExpressionParser.hpp"/>
     <File Name="Zero.hpp"/>
     <File Name="StringView.hpp"/>
+    <File Name="Tokenizer.hpp"/>
+    <File Name="Parser.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -162,6 +164,7 @@
     <File Name="test/UnitsTest.cpp"/>
     <File Name="test/ExpressionParserTest.cpp"/>
     <File Name="test/StringViewTest.cpp"/>
+    <File Name="test/TokenizerTest.cpp"/>
     <File Name="test/VectorRangeTest.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>
