@@ -181,7 +181,7 @@ public:
 template<typename Tokenizer>
 class BasicTokenizerIterator
 {
-    template<typename, typename, typename>
+    template<typename, typename, typename, typename>
     friend class BasicTokenizer;
 
 
@@ -343,16 +343,21 @@ private:
  * @tparam Derived       Type of derived tokenizer.
  * @tparam Token         Type of token.
  * @tparam InputIterator Type of input iterator.
+ * @tparam Source        Type of source range.
  */
 template<
     typename Derived,
     typename Token,
-    typename InputIterator
+    typename InputIterator,
+    typename Source = IteratorRange<InputIterator>
 >
 class BasicTokenizer
 {
     template<typename>
     friend class BasicTokenizerIterator;
+
+
+    friend Derived;
 
 
 // Public Types
@@ -368,6 +373,9 @@ public:
     /// Input value type.
     using ValueType = typename std::iterator_traits<InputIterator>::value_type;
 
+    /// Source iterator range.
+    using SourceRange = Source;
+
 
 // Public Ctors & Dtors
 public:
@@ -378,7 +386,7 @@ public:
      *
      * @param range Source range.
      */
-    explicit BasicTokenizer(IteratorRange<InputIterator> range) noexcept
+    explicit BasicTokenizer(SourceRange range) noexcept
         : m_range{std::move(range)}
     {
         // Nothing to do
@@ -401,11 +409,13 @@ public:
     /**
      * @brief Constructor.
      *
+     * @tparam Src Type of source range.
+     *
      * @param source Source object.
      */
-    template<typename Source>
-    explicit BasicTokenizer(Source&& source) noexcept
-        : m_range(makeRange(std::forward<Source>(source)))
+    template<typename Src>
+    explicit BasicTokenizer(Src&& source) noexcept
+        : m_range(makeRange(std::forward<Src>(source)))
     {
         // Nothing to do
     }
@@ -585,8 +595,8 @@ public:
     }
 
 
-// Public Operations
-public:
+// Protected Operations
+protected:
 
 
     /**
@@ -596,10 +606,6 @@ public:
     {
         m_range.advanceBegin();
     }
-
-
-// Protected Operations
-protected:
 
 
     /**
@@ -688,7 +694,7 @@ private:
 
 
     /// Source range.
-    IteratorRange<InputIterator> m_range;
+    SourceRange m_range;
 
 };
 
