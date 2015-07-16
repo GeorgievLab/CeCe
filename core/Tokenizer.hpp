@@ -320,6 +320,7 @@ protected:
         }
     }
 
+
 // Private Data Members
 private:
 
@@ -338,6 +339,10 @@ private:
 
 /**
  * @brief Basic tokenizer class.
+ *
+ * @tparam Derived       Type of derived tokenizer.
+ * @tparam Token         Type of token.
+ * @tparam InputIterator Type of input iterator.
  */
 template<
     typename Derived,
@@ -375,6 +380,19 @@ public:
      */
     explicit BasicTokenizer(IteratorRange<InputIterator> range) noexcept
         : m_range{std::move(range)}
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param beg Begin iterator.
+     * @param end End iterator.
+     */
+    BasicTokenizer(InputIterator beg, InputIterator end) noexcept
+        : m_range{beg, end}
     {
         // Nothing to do
     }
@@ -484,6 +502,24 @@ public:
 
 
     /**
+     * @brief Test if current character is in range of values.
+     *
+     * @tparam Value1 Type of tested value.
+     * @tparam Value2 Type of tested value.
+     *
+     * @param val1 First value from range.
+     * @param val2 Last value from range.
+     *
+     * @return Result of the test.
+     */
+    template<typename Value1, typename Value2>
+    bool isRange(Value1&& val1, Value2&& val2) const noexcept
+    {
+        return (value() >= val1) && (value() <= val2);
+    }
+
+
+    /**
      * @brief Test if current character match to the given value.
      *
      * Difference between `match` function and `is` function is the `match`
@@ -508,6 +544,44 @@ public:
         }
 
         return false;
+    }
+
+
+    /**
+     * @brief Skip given values.
+     *
+     * @tparam Values Types of tested values.
+     *
+     * @param values Tested values.
+     *
+     * @return !isEof().
+     */
+    template<typename... Values>
+    bool skip(Values&&... values) noexcept
+    {
+        while (!isEof() && is(values...))
+            next();
+
+        return !isEof();
+    }
+
+
+    /**
+     * @brief Try to find one of the given values.
+     *
+     * @tparam Values Types of tested values.
+     *
+     * @param values Tested values.
+     *
+     * @return !isEof().
+     */
+    template<typename... Values>
+    bool find(Values&&... values) noexcept
+    {
+        while (!isEof() && !is(values...))
+            next();
+
+        return !isEof();
     }
 
 
@@ -540,7 +614,7 @@ protected:
     TokenType fetch()
     {
         static_assert(std::is_member_function_pointer<decltype(&Derived::tokenize)>::value,
-            "Function Derived::tokenize required");
+            "Function Derived::tokenize is required");
 
         // End of source -> return invalid token
         if (isEof())
@@ -873,140 +947,6 @@ operator!=(const BasicToken<Code, Value, Position>& lhs, const T& value) noexcep
 {
     return !operator==(lhs, Value{value});
 }
-
-/* ************************************************************************ */
-
-/**
- * @brief Expression token codes.
- */
-enum class ExpressionTokenCode
-{
-    Invalid,
-    Identifier,
-    Number,
-    Operator
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Expression tokenizer.
- *
- * @tparam InputIterator Input iterator type.
- */
-template<typename InputIterator>
-class ExpressionTokenizer
-    : public BasicTokenizer<
-        ExpressionTokenizer<InputIterator>,
-        BasicToken<ExpressionTokenCode, String>,
-        InputIterator
-    >
-{
-
-// Public Types
-public:
-
-
-    // Parent type
-    using ParentType = BasicTokenizer<
-        ExpressionTokenizer<InputIterator>,
-        BasicToken<ExpressionTokenCode, String>,
-        InputIterator
-    >;
-
-    /// Token type
-    using TokenType = typename ParentType::TokenType;
-
-
-// Public Ctors & Dtors
-public:
-
-
-    using ParentType::ParentType;
-
-
-// Public Operation
-public:
-
-
-    using ParentType::value;
-    using ParentType::next;
-    using ParentType::is;
-    using ParentType::match;
-
-
-    /**
-     * @brief Tokenize number.
-     *
-     * @return
-     */
-    TokenType tokenizeNumber()
-    {
-        TokenType token{ExpressionTokenCode::Number};
-
-        while (isDigit() || is('.'))
-        {
-            token.value.push_back(value());
-            next();
-        }
-
-        // Suffix
-        if (is('f'))
-        {
-            token.value.push_back(value());
-            next();
-        }
-
-        return token;
-    }
-
-
-    /**
-     * @brief Tokenize source.
-     *
-     * @return
-     */
-    TokenType tokenize()
-    {
-        // Skip whitespaces
-        while (value() <= 0x20)
-            next();
-
-        if (isDigit())
-            return tokenizeNumber();
-
-        switch (value())
-        {
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-        {
-            auto val = value();
-            next();
-            return TokenType{ExpressionTokenCode::Operator, String(1, val)};
-        }
-        }
-
-        return TokenType{};
-    }
-
-
-// Protected Operation
-protected:
-
-
-    /**
-     * @brief Check if current value is digit.
-     *
-     * @return
-     */
-    bool isDigit() const noexcept
-    {
-        return value() >= '0' && value() <= '9';
-    }
-
-};
 
 /* ************************************************************************ */
 
