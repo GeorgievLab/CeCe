@@ -14,7 +14,7 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
@@ -50,7 +50,7 @@ void ReactionParserIntercellular::check_push(String& id, DynamicArray<String>& a
 
 simulator::Program ReactionParserIntercellular::parse()
 {
-    ReactionIntercellular reaction;
+    IntercellularReactions reaction;
     while (!range.isEmpty())
     {
         validator = true;

@@ -18,15 +18,15 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
-    <File Name="ReactionParser.cpp"/>
-    <File Name="ReactionParserIntracellular.cpp"/>
     <File Name="IntracellularReactions.cpp"/>
+    <File Name="IntracellularReactionsParser.cpp"/>
+    <File Name="ReactionsParser.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="ReactionParser.hpp"/>
-    <File Name="ReactionParserIntracellular.hpp"/>
     <File Name="Reactions.hpp"/>
     <File Name="IntracellularReactions.hpp"/>
+    <File Name="ReactionsParser.hpp"/>
+    <File Name="IntracellularReactionsParser.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

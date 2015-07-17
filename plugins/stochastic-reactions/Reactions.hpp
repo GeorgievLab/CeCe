@@ -30,15 +30,14 @@ namespace stochastic_reactions {
 template<typename T>
 class Reactions
 {
-    using RateType = float;
-    using PropensityType = float;
-
 protected:
     
-    DynamicArray<RateType> m_rates;
+    using NumberType = long double;
+    
+    DynamicArray<NumberType> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<T>> m_rules;
-    DynamicArray<PropensityType> propensities;
+    DynamicArray<NumberType> propensities;
 
 /* ************************************************************************ */
 
@@ -55,7 +54,7 @@ protected:
         units::Duration time = units::Duration(0);
 
         // Gillespie algorithm
-        float sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
+        NumberType sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
         if (sum == 0)
             return;
         // tau-leaping
@@ -81,8 +80,6 @@ protected:
         return *object.cast<plugin::cell::CellBase>();
     }
 
-public:
-
 /* ************************************************************************ */
 
     int getIndexOfMoleculeColumn(const String& id)
@@ -98,6 +95,37 @@ public:
             return m_ids.size() - 1;
         }
         return std::distance(m_ids.begin(), pointer);
+    }
+    
+/* ************************************************************************ */
+    
+    void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const NumberType rate)
+    {
+        DynamicArray<ReqProd> array;
+        if (m_rules.size() > 0)
+            array.resize(m_rules[0].size());
+        for (unsigned int i = 0; i < ids_minus.size(); i++)
+        {
+            unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
+            if (index == array.size())
+            {
+                array.push_back(ReqProd{1,0});
+                continue;
+            }
+            array[index].requirement += 1;
+        }
+        for (unsigned int i = 0; i < ids_plus.size(); i++)
+        {
+            unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
+            if (index == array.size())
+            {
+                array.push_back(ReqProd{0,1});
+                continue;
+            }
+            array[index].product += 1;
+        }
+        m_rates.push_back(rate);
+        m_rules.push_back(array);
     }
 };
 

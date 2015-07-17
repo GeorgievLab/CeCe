@@ -11,8 +11,8 @@ set(SRCS
     Library.cpp
     Diffusion.hpp
     Diffusion.cpp
-    ReactionIntercellular.hpp
-    ReactionIntercellular.cpp
+    IntercellularReactions.hpp
+    IntercellularReactions.cpp
     ReactionParserIntercellular.hpp
     ReactionParserIntercellular.cpp
 )

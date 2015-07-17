@@ -18,7 +18,7 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-void ReactionParser::skipComments()
+void ReactionsParser::skipComments()
 {
     while(!range.isEmpty() && (range.front() != '\n' || range.front() != '\r'))
     {
@@ -28,7 +28,7 @@ void ReactionParser::skipComments()
 
 /* ************************************************************************ */
 
-float ReactionParser::parseRate(const char end_char)
+float ReactionsParser::parseRate(const char end_char)
 {
     if (!validator)
         return 0;
@@ -61,7 +61,7 @@ float ReactionParser::parseRate(const char end_char)
 
 /* ************************************************************************ */
 
-DynamicArray<String> ReactionParser::parseList()
+DynamicArray<String> ReactionsParser::parseList()
 {
     if (!validator)
         return DynamicArray<String> ();

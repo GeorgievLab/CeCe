@@ -12,18 +12,18 @@
 #pragma once
 
 #include "../stochastic-reactions/ReactionParser.hpp"
-#include "ReactionIntercellular.hpp"
+#include "IntercellularReactions.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-class ReactionParserIntercellular: public stochastic_reactions::ReactionParser
+class ReactionParserIntercellular: public stochastic_reactions::ReactionsParser
 {
-using ReactionParser::ReactionParser;
+using ReactionsParserReactionsParserer;
 
 protected:
 

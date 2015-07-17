@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "ReactionParser.hpp"
+#include "ReactionsParser.hpp"
 #include "IntracellularReactions.hpp"
 
 /* ************************************************************************ */
@@ -21,9 +21,9 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-class ReactionParserIntracellular: public ReactionParser
+class IntracellularReactionsParser: public ReactionsParser
 {
-using ReactionParser::ReactionParser;
+using ReactionsParserReactionsParserer;
 
 protected:
 

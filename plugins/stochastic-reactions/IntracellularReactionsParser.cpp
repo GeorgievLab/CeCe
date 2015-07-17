@@ -18,7 +18,7 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-void ReactionParserIntracellular::check_push(String& id, DynamicArray<String>& array)
+void IntracellularReactionsParser::check_push(String& id, DynamicArray<String>& array)
 {
     if (id.size() == 0)
     {
@@ -38,7 +38,7 @@ void ReactionParserIntracellular::check_push(String& id, DynamicArray<String>& a
 
 /* ************************************************************************ */
 
-simulator::Program ReactionParserIntracellular::parse()
+simulator::Program IntracellularReactionsParser::parse()
 {
     IntracellularReactions reaction;
     while (!range.isEmpty())

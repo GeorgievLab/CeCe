@@ -16,7 +16,7 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
@@ -25,23 +25,25 @@ struct ReqProd
     ReqProd() = default;
     unsigned int requirement = 0;
     unsigned int product = 0;
+    unsigned int env_requirement = 0;
+    unsigned int env_product = 0;
     bool mustnt_have = false;
-    ReqProd(int req, int prod, bool flag = false) noexcept
-    : requirement(req), product(prod), mustnt_have(flag)
+    ReqProd(int req, int prod, int e_req = 0, int e_prod = 0, bool flag = false) noexcept
+    : requirement(req), product(prod), env_requirement(e_req), env_product(e_prod), mustnt_have(flag)
     {
         // Nothing to do
     }
 };
 
-class ReactionIntercellular: public stochastic_reactions::Reactions<ReqProd>
+class IntercellularReactions: public stochastic_reactions::Reactions<ReqProd>
 {
 protected:
 
-    float computePropensity(const unsigned int index);
+    NumberType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell, simulator::Simulation& simulation);
 
-    void refreshPropensities(unsigned int index);
+    void refreshPropensities(unsigned int index, const plugin::cell::CellBase& cell);
 
-    void executeReaction(const unsigned int index);
+    void executeReaction(const unsigned int index, plugin::cell::CellBase& cell);
 
     void changeMoleculesInEnvironment(const String& id, int change);
 
@@ -51,11 +53,11 @@ protected:
 
 public:
 
-    void operator()(simulator::Object& object, simulator::Simulation&, units::Duration);
+    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step);
 
-    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate);
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const NumberType rate);
 
-    void addCondition(const String& id, const float condition);
+    void addCondition(const String& id, const unsigned int condition);
 };
 
 /* ************************************************************************ */

@@ -15,7 +15,7 @@
 #include "core/DynamicArray.hpp"
 #include "core/ExpressionParser.hpp"
 #include "core/Log.hpp"
-#include "core/Range.hpp"
+#include "core/Tokenizer.hpp"
 
 /* ************************************************************************ */
 
@@ -24,7 +24,7 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-class ReactionParser
+class ReactionsParser
 {
 protected:
 
@@ -45,7 +45,7 @@ public:
 
     virtual simulator::Program parse() = 0;
 
-    ReactionParser(const String& code) NOEXCEPT
+    ReactionsParser(const String& code) NOEXCEPT
     : range(makeRange(code.c_str(), code.c_str() + code.size()))
     {
         // Nothing to do.
