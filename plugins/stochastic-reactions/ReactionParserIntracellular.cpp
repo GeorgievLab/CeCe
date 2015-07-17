@@ -40,7 +40,7 @@ void ReactionParserIntracellular::check_push(String& id, DynamicArray<String>& a
 
 simulator::Program ReactionParserIntracellular::parse()
 {
-    ReactionIntracellular reaction;
+    IntracellularReactions reaction;
     while (!range.isEmpty())
     {
         validator = true;

@@ -9,10 +9,9 @@
 # Sources
 set(SRCS
     Library.cpp
-    Reaction.hpp
-    Reaction.cpp
-    ReactionIntracellular.hpp
-    ReactionIntracellular.cpp
+    Reactions.hpp
+    IntracellularReactions.hpp
+    IntracellularReactions.cpp
     ReactionParser.hpp
     ReactionParser.cpp
     ReactionParserIntracellular.hpp

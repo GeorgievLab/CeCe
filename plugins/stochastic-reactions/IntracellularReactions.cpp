@@ -9,7 +9,7 @@
 /* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
 /* ************************************************************************ */
 
-#include "ReactionIntracellular.hpp"
+#include "IntracellularReactions.hpp"
 
 /* ************************************************************************ */
 
@@ -18,45 +18,85 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-float ReactionIntracellular::computePropensity(const unsigned int index)
+float IntracellularReactions::computePropensity(const unsigned int index, const plugin::cell::CellBase& cell)
 {
     float local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
         if (m_rules[index][i].requirement == 0u)
             continue;
-        if (m_rules[index][i].requirement > cell->getMoleculeCount(m_ids[i]))
+        if (m_rules[index][i].requirement > cell.getMoleculeCount(m_ids[i]))
             return 0;
-        local *= cell->getMoleculeCount(m_ids[i]);
+        local *= cell.getMoleculeCount(m_ids[i]);
     }
     return local;
 }
 
 /* ************************************************************************ */
 
-void ReactionIntracellular::executeReaction(const unsigned int index)
+void IntracellularReactions::initializePropensities(const plugin::cell::CellBase& cell)
+    {
+        for (unsigned int i = 0; i < m_rules.size(); i++)
+        {
+            propensities.push_back(computePropensity(i, cell));
+        }
+    }
+
+/* ************************************************************************ */
+
+void IntracellularReactions::refreshPropensities(unsigned int index, const plugin::cell::CellBase& cell)
+    {
+        for (unsigned int i = 0; i < m_rules.size(); i++)
+        {
+            if (m_rules[i][index].requirement != 0)
+            {
+                propensities[i] = computePropensity(i, cell);
+            }
+        }
+    }
+
+/* ************************************************************************ */
+
+void IntracellularReactions::executeReaction(const unsigned int index, plugin::cell::CellBase& cell)
 {
     for (unsigned int i = 0; i < m_ids.size(); i++)
     {
         int change = m_rules[index][i].product - m_rules[index][i].requirement;
         if (change != 0)
         {
-            cell->addMolecules(m_ids[i], change);
-            refreshPropensities(i);
+            cell.addMolecules(m_ids[i], change);
+            refreshPropensities(i, cell);
         }
     }
 }
 
 /* ************************************************************************ */
 
-void ReactionIntracellular::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate)
+void IntracellularReactions::operator()(simulator::Object& object, simulator::Simulation&, units::Duration step)
+{
+    auto& cell = getCell(object);
+
+    if (propensities.empty())
+    {
+        initializePropensities(cell);
+    }
+
+    executeReactions(step, [this, &cell](unsigned int index)
+    {
+        executeReaction(index, cell);
+    });
+}
+
+/* ************************************************************************ */
+
+void IntracellularReactions::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate)
 {
     DynamicArray<ReqProd> array;
     if (m_rules.size() > 0)
         array.resize(m_rules[0].size());
     for (unsigned int i = 0; i < ids_minus.size(); i++)
     {
-        unsigned int index = getIndexOf(ids_minus[i]);
+        unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{1,0});
@@ -66,7 +106,7 @@ void ReactionIntracellular::extend(const DynamicArray<String>& ids_plus, const D
     }
     for (unsigned int i = 0; i < ids_plus.size(); i++)
     {
-        unsigned int index = getIndexOf(ids_plus[i]);
+        unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{0,1});
@@ -77,41 +117,6 @@ void ReactionIntracellular::extend(const DynamicArray<String>& ids_plus, const D
     m_rates.push_back(rate);
     m_rules.push_back(array);
 }
-
-/* ************************************************************************ */
-
-int ReactionIntracellular::getIndexOf(const String& id)
-{
-    auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
-    if (pointer == m_ids.end())
-    {
-        for (unsigned int i = 0; i < m_rules.size(); i++)
-        {
-            m_rules[i].emplace_back();
-        }
-        m_ids.push_back(id);
-        return m_ids.size() - 1;
-    }
-    return std::distance(m_ids.begin(), pointer);
-}
-
-/* ************************************************************************ */
-
-/* bool ReactionIntracellular::areEqualRules(const ReactionIntracellular& rhs, unsigned int index1, unsigned int index2)
-{
-    if (m_rates[index1] != rhs.m_rates[index2])
-        return false;
-    for (unsigned int i = 0; i < m_ids.size(); i++)
-    {
-        auto pointer = std::find(rhs.m_ids.begin(), rhs.m_ids.end(), m_ids[i]);
-        if (pointer == rhs.m_ids.end())
-            return false;
-        unsigned int index = std::distance(rhs.m_ids.begin(), pointer);
-        if (rhs.m_ids[index] != m_ids[i] || rhs.m_rules[index2][index] != m_rules[index1][i])
-            return false;
-    }
-    return true;
-} */
 
 /* ************************************************************************ */
 

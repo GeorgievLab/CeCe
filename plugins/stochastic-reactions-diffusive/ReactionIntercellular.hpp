@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "../stochastic-reactions/Reaction.hpp"
+#include "../stochastic-reactions/Reactions.hpp"
 
 /* ************************************************************************ */
 
@@ -20,13 +20,28 @@ namespace stochastic_reactions_diffusive {
 
 /* ************************************************************************ */
 
-class ReactionIntercellular: public stochastic_reactions::Reaction
+struct ReqProd
+{
+    ReqProd() = default;
+    unsigned int requirement = 0;
+    unsigned int product = 0;
+    bool mustnt_have = false;
+    ReqProd(int req, int prod, bool flag = false) noexcept
+    : requirement(req), product(prod), mustnt_have(flag)
+    {
+        // Nothing to do
+    }
+};
+
+class ReactionIntercellular: public stochastic_reactions::Reactions<ReqProd>
 {
 protected:
 
-    float computePropensity(const unsigned int index) override;
+    float computePropensity(const unsigned int index);
 
-    void executeReaction(const unsigned int index) override;
+    void refreshPropensities(unsigned int index);
+
+    void executeReaction(const unsigned int index);
 
     void changeMoleculesInEnvironment(const String& id, int change);
 
@@ -36,11 +51,11 @@ protected:
 
 public:
 
-    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate) override;
+    void operator()(simulator::Object& object, simulator::Simulation&, units::Duration);
 
-    int getIndexOf(const String& id) override;
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate);
 
-    bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
+    void addCondition(const String& id, const float condition);
 };
 
 /* ************************************************************************ */

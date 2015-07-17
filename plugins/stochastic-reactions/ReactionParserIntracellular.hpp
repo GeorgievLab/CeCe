@@ -12,7 +12,7 @@
 #pragma once
 
 #include "ReactionParser.hpp"
-#include "ReactionIntracellular.hpp"
+#include "IntracellularReactions.hpp"
 
 /* ************************************************************************ */
 

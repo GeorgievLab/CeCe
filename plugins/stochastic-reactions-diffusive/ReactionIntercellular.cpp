@@ -84,7 +84,6 @@ void ReactionIntercellular::executeReaction(const unsigned int index)
 
 void ReactionIntercellular::changeMoleculesInEnvironment(const String& name, const int change)
 {
-    /* todo: přidat počet molekul typu m_ids[i-1] na pozici kolem bunky (random device? - will be added later)*/
     assert(change != 0);
 
     // TODO: change to requireModule after it returns the module
@@ -115,7 +114,7 @@ void ReactionIntercellular::extendAbsorption(const DynamicArray<String>& ids_plu
         array.resize(m_rules[0].size());
     for (unsigned int i = 0; i < ids_plus.size(); i++)
     {
-        unsigned int index = getIndexOf(ids_plus[i]);
+        unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{0,1});
@@ -138,7 +137,7 @@ void ReactionIntercellular::extendExpression(const DynamicArray<String>& ids_min
         array.resize(m_rules[0].size());
     for (unsigned int i = 0; i < ids_minus.size(); i++)
     {
-        unsigned int index = getIndexOf(ids_minus[i]);
+        unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{1,0});
@@ -181,7 +180,7 @@ void ReactionIntercellular::extend(const DynamicArray<String>& ids_plus, const D
 
     for (unsigned int i = 0; i < ids_minus.size(); i++)
     {
-        unsigned int index = getIndexOf(ids_minus[i]);
+        unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{1,0});
@@ -193,7 +192,7 @@ void ReactionIntercellular::extend(const DynamicArray<String>& ids_plus, const D
 
     for (unsigned int i = 0; i < ids_plus.size(); i++)
     {
-        unsigned int index = getIndexOf(ids_plus[i]);
+        unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{0,1});
@@ -209,7 +208,7 @@ void ReactionIntercellular::extend(const DynamicArray<String>& ids_plus, const D
 
 /* ************************************************************************ */
 
-int ReactionIntercellular::getIndexOf(const String& id)
+int ReactionIntercellular::getIndexOfMoleculeColumn(const String& id)
 {
     auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
     if (pointer == m_ids.end())
@@ -227,7 +226,7 @@ int ReactionIntercellular::getIndexOf(const String& id)
 
 /* ************************************************************************ */
 
-bool ReactionIntercellular::areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2)
+bool ReactionIntercellular::areEqualRules(const Reactions& rhs, unsigned int index1, unsigned int index2)
 {
     return true;
     // TODO !!!

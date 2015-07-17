@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "Reaction.hpp"
+#include "Reactions.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/ExpressionParser.hpp"
 #include "core/Log.hpp"
