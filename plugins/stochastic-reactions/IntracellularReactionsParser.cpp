@@ -9,7 +9,7 @@
 /* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
 /* ************************************************************************ */
 
-#include "ReactionParserIntracellular.hpp"
+#include "IntracellularReactionsParser.hpp"
 
 /* ************************************************************************ */
 

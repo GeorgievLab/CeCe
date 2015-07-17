@@ -14,7 +14,7 @@
 #include "simulator/PluginApi.hpp"
 
 // Reactions
-#include "ReactionParserIntracellular.hpp"
+#include "IntracellularReactionsParser.hpp"
 
 /************************************************************************** */
 

@@ -12,10 +12,10 @@ set(SRCS
     Reactions.hpp
     IntracellularReactions.hpp
     IntracellularReactions.cpp
-    ReactionParser.hpp
-    ReactionParser.cpp
-    ReactionParserIntracellular.hpp
-    ReactionParserIntracellular.cpp
+    ReactionsParser.hpp
+    ReactionsParser.cpp
+    IntracellularReactionsParser.hpp
+    IntracellularReactionsParser.cpp
 )
 
 # Build plugin
