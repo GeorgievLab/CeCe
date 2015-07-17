@@ -61,12 +61,10 @@ class ParserException: public Exception {};
  *
  * @tparam Derived    Type of derived parser.
  * @tparam Tokenizer  Type used tokenizer.
- * @tparam ResultType Parser result type.
  */
 template<
     typename Derived,
-    typename Tokenizer,
-    typename ResultType
+    typename Tokenizer
 >
 class BasicParser
 {
@@ -80,7 +78,7 @@ public:
     using TokenType = typename Tokenizer::TokenType;
 
     /// The input iterator type.
-    using InputIterator = typename Tokenizer::InputIterator;
+    using InputIteratorType = typename Tokenizer::InputIteratorType;
 
 
 // Public Ctors & Dtors
@@ -92,9 +90,9 @@ public:
      *
      * @param range Source range.
      */
-    explicit BasicParser(IteratorRange<InputIterator> range) noexcept
+    explicit BasicParser(IteratorRange<InputIteratorType> range) noexcept
         : m_tokenizer{std::move(range)}
-        , m_range{m_tokenizer}
+        , m_range{makeRange(m_tokenizer)}
     {
         // Nothing to do
     }
@@ -106,9 +104,9 @@ public:
      * @param beg Begin iterator.
      * @param end End iterator.
      */
-    BasicParser(InputIterator beg, InputIterator end) noexcept
+    BasicParser(InputIteratorType beg, InputIteratorType end) noexcept
         : m_tokenizer{beg, end}
-        , m_range{m_tokenizer}
+        , m_range{makeRange(m_tokenizer)}
     {
         // Nothing to do
     }
@@ -122,9 +120,35 @@ public:
     template<typename Source>
     explicit BasicParser(Source&& source) noexcept
         : m_tokenizer(std::forward<Source>(source))
-        , m_range{m_tokenizer}
+        , m_range{makeRange(m_tokenizer)}
     {
         // Nothing to do
+    }
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns used tokenizer.
+     *
+     * @return
+     */
+    Tokenizer& getTokenizer() noexcept
+    {
+        return m_tokenizer;
+    }
+
+
+    /**
+     * @brief Returns used tokenizer.
+     *
+     * @return
+     */
+    const Tokenizer& getTokenizer() const noexcept
+    {
+        return m_tokenizer;
     }
 
 
@@ -301,25 +325,6 @@ protected:
 
 
     /**
-     * @brief Parse tokenizer sequence.
-     *
-     * @note It calls Derived::parse()
-     *
-     * @return Parse result.
-     *
-     * @throw ParserError
-     */
-    ResultType parse()
-    {
-        static_assert(std::is_member_function_pointer<decltype(&Derived::parse)>::value,
-            "Function Derived::parse is required");
-
-        // Call parent's member function
-        return static_cast<Derived*>(this)->parse();
-    }
-
-
-    /**
      * @brief Write note message.
      *
      * @tparam Message Written message type.
@@ -362,7 +367,23 @@ protected:
 
 
     /**
-     * @brief Write fatal error message.
+     * @brief Throw fatal error with given message.
+     *
+     * @tparam Message Written message type.
+     *
+     * @param msg Message.
+     *
+     * @throw ParserException
+     */
+    template<typename Message>
+    [[noreturn]] void fatalError(Message&& msg) const
+    {
+        throw ParserException(msg);
+    }
+
+
+    /**
+     * @brief Throw fatal error with given message.
      *
      * @tparam ExceptionType Exception type.
      * @tparam Message       Written message type.
@@ -375,6 +396,20 @@ protected:
     [[noreturn]] void fatalError(Message&& msg) const
     {
         throw ExceptionType(msg);
+    }
+
+
+    /**
+     * @brief Throw fatal error.
+     *
+     * @tparam ExceptionType Exception type.
+     *
+     * @throw ExceptionType
+     */
+    template<typename ExceptionType>
+    [[noreturn]] void fatalError() const
+    {
+        throw ExceptionType();
     }
 
 
