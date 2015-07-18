@@ -33,6 +33,9 @@ enum class TokenCode
     Invalid,
     Identifier,
     Greater,
+    Less,
+    Plus,
+    Colon,
     Semicolon
 };
 
@@ -126,7 +129,12 @@ public:
         {
         case '>':
             return TokenType{TokenCode::Greater};
-
+        case '<':
+            return TokenType{TokenCode::Less};
+        case ':':
+            return TokenType{TokenCode::Colon};
+        case '+':
+            return TokenType{TokenCode::Plus};
         case ';':
             return TokenType{TokenCode::Semicolon};
         }
@@ -137,7 +145,6 @@ public:
 
 // Protected Operation
 protected:
-
 
     /**
      * @brief Check if current value is digit.
@@ -175,37 +182,71 @@ protected:
 
 /* ************************************************************************ */
 
+template<typename T>
 class ReactionsParser
     : public BasicParser<
-        ReactionsParser,
+        ReactionsParser<T>,
         Tokenizer
     >
 {
 protected:
 
-    //IteratorRange<const char*> range;
-    const String whitespace = " \n\r\t\v\b";
     bool validator;
     bool reversible;
 
-    virtual void check_push(String& id, DynamicArray<String>& array) = 0;
-
-    void skipComments();
+    DynamicArray<std::pair<String, int>> parseConditions();
+    
+    RateType parseRate(const char end_char);
 
     DynamicArray<String> parseList();
-
-    float parseRate(const char end_char);
+    
+    void check_push(String& id, DynamicArray<String>& array);
 
 public:
 
-    ReactionsParser(const String& code) NOEXCEPT
+    ReactionsParser(const String& code) noexcept
         : BasicParser(code.c_str(), code.c_str() + code.size())
     {
         // Nothing to do.
     }
+    
+    T parse()
+    {
+        T reactions;
+        while (!is(TokenCode::Invalid))
+        {
+            validator = true;
+            reversible = false;
+            auto conditions = parseConditions();
+            auto ids_minus = parseList();
+            RateType rate;
+            RateType rateR;
+            if (reversible)
+            {
+                rateR = parseRate(',');
+                rate = parseRate('>');
+            }
+            else
+            {            
+                rate = parseRate('>');
+            }
+            auto ids_plus = parseList();
+            if (validator)
+            {
+                reactions.extend(ids_plus, ids_minus, rate);
+                if (reversible)
+                    reactions.extend(ids_minus, ids_plus, rateR);
+            }
+            for (unsigned int i = 0; i < conditions.size(); i++)
+            {
+                reactions.addCondition(conditions[i].first, conditions[i].second);
+            }
+        }
+        return reactions;
+    }
+};
 
-
-    // NOTE: This is only an example, real code should be in derived class
+    /** NOTE: This is only an example, real code should be in derived class
     ReactionsImpl parse()
     {
         ReactionsImpl result;
@@ -244,7 +285,7 @@ public:
 
         return result;
     }
-};
+};**/
 
 /* ************************************************************************ */
 

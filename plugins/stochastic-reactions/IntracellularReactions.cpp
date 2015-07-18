@@ -18,7 +18,7 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-Reactions<ReqProd>::NumberType IntracellularReactions::computePropensity(const unsigned int index, const plugin::cell::CellBase& cell)
+IntracellularReactions::PropensityType IntracellularReactions::computePropensity(const unsigned int index, const plugin::cell::CellBase& cell)
 {
     auto local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
@@ -89,9 +89,9 @@ void IntracellularReactions::operator()(simulator::Object& object, simulator::Si
 
 /* ************************************************************************ */
 
-void IntracellularReactions::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const Reactions<ReqProd>::NumberType rate)
+void IntracellularReactions::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
 {
-    extendIntracellular(ids_plus, ids_minus, rate)
+    extendIntracellular(ids_plus, ids_minus, rate);
 }
 
 /* ************************************************************************ */

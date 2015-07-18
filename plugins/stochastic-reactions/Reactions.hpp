@@ -27,17 +27,19 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
+using RateType = long double;
+
 template<typename T>
 class Reactions
 {
 protected:
     
-    using NumberType = long double;
-    
-    DynamicArray<NumberType> m_rates;
+    using PropensityType = RateType;
+
+    DynamicArray<RateType> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<T>> m_rules;
-    DynamicArray<NumberType> propensities;
+    DynamicArray<PropensityType> propensities;
 
 /* ************************************************************************ */
 
@@ -54,7 +56,7 @@ protected:
         units::Duration time = units::Duration(0);
 
         // Gillespie algorithm
-        NumberType sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
+        PropensityType sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
         if (sum == 0)
             return;
         // tau-leaping
@@ -99,9 +101,9 @@ protected:
     
 /* ************************************************************************ */
     
-    void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const NumberType rate)
+    void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
     {
-        DynamicArray<ReqProd> array;
+        DynamicArray<T> array;
         if (m_rules.size() > 0)
             array.resize(m_rules[0].size());
         for (unsigned int i = 0; i < ids_minus.size(); i++)
@@ -109,7 +111,7 @@ protected:
             unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
             if (index == array.size())
             {
-                array.push_back(ReqProd{1,0});
+                array.push_back(T{1,0});
                 continue;
             }
             array[index].requirement += 1;
@@ -119,7 +121,7 @@ protected:
             unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
             if (index == array.size())
             {
-                array.push_back(ReqProd{0,1});
+                array.push_back(T{0,1});
                 continue;
             }
             array[index].product += 1;
