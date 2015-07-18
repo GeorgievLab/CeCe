@@ -51,7 +51,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    parser-xml
+    loader-xml
     simulator
     ${wxWidgets_LIBRARIES}
 )

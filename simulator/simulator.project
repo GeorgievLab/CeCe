@@ -20,18 +20,17 @@
     <File Name="Simulator.cpp"/>
     <File Name="Object.cpp"/>
     <File Name="Simulation.cpp"/>
-    <File Name="SimulationFactory.cpp"/>
     <File Name="Configuration.cpp"/>
     <File Name="Obstacle.cpp"/>
     <File Name="Plugin.cpp"/>
     <File Name="PluginManager.cpp"/>
+    <File Name="SimulationLoader.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
     <File Name="Object.hpp"/>
     <File Name="Module.hpp"/>
     <File Name="Simulation.hpp"/>
-    <File Name="SimulationFactory.hpp"/>
     <File Name="Configuration.hpp"/>
     <File Name="Shape.hpp"/>
     <File Name="ShapeToGrid.hpp"/>
@@ -42,6 +41,7 @@
     <File Name="Plugin.hpp"/>
     <File Name="SimulationListener.hpp"/>
     <File Name="PluginManager.hpp"/>
+    <File Name="SimulationLoader.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

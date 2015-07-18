@@ -24,7 +24,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
 #include "simulator/Module.hpp"
-#include "parser-xml/SimulationFactory.hpp"
+#include "loaders/xml/SimulationLoader.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -121,10 +121,10 @@ int main(int argc, char** argv)
         setMeasureTimeOutput(&time_file);
 
         // Create javascript world factory
-        parser::xml::SimulationFactory simFactory;
+        loader::xml::SimulationLoader simLoader;
 
         // Create world
-        g_sim.setSimulation(simFactory.fromFile(argv[1]));
+        g_sim.setSimulation(simLoader.fromFile(argv[1]));
 
 #if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
         // Get simulation

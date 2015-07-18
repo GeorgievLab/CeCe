@@ -13,6 +13,8 @@
 // Simulator
 #include "core/compatibility.hpp"
 #include "core/String.hpp"
+#include "core/DynamicArray.hpp"
+#include "core/Map.hpp"
 #include "core/FilePath.hpp"
 #include "simulator/Configuration.hpp"
 
@@ -21,15 +23,15 @@
 
 /* ************************************************************************ */
 
-namespace parser {
+namespace loader {
 namespace xml {
 
 /* ************************************************************************ */
 
 /**
- * @brief XML mutable configuration.
+ * @brief XML immutable configuration.
  */
-class DLL_EXPORT MutableConfiguration : public simulator::Configuration
+class DLL_EXPORT ImmutableConfiguration : public simulator::Configuration
 {
 
 // Public Ctors & Dtors
@@ -42,8 +44,22 @@ public:
      * @param node
      * @param filename
      */
-    explicit MutableConfiguration(pugi::xml_node& node, FilePath filename = {}) NOEXCEPT
+    explicit ImmutableConfiguration(pugi::xml_node_struct* node, FilePath filename = {}) NOEXCEPT
         : m_node(node)
+        , m_sourcePath(std::move(filename))
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param node
+     * @param filename
+     */
+    explicit ImmutableConfiguration(const pugi::xml_node& node, FilePath filename = {}) NOEXCEPT
+        : m_node(node.internal_object())
         , m_sourcePath(std::move(filename))
     {
         // Nothing to do
@@ -59,7 +75,7 @@ public:
      *
      * @return
      */
-    const String& getSourcePath() const NOEXCEPT override
+    const FilePath& getSourcePath() const NOEXCEPT override
     {
         return m_sourcePath;
     }
@@ -139,6 +155,56 @@ public:
     }
 
 
+    /**
+     * @brief Returns configuration subconfiguration.
+     *
+     * @param name Configuration name.
+     *
+     * @return Configuration or nullptr.
+     */
+    virtual Configuration* getConfiguration(const String& name) const noexcept
+    {
+        auto list = getConfigurations(name);
+        return list.empty() ? nullptr : list[0];
+    }
+
+
+    /**
+     * @brief Returns configuration subconfigurations.
+     *
+     * @param name Configuration name.
+     *
+     * @return List of valid subconfigurations.
+     */
+    virtual DynamicArray<Configuration*> getConfigurations(const String& name) const noexcept
+    {
+        auto it = m_cache.find(name);
+
+        if (it == m_cache.end())
+        {
+            DynamicArray<ImmutableConfiguration> list;
+
+            for (const auto& node : m_node.children(name.c_str()))
+            {
+                list.emplace_back(node.internal_object(), m_sourcePath);
+            }
+
+            it = m_cache.emplace(name, std::move(list)).first;
+        }
+
+        DynamicArray<Configuration*> result;
+        result.reserve(it->second.size());
+
+        // Convert cache
+        for (auto& config : it->second)
+        {
+            result.push_back(&config);
+        }
+
+        return result;
+    }
+
+
 // Public Mutators
 public:
 
@@ -194,10 +260,13 @@ public:
 private:
 
     /// Managed node.
-    pugi::xml_node& m_node;
+    const pugi::xml_node m_node;
 
     /// Path to source file
     FilePath m_sourcePath;
+
+    /// Subconfigurations cache.
+    mutable Map<String, DynamicArray<ImmutableConfiguration>> m_cache;
 
 };
 

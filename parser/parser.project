@@ -27,11 +27,9 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Parser.cpp"/>
-    <File Name="SimulationFactory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Parser.hpp"/>
-    <File Name="SimulationFactory.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

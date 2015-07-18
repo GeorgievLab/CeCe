@@ -13,7 +13,9 @@
 
 // Simulator
 #include "core/Log.hpp"
-#include "parser-xml/SimulationFactory.hpp"
+
+// Loaders
+#include "loaders/xml/SimulationLoader.hpp"
 
 // GUI
 #include "AboutDialog.h"
@@ -23,7 +25,7 @@
 
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
-    , m_simulatorThread(m_glCanvasView, new parser::xml::SimulationFactory())
+    , m_simulatorThread(m_glCanvasView, new loader::xml::SimulationLoader())
     , m_logger(this)
 {
     // Register logger into Log

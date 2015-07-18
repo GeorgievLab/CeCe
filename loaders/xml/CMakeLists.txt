@@ -11,16 +11,15 @@ cmake_minimum_required(VERSION 2.8.8)
 # ######################################################################### #
 
 # Create project
-project(parser-xml CXX)
+project(loader-xml CXX)
 
 # ######################################################################### #
 
 # Create library
 add_library(${PROJECT_NAME}
-    SimulationFactory.hpp
-    SimulationFactory.cpp
-    ImmutableConfiguration.hpp
-    MutableConfiguration.hpp
+    SimulationLoader.hpp
+    SimulationLoader.cpp
+    Configuration.hpp
 
     # PugiXML library
     pugixml/pugixml.hpp

@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -7,7 +9,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "parser-xml/SimulationFactory.hpp"
+#include "SimulationLoader.hpp"
 
 // C++
 #include <cassert>
@@ -35,7 +37,7 @@
 #include "simulator/Program.hpp"
 
 // Parser
-#include "parser-xml/ImmutableConfiguration.hpp"
+#include "Configuration.hpp"
 
 /* ************************************************************************ */
 
@@ -110,15 +112,15 @@ void process_parameter_node(const pugi::xml_node& node, simulator::Simulation& s
     assert(!strcmp(node.name(), "parameter"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node, filename);
+    const loader::xml::ImmutableConfiguration configuration(node, filename);
 
     // Module name
     {
         if (!configuration.hasValue("name"))
-            throw parser::Exception("Missing attribute 'name' in 'parameter' element");
+            throw simulator::LoaderException("Missing attribute 'name' in 'parameter' element");
 
         if (!configuration.hasValue("value"))
-            throw parser::Exception("Missing attribute 'value' in 'parameter' element");
+            throw simulator::LoaderException("Missing attribute 'value' in 'parameter' element");
 
         // Load plugin
         simulation.setParameter(configuration.getString("name"), configuration.getFloat("value"));
@@ -138,7 +140,7 @@ void process_init_node(const pugi::xml_node& node, simulator::Simulation& simula
     assert(!strcmp(node.name(), "init"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node, filename);
+    const loader::xml::ImmutableConfiguration configuration(node, filename);
 
     if (!configuration.hasValue("language"))
         throw parser::Exception("Missing attribute 'language' in 'init' element");
@@ -169,19 +171,19 @@ void process_program_node(const pugi::xml_node& node, simulator::Simulation& sim
     assert(!strcmp(node.name(), "program"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node, filename);
+    const loader::xml::ImmutableConfiguration configuration(node, filename);
 
     // Global name of the program
     if (!configuration.hasValue("name"))
-        throw parser::Exception("Missing attribute 'name' in 'program' element");
+        throw simulator::LoaderException("Missing attribute 'name' in 'program' element");
 
     // Program language
     if (!configuration.hasValue("language"))
-        throw parser::Exception("Missing attribute 'language' in 'program' element");
+        throw simulator::LoaderException("Missing attribute 'language' in 'program' element");
 
     // Program code
     if (!configuration.hasText())
-        throw parser::Exception("Missing program element code");
+        throw simulator::LoaderException("Missing program element code");
 
     const auto name = configuration.getString("name");
     const auto lang = configuration.getString("language");
@@ -210,10 +212,10 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
     assert(!strcmp(node.name(), "object"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node, filename);
+    const loader::xml::ImmutableConfiguration configuration(node, filename);
 
     if (!configuration.hasValue("class"))
-        throw parser::Exception("Missing attribute 'class' in 'object' element");
+        throw simulator::LoaderException("Missing attribute 'class' in 'object' element");
 
     bool isStatic = configuration.getString("type") == "static";
 
@@ -245,7 +247,7 @@ void process_obstacle_node(const pugi::xml_node& node, simulator::Simulation& si
     assert(!strcmp(node.name(), "obstacle"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node, filename);
+    const loader::xml::ImmutableConfiguration configuration(node, filename);
 
     // Create object
     simulator::Object* object = simulation.createObject<simulator::Obstacle>();
@@ -267,12 +269,12 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
     assert(!strcmp(node.name(), "module"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node, filename);
+    const loader::xml::ImmutableConfiguration configuration(node, filename);
 
     // Module name
     {
         if (!configuration.hasValue("name"))
-            throw parser::Exception("Missing attribute 'name' in 'module' element");
+            throw simulator::LoaderException("Missing attribute 'name' in 'module' element");
 
         // Create module by given name
         simulator::Module* module = simulation.useModule(configuration.getString("name"));
@@ -296,12 +298,12 @@ void process_plugin_node(const pugi::xml_node& node, simulator::Simulation& simu
     assert(!strcmp(node.name(), "plugin"));
 
     // Create configuration
-    const parser::xml::ImmutableConfiguration configuration(node, filename);
+    const loader::xml::ImmutableConfiguration configuration(node, filename);
 
     // Module name
     {
         if (!configuration.hasValue("name"))
-            throw parser::Exception("Missing attribute 'name' in 'plugin' element");
+            throw simulator::LoaderException("Missing attribute 'name' in 'plugin' element");
 
         // Load plugin
         simulation.requirePlugin(configuration.getString("name"));
@@ -405,21 +407,21 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
 
 /* ************************************************************************ */
 
-namespace parser {
+namespace loader {
 namespace xml {
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
+UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
     InStream& source, const FilePath& filename) const
 {
-    UniquePtr<simulator::Simulation> simulation(new simulator::Simulation());
+    auto simulation = makeUnique<simulator::Simulation>();
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load(source);
 
     if (!result)
-        throw Exception("XML parse error: " + String(result.description()));
+        throw simulator::LoaderException("XML parse error: " + String(result.description()));
 
     {
         // Register file path as module library
@@ -435,6 +437,13 @@ UniquePtr<simulator::Simulation> SimulationFactory::fromStream(
     process_simulation_node(doc.document_element(), *simulation, filename);
 
     return simulation;
+}
+
+/* ************************************************************************ */
+
+void SimulationLoader::toStream(OutStream& os, const simulator::Simulation& simulation, const FilePath& filename) const
+{
+    // TODO: implement
 }
 
 /* ************************************************************************ */

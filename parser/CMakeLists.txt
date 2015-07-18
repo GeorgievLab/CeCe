@@ -30,8 +30,6 @@ endif ()
 add_library(${PROJECT_NAME} OBJECT
     Parser.hpp
     Parser.cpp
-    SimulationFactory.hpp
-    SimulationFactory.cpp
 )
 
 # ######################################################################### #

@@ -26,8 +26,8 @@ set(SRCS
     Object.cpp
     Simulation.hpp
     Simulation.cpp
-    SimulationFactory.hpp
-    SimulationFactory.cpp
+    SimulationLoader.hpp
+    SimulationLoader.cpp
     Simulator.hpp
     Simulator.cpp
     Module.hpp

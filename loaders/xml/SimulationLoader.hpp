@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -11,11 +13,10 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/InStream.hpp"
 #include "core/FilePath.hpp"
-#include "parser/SimulationFactory.hpp"
+#include "simulator/SimulationLoader.hpp"
 
 /* ************************************************************************ */
 
@@ -23,7 +24,7 @@ namespace simulator { class Simulation; }
 
 /* ************************************************************************ */
 
-namespace parser {
+namespace loader {
 namespace xml {
 
 /* ************************************************************************ */
@@ -31,7 +32,7 @@ namespace xml {
 /**
  * @brief XML parser simulation factory.
  */
-class DLL_EXPORT SimulationFactory : public parser::SimulationFactory
+class SimulationLoader : public simulator::SimulationLoader
 {
 
 
@@ -40,16 +41,27 @@ protected:
 
 
     /**
-     * @brief Parse simulation from stream.
+     * @brief Read simulation from input stream.
      *
-     * @param simulator
-     * @param source
-     * @param filename
+     * @param is       Source stream.
+     * @param filename Source file name.
      *
-     * @return
+     * @return Created simulation.
      */
-    UniquePtr<simulator::Simulation> fromStream(InStream& source,
-        const FilePath& filename) const override;
+    UniquePtr<simulator::Simulation> fromStream(InStream& is,
+        const FilePath& filename = "<stream>") const override;
+
+
+    /**
+     * @brief Write simulation into output stream.
+     *
+     * @param os         Output stream.
+     * @param simulation Source simulation.
+     *
+     * @return Source code.
+     */
+    void toStream(OutStream& os, const simulator::Simulation& simulation,
+        const FilePath& filename = "<stream>") const override;
 
 };
 

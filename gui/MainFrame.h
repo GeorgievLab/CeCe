@@ -13,7 +13,7 @@
 // Simulator
 #include "simulator/Simulation.hpp"
 #include "simulator/Simulator.hpp"
-#include "simulator/SimulationFactory.hpp"
+#include "simulator/SimulationLoader.hpp"
 
 // GUI
 #include "gui/SimulatorThread.hpp"
