@@ -13,8 +13,6 @@ set(SRCS
     Diffusion.cpp
     IntercellularReactions.hpp
     IntercellularReactions.cpp
-    ReactionParserIntercellular.hpp
-    ReactionParserIntercellular.cpp
 )
 
 # Build plugin

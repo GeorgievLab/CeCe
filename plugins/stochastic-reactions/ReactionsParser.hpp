@@ -5,11 +5,13 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
+
+/* ************************************************************************ */
 
 #include "Reactions.hpp"
 #include "core/DynamicArray.hpp"
@@ -189,27 +191,38 @@ class ReactionsParser
         Tokenizer
     >
 {
-protected:
 
-    bool validator;
-    bool reversible;
-
-    DynamicArray<std::pair<String, int>> parseConditions();
-    
-    RateType parseRate(const char end_char);
-
-    DynamicArray<String> parseList();
-    
-    void check_push(String& id, DynamicArray<String>& array);
-
+// Public Types
 public:
 
-    ReactionsParser(const String& code) noexcept
-        : BasicParser(code.c_str(), code.c_str() + code.size())
+    // Parent type.
+    using ParentType = BasicParser<
+        ReactionsParser<T>,
+        Tokenizer
+    >;
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param code Source code to parse.
+     */
+    explicit ReactionsParser(const String& code) noexcept
+        : ParentType(code.c_str(), code.c_str() + code.size())
     {
         // Nothing to do.
     }
-    
+
+
+    /**
+     * @brief Parse source string into reactions.
+     *
+     * @return
+     */
     T parse()
     {
         T reactions;
@@ -227,7 +240,7 @@ public:
                 rate = parseRate('>');
             }
             else
-            {            
+            {
                 rate = parseRate('>');
             }
             auto ids_plus = parseList();
@@ -244,48 +257,118 @@ public:
         }
         return reactions;
     }
-};
 
-    /** NOTE: This is only an example, real code should be in derived class
-    ReactionsImpl parse()
+        protected:
+
+
+    // Use parent's member functions
+    using ParentType::is;
+    using ParentType::next;
+    using ParentType::match;
+    using ParentType::fatalError;
+    using ParentType::require;
+
+
+    bool validator;
+    bool reversible;
+
+    DynamicArray<std::pair<String, int>> parseConditions()
     {
-        ReactionsImpl result;
-
-        // Parse: "A > 0.3 > B;"
-
-        // First token must be identifier
-        if (!is(TokenCode::Identifier))
-            fatalError<ParserException>("Identifier expected");
-
-        // Store source molecule
-        result.source = token().value;
-
-        // Next token
-        next();
-
-        // > required
-        require(TokenCode::Greater);
-
-        // Parse rate expression
-        // NOTE: this modify tokenizer source range
-        result.rate = parseExpression(getTokenizer().getRange());
-
-        // > required
-        require(TokenCode::Greater);
-
-        // Identifier for output molecule
-        if (!is(TokenCode::Identifier))
-            fatalError<ParserException>("Identifier expected");
-
-        // Store product molecule
-        result.product = token().value;
-
-        // Expression end
-        require(TokenCode::Semicolon);
-
-        return result;
+        return DynamicArray<String, unsigned int>();
     }
-};**/
+
+    RateType parseRate(TokenCode end)
+    {
+        if (!validator)
+            return 0;
+        if (!is(TokenCode::Invalid))
+        {
+            float rate;
+            try
+            {
+                rate = parseExpression(range, {});
+            }
+            catch (const ExpressionParserException& ex)
+            {
+                validator = false;
+                Log::warning(ex.what());
+                return 0;
+            }
+            if (range.front() == end_char)
+            {
+                range.advanceBegin();
+                return rate;
+            }
+            validator = false;
+            Log::warning("Rate area is either invalid or has no end.");
+            return 0;
+        }
+        validator = false;
+        Log::warning("Reaction has no rate area.");
+        return 0;
+    }
+
+    DynamicArray<String> parseList()
+    {
+        if (!validator)
+            return DynamicArray<String> ();
+        DynamicArray<String> array;
+        while (!is(TokenCode::Invalid))
+        {
+            if (is(TokenCode::Identifier))
+            {
+                check_push(token().value, array);
+                next();
+            }
+            else if (is(TokenCode::Greater))
+            {
+                next();
+                return array;
+            }
+            else if (is(TokenCode::Less))
+            {
+                reversible = true;
+                next();
+                return array;
+            }
+            else if (is(TokenCode::Plus))
+            {
+                next();
+            }
+            else
+            {
+                break;
+            }
+        }
+        validator = false;
+        Log::warning("Left side  of reaction has no end.");
+        return DynamicArray<String> ();
+    }
+
+    void check_push(String& id, DynamicArray<String>& array)
+    {
+        if (id.size() == 0)
+        {
+            validator = false;
+            Log::warning("I cannot accept empty molecule name. You may want to use 'null' molecule in degradation/expression reactions.");
+        }
+        else if (id == "null")
+        {
+            id.clear();
+        }
+        else if (id == "environment")
+        {
+            array.push_back("env");
+            id.clear();
+        }
+        else
+        {
+            array.push_back(id);
+            id.clear();
+        }
+    }
+
+};
 
 /* ************************************************************************ */
 
