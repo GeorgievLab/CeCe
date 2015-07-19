@@ -27,7 +27,6 @@
 #include "core/Log.hpp"
 #include "core/Units.hpp"
 #include "core/FilePath.hpp"
-#include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
@@ -112,19 +111,10 @@ void process_parameter_node(const pugi::xml_node& node, simulator::Simulation& s
     assert(!strcmp(node.name(), "parameter"));
 
     // Create configuration
-    const loader::xml::ImmutableConfiguration configuration(node, filename);
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
-    // Module name
-    {
-        if (!configuration.hasValue("name"))
-            throw simulator::LoaderException("Missing attribute 'name' in 'parameter' element");
-
-        if (!configuration.hasValue("value"))
-            throw simulator::LoaderException("Missing attribute 'value' in 'parameter' element");
-
-        // Load plugin
-        simulation.setParameter(configuration.getString("name"), configuration.getFloat("value"));
-    }
+    // Set parameter
+    simulation.setParameter(config.get("name"), config.get<float>("value"));
 }
 
 /* ************************************************************************ */
@@ -140,22 +130,13 @@ void process_init_node(const pugi::xml_node& node, simulator::Simulation& simula
     assert(!strcmp(node.name(), "init"));
 
     // Create configuration
-    const loader::xml::ImmutableConfiguration configuration(node, filename);
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
-    if (!configuration.hasValue("language"))
-        throw parser::Exception("Missing attribute 'language' in 'init' element");
-
-    const auto lang = configuration.getString("language");
-    const auto code = configuration.getText();
-
-    // Get library by language name
-    auto api = simulation.loadPlugin(lang);
-
-    if (!api)
-        throw parser::Exception("Unable to load library for language '" + lang + "'");
+    // Plugin is required
+    auto api = simulation.requirePlugin(config.get("language"));
 
     // Register program
-    simulation.addInitializer(api->createInitializer(simulation, code));
+    simulation.addInitializer(api->createInitializer(simulation, config.getContent()));
 }
 
 /* ************************************************************************ */
@@ -171,32 +152,16 @@ void process_program_node(const pugi::xml_node& node, simulator::Simulation& sim
     assert(!strcmp(node.name(), "program"));
 
     // Create configuration
-    const loader::xml::ImmutableConfiguration configuration(node, filename);
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
-    // Global name of the program
-    if (!configuration.hasValue("name"))
-        throw simulator::LoaderException("Missing attribute 'name' in 'program' element");
+    // Plugin is required
+    auto api = simulation.requirePlugin(config.get("language"));
 
-    // Program language
-    if (!configuration.hasValue("language"))
-        throw simulator::LoaderException("Missing attribute 'language' in 'program' element");
-
-    // Program code
-    if (!configuration.hasText())
-        throw simulator::LoaderException("Missing program element code");
-
-    const auto name = configuration.getString("name");
-    const auto lang = configuration.getString("language");
-    const auto code = configuration.getText();
-
-    // Get library by language name
-    auto api = simulation.loadPlugin(lang);
-
-    if (!api)
-        throw parser::Exception("Unable to load library for language '" + lang + "'");
+    // Program name
+    auto name = config.get("name");
 
     // Register program
-    simulation.addProgram(name, api->createProgram(simulation, name, code));
+    simulation.addProgram(name, api->createProgram(simulation, name, config.getContent()));
 }
 
 /* ************************************************************************ */
@@ -212,21 +177,17 @@ void process_object_node(const pugi::xml_node& node, simulator::Simulation& simu
     assert(!strcmp(node.name(), "object"));
 
     // Create configuration
-    const loader::xml::ImmutableConfiguration configuration(node, filename);
-
-    if (!configuration.hasValue("class"))
-        throw simulator::LoaderException("Missing attribute 'class' in 'object' element");
-
-    bool isStatic = configuration.getString("type") == "static";
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
     // Create object
-    simulator::Object* object = simulation.buildObject(configuration.getString("class"), !isStatic);
+    simulator::Object* object = simulation.buildObject(config.get("class"), config.get("type", String("dynamic")) != "static");
 
     if (object)
     {
-        object->configure(configuration, simulation);
+        object->configure(config, simulation);
 
         // Set object values
+        // TODO: remove
         for (const pugi::xml_attribute& attr : node.attributes())
         {
             parse_attribute_value(*object, attr.name(), attr.value());
@@ -247,13 +208,13 @@ void process_obstacle_node(const pugi::xml_node& node, simulator::Simulation& si
     assert(!strcmp(node.name(), "obstacle"));
 
     // Create configuration
-    const loader::xml::ImmutableConfiguration configuration(node, filename);
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
     // Create object
     simulator::Object* object = simulation.createObject<simulator::Obstacle>();
 
     if (object)
-        object->configure(configuration, simulation);
+        object->configure(config, simulation);
 }
 
 /* ************************************************************************ */
@@ -269,20 +230,14 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
     assert(!strcmp(node.name(), "module"));
 
     // Create configuration
-    const loader::xml::ImmutableConfiguration configuration(node, filename);
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
-    // Module name
-    {
-        if (!configuration.hasValue("name"))
-            throw simulator::LoaderException("Missing attribute 'name' in 'module' element");
+    // Create module by given name
+    simulator::Module* module = simulation.useModule(config.get("name"));
 
-        // Create module by given name
-        simulator::Module* module = simulation.useModule(configuration.getString("name"));
-
-        // Configure module
-        if (module)
-            module->configure(configuration, simulation);
-    }
+    // Configure module
+    if (module)
+        module->configure(config, simulation);
 }
 
 /* ************************************************************************ */
@@ -298,16 +253,10 @@ void process_plugin_node(const pugi::xml_node& node, simulator::Simulation& simu
     assert(!strcmp(node.name(), "plugin"));
 
     // Create configuration
-    const loader::xml::ImmutableConfiguration configuration(node, filename);
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
-    // Module name
-    {
-        if (!configuration.hasValue("name"))
-            throw simulator::LoaderException("Missing attribute 'name' in 'plugin' element");
-
-        // Load plugin
-        simulation.requirePlugin(configuration.getString("name"));
-    }
+    // Load plugin
+    simulation.requirePlugin(config.get("name"));
 }
 
 /* ************************************************************************ */
@@ -322,19 +271,22 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
 {
     assert(!strcmp(node.name(), "simulation"));
 
+    // Create configuration
+    const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
+
     // Resize world
     {
-        auto size = parser::parse_vector<units::Length>(node.attribute("world-size").value());
+        auto size = config.get<SizeVector>("world-size");
 
-        if (size.getWidth() == units::um(0) || size.getHeight() == units::um(0))
-            throw parser::Exception("Width or height is zero!");
+        if (size.getWidth() == Zero || size.getHeight() == Zero)
+            throw simulator::ConfigException("Width or height is zero!");
 
         simulation.setWorldSize(size);
     }
 
     // Time step
     {
-        String dtStr = node.attribute("dt").value();
+        String dtStr = config.get("dt");
 
         // Real-time time step
         if (dtStr.empty() || dtStr == "auto")
@@ -344,17 +296,13 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         else
         {
             // Parse time step
-            auto dt = parser::parse_value<units::Duration>(dtStr);
-            simulation.setTimeStep(dt);
+            simulation.setTimeStep(lexical_cast<units::Time>(dtStr));
         }
     }
 
     // Number of iterations
     {
-        auto attr = node.attribute("iterations");
-
-        if (!attr.empty())
-            simulation.setIterations(attr.as_ullong());
+        simulation.setIterations(config.get("iterations", simulation.getIterations()));
     }
 
     // Parse parameters

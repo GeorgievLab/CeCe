@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -15,8 +17,9 @@
 #endif
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/StaticArray.hpp"
+#include "core/InStream.hpp"
+#include "core/OutStream.hpp"
 
 /* ************************************************************************ */
 
@@ -27,7 +30,7 @@ namespace render {
 /**
  * @brief Color structure.
  */
-class DLL_EXPORT Color
+class Color
 {
 
 // Public Types
@@ -55,7 +58,7 @@ public:
      *
      * @param gray
      */
-    CONSTEXPR explicit Color(ComponentType gray) NOEXCEPT
+    constexpr explicit Color(ComponentType gray) noexcept
         : Color(gray, gray, gray)
     {
         // Nothing to do
@@ -71,7 +74,7 @@ public:
      * @param blue
      * @param alpha
      */
-    CONSTEXPR Color(ComponentType red, ComponentType green, ComponentType blue, ComponentType alpha = 1.0f) NOEXCEPT
+    constexpr Color(ComponentType red, ComponentType green, ComponentType blue, ComponentType alpha = 1.0f) noexcept
 #ifndef _MSC_VER
         : m_components{{red, green, blue, alpha}}
 #endif
@@ -91,7 +94,7 @@ public:
      *
      * @param values
      */
-    CONSTEXPR Color(__m128 values)
+    constexpr Color(__m128 values)
         : m_sse(values)
     {
         // Nothing to do
@@ -110,7 +113,7 @@ public:
      *
      * @return
      */
-    Color operator+(const Color& c) const NOEXCEPT
+    Color operator+(const Color& c) const noexcept
     {
 #if ENABLE_SSE && __SSE__
         return Color{_mm_add_ps(m_sse, c.m_sse)};
@@ -132,7 +135,7 @@ public:
      *
      * @return
      */
-    Color& operator+=(const Color& c) NOEXCEPT
+    Color& operator+=(const Color& c) noexcept
     {
 #if ENABLE_SSE && __SSE__
         m_sse = _mm_add_ps(m_sse, c.m_sse);
@@ -151,7 +154,7 @@ public:
      *
      * @return
      */
-    Color operator-(const Color& c) const NOEXCEPT
+    Color operator-(const Color& c) const noexcept
     {
 #if ENABLE_SSE && __SSE__
         return Color{_mm_sub_ps(m_sse, c.m_sse)};
@@ -173,7 +176,7 @@ public:
      *
      * @return
      */
-    Color& operator-=(const Color& c) NOEXCEPT
+    Color& operator-=(const Color& c) noexcept
     {
 #if ENABLE_SSE && __SSE__
         m_sse = _mm_sub_ps(m_sse, c.m_sse);
@@ -192,7 +195,7 @@ public:
      *
      * @return
      */
-    Color operator*(float val) const NOEXCEPT
+    Color operator*(float val) const noexcept
     {
 #if ENABLE_SSE && __SSE__
         return Color{_mm_mul_ps(m_sse, _mm_set1_ps(val))};
@@ -214,7 +217,7 @@ public:
      *
      * @return
      */
-    Color& operator*=(float val) NOEXCEPT
+    Color& operator*=(float val) noexcept
     {
 #if ENABLE_SSE && __SSE__
         m_sse = _mm_mul_ps(m_sse, _mm_set1_ps(val));
@@ -233,7 +236,7 @@ public:
      *
      * @return
      */
-    Color operator/(float val) const NOEXCEPT
+    Color operator/(float val) const noexcept
     {
 #if ENABLE_SSE && __SSE__
         return Color{_mm_div_ps(m_sse, _mm_set1_ps(val))};
@@ -255,7 +258,7 @@ public:
      *
      * @return
      */
-    Color& operator/=(float val) NOEXCEPT
+    Color& operator/=(float val) noexcept
     {
 #if ENABLE_SSE && __SSE__
         m_sse = _mm_div_ps(m_sse, _mm_set1_ps(val));
@@ -276,7 +279,7 @@ public:
      *
      * @return
      */
-    ComponentType& red() NOEXCEPT
+    ComponentType& red() noexcept
     {
         return m_components[0];
     }
@@ -287,7 +290,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR ComponentType getRed() const NOEXCEPT
+    constexpr ComponentType getRed() const noexcept
     {
         return m_components[0];
     }
@@ -298,7 +301,7 @@ public:
      *
      * @return
      */
-    ComponentType& green() NOEXCEPT
+    ComponentType& green() noexcept
     {
         return m_components[1];
     }
@@ -309,7 +312,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR ComponentType getGreen() const NOEXCEPT
+    constexpr ComponentType getGreen() const noexcept
     {
         return m_components[1];
     }
@@ -320,7 +323,7 @@ public:
      *
      * @return
      */
-    ComponentType& blue() NOEXCEPT
+    ComponentType& blue() noexcept
     {
         return m_components[2];
     }
@@ -331,7 +334,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR ComponentType getBlue() const NOEXCEPT
+    constexpr ComponentType getBlue() const noexcept
     {
         return m_components[2];
     }
@@ -342,7 +345,7 @@ public:
      *
      * @return
      */
-    ComponentType& alpha() NOEXCEPT
+    ComponentType& alpha() noexcept
     {
         return m_components[3];
     }
@@ -353,7 +356,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR ComponentType getAlpha() const NOEXCEPT
+    constexpr ComponentType getAlpha() const noexcept
     {
         return m_components[3];
     }
@@ -368,7 +371,7 @@ public:
      *
      * @param red
      */
-    void setRed(ComponentType red) NOEXCEPT
+    void setRed(ComponentType red) noexcept
     {
         m_components[0] = red;
     }
@@ -379,7 +382,7 @@ public:
      *
      * @param green
      */
-    void setGreen(ComponentType green) NOEXCEPT
+    void setGreen(ComponentType green) noexcept
     {
         m_components[1] = green;
     }
@@ -390,7 +393,7 @@ public:
      *
      * @param blue
      */
-    void setBlue(ComponentType blue) NOEXCEPT
+    void setBlue(ComponentType blue) noexcept
     {
         m_components[2] = blue;
     }
@@ -401,7 +404,7 @@ public:
      *
      * @param alpha
      */
-    void setAlpha(ComponentType alpha) NOEXCEPT
+    void setAlpha(ComponentType alpha) noexcept
     {
         m_components[3] = alpha;
     }
@@ -422,29 +425,42 @@ private:
 
 /* ************************************************************************ */
 
+/**
+ * @brief Input stream operator.
+ *
+ * @param is    Input stream.
+ * @param color Result value.
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Color& color);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Output stream operator.
+ *
+ * @param os    Output stream.
+ * @param color Input value.
+ *
+ * @return os.
+ */
+OutStream& operator<<(OutStream& os, const Color& color) noexcept;
+
+/* ************************************************************************ */
+
 namespace colors  {
 
 /* ************************************************************************ */
 
-#ifdef _MSC_VER
-extern Color BLACK;
-extern Color WHITE;
-extern Color RED;
-extern Color GREEN;
-extern Color BLUE;
-extern Color YELLOW;
-extern Color CYAN;
-extern Color MAGENTA;
-#else
-CONSTEXPR Color BLACK  {0, 0, 0};
-CONSTEXPR Color WHITE  {1, 1, 1};
-CONSTEXPR Color RED    {1, 0, 0};
-CONSTEXPR Color GREEN  {0, 1, 0};
-CONSTEXPR Color BLUE   {0, 0, 1};
-CONSTEXPR Color YELLOW {1, 1, 0};
-CONSTEXPR Color CYAN   {0, 1, 1};
-CONSTEXPR Color MAGENTA{1, 0, 1};
-#endif
+constexpr Color BLACK  {0, 0, 0};
+constexpr Color WHITE  {1, 1, 1};
+constexpr Color RED    {1, 0, 0};
+constexpr Color GREEN  {0, 1, 0};
+constexpr Color BLUE   {0, 0, 1};
+constexpr Color YELLOW {1, 1, 0};
+constexpr Color CYAN   {0, 1, 1};
+constexpr Color MAGENTA{1, 0, 1};
 
 /* ************************************************************************ */
 

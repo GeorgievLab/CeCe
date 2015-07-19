@@ -5,7 +5,6 @@
   <Project Name="simulator" Path="simulator/simulator.project"/>
   <Project Name="render" Path="render/render.project"/>
   <Project Name="cli" Path="cli/cli.project" Active="No"/>
-  <Project Name="parser" Path="parser/parser.project" Active="No"/>
   <Project Name="diffusion" Path="plugins/diffusion/diffusion.project" Active="No"/>
   <Project Name="cell" Path="plugins/cell/cell.project" Active="No"/>
   <Environment>
@@ -26,7 +25,6 @@
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
       <Project Name="render" ConfigName="Debug"/>
-      <Project Name="parser" ConfigName="Debug"/>
       <Project Name="gui" ConfigName="Debug"/>
       <Project Name="core" ConfigName="Debug"/>
       <Project Name="cli" ConfigName="DebugCLI"/>
@@ -51,7 +49,6 @@
       <Project Name="simulator" ConfigName="Release"/>
       <Project Name="render" ConfigName="Release"/>
       <Project Name="cli" ConfigName="Release"/>
-      <Project Name="parser" ConfigName="Release"/>
       <Project Name="plugin_diffusion" ConfigName="Release"/>
       <Project Name="plugin_cell" ConfigName="Release"/>
       <Project Name="parser-xml" ConfigName="Release"/>

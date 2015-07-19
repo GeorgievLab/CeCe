@@ -19,6 +19,7 @@
 #include "core/UniquePtr.hpp"
 #include "core/Exception.hpp"
 #include "core/DynamicArray.hpp"
+#include "core/LexicalCast.hpp"
 
 /* ************************************************************************ */
 
@@ -204,7 +205,7 @@ public:
      *
      * @return
      */
-    bool hasValue(const StringView& name) const noexcept
+    bool has(const StringView& name) const noexcept
     {
         return m_impl->has(name);
     }
@@ -221,7 +222,7 @@ public:
      */
     String get(const StringView& name) const
     {
-        if (!hasValue(name))
+        if (!has(name))
             throw ConfigException("Missing value for '" + String(name) + "'");
 
         return m_impl->get(name);
@@ -238,7 +239,7 @@ public:
      */
     String get(const StringView& name, String def) const noexcept
     {
-        return hasValue(name) ? m_impl->get(name) : std::move(def);
+        return has(name) ? m_impl->get(name) : std::move(def);
     }
 
 
@@ -256,6 +257,7 @@ public:
     template<typename T>
     T get(const StringView& name) const
     {
+        return lexical_cast<T>(get(name));
     }
 
 
@@ -272,7 +274,7 @@ public:
     template<typename T>
     T get(const StringView& name, T def) const noexcept
     {
-        return hasValue(name) ? m_impl->get(name) : std::move(def);
+        return has(name) ? lexical_cast<T>(m_impl->get(name)) : std::move(def);
     }
 
 
@@ -327,7 +329,7 @@ public:
         if (configurations.empty())
             throw ConfigException("Sub-configuration '" + String(name) + "' doesn't exists");
 
-        return configurations[0];
+        return std::move(configurations[0]);
     }
 
 
@@ -379,6 +381,7 @@ public:
     template<typename T>
     void set(const String& name, T value) noexcept
     {
+        set(name, lexical_cast<String>(value));
     }
 
 

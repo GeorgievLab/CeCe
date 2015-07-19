@@ -23,32 +23,6 @@
 #include "core/TimeMeasurement.hpp"
 #include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"
-#include "parser/Parser.hpp"
-
-/* ************************************************************************ */
-
-namespace parser {
-
-/* ************************************************************************ */
-
-template<>
-struct value_constructor<plugin::diffusion::Module::DegradationRate>
-{
-    static plugin::diffusion::Module::DegradationRate construct(float val, const String& suffix)
-    {
-        if (suffix.empty())
-            return plugin::diffusion::Module::DegradationRate(val);
-
-        if (suffix == "/s")
-            return units::Unit<units::List<>, units::List<>>(val) / units::s(1);
-
-        throw Exception("Unsupported suffix: " + suffix);
-    }
-};
-
-/* ************************************************************************ */
-
-}
 
 /* ************************************************************************ */
 
@@ -132,31 +106,28 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Grid size
-    config.callIfSetString("grid", [this](const String& value) {
-        setGridSize(parser::parse_vector_single<unsigned int>(value));
-    });
+    setGridSize(config.get<Vector<GridType::SizeType>>("grid"));
 
     // Foreach signal configurations
-    for (auto signal : config.getConfigurations("signal"))
+    for (auto&& signal : config.getConfigurations("signal"))
     {
         // Register signal
         auto id = registerSignal(
-            signal->getString("name"),
-            parser::parse_value<DiffusionRate>(signal->getString("diffusion-rate")),
-            parser::parse_value<DegradationRate>(signal->getString("degradation-rate"))
+            signal.get("name"),
+            signal.get<DiffusionRate>("diffusion-rate"),
+            signal.get<DegradationRate>("degradation-rate")
         );
 
 #if ENABLE_RENDER
-        signal->callIfSetString("color", [this, id] (const String& value) {
-            setSignalColor(id, parser::parse_color(value));
-        });
+        // Set signal color
+        // FIXME: limited number of colors
+        setSignalColor(id, signal.get("color", g_colors[id]));
 #endif
     }
 
 #if ENABLE_RENDER
-    config.callIfSetString("background", [this](const String& value) {
-        m_background = parser::parse_color(value);
-    });
+    // Set background color
+    m_background = config.get("background", m_background);
 #endif
 }
 

@@ -1,30 +1,103 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
 #include "render/Color.hpp"
 
+// Unix
+#if defined(__unix__)
+#include <arpa/inet.h>
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+#include <winsock.h>
+#endif
+
+// Simulator
+#include "core/String.hpp"
+#include "core/Map.hpp"
+#include "core/Exception.hpp"
+
 /* ************************************************************************ */
 
 namespace render {
-namespace colors  {
 
 /* ************************************************************************ */
 
-#ifdef _MSC_VER
-Color BLACK{ 0, 0, 0 };
-Color WHITE{ 1, 1, 1 };
-Color RED{ 1, 0, 0 };
-Color GREEN{ 0, 1, 0 };
-Color BLUE{ 0, 0, 1 };
-Color YELLOW{ 1, 1, 0 };
-Color CYAN{ 0, 1, 1 };
-Color MAGENTA{ 1, 0, 1 };
-#endif
+namespace {
+
+/* ************************************************************************ */
+
+// Predefined colors
+const Map<String, render::Color> g_colors{{
+    {"black", render::colors::BLACK},
+    {"white", render::colors::WHITE},
+    {"red", render::colors::RED},
+    {"green", render::colors::GREEN},
+    {"blue", render::colors::BLUE},
+    {"yellow", render::colors::YELLOW},
+    {"cyan", render::colors::CYAN},
+    {"magenta", render::colors::MAGENTA}
+}};
 
 /* ************************************************************************ */
 
 }
+
+/* ************************************************************************ */
+
+InStream& operator>>(InStream& is, Color& color)
+{
+    String str;
+    is >> str;
+
+    if (str.empty())
+        throw InvalidArgumentException("Empty color value");
+
+    // Find color by name
+    auto it = g_colors.find(str);
+    if (it != g_colors.end())
+    {
+        color = it->second;
+        return is;
+    }
+
+    if (str[0] != '#')
+        throw InvalidArgumentException("Invalid color value");
+
+    // Parse hexadecimal value
+    uint32_t value = htonl(std::strtoul(str.c_str() + 1, nullptr, 16));
+    const uint8_t* bytes = reinterpret_cast<uint8_t*>(&value);
+
+    // Alpha value
+    if (bytes[0] > 0)
+    {
+        color = {bytes[0] / 255.f, bytes[1] / 255.f, bytes[2] / 255.f, bytes[3] / 255.f};
+    }
+    else
+    {
+        color = {bytes[1] / 255.f, bytes[2] / 255.f, bytes[3] / 255.f, 1.f};
+    }
+
+    return is;
+}
+
+/* ************************************************************************ */
+
+OutStream& operator<<(OutStream& os, const Color& color) noexcept
+{
+    // TODO: implement
+
+    return os;
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

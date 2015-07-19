@@ -6,7 +6,6 @@
 #include <cstring>
 
 // Simulator
-#include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"

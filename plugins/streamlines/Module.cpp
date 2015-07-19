@@ -16,7 +16,6 @@
 #include "core/constants.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Exception.hpp"
-#include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/ShapeToGrid.hpp"
@@ -90,20 +89,14 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
-    // Maximum velocity
-    config.callIfSetString("velocity-inflow", [this](const String& value) {
-        setVelocityInflow(parser::parse_vector<units::Velocity>(value));
-    });
+    // Inflow velocity
+    setVelocityInflow(config.get("velocity-inflow", getVelocityInflow()));
 
     // Viscosity
-    config.callIfSetString("kinematic-viscosity", [this](const String& value) {
-        setKinematicViscosity(parser::parse_value<units::KinematicViscosity>(value));
-    });
+    setKinematicViscosity(config.get("kinematic-viscosity", getKinematicViscosity()));
 
     // Grid size
-    config.callString("grid", [this](const String& value) {
-        m_lattice.setSize(parser::parse_vector_single<Lattice::SizeType>(value));
-    });
+    m_lattice.setSize(config.get<Vector<Lattice::SizeType>>("grid"));
 
     // Initialize lattice
     init();

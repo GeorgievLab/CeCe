@@ -17,7 +17,6 @@
 // Simulator
 #include "core/Units.hpp"
 #include "core/Log.hpp"
-#include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -273,18 +272,15 @@ void Object::update(units::Duration dt)
 void Object::configure(const Configuration& config, Simulation& simulation)
 {
     // Set object position
-    config.callIfSetString("position", [this](const String& value) {
-        setPosition(parser::parse_vector<units::Length>(value));
-    });
+    setPosition(config.get("position", getPosition()));
 
     // Set object density
-    config.callIfSetString("density", [this](const String& value) {
-        setDensity(parser::parse_value<units::Density>(value));
-    });
+    setDensity(config.get("density", getDensity()));
 
     // Set object programs
-    config.callIfSetString("programs", [this, &simulation](const String& value) {
-        for (const auto& name : split(value, ' '))
+    if (config.has("programs"))
+    {
+        for (const auto& name : split(config.get("programs"), ' '))
         {
             auto program = simulation.getProgram(name);
 
@@ -293,7 +289,7 @@ void Object::configure(const Configuration& config, Simulation& simulation)
             else
                 Log::warning("Unable to create program: ", name);
         }
-    });
+    }
 }
 
 /* ************************************************************************ */

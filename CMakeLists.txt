@@ -231,7 +231,6 @@ endif ()
 
 # Core libraries
 add_subdirectory(core)
-add_subdirectory(parser)
 
 # Add render library
 if (ENABLE_RENDER)

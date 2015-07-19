@@ -143,7 +143,7 @@ public:
 
         // Foreach children
         for (const auto& node : m_node.children(name.getData()))
-            res.push_back(makeUnique<ConfigImplementation>{node.internal_object()});
+            res.push_back(makeUnique<ConfigImplementation>(node.internal_object()));
 
         return res;
     }
@@ -170,11 +170,11 @@ public:
     /**
      * @brief Store content.
      *
-     * @param value Content.
+     * @param content Content text.
      */
-    void setContent(const StringView& value) noexcept override
+    void setContent(const StringView& content) noexcept override
     {
-        m_node.text().set(text.getData());
+        m_node.text().set(content.getData());
     }
 
 

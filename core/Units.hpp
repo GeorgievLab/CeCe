@@ -19,6 +19,12 @@
 
 // Simulator
 #include "core/Zero.hpp"
+#include "core/String.hpp"
+#include "core/StaticArray.hpp"
+#include "core/IntegerSequence.hpp"
+#include "core/InStream.hpp"
+#include "core/OutStream.hpp"
+#include "core/Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -37,17 +43,32 @@ using Value = float;
 
 /* ************************************************************************ */
 
+static constexpr Value LENGTH_COEFFICIENT = 1e6f;
+static constexpr Value TIME_COEFFICIENT = 1e0f;
+static constexpr Value MASS_COEFFICIENT = 1e9f;
+
+/* ************************************************************************ */
+
+/// @link https://azraelplanet.wordpress.com/2012/03/30/number-of-arguments-in-__va_args__-gcc/
+#define ARG_N(_1, _2, _3, N, ...) N
+#define NARG_(...) ARG_N(__VA_ARGS__)
+#define NARG(...) NARG_(__VA_ARGS__, 3, 2, 1, 0)
+
+/* ************************************************************************ */
+
 /**
  * @brief Defines base unit.
  *
- * @param name Unit Name.
- * @param ord  Unit order.
+ * @param name  Unit Name.
+ * @param ord   Unit order.
+ * @param coeff Value coefficient.
  * @param ...
  */
-#define DEFINE_BASE_UNIT(name, ord, ...) \
+#define DEFINE_BASE_UNIT(name, coeff, ord, ...) \
     struct Base ## name {\
+        static constexpr Value coefficient = coeff; \
         static constexpr int order = ord;\
-        static constexpr char symbol[] = {__VA_ARGS__};\
+        static constexpr StaticArray<char, NARG(__VA_ARGS__) + 1> symbol = {__VA_ARGS__, '\0'};\
     }
 
 /* ************************************************************************ */
@@ -55,19 +76,13 @@ using Value = float;
 /**
  * @brief Base SI units.
  */
-DEFINE_BASE_UNIT(Length,                    0, 'm');
-DEFINE_BASE_UNIT(Time,                      1, 's');
-DEFINE_BASE_UNIT(Mass,                      2, 'g');
-DEFINE_BASE_UNIT(ElectricCurrent,           3, 'A');
-DEFINE_BASE_UNIT(ThermodynamicTemperature,  4, 'K');
-DEFINE_BASE_UNIT(AmountOfSubstance,         5, 'm', 'o', 'l');
-DEFINE_BASE_UNIT(LuminousIntensity,         6, 'c', 'd');
-
-/* ************************************************************************ */
-
-static constexpr Value LENGTH_COEFFICIENT = 1e6f;
-static constexpr Value TIME_COEFFICIENT = 1e0f;
-static constexpr Value MASS_COEFFICIENT = 1e9f;
+DEFINE_BASE_UNIT(Length, LENGTH_COEFFICIENT,    0, 'm');
+DEFINE_BASE_UNIT(Time,   TIME_COEFFICIENT,      1, 's');
+DEFINE_BASE_UNIT(Mass,   MASS_COEFFICIENT,      2, 'g');
+DEFINE_BASE_UNIT(ElectricCurrent, 1.f,          3, 'A');
+DEFINE_BASE_UNIT(ThermodynamicTemperature, 1.f, 4, 'K');
+DEFINE_BASE_UNIT(AmountOfSubstance, 1.f,        5, 'm', 'o', 'l');
+DEFINE_BASE_UNIT(LuminousIntensity, 1.f,        6, 'c', 'd');
 
 /* ************************************************************************ */
 
@@ -93,7 +108,39 @@ struct Less
 template<typename... Types>
 struct List
 {
+
+    /**
+     * @brief Multiply arguments.
+     *
+     * @param arg
+     * @param args
+     *
+     * @return
+     */
+    template<typename Arg, typename... Args>
+    static constexpr Value multiply(Arg&& arg, Args&&... args) noexcept
+    {
+        return arg * multiply(args...);
+    }
+
+
+    /**
+     * @brief Multiply arguments.
+     *
+     * @return
+     */
+    static constexpr Value multiply() noexcept
+    {
+        return Value(1);
+    }
+
+
+    /// List size.
     static constexpr unsigned int size = sizeof...(Types);
+
+    /// List coefficient
+    static constexpr Value coefficient = multiply(Types::coefficient...);
+
 };
 
 /* ************************************************************************ */
@@ -134,6 +181,184 @@ struct Concat<List<Types...>>
 
 /* ************************************************************************ */
 
+template<typename... Types>
+struct Suffix;
+
+/* ************************************************************************ */
+
+template<typename... Types>
+struct Suffix<List<Types...>>
+{
+
+    /**
+     * @brief Add arguments.
+     *
+     * @param arg
+     * @param args
+     *
+     * @return
+     */
+    template<typename Arg, typename... Args>
+    static constexpr Value add(Arg&& arg, Args&&... args) noexcept
+    {
+        return arg + add(args...);
+    }
+
+
+    /**
+     * @brief Add arguments.
+     *
+     * @return
+     */
+    static constexpr Value add() noexcept
+    {
+        return Value(0);
+    }
+
+
+    /// Suffix size with '\0'.
+    static constexpr unsigned int length = 1 + add(Types::symbol.size()...) - sizeof...(Types);
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    template<unsigned long N1, unsigned long N2, int... I1, int... I2>
+    static constexpr StaticArray<char, N1 + N2 - 1> concatInner(
+        const StaticArray<char, N1>& a1,
+        IntegerSequence<I1...>,
+        const StaticArray<char, N2>& a2,
+        IntegerSequence<I2...>
+    ) noexcept
+    {
+        static_assert(N1 + N2 - 1 == sizeof...(I1) + sizeof...(I2) + 1, "Sizes doesn't match");
+
+        return {std::get<I1>(a1)..., std::get<I2>(a2)..., '\0'};
+    }
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    static constexpr StaticArray<char, 1> concat() noexcept
+    {
+        return {'\0'};
+    }
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    template<unsigned long N1>
+    static constexpr StaticArray<char, N1> concat(const StaticArray<char, N1>& a1) noexcept
+    {
+        return a1;
+    }
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    template<unsigned long N1, unsigned long N2>
+    static constexpr StaticArray<char, N1 + N2 - 1> concat(const StaticArray<char, N1>& a1, const StaticArray<char, N2>& a2) noexcept
+    {
+        return concatInner(
+            a1, MakeIntegerSequence<0, N1 - 1>{},
+            a2, MakeIntegerSequence<0, N2 - 1>{}
+        );
+    }
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    template<unsigned long N1, unsigned long N2, unsigned long N3>
+    static constexpr StaticArray<char, N1 + N2> concat(
+        const StaticArray<char, N1>& a1, const StaticArray<char, N2>& a2,
+        const StaticArray<char, N3>& a3) noexcept
+    {
+        return concat(a1, concat(a2, a3));
+    }
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+#if 0
+    template<unsigned long N1, typename... Arrays>
+    static constexpr auto concat(const StaticArray<char, N1>& a1, Arrays... arrays) noexcept -> decltype(concat(a1, concat(arrays...)))
+    {
+        return concat(a1, concat(arrays...));
+    }
+#endif
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    static constexpr StaticArray<char, length> get() noexcept
+    {
+        return concat(Types::symbol...);
+    }
+};
+
+/* ************************************************************************ */
+
+template<typename... Nominators, typename... Denominators>
+struct Suffix<List<Nominators...>, List<Denominators...>>
+{
+    static constexpr unsigned int nomSize = Suffix<List<Nominators...>>::length;
+    static constexpr unsigned int denomSize = Suffix<List<Denominators...>>::length;
+
+    /// Suffix size with '\0'.
+    static constexpr unsigned int length = nomSize + (denomSize == 1 ? 0 : denomSize);
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    template<int... I1, int... I2>
+    static constexpr StaticArray<char, length> concat(
+        const StaticArray<char, nomSize>& a1,
+        IntegerSequence<I1...>,
+        const StaticArray<char, denomSize>& a2,
+        IntegerSequence<I2...>
+    ) noexcept
+    {
+        return {std::get<I1>(a1)..., '/', std::get<I2>(a2)..., '\0'};
+    }
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    template<int... I1>
+    static constexpr StaticArray<char, nomSize> concat(
+        const StaticArray<char, nomSize>& a1,
+        IntegerSequence<I1...>,
+        const StaticArray<char, 1>&,
+        IntegerSequence<>
+    ) noexcept
+    {
+        return {std::get<I1>(a1)..., '\0'};
+    }
+
+
+    /**
+     * @brief Returns suffix array string.
+     */
+    static constexpr StaticArray<char, length> get() noexcept
+    {
+        return concat(
+            Suffix<List<Nominators...>>::get(),
+            MakeIntegerSequence<0, nomSize - 1>{},
+            Suffix<List<Denominators...>>::get(),
+            MakeIntegerSequence<0, denomSize - 1>{}
+        );
+    }
+};
+
+/* ************************************************************************ */
+
 /**
  * @brief SI Unit.
  *
@@ -147,6 +372,7 @@ class Unit
 // Public Types
 public:
 
+
     /// Value type.
     using value_type = Value;
 
@@ -156,6 +382,16 @@ public:
     /// List type.
     using denominator = Denom;
 
+
+// Public Constants
+public:
+
+
+    /// Total unit coefficient.
+    static constexpr Value coefficient = Nom::coefficient / Denom::coefficient;
+
+    /// Total unit coefficient.
+    static constexpr StaticArray<char, Suffix<Nom, Denom>::length> suffix = Suffix<Nom, Denom>::get();
 
 
 // Public Ctors & Dtors
@@ -316,6 +552,11 @@ private:
     value_type m_value;
 
 };
+
+/* ************************************************************************ */
+
+template<typename Nom, typename Denom>
+constexpr StaticArray<char, Suffix<Nom, Denom>::length> Unit<Nom, Denom>::suffix;
 
 /* ************************************************************************ */
 
@@ -1759,6 +2000,94 @@ inline constexpr Angle deg(Value value) noexcept
 inline constexpr Probability precent(Value value) noexcept
 {
     return value / 100.f;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Input stream operator.
+ *
+ * @param is   Input stream.
+ * @param unit Result value.
+ *
+ * @return is.
+ */
+template<typename... Nominators, typename... Denominators>
+InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators...>>& unit)
+{
+    using Type = Unit<List<Nominators...>, List<Denominators...>>;
+
+    Value val;
+    String suffix;
+    is >> val >> suffix;
+
+    // Suffix is given
+    if (!suffix.empty())
+    {
+        // Type suffix
+        const auto typeSuffix = Type::suffix.data();
+
+        // Find real suffix
+        auto pos = suffix.find(typeSuffix);
+        if (pos == String::npos)
+        {
+            throw InvalidArgumentException(
+                "Invalid units string. "
+                "Expected '(m|u|n)" + String(typeSuffix) + "' "
+                "given '" + suffix + "'"
+            );
+        }
+
+        // Modify base value
+        val *= Type::coefficient;
+
+        // Get unit prefix
+        if (pos == 1)
+        {
+            // Unit prefix
+            switch (suffix.front())
+            {
+            default:
+                throw InvalidArgumentException("Unknown/unsupported unit prefix: " + String(1, suffix.front()));
+
+            case 'n':
+                val *= 1e-3;
+            case 'u':
+                val *= 1e-3;
+            case 'm':
+                val *= 1e-3;
+            }
+        }
+        else if (pos != 0)
+        {
+            throw InvalidArgumentException("Unit prefix is longer than expected");
+        }
+    }
+
+    // Set unit
+    unit = Unit<List<Nominators...>, List<Denominators...>>{val};
+
+    return is;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Output stream operator.
+ *
+ * @param os   Output stream.
+ * @param unit Input value.
+ *
+ * @return os.
+ */
+template<typename... Nominators, typename... Denominators>
+OutStream& operator<<(OutStream& os, const Unit<List<Nominators...>, List<Denominators...>>& unit) noexcept
+{
+    os << unit.value();
+
+    // TODO: write suffix
+
+    return os;
 }
 
 /* ************************************************************************ */
