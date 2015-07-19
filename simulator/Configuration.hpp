@@ -5,15 +5,18 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/String.hpp"
+#include "core/StringView.hpp"
 #include "core/FilePath.hpp"
+#include "core/UniquePtr.hpp"
 #include "core/Exception.hpp"
 #include "core/DynamicArray.hpp"
 
@@ -34,21 +37,148 @@ class ConfigException : public RuntimeException
 /* ************************************************************************ */
 
 /**
- * @brief Base class for configuration storages.
+ * @brief Simulation configuration.
  */
-class DLL_EXPORT Configuration
+class Configuration
 {
 
-// Public Ctors & Dtors
+// Public Types
 public:
 
 
     /**
-     * @brief Destructor.
+     * @brief Configuration implementation.
      */
-    virtual ~Configuration()
+    class Implementation
     {
-        // Nothing to do
+
+    // Public Ctors & Dtors
+    public:
+
+
+        /**
+         * @brief Destructor.
+         */
+        virtual ~Implementation()
+        {
+            // Nothing to do
+        }
+
+
+    // Public Accessors
+    public:
+
+
+        /**
+         * @brief Check if value with given name exists.
+         *
+         * @param name Value name.
+         *
+         * @return
+         */
+        virtual bool has(const StringView& name) const noexcept = 0;
+
+
+        /**
+         * @brief Returns string value.
+         *
+         * @param name Value name.
+         *
+         * @return
+         */
+        virtual String get(const StringView& name) const noexcept = 0;
+
+
+        /**
+         * @brief Returns if content string is set.
+         *
+         * @return
+         */
+        virtual bool hasContent() const noexcept = 0;
+
+
+        /**
+         * @brief Returns content string.
+         *
+         * @return
+         */
+        virtual String getContent() const noexcept = 0;
+
+
+        /**
+         * @brief Returns if sub-configuration exists.
+         *
+         * @param name Sub-configuration name.
+         *
+         * @return
+         */
+        virtual bool hasSubs(const StringView& name) const noexcept = 0;
+
+
+        /**
+         * @brief Returns all sub-configuration with given name.
+         *
+         * @param name Sub-configuration name.
+         *
+         * @return
+         */
+        virtual DynamicArray<UniquePtr<Implementation>> getSubs(const StringView& name) const noexcept = 0;
+
+
+    // Public Mutators
+    public:
+
+
+        /**
+         * @brief Set string value.
+         *
+         * @param name  Value name.
+         * @param value Value to store.
+         *
+         * @return
+         */
+        virtual void set(const StringView& name, const StringView& value) noexcept = 0;
+
+
+        /**
+         * @brief Store content.
+         *
+         * @param value Content.
+         */
+        virtual void setContent(const StringView& value) noexcept = 0;
+
+    };
+
+
+// Public Ctors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param impl Implementation.
+     * @param path Path to source file.
+     */
+    Configuration(UniquePtr<Implementation> impl, FilePath path) noexcept
+        : m_impl(std::move(impl))
+        , m_filePath(std::move(path))
+    {
+        // Nothign to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param impl Implementation.
+     * @param path Path to source file.
+     */
+    Configuration(Implementation* impl, FilePath path) noexcept
+        : m_impl(impl)
+        , m_filePath(std::move(path))
+    {
+        // Nothign to do
     }
 
 
@@ -61,88 +191,164 @@ public:
      *
      * @return
      */
-    virtual const FilePath& getSourcePath() const NOEXCEPT = 0;
+    const FilePath& getSourcePath() const noexcept
+    {
+        return m_filePath;
+    }
 
 
     /**
      * @brief Returns if value exists under given name.
      *
-     * @param name
+     * @param name Value name.
      *
      * @return
      */
-    virtual bool hasValue(const String& name) const = 0;
+    bool hasValue(const StringView& name) const noexcept
+    {
+        return m_impl->has(name);
+    }
 
 
     /**
      * @brief Returns string value.
      *
-     * @param name
+     * @param name Value name.
      *
      * @return
+     *
+     * @throw ConfigException
      */
-    virtual String getString(const String& name) const = 0;
+    String get(const StringView& name) const
+    {
+        if (!hasValue(name))
+            throw ConfigException("Missing value for '" + String(name) + "'");
+
+        return m_impl->get(name);
+    }
 
 
     /**
-     * @brief Returns integer value.
+     * @brief Returns string value.
      *
-     * @param name
-     *
-     * @return
-     */
-    virtual int getInteger(const String& name) const = 0;
-
-
-    /**
-     * @brief Returns float value.
-     *
-     * @param name
+     * @param name Value name.
+     * @param def  Default value if doesn't exists.
      *
      * @return
      */
-    virtual float getFloat(const String& name) const = 0;
+    String get(const StringView& name, String def) const noexcept
+    {
+        return hasValue(name) ? m_impl->get(name) : std::move(def);
+    }
 
 
     /**
-     * @brief Returns if there is content text.
+     * @brief Returns value of given type.
+     *
+     * @tparam T Required value type.
+     *
+     * @param name Value name.
+     *
+     * @return
+     *
+     * @throw ConfigException
+     */
+    template<typename T>
+    T get(const StringView& name) const
+    {
+    }
+
+
+    /**
+     * @brief Returns value of given type.
+     *
+     * @tparam T Required value type.
+     *
+     * @param name Value name.
+     * @param def  Default value if doesn't exists.
      *
      * @return
      */
-    virtual bool hasText() const = 0;
+    template<typename T>
+    T get(const StringView& name, T def) const noexcept
+    {
+        return hasValue(name) ? m_impl->get(name) : std::move(def);
+    }
 
 
     /**
-     * @brief Returns text string.
+     * @brief Returns if there is content.
      *
      * @return
      */
-    virtual String getText() const = 0;
+    bool hasContent() const noexcept
+    {
+        return m_impl->hasContent();
+    }
 
 
     /**
-     * @brief Returns configuration subconfiguration.
+     * @brief Returns content.
+     *
+     * @return
+     */
+    String getContent() const noexcept
+    {
+        return m_impl->getContent();
+    }
+
+
+    /**
+     * @brief Check if subconfiguration exists.
      *
      * @param name Configuration name.
      *
      * @return Configuration or nullptr.
      */
-    virtual Configuration* getConfiguration(const String& name) const noexcept
+    bool hasConfiguration(const StringView& name) const noexcept
     {
-        return nullptr;
+        return m_impl->hasSubs(name);
     }
 
 
     /**
-     * @brief Returns configuration subconfigurations.
+     * @brief Returns the first sub-configuration.
      *
-     * @param name Configuration name.
+     * @param name Sub-configuration name.
      *
-     * @return List of valid subconfigurations.
+     * @return Sub-configuration.
+     *
+     * @throw ConfigException
      */
-    virtual DynamicArray<Configuration*> getConfigurations(const String& name) const noexcept
+    Configuration getConfiguration(const StringView& name) const
     {
-        return {};
+        auto configurations = getConfigurations(name);
+
+        if (configurations.empty())
+            throw ConfigException("Sub-configuration '" + String(name) + "' doesn't exists");
+
+        return configurations[0];
+    }
+
+
+    /**
+     * @brief Returns all sub-configurations with given name.
+     *
+     * @param name Sub-configuration name.
+     *
+     * @return List of valid sub-configurations.
+     */
+    DynamicArray<Configuration> getConfigurations(const StringView& name) const noexcept
+    {
+        if (!hasConfiguration(name))
+            return {};
+
+        DynamicArray<Configuration> res;
+
+        for (auto&& ptr : m_impl->getSubs(name))
+            res.emplace_back(std::move(ptr), m_filePath);
+
+        return res;
     }
 
 
@@ -151,38 +357,40 @@ public:
 
 
     /**
-     * @brief Set string value.
+     * @brief Store string value.
      *
-     * @param name
-     * @param value
+     * @param name  Value name.
+     * @param value Value to store.
      */
-    virtual void setString(const String& name, const String& value) = 0;
+    void set(const StringView& name, const StringView& value) noexcept
+    {
+        m_impl->set(name, value);
+    }
 
 
     /**
      * @brief Set integer value.
      *
-     * @param name
-     * @param value
+     * @tparam T Value type.
+     *
+     * @param name  Value name.
+     * @param value Value to store.
      */
-    virtual void setInteger(const String& name, int value) = 0;
+    template<typename T>
+    void set(const String& name, T value) noexcept
+    {
+    }
 
 
     /**
-     * @brief Set float value.
+     * @brief Set content text.
      *
-     * @param name
-     * @param value
+     * @param content Content text.
      */
-    virtual void setFloat(const String& name, float value) = 0;
-
-
-    /**
-     * @brief Set text.
-     *
-     * @param text
-     */
-    virtual void setText(String text) = 0;
+    void setContent(const StringView& content) noexcept
+    {
+        m_impl->setContent(content);
+    }
 
 
 // Public Operations
@@ -197,109 +405,18 @@ public:
      *
      * @return
      */
-    FilePath buildFilePath(const FilePath& filename) const NOEXCEPT;
+    FilePath buildFilePath(const FilePath& filename) const noexcept;
 
 
-    /**
-     * @brief Call given function when configuration under name is set (not empty).
-     *
-     * @tparam Fn Function type.
-     *
-     * @param name
-     * @param fn
-     */
-    template<typename Fn>
-    void callIfSetString(const String& name, Fn fn) const
-    {
-        if (hasValue(name))
-            fn(getString(name));
-    }
+// Private Data Members
+private:
 
 
-    /**
-     * @brief Call given function when configuration under name is set (not empty).
-     *
-     * @tparam Fn Function type.
-     *
-     * @param name
-     * @param fn
-     */
-    template<typename Fn>
-    void callString(const String& name, Fn fn) const
-    {
-        if (hasValue(name))
-            fn(getString(name));
-        else
-            throw ConfigException("Missing configuration '" + name + "'");
-    }
+    /// Configuration implementation.
+    UniquePtr<Implementation> m_impl;
 
-
-    /**
-     * @brief Call given function when configuration under name is set (not empty).
-     *
-     * @tparam Fn Function type.
-     *
-     * @param name
-     * @param fn
-     */
-    template<typename Fn>
-    void callIfSetInteger(const String& name, Fn fn) const
-    {
-        if (hasValue(name))
-            fn(getInteger(name));
-    }
-
-
-    /**
-     * @brief Call given function when configuration under name is set (not empty).
-     *
-     * @tparam Fn Function type.
-     *
-     * @param name
-     * @param fn
-     */
-    template<typename Fn>
-    void callInteger(const String& name, Fn fn) const
-    {
-        if (hasValue(name))
-            fn(getInteger(name));
-        else
-            throw ConfigException("Missing configuration '" + name + "'");
-    }
-
-
-    /**
-     * @brief Call given function when configuration under name is set (not empty).
-     *
-     * @tparam Fn Function type.
-     *
-     * @param name
-     * @param fn
-     */
-    template<typename Fn>
-    void callIfSetFloat(const String& name, Fn fn) const
-    {
-        if (hasValue(name))
-            fn(getFloat(name));
-    }
-
-
-    /**
-     * @brief Call given function when configuration under name is set (not empty).
-     *
-     * @tparam Fn Function type.
-     *
-     * @param name
-     * @param fn
-     */
-    template<typename Fn>
-    void callFloat(const String& name, Fn fn) const
-    {
-        if (hasValue(name))
-            fn(getFloat(name));
-        else
-            throw ConfigException("Missing configuration '" + name + "'");
-    }
+    /// Path to source configuration.
+    FilePath m_filePath;
 
 };
 

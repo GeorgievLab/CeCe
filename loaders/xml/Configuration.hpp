@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -11,11 +13,9 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/String.hpp"
+#include "core/StringView.hpp"
 #include "core/DynamicArray.hpp"
-#include "core/Map.hpp"
-#include "core/FilePath.hpp"
 #include "simulator/Configuration.hpp"
 
 // pugixml
@@ -29,9 +29,9 @@ namespace xml {
 /* ************************************************************************ */
 
 /**
- * @brief XML immutable configuration.
+ * @brief XML configuration implementation.
  */
-class DLL_EXPORT ImmutableConfiguration : public simulator::Configuration
+class ConfigImplementation : public simulator::Configuration::Implementation
 {
 
 // Public Ctors & Dtors
@@ -41,12 +41,11 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param node
-     * @param filename
+     * @param node     XML node.
+     * @param filename Path to source file.
      */
-    explicit ImmutableConfiguration(pugi::xml_node_struct* node, FilePath filename = {}) NOEXCEPT
+    ConfigImplementation(pugi::xml_node_struct* node) noexcept
         : m_node(node)
-        , m_sourcePath(std::move(filename))
     {
         // Nothing to do
     }
@@ -55,12 +54,11 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param node
-     * @param filename
+     * @param node     XML node.
+     * @param filename Path to source file.
      */
-    explicit ImmutableConfiguration(const pugi::xml_node& node, FilePath filename = {}) NOEXCEPT
+    ConfigImplementation(const pugi::xml_node& node) noexcept
         : m_node(node.internal_object())
-        , m_sourcePath(std::move(filename))
     {
         // Nothing to do
     }
@@ -71,137 +69,83 @@ public:
 
 
     /**
-     * @brief Returns of the source file.
+     * @brief Check if value with given name exists.
+     *
+     * @param name Value name.
      *
      * @return
      */
-    const FilePath& getSourcePath() const NOEXCEPT override
+    bool has(const StringView& name) const noexcept override
     {
-        return m_sourcePath;
-    }
-
-
-    /**
-     * @brief Returns if value exists under given name.
-     *
-     * @param name
-     *
-     * @return
-     */
-    bool hasValue(const String& name) const override
-    {
-        return !m_node.attribute(name.c_str()).empty();
+        return !m_node.attribute(name.getData()).empty();
     }
 
 
     /**
      * @brief Returns string value.
      *
-     * @param name
+     * @param name Value name.
      *
      * @return
      */
-    String getString(const String& name) const override
+    String get(const StringView& name) const noexcept override
     {
-        return m_node.attribute(name.c_str()).value();
+        return m_node.attribute(name.getData()).value();
     }
 
 
     /**
-     * @brief Returns integer value.
-     *
-     * @param name
+     * @brief Returns if content string is set.
      *
      * @return
      */
-    int getInteger(const String& name) const override
-    {
-        return m_node.attribute(name.c_str()).as_int();
-    }
-
-
-    /**
-     * @brief Returns float value.
-     *
-     * @param name
-     *
-     * @return
-     */
-    float getFloat(const String& name) const override
-    {
-        return m_node.attribute(name.c_str()).as_float();
-    }
-
-
-    /**
-     * @brief Returns if there is content text.
-     *
-     * @return
-     */
-    bool hasText() const override
+    bool hasContent() const noexcept override
     {
         return !m_node.text().empty();
     }
 
 
     /**
-     * @brief Returns text string.
+     * @brief Returns content string.
      *
      * @return
      */
-    String getText() const override
+    String getContent() const noexcept override
     {
         return m_node.text().get();
     }
 
 
     /**
-     * @brief Returns configuration subconfiguration.
+     * @brief Returns if sub-configuration exists.
      *
-     * @param name Configuration name.
+     * @param name Sub-configuration name.
      *
-     * @return Configuration or nullptr.
+     * @return
      */
-    virtual Configuration* getConfiguration(const String& name) const noexcept
+    bool hasSubs(const StringView& name) const noexcept override
     {
-        auto list = getConfigurations(name);
-        return list.empty() ? nullptr : list[0];
+        auto rng = m_node.children(name.getData());
+        return rng.begin() != rng.end();
     }
 
 
     /**
-     * @brief Returns configuration subconfigurations.
+     * @brief Returns all sub-configuration with given name.
      *
-     * @param name Configuration name.
+     * @param name Sub-configuration name.
      *
-     * @return List of valid subconfigurations.
+     * @return
      */
-    virtual DynamicArray<Configuration*> getConfigurations(const String& name) const noexcept
+    DynamicArray<UniquePtr<Implementation>> getSubs(const StringView& name) const noexcept override
     {
-        auto it = m_cache.find(name);
+        DynamicArray<UniquePtr<Implementation>> res;
 
-        if (it == m_cache.end())
-        {
-            DynamicArray<ImmutableConfiguration> list;
+        // Foreach children
+        for (const auto& node : m_node.children(name.getData()))
+            res.push_back(makeUnique<ConfigImplementation>{node.internal_object()});
 
-            for (const auto& node : m_node.children(name.c_str()))
-            {
-                list.emplace_back(node.internal_object(), m_sourcePath);
-            }
-
-            it = m_cache.emplace(name, std::move(list)).first;
-        }
-
-        DynamicArray<Configuration*> result;
-        result.reserve(it->second.size());
-
-        // Convert cache
-        for (auto& config : it->second)
-        {
-            result.push_back(&config);
-        }
-
-        return result;
+        return res;
     }
 
 
@@ -212,47 +156,25 @@ public:
     /**
      * @brief Set string value.
      *
-     * @param name
-     * @param value
+     * @param name  Value name.
+     * @param value Value to store.
+     *
+     * @return
      */
-    void setString(const String& name, const String& value) override
+    void set(const StringView& name, const StringView& value) noexcept override
     {
-        m_node.attribute(name.c_str()).set_value(value.c_str());
+        m_node.attribute(name.getData()).set_value(value.getData());
     }
 
 
     /**
-     * @brief Set integer value.
+     * @brief Store content.
      *
-     * @param name
-     * @param value
+     * @param value Content.
      */
-    void setInteger(const String& name, int value) override
+    void setContent(const StringView& value) noexcept override
     {
-        m_node.attribute(name.c_str()).set_value(value);
-    }
-
-
-    /**
-     * @brief Set float value.
-     *
-     * @param name
-     * @param value
-     */
-    void setFloat(const String& name, float value) override
-    {
-        m_node.attribute(name.c_str()).set_value(value);
-    }
-
-
-    /**
-     * @brief Set text.
-     *
-     * @param text
-     */
-    void setText(String text) override
-    {
-        m_node.text().set(text.c_str());
+        m_node.text().set(text.getData());
     }
 
 
@@ -261,12 +183,6 @@ private:
 
     /// Managed node.
     const pugi::xml_node m_node;
-
-    /// Path to source file
-    FilePath m_sourcePath;
-
-    /// Subconfigurations cache.
-    mutable Map<String, DynamicArray<ImmutableConfiguration>> m_cache;
 
 };
 

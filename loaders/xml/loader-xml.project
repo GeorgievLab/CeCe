@@ -27,10 +27,17 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="SimulationLoader.cpp"/>
+    <VirtualDirectory Name="pugixml">
+      <File Name="pugixml/pugixml.cpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="SimulationLoader.hpp"/>
     <File Name="Configuration.hpp"/>
+    <VirtualDirectory Name="pugixml">
+      <File Name="pugixml/pugiconfig.hpp"/>
+      <File Name="pugixml/pugixml.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

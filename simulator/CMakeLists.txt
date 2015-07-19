@@ -47,7 +47,6 @@ set(SRCS
 
     # Add object libraries
     $<TARGET_OBJECTS:core>
-    $<TARGET_OBJECTS:parser>
 )
 
 if (ENABLE_RENDER)

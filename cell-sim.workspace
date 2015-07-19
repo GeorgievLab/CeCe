@@ -11,7 +11,6 @@
   <Environment>
     <![CDATA[]]>
   </Environment>
-  <Project Name="parser-xml" Path="parser-xml/parser-xml.project" Active="No"/>
   <Project Name="picture" Path="plugins/picture/picture.project" Active="No"/>
   <Project Name="tool_shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <Project Name="python" Path="plugins/python/python.project" Active="No"/>
@@ -44,6 +43,7 @@
       <Project Name="plugin_diffusion-python" ConfigName="Debug"/>
       <Project Name="plugin_diffusion-streamlines" ConfigName="Debug"/>
       <Project Name="plugin_stochastic-reactions-diffusive" ConfigName="Debug"/>
+      <Project Name="loader_xml" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -65,6 +65,7 @@
       <Project Name="plugin_diffusion-python" ConfigName="Release"/>
       <Project Name="plugin_diffusion-streamlines" ConfigName="Release"/>
       <Project Name="plugin_stochastic-reactions-diffusive" ConfigName="Release"/>
+      <Project Name="loader_xml" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
