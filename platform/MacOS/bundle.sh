@@ -11,10 +11,12 @@
 # ######################################################################### #
 
 FRAMEWORKS=../Frameworks
-SOURCE_DIR=/usr/local/lib
+SOURCE_DIR=/usr/local
 
 # Directory of the binary
 DIRECTORY=`dirname $1`
+
+#DEBUG_FILE="update.log"
 
 #
 # Get dependency of given library
@@ -39,9 +41,12 @@ function fix_libraries()
 
     local BINARY=$1
     local BINARY_COPY=$2
+    local LIBRARY
+
+    #echo -e "START: $BINARY\n" >> $DEBUG_FILE
 
     # Foreach binary dependencies
-    for LIBRARY in `get_dependency $BINARY`
+    for LIBRARY in `get_dependency $BINARY_COPY`
     do
         if [[ $LIBRARY == *"@executable_path"* ]]
         then
@@ -59,9 +64,6 @@ function fix_libraries()
             # /usr/local/lib
             if [[ $LIBRARY == *"${SOURCE_DIR}"* ]]
             then
-
-                echo "Library: '${LIBRARY}'"
-
                 if [[ ! -f "${FILEPATH}" ]]
                 then
                     # Copy library into bundle
@@ -72,27 +74,45 @@ function fix_libraries()
                     fix_libraries $LIBRARY $FILEPATH
                 fi
 
-                echo "Update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
-                chmod a+w ${BINARY}
-                install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
-                chmod a-w ${BINARY}
+                if [[ $LIBRARY == $BINARY ]]
+                then
+                    chmod a+w ${BINARY_COPY}
+                    install_name_tool -id @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
+                    chmod a-w ${BINARY_COPY}
 
-                echo "----------"
+                    #echo -e "install_name_tool -id\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY_COPY}\n" >> $DEBUG_FILE
+                else
+                    chmod a+w ${BINARY_COPY}
+                    install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
+                    chmod a-w ${BINARY_COPY}
+
+                    #echo -e "install_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY_COPY}\n" >> $DEBUG_FILE
+                fi
             fi
         else
-            echo "Local library: '${LIBRARY}'"
+            if [[ $LIBRARY == $BINARY ]]
+            then
+                chmod a+w ${BINARY_COPY}
+                install_name_tool -id @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
+                chmod a-w ${BINARY_COPY}
 
-            # Local
-            echo "Local update '${BINARY#$DIRECTORY}' for '${LIBRARY}'"
-            install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY_COPY}
+                #echo -e "LOCAL:\ninstall_name_tool -id\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY_COPY}\n" >> $DEBUG_FILE
+            else
+                # Local
+                install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY_COPY}
 
-            # Recursive fix
-            fix_libraries $LIBRARY $BUNDLE_PATH/$LIBRARY
+                #echo -e "LOCAL:\ninstall_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${LIBRARY}\n${BINARY_COPY}\n" >> $DEBUG_FILE
 
-            echo "----------"
+                # Recursive fix
+                fix_libraries $LIBRARY $BUNDLE_PATH/$LIBRARY
+            fi
         fi
     done
+
+    #echo -e "END: $BINARY\n\n" >> $DEBUG_FILE
 }
+
+#echo "" > $DEBUG_FILE
 
 # Source binary
 fix_libraries $1 $1
