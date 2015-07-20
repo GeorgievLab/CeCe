@@ -43,6 +43,7 @@ using Value = float;
 
 /* ************************************************************************ */
 
+/// Base units coefficients
 static constexpr Value LENGTH_COEFFICIENT = 1e6f;
 static constexpr Value TIME_COEFFICIENT = 1e0f;
 static constexpr Value MASS_COEFFICIENT = 1e9f;
@@ -62,7 +63,7 @@ static constexpr Value MASS_COEFFICIENT = 1e9f;
  * @param name  Unit Name.
  * @param ord   Unit order.
  * @param coeff Value coefficient.
- * @param ...
+ * @param ...   Characters of unit symbol.
  */
 #define DEFINE_BASE_UNIT(name, coeff, ord, ...) \
     struct Base ## name {\
@@ -89,12 +90,13 @@ DEFINE_BASE_UNIT(LuminousIntensity, 1.f,        6, 'c', 'd');
 /**
  * @brief Less structure.
  *
- * @tparam T1 First type.
- * @tparam T2 Second type.
+ * @tparam T1 First base unit type.
+ * @tparam T2 Second base unit type.
  */
 template<typename T1, typename T2>
 struct Less
 {
+    /// If T1 is less than T2
     static constexpr bool value = T1::order < T2::order;
 };
 
@@ -109,13 +111,39 @@ template<typename... Types>
 struct List
 {
 
+    /// Number of types in list.
+    static constexpr unsigned int size = sizeof...(Types);
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Struct for calculating total coefficient of given list.
+ *
+ * @tparam Types A list of unit types.
+ */
+template<typename... Types>
+struct Coefficient;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Struct for calculating total coefficient of given list.
+ *
+ * @tparam Types A list of unit types.
+ */
+template<typename... Types>
+struct Coefficient<List<Types...>>
+{
+
     /**
-     * @brief Multiply arguments.
+     * @brief Multiply coefficients.
      *
-     * @param arg
-     * @param args
+     * @param arg  The first coefficient.
+     * @param args Rest of the coefficients.
      *
-     * @return
+     * @return Result coefficient.
      */
     template<typename Arg, typename... Args>
     static constexpr Value multiply(Arg&& arg, Args&&... args) noexcept
@@ -125,9 +153,9 @@ struct List
 
 
     /**
-     * @brief Multiply arguments.
+     * @brief Multiply coefficients.
      *
-     * @return
+     * @return 1.
      */
     static constexpr Value multiply() noexcept
     {
@@ -135,18 +163,17 @@ struct List
     }
 
 
-    /// List size.
-    static constexpr unsigned int size = sizeof...(Types);
-
-    /// List coefficient
-    static constexpr Value coefficient = multiply(Types::coefficient...);
+    /// Calculate types coefficient.
+    static constexpr Value value = multiply(Types::coefficient...);
 
 };
 
 /* ************************************************************************ */
 
 /**
- * @brief Concat lists.
+ * @brief Concatenate two lists.
+ *
+ * @tparam T Types.
  */
 template<typename... T>
 struct Concat;
@@ -154,40 +181,288 @@ struct Concat;
 /* ************************************************************************ */
 
 /**
- * @brief Concat two lists.
+ * @brief Concatenated specialization for single list.
  *
- * @tparam Types1
- * @tparam Types2
- * @tparam Tail
+ * @tparam Types Types of the list.
+ */
+template<typename... Types>
+struct Concat<List<Types...>>
+{
+    /// Concatenated list.
+    using type = List<Types...>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Concatenate two lists.
+ *
+ * @tparam Types1 Types of the first list.
+ * @tparam Types2 Types of the second list.
+ * @tparam Tail   Remaining types.
  */
 template<typename... Types1, typename... Types2, typename... Tail>
 struct Concat<List<Types1...>, List<Types2...>, Tail...>
 {
+    /// Concatenated list.
     using type = typename Concat<List<Types1..., Types2...>, Tail...>::type;
 };
 
 /* ************************************************************************ */
 
 /**
- * @brief Stop specialization.
+ * @brief Remove type from list.
  *
- * @tparam Types
+ * @tparam T    Type to remove.
+ * @tparam List List of types.
  */
-template<typename... Types>
-struct Concat<List<Types...>>
+template<typename T, typename List>
+struct Remove;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Remove type from list.
+ *
+ * @tparam T Type to remove.
+ */
+template<typename T>
+struct Remove<T, List<>>
 {
-    using type = List<Types...>;
+    // Not found
+    static constexpr bool value = false;
+
+    // Number of occurences.
+    static constexpr unsigned int count = 1;
+
+    // Remaining types.
+    using type = List<>;
 };
 
 /* ************************************************************************ */
 
-template<typename... Types>
-struct Suffix;
+/**
+ * @brief Remove type element from list.
+ *
+ * @tparam T     Type to remove.
+ * @tparam Type  First type.
+ * @tparam Types Remaining types in the list.
+ */
+template<typename T, typename Type, typename... Types>
+struct Remove<T, List<Type, Types...>>
+{
+    /// If types match.
+    static constexpr bool match = std::is_same<T, Type>::value;
+
+    // Inner remove.
+    using RemoveInnerType = Remove<T, List<Types...>>;
+
+    // If type is found.
+    static constexpr bool value = match || RemoveInnerType::value;
+
+    // Number of occurences.
+    static constexpr unsigned int count = (match ? 1 : 0) + RemoveInnerType::count;
+
+    /// List type without the required type.
+    using type = typename std::conditional<match,
+        List<Types...>,
+        typename Concat<List<Type>, typename RemoveInnerType::type>::type
+    >::type;
+};
 
 /* ************************************************************************ */
 
+/**
+ * @brief Helper class to reduce units.
+ *
+ * @tparam Nom   Nominators.
+ * @tparam Denom Denominators.
+ */
+template<typename Nom, typename Denom>
+struct ReduceInner;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to reduce units.
+ *
+ * @tparam Denominators List types.
+ */
+template<typename... Denominators>
+struct ReduceInner<List<>, List<Denominators...>>
+{
+    using nominators = List<>;
+    using denominators = List<Denominators...>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Helper class to simplify units.
+ *
+ * Type removes shared types in nominator and denominator.
+ *
+ * @tparam Nom          First nominator.
+ * @tparam Nominators   List types.
+ * @tparam Denominators List types.
+ */
+template<typename Nom, typename... Nominators, typename... Denominators>
+struct ReduceInner<List<Nom, Nominators...>, List<Denominators...>>
+{
+    /// Type of removing type.
+    using remove_type = Remove<Nom, List<Denominators...>>;
+
+    // Reduce without the first nominator
+    using reduce_inner = ReduceInner<List<Nominators...>, typename remove_type::type>;
+
+    /// List of nominators
+    using nominators = typename std::conditional<remove_type::value,
+        typename reduce_inner::nominators,
+        typename Concat<List<Nom>, typename reduce_inner::nominators>::type
+    >::type;
+
+    /// List of denominators
+    using denominators = typename reduce_inner::denominators;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Group of unit symbol.
+ *
+ * @tparam Type  Base unit type.
+ * @tparam Count Number of base unit occurences.
+ */
+template<typename Type, unsigned int Count>
+struct SymbolGroup
+{
+    static_assert(Count > 1, "Count must be greater than 1");
+    static_assert(Count < 10, "Count must be less than 10");
+
+
+    /// Length of the base suffix.
+    static constexpr unsigned int length = Type::symbol.size();
+
+
+    /**
+     * @brief Create symbol character array.
+     *
+     * @tparam Indices Indices from symbol array to use.
+     *
+     * @param symbol  Type symbol.
+     * @param indices Sequence of indices.
+     *
+     * @return Result symbol.
+     */
+    template<int... Indices>
+    static constexpr StaticArray<char, length + 1> createSymbol(
+        const StaticArray<char, length>& symbol,
+        IntegerSequence<Indices...> indices
+    ) noexcept
+    {
+        return {std::get<Indices>(symbol)..., '0' + Count, '\0'};
+    }
+
+
+    /**
+     * @brief Returns symbol character array.
+     *
+     * @return
+     */
+    static constexpr StaticArray<char, length + 1> get() noexcept
+    {
+        return createSymbol(Type::symbol, MakeIntegerSequence<0, length - 1>{});
+    }
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Group of unit symbol specialization for single occurence.
+ *
+ * @tparam Type  Base unit type.
+ */
+template<typename Type>
+struct SymbolGroup<Type, 1>
+{
+    /// Length of the base suffix.
+    static constexpr unsigned int length = Type::symbol.size();
+
+
+    /**
+     * @brief Returns symbol character array.
+     *
+     * @return
+     */
+    static constexpr StaticArray<char, length> get() noexcept
+    {
+        return Type::symbol;
+    }
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create SymbolGroup for list of types.
+ *
+ * @tparam Types A list of types.
+ */
 template<typename... Types>
-struct Suffix<List<Types...>>
+struct SymbolGrouper;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create SymbolGroup for list of types.
+ *
+ * @tparam Types A list of types.
+ */
+template<>
+struct SymbolGrouper<List<>>
+{
+    /// List of suffix groups
+    using type = List<>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Create SymbolGroup for list of types.
+ *
+ * @tparam Type  The first type.
+ * @tparam Types A list of types.
+ */
+template<typename Type, typename... Types>
+struct SymbolGrouper<List<Type, Types...>>
+{
+    using RemoveType = Remove<Type, List<Types...>>;
+
+    /// List of suffix groups.
+    using type = typename Concat<
+        List<SymbolGroup<Type, RemoveType::count>>,
+        typename SymbolGrouper<List<Types...>>::type
+    >::type;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Unit type symbol.
+ *
+ * @tparam Types List of base types.
+ */
+template<typename... Types>
+struct Symbol;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Unit type symbol.
+ *
+ * @tparam Types List of base types.
+ */
+template<typename... Types>
+struct Symbol<List<Types...>>
 {
 
     /**
@@ -216,8 +491,8 @@ struct Suffix<List<Types...>>
     }
 
 
-    /// Suffix size with '\0'.
-    static constexpr unsigned int length = 1 + add(Types::symbol.size()...) - sizeof...(Types);
+    /// Symbol size with '\0'.
+    static constexpr unsigned int length = 1 + add(Types::get().size()...) - sizeof...(Types);
 
 
     /**
@@ -273,7 +548,7 @@ struct Suffix<List<Types...>>
      * @brief Returns suffix array string.
      */
     template<unsigned long N1, unsigned long N2, unsigned long N3>
-    static constexpr StaticArray<char, N1 + N2> concat(
+    static constexpr StaticArray<char, N1 + N2 + N3 - 2> concat(
         const StaticArray<char, N1>& a1, const StaticArray<char, N2>& a2,
         const StaticArray<char, N3>& a3) noexcept
     {
@@ -297,19 +572,22 @@ struct Suffix<List<Types...>>
      */
     static constexpr StaticArray<char, length> get() noexcept
     {
-        return concat(Types::symbol...);
+        return concat(Types::get()...);
     }
 };
 
 /* ************************************************************************ */
 
 template<typename... Nominators, typename... Denominators>
-struct Suffix<List<Nominators...>, List<Denominators...>>
+struct Symbol<List<Nominators...>, List<Denominators...>>
 {
-    static constexpr unsigned int nomSize = Suffix<List<Nominators...>>::length;
-    static constexpr unsigned int denomSize = Suffix<List<Denominators...>>::length;
+    using SymbolNominators = Symbol<typename SymbolGrouper<List<Nominators...>>::type>;
+    using SymbolDenominators = Symbol<typename SymbolGrouper<List<Denominators...>>::type>;
 
-    /// Suffix size with '\0'.
+    static constexpr unsigned int nomSize = SymbolNominators::length;
+    static constexpr unsigned int denomSize = SymbolDenominators::length;
+
+    /// Symbol size with '\0'.
     static constexpr unsigned int length = nomSize + (denomSize == 1 ? 0 : denomSize);
 
 
@@ -349,9 +627,9 @@ struct Suffix<List<Nominators...>, List<Denominators...>>
     static constexpr StaticArray<char, length> get() noexcept
     {
         return concat(
-            Suffix<List<Nominators...>>::get(),
+            SymbolNominators::get(),
             MakeIntegerSequence<0, nomSize - 1>{},
-            Suffix<List<Denominators...>>::get(),
+            SymbolDenominators::get(),
             MakeIntegerSequence<0, denomSize - 1>{}
         );
     }
@@ -388,10 +666,10 @@ public:
 
 
     /// Total unit coefficient.
-    static constexpr Value coefficient = Nom::coefficient / Denom::coefficient;
+    static constexpr Value coefficient = Coefficient<Nom>::value / Coefficient<Denom>::value;
 
-    /// Total unit coefficient.
-    static constexpr StaticArray<char, Suffix<Nom, Denom>::length> suffix = Suffix<Nom, Denom>::get();
+    /// Unit symbol.
+    static constexpr StaticArray<char, Symbol<Nom, Denom>::length> symbol = Symbol<Nom, Denom>::get();
 
 
 // Public Ctors & Dtors
@@ -556,118 +834,7 @@ private:
 /* ************************************************************************ */
 
 template<typename Nom, typename Denom>
-constexpr StaticArray<char, Suffix<Nom, Denom>::length> Unit<Nom, Denom>::suffix;
-
-/* ************************************************************************ */
-
-/**
- * @brief Remove type element from list.
- *
- * @tparam T    Type to remove.
- * @tparam List List of types.
- */
-template<typename T, typename List>
-struct Remove;
-
-/* ************************************************************************ */
-
-/**
- * @brief Remove type element from list.
- *
- * @tparam T Type to remove.
- */
-template<typename T>
-struct Remove<T, List<>>
-{
-    // Not found
-    static constexpr bool value = false;
-
-    // Empty list.
-    using type = List<>;
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Remove type element from list.
- *
- * @tparam T     Type to remove.
- * @tparam Type  First type.
- * @tparam Types List of types.
- */
-template<typename T, typename Type, typename... Types>
-struct Remove<T, List<Type, Types...>>
-{
-    /// If types match.
-    static constexpr bool match = std::is_same<T, Type>::value;
-
-    // Inner remove
-    using remove_inner = Remove<T, List<Types...>>;
-
-    // If type is found.
-    static constexpr bool value = match || remove_inner::value;
-
-    /// List type without first T
-    using type = typename std::conditional<match,
-        List<Types...>,
-        typename Concat<List<Type>, typename remove_inner::type>::type
-    >::type;
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Helper class to reduce units.
- *
- * @tparam Nom   Nominators.
- * @tparam Denom Denominators.
- */
-template<typename Nom, typename Denom>
-struct ReduceInner;
-
-/* ************************************************************************ */
-
-/**
- * @brief Helper class to reduce units.
- *
- * @tparam Denominators List types.
- */
-template<typename... Denominators>
-struct ReduceInner<List<>, List<Denominators...>>
-{
-    using nominators = List<>;
-    using denominators = List<Denominators...>;
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Helper class to simplify units.
- *
- * Type removes shared types in nominator and denominator.
- *
- * @tparam Nom          First nominator.
- * @tparam Nominators   List types.
- * @tparam Denominators List types.
- */
-template<typename Nom, typename... Nominators, typename... Denominators>
-struct ReduceInner<List<Nom, Nominators...>, List<Denominators...>>
-{
-    /// Type of removing type.
-    using remove_type = Remove<Nom, List<Denominators...>>;
-
-    // Reduce without the first nominator
-    using reduce_inner = ReduceInner<List<Nominators...>, typename remove_type::type>;
-
-    /// List of nominators
-    using nominators = typename std::conditional<remove_type::value,
-        typename reduce_inner::nominators,
-        typename Concat<List<Nom>, typename reduce_inner::nominators>::type
-    >::type;
-
-    /// List of denominators
-    using denominators = typename reduce_inner::denominators;
-};
+constexpr StaticArray<char, Symbol<Nom, Denom>::length> Unit<Nom, Denom>::symbol;
 
 /* ************************************************************************ */
 
@@ -2018,23 +2185,23 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
     using Type = Unit<List<Nominators...>, List<Denominators...>>;
 
     Value val;
-    String suffix;
-    is >> val >> suffix;
+    String symbol;
+    is >> val >> symbol;
 
-    // Suffix is given
-    if (!suffix.empty())
+    // Symbol is given
+    if (!symbol.empty())
     {
-        // Type suffix
-        const auto typeSuffix = Type::suffix.data();
+        // Type symbol
+        const auto typeSymbol = Type::symbol.data();
 
-        // Find real suffix
-        auto pos = suffix.find(typeSuffix);
+        // Find real symbol
+        auto pos = symbol.find(typeSymbol);
         if (pos == String::npos)
         {
             throw InvalidArgumentException(
-                "Invalid units string. "
-                "Expected '(m|u|n)" + String(typeSuffix) + "' "
-                "given '" + suffix + "'"
+                "Invalid units symbol. "
+                "Expected '(m|u|n)" + String(typeSymbol) + "' "
+                "given '" + symbol + "'"
             );
         }
 
@@ -2045,10 +2212,10 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
         if (pos == 1)
         {
             // Unit prefix
-            switch (suffix.front())
+            switch (symbol.front())
             {
             default:
-                throw InvalidArgumentException("Unknown/unsupported unit prefix: " + String(1, suffix.front()));
+                throw InvalidArgumentException("Unknown/unsupported unit symbol prefix: " + String(1, symbol.front()));
 
             case 'n':
                 val *= 1e-3;
@@ -2060,7 +2227,7 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
         }
         else if (pos != 0)
         {
-            throw InvalidArgumentException("Unit prefix is longer than expected");
+            throw InvalidArgumentException("Unit symbol prefix is longer than expected");
         }
     }
 
