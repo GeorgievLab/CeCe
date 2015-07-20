@@ -32,14 +32,10 @@ namespace picture {
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // File name pattern
-    config.callIfSetString("pattern", [this](const String& value) {
-        setFilePattern(value);
-    });
+    setFilePattern(config.get("pattern", getFilePattern()));
 
     // Save iteration
-    config.callIfSetInteger("iteration", [this](int value){
-        setSaveIteration(value);
-    });
+    setSaveIteration(config.get("iteration", getSaveIteration()));
 }
 
 /* ************************************************************************ */
