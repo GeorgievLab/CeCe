@@ -106,7 +106,7 @@ unsigned int getAmountOfMolecules(
     plugin::diffusion::Module::SignalId id
 )
 {
-    unsigned int amount = 0u;
+    plugin::diffusion::Module::Signal amount = 0u;
 
     // Foreach all coordinates and calculate amount of molecules
     for (const auto& coord : coords)
