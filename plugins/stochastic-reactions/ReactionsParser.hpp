@@ -130,17 +130,35 @@ public:
 
         switch (value())
         {
+        case '-':
+            next();
+            if (!is('>'))
+                fatalError("Invalid token");
+
         case '>':
+            next();
             return TokenType{TokenCode::ArrowFwrd};
+
         case '<':
+            next();
+            match('-');
+
             return TokenType{TokenCode::ArrowBack};
+
         case ':':
+            next();
             return TokenType{TokenCode::Colon};
+
         case '+':
+            next();
             return TokenType{TokenCode::Plus};
+
         case ';':
+            next();
             return TokenType{TokenCode::Semicolon};
+
         case ',':
+            next();
             return TokenType{TokenCode::Comma};
         }
 
@@ -245,13 +263,14 @@ public:
         {
             try
             {
-                reversible = false;
                 auto conditions = parseConditions();
                 auto ids_minus = parseList();
-                if (!is(TokenCode::ArrowBack) || !is(TokenCode::ArrowFwrd))
+                if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd))
                     throw MissingArrowException();
                 RateType rate;
                 RateType rateR;
+                bool reversible = is(TokenCode::ArrowBack);
+                next();
                 if (reversible)
                 {
                     rateR = parseRate();
@@ -279,7 +298,7 @@ public:
         return reactions;
     }
 
-        protected:
+protected:
 
 
     // Use parent's member functions
@@ -290,10 +309,6 @@ public:
     using ParentType::token;
     using ParentType::find;
 
-
-    bool reversible;
-
-
     DynamicArray<std::pair<String, unsigned int>> parseConditions()
     {
         return DynamicArray<std::pair<String, unsigned int>>();
@@ -303,7 +318,9 @@ public:
 
     RateType parseRate()
     {
-            return parseExpression(getTokenizer().getRange());
+        auto rate = parseExpression(getTokenizer().getRange());
+        next();
+        return rate;
     }
 
 /* ************************************************************************ */

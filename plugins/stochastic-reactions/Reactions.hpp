@@ -33,7 +33,7 @@ template<typename T>
 class Reactions
 {
 protected:
-    
+
     using PropensityType = RateType;
 
     DynamicArray<RateType> m_rates;
@@ -98,9 +98,9 @@ protected:
         }
         return std::distance(m_ids.begin(), pointer);
     }
-    
+
 /* ************************************************************************ */
-    
+
     void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
     {
         DynamicArray<T> array;
