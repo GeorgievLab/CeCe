@@ -124,14 +124,11 @@ void IntercellularReactions::operator()(simulator::Object& object, simulator::Si
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
 
-    if (propensities.empty())
-    {
-        initializePropensities(cell, diffusion, coords);
-    }
-
     executeReactions(step, [this, &cell, &diffusion, &coords](unsigned int index)
     {
         executeReaction(index, cell, diffusion, coords);
+    }, [this, &cell, &diffusion, &coords] () {
+        initializePropensities(cell, diffusion, coords);
     });
 }
 
@@ -153,7 +150,7 @@ void IntercellularReactions::changeMoleculesInEnvironment(
 
     // Change amount of molecules
     // FIXME: #36
-    changeMolecules(*diffusion, coords, id, 100 * change);
+    changeMolecules(*diffusion, coords, id, change);
 }
 
 /* ************************************************************************ */

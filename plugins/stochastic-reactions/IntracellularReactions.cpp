@@ -77,13 +77,12 @@ void IntracellularReactions::executeReaction(const unsigned int index, plugin::c
 void IntracellularReactions::operator()(simulator::Object& object, simulator::Simulation&, units::Duration step)
 {
     auto& cell = getCell(object);
-    if (propensities.empty())
-    {
-        initializePropensities(cell);
-    }
+
     executeReactions(step, [this, &cell](unsigned int index)
     {
         executeReaction(index, cell);
+    }, [this, &cell] () {
+        initializePropensities(cell);
     });
 }
 
