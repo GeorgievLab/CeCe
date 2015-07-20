@@ -43,6 +43,8 @@ struct ObjectDesc
     /// Maximum spawn position.
     PositionVector positionMax;
 
+    /// Object programs.
+    DynamicArray<String> programs;
 };
 
 /* ************************************************************************ */

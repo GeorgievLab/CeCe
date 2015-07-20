@@ -28,7 +28,6 @@ class ObjectGeneratorApi : public PluginApi
     {
         return makeUnique<plugin::object_generator::Module>();
     }
-
 };
 
 /* ************************************************************************ */
