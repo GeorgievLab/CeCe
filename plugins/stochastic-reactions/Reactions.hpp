@@ -108,6 +108,13 @@ protected:
             array.resize(m_rules[0].size());
         for (unsigned int i = 0; i < ids_minus.size(); i++)
         {
+            if (ids_minus[i] == "null")
+                continue;
+            if (ids_minus[i] == "env")
+            {
+                Log::warning("ENV tag must be alone.");
+                return;
+            }
             unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
             if (index == array.size())
             {
@@ -118,6 +125,13 @@ protected:
         }
         for (unsigned int i = 0; i < ids_plus.size(); i++)
         {
+            if (ids_plus[i] == "null")
+                continue;
+            if (ids_plus[i] == "env")
+            {
+                Log::warning("ENV tag must be alone.");
+                return;
+            }
             unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
             if (index == array.size())
             {

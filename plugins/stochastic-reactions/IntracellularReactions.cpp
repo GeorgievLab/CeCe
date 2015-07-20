@@ -46,7 +46,7 @@ void IntracellularReactions::initializePropensities(const plugin::cell::CellBase
 
 /* ************************************************************************ */
 
-void IntracellularReactions::refreshPropensities(unsigned int index, const plugin::cell::CellBase& cell)
+void IntracellularReactions::refreshPropensities(const unsigned int index, const plugin::cell::CellBase& cell)
 {
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {

@@ -41,7 +41,7 @@ std::mt19937 g_randomEngine(g_randomDevice());
 DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
     const plugin::diffusion::Module::SizeType& gridSize,
     const SizeVector& worldSize,
-    plugin::cell::CellBase& cell)
+    const plugin::cell::CellBase& cell)
 {
     const auto start = worldSize * -0.5f;
     const auto step = worldSize / gridSize;

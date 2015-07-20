@@ -27,7 +27,8 @@ class StochasticReactionsApi : public PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
-        return plugin::stochastic_reactions::ReactionsParser<IntracellularReactions>(code).parse();
+        using namespace plugin::stochastic_reactions;
+        return ReactionsParser<IntracellularReactions>(code).parse();
     }
 };
 

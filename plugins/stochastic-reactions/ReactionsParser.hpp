@@ -34,11 +34,12 @@ enum class TokenCode
 {
     Invalid,
     Identifier,
-    Greater,
-    Less,
+    ArrowFwrd,
+    ArrowBack,
     Plus,
     Colon,
-    Semicolon
+    Semicolon,
+    Comma
 };
 
 /* ************************************************************************ */
@@ -130,15 +131,17 @@ public:
         switch (value())
         {
         case '>':
-            return TokenType{TokenCode::Greater};
+            return TokenType{TokenCode::ArrowFwrd};
         case '<':
-            return TokenType{TokenCode::Less};
+            return TokenType{TokenCode::ArrowBack};
         case ':':
             return TokenType{TokenCode::Colon};
         case '+':
             return TokenType{TokenCode::Plus};
         case ';':
             return TokenType{TokenCode::Semicolon};
+        case ',':
+            return TokenType{TokenCode::Comma};
         }
 
         return TokenType{};
@@ -181,6 +184,18 @@ protected:
     }
 
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Base expression parser exception.
+ */
+class ReactionParserException: public ParserException {};
+
+/* ************************************************************************ */
+
+DEFINE_PARSER_EXCEPTION_BASE(MissingArrowException, ReactionParserException, "You are missing > or -> arrow.");
+DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException, "You are missing at least one identifier on each side of reaction rule.");
 
 /* ************************************************************************ */
 
@@ -228,31 +243,37 @@ public:
         T reactions;
         while (!is(TokenCode::Invalid))
         {
-            validator = true;
-            reversible = false;
-            auto conditions = parseConditions();
-            auto ids_minus = parseList();
-            RateType rate;
-            RateType rateR;
-            if (reversible)
+            try
             {
-                rateR = parseRate(',');
-                rate = parseRate('>');
-            }
-            else
-            {
-                rate = parseRate('>');
-            }
-            auto ids_plus = parseList();
-            if (validator)
-            {
+                reversible = false;
+                auto conditions = parseConditions();
+                auto ids_minus = parseList();
+                if (!is(TokenCode::ArrowBack) || !is(TokenCode::ArrowFwrd))
+                    throw MissingArrowException();
+                RateType rate;
+                RateType rateR;
+                if (reversible)
+                {
+                    rateR = parseRate();
+                    require(TokenCode::Comma);
+                }
+                rate = parseRate();
+                require(TokenCode::ArrowFwrd);
+                auto ids_plus = parseList();
+                require(TokenCode::Semicolon);
                 reactions.extend(ids_plus, ids_minus, rate);
                 if (reversible)
                     reactions.extend(ids_minus, ids_plus, rateR);
+                for (unsigned int i = 0; i < conditions.size(); i++)
+                {
+                    reactions.addCondition(conditions[i].first, conditions[i].second);
+                }
             }
-            for (unsigned int i = 0; i < conditions.size(); i++)
+            catch (const ParserException ex)
             {
-                reactions.addCondition(conditions[i].first, conditions[i].second);
+                Log::warning(ex.what());
+                find(TokenCode::Semicolon);
+                next();
             }
         }
         return reactions;
@@ -264,108 +285,43 @@ public:
     // Use parent's member functions
     using ParentType::is;
     using ParentType::next;
-    using ParentType::match;
-    using ParentType::fatalError;
     using ParentType::require;
+    using ParentType::getTokenizer;
+    using ParentType::token;
+    using ParentType::find;
 
 
-    bool validator;
     bool reversible;
 
-    DynamicArray<std::pair<String, int>> parseConditions()
+
+    DynamicArray<std::pair<String, unsigned int>> parseConditions()
     {
-        return DynamicArray<String, unsigned int>();
+        return DynamicArray<std::pair<String, unsigned int>>();
     }
 
-    RateType parseRate(TokenCode end)
+/* ************************************************************************ */
+
+    RateType parseRate()
     {
-        if (!validator)
-            return 0;
-        if (!is(TokenCode::Invalid))
-        {
-            float rate;
-            try
-            {
-                rate = parseExpression(range, {});
-            }
-            catch (const ExpressionParserException& ex)
-            {
-                validator = false;
-                Log::warning(ex.what());
-                return 0;
-            }
-            if (range.front() == end_char)
-            {
-                range.advanceBegin();
-                return rate;
-            }
-            validator = false;
-            Log::warning("Rate area is either invalid or has no end.");
-            return 0;
-        }
-        validator = false;
-        Log::warning("Reaction has no rate area.");
-        return 0;
+            return parseExpression(getTokenizer().getRange());
     }
+
+/* ************************************************************************ */
 
     DynamicArray<String> parseList()
     {
-        if (!validator)
-            return DynamicArray<String> ();
         DynamicArray<String> array;
-        while (!is(TokenCode::Invalid))
+        if (!is(TokenCode::Identifier))
+            throw MissingIdentifierException();
+        while (is(TokenCode::Identifier))
         {
-            if (is(TokenCode::Identifier))
-            {
-                check_push(token().value, array);
-                next();
-            }
-            else if (is(TokenCode::Greater))
-            {
-                next();
-                return array;
-            }
-            else if (is(TokenCode::Less))
-            {
-                reversible = true;
-                next();
-                return array;
-            }
-            else if (is(TokenCode::Plus))
-            {
-                next();
-            }
-            else
-            {
+            array.push_back(token().value);
+            next();
+            if (!is(TokenCode::Plus))
                 break;
-            }
+            next();
         }
-        validator = false;
-        Log::warning("Left side  of reaction has no end.");
-        return DynamicArray<String> ();
-    }
-
-    void check_push(String& id, DynamicArray<String>& array)
-    {
-        if (id.size() == 0)
-        {
-            validator = false;
-            Log::warning("I cannot accept empty molecule name. You may want to use 'null' molecule in degradation/expression reactions.");
-        }
-        else if (id == "null")
-        {
-            id.clear();
-        }
-        else if (id == "environment")
-        {
-            array.push_back("env");
-            id.clear();
-        }
-        else
-        {
-            array.push_back(id);
-            id.clear();
-        }
+        return array;
     }
 
 };

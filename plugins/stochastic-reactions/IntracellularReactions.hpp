@@ -41,7 +41,7 @@ protected:
 
     void initializePropensities(const plugin::cell::CellBase& cell);
 
-    void refreshPropensities(unsigned int index, const plugin::cell::CellBase& cell);
+    void refreshPropensities(const unsigned int index, const plugin::cell::CellBase& cell);
 
     void executeReaction(const unsigned int index, plugin::cell::CellBase& cell);
 

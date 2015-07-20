@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 // Module
-#include "../ReactionParserIntracellular.hpp"
+#include "../ReactionsParser.hpp"
 
 
 /* ************************************************************************ */

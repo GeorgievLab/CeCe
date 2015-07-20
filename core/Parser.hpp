@@ -378,7 +378,7 @@ protected:
     template<typename Message>
     [[noreturn]] void fatalError(Message&& msg) const
     {
-        throw ParserException(msg);
+        throw ParserException();
     }
 
 
