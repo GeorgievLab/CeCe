@@ -341,7 +341,7 @@ struct SymbolGroup
 
 
     /// Length of the base suffix.
-    static constexpr unsigned int length = Type::symbol.size();
+    static constexpr unsigned int length = Type::symbol.size() + 1;
 
 
     /**
@@ -355,8 +355,8 @@ struct SymbolGroup
      * @return Result symbol.
      */
     template<int... Indices>
-    static constexpr StaticArray<char, length + 1> createSymbol(
-        const StaticArray<char, length>& symbol,
+    static constexpr StaticArray<char, length> createSymbol(
+        const StaticArray<char, length - 1>& symbol,
         IntegerSequence<Indices...> indices
     ) noexcept
     {
@@ -369,9 +369,9 @@ struct SymbolGroup
      *
      * @return
      */
-    static constexpr StaticArray<char, length + 1> get() noexcept
+    static constexpr StaticArray<char, length> get() noexcept
     {
-        return createSymbol(Type::symbol, MakeIntegerSequence<0, length - 1>{});
+        return createSymbol(Type::symbol, MakeIntegerSequence<0, length - 2>{});
     }
 };
 
@@ -447,6 +447,58 @@ struct SymbolGrouper<List<Type, Types...>>
 /* ************************************************************************ */
 
 /**
+ * @brief Symbol length.
+ *
+ * @tparam Types List of types.
+ */
+template<typename... Types>
+struct SymbolLength;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Symbol length.
+ *
+ * @tparam Types List of types.
+ */
+template<typename... Types>
+struct SymbolLength<List<Types...>>
+{
+
+    /**
+     * @brief Add lengths.
+     *
+     * @param arg  The first length.
+     * @param args Rest of the lengths.
+     *
+     * @return Total length.
+     */
+    template<typename Arg, typename... Args>
+    static constexpr Value add(Arg&& arg, Args&&... args) noexcept
+    {
+        return arg + add(args...);
+    }
+
+
+    /**
+     * @brief Add length.
+     *
+     * @return 0.
+     */
+    static constexpr Value add() noexcept
+    {
+        return Value(0);
+    }
+
+
+    /// Symbol length with '\0' and without '\0' of each type.
+    static constexpr unsigned int value = add(Types::length...) - sizeof...(Types) + 1;
+
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Unit type symbol.
  *
  * @tparam Types List of base types.
@@ -465,94 +517,108 @@ template<typename... Types>
 struct Symbol<List<Types...>>
 {
 
-    /**
-     * @brief Add arguments.
-     *
-     * @param arg
-     * @param args
-     *
-     * @return
-     */
-    template<typename Arg, typename... Args>
-    static constexpr Value add(Arg&& arg, Args&&... args) noexcept
-    {
-        return arg + add(args...);
-    }
+    /// Symbol length.
+    static constexpr unsigned int length = SymbolLength<List<Types...>>::value;
 
 
     /**
-     * @brief Add arguments.
+     * @brief Concatenate two symbols.
      *
-     * @return
+     * @tparam N1 Length of the first symbol.
+     * @tparam N2 Length of the second symbol.
+     * @tparam Indices1 Indices for the first symbol.
+     * @tparam Indices2 Indices for the second symbol.
+     *
+     * @param symbol1 The first symbol.
+     * @param seq1 Indices for the first symbol.
+     * @param symbol2 The second symbol.
+     * @param seq2 Indices for the second symbol.
+     *
+     * @return Result symbol.
      */
-    static constexpr Value add() noexcept
-    {
-        return Value(0);
-    }
-
-
-    /// Symbol size with '\0'.
-    static constexpr unsigned int length = 1 + add(Types::get().size()...) - sizeof...(Types);
-
-
-    /**
-     * @brief Returns suffix array string.
-     */
-    template<unsigned long N1, unsigned long N2, int... I1, int... I2>
-    static constexpr StaticArray<char, N1 + N2 - 1> concatInner(
-        const StaticArray<char, N1>& a1,
-        IntegerSequence<I1...>,
-        const StaticArray<char, N2>& a2,
-        IntegerSequence<I2...>
+    template<unsigned long N1, unsigned long N2, int... Indices1, int... Indices2>
+    static constexpr StaticArray<char, N1 + N2 - 1> concat(
+        const StaticArray<char, N1>& symbol1,
+        IntegerSequence<Indices1...> seq1,
+        const StaticArray<char, N2>& symbol2,
+        IntegerSequence<Indices2...> seq2
     ) noexcept
     {
-        static_assert(N1 + N2 - 1 == sizeof...(I1) + sizeof...(I2) + 1, "Sizes doesn't match");
+        static_assert(N1 + N2 - 1 == sizeof...(Indices1) + sizeof...(Indices2) + 1, "Sizes doesn't match");
 
-        return {std::get<I1>(a1)..., std::get<I2>(a2)..., '\0'};
+        return {std::get<Indices1>(symbol1)..., std::get<Indices2>(symbol2)..., '\0'};
     }
 
 
     /**
-     * @brief Returns suffix array string.
+     * @brief Create empty symbol.
+     *
+     * @return Empty array (only '\0').
      */
-    static constexpr StaticArray<char, 1> concat() noexcept
+    static constexpr StaticArray<char, 1> createSymbol() noexcept
     {
         return {'\0'};
     }
 
 
     /**
-     * @brief Returns suffix array string.
+     * @brief Create symbol from single symbol.
+     *
+     * @tparam N1 Length of the symbol.
+     *
+     * @param symbol Source symbol.
      */
     template<unsigned long N1>
-    static constexpr StaticArray<char, N1> concat(const StaticArray<char, N1>& a1) noexcept
+    static constexpr StaticArray<char, N1> createSymbol(StaticArray<char, N1> symbol) noexcept
     {
-        return a1;
+        return symbol;
     }
 
 
     /**
-     * @brief Returns suffix array string.
+     * @brief Create symbol from two symbols.
+     *
+     * @tparam N1 Length of the first symbol.
+     * @tparam N2 Length of the second symbol.
+     *
+     * @param symbol1 The first symbol.
+     * @param symbol2 The second symbol.
+     *
+     * @return Result symbol.
      */
     template<unsigned long N1, unsigned long N2>
-    static constexpr StaticArray<char, N1 + N2 - 1> concat(const StaticArray<char, N1>& a1, const StaticArray<char, N2>& a2) noexcept
+    static constexpr StaticArray<char, N1 + N2 - 1> createSymbol(
+        const StaticArray<char, N1>& symbol1,
+        const StaticArray<char, N2>& symbol2
+    ) noexcept
     {
-        return concatInner(
-            a1, MakeIntegerSequence<0, N1 - 1>{},
-            a2, MakeIntegerSequence<0, N2 - 1>{}
+        return concat(
+            symbol1, MakeIntegerSequence<0, N1 - 1>{},
+            symbol2, MakeIntegerSequence<0, N2 - 1>{}
         );
     }
 
 
     /**
-     * @brief Returns suffix array string.
+     * @brief Create symbol from three symbols.
+     *
+     * @tparam N1 Length of the first symbol.
+     * @tparam N2 Length of the second symbol.
+     * @tparam N3 Length of the third symbol.
+     *
+     * @param symbol1 The first symbol.
+     * @param symbol2 The second symbol.
+     * @param symbol3 The third symbol.
+     *
+     * @return Result symbol.
      */
     template<unsigned long N1, unsigned long N2, unsigned long N3>
-    static constexpr StaticArray<char, N1 + N2 + N3 - 2> concat(
-        const StaticArray<char, N1>& a1, const StaticArray<char, N2>& a2,
-        const StaticArray<char, N3>& a3) noexcept
+    static constexpr StaticArray<char, N1 + N2 + N3 - 2> createSymbol(
+        const StaticArray<char, N1>& symbol1,
+        const StaticArray<char, N2>& symbol2,
+        const StaticArray<char, N3>& symbol3) noexcept
     {
-        return concat(a1, concat(a2, a3));
+        return createSymbol(symbol1, createSymbol(symbol2, symbol3));
     }
 
 
@@ -560,77 +626,118 @@ struct Symbol<List<Types...>>
      * @brief Returns suffix array string.
      */
 #if 0
+    // TODO: support for more symbols
     template<unsigned long N1, typename... Arrays>
-    static constexpr auto concat(const StaticArray<char, N1>& a1, Arrays... arrays) noexcept -> decltype(concat(a1, concat(arrays...)))
+    static constexpr auto createSymbol(const StaticArray<char, N1>& a1, Arrays&&... arrays) noexcept
+        -> decltype(createSymbol(a1, createSymbol(std::forward<Arrays>(arrays)...)))
     {
-        return concat(a1, concat(arrays...));
+        static_assert(sizeof...(Arrays) > 2, "Damn");
+
+        return createSymbol(a1, createSymbol(std::forward<Arrays>(arrays)...));
     }
 #endif
 
+
     /**
-     * @brief Returns suffix array string.
+     * @brief Returns symbol character array.
+     *
+     * @return
      */
     static constexpr StaticArray<char, length> get() noexcept
     {
-        return concat(Types::get()...);
+        return createSymbol(Types::get()...);
     }
 };
 
 /* ************************************************************************ */
 
+/**
+ * @brief Symbol for unit type.
+ *
+ * @tparam Nominators   List of nominators.
+ * @tparam Denominators List of denominators.
+ */
 template<typename... Nominators, typename... Denominators>
 struct Symbol<List<Nominators...>, List<Denominators...>>
 {
+    /// Nominators symbol.
     using SymbolNominators = Symbol<typename SymbolGrouper<List<Nominators...>>::type>;
+
+    /// Denominators symbol.
     using SymbolDenominators = Symbol<typename SymbolGrouper<List<Denominators...>>::type>;
 
-    static constexpr unsigned int nomSize = SymbolNominators::length;
-    static constexpr unsigned int denomSize = SymbolDenominators::length;
 
-    /// Symbol size with '\0'.
-    static constexpr unsigned int length = nomSize + (denomSize == 1 ? 0 : denomSize);
+    /// Length of nominator symbol.
+    static constexpr unsigned int nomLength = SymbolNominators::length;
+
+    /// Length of denominator symbol.
+    static constexpr unsigned int denomLength = SymbolDenominators::length;
+
+    /// Total symbol length.
+    static constexpr unsigned int length = nomLength + (denomLength == 1 ? 0 : denomLength);
 
 
     /**
-     * @brief Returns suffix array string.
+     * @brief Concatenate nominator and denominator symbols.
+     *
+     * @tparam IndicesNom   Indices for nominator symbol.
+     * @tparam IndicesDenom Indices for denominator symbol.
+     *
+     * @param nominatorSymbol   Nominator symbol.
+     * @param denominatorSymbol Denominator symbol.
+     *
+     * @return Result symbol.
      */
-    template<int... I1, int... I2>
+    template<int... IndicesNom, int... IndicesDenom>
     static constexpr StaticArray<char, length> concat(
-        const StaticArray<char, nomSize>& a1,
-        IntegerSequence<I1...>,
-        const StaticArray<char, denomSize>& a2,
-        IntegerSequence<I2...>
+        const StaticArray<char, nomLength>& nominatorSymbol,
+        IntegerSequence<IndicesNom...>,
+        const StaticArray<char, denomLength>& denominatorSymbol,
+        IntegerSequence<IndicesDenom...>
     ) noexcept
     {
-        return {std::get<I1>(a1)..., '/', std::get<I2>(a2)..., '\0'};
+        return {
+            std::get<IndicesNom>(nominatorSymbol)...,
+            '/',
+            std::get<IndicesDenom>(denominatorSymbol)...,
+            '\0'
+        };
     }
 
 
     /**
-     * @brief Returns suffix array string.
+     * @brief Create symbol without denominator symbol.
+     *
+     * @tparam IndicesNom Indices for nominator symbol.
+     *
+     * @param nominatorSymbol   Nominator symbol.
+     *
+     * @return Result symbol.
      */
-    template<int... I1>
-    static constexpr StaticArray<char, nomSize> concat(
-        const StaticArray<char, nomSize>& a1,
-        IntegerSequence<I1...>,
+    template<int... IndicesNom>
+    static constexpr StaticArray<char, nomLength> concat(
+        const StaticArray<char, nomLength>& nominatorSymbol,
+        IntegerSequence<IndicesNom...>,
         const StaticArray<char, 1>&,
         IntegerSequence<>
     ) noexcept
     {
-        return {std::get<I1>(a1)..., '\0'};
+        return {std::get<IndicesNom>(nominatorSymbol)..., '\0'};
     }
 
 
     /**
-     * @brief Returns suffix array string.
+     * @brief Returns symbol character array.
+     *
+     * @return
      */
     static constexpr StaticArray<char, length> get() noexcept
     {
         return concat(
             SymbolNominators::get(),
-            MakeIntegerSequence<0, nomSize - 1>{},
+            MakeIntegerSequence<0, nomLength - 1>{},
             SymbolDenominators::get(),
-            MakeIntegerSequence<0, denomSize - 1>{}
+            MakeIntegerSequence<0, denomLength - 1>{}
         );
     }
 };
