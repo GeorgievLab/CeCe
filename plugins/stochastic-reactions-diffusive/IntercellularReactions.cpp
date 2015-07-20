@@ -81,7 +81,8 @@ void IntercellularReactions::refreshPropensities(
 {
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {
-        if (m_rules[i][index].requirement != 0)
+        if (m_rules[i][index].requirement ||
+            m_rules[i][index].env_requirement)
         {
             propensities[i] = computePropensity(i, cell, diffusion, coords);
         }
@@ -103,14 +104,12 @@ void IntercellularReactions::executeReaction(
         {
             cell.changeMoleculeCount(m_ids[i], change);
             refreshPropensities(i, cell, diffusion, coords);
-            return;
         }
         change = m_rules[index][i].env_product - m_rules[index][i].env_requirement;
         if (change != 0)
         {
             changeMoleculesInEnvironment(m_ids[i], change, diffusion, coords);
             refreshPropensities(i, cell, diffusion, coords);
-            return;
         }
     }
 }
@@ -174,10 +173,11 @@ void IntercellularReactions::extendAbsorption(const DynamicArray<String>& ids_pl
         unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
         if (index == array.size())
         {
-            array.push_back(ReqProd{0,0,1,0});
+            array.push_back(ReqProd{0,1,1,0});
             continue;
         }
-        array[index].env_product += 1;
+        array[index].env_requirement += 1;
+        array[index].product += 1;
     }
     m_rates.push_back(rate);
     m_rules.push_back(array);
@@ -200,10 +200,11 @@ void IntercellularReactions::extendExpression(const DynamicArray<String>& ids_mi
         unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
         if (index == array.size())
         {
-            array.push_back(ReqProd{0,0,0,1});
+            array.push_back(ReqProd{1,0,0,1});
             continue;
         }
-        array[index].env_requirement += 1;
+        array[index].env_product += 1;
+        array[index].requirement += 1;
     }
     m_rates.push_back(rate);
     m_rules.push_back(array);
