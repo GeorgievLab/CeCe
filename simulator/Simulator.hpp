@@ -192,13 +192,13 @@ private:
     /// Flag if thread is running
     std::atomic<bool> m_isRunning{false};
 
-    /// Current simulation
-    UniquePtr<Simulation> m_simulation;
-
 #if ENABLE_RENDER
     /// Rendering context.
     render::Context m_renderContext;
 #endif
+
+    /// Current simulation
+    UniquePtr<Simulation> m_simulation;
 
 };
 
