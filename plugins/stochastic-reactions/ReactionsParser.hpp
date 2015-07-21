@@ -113,7 +113,7 @@ public:
     TokenType tokenize()
     {
         // Skip whitespaces
-        while (isRange('\0', ' '))
+        while (isRange('\1', ' '))
             next();
 
         // Skip comments
@@ -121,7 +121,7 @@ public:
         {
             find('\n', '\r');
 
-            while (isRange('\0', ' '))
+            while (isRange('\1', ' '))
                 next();
         }
 
