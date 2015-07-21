@@ -135,11 +135,6 @@ protected:
         {
             if (ids_minus[i] == "null")
                 continue;
-            if (ids_minus[i] == "env")
-            {
-                Log::warning("ENV tag must be alone.");
-                return;
-            }
             unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
             if (index == array.size())
             {
@@ -152,11 +147,6 @@ protected:
         {
             if (ids_plus[i] == "null")
                 continue;
-            if (ids_plus[i] == "env")
-            {
-                Log::warning("ENV tag must be alone.");
-                return;
-            }
             unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
             if (index == array.size())
             {

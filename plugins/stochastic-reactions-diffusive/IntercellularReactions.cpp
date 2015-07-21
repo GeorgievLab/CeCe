@@ -50,7 +50,7 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
                 throw InvalidArgumentException("Unknown signal molecule '" + m_ids[i] + "' in diffusion");
 
             unsigned int number = getAmountOfMolecules(*diffusion, coords, id);
-            if (m_rules[index][i].requirement > number)
+            if (m_rules[index][i].env_requirement > number)
                 return 0;
             local *= number;
         }
@@ -211,7 +211,7 @@ void IntercellularReactions::extendExpression(const DynamicArray<String>& ids_mi
 
 void IntercellularReactions::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
 {
-    if (!ids_minus.empty() && ids_minus[0] == "env")
+    if (std::find(ids_minus.begin(), ids_minus.end(), "env") != ids_minus.end())
     {
         if (ids_minus.size() == 1)
             extendAbsorption(ids_plus, rate);
@@ -220,7 +220,7 @@ void IntercellularReactions::extend(const DynamicArray<String>& ids_plus, const 
         return;
     }
 
-    if (!ids_plus.empty() && ids_plus[0] == "env")
+    if (std::find(ids_plus.begin(), ids_plus.end(), "env") != ids_plus.end())
     {
         if (ids_plus.size() == 1)
             extendExpression(ids_minus, rate);
