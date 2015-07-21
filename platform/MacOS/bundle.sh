@@ -24,8 +24,8 @@ echo "" > $DEBUG_FILE
 #
 function debug()
 {
-    echo -e $1 >> $DEBUG_FILE
-    #:
+    #echo -e $1 >> $DEBUG_FILE
+    :
 }
 
 #
