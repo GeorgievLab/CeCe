@@ -52,7 +52,7 @@ inline namespace core {
 /**
  * @brief Base parser exception.
  */
-class ParserException: public Exception {};
+DEFINE_PARSER_EXCEPTION_BASE(ParserException, Exception, "Parser error");
 
 /* ************************************************************************ */
 
