@@ -12,47 +12,50 @@
 // GTest
 #include <gtest/gtest.h>
 
-// Module
+// Plugin
 #include "../ReactionsParser.hpp"
+#include "../IntracellularReactions.hpp"
 
+/* ************************************************************************ */
+
+using namespace plugin::stochastic_reactions;
 
 /* ************************************************************************ */
 
 /**
  * @brief Compare source code with expected reaction values.
  *
- * @param line  Source test line.
- * @param code  Code to parse.
- * @param names Expected names in code.
- * @param rates Expected rates in code.
- * @param rules Expected rules in code.
+ * @param line      Source test line.
+ * @param code      Code to parse.
+ * @param names     Expected names in code.
+ * @param rates     Expected rates in code.
+ * @param reactions Expected reactions in code.
  */
 static void test_impl(int line, const String& code, std::initializer_list<String> names,
-    std::initializer_list<float> rates, std::initializer_list<std::initializer_list<int>> rules)
+    std::initializer_list<float> rates, std::initializer_list<std::initializer_list<int>> reactions)
 {
     std::cout << "@" << line << ": `" << code << "`\n";
 
-    // TODO: Waiting for usable Reaction API.
-    ASSERT_TRUE(false);
-/*
     // Parse code
-    auto reaction = ReactionParserIntracellular(code).parse();
+    auto reaction = ReactionsParser<IntracellularReactions>(code).parse();
 
     // Reaction IDs
-    ASSERT_EQ(names.size(), reaction.m_ids.size());
+    ASSERT_EQ(names.size(), reaction.getMoleculeCount());
 
     for (auto it = names.begin(); it != names.end(); ++it)
-        EXPECT_EQ(*it, reaction.m_ids[it - names.begin()]);
+        EXPECT_EQ(*it, reaction.getMoleculeName(it - names.begin()));
 
     // Reaction rates
-    ASSERT_EQ(rates.size(), reaction.m_rates.size());
+    ASSERT_EQ(rates.size(), reaction.getRateCount());
 
     for (auto it = rates.begin(); it != rates.end(); ++it)
-        EXPECT_EQ(*it, reaction.m_rates[it - rates.begin()]);
+        EXPECT_EQ(*it, reaction.getRate(it - rates.begin()));
 
     // Reaction table
-    ASSERT_EQ(rules.size(), reaction.m_rules.size());
+    ASSERT_EQ(reactions.size(), reaction.getReactionCount());
 
+    // TODO: test reactions
+/*
     for (auto it = rules.begin(); it != rules.end(); ++it)
     {
         const auto& row = reaction.m_rules[it - rules.begin()];
@@ -76,22 +79,17 @@ static void test_invalid_impl(int line, const String& code)
 {
     std::cout << "@" << line << ": `" << code << "`\n";
 
-    // TODO: Waiting for usable Reaction API.
-    ASSERT_TRUE(false);
-
-/*
     // Parse code
-    auto reaction = ReactionParserIntracellular(code).parse();
+    auto reaction = ReactionsParser<IntracellularReactions>(code).parse();
 
     // Reaction IDs
-    EXPECT_EQ(0, reaction.m_ids.size());
+    EXPECT_EQ(0, reaction.getMoleculeCount());
 
     // Reaction rates
-    ASSERT_EQ(0, reaction.m_rates.size());
+    ASSERT_EQ(0, reaction.getRateCount());
 
     // Reaction table
-    ASSERT_EQ(0, reaction.m_rules.size());
-*/
+    ASSERT_EQ(0, reaction.getReactionCount());
 }
 
 /* ************************************************************************ */

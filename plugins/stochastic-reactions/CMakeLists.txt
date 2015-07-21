@@ -27,7 +27,7 @@ build_plugin(stochastic-reactions
 build_test(stochastic-reactions
     SOURCES
         test/test.cpp
-        test/ParserTest.cpp
+        test/ReactionsParserTest.cpp
     PLUGINS_REQUIRED
         stochastic-reactions
 )
