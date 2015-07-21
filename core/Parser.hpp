@@ -347,6 +347,9 @@ protected:
     void requireNext(Values&&... values)
     {
         require<ExceptionType>(std::forward<Values>(values)...);
+
+        // Next token
+        next();
     }
 
 
