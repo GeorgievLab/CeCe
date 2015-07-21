@@ -17,17 +17,27 @@
         YFP > 0.5 > env;
 ]]>
     </program>
+    <program name="make-bfp" language="stochastic-reactions-diffusive">
+<![CDATA[
+        env > 0.4 > GFP;
+        env > 0.4 > RFP;
+        GFP + RFP > 0.5 > BFP;
+        BFP > 0.5 > env;
+]]>
+    </program>
     <module name="diffusion" grid="200">
         <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" />
         <signal name="RFP" diffusion-rate="50um2/s" color="red" />
         <signal name="YFP" diffusion-rate="50um2/s" color="yellow" />
+        <signal name="BFP" diffusion-rate="50um2/s" color="blue" />
     </module>
     <module name="object-generator">
         <object class="cell.Yeast" probability="0.002" programs="make-gfp" />
         <object class="cell.Yeast" probability="0.005" programs="make-rfp" />
         <object class="cell.Yeast" probability="0.005" programs="make-yfp" />
+        <object class="cell.Yeast" probability="0.005" programs="make-bfp" />
     </module>
-    <module name="streamlines" grid="100" velocity-inflow="200um/s" kinematic-viscosity="6.58um2/s" />
+    <module name="streamlines" grid="100" velocity-inflow="200um/s" kinematic-viscosity="60.58um2/s" />
     <module name="diffusion-streamlines" />
     <object class="cell.Cell" type="static" volume="2000um3" />
 
@@ -41,7 +51,7 @@
     <object class="cell.Yeast" position="-40um 30um" programs="make-rfp" />
     <object class="cell.Yeast" position="-40um -30um" programs="make-yfp" />
 
-    <obstacle type="rectangle" position="0 45um" size="100um 10um" />
-    <obstacle type="rectangle" position="0 -45um" size="100um 10um" />
+    <obstacle type="rectangle" position="0 49um" size="100um 5um" />
+    <obstacle type="rectangle" position="0 -49um" size="100um 5um" />
 </simulation>
 
