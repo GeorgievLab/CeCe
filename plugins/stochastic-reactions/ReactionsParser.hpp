@@ -288,7 +288,7 @@ public:
                     reactions.addCondition(conditions[i].first, conditions[i].second);
                 }
             }
-            catch (const ParserException ex)
+            catch (const Exception& ex)
             {
                 Log::warning(ex.what());
                 find(TokenCode::Semicolon);
@@ -329,6 +329,7 @@ protected:
 
     DynamicArray<String> parseList()
     {
+        // TODO: "ID + > ..." ????
         DynamicArray<String> array;
         if (!is(TokenCode::Identifier))
             throw MissingIdentifierException();
