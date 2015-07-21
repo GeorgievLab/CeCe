@@ -47,8 +47,13 @@ target_link_libraries(${PROJECT_NAME}
     simulator
     parser-xml
     ${RENDER_LIBS}
-    -pthread
 )
+
+if (UNIX AND NOT APPLE)
+    target_link_libraries(${PROJECT_NAME}
+        -pthread
+    )
+endif ()
 
 # Setup dependencies
 add_dependencies(${PROJECT_NAME}
@@ -60,5 +65,15 @@ install(TARGETS ${PROJECT_NAME}
     BUNDLE  DESTINATION ${INSTALL_DIR_BUNDLE}
     RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
 )
+
+# Fixup shared libraries for bundle
+if (APPLE)
+    install(CODE "
+        execute_process(COMMAND
+            ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle.sh
+            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
+        )
+    " COMPONENT Runtime)
+endif ()
 
 # ######################################################################### #

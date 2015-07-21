@@ -15,7 +15,11 @@
 #endif
 
 #ifdef ENABLE_RENDER
+#ifdef __linux__
 #include <GL/glut.h>
+#elif __APPLE__ && __MACH__
+#include <GLUT/glut.h>
+#endif
 #endif
 
 // Simulator

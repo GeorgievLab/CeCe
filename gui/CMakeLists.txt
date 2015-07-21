@@ -94,12 +94,4 @@ if (APPLE)
     " COMPONENT Runtime)
 endif ()
 
-# Fixup bundle on MacOS X
-#if (APPLE)
-#    install(CODE "
-#        include(BundleUtilities)
-#        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app\" \"\" \"/usr/local/lib\")
-#    " COMPONENT Runtime)
-#endif ()
-
 # ######################################################################### #
