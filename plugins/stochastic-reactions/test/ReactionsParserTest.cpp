@@ -151,7 +151,7 @@ TEST(Parser, assembly)
 {
     test(
         "A +B\n> 0.5\t> C;\n"
-        "D + A + N32 > 1 > A61",
+        "D + A + N32 > 1 > A61;",
         {"A", "B", "C", "D", "N32", "A61"},
         {0.5, 1},
         {{-1, -1, +1,  0,  0,  0},
@@ -168,6 +168,25 @@ TEST(Parser, disassembly)
         {"A", "B", "XNa0"},
         {0.5},
         {{-1, +1, +1}}
+    );
+}
+
+/* ************************************************************************ */
+
+TEST(Parser, newline)
+{
+    test(
+        "A -> 0.5 -> B;\n",
+        {"A", "B"},
+        {0.5},
+        {{-1, +1}}
+    );
+
+    test(
+        "A\n+ C\n ->0.5\n -> B\n;\n",
+        {"A", "C", "B"},
+        {0.5},
+        {{-1, -1, +1}}
     );
 }
 
@@ -192,12 +211,18 @@ TEST(Parser, invalid)
     test_invalid("A > 0.3 >;");
     test_invalid("A > B;");
 
+    // Invalid identifier list
     test_invalid("A + > 0.1 > D;");
     test_invalid(" + > 0.1 > D;");
     test_invalid(" + B > 0.1 > D;");
     test_invalid("A + B + > 0.1 > D;");
     test_invalid("A + B > 0.1 > C +;");
     test_invalid("A + B + C> 0.1 > + D +E;");
+
+    // Missing semicolon
+    test_invalid("A + B -> 0.3 > D");
+    test_invalid("A + B -> 0.3 -> D + N");
+    test_invalid("A + B -> 0.3 -> D + N\nA + O -> 3 > N;");
 }
 
 /* ************************************************************************ */
