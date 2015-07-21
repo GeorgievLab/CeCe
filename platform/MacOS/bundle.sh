@@ -16,8 +16,8 @@ SOURCE_DIR=/usr/local
 # Directory of the binary
 DIRECTORY=`dirname $1`
 
-DEBUG_FILE="update.log"
-echo "" > $DEBUG_FILE
+#DEBUG_FILE="update.log"
+#echo "" > $DEBUG_FILE
 
 #
 # Debug print
@@ -83,7 +83,7 @@ function follow_symlink()
 #
 # $1: Path to binary/library.
 #
-function fix_libraries()
+function fix_binary()
 {
     local BUNDLE_PATH="${DIRECTORY}/${FRAMEWORKS}"
 
@@ -131,7 +131,7 @@ function fix_libraries()
                     cp "${REALPATH}" "${BUNDLE_PATH}"
 
                     # Recursive fix
-                    fix_libraries $FILEPATH
+                    fix_binary $FILEPATH
                 fi
 
                 debug "SYSTEM:\ninstall_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY}\n"
@@ -148,7 +148,7 @@ function fix_libraries()
             install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY}
 
             # Recursive fix
-            fix_libraries $BUNDLE_PATH/$LIBRARY
+            fix_binary $BUNDLE_PATH/$LIBRARY
         fi
     done
 
@@ -156,6 +156,6 @@ function fix_libraries()
 }
 
 # Source binary
-fix_libraries $1 $1
+fix_binary $1
 
 # ######################################################################### #
