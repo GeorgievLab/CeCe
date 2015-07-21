@@ -274,12 +274,12 @@ public:
                 if (reversible)
                 {
                     rateR = parseRate();
-                    require(TokenCode::Comma);
+                    requireNext(TokenCode::Comma);
                 }
                 rate = parseRate();
-                require(TokenCode::ArrowFwrd);
+                requireNext(TokenCode::ArrowFwrd);
                 auto ids_plus = parseList();
-                require(TokenCode::Semicolon);
+                requireNext(TokenCode::Semicolon);
                 reactions.extend(ids_plus, ids_minus, rate);
                 if (reversible)
                     reactions.extend(ids_minus, ids_plus, rateR);
@@ -304,7 +304,9 @@ protected:
     // Use parent's member functions
     using ParentType::is;
     using ParentType::next;
+    using ParentType::match;
     using ParentType::require;
+    using ParentType::requireNext;
     using ParentType::getTokenizer;
     using ParentType::token;
     using ParentType::find;
