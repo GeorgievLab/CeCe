@@ -11,6 +11,9 @@
 
 #pragma once
 
+// C++
+#include <random>
+
 #include "core/Units.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Log.hpp"
