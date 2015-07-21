@@ -69,6 +69,7 @@
     <File Name="StringView.hpp"/>
     <File Name="Tokenizer.hpp"/>
     <File Name="Parser.hpp"/>
+    <File Name="Real.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

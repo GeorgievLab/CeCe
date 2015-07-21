@@ -20,7 +20,7 @@ project(cell-sim)
 
 # ######################################################################### #
 
-# Applicatio version
+# Application version
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 3)
 set(VERSION_PATCH 0)
@@ -52,6 +52,10 @@ option(BUILD_TESTS                  "Build simulator part tests (requires GTest)
 option(BUILD_TOOLS                  "Build support tools" Off)
 
 option(DEV_PLUGINS                  "Enable special mode for developers that helps develop plugins (doesn't require installation)" Off)
+
+# Real type
+set(CONFIG_REAL_TYPE "float" CACHE STRING "Type used for real values")
+set_property(CACHE CONFIG_REAL_TYPE PROPERTY STRINGS "float" "double" "long double")
 
 # ######################################################################### #
 
@@ -199,6 +203,10 @@ if (BUILD_TESTS)
     find_package(GTest REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
 endif ()
+
+# Set real type
+message(STATUS "Real type: ${CONFIG_REAL_TYPE}")
+add_definitions(-DREAL_TYPE=${CONFIG_REAL_TYPE})
 
 # ######################################################################### #
 

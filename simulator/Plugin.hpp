@@ -13,7 +13,7 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
+#include "core/Real.hpp"
 #include "core/String.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Map.hpp"
@@ -131,13 +131,46 @@
 /* ************************************************************************ */
 
 /**
+ * @brief Prototype of function for returning plugin real type size.
+ *
+ * @param name Plugin name.
+ */
+#define PLUGIN_REAL_SIZE_PROTOTYPE(name) \
+    extern "C" unsigned int PLUGIN_PROTOTYPE_NAME(real_size, name)()
+
+/* ************************************************************************ */
+
+/**
+ * @brief Declare function for returning plugin real type size.
+ *
+ * @param name Plugin name.
+ */
+#define DECLARE_PLUGIN_REAL_SIZE(name) PLUGIN_REAL_SIZE_PROTOTYPE(name)
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define function for returning plugin real type size.
+ *
+ * @param name Plugin name.
+ */
+#define DEFINE_PLUGIN_REAL_SIZE(name) \
+    PLUGIN_REAL_SIZE_PROTOTYPE(name) \
+    { \
+        return sizeof(RealType); \
+    }
+
+/* ************************************************************************ */
+
+/**
  * @brief Declare plugin functions.
  *
  * @param name Plugin name.
  */
 #define DECLARE_PLUGIN(name) \
     DECLARE_PLUGIN_CREATE(name); \
-    DECLARE_PLUGIN_API_VERSION(name)
+    DECLARE_PLUGIN_API_VERSION(name); \
+    DECLARE_PLUGIN_REAL_SIZE(name)
 
 /* ************************************************************************ */
 
@@ -149,7 +182,8 @@
  */
 #define DEFINE_PLUGIN(name, className) \
     DEFINE_PLUGIN_CREATE(name, className) \
-    DEFINE_PLUGIN_API_VERSION(name)
+    DEFINE_PLUGIN_API_VERSION(name) \
+    DEFINE_PLUGIN_REAL_SIZE(name)
 
 /* ************************************************************************ */
 
@@ -165,7 +199,7 @@ class Simulation;
 /**
  * @brief Helper class for wrapping plugin.
  */
-class DLL_EXPORT Plugin final
+class Plugin final
 {
 
 // Public Constants
@@ -188,6 +222,9 @@ public:
 
     /// API version function pointer type.
     using ApiVersionFn = int (*)();
+
+    /// Size of real type.
+    using RealSizeFn = unsigned int (*)();
 
 
 // Public Ctors & Dtors

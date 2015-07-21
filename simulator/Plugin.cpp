@@ -201,6 +201,15 @@ Plugin::Plugin(String name, FilePath path)
     if (apiVerFn() != PLUGIN_API_VERSION)
         throw RuntimeException("Plugin API version is different from the simulator");
 
+    // Check real type size
+    auto realSizeFn = m_impl->getAddr<RealSizeFn>("real_size");
+
+    if (!realSizeFn)
+        throw RuntimeException("Plugin doesn't contains 'real_size' function");
+
+    if (realSizeFn() != sizeof(RealType))
+        throw RuntimeException("Plugin real type size is different from the simulator");
+
     auto fn = m_impl->getAddr<CreateFn>("create");
 
     if (!fn)
