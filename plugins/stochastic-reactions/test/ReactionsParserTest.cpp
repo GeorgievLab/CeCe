@@ -191,6 +191,13 @@ TEST(Parser, invalid)
     test_invalid("A > 0.3");
     test_invalid("A > 0.3 >;");
     test_invalid("A > B;");
+
+    test_invalid("A + > 0.1 > D;");
+    test_invalid(" + > 0.1 > D;");
+    test_invalid(" + B > 0.1 > D;");
+    test_invalid("A + B + > 0.1 > D;");
+    test_invalid("A + B > 0.1 > C +;");
+    test_invalid("A + B + C> 0.1 > + D +E;");
 }
 
 /* ************************************************************************ */
