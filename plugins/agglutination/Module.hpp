@@ -104,7 +104,6 @@ private:
     /// List of bodies to join
     // TODO: use Vector<b2Body*, 2>.
     DynamicArray<std::pair<b2Body*, b2Body*>> m_toJoin;
-
 };
 
 /* ************************************************************************ */
