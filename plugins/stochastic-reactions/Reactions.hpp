@@ -14,6 +14,8 @@
 // C++
 #include <random>
 
+#include "core/String.hpp"
+#include "core/StringView.hpp"
 #include "core/Units.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Log.hpp"
@@ -35,6 +37,18 @@ using RateType = long double;
 template<typename T>
 class Reactions
 {
+
+// Public Types
+public:
+
+
+    /// Reaction identifier type.
+    using ReactionId = unsigned int;
+
+    /// Molecule identifier type.
+    using MoleculeId = unsigned int;
+
+
 protected:
 
     using PropensityType = RateType;
@@ -154,6 +168,83 @@ protected:
         m_rates.push_back(rate);
         m_rules.push_back(array);
     }
+
+
+// Public Accessors:
+public:
+
+
+    /**
+     * @brief Returns number different molecules in reactions.
+     *
+     * @return
+     */
+    unsigned int getMoleculeCount() const noexcept
+    {
+        return m_ids.size();
+    }
+
+
+    /**
+     * @brief Check if given molecule is used in reactions.
+     *
+     * @param name Molecule name.
+     *
+     * @return
+     */
+    bool hasMolecule(const StringView& name) const noexcept
+    {
+        return std::find(m_ids.begin(), m_ids.end(), name) != m_ids.end();
+    }
+
+
+    /**
+     * @brief Returns molecule name.
+     *
+     * @param id Molecule identifier.
+     *
+     * @return
+     */
+    StringView getMoleculeName(MoleculeId id) const noexcept
+    {
+        return m_ids[id];
+    }
+
+
+    /**
+     * @brief Returns number of reactions.
+     *
+     * @return
+     */
+    unsigned int getReactionCount() const noexcept
+    {
+        return m_rules.size();
+    }
+
+
+    /**
+     * @brief Returns number of rates.
+     *
+     * @return
+     */
+    unsigned int getRateCount() const noexcept
+    {
+        return m_rates.size();
+    }
+
+
+    /**
+     * @brief Returns reaction rate.
+     *
+     * @param reaction Reaction identifier.
+     *
+     * @return
+     */
+    RateType getRate(ReactionId reaction) const noexcept
+    {
+        return m_rates[reaction];
+    }
+
 };
 
 /* ************************************************************************ */
