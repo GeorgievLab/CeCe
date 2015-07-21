@@ -16,15 +16,16 @@ SOURCE_DIR=/usr/local
 # Directory of the binary
 DIRECTORY=`dirname $1`
 
-#DEBUG_FILE="update.log"
-#echo "" > $DEBUG_FILE
+DEBUG_FILE="update.log"
+echo "" > $DEBUG_FILE
 
 #
 # Debug print
 #
 function debug()
 {
-    #echo -e $1 >> $DEBUG_FILE
+    echo -e $1 >> $DEBUG_FILE
+    #:
 }
 
 #
@@ -56,6 +57,28 @@ function get_dependency()
 }
 
 #
+# Get path to real file from symbolic links.
+#
+# $1: Original file
+#
+function follow_symlink()
+{
+    local LIBRARY=$1
+
+    # Get real path
+    local REALPATH="${LIBRARY}"
+
+    while [ -h "${REALPATH}" ]
+    do
+        local DIR=`dirname ${REALPATH}`
+        local LINK=`readlink ${REALPATH}`
+        REALPATH="${DIR}/${LINK}"
+    done
+
+    echo $REALPATH
+}
+
+#
 # Fix libraries
 #
 # $1: Path to binary/library.
@@ -70,7 +93,9 @@ function fix_libraries()
     debug "START: $BINARY\n"
 
     # Get library ID, is empty for
-    local ID=`get_id $1`
+    local ID=`get_id $BINARY`
+
+    debug "ID = ${ID}"
 
     # Fix binary ID (only shared libraries)
     if [[ -n "${ID}" ]]
@@ -85,23 +110,16 @@ function fix_libraries()
     fi
 
     # Foreach binary dependencies
-    for LIBRARY in `get_dependency ${BINARY}`
+    for LIBRARY in `get_dependency "${ID}" "${BINARY}"`
     do
         # If library contains separator is from system
         if [[ $LIBRARY == *"/"* ]]
         then
-            local BASENAME=`basename ${LIBRARY}`
-            local FILEPATH="${BUNDLE_PATH}/${BASENAME}"
-
             # Get real path
-            local REALPATH="${LIBRARY}"
+            local REALPATH=`follow_symlink "${LIBRARY}"`
 
-            while [ -h "${REALPATH}" ]
-            do
-                local DIR=`dirname ${REALPATH}`
-                local LINK=`readlink ${REALPATH}`
-                REALPATH="${DIR}/${LINK}"
-            done
+            local BASENAME=`basename ${REALPATH}`
+            local FILEPATH="${BUNDLE_PATH}/${BASENAME}"
 
             # Only libraries from sources
             # /usr/local
@@ -123,6 +141,7 @@ function fix_libraries()
                 chmod a-w ${BINARY}
             fi
         else
+
             debug "LOCAL:\ninstall_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${LIBRARY}\n${BINARY}\n"
 
             # Local
