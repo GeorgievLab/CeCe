@@ -327,20 +327,26 @@ protected:
 
 /* ************************************************************************ */
 
+
+    /**
+     * @brief Parse list of identifiers (molecule names).
+     *
+     * @return
+     */
     DynamicArray<String> parseList()
     {
-        // TODO: "ID + > ..." ????
         DynamicArray<String> array;
-        if (!is(TokenCode::Identifier))
-            throw MissingIdentifierException();
-        while (is(TokenCode::Identifier))
+
+        do
         {
+            if (!is(TokenCode::Identifier))
+                throw MissingIdentifierException{};
+
             array.push_back(token().value);
             next();
-            if (!is(TokenCode::Plus))
-                break;
-            next();
         }
+        while (match(TokenCode::Plus));
+
         return array;
     }
 
