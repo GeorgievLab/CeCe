@@ -376,6 +376,9 @@ public:
     /// Source iterator range.
     using SourceRange = Source;
 
+    // Input iterator type.
+    using InputIteratorType = InputIterator;
+
 
 // Public Ctors & Dtors
 public:
@@ -423,6 +426,28 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns tokenizer source range.
+     *
+     * @return
+     */
+    SourceRange& getRange() noexcept
+    {
+        return m_range;
+    }
+
+
+    /**
+     * @brief Returns tokenizer source range.
+     *
+     * @return
+     */
+    const SourceRange& getRange() const noexcept
+    {
+        return m_range;
+    }
 
 
     /**

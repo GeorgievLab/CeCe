@@ -9,14 +9,10 @@
 # Sources
 set(SRCS
     Library.cpp
-    Reaction.hpp
-    Reaction.cpp
-    ReactionIntracellular.hpp
-    ReactionIntracellular.cpp
-    ReactionParser.hpp
-    ReactionParser.cpp
-    ReactionParserIntracellular.hpp
-    ReactionParserIntracellular.cpp
+    Reactions.hpp
+    IntracellularReactions.hpp
+    IntracellularReactions.cpp
+    ReactionsParser.hpp
 )
 
 # Build plugin
@@ -31,7 +27,7 @@ build_plugin(stochastic-reactions
 build_test(stochastic-reactions
     SOURCES
         test/test.cpp
-        test/ParserTest.cpp
+        test/ReactionsParserTest.cpp
     PLUGINS_REQUIRED
         stochastic-reactions
 )

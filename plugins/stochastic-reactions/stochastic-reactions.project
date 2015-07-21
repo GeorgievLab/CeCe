@@ -17,17 +17,13 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Reaction.cpp"/>
     <File Name="Library.cpp"/>
-    <File Name="ReactionParser.cpp"/>
-    <File Name="ReactionIntracellular.cpp"/>
-    <File Name="ReactionParserIntracellular.cpp"/>
+    <File Name="IntracellularReactions.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Reaction.hpp"/>
-    <File Name="ReactionParser.hpp"/>
-    <File Name="ReactionIntracellular.hpp"/>
-    <File Name="ReactionParserIntracellular.hpp"/>
+    <File Name="Reactions.hpp"/>
+    <File Name="IntracellularReactions.hpp"/>
+    <File Name="ReactionsParser.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -125,7 +121,7 @@
   <Dependencies Name="Release"/>
   <VirtualDirectory Name="test">
     <File Name="test/test.cpp"/>
-    <File Name="test/ParserTest.cpp"/>
     <File Name="test/ReactionTest.cpp"/>
+    <File Name="test/ReactionsParserTest.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

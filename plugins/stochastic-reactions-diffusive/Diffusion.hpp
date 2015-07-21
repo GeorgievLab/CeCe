@@ -33,7 +33,7 @@ namespace stochastic_reactions_diffusive {
 DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
     const plugin::diffusion::Module::SizeType& gridSize,
     const SizeVector& worldSize,
-    plugin::cell::CellBase& cell);
+    const plugin::cell::CellBase& cell);
 
 /* ************************************************************************ */
 

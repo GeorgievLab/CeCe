@@ -11,36 +11,50 @@
 
 #pragma once
 
-#include "../stochastic-reactions/Reaction.hpp"
+#include "Reactions.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-class ReactionIntercellular: public stochastic_reactions::Reaction
+struct ReqProd
+{
+    ReqProd() = default;
+    unsigned int requirement = 0;
+    unsigned int product = 0;
+    bool mustnt_have = false;
+    ReqProd(int req, int prod, bool flag = false) noexcept
+    : requirement(req), product(prod), mustnt_have(flag)
+    {
+        // Nothing to do
+    }
+};
+
+class IntracellularReactions: public Reactions<ReqProd>
 {
 protected:
 
-    float computePropensity(const unsigned int index) override;
+    PropensityType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell);
 
-    void executeReaction(const unsigned int index) override;
+    void initializePropensities(const plugin::cell::CellBase& cell);
 
-    void changeMoleculesInEnvironment(const String& id, int change);
+    void refreshPropensities(const unsigned int index, const plugin::cell::CellBase& cell);
 
-    void extendAbsorption(const DynamicArray<String>& ids_plus, const float rate);
-
-    void extendExpression(const DynamicArray<String>& ids_minus, const float rate);
+    void executeReaction(const unsigned int index, plugin::cell::CellBase& cell);
 
 public:
 
-    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const float rate) override;
+    void operator()(simulator::Object& object, simulator::Simulation&, units::Duration step);
 
-    int getIndexOf(const String& id) override;
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate);
 
-    bool areEqualRules(const Reaction& rhs, unsigned int index1, unsigned int index2);
+    void addCondition(const String& id, const unsigned int condition)
+    {
+        // TODO implement
+    }
 };
 
 /* ************************************************************************ */

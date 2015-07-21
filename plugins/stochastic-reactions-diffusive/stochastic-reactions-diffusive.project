@@ -19,13 +19,11 @@
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
     <File Name="Diffusion.cpp"/>
-    <File Name="ReactionIntercellular.cpp"/>
-    <File Name="ReactionParserIntercellular.cpp"/>
+    <File Name="IntercellularReactions.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Diffusion.hpp"/>
-    <File Name="ReactionIntercellular.hpp"/>
-    <File Name="ReactionParserIntercellular.hpp"/>
+    <File Name="IntercellularReactions.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

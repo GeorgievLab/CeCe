@@ -52,7 +52,7 @@ inline namespace core {
 /**
  * @brief Base parser exception.
  */
-class ParserException: public Exception {};
+DEFINE_PARSER_EXCEPTION_BASE(ParserException, Exception, "Parser error");
 
 /* ************************************************************************ */
 
@@ -61,12 +61,10 @@ class ParserException: public Exception {};
  *
  * @tparam Derived    Type of derived parser.
  * @tparam Tokenizer  Type used tokenizer.
- * @tparam ResultType Parser result type.
  */
 template<
     typename Derived,
-    typename Tokenizer,
-    typename ResultType
+    typename Tokenizer
 >
 class BasicParser
 {
@@ -80,7 +78,7 @@ public:
     using TokenType = typename Tokenizer::TokenType;
 
     /// The input iterator type.
-    using InputIterator = typename Tokenizer::InputIterator;
+    using InputIteratorType = typename Tokenizer::InputIteratorType;
 
 
 // Public Ctors & Dtors
@@ -92,9 +90,9 @@ public:
      *
      * @param range Source range.
      */
-    explicit BasicParser(IteratorRange<InputIterator> range) noexcept
+    explicit BasicParser(IteratorRange<InputIteratorType> range) noexcept
         : m_tokenizer{std::move(range)}
-        , m_range{m_tokenizer}
+        , m_range{makeRange(m_tokenizer)}
     {
         // Nothing to do
     }
@@ -106,9 +104,9 @@ public:
      * @param beg Begin iterator.
      * @param end End iterator.
      */
-    BasicParser(InputIterator beg, InputIterator end) noexcept
+    BasicParser(InputIteratorType beg, InputIteratorType end) noexcept
         : m_tokenizer{beg, end}
-        , m_range{m_tokenizer}
+        , m_range{makeRange(m_tokenizer)}
     {
         // Nothing to do
     }
@@ -122,9 +120,35 @@ public:
     template<typename Source>
     explicit BasicParser(Source&& source) noexcept
         : m_tokenizer(std::forward<Source>(source))
-        , m_range{m_tokenizer}
+        , m_range{makeRange(m_tokenizer)}
     {
         // Nothing to do
+    }
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns used tokenizer.
+     *
+     * @return
+     */
+    Tokenizer& getTokenizer() noexcept
+    {
+        return m_tokenizer;
+    }
+
+
+    /**
+     * @brief Returns used tokenizer.
+     *
+     * @return
+     */
+    const Tokenizer& getTokenizer() const noexcept
+    {
+        return m_tokenizer;
     }
 
 
@@ -269,7 +293,7 @@ protected:
     /**
      * @brief Read next token from input range.
      */
-    void next() noexcept
+    void next()
     {
         m_range.advanceBegin();
     }
@@ -278,45 +302,75 @@ protected:
     /**
      * @brief Check if current value match given value.
      *
-     * @tparam Value   Test value type.
-     * @tparam Message Error message type.
+     * @tparam ExceptionType Type of thrown exception.
+     * @tparam Values        Test value types.
      *
-     * @param val Value tested agains current token.
+     * @param values Values tested agains current token.
+     *
+     * @throw ExceptionType If value doesn't match current token.
+     */
+    template<typename ExceptionType, typename... Values>
+    void require(Values&&... values)
+    {
+        if (!is(std::forward<Values>(values)...))
+            fatalError<ExceptionType>();
+    }
+
+
+    /**
+     * @brief Check if current value match given value.
+     *
+     * @tparam Values Test value types.
+     *
+     * @param values Values tested agains current token.
      *
      * @throw ParserException If value doesn't match current token.
      */
-    template<typename Value, typename Message = const char*>
-    void require(Value&& val, Message&& msg = "Required value doesn't match")
+    template<typename... Values>
+    void require(Values&&... values)
     {
-        if (!is(val))
-            fatalError(msg);
+        require<ParserException>(std::forward<Values>(values)...);
+    }
+
+
+    /**
+     * @brief Check if current value match given value and if yes, then call next.
+     *
+     * @tparam ExceptionType Type of thrown exception.
+     * @tparam Values        Test value types.
+     *
+     * @param values Value tested agains current token.
+     *
+     * @throw ExceptionType If value doesn't match current token.
+     */
+    template<typename ExceptionType, typename... Values>
+    void requireNext(Values&&... values)
+    {
+        require<ExceptionType>(std::forward<Values>(values)...);
 
         // Next token
         next();
     }
 
 
+    /**
+     * @brief Check if current value match given value and if yes, then call next.
+     *
+     * @tparam Values Test value types.
+     *
+     * @param values Value tested agains current token.
+     *
+     * @throw ParserException If value doesn't match current token.
+     */
+    template<typename... Values>
+    void requireNext(Values&&... values)
+    {
+        requireNext<ParserException>(std::forward<Values>(values)...);
+    }
+
+
 // Protected Operations
 protected:
-
-
-    /**
-     * @brief Parse tokenizer sequence.
-     *
-     * @note It calls Derived::parse()
-     *
-     * @return Parse result.
-     *
-     * @throw ParserError
-     */
-    ResultType parse()
-    {
-        static_assert(std::is_member_function_pointer<decltype(&Derived::parse)>::value,
-            "Function Derived::parse is required");
-
-        // Call parent's member function
-        return static_cast<Derived*>(this)->parse();
-    }
 
 
     /**
@@ -362,19 +416,18 @@ protected:
 
 
     /**
-     * @brief Write fatal error message.
+     * @brief Throw fatal error.
      *
      * @tparam ExceptionType Exception type.
-     * @tparam Message       Written message type.
      *
-     * @param msg Message.
+     * @param exception Exception to throw.
      *
      * @throw ExceptionType
      */
-    template<typename ExceptionType, typename Message>
-    [[noreturn]] void fatalError(Message&& msg) const
+    template<typename ExceptionType, typename... Args>
+    [[noreturn]] void fatalError(Args&&... args) const
     {
-        throw ExceptionType(msg);
+        throw ExceptionType{std::forward<Args>(args)...};
     }
 
 

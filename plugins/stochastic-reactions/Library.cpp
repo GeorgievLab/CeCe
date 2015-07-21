@@ -14,7 +14,8 @@
 #include "simulator/PluginApi.hpp"
 
 // Reactions
-#include "ReactionParserIntracellular.hpp"
+#include "ReactionsParser.hpp"
+#include "IntracellularReactions.hpp"
 
 /************************************************************************** */
 
@@ -26,7 +27,8 @@ class StochasticReactionsApi : public PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
-        return plugin::stochastic_reactions::ReactionParserIntracellular(code).parse();
+        using namespace plugin::stochastic_reactions;
+        return ReactionsParser<IntracellularReactions>(code).parse();
     }
 };
 

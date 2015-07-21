@@ -11,10 +11,8 @@ set(SRCS
     Library.cpp
     Diffusion.hpp
     Diffusion.cpp
-    ReactionIntercellular.hpp
-    ReactionIntercellular.cpp
-    ReactionParserIntercellular.hpp
-    ReactionParserIntercellular.cpp
+    IntercellularReactions.hpp
+    IntercellularReactions.cpp
 )
 
 # Build plugin
