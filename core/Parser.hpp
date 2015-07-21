@@ -293,7 +293,7 @@ protected:
     /**
      * @brief Read next token from input range.
      */
-    void next() noexcept
+    void next()
     {
         m_range.advanceBegin();
     }
@@ -302,21 +302,67 @@ protected:
     /**
      * @brief Check if current value match given value.
      *
-     * @tparam Value   Test value type.
-     * @tparam Message Error message type.
+     * @tparam ExceptionType Type of thrown exception.
+     * @tparam Values        Test value types.
      *
-     * @param val Value tested agains current token.
+     * @param values Values tested agains current token.
+     *
+     * @throw ExceptionType If value doesn't match current token.
+     */
+    template<typename ExceptionType, typename... Values>
+    void require(Values&&... values)
+    {
+        if (!is(std::forward<Values>(values)...))
+            fatalError<ExceptionType>();
+    }
+
+
+    /**
+     * @brief Check if current value match given value.
+     *
+     * @tparam Values Test value types.
+     *
+     * @param values Values tested agains current token.
      *
      * @throw ParserException If value doesn't match current token.
      */
-    template<typename Value, typename Message = const char*>
-    void require(Value&& val, Message&& msg = "Required value doesn't match")
+    template<typename... Values>
+    void require(Values&&... values)
     {
-        if (!is(val))
-            fatalError(msg);
+        require<ParserException>(std::forward<Values>(values)...);
+    }
 
-        // Next token
-        next();
+
+    /**
+     * @brief Check if current value match given value and if yes, then call next.
+     *
+     * @tparam ExceptionType Type of thrown exception.
+     * @tparam Values        Test value types.
+     *
+     * @param values Value tested agains current token.
+     *
+     * @throw ExceptionType If value doesn't match current token.
+     */
+    template<typename ExceptionType, typename... Values>
+    void requireNext(Values&&... values)
+    {
+        require<ExceptionType>(std::forward<Values>(values)...);
+    }
+
+
+    /**
+     * @brief Check if current value match given value and if yes, then call next.
+     *
+     * @tparam Values Test value types.
+     *
+     * @param values Value tested agains current token.
+     *
+     * @throw ParserException If value doesn't match current token.
+     */
+    template<typename... Values>
+    void requireNext(Values&&... values)
+    {
+        requireNext<ParserException>(std::forward<Values>(values)...);
     }
 
 
@@ -367,49 +413,18 @@ protected:
 
 
     /**
-     * @brief Throw fatal error with given message.
-     *
-     * @tparam Message Written message type.
-     *
-     * @param msg Message.
-     *
-     * @throw ParserException
-     */
-    template<typename Message>
-    [[noreturn]] void fatalError(Message&& msg) const
-    {
-        throw ParserException();
-    }
-
-
-    /**
-     * @brief Throw fatal error with given message.
-     *
-     * @tparam ExceptionType Exception type.
-     * @tparam Message       Written message type.
-     *
-     * @param msg Message.
-     *
-     * @throw ExceptionType
-     */
-    template<typename ExceptionType, typename Message>
-    [[noreturn]] void fatalError(Message&& msg) const
-    {
-        throw ExceptionType(msg);
-    }
-
-
-    /**
      * @brief Throw fatal error.
      *
      * @tparam ExceptionType Exception type.
      *
+     * @param exception Exception to throw.
+     *
      * @throw ExceptionType
      */
-    template<typename ExceptionType>
-    [[noreturn]] void fatalError() const
+    template<typename ExceptionType, typename... Args>
+    [[noreturn]] void fatalError(Args&&... args) const
     {
-        throw ExceptionType();
+        throw ExceptionType{std::forward<Args>(args)...};
     }
 
 
