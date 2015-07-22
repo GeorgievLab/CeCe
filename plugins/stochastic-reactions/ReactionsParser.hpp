@@ -162,6 +162,11 @@ public:
             return TokenType{TokenCode::Comma};
         }
 
+        // In case of invalid character, generate invalid token, but
+        // move to next character, so we don't keep trying to create
+        // a token from same character
+        next();
+
         return TokenType{};
     }
 
@@ -270,7 +275,6 @@ public:
                 RateType rate;
                 RateType rateR;
                 bool reversible = is(TokenCode::ArrowBack);
-                next();
                 if (reversible)
                 {
                     rateR = parseRate();
