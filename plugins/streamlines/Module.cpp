@@ -183,9 +183,6 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
     const PositionVector start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / m_lattice.getSize();
 
-    DynamicArray<Coordinate> coords;
-    coords.reserve(256);
-
     // Foreach all cells
     for (auto& obj : simulation.getObjects())
     {
@@ -199,31 +196,24 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
         // Get grid position
         const auto coord = Coordinate(pos / step);
 
-        coords.clear();
-        const auto& shapes = obj->getShapes();
-        auto coordIt = std::back_inserter(coords);
-
-        // TODO: change to something that doesn't require container
-        // function mapShapeToGrid should call function that does
-        // required operation
-
-        // Map shapes to grid
-        for (const auto& shape : shapes)
-        {
-            coordIt = mapShapeToGrid(coordIt, shape, step, coord, obj->getRotation(), m_lattice.getSize());
-        }
+        // Calculate object velocity in LB
+        const auto velocity = obj->getVelocity() / v_max;
 
         // In this case duplicate coordinates doesn't harm and calling
         // operation multiple times on same coordinate is faster than
         // sorting and erasing non-unique coordinates.
 
-        // Calculate object velocity in LB
-        const auto velocity = obj->getVelocity() / v_max;
-
-        for (const auto& c : coords)
+        // Map shapes to grid
+        for (const auto& shape : obj->getShapes())
         {
-            assert(m_lattice.inRange(c + 1));
-            m_lattice[c + 1].setDynamicObstacle(true, velocity);
+            mapShapeToGrid(
+                [this, &velocity] (Coordinate&& coord) {
+                    assert(m_lattice.inRange(coord + 1));
+                    m_lattice[coord + 1].setDynamicObstacle(true, velocity);
+                },
+                [] (Coordinate&& coord) {},
+                shape, step, coord, obj->getRotation(), m_lattice.getSize()
+            );
         }
     }
 }
@@ -235,8 +225,15 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
     const PositionVector start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / m_lattice.getSize();
 
-    DynamicArray<Coordinate> coords;
-    coords.reserve(256);
+    // Velocity profile
+    const auto size = m_lattice.getRealSize();
+    const auto velocity = getVelocityInflow();
+
+    auto computePoiseuille = [&size, velocity](int i) {
+        const float y = (float) (i - 1);
+        const float L = (float) (size.getHeight() - 1);
+        return 4.f * velocity.getX() / (L * L) * (L * y - y * y);
+    };
 
     // Foreach objects
     for (auto& obj : simulation.getObjects())
@@ -258,24 +255,26 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
         // Map shapes border to grid
         for (const auto& shape : obj->getShapes())
         {
-            coords.clear();
-            auto coordIt = std::back_inserter(coords);
-            coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, m_lattice.getSize(), {}, 5);
+            VelocityVector velocity = Zero;
+            unsigned long count = 0;
 
-            // NOTE: Function should return only unique coordinates.
-
-            // Sum of the velocities
-            VelocityVector velocity = std::accumulate(coords.begin(), coords.end(),
-                VelocityVector{Zero},
-                [&v_max, this](VelocityVector& init, const Coordinate& c) {
-                    return init + m_lattice[c + 1].calcVelocityNormalized() * v_max;
-                }
+            // Store velocity for each coordinate
+            mapShapeBorderToGrid(
+                [this, &velocity, &v_max, &count] (Coordinate&& coord) {
+                    velocity += m_lattice[coord + 1].calcVelocityNormalized() * v_max;
+                    ++count;
+                },
+                [this, &velocity, &count, &computePoiseuille] (Coordinate&& coord) {
+                    velocity += VelocityVector{computePoiseuille(coord.getY()), Zero};
+                    ++count;
+                },
+                shape, step, coord, m_lattice.getSize(), {}, 5
             );
 
-            assert(!coords.empty());
+            assert(count);
 
             // Average
-            velocity = velocity / coords.size();
+            velocity /= count;
 
             // Difference between velocities
             const auto dv = velocity - obj->getVelocity();
