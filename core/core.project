@@ -163,5 +163,7 @@
     <File Name="test/UnitsTest.cpp"/>
     <File Name="test/ExpressionParserTest.cpp"/>
     <File Name="test/StringViewTest.cpp"/>
+    <File Name="test/VectorTest.cpp"/>
+    <File Name="test/VectorUnitsTest.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

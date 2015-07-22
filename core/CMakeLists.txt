@@ -79,6 +79,8 @@ build_test(core
         test/IteratorRangeTest.cpp
         test/UnitsTest.cpp
         test/StringViewTest.cpp
+        test/VectorTest.cpp
+        test/VectorUnitsTest.cpp
         test/ExpressionParserTest.cpp
         ExpressionParser.hpp
         ExpressionParser.cpp
