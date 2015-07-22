@@ -16,7 +16,6 @@
 #include <algorithm>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/String.hpp"
 #include "core/Units.hpp"
 #include "core/Grid.hpp"
@@ -28,6 +27,10 @@
 #include "render/Context.hpp"
 #include "render/Object.hpp"
 #include "render/GridColorSmooth.hpp"
+#endif
+
+#ifdef THREAD_SAFE
+#include "core/Mutex.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -396,6 +399,19 @@ public:
     }
 
 
+#ifdef THREAD_SAFE
+    /**
+     * @brief Returns module mutex.
+     *
+     * @return
+     */
+    Mutex& getMutex() noexcept
+    {
+        return m_mutex;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -701,6 +717,11 @@ private:
 
     /// Drawable signal grid.
     render::ObjectPtr<render::GridColorSmooth> m_drawable;
+#endif
+
+#ifdef THREAD_SAFE
+    /// Access mutex.
+    Mutex m_mutex;
 #endif
 
 };

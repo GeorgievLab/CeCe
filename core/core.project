@@ -70,6 +70,7 @@
     <File Name="Tokenizer.hpp"/>
     <File Name="Parser.hpp"/>
     <File Name="Real.hpp"/>
+    <File Name="Mutex.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -121,6 +121,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Precompute values
     const auto step = simulation.getWorldSize() / getGridSize();
 
+#ifdef THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
+#endif
+
     // Update all signals
     // TODO: use OpenMP
     for (auto id : getSignalIds())
@@ -187,6 +192,11 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 void Module::updateDrawable() const
 {
     assert(getGridSize() == m_drawable->getSize());
+
+#ifdef THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
+#endif
 
     // Foreach grid
     for (auto&& c : range(getGridSize()))

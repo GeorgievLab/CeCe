@@ -57,6 +57,9 @@ option(DEV_PLUGINS                  "Enable special mode for developers that hel
 set(CONFIG_REAL_TYPE "float" CACHE STRING "Type used for real values")
 set_property(CACHE CONFIG_REAL_TYPE PROPERTY STRINGS "float" "double" "long double")
 
+# If simulator should be thread safe
+set(THREAD_SAFE Off)
+
 # ######################################################################### #
 
 # List of plugins values
@@ -154,6 +157,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 if (ENABLE_GUI)
     message(STATUS "Build GUI application")
     set(ENABLE_RENDER 1)
+    set(THREAD_SAFE On)
 else ()
     # If GUI is disabled build CLI
     set(ENABLE_CLI 1)
@@ -202,6 +206,10 @@ if (BUILD_TESTS)
     enable_testing()
     find_package(GTest REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
+endif ()
+
+if (THREAD_SAFE)
+    add_definitions(-DTHREAD_SAFE)
 endif ()
 
 # Set real type

@@ -69,6 +69,7 @@ add_library(${PROJECT_NAME} OBJECT
     Zero.hpp
     Tokenizer.hpp
     Real.hpp
+    Mutex.hpp
 )
 
 # ######################################################################### #
