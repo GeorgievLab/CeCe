@@ -145,7 +145,9 @@ function fix_binary()
             debug "LOCAL:\ninstall_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${LIBRARY}\n${BINARY}\n"
 
             # Local
+            chmod u+w ${BINARY}
             install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY}
+            chmod u-w ${BINARY}
 
             # Recursive fix
             fix_binary $BUNDLE_PATH/$LIBRARY

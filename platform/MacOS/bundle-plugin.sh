@@ -10,8 +10,10 @@
 # Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                   #
 # ######################################################################### #
 
+CWD=`dirname $0`
+
 # Include bundle script
-. bundle.sh
+. $CWD/bundle.sh
 
 PLUGINS=../PlugIns
 
@@ -59,14 +61,21 @@ function fix_plugin()
 
     # Update ID
     debug "ID:\ninstall_name_tool -id\n@executable_path/${PLUGINS}/${BASENAME}\n${BINARY}\n"
+
+    chmod u+w ${BINARY}
     install_name_tool -id @executable_path/${PLUGINS}/${BASENAME} ${BINARY}
+    chmod u-w ${BINARY}
 
     # Foreach plugin dependencies
-    for PLUGIN in `get_plugin_dependency "${ID}" "${BINARY}"`
+    for PLUGIN in `get_plugin_dependency "${BINARY}"`
     do
+        echo "##### " $PLUGIN
         # Plugins are in same directory without path
         debug "PLUGIN:\ninstall_name_tool -change\n${PLUGIN}\n@executable_path/${PLUGINS}/${PLUGIN}\n${BINARY}\n"
+
+        chmod u+w ${BINARY}
         install_name_tool -change ${PLUGIN} @executable_path/${PLUGINS}/${PLUGIN} ${BINARY}
+        chmod u-w ${BINARY}
     done
 
     # Fix as binary
