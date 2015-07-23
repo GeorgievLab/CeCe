@@ -233,7 +233,7 @@ private:
 
     const String operators = "+-*/^();<> \n\r\t\v\b";
     const String whitespace = " \n\r\t\v\b";
-    Map<String, float> parameters;
+    const Map<String, float>& parameters;
     IteratorRange<const char*>& iterator;
 
     void skipWhitespace()
@@ -263,7 +263,7 @@ private:
     float add()
     {
         float value = multiply();
-        while (true)
+        while (!iterator.isEmpty())
         {
             if (iterator.front() == '+')
             {
@@ -280,12 +280,14 @@ private:
             else
                 return value;
         }
+
+        return value;
     }
 
     float multiply()
     {
         float value = power();
-        while (true)
+        while (!iterator.isEmpty())
         {
             if (iterator.front() == '*')
             {
@@ -302,12 +304,14 @@ private:
             else
                 return value;
         }
+
+        return value;
     }
 
     float power()
     {
         float value = parenthesis();
-        while (true)
+        while (!iterator.isEmpty())
         {
             if (iterator.front() == '^')
             {
@@ -322,6 +326,8 @@ private:
             else
                 return value;
         }
+
+        return value;
     }
 
     float parenthesis()
@@ -414,7 +420,7 @@ private:
 
 public:
 
-    ExpressionParser(IteratorRange<const char*>& range, const Map<String, float>& param) NOEXCEPT
+    ExpressionParser(IteratorRange<const char*>& range, const Map<String, float>& param) noexcept
     : parameters(param), iterator(range)
     {
         // Nothing to do
@@ -431,7 +437,7 @@ public:
 
 /* ************************************************************************ */
 
-float parseExpression(IteratorRange<const char*>& range, const Map<String,float>& parameters)
+float parseExpressionRef(IteratorRange<const char*>& range, const Map<String,float>& parameters)
 {
     return ExpressionParser(range, parameters).parse();
 }
