@@ -16,7 +16,7 @@
 // Simulator
 #include "core/Range.hpp"
 #include "core/Map.hpp"
-#include "core/String.hpp"
+#include "core/StringView.hpp"
 #include "core/Exception.hpp"
 #include "core/Parser.hpp"
 
@@ -51,14 +51,46 @@ DEFINE_EXPRESSION_EXCEPTION(UnknownFunctionException, "Unknown function name");
 
 /* ************************************************************************ */
 
-float parseExpression(IteratorRange<const char*>& range, const Map<String, float>& parameters = {});
+/**
+ * @brief Parse expression from given range of iterators.
+ *
+ * @param range      Iterator range reference - it is updated.
+ * @param parameters Map of variables.
+ *
+ * @return Result value.
+ */
+float parseExpressionRef(IteratorRange<const char*>& range, const Map<String, float>& parameters = {});
 
 /* ************************************************************************ */
 
-inline float parseExpression(const String& expression, const Map<String, float>& parameters = {})
+/**
+ * @brief Parse expression from given range of iterators.
+ *
+ * @param range      Iterator range.
+ * @param parameters Map of variables.
+ *
+ * @return Result value.
+ */
+inline float parseExpression(IteratorRange<const char*> range, const Map<String, float>& parameters = {})
 {
-    auto range = makeRange(expression.c_str(), expression.c_str() + expression.size());
-    return parseExpression(range, parameters);
+    return parseExpressionRef(range, parameters);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse expression from given range of iterators.
+ *
+ * @param expression Expression string.
+ * @param parameters Map of variables.
+ *
+ * @return Result value.
+ */
+inline float parseExpression(const StringView& expression, const Map<String, float>& parameters = {})
+{
+    return parseExpression(makeRange(
+        expression.getData(), expression.getData() + expression.getLength()
+    ), parameters);
 }
 
 /* ************************************************************************ */

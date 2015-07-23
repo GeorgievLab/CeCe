@@ -63,7 +63,7 @@ TEST(ExpressionParser, inner)
         const char str[] = "15 + 3 hello";
         auto range = makeRange(str);
 
-        EXPECT_FLOAT_EQ(18.f, parseExpression(range, {}));
+        EXPECT_FLOAT_EQ(18.f, parseExpressionRef(range, {}));
         EXPECT_EQ(str + 7, range.begin());
     }
 }
