@@ -64,3 +64,46 @@ TEST(UnitsTest, dividion)
 }
 
 /* ************************************************************************ */
+
+TEST(UnitsTest, symbol)
+{
+    using namespace units;
+
+    {
+        using type = Unit<List<BaseLength>, List<>>;
+        String symbol(type::symbol::get().data());
+        EXPECT_EQ("m", symbol);
+    }
+
+    {
+        using type = Unit<List<BaseLength, BaseLength>, List<>>;
+        String symbol(type::symbol::get().data());
+        EXPECT_EQ("m2", symbol);
+    }
+
+    {
+        using type = Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+        String symbol(type::symbol::get().data());
+        EXPECT_EQ("m3", symbol);
+    }
+
+    {
+        using type = Unit<List<BaseLength, BaseLength, BaseLength, BaseLength>, List<>>;
+        String symbol(type::symbol::get().data());
+        EXPECT_EQ("m4", symbol);
+    }
+
+    {
+        using type = Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+        String symbol(type::symbol::get().data());
+        EXPECT_EQ("m2/s", symbol);
+    }
+
+    {
+        using type = Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+        String symbol(type::symbol::get().data());
+        EXPECT_EQ("m/s2", symbol);
+    }
+}
+
+/* ************************************************************************ */
