@@ -1,91 +1,331 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // C++
 #include <iostream>
-#include <string>
-#include <exception>
 #include <csignal>
 #include <atomic>
-#include <mutex>
-#include <thread>
 #include <fstream>
-#ifdef ENABLE_RENDER
-#include <chrono>
-#endif
 
-#ifdef ENABLE_RENDER
-#include <GL/glut.h>
+#if ENABLE_RENDER
+#include <GL/glfw.h>
 #endif
 
 // Simulator
+#include "core/String.hpp"
+#include "core/StringView.hpp"
+#include "core/Exception.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
-#include "simulator/Module.hpp"
 #include "parser-xml/SimulationFactory.hpp"
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 #include "render/Context.hpp"
-#endif
 
 #if ENABLE_PHYSICS_DEBUG
 #include "Render.hpp"
 #endif
 
+#endif
+
 /* ************************************************************************ */
 
+/// Global termination flag
 std::atomic_bool g_terminated{false};
 
 /* ************************************************************************ */
 
-bool g_paused{false};
-
-/* ************************************************************************ */
-
-// Simulator
-simulator::Simulator g_sim;
-
-/* ************************************************************************ */
-
-/// Mutex for logging.
-std::mutex g_log_mutex;
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
-GLuint g_width = 800;
-GLuint g_height = 600;
-#endif
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
-using clock_type = std::chrono::high_resolution_clock;
-clock_type::time_point g_start;
-#endif
-
-/* ************************************************************************ */
-
-[[noreturn]] void error(const std::string& err)
+/**
+ * @brief Terminate simulation.
+ *
+ * @param param
+ */
+void terminate_simulation(int param)
 {
-    std::cerr << err << std::endl;
-    exit(1);
+    std::cerr << "Terminating simulation" << std::endl;
+    g_terminated = true;
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Stop simulation request.
- *
- * @param param
+ * @brief Simulator.
  */
-void stop_simulation(int param)
+class Simulator
 {
-    g_sim.stop();
-    g_terminated = true;
-}
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param argc
+     * @param argv
+     */
+    Simulator(int argc, char** argv)
+    {
+        parseArguments(argc, argv);
+
+#if ENABLE_RENDER
+        initVizualization();
+#endif
+    }
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~Simulator()
+    {
+#if ENABLE_RENDER
+        cleanupVizualization();
+#endif
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Start simulation.
+     */
+    void start()
+    {
+#if ENABLE_RENDER
+        if (m_visualize)
+        {
+            // Make the window's context current
+            glfwMakeContextCurrent(m_window);
+
+            // Loop until the user closes the window
+            while (!g_terminated && !glfwWindowShouldClose(m_window))
+            {
+                if (!m_paused)
+                {
+                    // Update scene
+                    g_sim.update()
+
+                    // Draw scene
+                    m_simulator.draw(m_windowWidth, m_windowHeight);
+
+                    // Swap buffers
+                    glfwSwapBuffers(m_window);
+                }
+
+                /// Poll for and process events
+                glfwPollEvents();
+            }
+        }
+        else
+        {
+#endif
+            // Update simulation
+            while (!g_terminated && g_sim.update())
+                continue;
+#if ENABLE_RENDER
+        }
+#endif
+    }
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Window resize callback.
+     *
+     * @param win
+     * @param w
+     * @param h
+     */
+    static void windowResizeCallback(GLFWwindow* win, int w, int h) noexcept
+    {
+        auto* ptr = reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win));
+        ptr->m_windowWidth = w;
+        ptr->m_windowHeight = h;
+
+        auto size = ptr->m_simulator.getSimulation()->getWorldSize();
+        ptr->m_simulator.getRenderContext().getCamera().setZoom(
+            std::max(size.getWidth() / w, size.getHeight() / h).value()
+        );
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Keyboard callback function.
+     *
+     * @param win
+     * @param key
+     * @param code
+     * @param action
+     * @param mods
+     */
+    static void keyboardCallback(GLFWwindow* win, int key, int code, int action, int mods) noexcept
+    {
+        auto* ptr = reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win));
+
+        if (action != GLFW_PRESS)
+            return;
+
+        switch (key)
+        {
+        default:
+            // Nothing
+            break;
+
+        case GLFW_KEY_P:
+            ptr->m_paused = !ptr->m_paused;
+            break;
+
+        case GLFW_KEY_S:
+            if (g_paused) {
+                g_sim.update(units::Time(0.01f));
+                glutPostRedisplay();
+            }
+            break;
+
+#if ENABLE_PHYSICS_DEBUG
+        case GLFW_KEY_D:
+            g_sim.getSimulation()->setDrawPhysics(!g_sim.getSimulation()->isDrawPhysics());
+            break;
+#endif
+        }
+    }
+#endif
+
+
+// Private Operations
+private:
+
+
+    /**
+     * @brief Parse arguments.
+     *
+     * @param argc
+     * @param argv
+     */
+    void parseArguments(int argc, char** argv)
+    {
+        if (argc < 2)
+        {
+            throw InvalidArgumentException("not enough arguments: <desc.xml>");
+        }
+
+        // Create simulation factory
+        parser::xml::SimulationFactory simFactory;
+
+        // Create simulation
+        m_simulator.setSimulation(simFactory.fromFile(argv[1]));
+    }
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Init vizualization.
+     */
+    void initVizualization()
+    {
+        if (!m_visualize)
+            return;
+
+        // Initialize the library
+        if (!glfwInit())
+            throw RuntimeException("Unable to initialize GLFW");
+
+        // Create a windowed mode window and its OpenGL context
+        m_window = glfwCreateWindow(
+            args.windowWidth,
+            args.windowHeight,
+            "Simulator", nullptr, nullptr
+        );
+
+        if (!m_window)
+            throw RuntimeException("Unable to create rendering window");
+
+        // Store this pointer
+        glfwSetWindowUserPointer(m_window, this);
+
+        //glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_STENCIL);
+
+        // VSync
+        glfwSwapInterval(1);
+
+        // Set callbacks
+        glfwSetWindowSizeCallback(&Simulator::windowResizeCallback);
+        glfwSetKeyCallback(m_window, keyboardCallback);
+
+#if ENABLE_PHYSICS_DEBUG
+        // Get simulation
+        auto simulation = m_simulator.getSimulation();
+
+        m_debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
+        simulation->getWorld().SetDebugDraw(&m_debugDraw);
+#endif
+
+        // Initialize simulator
+        m_simulator.drawInit();
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Cleanup vizualization.
+     */
+    void cleanupVizualization() noexcept
+    {
+        if (!m_visualize)
+            return;
+
+        if (m_window)
+            glfwDestroyWindow(m_window);
+
+        glfwTerminate();
+    }
+#endif
+
+
+// Private Data Members
+private:
+
+    // Simulator
+    simulator::Simulator m_simulator;
+
+#if ENABLE_RENDER
+    // If simulation should be rendered.
+    bool m_visualize = false;
+
+    /// Window width.
+    unsigned int m_windowWidth = 800;
+
+    /// Window height.
+    unsigned int m_windowHeight = 600;
+
+    /// Render window.
+    GLFWwindow* m_window;
+
+    /// If simulation is paused.
+    bool m_paused = false;
+
+#if ENABLE_PHYSICS_DEBUG
+    // Physics engine debug draw.
+    DebugDraw m_debugDraw;
+#endif
+
+#endif
+};
 
 /* ************************************************************************ */
 
@@ -97,132 +337,25 @@ void stop_simulation(int param)
  */
 int main(int argc, char** argv)
 {
-    if (argc < 2)
-    {
-        error("not enough arguments: <desc.xml>");
-    }
+    // Install signal handler
+    signal(SIGTERM, terminate_simulation);
+    signal(SIGINT, terminate_simulation);
 
-#if ENABLE_RENDER
-    glutInit(&argc, argv);
-    glutInitWindowSize(g_width, g_height);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_STENCIL);
-    glutCreateWindow("Cell Simulator");
-
-    g_sim.drawInit();
-#endif
+    // Initialize plugins
+    simulator::PluginManager::rescanDirectories();
 
     std::ofstream time_file("time.csv");
+    setMeasureTimeOutput(&time_file);
 
     try
     {
-        // Initialize plugins
-        simulator::PluginManager::rescanDirectories();
-
-        setMeasureTimeOutput(&time_file);
-
-        // Create javascript world factory
-        parser::xml::SimulationFactory simFactory;
-
-        // Create world
-        g_sim.setSimulation(simFactory.fromFile(argv[1]));
-
-#if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
-        // Get simulation
-        auto simulation = g_sim.getSimulation();
-
-        DebugDraw debugDraw;
-        debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
-        simulation->getWorld().SetDebugDraw(&debugDraw);
-#endif
-
-#ifdef ENABLE_RENDER
-        // Register callbacks:
-        glutDisplayFunc([]() {
-            g_sim.draw(g_width, g_height);
-            glutSwapBuffers();
-        });
-
-        glutReshapeFunc([](int width, int height) {
-            g_width = width;
-            g_height = height;
-            auto size = g_sim.getSimulation()->getWorldSize();
-
-            g_sim.getRenderContext().getCamera().setZoom(
-                std::max(size.getWidth() / g_width, size.getHeight() / g_height).value()
-            );
-        });
-
-        // Idle function: update scene
-        glutIdleFunc([]() {
-            if (g_paused)
-                return;
-
-            auto start = clock_type::now();
-            auto diff = start - g_start;
-            //float dt = std::chrono::duration<float, std::chrono::seconds::period>(diff).count();
-            static decltype(diff) s_diff;
-            static unsigned int s_count = 0;
-
-            // Update simulation
-            //g_sim.update(dt);
-            //g_sim.update(1.f);
-            //for (int i = 0; i < 10; ++i)
-            if (!g_sim.update())
-                exit(0);
-
-            // Reset clock
-            g_start = clock_type::now();
-
-            // Add change
-            s_diff += g_start - start;
-            ++s_count;
-
-            if (s_count == 100)
-            {
-                std::cout << "Avg Time: " << std::chrono::duration_cast<std::chrono::microseconds>(s_diff / s_count).count() << " us\n";
-
-                s_diff = {};
-                s_count = 0;
-            }
-
-            //std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-            // Force redraw
-            glutPostRedisplay();
-        });
-
-        glutKeyboardFunc([](unsigned char key, int x, int y) {
-            switch (key)
-            {
-            case 'p': case 'P': g_paused = !g_paused; break;
-            case 's': case 'S': if (g_paused) { g_sim.update(units::Time(0.01f)); glutPostRedisplay(); } break;
-            case 'w': case 'W': g_sim.getRenderContext().setWireframe(!g_sim.getRenderContext().isWireframe()); break;
-#if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
-            case 'd': case 'D': g_sim.getSimulation()->setDrawPhysics(!g_sim.getSimulation()->isDrawPhysics()); break;
-#endif
-            }
-        });
-
-        // Init start time
-        g_start = clock_type::now();
-
-        glutMainLoop();
-#else
-        // Install signal handler
-        signal(SIGINT, stop_simulation);
-
-        // Start simulation
-        g_sim.start();
-#endif
-
-        if (g_terminated)
-            std::cout << "Simulation terminated" << std::endl;
-        else
-            std::cout << "Simulation finished" << std::endl;
+        // Create simulator
+        Simulator(argc, argv).start();
     }
-    catch (const std::exception& e)
+    catch (const Exception& e)
     {
-        error(e.what());
+        Log::error(e.what());
+        return 1;
     }
 }
 

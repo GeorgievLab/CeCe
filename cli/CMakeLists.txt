@@ -10,10 +10,10 @@
 project(cli CXX)
 
 if (ENABLE_RENDER)
-    find_package(GLUT REQUIRED)
-    include_directories(${GLUT_INCLUDE_DIR})
+    find_package(GLFW REQUIRED)
+    include_directories(${GLFW_INCLUDE_DIRS})
 
-    set(RENDER_LIBS ${GLUT_LIBRARIES})
+    set(RENDER_LIBS ${GLFW_LIBRARIES})
 
     if (ENABLE_BUILTIN_PHYSICS_DEBUG)
         find_package(OpenGL)
@@ -47,8 +47,13 @@ target_link_libraries(${PROJECT_NAME}
     simulator
     parser-xml
     ${RENDER_LIBS}
-    -pthread
 )
+
+if (UNIX AND NOT APPLE)
+    target_link_libraries(${PROJECT_NAME}
+        -pthread
+    )
+endif ()
 
 # Setup dependencies
 add_dependencies(${PROJECT_NAME}
@@ -57,7 +62,6 @@ add_dependencies(${PROJECT_NAME}
 
 # Install
 install(TARGETS ${PROJECT_NAME}
-    BUNDLE  DESTINATION ${INSTALL_DIR_BUNDLE}
     RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
 )
 
