@@ -69,7 +69,11 @@ static constexpr Value MASS_COEFFICIENT = 1e9f;
     struct Base ## name {\
         static constexpr Value coefficient = coeff; \
         static constexpr int order = ord;\
-        static constexpr StaticArray<char, NARG(__VA_ARGS__) + 1> symbol = {__VA_ARGS__, '\0'};\
+        static constexpr unsigned int symbolLength = NARG(__VA_ARGS__) + 1; \
+        static constexpr StaticArray<char, symbolLength> getSymbol() noexcept \
+        { \
+            return {__VA_ARGS__, '\0'};\
+        } \
     }
 
 /* ************************************************************************ */
@@ -232,9 +236,6 @@ struct Remove<T, List<>>
     // Not found
     static constexpr bool value = false;
 
-    // Number of occurences.
-    static constexpr unsigned int count = 1;
-
     // Remaining types.
     using type = List<>;
 };
@@ -259,9 +260,6 @@ struct Remove<T, List<Type, Types...>>
 
     // If type is found.
     static constexpr bool value = match || RemoveInnerType::value;
-
-    // Number of occurences.
-    static constexpr unsigned int count = (match ? 1 : 0) + RemoveInnerType::count;
 
     /// List type without the required type.
     using type = typename std::conditional<match,
@@ -328,6 +326,68 @@ struct ReduceInner<List<Nom, Nominators...>, List<Denominators...>>
 /* ************************************************************************ */
 
 /**
+ * @brief Remove all occurences of given type element from list.
+ *
+ * @tparam T    Type to remove.
+ * @tparam List List of types.
+ */
+template<typename T, typename List>
+struct RemoveAll;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Remove all occurences of given type element from list.
+ *
+ * @tparam T Type to remove.
+ */
+template<typename T>
+struct RemoveAll<T, List<>>
+{
+    // Not found
+    static constexpr bool value = false;
+
+    // Number of occurences.
+    static constexpr unsigned int count = 0;
+
+    // Remaining types.
+    using type = List<>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Remove all occurences of given type element from list.
+ *
+ * @tparam T     Type to remove.
+ * @tparam Type  First type.
+ * @tparam Types Remaining types in the list.
+ */
+template<typename T, typename Type, typename... Types>
+struct RemoveAll<T, List<Type, Types...>>
+{
+    /// If types match.
+    static constexpr bool match = std::is_same<T, Type>::value;
+
+    // Inner remove.
+    using RemoveInnerType = RemoveAll<T, List<Types...>>;
+
+    // If type is found.
+    static constexpr bool value = match || RemoveInnerType::value;
+
+    // Number of occurences.
+    static constexpr unsigned int count = (match ? 1 : 0) + RemoveInnerType::count;
+
+    /// List type without the required type.
+    using type = typename std::conditional<match,
+        typename RemoveInnerType::type,
+        typename Concat<List<Type>, typename RemoveInnerType::type>::type
+    >::type;
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Group of unit symbol.
  *
  * @tparam Type  Base unit type.
@@ -341,7 +401,7 @@ struct SymbolGroup
 
 
     /// Length of the base suffix.
-    static constexpr unsigned int length = Type::symbol.size() + 1;
+    static constexpr unsigned int length = Type::symbolLength + 1;
 
 
     /**
@@ -371,7 +431,7 @@ struct SymbolGroup
      */
     static constexpr StaticArray<char, length> get() noexcept
     {
-        return createSymbol(Type::symbol, MakeIntegerSequence<0, length - 2>{});
+        return createSymbol(Type::getSymbol(), MakeIntegerSequence<0, length - 2>{});
     }
 };
 
@@ -386,7 +446,7 @@ template<typename Type>
 struct SymbolGroup<Type, 1>
 {
     /// Length of the base suffix.
-    static constexpr unsigned int length = Type::symbol.size();
+    static constexpr unsigned int length = Type::symbolLength;
 
 
     /**
@@ -396,7 +456,7 @@ struct SymbolGroup<Type, 1>
      */
     static constexpr StaticArray<char, length> get() noexcept
     {
-        return Type::symbol;
+        return Type::getSymbol();
     }
 };
 
@@ -435,12 +495,12 @@ struct SymbolGrouper<List<>>
 template<typename Type, typename... Types>
 struct SymbolGrouper<List<Type, Types...>>
 {
-    using RemoveType = Remove<Type, List<Types...>>;
+    using RemoveType = RemoveAll<Type, List<Type, Types...>>;
 
     /// List of suffix groups.
     using type = typename Concat<
         List<SymbolGroup<Type, RemoveType::count>>,
-        typename SymbolGrouper<List<Types...>>::type
+        typename SymbolGrouper<typename RemoveType::type>::type
     >::type;
 };
 
@@ -767,6 +827,9 @@ public:
     /// List type.
     using denominator = Denom;
 
+    /// Unit symbol type.
+    using symbol = Symbol<Nom, Denom>;
+
 
 // Public Constants
 public:
@@ -774,9 +837,6 @@ public:
 
     /// Total unit coefficient.
     static constexpr Value coefficient = Coefficient<Nom>::value / Coefficient<Denom>::value;
-
-    /// Unit symbol.
-    static constexpr StaticArray<char, Symbol<Nom, Denom>::length> symbol = Symbol<Nom, Denom>::get();
 
 
 // Public Ctors & Dtors
@@ -937,11 +997,6 @@ private:
     value_type m_value;
 
 };
-
-/* ************************************************************************ */
-
-template<typename Nom, typename Denom>
-constexpr StaticArray<char, Symbol<Nom, Denom>::length> Unit<Nom, Denom>::symbol;
 
 /* ************************************************************************ */
 
@@ -2299,15 +2354,15 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
     if (!symbol.empty())
     {
         // Type symbol
-        const auto typeSymbol = Type::symbol.data();
+        static constexpr auto typeSymbol = Type::symbol::get();
 
         // Find real symbol
-        auto pos = symbol.find(typeSymbol);
+        auto pos = symbol.find(typeSymbol.data());
         if (pos == String::npos)
         {
             throw InvalidArgumentException(
                 "Invalid units symbol. "
-                "Expected '(m|u|n)" + String(typeSymbol) + "' "
+                "Expected '(m|u|n)" + String(typeSymbol.data()) + "' "
                 "given '" + symbol + "'"
             );
         }
