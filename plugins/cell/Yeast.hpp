@@ -154,7 +154,9 @@ private:
     boost::optional<Bud> m_bud;
 
 #if ENABLE_RENDER
-    render::ObjectPtr<DrawableYeast> m_renderObject;
+    /// Render object for Yeast.
+    /// Shared between all instances, it's same for all instances.
+    static render::ObjectPtr<DrawableYeast> s_renderObject;
 #endif
 
 #if ENABLE_PHYSICS

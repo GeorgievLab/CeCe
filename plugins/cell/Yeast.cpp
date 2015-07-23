@@ -28,6 +28,10 @@ static std::random_device g_rd;
 
 /* ************************************************************************ */
 
+render::ObjectPtr<DrawableYeast> Yeast::s_renderObject;
+
+/* ************************************************************************ */
+
 Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) NOEXCEPT
     : CellBase(simulation, type)
 {
@@ -153,8 +157,8 @@ void Yeast::budRelease()
 #if ENABLE_RENDER
 void Yeast::draw(render::Context& context)
 {
-    if (!m_renderObject)
-        m_renderObject.create(context);
+    if (!s_renderObject)
+        s_renderObject.create(context);
 
     auto pos = getPosition();
     auto radius = calcSphereRadius(getVolume());
@@ -175,7 +179,7 @@ void Yeast::draw(render::Context& context)
     context.matrixTranslate(pos);
     context.matrixRotate(angle);
     context.matrixScale(2 * radius.value());
-    m_renderObject->draw(context, 0.5f, 0.5f * (budRadius / radius), color);
+    s_renderObject->draw(context, 0.5f, 0.5f * (budRadius / radius), color);
     context.matrixPop();
 }
 #endif
