@@ -128,6 +128,10 @@ public:
         if (isIdentifierBegin())
             return tokenizeIdentifier();
 
+        // Full forward arrow string.
+        // Starts at '>'
+        const char* arrow_fwd_str = "->" + 1;
+
         switch (value())
         {
         case '-':
@@ -135,9 +139,12 @@ public:
             if (!is('>'))
                 fatalError("Invalid token");
 
+            // Reset to full arrow string
+            --arrow_fwd_str;
+
         case '>':
             next();
-            return TokenType{TokenCode::ArrowFwrd};
+            return TokenType{TokenCode::ArrowFwrd, arrow_fwd_str};
 
         case '<':
             next();
@@ -218,7 +225,7 @@ class ReactionParserException: public ParserException {};
 /* ************************************************************************ */
 
 DEFINE_PARSER_EXCEPTION_BASE(MissingArrowException, ReactionParserException, "You are missing > or -> arrow.");
-DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException, "You are missing at least one identifier on each side of reaction rule.");
+DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException, "You are missing an identifier.");
 
 /* ************************************************************************ */
 
@@ -266,41 +273,45 @@ public:
         T reactions;
         while (!is(TokenCode::Invalid))
         {
-            try
-            {
-                auto conditions = parseConditions();
-                auto ids_minus = parseList();
-                if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd))
-                    throw MissingArrowException();
-                RateType rate;
-                RateType rateR;
-                bool reversible = is(TokenCode::ArrowBack);
-                if (reversible)
-                {
-                    rateR = parseRate();
-                    requireNext(TokenCode::Comma);
-                }
-                rate = parseRate();
-                requireNext(TokenCode::ArrowFwrd);
-                auto ids_plus = parseList();
-                requireNext(TokenCode::Semicolon);
-                reactions.extend(ids_plus, ids_minus, rate);
-                if (reversible)
-                    reactions.extend(ids_minus, ids_plus, rateR);
-                for (unsigned int i = 0; i < conditions.size(); i++)
-                {
-                    reactions.addCondition(conditions[i].first, conditions[i].second);
-                }
-            }
-            catch (const Exception& ex)
-            {
-                Log::warning(ex.what());
-                find(TokenCode::Semicolon);
-                next();
-            }
+            parseReaction(reactions);
         }
         return reactions;
     }
+
+    void parseReaction(T& reactions)
+    {
+        try
+        {
+            auto conditions = parseConditions();
+            auto ids_minus = parseList();
+            if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd))
+                throw MissingArrowException();
+            RateType rate;
+            RateType rateR;
+            bool reversible = is(TokenCode::ArrowBack);
+            next();
+            if (reversible)
+                rateR = parseRateReversible();
+            rate = parseRate();
+            auto ids_plus = parseList();
+            requireNext(TokenCode::Semicolon);
+            reactions.extend(ids_plus, ids_minus, rate);
+            if (reversible)
+                reactions.extend(ids_minus, ids_plus, rateR);
+            for (unsigned int i = 0; i < conditions.size(); i++)
+            {
+                reactions.addCondition(conditions[i].first, conditions[i].second);
+            }
+        }
+        catch (const Exception& ex)
+        {
+            Log::warning(ex.what());
+            find(TokenCode::Semicolon);
+            next();
+            return;
+        }
+    }
+
 
 protected:
 
@@ -322,9 +333,30 @@ protected:
 
 /* ************************************************************************ */
 
+    RateType parseRateReversible()
+    {
+        const char* begin = getTokenizer().getRange().begin();
+        find(TokenCode::Comma);
+        if (is(TokenCode::Invalid))
+            throw MissingArrowException();
+        const char* end = getTokenizer().getRange().begin() - 1;
+        auto range = makeRange(begin, end);
+        auto rate = parseExpression(range);
+        next();
+        return rate;
+    }
+
+/* ************************************************************************ */
+
     RateType parseRate()
     {
-        auto rate = parseExpression(getTokenizer().getRange());
+        const char* begin = getTokenizer().getRange().begin();
+        find(TokenCode::ArrowFwrd);
+        if (is(TokenCode::Invalid))
+            throw MissingArrowException();
+        const char* end = getTokenizer().getRange().begin() - token().value.size();
+        auto range = makeRange(begin, end);
+        auto rate = parseExpression(range);
         next();
         return rate;
     }
