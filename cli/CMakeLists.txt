@@ -11,7 +11,7 @@ project(cli CXX)
 
 if (ENABLE_RENDER)
     find_package(GLFW REQUIRED)
-    include_directories(${GLFW_INCLUDE_DIRS})
+    include_directories(${GLFW_INCLUDE_DIR})
 
     set(RENDER_LIBS ${GLFW_LIBRARIES})
 

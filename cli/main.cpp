@@ -15,7 +15,7 @@
 #include <fstream>
 
 #if ENABLE_RENDER
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #endif
 
 // Simulator
@@ -115,7 +115,7 @@ public:
                 if (!m_paused)
                 {
                     // Update scene
-                    g_sim.update()
+                    m_simulator.update();
 
                     // Draw scene
                     m_simulator.draw(m_windowWidth, m_windowHeight);
@@ -132,7 +132,7 @@ public:
         {
 #endif
             // Update simulation
-            while (!g_terminated && g_sim.update())
+            while (!g_terminated && m_simulator.update())
                 continue;
 #if ENABLE_RENDER
         }
@@ -190,9 +190,10 @@ public:
             break;
 
         case GLFW_KEY_S:
-            if (g_paused) {
-                g_sim.update(units::Time(0.01f));
-                glutPostRedisplay();
+            if (ptr->m_paused)
+            {
+                ptr->m_simulator.update();
+                // TODO: redraw
             }
             break;
 
@@ -246,8 +247,8 @@ private:
 
         // Create a windowed mode window and its OpenGL context
         m_window = glfwCreateWindow(
-            args.windowWidth,
-            args.windowHeight,
+            m_windowWidth,
+            m_windowHeight,
             "Simulator", nullptr, nullptr
         );
 
@@ -263,8 +264,8 @@ private:
         glfwSwapInterval(1);
 
         // Set callbacks
-        glfwSetWindowSizeCallback(&Simulator::windowResizeCallback);
-        glfwSetKeyCallback(m_window, keyboardCallback);
+        glfwSetWindowSizeCallback(m_window, &Simulator::windowResizeCallback);
+        glfwSetKeyCallback(m_window, &Simulator::keyboardCallback);
 
 #if ENABLE_PHYSICS_DEBUG
         // Get simulation
