@@ -289,7 +289,6 @@ public:
             RateType rate;
             RateType rateR;
             bool reversible = is(TokenCode::ArrowBack);
-            next();
             if (reversible)
                 rateR = parseRateReversible();
             rate = parseRate();
@@ -335,33 +334,53 @@ protected:
 
     RateType parseRateReversible()
     {
-        const char* begin = getTokenizer().getRange().begin();
-        find(TokenCode::Comma);
-        if (is(TokenCode::Invalid))
+        // Alias to tokenizer range.
+        const auto& tokenizerRange = getTokenizer().getRange();
+
+        // Store rate begin
+        auto begin = tokenizerRange.begin();
+
+        next();
+        find(TokenCode::Comma, TokenCode::Semicolon);
+
+        if (!is(TokenCode::Comma))
             throw MissingArrowException();
-        const char* end = getTokenizer().getRange().begin() - 1;
-        auto range = makeRange(begin, end);
-        auto rate = parseExpression(range);
+
+        auto end = tokenizerRange.begin() - 1;
+        auto rate = parseExpression(makeRange(begin, end));
         next();
         return rate;
     }
 
 /* ************************************************************************ */
 
+    /**
+     * @brief Parse rate expression.
+     *
+     * @return
+     */
     RateType parseRate()
     {
-        const char* begin = getTokenizer().getRange().begin();
-        find(TokenCode::ArrowFwrd);
-        if (is(TokenCode::Invalid))
+        // Alias to tokenizer range.
+        const auto& tokenizerRange = getTokenizer().getRange();
+
+        // Store rate begin
+        auto begin = tokenizerRange.begin();
+
+        // Last token was the one before rate - ArrowFwrd
+        next();
+        // Find arrow or semicolon
+        find(TokenCode::ArrowFwrd, TokenCode::Semicolon);
+
+        if (!is(TokenCode::ArrowFwrd))
             throw MissingArrowException();
-        const char* end = getTokenizer().getRange().begin() - token().value.size();
-        auto range = makeRange(begin, end);
-        auto rate = parseExpression(range);
+
+        // Get position before token.
+        auto end = tokenizerRange.begin() - token().value.size();
+        auto rate = parseExpression(makeRange(begin, end));
         next();
         return rate;
     }
-
-/* ************************************************************************ */
 
 
     /**
