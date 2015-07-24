@@ -115,7 +115,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
         auto id = registerSignal(
             signal.get("name"),
             signal.get<DiffusionRate>("diffusion-rate"),
-            signal.get<DegradationRate>("degradation-rate")
+            signal.get<DegradationRate>("degradation-rate", DegradationRate{})
         );
 
 #if ENABLE_RENDER
