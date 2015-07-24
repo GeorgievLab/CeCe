@@ -12,9 +12,9 @@ wxDEFINE_EVENT(EVT_ERROR, wxCommandEvent);
 
 /* ************************************************************************ */
 
-SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory) NOEXCEPT
+SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationLoader* loader) NOEXCEPT
     : m_handler(handler)
-    , m_simulationFactory(factory)
+    , m_simulationLoader(loader)
 {
     if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
     {
@@ -196,7 +196,7 @@ void SimulatorThread::DoLoad(const wxString& code) NOEXCEPT
     try
     {
         // Create new simulation from source
-        auto ptr = m_simulationFactory->fromSource(code.To8BitData().data());
+        auto ptr = m_simulationLoader->fromSource(code.To8BitData().data());
 
         // Set simulation
         wxMutexLocker lock(m_mutex);

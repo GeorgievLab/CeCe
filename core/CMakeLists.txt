@@ -67,6 +67,7 @@ add_library(${PROJECT_NAME} OBJECT
     ViewPtr.hpp
     ListenerContainer.hpp
     Zero.hpp
+    StringStream.hpp
     Tokenizer.hpp
     Real.hpp
     Mutex.hpp
@@ -83,6 +84,8 @@ build_test(core
         test/VectorRangeTest.cpp
         test/UnitsTest.cpp
         test/StringViewTest.cpp
+        test/VectorTest.cpp
+        test/VectorUnitsTest.cpp
         test/ExpressionParserTest.cpp
         test/TokenizerTest.cpp
         ExpressionParser.hpp

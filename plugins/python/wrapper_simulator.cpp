@@ -37,7 +37,8 @@ static void python_wrapper_simulator_Configuration(PyObject* module)
     using type_def = TypeDefinition<type>;
 
     static PyMethodDef fns[] = {
-        defineMemberFunction<1, type>("get", &simulator::Configuration::getString),
+        defineMemberFunction<1, type>("get",
+            static_cast<String (simulator::Configuration::*)(const StringView&) const>(&simulator::Configuration::get)),
         {NULL}  /* Sentinel */
     };
 

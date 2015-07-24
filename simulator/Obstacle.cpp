@@ -13,7 +13,7 @@
 #include <cassert>
 
 // Simulator
-#include "parser/Parser.hpp"
+#include "core/VectorUnits.hpp"
 #include "simulator/Configuration.hpp"
 #include "simulator/Simulation.hpp"
 
@@ -32,27 +32,23 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
     auto& shape = shapes[0];
 
     // Obstacle shape
-    config.callString("type", [&shape](const String& value) {
-        if (value == "circle")
-            shape.type = ShapeType::Circle;
-        else if (value == "rectangle")
-            shape.type = ShapeType::Rectangle;
-        // TODO: other shapes
-    });
+    auto type = config.get("type");
+
+    if (type == "circle")
+        shape.type = ShapeType::Circle;
+    else if (type == "rectangle")
+        shape.type = ShapeType::Rectangle;
+    // TODO: other shapes
 
     // Different configurations for different types
     switch (shape.type)
     {
     case ShapeType::Circle:
-        config.callString("radius", [&shape](const String& value) {
-            shape.circle.radius = parser::parse_value<units::Length>(value);
-        });
+        shape.circle.radius = config.get<units::Length>("radius");
         break;
 
     case ShapeType::Rectangle:
-        config.callString("size", [&shape](const String& value) {
-            shape.rectangle.size = parser::parse_vector<units::Length>(value);
-        });
+        shape.rectangle.size = config.get<PositionVector>("size");
         break;
 
     case ShapeType::Undefined:

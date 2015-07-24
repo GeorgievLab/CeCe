@@ -35,7 +35,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     simulator
-    parser-xml
+    loader-xml
+    ${RENDER_LIBS}
+    -pthread
 )
 
 if (ENABLE_RENDER)

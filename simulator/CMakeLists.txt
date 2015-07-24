@@ -26,8 +26,8 @@ set(SRCS
     Object.cpp
     Simulation.hpp
     Simulation.cpp
-    SimulationFactory.hpp
-    SimulationFactory.cpp
+    SimulationLoader.hpp
+    SimulationLoader.cpp
     Simulator.hpp
     Simulator.cpp
     Module.hpp
@@ -47,7 +47,6 @@ set(SRCS
 
     # Add object libraries
     $<TARGET_OBJECTS:core>
-    $<TARGET_OBJECTS:parser>
 )
 
 if (ENABLE_RENDER)

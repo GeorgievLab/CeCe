@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -11,12 +13,10 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
-#include "core/String.hpp"
-#include "core/FilePath.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/InStream.hpp"
-#include "simulator/SimulationFactory.hpp"
+#include "core/FilePath.hpp"
+#include "simulator/SimulationLoader.hpp"
 
 /* ************************************************************************ */
 
@@ -24,37 +24,16 @@ namespace simulator { class Simulation; }
 
 /* ************************************************************************ */
 
-namespace parser {
+namespace loader {
+namespace xml {
 
 /* ************************************************************************ */
 
 /**
- * @brief Parse simulation factory interface.
+ * @brief XML parser simulation factory.
  */
-class DLL_EXPORT SimulationFactory : public simulator::SimulationFactory
+class SimulationLoader : public simulator::SimulationLoader
 {
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Create a new world from source file.
-     *
-     * @param filename
-     */
-    UniquePtr<simulator::Simulation> fromFile(const FilePath& filename) const override;
-
-
-    /**
-     * @brief Create a new world from source code.
-     *
-     * @param source
-     * @param filename
-     */
-    UniquePtr<simulator::Simulation> fromSource(const String& source,
-        const FilePath& filename = "<source>") const override;
 
 
 // Protected Operations
@@ -62,20 +41,33 @@ protected:
 
 
     /**
-     * @brief Parse simulation from input stream.
+     * @brief Read simulation from input stream.
      *
-     * @param source
-     * @param filename
+     * @param is       Source stream.
+     * @param filename Source file name.
      *
-     * @return
+     * @return Created simulation.
      */
-    virtual UniquePtr<simulator::Simulation> fromStream(InStream& source,
-        const FilePath& filename) const = 0;
+    UniquePtr<simulator::Simulation> fromStream(InStream& is,
+        const FilePath& filename = "<stream>") const override;
+
+
+    /**
+     * @brief Write simulation into output stream.
+     *
+     * @param os         Output stream.
+     * @param simulation Source simulation.
+     *
+     * @return Source code.
+     */
+    void toStream(OutStream& os, const simulator::Simulation& simulation,
+        const FilePath& filename = "<stream>") const override;
 
 };
 
 /* ************************************************************************ */
 
+}
 }
 
 /* ************************************************************************ */

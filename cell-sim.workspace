@@ -5,13 +5,11 @@
   <Project Name="simulator" Path="simulator/simulator.project"/>
   <Project Name="render" Path="render/render.project"/>
   <Project Name="cli" Path="cli/cli.project" Active="No"/>
-  <Project Name="parser" Path="parser/parser.project" Active="No"/>
   <Project Name="diffusion" Path="plugins/diffusion/diffusion.project" Active="No"/>
   <Project Name="cell" Path="plugins/cell/cell.project" Active="No"/>
   <Environment>
     <![CDATA[]]>
   </Environment>
-  <Project Name="parser-xml" Path="parser-xml/parser-xml.project" Active="No"/>
   <Project Name="picture" Path="plugins/picture/picture.project" Active="No"/>
   <Project Name="tool_shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <Project Name="python" Path="plugins/python/python.project" Active="No"/>
@@ -24,11 +22,11 @@
   <Project Name="stochastic-reactions-diffusive" Path="plugins/stochastic-reactions-diffusive/stochastic-reactions-diffusive.project" Active="No"/>
   <Project Name="agglutination" Path="plugins/agglutination/agglutination.project" Active="No"/>
   <Project Name="object-generator" Path="plugins/object-generator/object-generator.project" Active="No"/>
+  <Project Name="loader-xml" Path="loaders/xml/loader-xml.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
       <Project Name="render" ConfigName="Debug"/>
-      <Project Name="parser" ConfigName="Debug"/>
       <Project Name="gui" ConfigName="Debug"/>
       <Project Name="core" ConfigName="Debug"/>
       <Project Name="cli" ConfigName="DebugCLI"/>
@@ -47,6 +45,7 @@
       <Project Name="plugin_stochastic-reactions-diffusive" ConfigName="Debug"/>
       <Project Name="plugin_agglutination" ConfigName="Debug"/>
       <Project Name="plugin_object-generator" ConfigName="Debug"/>
+      <Project Name="loader_xml" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -54,7 +53,6 @@
       <Project Name="simulator" ConfigName="Release"/>
       <Project Name="render" ConfigName="Release"/>
       <Project Name="cli" ConfigName="Release"/>
-      <Project Name="parser" ConfigName="Release"/>
       <Project Name="plugin_diffusion" ConfigName="Release"/>
       <Project Name="plugin_cell" ConfigName="Release"/>
       <Project Name="parser-xml" ConfigName="Release"/>
@@ -70,6 +68,7 @@
       <Project Name="plugin_stochastic-reactions-diffusive" ConfigName="Release"/>
       <Project Name="plugin_agglutination" ConfigName="Release"/>
       <Project Name="plugin_object-generator" ConfigName="Release"/>
+      <Project Name="loader_xml" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -6,45 +8,37 @@
 /* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
-// Declaration
-#include "simulator/SimulationFactory.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // C++
-#include <fstream>
-
-// Simulator
-#include "simulator/Simulation.hpp"
+#include <sstream>
 
 /* ************************************************************************ */
 
-namespace simulator {
+inline namespace core {
 
 /* ************************************************************************ */
 
-UniquePtr<Simulation> SimulationFactory::createSimulation() const
-{
-    return makeUnique<Simulation>();
-}
+/**
+ * @brief Input string stream type.
+ */
+using InStringStream = std::istringstream;
 
 /* ************************************************************************ */
 
-UniquePtr<Simulation> SimulationFactory::fromFile(const FilePath& filename) const
-{
-    String source;
+/**
+ * @brief Output string stream type.
+ */
+using OutStringStream = std::ostringstream;
 
-    {
-        std::ifstream file(filename.string(), std::ios::in);
+/* ************************************************************************ */
 
-        String line;
-        while (std::getline(file, line))
-        {
-            // Read source
-            source.append(line);
-        }
-    }
-
-    return fromSource(source);
-}
+/**
+ * @brief Input/Output string stream type.
+ */
+using StringStream = std::stringstream;
 
 /* ************************************************************************ */
 

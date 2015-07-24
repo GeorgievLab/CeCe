@@ -14,12 +14,15 @@
 
 // C++
 #include <cmath>
+#include <cassert>
 #include <tuple>
 #include <type_traits>
 
 // Simulator
 #include "core/Zero.hpp"
 #include "core/Units.hpp"
+#include "core/InStream.hpp"
+#include "core/OutStream.hpp"
 
 /* ************************************************************************ */
 
@@ -1043,6 +1046,52 @@ template<typename T1, typename T2>
 inline constexpr decltype(T1{} * T2{}) dot(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
     return lhs.getX() * rhs.getX() + lhs.getY() * rhs.getY();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Input stream operator.
+ *
+ * @param is     Input stream.
+ * @param vector Result value.
+ *
+ * @return is.
+ */
+template<typename T>
+InStream& operator>>(InStream& is, Vector<T>& vector)
+{
+    T v1;
+    T v2;
+    is >> v1;
+
+    if (is.get() == ' ' && is >> v2)
+    {
+        vector = Vector<T>{v1, v2};
+    }
+    else
+    {
+        vector = Vector<T>{v1};
+    }
+
+    return is;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Output stream operator.
+ *
+ * @param os     Output stream.
+ * @param vector Input value.
+ *
+ * @return os.
+ */
+template<typename T>
+OutStream& operator<<(OutStream& os, const Vector<T>& vector) noexcept
+{
+    os << vector.getX() << " " << vector.getY();
+    return os;
 }
 
 /* ************************************************************************ */

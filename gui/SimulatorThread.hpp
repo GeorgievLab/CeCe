@@ -13,7 +13,7 @@
 
 // Simulator
 #include "simulator/Simulation.hpp"
-#include "simulator/SimulationFactory.hpp"
+#include "simulator/SimulationLoader.hpp"
 #include "simulator/Simulator.hpp"
 
 /* ************************************************************************ */
@@ -56,9 +56,9 @@ public:
      * @brief Constructor.
      *
      * @param handler Event handler.
-     * @param factory Simulation factory.
+     * @param loader Simulation loader.
      */
-    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationFactory* factory) NOEXCEPT;
+    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationLoader* loader) NOEXCEPT;
 
 
     /**
@@ -228,7 +228,7 @@ private:
     wxAtomicInt m_running = 0;
 
     /// World factory
-    wxScopedPtr<simulator::SimulationFactory> m_simulationFactory;
+    wxScopedPtr<simulator::SimulationLoader> m_simulationLoader;
 
 };
 

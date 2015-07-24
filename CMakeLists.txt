@@ -36,6 +36,7 @@ add_definitions(
 
 # Directory with plugins
 set(DIR_PLUGINS "plugins")
+set(DIR_LOADERS "loaders")
 
 # ######################################################################### #
 
@@ -62,7 +63,7 @@ set(THREAD_SAFE Off)
 
 # ######################################################################### #
 
-# List of plugins values
+# List of plugins variables
 set(PLUGINS_AVAILABLE "")
 set(PLUGINS_BUILD "")
 set(PLUGINS_BUILTIN "")
@@ -73,7 +74,7 @@ foreach(PLUGIN_DIR ${PLUGINS_DIRECTORIES})
     if (IS_DIRECTORY "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}/${PLUGIN_DIR}")
         list(APPEND PLUGINS_AVAILABLE ${PLUGIN_DIR})
         option(PLUGINS_BUILD_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}'" On)
-        option(PLUGINS_BUILTIN_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}' as build-in plugin" Off)
+        option(PLUGINS_BUILTIN_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}' as builtin" Off)
 
         if (PLUGINS_BUILTIN_${PLUGIN_DIR})
             list(APPEND PLUGINS_BUILTIN ${PLUGIN_DIR})
@@ -82,6 +83,32 @@ foreach(PLUGIN_DIR ${PLUGINS_DIRECTORIES})
 
         if (PLUGINS_BUILD_${PLUGIN_DIR})
             list(APPEND PLUGINS_BUILD ${PLUGIN_DIR})
+        endif ()
+    endif()
+endforeach()
+
+# ######################################################################### #
+
+# List of loaders variables
+set(LOADERS_AVAILABLE "")
+set(LOADERS_BUILD "")
+set(LOADERS_BUILTIN "")
+
+# Get list of available plugins
+file(GLOB LOADERS_DIRECTORIES RELATIVE "${CMAKE_SOURCE_DIR}/${DIR_LOADERS}" "${CMAKE_SOURCE_DIR}/${DIR_LOADERS}/*")
+foreach(LOADER_DIR ${LOADERS_DIRECTORIES})
+    if (IS_DIRECTORY "${CMAKE_SOURCE_DIR}/${DIR_LOADERS}/${LOADER_DIR}")
+        list(APPEND LOADERS_AVAILABLE ${LOADER_DIR})
+        option(LOADERS_BUILD_${LOADER_DIR} "Build loader '${LOADER_DIR}'" On)
+        #option(LOADERS_BUILTIN_${LOADER_DIR} "Build loader '${LOADER_DIR}' as builtin" Off)
+
+        if (LOADERS_BUILTIN_${LOADER_DIR})
+            list(APPEND LOADERS_BUILTIN ${LOADER_DIR})
+            set(LOADERS_BUILD_${LOADER_DIR} On)
+        endif ()
+
+        if (LOADERS_BUILD_${LOADER_DIR})
+            list(APPEND LOADERS_BUILD ${LOADER_DIR})
         endif ()
     endif()
 endforeach()
@@ -220,8 +247,6 @@ add_definitions(-DREAL_TYPE=${CONFIG_REAL_TYPE})
 
 # Core libraries
 add_subdirectory(core)
-add_subdirectory(parser)
-add_subdirectory(parser-xml)
 
 # Add render library
 if (ENABLE_RENDER)
@@ -230,6 +255,11 @@ endif ()
 
 # Main simulator library
 add_subdirectory(simulator)
+
+# Add loaders that should be built
+foreach (LOADER_NAME ${LOADERS_BUILD})
+    add_subdirectory(${DIR_LOADERS}/${LOADER_NAME})
+endforeach ()
 
 # Add plugins that should be built
 foreach (PLUGIN_NAME ${PLUGINS_BUILD})

@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -10,52 +12,23 @@
 
 /* ************************************************************************ */
 
-// Simulator
-#include "core/compatibility.hpp"
-#include "core/UniquePtr.hpp"
-#include "core/InStream.hpp"
-#include "core/FilePath.hpp"
-#include "parser/SimulationFactory.hpp"
+// Boost
+#include <boost/lexical_cast.hpp>
 
 /* ************************************************************************ */
 
-namespace simulator { class Simulation; }
+inline namespace core {
 
 /* ************************************************************************ */
 
-namespace parser {
-namespace xml {
+using boost::lexical_cast;
 
 /* ************************************************************************ */
 
-/**
- * @brief XML parser simulation factory.
- */
-class DLL_EXPORT SimulationFactory : public parser::SimulationFactory
-{
-
-
-// Protected Operations
-protected:
-
-
-    /**
-     * @brief Parse simulation from stream.
-     *
-     * @param simulator
-     * @param source
-     * @param filename
-     *
-     * @return
-     */
-    UniquePtr<simulator::Simulation> fromStream(InStream& source,
-        const FilePath& filename) const override;
-
-};
+using BadLexicalCast = boost::bad_lexical_cast;
 
 /* ************************************************************************ */
 
-}
 }
 
 /* ************************************************************************ */

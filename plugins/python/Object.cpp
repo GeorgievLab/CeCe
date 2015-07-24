@@ -76,13 +76,13 @@ Object::Object(simulator::Simulation& simulation, const std::string& name, Type 
 void Object::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Check if configuration contains code
-    if (config.hasText())
+    if (config.hasContent())
     {
         if (m_source.isInitialized())
             Log::warning("Overriding external script by internal code");
 
         // Initialize from source text
-        m_source.initSource(config.getText());
+        m_source.initSource(config.getContent());
     }
 
     // Get function pointers

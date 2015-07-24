@@ -7,7 +7,6 @@
 
 // Simulator
 #include "core/TimeMeasurement.hpp"
-#include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
 
@@ -48,17 +47,9 @@ void Generator::update(units::Duration dt, simulator::Simulation& simulation)
 
 void Generator::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
-    config.callString("object", [this](const String& value) {
-        setObjectClass(value);
-    });
-
-    config.callIfSetString("probability", [this](const String& value) {
-        setProbability(parser::parse_value<units::Probability>(value));
-    });
-
-    config.callIfSetString("start-velocity", [this](const String& value) {
-        setStartVelocity(parser::parse_vector<VelocityVector::value_type>(value));
-    });
+    setObjectClass(config.get("object"));
+    setProbability(config.get<units::Probability>("probability"));
+    setStartVelocity(config.get<VelocityVector>("start-velocity", Zero));
 }
 
 /* ************************************************************************ */

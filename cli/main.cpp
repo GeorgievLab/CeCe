@@ -31,7 +31,7 @@
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
-#include "parser-xml/SimulationFactory.hpp"
+#include "loaders/xml/SimulationLoader.hpp"
 
 #if ENABLE_RENDER
 #include "render/Context.hpp"
@@ -250,11 +250,10 @@ public:
     explicit Simulator(const Parameters& params)
     {
         // Create simulation factory
-        // TODO: loaders
-        parser::xml::SimulationFactory simFactory;
+        loaders::xml::SimulationLoader loader;
 
         // Create simulation
-        m_simulator.setSimulation(simFactory.fromFile(params.simulationFile));
+        m_simulator.setSimulation(loader.fromFile(params.simulationFile));
 
 #if ENABLE_RENDER
         initVizualization(params);
