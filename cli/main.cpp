@@ -640,6 +640,9 @@ int main(int argc, char** argv)
         help(argv[0]);
         return 1;
     }
+
+    // In case of termination, return special code
+    return g_terminated ? 2 : 0;
 }
 
 /* ************************************************************************ */
