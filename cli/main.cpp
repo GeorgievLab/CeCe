@@ -107,8 +107,19 @@ void terminate_simulation(int param)
         "  TODO: description.\n"
         "\n"
         "Usage:\n"
-        "  " << bname << " [ --vizualize | --novizualize | --fullscreen | --width <width> | --height <height> ] <simulation-file>\n"
+        "  " << bname << " "
+            "[ --plugins "
+#if ENABLE_RENDER
+            "| --vizualize "
+            "| --novizualize "
+            "| --fullscreen "
+            "| --width <width> "
+            "| --height <height> "
+#endif
+            "] "
+        "<simulation-file>\n"
         "\n"
+        "    --plugins          Prints a list of available plugins.\n"
 #if ENABLE_RENDER
         "    --vizualize        Enable vizualization (default).\n"
         "    --fullscreen       Vizualization window in fullscreen mode.\n"
@@ -118,6 +129,26 @@ void terminate_simulation(int param)
 #endif
         "    <simulation-file>   Path to simulation file.\n"
     << std::endl;
+
+    exit(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Prints a list of available plugins.
+ */
+[[noreturn]] static void plugins() noexcept
+{
+    std::cout <<
+        "Plugins:\n";
+
+    for (auto name : simulator::PluginManager::getNames())
+    {
+        std::cout << "    " << name << "\n";
+    }
+
+    std::cout << std::endl;
 
     exit(1);
 }
@@ -178,7 +209,9 @@ Parameters parseArguments(int argc, char** argv)
             }
             else
 #endif
-            if (arg == "--help")
+            if (arg == "--plugins")
+                plugins();
+            else if (arg == "--help")
                 help(argv[0]);
         }
         else if (params.simulationFile.empty())
