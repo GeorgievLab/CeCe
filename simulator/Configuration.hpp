@@ -19,7 +19,8 @@
 #include "core/UniquePtr.hpp"
 #include "core/Exception.hpp"
 #include "core/DynamicArray.hpp"
-#include "core/LexicalCast.hpp"
+#include "core/StringStream.hpp"
+//#include "core/LexicalCast.hpp"
 
 /* ************************************************************************ */
 
@@ -257,7 +258,7 @@ public:
     template<typename T>
     T get(const StringView& name) const
     {
-        return lexical_cast<T>(get(name));
+        return castFrom<T>(get(name));
     }
 
 
@@ -274,7 +275,7 @@ public:
     template<typename T>
     T get(const StringView& name, T def) const noexcept
     {
-        return has(name) ? lexical_cast<T>(m_impl->get(name)) : std::move(def);
+        return has(name) ? castFrom<T>(m_impl->get(name)) : std::move(def);
     }
 
 
@@ -381,7 +382,7 @@ public:
     template<typename T>
     void set(const String& name, T value) noexcept
     {
-        set(name, lexical_cast<String>(value));
+        set(name, castTo(value));
     }
 
 
@@ -409,6 +410,45 @@ public:
      * @return
      */
     FilePath buildFilePath(const FilePath& filename) const noexcept;
+
+
+// Private Operations
+private:
+
+
+    /**
+     * @brief Cast value from string into required type.
+     *
+     * @param value Value.
+     *
+     * @return
+     */
+    template<typename T>
+    static T castFrom(const String& value)
+    {
+        //return lexical_cast<T>(value);
+        InStringStream is(value);
+        T res;
+        is >> std::noskipws >> res;
+        return res;
+    }
+
+
+    /**
+     * @brief Cast value to string from given type.
+     *
+     * @param value Value.
+     *
+     * @return
+     */
+    template<typename T>
+    static String castTo(T&& value)
+    {
+        //return lexical_cast<String>(value);
+        OutStringStream os;
+        os << value;
+        return os.str();
+    }
 
 
 // Private Data Members
