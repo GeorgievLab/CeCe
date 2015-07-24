@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -12,13 +14,10 @@
 
 // C++
 #include <atomic>
-#include <cassert>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/UniquePtr.hpp"
-
 #if ENABLE_RENDER
 #include "render/Context.hpp"
 #endif
@@ -38,7 +37,7 @@ class Simulation;
  *
  * Simulator handles simulation of the given (owned) simulation in current thread.
  */
-class DLL_EXPORT Simulator final
+class Simulator final
 {
 
 // Public Ctors & Dtors
@@ -63,7 +62,7 @@ public:
      *
      * @return
      */
-    bool isRunning() const NOEXCEPT
+    bool isRunning() const noexcept
     {
         return m_isRunning;
     }
@@ -74,7 +73,7 @@ public:
      *
      * @return A pointer to current simulation or nullptr.
      */
-    Simulation* getSimulation() const NOEXCEPT
+    Simulation* getSimulation() const noexcept
     {
         return m_simulation.get();
     }
@@ -86,7 +85,7 @@ public:
      *
      * @return
      */
-    render::Context& getRenderContext() NOEXCEPT
+    render::Context& getRenderContext() noexcept
     {
         return m_renderContext;
     }
@@ -99,7 +98,7 @@ public:
      *
      * @return
      */
-    bool isDrawInitialized() NOEXCEPT
+    bool isDrawInitialized() noexcept
     {
         return m_renderContext.isInitialized();
     }
@@ -115,7 +114,7 @@ public:
      *
      * @param simulation New simulation.
      */
-    void setSimulation(UniquePtr<Simulation> simulation) NOEXCEPT
+    void setSimulation(UniquePtr<Simulation> simulation) noexcept
     {
         m_simulation = std::move(simulation);
     }
@@ -153,7 +152,7 @@ public:
      *
      * @return If next step can be calculated.
      */
-    bool update(units::Duration dt);
+    bool update(units::Time dt);
 
 
     /**
@@ -182,7 +181,7 @@ public:
      * @param width
      * @param height
      */
-    void draw(unsigned width, unsigned height);
+    void draw(unsigned int width, unsigned int height);
 #endif
 
 

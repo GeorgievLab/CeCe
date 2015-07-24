@@ -250,7 +250,7 @@ public:
     explicit Simulator(const Parameters& params)
     {
         // Create simulation factory
-        loaders::xml::SimulationLoader loader;
+        loader::xml::SimulationLoader loader;
 
         // Create simulation
         m_simulator.setSimulation(loader.fromFile(params.simulationFile));

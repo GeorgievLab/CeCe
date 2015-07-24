@@ -19,7 +19,6 @@
 
 // Simulator
 #include "core/TimeMeasurement.hpp"
-#include "parser/Parser.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
 
@@ -64,7 +63,7 @@ DynamicArray<String> split(String value, char separator) noexcept
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    auto _ = measure_time("object-generator", simulator::TimeMeasurementIterationOutput(&simulation));
+    auto _ = measure_time("object-generator", simulator::TimeMeasurementIterationOutput(simulation));
 
     // Random engine
     std::random_device rd;
@@ -111,25 +110,15 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     const auto minPos = PositionVector{-half.getX(), -half.getY()};
     const auto maxPos = PositionVector{-half.getX() * 0.95, half.getY()};
 
-    for (auto cfg : config.getConfigurations("object"))
+    for (auto&& cfg : config.getConfigurations("object"))
     {
         ObjectDesc desc;
-        desc.className = cfg->getString("class");
-        desc.probability = parser::parse_value<units::Probability>(cfg->getString("probability"));
-        desc.positionMin = minPos;
+        desc.className = cfg.get("class");
+        desc.probability = cfg.get<units::Probability>("probability");
         desc.positionMax = maxPos;
-
-        cfg->callIfSetString("position-min", [&desc] (const String& value) {
-           desc.positionMin = parser::parse_vector<units::Length>(value);
-        });
-
-        cfg->callIfSetString("position-max", [&desc] (const String& value) {
-           desc.positionMax = parser::parse_vector<units::Length>(value);
-        });
-
-        cfg->callIfSetString("programs", [&desc] (const String& value) {
-           desc.programs = split(value, ' ');
-        });
+        desc.positionMin = cfg.get<PositionVector>("position-min", minPos);
+        desc.positionMax = cfg.get<PositionVector>("position-max", maxPos);
+        desc.programs = split(cfg.get("programs", String()), ' ');
 
         add(std::move(desc));
     }

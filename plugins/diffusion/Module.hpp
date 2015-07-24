@@ -721,7 +721,7 @@ private:
 
 #ifdef THREAD_SAFE
     /// Access mutex.
-    Mutex m_mutex;
+    mutable Mutex m_mutex;
 #endif
 
 };

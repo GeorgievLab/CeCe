@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -44,9 +46,8 @@ void Simulator::step()
     // When to wake-up
     auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(16);
 
-    {
-        update(units::ms(16));
-    }
+    // Update simulation
+    update(units::ms(16));
 
     // Sleep
     std::this_thread::sleep_until(sleep);
@@ -54,7 +55,7 @@ void Simulator::step()
 
 /* ************************************************************************ */
 
-bool Simulator::update(units::Duration dt)
+bool Simulator::update(units::Time dt)
 {
     assert(m_simulation);
     return m_simulation->update(dt);
@@ -71,11 +72,12 @@ bool Simulator::update()
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-void Simulator::draw(unsigned width, unsigned height)
+void Simulator::draw(unsigned int width, unsigned int height)
 {
-    // Delete old object
+    // Delete old objects
     m_renderContext.deleteReleasedObjects();
 
+    // Start frame
     m_renderContext.frameBegin(width, height);
 
     assert(m_simulation);
