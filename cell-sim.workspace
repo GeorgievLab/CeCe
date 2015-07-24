@@ -23,6 +23,7 @@
   <Project Name="agglutination" Path="plugins/agglutination/agglutination.project" Active="No"/>
   <Project Name="object-generator" Path="plugins/object-generator/object-generator.project" Active="No"/>
   <Project Name="loader-xml" Path="loaders/xml/loader-xml.project" Active="No"/>
+  <Project Name="loader-reactions" Path="loaders/reactions/loader-reactions.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -46,6 +47,7 @@
       <Project Name="plugin_agglutination" ConfigName="Debug"/>
       <Project Name="plugin_object-generator" ConfigName="Debug"/>
       <Project Name="loader_xml" ConfigName="Debug"/>
+      <Project Name="loader_reactions" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -69,6 +71,7 @@
       <Project Name="plugin_agglutination" ConfigName="Release"/>
       <Project Name="plugin_object-generator" ConfigName="Release"/>
       <Project Name="loader_xml" ConfigName="Release"/>
+      <Project Name="loader_reactions" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
