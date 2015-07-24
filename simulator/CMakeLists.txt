@@ -44,6 +44,8 @@ set(SRCS
     Obstacle.hpp
     Obstacle.cpp
     SimulationListener.hpp
+    LoaderManager.hpp
+    LoaderManager.cpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>

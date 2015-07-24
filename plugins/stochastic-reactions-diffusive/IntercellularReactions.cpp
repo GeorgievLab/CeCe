@@ -119,8 +119,7 @@ void IntercellularReactions::executeReaction(
 void IntercellularReactions::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step)
 {
     auto& cell = getCell(object);
-    // TODO: use requireModule
-    auto diffusion = simulation.getModule<plugin::diffusion::Module>("diffusion");
+    auto diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
 

@@ -31,7 +31,9 @@
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
+#include "simulator/LoaderManager.hpp"
 #include "loaders/xml/SimulationLoader.hpp"
+#include "loaders/reactions/SimulationLoader.hpp"
 
 #if ENABLE_RENDER
 #include "render/Context.hpp"
@@ -249,11 +251,8 @@ public:
      */
     explicit Simulator(const Parameters& params)
     {
-        // Create simulation factory
-        loader::xml::SimulationLoader loader;
-
         // Create simulation
-        m_simulator.setSimulation(loader.fromFile(params.simulationFile));
+        m_simulator.setSimulation(simulator::LoaderManager::create(params.simulationFile));
 
 #if ENABLE_RENDER
         initVizualization(params);
@@ -621,6 +620,10 @@ int main(int argc, char** argv)
 
     // Initialize plugins
     simulator::PluginManager::rescanDirectories();
+
+    // Register loaders
+    simulator::LoaderManager::add<loader::xml::SimulationLoader>("xml");
+    simulator::LoaderManager::add<loader::reactions::SimulationLoader>("reactions");
 
     std::ofstream time_file("time.csv");
     setMeasureTimeOutput(&time_file);

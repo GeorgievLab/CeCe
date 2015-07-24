@@ -36,6 +36,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME}
     simulator
     loader-xml
+    loader-reactions
 )
 
 if (ENABLE_RENDER)
