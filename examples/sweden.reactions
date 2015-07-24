@@ -1,3 +1,5 @@
+@iterations 500
+@dt 1s
 null > 0.8 > A;
 A + B < 0.2, 0.3 > C;
 C > 0.5 > C + D + E;

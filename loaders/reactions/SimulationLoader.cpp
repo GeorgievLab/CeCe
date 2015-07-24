@@ -17,6 +17,7 @@
 // Simulator
 #include "core/Log.hpp"
 #include "core/String.hpp"
+#include "core/StringStream.hpp"
 #include "simulator/PluginApi.hpp"
 #include "simulator/Simulation.hpp"
 
@@ -30,21 +31,67 @@ namespace reactions {
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse directive.
+ *
+ * @param directive
+ * @param simulation
+ */
+void parseDirective(const StringView& directive, simulator::Simulation& simulation)
+{
+    InStringStream iss(directive.getData());
+
+    String name;
+    iss >> name;
+
+    if (name == "iterations")
+    {
+        simulator::IterationNumber iterations;
+        iss >> iterations;
+        simulation.setIterations(iterations);
+        Log::info("Number of iterations: ", iterations);
+    }
+    else if (name == "dt")
+    {
+        units::Time dt;
+        iss >> dt;
+        simulation.setTimeStep(dt);
+        Log::info("Time step: ", dt);
+    }
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
     InStream& source, const FilePath& filename) const
 {
     String code;
     String line;
 
+    auto simulation = makeUnique<simulator::Simulation>();
+
     // Read all lines
     while (std::getline(source, line))
-        code += line;
+    {
+        if (line.empty())
+            continue;
 
-    auto simulation = makeUnique<simulator::Simulation>();
-    simulation->setWorldSize(SizeVector(units::um(500)));
+        if (line.front() == '@')
+            parseDirective(StringView(line.c_str() + 1), *simulation);
+        else
+            code += line;
+    }
 
     // Get plugin
-    auto api = simulation->requirePlugin("stochastic-reactions-diffusive");
+    auto api = simulation->requirePlugin("stochastic-reactions");
 
     // Create simple static object
     auto object = simulation->buildObject("cell.Yeast", false);
