@@ -39,7 +39,8 @@
 #endif
 
 #if ENABLE_PHYSICS
-#include "Box2D/Box2D.h"
+// Box2D
+#include <Box2D/Box2D.h>
 #endif
 
 /* ************************************************************************ */

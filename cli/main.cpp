@@ -35,11 +35,9 @@
 
 #if ENABLE_RENDER
 #include "render/Context.hpp"
-
 #if ENABLE_PHYSICS_DEBUG
-#include "Render.hpp"
+#include "render/PhysicsDebugger.hpp"
 #endif
-
 #endif
 
 /* ************************************************************************ */
@@ -378,7 +376,7 @@ public:
 
 #if ENABLE_PHYSICS_DEBUG
         case GLFW_KEY_D:
-            g_sim.getSimulation()->setDrawPhysics(!g_sim.getSimulation()->isDrawPhysics());
+            ptr->swapPhysicsDebug();
             break;
 #endif
         }
@@ -504,8 +502,11 @@ private:
         // Get simulation
         auto simulation = m_simulator.getSimulation();
 
-        m_debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
-        simulation->getWorld().SetDebugDraw(&m_debugDraw);
+        m_physicsDebugger.SetFlags(
+            render::PhysicsDebugger::e_shapeBit |
+            render::PhysicsDebugger::e_centerOfMassBit
+        );
+        simulation->getWorld().SetDebugDraw(&m_physicsDebugger);
 #endif
 
         // Initialize simulator
@@ -527,6 +528,17 @@ private:
         m_simulator.getRenderContext().getCamera().setZoom(
             std::max(size.getWidth() / m_windowWidth, size.getHeight() / m_windowHeight).value()
         );
+    }
+#endif
+
+
+#if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
+    /**
+     * @brief Swap physics debug rendering.
+     */
+    void swapPhysicsDebug() noexcept
+    {
+        m_simulator.getSimulation()->setDrawPhysics(!m_simulator.getSimulation()->isDrawPhysics());
     }
 #endif
 
@@ -555,7 +567,7 @@ private:
 
 #if ENABLE_PHYSICS_DEBUG
     // Physics engine debug draw.
-    DebugDraw m_debugDraw;
+    render::PhysicsDebugger m_physicsDebugger;
 #endif
 
 #endif

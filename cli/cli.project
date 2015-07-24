@@ -36,8 +36,6 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="main.cpp"/>
-    <File Name="Render.cpp"/>
-    <File Name="Render.hpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="simulator"/>

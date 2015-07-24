@@ -42,8 +42,8 @@ endif ()
 
 # ######################################################################### #
 
-# Create library
-add_library(${PROJECT_NAME} OBJECT
+# Sources
+set(SRCS
     datatype.hpp
     Color.hpp
     Color.cpp
@@ -81,5 +81,17 @@ add_library(${PROJECT_NAME} OBJECT
     ImageData.hpp
     glext.h
 )
+
+if (ENABLE_BUILTIN_PHYSICS_DEBUG)
+    set(SRCS ${SRCS}
+        PhysicsDebugger.hpp
+        PhysicsDebugger.cpp
+    )
+endif ()
+
+# ######################################################################### #
+
+# Create library
+add_library(${PROJECT_NAME} OBJECT ${SRCS})
 
 # ######################################################################### #
