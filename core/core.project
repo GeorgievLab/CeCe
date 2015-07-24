@@ -68,6 +68,7 @@
     <File Name="Zero.hpp"/>
     <File Name="StringView.hpp"/>
     <File Name="LexicalCast.hpp"/>
+    <File Name="StringStream.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

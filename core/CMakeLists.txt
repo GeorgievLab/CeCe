@@ -67,6 +67,7 @@ add_library(${PROJECT_NAME} OBJECT
     ViewPtr.hpp
     ListenerContainer.hpp
     Zero.hpp
+    StringStream.hpp
 )
 
 # ######################################################################### #
