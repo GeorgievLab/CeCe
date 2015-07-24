@@ -13,6 +13,10 @@
 #include <csignal>
 #include <atomic>
 #include <fstream>
+#if _WIN32
+// _splitpath
+#include <stdlib.h>
+#endif
 
 #if ENABLE_RENDER
 #include <GLFW/glfw3.h>
@@ -23,6 +27,7 @@
 #include "core/StringView.hpp"
 #include "core/Exception.hpp"
 #include "core/TimeMeasurement.hpp"
+#include "core/FilePath.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
@@ -36,6 +41,31 @@
 #endif
 
 #endif
+
+/* ************************************************************************ */
+
+/**
+ * @brief Application parameters.
+ */
+struct Parameters
+{
+    /// Path to simulation file.
+    FilePath simulationFile;
+
+#if ENABLE_RENDER
+    // If simulation should be rendered.
+    bool visualize = true;
+
+    /// Window width.
+    unsigned int windowWidth = 0;
+
+    /// Window height.
+    unsigned int windowHeight = 0;
+
+    // Vizualization window in fullscreen mode.
+    bool fullscreen = false;
+#endif
+};
 
 /* ************************************************************************ */
 
@@ -58,6 +88,120 @@ void terminate_simulation(int param)
 /* ************************************************************************ */
 
 /**
+ * @brief Prints help message.
+ *
+ * @param name Application name.
+ */
+[[noreturn]] static void help(const char* name) noexcept
+{
+#if _WIN32
+    char fname[_MAX_FNAME];
+    char fext[_MAX_EXT];
+    _splitpath(name, NULL, NULL, fname, fext);
+    auto bname = String(fname) + "." + fext;
+#else
+    const char* bname = basename(name);
+#endif
+
+    std::cout <<
+        "Simulator\n"
+        "\n"
+        "  TODO: description.\n"
+        "\n"
+        "Usage:\n"
+        "  " << bname << " [ --vizualize | --novizualize | --fullscreen | --width <width> | --height <height> ] <simulation-file>\n"
+        "\n"
+#if ENABLE_RENDER
+        "    --vizualize        Enable vizualization (default).\n"
+        "    --fullscreen       Vizualization window in fullscreen mode.\n"
+        "    --novizualize      Disable vizualization.\n"
+        "    --width <width>    Vizualization window width (default 800; fullscreen by monitor).\n"
+        "    --height <height>  Vizualization window height (default 600; fullscreen by monitor).\n"
+#endif
+        "    <simulation-file>   Path to simulation file.\n"
+    << std::endl;
+
+    exit(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse arguments.
+ *
+ * @param argc
+ * @param argv
+ *
+ * @return Parameters.
+ */
+Parameters parseArguments(int argc, char** argv)
+{
+    Parameters params;
+
+    for (int i = 1; i < argc; ++i)
+    {
+        StringView arg(argv[i]);
+
+        // Switch
+        if (arg[0] == '-')
+        {
+#if ENABLE_RENDER
+            if (arg == "--vizualize")
+            {
+                params.visualize = true;
+            }
+            else if (arg == "--novizualize")
+            {
+                params.visualize = false;
+            }
+            else if (arg == "--fullscreen")
+            {
+                params.fullscreen = true;
+            }
+            else if (arg == "--width")
+            {
+                if (i + 1 < argc)
+                    throw InvalidArgumentException("missing width value");
+
+                params.windowWidth = atoi(argv[i + 1]);
+
+                if (!params.windowWidth)
+                    throw InvalidArgumentException("invalid width value");
+            }
+            else if (arg == "--height")
+            {
+                if (i + 1 < argc)
+                    throw InvalidArgumentException("missing height value");
+
+                params.windowHeight = atoi(argv[i + 1]);
+
+                if (!params.windowHeight)
+                    throw InvalidArgumentException("invalid height value");
+            }
+            else
+#endif
+            if (arg == "--help")
+                help(argv[0]);
+        }
+        else if (params.simulationFile.empty())
+        {
+            params.simulationFile = FilePath(arg.getData());
+        }
+        else
+        {
+            Log::warning("Unknown argument: ", arg.getData());
+        }
+    }
+
+    if (params.simulationFile.empty())
+        throw InvalidArgumentException("missing simulation file");
+
+    return params;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Simulator.
  */
 class Simulator
@@ -70,15 +214,19 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param argc
-     * @param argv
+     * @param params Simulation parameters.
      */
-    Simulator(int argc, char** argv)
+    explicit Simulator(const Parameters& params)
     {
-        parseArguments(argc, argv);
+        // Create simulation factory
+        // TODO: loaders
+        parser::xml::SimulationFactory simFactory;
+
+        // Create simulation
+        m_simulator.setSimulation(simFactory.fromFile(params.simulationFile));
 
 #if ENABLE_RENDER
-        initVizualization();
+        initVizualization(params);
 #endif
     }
 
@@ -109,16 +257,20 @@ public:
             // Make the window's context current
             glfwMakeContextCurrent(m_window);
 
+            // Initialize scene
+            initScene();
+
             // Loop until the user closes the window
             while (!g_terminated && !glfwWindowShouldClose(m_window))
             {
                 if (!m_paused)
                 {
                     // Update scene
-                    m_simulator.update();
+                    if (!update())
+                        break;
 
                     // Draw scene
-                    m_simulator.draw(m_windowWidth, m_windowHeight);
+                    draw();
 
                     // Swap buffers
                     glfwSwapBuffers(m_window);
@@ -132,12 +284,34 @@ public:
         {
 #endif
             // Update simulation
-            while (!g_terminated && m_simulator.update())
+            while (!g_terminated && update())
                 continue;
 #if ENABLE_RENDER
         }
 #endif
     }
+
+
+    /**
+     * @brief Update simulation.
+     *
+     * @return Update result.
+     */
+    bool update()
+    {
+        return m_simulator.update();
+    }
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Draw scene.
+     */
+    void draw()
+    {
+        m_simulator.draw(m_windowWidth, m_windowHeight);
+    }
+#endif
 
 
 #if ENABLE_RENDER
@@ -154,10 +328,8 @@ public:
         ptr->m_windowWidth = w;
         ptr->m_windowHeight = h;
 
-        auto size = ptr->m_simulator.getSimulation()->getWorldSize();
-        ptr->m_simulator.getRenderContext().getCamera().setZoom(
-            std::max(size.getWidth() / w, size.getHeight() / h).value()
-        );
+        // Update zoom
+        ptr->setOptimalZoom();
     }
 #endif
 
@@ -185,6 +357,10 @@ public:
             // Nothing
             break;
 
+        case GLFW_KEY_Q:
+            glfwSetWindowShouldClose(win, GL_TRUE);
+            break;
+
         case GLFW_KEY_P:
             ptr->m_paused = !ptr->m_paused;
             break;
@@ -192,8 +368,11 @@ public:
         case GLFW_KEY_S:
             if (ptr->m_paused)
             {
-                ptr->m_simulator.update();
-                // TODO: redraw
+                ptr->update();
+                ptr->draw();
+
+                // Swap buffers
+                glfwSwapBuffers(win);
             }
             break;
 
@@ -211,33 +390,16 @@ public:
 private:
 
 
-    /**
-     * @brief Parse arguments.
-     *
-     * @param argc
-     * @param argv
-     */
-    void parseArguments(int argc, char** argv)
-    {
-        if (argc < 2)
-        {
-            throw InvalidArgumentException("not enough arguments: <desc.xml>");
-        }
-
-        // Create simulation factory
-        parser::xml::SimulationFactory simFactory;
-
-        // Create simulation
-        m_simulator.setSimulation(simFactory.fromFile(argv[1]));
-    }
-
-
 #if ENABLE_RENDER
     /**
      * @brief Init vizualization.
+     *
+     * @param params Parameters.
      */
-    void initVizualization()
+    void initVizualization(const Parameters& params)
     {
+        m_visualize = params.visualize;
+
         if (!m_visualize)
             return;
 
@@ -245,20 +407,65 @@ private:
         if (!glfwInit())
             throw RuntimeException("Unable to initialize GLFW");
 
+        // Get primary monitor
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+
+        // Monitor video mode
+        const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
+
+        // Fullscreen mode
+        if (params.fullscreen)
+        {
+            m_windowWidth  = params.windowWidth  ? params.windowWidth  : vidmode->width;
+            m_windowHeight = params.windowHeight ? params.windowHeight : vidmode->height;
+
+            // Borderless fullscreen mode
+            if (!params.windowWidth && !params.windowHeight)
+            {
+                glfwWindowHint(GLFW_RED_BITS, vidmode->redBits);
+                glfwWindowHint(GLFW_GREEN_BITS, vidmode->greenBits);
+                glfwWindowHint(GLFW_BLUE_BITS, vidmode->blueBits);
+                glfwWindowHint(GLFW_REFRESH_RATE, vidmode->refreshRate);
+            }
+        }
+        else
+        {
+            m_windowWidth  = params.windowWidth  ? params.windowWidth  : 800;
+            m_windowHeight = params.windowHeight ? params.windowHeight : 600;
+        }
+
         // Create a windowed mode window and its OpenGL context
         m_window = glfwCreateWindow(
             m_windowWidth,
             m_windowHeight,
-            "Simulator", nullptr, nullptr
+            "Simulator",
+            params.fullscreen ? monitor : nullptr,
+            nullptr
         );
 
         if (!m_window)
             throw RuntimeException("Unable to create rendering window");
 
+        if (!params.fullscreen)
+        {
+            // Get monitor position
+            int xpos;
+            int ypos;
+            glfwGetMonitorPos(monitor, &xpos, &ypos);
+
+            // Center window
+            glfwSetWindowPos(
+                m_window,
+                xpos + (vidmode->width - m_windowWidth) / 2,
+                ypos + (vidmode->height - m_windowHeight) / 2
+            );
+        }
+
         // Store this pointer
         glfwSetWindowUserPointer(m_window, this);
 
         //glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_STENCIL);
+        glfwWindowHint(GLFW_SAMPLES, 8);
 
         // VSync
         glfwSwapInterval(1);
@@ -266,17 +473,6 @@ private:
         // Set callbacks
         glfwSetWindowSizeCallback(m_window, &Simulator::windowResizeCallback);
         glfwSetKeyCallback(m_window, &Simulator::keyboardCallback);
-
-#if ENABLE_PHYSICS_DEBUG
-        // Get simulation
-        auto simulation = m_simulator.getSimulation();
-
-        m_debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
-        simulation->getWorld().SetDebugDraw(&m_debugDraw);
-#endif
-
-        // Initialize simulator
-        m_simulator.drawInit();
     }
 #endif
 
@@ -298,6 +494,43 @@ private:
 #endif
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Initialize rendering scene.
+     */
+    void initScene()
+    {
+#if ENABLE_PHYSICS_DEBUG
+        // Get simulation
+        auto simulation = m_simulator.getSimulation();
+
+        m_debugDraw.SetFlags(DebugDraw::e_shapeBit | DebugDraw::e_centerOfMassBit);
+        simulation->getWorld().SetDebugDraw(&m_debugDraw);
+#endif
+
+        // Initialize simulator
+        m_simulator.drawInit();
+
+        // Initial zoom
+        setOptimalZoom();
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Calculate zoom to render scene in whole window.
+     */
+    void setOptimalZoom()
+    {
+        auto size = m_simulator.getSimulation()->getWorldSize();
+        m_simulator.getRenderContext().getCamera().setZoom(
+            std::max(size.getWidth() / m_windowWidth, size.getHeight() / m_windowHeight).value()
+        );
+    }
+#endif
+
+
 // Private Data Members
 private:
 
@@ -306,13 +539,13 @@ private:
 
 #if ENABLE_RENDER
     // If simulation should be rendered.
-    bool m_visualize = false;
+    bool m_visualize;
 
     /// Window width.
-    unsigned int m_windowWidth = 800;
+    unsigned int m_windowWidth;
 
     /// Window height.
-    unsigned int m_windowHeight = 600;
+    unsigned int m_windowHeight;
 
     /// Render window.
     GLFWwindow* m_window;
@@ -350,12 +583,16 @@ int main(int argc, char** argv)
 
     try
     {
-        // Create simulator
-        Simulator(argc, argv).start();
+        // Parse arguments
+        auto params = parseArguments(argc, argv);
+
+        // Create simulator and start it
+        Simulator(params).start();
     }
     catch (const Exception& e)
     {
         Log::error(e.what());
+        help(argv[0]);
         return 1;
     }
 }
