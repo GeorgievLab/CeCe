@@ -107,3 +107,54 @@ TEST(UnitsTest, symbol)
 }
 
 /* ************************************************************************ */
+
+TEST(UnitsTest, istream)
+{
+    {
+        std::istringstream is("0");
+
+        units::Length val;
+        is >> val;
+
+        EXPECT_EQ(units::um(0), val);
+    }
+
+    {
+        std::istringstream is("0um");
+
+        units::Length val;
+        is >> val;
+
+        EXPECT_EQ(units::um(0), val);
+    }
+
+    {
+        std::istringstream is("100um");
+
+        units::Length val;
+        is >> val;
+
+        EXPECT_EQ(units::um(100), val);
+    }
+
+    {
+        std::istringstream is("  500ms    ");
+
+        units::Time val;
+        is >> val;
+
+        EXPECT_EQ(units::ms(500), val);
+    }
+
+    {
+        std::istringstream is("2um2");
+
+        units::Area val;
+        is >> val;
+
+        EXPECT_EQ(units::um2(2), val);
+    }
+
+}
+
+/* ************************************************************************ */

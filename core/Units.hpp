@@ -215,6 +215,89 @@ struct Concat<List<Types1...>, List<Types2...>, Tail...>
 /* ************************************************************************ */
 
 /**
+ * @brief Type counter.
+ *
+ * @tparam T    Type to count.
+ * @tparam List List of types.
+ */
+template<typename T, typename... Types>
+struct Counter;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type counter.
+ *
+ * @tparam T Type to count.
+ */
+template<typename T>
+struct Counter<T, List<>>
+{
+    /// Number of occurences.
+    static constexpr unsigned int value = 0;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type counter.
+ *
+ * @tparam T    Type to count.
+ * @tparam Type The first type from types.
+ * @tparam List List of types.
+ */
+template<typename T, typename Type, typename... Types>
+struct Counter<T, List<Type, Types...>>
+{
+    /// Number of occurences.
+    static constexpr unsigned int value =
+        (std::is_same<T, Type>::value ? 1 : 0) +
+        Counter<T, List<Types...>>::value
+    ;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type counter.
+ *
+ * @tparam List List of types.
+ */
+template<typename... Types>
+struct CounterFirst;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type counter.
+ *
+ * @tparam List List of types.
+ */
+template<>
+struct CounterFirst<List<>>
+{
+    /// Number of occurences.
+    static constexpr unsigned int value = 0;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type counter.
+ *
+ * @tparam Type The first type from types.
+ * @tparam List List of types.
+ */
+template<typename Type, typename... Types>
+struct CounterFirst<List<Type, Types...>>
+{
+    /// Number of occurences.
+    static constexpr unsigned int value = Counter<Type, List<Type, Types...>>::value;
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Remove type from list.
  *
  * @tparam T    Type to remove.
@@ -837,6 +920,9 @@ public:
 
     /// Total unit coefficient.
     static constexpr Value coefficient = Coefficient<Nom>::value / Coefficient<Denom>::value;
+
+    /// Number of occurences of the first nominator.
+    static constexpr unsigned int firstCount = CounterFirst<Nom>::value;
 
 
 // Public Ctors & Dtors
@@ -2346,16 +2432,21 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
 {
     using Type = Unit<List<Nominators...>, List<Denominators...>>;
 
+    // Type symbol
+    static constexpr auto typeSymbol = Type::symbol::get();
+
     Value val;
     String symbol;
-    is >> val >> symbol;
+
+    is >> std::ws >> val;
+
+    // Unable to load unit
+    if (!is)
+        return is;
 
     // Symbol is given
-    if (!symbol.empty())
+    if (is >> std::noskipws >> symbol)
     {
-        // Type symbol
-        static constexpr auto typeSymbol = Type::symbol::get();
-
         // Find real symbol
         auto pos = symbol.find(typeSymbol.data());
         if (pos == String::npos)
@@ -2373,6 +2464,9 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
         // Get unit prefix
         if (pos == 1)
         {
+            if (Type::firstCount == 0)
+                throw InvalidArgumentException("Unit symbol prefix doesn't make sence without nominator");
+
             // Unit prefix
             switch (symbol.front())
             {
@@ -2380,11 +2474,11 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
                 throw InvalidArgumentException("Unknown/unsupported unit symbol prefix: " + String(1, symbol.front()));
 
             case 'n':
-                val *= 1e-3;
+                val *= std::pow(1e-3, Type::firstCount);
             case 'u':
-                val *= 1e-3;
+                val *= std::pow(1e-3, Type::firstCount);
             case 'm':
-                val *= 1e-3;
+                val *= std::pow(1e-3, Type::firstCount);
             }
         }
         else if (pos != 0)
@@ -2392,9 +2486,13 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
             throw InvalidArgumentException("Unit symbol prefix is longer than expected");
         }
     }
+    else
+    {
+        is.clear();
+    }
 
     // Set unit
-    unit = Unit<List<Nominators...>, List<Denominators...>>{val};
+    unit = Type{val};
 
     return is;
 }

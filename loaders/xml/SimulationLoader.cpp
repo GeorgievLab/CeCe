@@ -296,7 +296,7 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
         else
         {
             // Parse time step
-            simulation.setTimeStep(lexical_cast<units::Time>(dtStr));
+            simulation.setTimeStep(config.get<units::Time>("dt"));
         }
     }
 

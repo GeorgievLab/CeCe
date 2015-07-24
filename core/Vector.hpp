@@ -1065,15 +1065,13 @@ InStream& operator>>(InStream& is, Vector<T>& vector)
     T v2;
     is >> v1;
 
-    if (is >> v2)
+    if (is.get() == ' ' && is >> v2)
     {
         vector = Vector<T>{v1, v2};
     }
     else
     {
         vector = Vector<T>{v1};
-        is.clear();
-        is.setstate(InStream::eofbit);
     }
 
     return is;
