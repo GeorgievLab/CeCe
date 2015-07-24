@@ -30,7 +30,8 @@
 # GLFW_LIBRARIES
 #
 
-find_path( GLFW_INCLUDE_DIR
+# Find header file
+find_path(GLFW_INCLUDE_DIR
     NAMES
         GLFW/glfw3.h
     HINTS
@@ -52,34 +53,9 @@ find_path( GLFW_INCLUDE_DIR
         "The directory where GLFW/glfw3.h resides"
 )
 
-#
-# XXX: Do we still need to search for GL/glfw.h?
-#
-find_path( GLFW_INCLUDE_DIR
-    NAMES
-        GL/glfw.h
-    HINTS
-        "${GLFW_LOCATION}/include"
-        "$ENV{GLFW_LOCATION}/include"
-    PATHS
-        "$ENV{PROGRAMFILES}/GLFW/include"
-        "${OPENGL_INCLUDE_DIR}"
-        /usr/openwin/share/include
-        /usr/openwin/include
-        /usr/X11R6/include
-        /usr/include/X11
-        /opt/graphics/OpenGL/include
-        /opt/graphics/OpenGL/contrib/libglfw
-        /usr/local/include
-        /usr/include/GL
-        /usr/include
-    DOC
-        "The directory where GL/glfw.h resides"
-)
-
 if (WIN32)
-    if(CYGWIN)
-        find_library( GLFW_glfw_LIBRARY
+    if (CYGWIN)
+        find_library(GLFW_glfw_LIBRARY
             NAMES
                 glfw32
             HINTS
@@ -95,8 +71,8 @@ if (WIN32)
             DOC
                 "The GLFW library"
         )
-    else()
-        find_library( GLFW_glfw_LIBRARY
+    else ()
+        find_library(GLFW_glfw_LIBRARY
             NAMES
                 glfw32
                 glfw32s
@@ -117,10 +93,10 @@ if (WIN32)
             DOC
                 "The GLFW library"
         )
-    endif()
+    endif ()
 else ()
     if (APPLE)
-        find_library( GLFW_glfw_LIBRARY glfw
+        find_library(GLFW_glfw_LIBRARY glfw
             NAMES
                 glfw
                 glfw3
@@ -139,30 +115,28 @@ else ()
         # (*)NIX
 
         find_package(Threads REQUIRED)
-
         find_package(X11 REQUIRED)
 
-        if(NOT X11_Xrandr_FOUND)
+        if (NOT X11_Xrandr_FOUND)
             message(FATAL_ERROR "Xrandr library not found - required for GLFW")
-        endif()
+        endif ()
 
-        if(NOT X11_xf86vmode_FOUND)
+        if (NOT X11_xf86vmode_FOUND)
             message(FATAL_ERROR "xf86vmode library not found - required for GLFW")
-        endif()
+        endif ()
 
-        if(NOT X11_Xcursor_FOUND)
+        if (NOT X11_Xcursor_FOUND)
             message(FATAL_ERROR "Xcursor library not found - required for GLFW")
-        endif()
+        endif ()
 
-        if(NOT X11_Xinerama_FOUND)
+        if (NOT X11_Xinerama_FOUND)
             message(FATAL_ERROR "Xinerama library not found - required for GLFW")
-        endif()
+        endif ()
 
         list(APPEND GLFW_x11_LIBRARY "${X11_Xrandr_LIB}" "${X11_Xxf86vm_LIB}" "${X11_Xcursor_LIB}" "${X11_Xinerama_LIB}" "${CMAKE_THREAD_LIBS_INIT}" -lrt -lXi)
 
-        find_library( GLFW_glfw_LIBRARY
+        find_library(GLFW_glfw_LIBRARY
             NAMES
-                glfw
                 glfw3
             HINTS
                 "${GLFW_LOCATION}/lib"
@@ -179,26 +153,24 @@ else ()
                 /usr/openwin/lib
                 /usr/X11R6/lib
             DOC
-                "The GLFW library"
+                "The GLFW3 library"
         )
-    endif (APPLE)
-endif (WIN32)
+    endif ()
+endif ()
 
-set( GLFW_FOUND "NO" )
+# Default is not found
+set(GLFW_FOUND "NO")
 
-if(GLFW_INCLUDE_DIR)
+if (GLFW_INCLUDE_DIR)
 
-    if(GLFW_glfw_LIBRARY)
-        set( GLFW_LIBRARIES "${GLFW_glfw_LIBRARY}"
-                            "${GLFW_x11_LIBRARY}"
-                            "${GLFW_cocoa_LIBRARY}"
-                            "${GLFW_iokit_LIBRARY}"
-                            "${GLFW_corevideo_LIBRARY}" )
-        set( GLFW_FOUND "YES" )
-        set (GLFW_LIBRARY "${GLFW_LIBRARIES}")
-        set (GLFW_INCLUDE_PATH "${GLFW_INCLUDE_DIR}")
-    endif(GLFW_glfw_LIBRARY)
-
+    if (GLFW_glfw_LIBRARY)
+        set(GLFW_LIBRARIES "${GLFW_glfw_LIBRARY}"
+                           "${GLFW_x11_LIBRARY}"
+                           "${GLFW_cocoa_LIBRARY}"
+                           "${GLFW_iokit_LIBRARY}"
+                           "${GLFW_corevideo_LIBRARY}" )
+        set(GLFW_FOUND "YES")
+    endif (GLFW_glfw_LIBRARY)
 
     # Tease the GLFW_VERSION numbers from the lib headers
     function(parseVersion FILENAME VARNAME)
@@ -214,13 +186,7 @@ if(GLFW_INCLUDE_DIR)
     endfunction()
 
 
-    if(EXISTS "${GLFW_INCLUDE_DIR}/GL/glfw.h")
-
-        parseVersion(GL/glfw.h GLFW_VERSION_MAJOR)
-        parseVersion(GL/glfw.h GLFW_VERSION_MINOR)
-        parseVersion(GL/glfw.h GLFW_VERSION_REVISION)
-
-    elseif(EXISTS "${GLFW_INCLUDE_DIR}/GLFW/glfw3.h")
+    if (EXISTS "${GLFW_INCLUDE_DIR}/GLFW/glfw3.h")
 
         parseVersion(GLFW/glfw3.h GLFW_VERSION_MAJOR)
         parseVersion(GLFW/glfw3.h GLFW_VERSION_MINOR)
@@ -234,7 +200,7 @@ if(GLFW_INCLUDE_DIR)
         mark_as_advanced(GLFW_VERSION)
     endif()
 
-endif(GLFW_INCLUDE_DIR)
+endif (GLFW_INCLUDE_DIR)
 
 include(FindPackageHandleStandardArgs)
 
