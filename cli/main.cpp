@@ -36,6 +36,7 @@
 #include "loaders/reactions/SimulationLoader.hpp"
 
 #if ENABLE_RENDER
+#include "core/TriBool.hpp"
 #include "render/Context.hpp"
 #if ENABLE_PHYSICS_DEBUG
 #include "render/PhysicsDebugger.hpp"
@@ -54,7 +55,7 @@ struct Parameters
 
 #if ENABLE_RENDER
     // If simulation should be rendered.
-    bool visualize = true;
+    TriBool visualize = Indeterminate;
 
     /// Window width.
     unsigned int windowWidth = 0;
@@ -255,6 +256,15 @@ public:
         m_simulator.setSimulation(simulator::LoaderManager::create(params.simulationFile));
 
 #if ENABLE_RENDER
+
+        // Decide if simulation should be vizualized
+        if (params.visualize)
+            m_visualize = true;
+        else if (!params.visualize)
+            m_visualize = false;
+        else
+            m_visualize = m_simulator.getSimulation()->getVizualize() != false;
+
         initVizualization(params);
 #endif
     }
@@ -427,8 +437,6 @@ private:
      */
     void initVizualization(const Parameters& params)
     {
-        m_visualize = params.visualize;
-
         if (!m_visualize)
             return;
 
