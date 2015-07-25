@@ -256,6 +256,7 @@ public:
         m_simulator.setSimulation(simulator::LoaderManager::create(params.simulationFile));
 
 #if ENABLE_RENDER
+        const auto simViz = m_simulator.getSimulation()->getVizualize();
 
         // Decide if simulation should be vizualized
         if (params.visualize)
@@ -263,7 +264,7 @@ public:
         else if (!params.visualize)
             m_visualize = false;
         else
-            m_visualize = m_simulator.getSimulation()->getVizualize() != false;
+            m_visualize = simViz || indeterminate(simViz);
 
         initVizualization(params);
 #endif
