@@ -35,7 +35,7 @@ if (ENABLE_BUILTIN_PHYSICS_DEBUG)
 endif ()
 
 # Create program
-add_executable(${PROJECT_NAME} ${SRCS})
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SRCS})
 
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -74,10 +74,12 @@ if (APPLE)
 #            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
 #        )
 #    " COMPONENT Runtime)
+    set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
+
     install(CODE
         "
         include(BundleUtilities)
-        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/Simulation.app\" \"\" \"/usr/local\")
+        fixup_bundle(\"${APP}\" \"\" \"/usr/local\")
         "
         COMPONENT Runtime
     )
