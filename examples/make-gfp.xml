@@ -1,11 +1,11 @@
-<simulation world-size="100um 100um" dt="1min" iterations="10000">
+<simulation world-size="100um 100um" dt="60s" iterations="10000">
     <init language="python">
 <![CDATA[
 def call(simulation):
     for i in range(0, 16):
         object = simulation.buildObject("cell.Yeast");
         object.useProgram("make-gfp")
-        object.useProgram("store-gfp")
+        object.useProgram("cell.store-molecules")
 ]]>
     </init>
     <program name="make-gfp" language="stochastic-reactions">
@@ -17,21 +17,6 @@ def call(simulation):
         null < 1.505149978, 0.001 > GFP;
 ]]>
         <!-- GFP > 0.001 > null;-->
-    </program>
-    <program name="store-gfp" language="python">
-<![CDATA[
-# Open CSV file writer for storing GFP data
-#import csv
-file = open("gfp.csv", 'wb')
-#writer = csv.writer(file, delimiter = ';')
-#writer.writerow(["iteration", "totalTime", "id", "gfp", "gfp/volume"])
-file.write("iteration;totalTime;id;gfp;gfp/volume\n");
-
-# Program code
-def call(object, simulation, dt):
-    #writer.writerow([simulation.iteration, simulation.totalTime, object.id, object.moleculeCount("GFP"), object.moleculeCount("GFP") / object.volume])
-    file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(object.id) + ";" + str(object.moleculeCount("GFP")) + ";" + str(object.moleculeCount("GFP") / object.volume) + "\n")
-]]>
     </program>
 </simulation>
 
