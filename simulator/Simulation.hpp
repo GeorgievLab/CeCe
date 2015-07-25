@@ -17,7 +17,6 @@
 #include <functional>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "core/Log.hpp"
@@ -36,6 +35,7 @@
 #include "simulator/SimulationListener.hpp"
 
 #if ENABLE_RENDER
+#include "core/TriBool.hpp"
 #include "render/Context.hpp"
 #endif
 
@@ -65,7 +65,7 @@ using IterationNumber = unsigned long long;
 /**
  * @brief Simulation class.
  */
-class DLL_EXPORT Simulation
+class Simulation
     : public ListenerContainer<SimulationListener>
 {
 
@@ -106,7 +106,7 @@ public:
     /**
      * @brief Constructor.
      */
-    Simulation() NOEXCEPT;
+    Simulation() noexcept;
 
 
     /**
@@ -135,7 +135,7 @@ public:
      *
      * @return
      */
-    IterationNumber getIteration() const NOEXCEPT
+    IterationNumber getIteration() const noexcept
     {
         return m_iteration;
     }
@@ -146,7 +146,7 @@ public:
      *
      * @return
      */
-    IterationNumber getIterations() const NOEXCEPT
+    IterationNumber getIterations() const noexcept
     {
         return m_iterations;
     }
@@ -157,7 +157,7 @@ public:
      *
      * @return
      */
-    bool hasUnlimitedIterations() const NOEXCEPT
+    bool hasUnlimitedIterations() const noexcept
     {
         return getIterations() == 0;
     }
@@ -168,7 +168,7 @@ public:
      *
      * @return
      */
-    const ModuleContainer& getModules() const NOEXCEPT
+    const ModuleContainer& getModules() const noexcept
     {
         return m_modules;
     }
@@ -179,7 +179,7 @@ public:
      *
      * @return
      */
-    units::Time getTimeStep() const NOEXCEPT
+    units::Time getTimeStep() const noexcept
     {
         return m_timeStep;
     }
@@ -190,7 +190,7 @@ public:
      *
      * @return
      */
-    units::Time getTotalTime() const NOEXCEPT
+    units::Time getTotalTime() const noexcept
     {
         return m_totalTime;
     }
@@ -201,7 +201,7 @@ public:
      *
      * @return
      */
-    bool isTimeStepRealTime() const NOEXCEPT
+    bool isTimeStepRealTime() const noexcept
     {
         return m_timeStep == Zero;
     }
@@ -214,7 +214,7 @@ public:
      *
      * @return If plugin is loaded.
      */
-    bool isPluginLoaded(const String& name) const NOEXCEPT
+    bool isPluginLoaded(const String& name) const noexcept
     {
         return m_plugins.find(name) != m_plugins.end();
     }
@@ -227,7 +227,7 @@ public:
      *
      * @return
      */
-    bool hasModule(const String& name) const NOEXCEPT
+    bool hasModule(const String& name) const noexcept
     {
         return m_modules.find(name) != m_modules.end();
     }
@@ -240,7 +240,7 @@ public:
      *
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
-    Module* getModule(const String& name) NOEXCEPT
+    Module* getModule(const String& name) noexcept
     {
         auto it = m_modules.find(name);
 
@@ -261,7 +261,7 @@ public:
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
     template<typename ModuleType>
-    ModuleType* getModule(const String& name) NOEXCEPT
+    ModuleType* getModule(const String& name) noexcept
     {
         auto module = getModule(name);
         if (!module)
@@ -277,7 +277,7 @@ public:
      *
      * @return
      */
-    const ObjectContainer& getObjects() const NOEXCEPT
+    const ObjectContainer& getObjects() const noexcept
     {
         return m_objects;
     }
@@ -288,7 +288,7 @@ public:
      *
      * @return
      */
-    const SizeVector& getWorldSize() const NOEXCEPT
+    const SizeVector& getWorldSize() const noexcept
     {
         return m_worldSize;
     }
@@ -299,7 +299,7 @@ public:
      *
      * @return
      */
-    const ParameterContainer& getParameters() const NOEXCEPT
+    const ParameterContainer& getParameters() const noexcept
     {
         return m_parameters;
     }
@@ -312,7 +312,7 @@ public:
      *
      * @return
      */
-    bool hasParameters(const String& name) const NOEXCEPT
+    bool hasParameters(const String& name) const noexcept
     {
         return m_parameters.find(name) != m_parameters.end();
     }
@@ -326,7 +326,7 @@ public:
      *
      * @return Parameter value or default value.
      */
-    ParameterValueType getParameter(const String& name, ParameterValueType def = {}) const NOEXCEPT
+    ParameterValueType getParameter(const String& name, ParameterValueType def = {}) const noexcept
     {
         auto it = m_parameters.find(name);
         return it != m_parameters.end() ? it->second : def;
@@ -339,7 +339,7 @@ public:
      *
      * @return
      */
-    b2World& getWorld() NOEXCEPT
+    b2World& getWorld() noexcept
     {
         return m_world;
     }
@@ -352,7 +352,7 @@ public:
      *
      * @return
      */
-    const b2World& getWorld() const NOEXCEPT
+    const b2World& getWorld() const noexcept
     {
         return m_world;
     }
@@ -365,7 +365,7 @@ public:
      *
      * @return
      */
-    bool isDrawPhysics() const NOEXCEPT
+    bool isDrawPhysics() const noexcept
     {
         return m_drawPhysics;
     }
@@ -377,7 +377,7 @@ public:
      *
      * @return
      */
-    const ProgramContainer& getPrograms() const NOEXCEPT
+    const ProgramContainer& getPrograms() const noexcept
     {
         return m_programs;
     }
@@ -390,7 +390,7 @@ public:
      *
      * @return
      */
-    bool hasProgram(const String& name) const NOEXCEPT
+    bool hasProgram(const String& name) const noexcept
     {
         return m_programs.find(name) != m_programs.end();
     }
@@ -403,7 +403,7 @@ public:
      *
      * @return Pointer to program.
      */
-    Program getProgram(const String& name) NOEXCEPT
+    Program getProgram(const String& name) noexcept
     {
         auto it = m_programs.find(name);
 
@@ -459,6 +459,19 @@ public:
     }
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Get vizualize flag.
+     *
+     * @return
+     */
+    TriBool getVizualize() const noexcept
+    {
+        return m_vizualize;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -480,7 +493,7 @@ public:
      * @param iterations Number of iterations. If value is 0, there is
      *                   unlimited number of iterations.
      */
-    void setIterations(IterationNumber iterations) NOEXCEPT
+    void setIterations(IterationNumber iterations) noexcept
     {
         m_iterations = iterations;
     }
@@ -491,7 +504,7 @@ public:
      *
      * @param dt Time step. If value is units::Zero, real-time step is enabled.
      */
-    void setTimeStep(units::Time dt) NOEXCEPT
+    void setTimeStep(units::Time dt) noexcept
     {
         m_timeStep = dt;
     }
@@ -502,7 +515,7 @@ public:
      *
      * @param parameters
      */
-    void setParameters(ParameterContainer parameters) NOEXCEPT
+    void setParameters(ParameterContainer parameters) noexcept
     {
         m_parameters = std::move(parameters);
     }
@@ -514,7 +527,7 @@ public:
      * @param name  Parameter name.
      * @param value Parameter value.
      */
-    void setParameter(const String& name, ParameterValueType value) NOEXCEPT
+    void setParameter(const String& name, ParameterValueType value) noexcept
     {
         m_parameters[name] = value;
     }
@@ -583,7 +596,7 @@ public:
      *
      * @param size
      */
-    void setWorldSize(SizeVector size) NOEXCEPT
+    void setWorldSize(SizeVector size) noexcept
     {
         m_worldSize = std::move(size);
     }
@@ -632,7 +645,7 @@ public:
     /**
      * @brief If physics debug data should be shown.
      */
-    void setDrawPhysics(bool flag) NOEXCEPT
+    void setDrawPhysics(bool flag) noexcept
     {
         m_drawPhysics = flag;
     }
@@ -672,6 +685,19 @@ public:
     {
         return m_dataTables[name.getData()];
     }
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Set vizualize flag.
+     *
+     * @param value
+     */
+    void setVizualize(TriBool value) noexcept
+    {
+        m_vizualize = value;
+    }
+#endif
 
 
 // Public Operations
@@ -741,7 +767,7 @@ public:
      *
      * @see requirePlugin
      */
-    ViewPtr<PluginApi> loadPlugin(const String& name) NOEXCEPT;
+    ViewPtr<PluginApi> loadPlugin(const String& name) noexcept;
 
 
     /**
@@ -796,6 +822,11 @@ private:
     /// Managed data tables.
     DataTableContainer m_dataTables;
 
+#if ENABLE_RENDER
+    /// Option if vizualization should be enable.d
+    TriBool m_vizualize = Indeterminate;
+#endif
+
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     bool m_drawPhysics = true;
 #endif
@@ -843,7 +874,7 @@ struct DLL_EXPORT TimeMeasurementIterationOutput
      * @param name Measurement name.
      * @param dt   Measured time.
      */
-    void operator()(OutStream& out, const String& name, Clock::duration dt) const NOEXCEPT
+    void operator()(OutStream& out, const String& name, Clock::duration dt) const noexcept
     {
         using namespace std::chrono;
         out << name << ";" << m_simulation->getIteration() << ";" << duration_cast<microseconds>(dt).count() << "\n";
