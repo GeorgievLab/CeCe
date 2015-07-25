@@ -178,11 +178,25 @@ public:
     }
 
 
+    /**
+     * @brief Create new sub-configuration.
+     *
+     * @param name Sub-configuration name.
+     *
+     * @return
+     */
+    UniquePtr<simulator::Configuration::Implementation> addSub(const StringView& name) noexcept override
+    {
+        return makeUnique<ConfigImplementation>(m_node.append_child(name.getData()));
+    }
+
+
+
 // Private Data Members
 private:
 
     /// Managed node.
-    const pugi::xml_node m_node;
+    pugi::xml_node m_node;
 
 };
 

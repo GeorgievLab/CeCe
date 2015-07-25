@@ -15,7 +15,6 @@ project(loader-reactions CXX)
 add_library(${PROJECT_NAME}
     SimulationLoader.hpp
     SimulationLoader.cpp
-    Configuration.hpp
 )
 
 # ######################################################################### #

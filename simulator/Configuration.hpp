@@ -149,6 +149,16 @@ public:
          */
         virtual void setContent(const StringView& value) noexcept = 0;
 
+
+        /**
+         * @brief Create new sub-configuration.
+         *
+         * @param name Sub-configuration name.
+         *
+         * @return
+         */
+        virtual UniquePtr<Implementation> addSub(const StringView& name) noexcept = 0;
+
     };
 
 
@@ -182,6 +192,14 @@ public:
     {
         // Nothign to do
     }
+
+
+    /**
+     * @brief Constructor (memory version).
+     *
+     * @param path Path to source file.
+     */
+    explicit Configuration(FilePath path) noexcept;
 
 
 // Public Accessors
@@ -382,7 +400,7 @@ public:
     template<typename T>
     void set(const String& name, T value) noexcept
     {
-        set(name, castTo(value));
+        m_impl->set(name, castTo(value));
     }
 
 
@@ -394,6 +412,19 @@ public:
     void setContent(const StringView& content) noexcept
     {
         m_impl->setContent(content);
+    }
+
+
+    /**
+     * @brief Create new sub-configuration.
+     *
+     * @param name Sub-configuration name.
+     *
+     * @return New configuration.
+     */
+    Configuration addConfiguration(const StringView& name) noexcept
+    {
+        return {m_impl->addSub(name), m_filePath};
     }
 
 
