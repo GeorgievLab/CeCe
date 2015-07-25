@@ -86,7 +86,7 @@ void Shader::init(Type type, const char* source, unsigned length)
     // Set shader source
     const GLchar* src = source;
     const GLint len = length;
-    gl(glShaderSource(m_id, 1, &source, &len));
+    gl(glShaderSource(m_id, 1, &src, &len));
 
 #ifdef _WIN32
     if (!glCompileShader)
