@@ -1,19 +1,23 @@
-
 /* ************************************************************************ */
-
-// C++
-#include <cassert>
-#include <cstring>
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 // Simulator
 #include "simulator/Simulation.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
-// Module
+// Plugin
 #include "Generator.hpp"
 #include "Yeast.hpp"
 #include "Cell.hpp"
+#include "StoreMolecules.hpp"
 
 /* ************************************************************************ */
 
@@ -22,30 +26,66 @@ using namespace plugin::cell;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Cell plugin API.
+ */
 class CellApi : public PluginApi
 {
-    std::unique_ptr<Module> createModule(Simulation& simulation, const std::string& name) NOEXCEPT override
+
+    /**
+     * @brief Create module from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Module name.
+     *
+     * @return Created module.
+     */
+    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
         if (name == "generator")
-            return std::unique_ptr<Module>(new Generator{});
+            return makeUnique<Generator>();
 
         return nullptr;
     }
 
-    std::unique_ptr<Object> createObject(Simulation& simulation, const std::string& name, bool dynamic = true) NOEXCEPT override
+
+    /**
+     * @brief Create object from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Object name.
+     * @param dynamic    If object should be dynamic.
+     *
+     * @return Created object.
+     */
+    UniquePtr<Object> createObject(Simulation& simulation, const String& name, bool dynamic = true) noexcept override
     {
         auto type = dynamic ? Object::Type::Dynamic : Object::Type::Static;
 
         if (name == "Yeast")
-        {
-            return std::unique_ptr<Object>(new Yeast{simulation, type});
-        }
+            return makeUnique<Yeast>(simulation, type);
         else if (name == "Cell")
-        {
-            return std::unique_ptr<Object>(new Cell{simulation, type});
-        }
+            return makeUnique<Cell>(simulation, type);
 
         return nullptr;
+    }
+
+
+    /**
+     * @brief Create program from current library.
+     *
+     * @param simulation Simulation for that module is created.
+     * @param name       Program name.
+     * @param code       Optional program code.
+     *
+     * @return Created program.
+     */
+    Program createProgram(Simulation& simulation, const String& name, String code = {}) override
+    {
+        if (name == "store-molecules")
+            return StoreMolecules{};
+
+        return {};
     }
 
 };

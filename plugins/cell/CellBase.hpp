@@ -7,15 +7,11 @@
 #include <cmath>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/Map.hpp"
 #include "core/String.hpp"
+#include "core/StringView.hpp"
 #include "simulator/Object.hpp"
-
-#ifdef ENABLE_RENDER
-#include "render/Context.hpp"
-#endif
 
 /* ************************************************************************ */
 
@@ -71,7 +67,7 @@ public:
      *
      * @return
      */
-    units::Volume getVolume() const NOEXCEPT
+    units::Volume getVolume() const noexcept
     {
         return m_volume;
     }
@@ -82,9 +78,20 @@ public:
      *
      * @return
      */
-    GrowthRate getGrowthRate() const NOEXCEPT
+    GrowthRate getGrowthRate() const noexcept
     {
         return m_growthRate;
+    }
+
+
+    /**
+     * @brief Returns map of molecules.
+     *
+     * @return
+     */
+    const Map<String, MoleculeCount>& getMolecules() const noexcept
+    {
+        return m_molecules;
     }
 
 
@@ -95,9 +102,9 @@ public:
      *
      * @return Number of molecules.
      */
-    MoleculeCount getMoleculeCount(const String& name) const NOEXCEPT
+    MoleculeCount getMoleculeCount(const StringView& name) const noexcept
     {
-        auto it = m_molecules.find(name);
+        auto it = m_molecules.find(name.getData());
         return it != m_molecules.end() ? it->second : MoleculeCount();
     }
 
@@ -111,7 +118,7 @@ public:
      *
      * @param volume
      */
-    void setVolume(units::Volume volume) NOEXCEPT
+    void setVolume(units::Volume volume) noexcept
     {
         m_volume = volume;
     }
@@ -122,7 +129,7 @@ public:
      *
      * @param rate
      */
-    void setGrowthRate(GrowthRate rate) NOEXCEPT
+    void setGrowthRate(GrowthRate rate) noexcept
     {
         m_growthRate = rate;
     }
@@ -134,9 +141,9 @@ public:
      * @param name  Molecule name.
      * @param count Number of molecules.
      */
-    void setMoleculeCount(const String& name, MoleculeCount count) NOEXCEPT
+    void setMoleculeCount(const StringView& name, MoleculeCount count) noexcept
     {
-        m_molecules[name] = count;
+        m_molecules[name.getData()] = count;
     }
 
 
@@ -146,10 +153,10 @@ public:
      * @param name Molecule name.
      * @param diff Number of molecules.
      */
-    void changeMoleculeCount(const String& name, MoleculeCountDifference diff) NOEXCEPT
+    void changeMoleculeCount(const StringView& name, MoleculeCountDifference diff) noexcept
     {
         // Get mutable reference
-        auto& value = m_molecules[name];
+        auto& value = m_molecules[name.getData()];
 
         // We need to compare signed versions.
         // If not, this condition is always true.
@@ -166,7 +173,7 @@ public:
      * @param name  Molecule name.
      * @param count Number of molecules to add.
      */
-    void addMolecules(const String& name, MoleculeCount count) NOEXCEPT
+    void addMolecules(const StringView& name, MoleculeCount count) noexcept
     {
         changeMoleculeCount(name, count);
     }
@@ -178,7 +185,7 @@ public:
      * @param name  Molecule name.
      * @param count Number of molecules to remove.
      */
-    void removeMolecules(const String& name, MoleculeCount count) NOEXCEPT
+    void removeMolecules(const StringView& name, MoleculeCount count) noexcept
     {
         changeMoleculeCount(name, -count);
     }
@@ -205,7 +212,7 @@ public:
      *
      * @return Radius.
      */
-    static units::Length calcSphereRadius(units::Volume volume) NOEXCEPT
+    static units::Length calcSphereRadius(units::Volume volume) noexcept
     {
         // 3th root of ((3 / 4 * pi) * volume)
         return units::Length(0.62035f * std::pow(volume.value(), 0.3333333f));

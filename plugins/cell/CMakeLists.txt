@@ -21,6 +21,8 @@ set(SRCS
     DrawableCell.cpp
     DrawableYeast.hpp
     DrawableYeast.cpp
+    StoreMolecules.hpp
+    StoreMolecules.cpp
 
     # Shaders
     vs.cell.hpp

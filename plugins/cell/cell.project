@@ -24,6 +24,7 @@
     <File Name="DrawableCell.cpp"/>
     <File Name="CellBase.cpp"/>
     <File Name="DrawableYeast.cpp"/>
+    <File Name="StoreMolecules.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Cell.hpp"/>
@@ -36,6 +37,7 @@
     <File Name="vs.cell.hpp"/>
     <File Name="fs.yeast.hpp"/>
     <File Name="vs.yeast.hpp"/>
+    <File Name="StoreMolecules.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
