@@ -68,12 +68,19 @@ install(TARGETS ${PROJECT_NAME}
 
 # Fixup shared libraries for bundle
 if (APPLE)
-    install(CODE "
-        execute_process(COMMAND
-            ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle.sh
-            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
-        )
-    " COMPONENT Runtime)
+#    install(CODE "
+#        execute_process(COMMAND
+#            ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle.sh
+#            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
+#        )
+#    " COMPONENT Runtime)
+    install(CODE
+        "
+        include(BundleUtilities)
+        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/Simulation.app\" \"\" \"/usr/local\")
+        "
+        COMPONENT Runtime
+    )
 endif ()
 
 # ######################################################################### #
