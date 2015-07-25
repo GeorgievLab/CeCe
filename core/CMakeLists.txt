@@ -71,9 +71,11 @@ add_library(${PROJECT_NAME} OBJECT
     Tokenizer.hpp
     Real.hpp
     Mutex.hpp
+    Pair.hpp
     Variant.hpp
     DataTable.hpp
     DataTable.cpp
+    SharedPtr.hpp
 )
 
 # ######################################################################### #

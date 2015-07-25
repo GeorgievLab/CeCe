@@ -76,6 +76,8 @@
     <File Name="Mutex.hpp"/>
     <File Name="Variant.hpp"/>
     <File Name="DataTable.hpp"/>
+    <File Name="Pair.hpp"/>
+    <File Name="SharedPtr.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
