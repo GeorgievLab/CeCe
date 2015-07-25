@@ -30,7 +30,6 @@
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="SimulationLoader.hpp"/>
-    <File Name="Configuration.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

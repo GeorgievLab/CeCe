@@ -18,11 +18,12 @@
 #include "core/Log.hpp"
 #include "core/String.hpp"
 #include "core/StringStream.hpp"
+#include "core/ExpressionParser.hpp"
 #include "simulator/PluginApi.hpp"
 #include "simulator/Simulation.hpp"
 
 // Simulator
-#include "Configuration.hpp"
+#include "simulator/Configuration.hpp"
 
 /* ************************************************************************ */
 
@@ -41,9 +42,10 @@ namespace {
  * @param directive
  * @param simulation
  */
-void parseDirective(const StringView& directive, simulator::Simulation& simulation)
+void parseDirective(const StringView& directive, simulator::Simulation& simulation,
+    simulator::Configuration& config)
 {
-    InStringStream iss(directive.getData());
+    InStringStream iss(directive.getData() + 1);
 
     String name;
     iss >> name;
@@ -62,6 +64,29 @@ void parseDirective(const StringView& directive, simulator::Simulation& simulati
         simulation.setTimeStep(dt);
         Log::info("Time step: ", dt);
     }
+    else if (name == "molecule")
+    {
+        String molecule;
+        unsigned int amount;
+        iss >> molecule >> amount;
+
+        auto sub = config.addConfiguration("molecule");
+        sub.set("name", molecule);
+        sub.set("amount", amount);
+    }
+    else if (name == "parameter")
+    {
+        String param;
+        String expression;
+
+        iss >> param;
+
+        // Get rest of line
+        std::getline(iss, expression);
+
+        // Parse expression
+        simulation.setParameter(param, parseExpression(expression, simulation.getParameters()));
+    }
 }
 
 /* ************************************************************************ */
@@ -78,6 +103,9 @@ UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
 
     auto simulation = makeUnique<simulator::Simulation>();
 
+    // Configuration
+    simulator::Configuration config(filename);
+
     // Read all lines
     while (std::getline(source, line))
     {
@@ -85,7 +113,7 @@ UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
             continue;
 
         if (line.front() == '@')
-            parseDirective(StringView(line.c_str() + 1), *simulation);
+            parseDirective(line, *simulation, config);
         else
             code += line;
     }
@@ -96,12 +124,21 @@ UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
     // Create simple static object
     auto object = simulation->buildObject("cell.Yeast", false);
 
+    // Configure cell
+    object->configure(config, *simulation);
+
     // Create program
     auto program = api->createProgram(*simulation, "__local__", code);
 
     // Add program to object
     if (program)
         object->addProgram(program);
+
+    auto storeProgram = simulation->buildProgram("cell.store-molecules");
+
+    // Add program to object
+    if (storeProgram)
+        object->addProgram(storeProgram);
 
     return simulation;
 }
