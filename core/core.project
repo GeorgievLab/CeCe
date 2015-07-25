@@ -78,6 +78,7 @@
     <File Name="DataTable.hpp"/>
     <File Name="Pair.hpp"/>
     <File Name="SharedPtr.hpp"/>
+    <File Name="TriBool.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

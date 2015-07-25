@@ -76,6 +76,7 @@ add_library(${PROJECT_NAME} OBJECT
     DataTable.hpp
     DataTable.cpp
     SharedPtr.hpp
+    TriBool.hpp
 )
 
 # ######################################################################### #
