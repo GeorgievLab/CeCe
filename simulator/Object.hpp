@@ -15,7 +15,6 @@
 #include <functional>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/Any.hpp"
 #include "core/VectorUnits.hpp"
@@ -46,7 +45,7 @@ class Simulation;
 /**
  * @brief Basic simulation object.
  */
-class DLL_EXPORT Object
+class Object
 {
 
 // Public Enums
@@ -81,7 +80,7 @@ public:
      * @param simulation Object owner.
      * @param type       Object type.
      */
-    explicit Object(Simulation& simulation, Type type = Type::Static) NOEXCEPT;
+    explicit Object(Simulation& simulation, Type type = Type::Static) noexcept;
 
 
     /**
@@ -99,7 +98,7 @@ public:
      *
      * @return
      */
-    Simulation& getSimulation() NOEXCEPT
+    Simulation& getSimulation() noexcept
     {
         return m_simulation;
     }
@@ -110,7 +109,7 @@ public:
      *
      * @return
      */
-    const Simulation& getSimulation() const NOEXCEPT
+    const Simulation& getSimulation() const noexcept
     {
         return m_simulation;
     }
@@ -121,7 +120,7 @@ public:
      *
      * @return
      */
-    IdType getId() const NOEXCEPT
+    IdType getId() const noexcept
     {
         return m_id;
     }
@@ -132,7 +131,7 @@ public:
      *
      * @return
      */
-    const Map<String, Any>& getValues() const NOEXCEPT
+    const Map<String, Any>& getValues() const noexcept
     {
         return m_values;
     }
@@ -145,7 +144,7 @@ public:
      *
      * @return If value exists.
      */
-    bool hasValue(const String& name) const NOEXCEPT
+    bool hasValue(const String& name) const noexcept
     {
         return m_values.find(name) != m_values.end();
     }
@@ -160,7 +159,7 @@ public:
      *
      * @return Mutable reference to dynamic object.
      */
-    Any& getValue(const String& name) NOEXCEPT
+    Any& getValue(const String& name) noexcept
     {
         return m_values[name];
     }
@@ -174,7 +173,7 @@ public:
      *
      * @return
      */
-    Any getValue(const String& name, const Any& def = {}) const NOEXCEPT
+    Any getValue(const String& name, const Any& def = {}) const noexcept
     {
         auto it = m_values.find(name);
         return it != m_values.end() ? it->second : def;
@@ -205,7 +204,7 @@ public:
      *
      * @return
      */
-    Type getType() const NOEXCEPT;
+    Type getType() const noexcept;
 
 
     /**
@@ -213,7 +212,7 @@ public:
      *
      * @return
      */
-    units::Density getDensity() const NOEXCEPT
+    units::Density getDensity() const noexcept
     {
         return m_density;
     }
@@ -224,7 +223,7 @@ public:
      *
      * @return
      */
-    PositionVector getPosition() const NOEXCEPT;
+    PositionVector getPosition() const noexcept;
 
 
     /**
@@ -232,7 +231,7 @@ public:
      *
      * @return
      */
-    units::Angle getRotation() const NOEXCEPT;
+    units::Angle getRotation() const noexcept;
 
 
     /**
@@ -240,7 +239,7 @@ public:
      *
      * @return
      */
-    VelocityVector getVelocity() const NOEXCEPT;
+    VelocityVector getVelocity() const noexcept;
 
 
 #if ENABLE_PHYSICS
@@ -249,7 +248,7 @@ public:
      *
      * @return
      */
-    b2Body* getBody() const NOEXCEPT
+    b2Body* getBody() const noexcept
     {
         return m_body;
     }
@@ -261,7 +260,7 @@ public:
      *
      * @return
      */
-    const DynamicArray<Shape>& getShapes() const NOEXCEPT
+    const DynamicArray<Shape>& getShapes() const noexcept
     {
         return m_shapes;
     }
@@ -272,7 +271,7 @@ public:
      *
      * @return
      */
-    const DynamicArray<Program>& getPrograms() const NOEXCEPT
+    const DynamicArray<Program>& getPrograms() const noexcept
     {
         return m_programs;
     }
@@ -291,7 +290,7 @@ public:
      * @param value Value.
      */
     template<typename T>
-    void setValue(const String& name, T&& value) NOEXCEPT
+    void setValue(const String& name, T&& value) noexcept
     {
         m_values[name] = std::forward<T>(value);
     }
@@ -302,7 +301,7 @@ public:
      *
      * @return
      */
-    void setType(Type type) NOEXCEPT;
+    void setType(Type type) noexcept;
 
 
     /**
@@ -310,7 +309,7 @@ public:
      *
      * @param density New density value.
      */
-    void setDensity(units::Density density) NOEXCEPT
+    void setDensity(units::Density density) noexcept
     {
         m_density = density;
     }
@@ -321,7 +320,7 @@ public:
      *
      * @param pos
      */
-    void setPosition(PositionVector pos) NOEXCEPT;
+    void setPosition(PositionVector pos) noexcept;
 
 
     /**
@@ -329,7 +328,7 @@ public:
      *
      * @param angle
      */
-    void setRotation(units::Angle angle) NOEXCEPT;
+    void setRotation(units::Angle angle) noexcept;
 
 
     /**
@@ -337,7 +336,7 @@ public:
      *
      * @param vel
      */
-    void setVelocity(VelocityVector vel) NOEXCEPT;
+    void setVelocity(VelocityVector vel) noexcept;
 
 
     /**
@@ -345,7 +344,7 @@ public:
      *
      * @param force
      */
-    void applyForce(const ForceVector& force) NOEXCEPT;
+    void applyForce(const ForceVector& force) noexcept;
 
 
     /**
@@ -354,7 +353,7 @@ public:
      * @param force
      * @param pos
      */
-    void applyForce(const ForceVector& force, const PositionVector& pos) NOEXCEPT;
+    void applyForce(const ForceVector& force, const PositionVector& pos) noexcept;
 
 
     /**
@@ -362,7 +361,7 @@ public:
      *
      * @param shapes
      */
-    void setShapes(DynamicArray<Shape> shapes) NOEXCEPT
+    void setShapes(DynamicArray<Shape> shapes) noexcept
     {
         m_shapes = std::move(shapes);
     }
@@ -373,7 +372,7 @@ public:
      *
      * @param programs
      */
-    void setPrograms(DynamicArray<Program> programs) NOEXCEPT
+    void setPrograms(DynamicArray<Program> programs) noexcept
     {
         m_programs = std::move(programs);
     }
@@ -384,7 +383,7 @@ public:
      *
      * @param program
      */
-    void addProgram(Program program) NOEXCEPT
+    void addProgram(Program program) noexcept
     {
         m_programs.push_back(std::move(program));
     }
@@ -400,7 +399,7 @@ public:
      * @return
      */
     template<typename T>
-    bool is() const NOEXCEPT
+    bool is() const noexcept
     {
         return dynamic_cast<const T*>(this) != nullptr;
     }
@@ -412,7 +411,7 @@ public:
      * @return
      */
     template<typename T>
-    T* cast() NOEXCEPT
+    T* cast() noexcept
     {
         assert(dynamic_cast<T*>(this));
         return static_cast<T*>(this);
@@ -425,10 +424,54 @@ public:
      * @return
      */
     template<typename T>
-    const T* cast() const NOEXCEPT
+    const T* cast() const noexcept
     {
         assert(dynamic_cast<const T*>(this));
         return static_cast<const T*>(this);
+    }
+
+
+    /**
+     * @brief Cast object into required type.
+     *
+     * @tparam T       Required result type.
+     * @tparam Message Type of error message.
+     *
+     * @param msg Error message.
+     *
+     * @return Reference.
+     */
+    template<typename T, typename Message = const char*>
+    T& castThrow(Message msg = "Invalid cast") noexcept
+    {
+        auto ptr = cast<T>();
+
+        if (!ptr)
+            throw InvalidCastException(msg);
+
+        return *ptr;
+    }
+
+
+    /**
+     * @brief Cast object into required type.
+     *
+     * @tparam T       Required result type.
+     * @tparam Message Type of error message.
+     *
+     * @param msg Error message.
+     *
+     * @return Constant reference.
+     */
+    template<typename T, typename Message = const char*>
+    const T& castThrow(Message msg = "Invalid cast") const noexcept
+    {
+        auto ptr = cast<T>();
+
+        if (!ptr)
+            throw InvalidCastException(msg);
+
+        return *ptr;
     }
 
 
@@ -475,7 +518,7 @@ protected:
      *
      * @return
      */
-    DynamicArray<Shape>& getMutableShapes() NOEXCEPT
+    DynamicArray<Shape>& getMutableShapes() noexcept
     {
         return m_shapes;
     }

@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -12,15 +14,11 @@
 
 // C++
 #include <stdexcept>
-
-// Simulator
-#include "core/compatibility.hpp"
+#include <typeinfo>
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -94,8 +92,23 @@ using UndeflowException = std::underflow_error;
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
+/**
+ * @brief Bad cast exception.
+ */
+using BadCastException = std::bad_cast;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Invalid cast exception.
+ */
+struct InvalidCastException : public RuntimeException
+{
+    using RuntimeException::RuntimeException;
+};
+
+/* ************************************************************************ */
+
 }
-#endif
 
 /* ************************************************************************ */
