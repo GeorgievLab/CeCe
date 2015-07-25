@@ -15,10 +15,12 @@
 #include <algorithm>
 #include <tuple>
 #include <chrono>
+#include <fstream>
 
 // Simulator
 #include "core/Log.hpp"
 #include "core/Exception.hpp"
+#include "core/OutStream.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
@@ -58,6 +60,31 @@ std::tuple<String, String> splitModulePath(const String& path) NOEXCEPT
 
 /* ************************************************************************ */
 
+/**
+ * @brief Write CSV line into output stream.
+ *
+ * @param os
+ * @param container
+ */
+template<typename Container>
+void writeCsvLine(OutStream& os, const Container& container)
+{
+    using std::begin;
+    using std::end;
+
+    for (auto it = begin(container); it != end(container); ++it)
+    {
+        if (it != begin(container))
+            os << ';';
+
+        os << *it;
+    }
+
+    os << "\n";
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
@@ -74,6 +101,9 @@ Simulation::Simulation() NOEXCEPT
 
 Simulation::~Simulation()
 {
+    // Store data tables
+    storeDataTables();
+
     // Call finalize simulations for all plugins
     for (auto it = m_plugins.rbegin(); it != m_plugins.rend(); ++it)
     {
@@ -359,6 +389,24 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
     }
 
     return nullptr;
+}
+
+/* ************************************************************************ */
+
+void Simulation::storeDataTables()
+{
+    for (const auto& item : m_dataTables)
+    {
+        const auto& table = item.second;
+
+        std::ofstream file(item.first + ".csv");
+
+        // Write headers
+        writeCsvLine(file, table.getColumns());
+
+        for (const auto& row : table.getRows())
+            writeCsvLine(file, row);
+    }
 }
 
 /* ************************************************************************ */

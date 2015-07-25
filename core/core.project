@@ -35,6 +35,7 @@
     <File Name="VectorUnits.cpp"/>
     <File Name="Units.cpp"/>
     <File Name="ExpressionParser.cpp"/>
+    <File Name="DataTable.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
@@ -73,6 +74,8 @@
     <File Name="Parser.hpp"/>
     <File Name="Real.hpp"/>
     <File Name="Mutex.hpp"/>
+    <File Name="Variant.hpp"/>
+    <File Name="DataTable.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

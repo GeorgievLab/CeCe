@@ -28,6 +28,7 @@
 #include "core/DynamicArray.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "core/ListenerContainer.hpp"
+#include "core/DataTable.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Plugin.hpp"
@@ -93,6 +94,9 @@ public:
 
     /// Initializer container type.
     using InitializerContainer = DynamicArray<Initializer>;
+
+    /// Data table container type.
+    using DataTableContainer = Map<String, DataTable>;
 
 
 // Public Ctors
@@ -411,6 +415,50 @@ public:
     }
 
 
+    /**
+     * @brief Returns data table exists.
+     *
+     * @param name Data table name.
+     *
+     * @return
+     */
+    bool hasDataTable(const StringView& name) const noexcept
+    {
+        return m_dataTables.find(name.getData()) != m_dataTables.end();
+    }
+
+
+    /**
+     * @brief Returns data table with given name.
+     *
+     * @param name Data table name.
+     *
+     * @return Data table.
+     */
+    DataTable& getDataTable(const StringView& name) noexcept
+    {
+        return m_dataTables[name.getData()];
+    }
+
+
+    /**
+     * @brief Returns data table with given name.
+     *
+     * @param name Data table name.
+     *
+     * @return Data table.
+     */
+    const DataTable& getDataTable(const StringView& name) const
+    {
+        auto it = m_dataTables.find(name.getData());
+
+        if (it == m_dataTables.end())
+            throw InvalidArgumentException("Unable to find data table: " + String(name));
+
+        return it->second;
+    }
+
+
 // Public Mutators
 public:
 
@@ -613,6 +661,19 @@ public:
     Program buildProgram(const String& path);
 
 
+    /**
+     * @brief Create new data table.
+     *
+     * @param name Data table name.
+     *
+     * @return Created data table.
+     */
+    DataTable& addDataTable(const StringView& name)
+    {
+        return m_dataTables[name.getData()];
+    }
+
+
 // Public Operations
 public:
 
@@ -683,6 +744,12 @@ public:
     ViewPtr<PluginApi> loadPlugin(const String& name) NOEXCEPT;
 
 
+    /**
+     * @brief Store data tables into files.
+     */
+    void storeDataTables();
+
+
 // Private Data Members
 private:
 
@@ -725,6 +792,9 @@ private:
 
     /// A map of preddefined programs.
     ProgramContainer m_programs;
+
+    /// Managed data tables.
+    DataTableContainer m_dataTables;
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     bool m_drawPhysics = true;
