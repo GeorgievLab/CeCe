@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -25,14 +27,14 @@ using namespace plugin::stochastic_reactions;
 /**
  * @brief Compare source code with expected reaction values.
  *
- * @param line      Source test line.
- * @param code      Code to parse.
- * @param names     Expected names in code.
- * @param rates     Expected rates in code.
- * @param reactions Expected reactions in code.
+ * @param line          Source test line.
+ * @param code          Code to parse.
+ * @param names         Expected names in code.
+ * @param rates         Expected rates in code.
+ * @param reactionCount Expected number of reactions.
  */
 static void test_impl(int line, const String& code, std::initializer_list<String> names,
-    std::initializer_list<float> rates, std::initializer_list<std::initializer_list<int>> reactions)
+    std::initializer_list<float> rates)
 {
     std::cout << "@" << line << ": `" << code << "`\n";
 
@@ -52,19 +54,7 @@ static void test_impl(int line, const String& code, std::initializer_list<String
         EXPECT_EQ(*it, reaction.getRate(it - rates.begin()));
 
     // Reaction table
-    ASSERT_EQ(reactions.size(), reaction.getReactionCount());
-
-    // TODO: test reactions
-/*
-    for (auto it = rules.begin(); it != rules.end(); ++it)
-    {
-        const auto& row = reaction.m_rules[it - rules.begin()];
-        ASSERT_EQ(it->size(), row.size());
-
-        for (auto it2 = it->begin(); it2 != it->end(); ++it2)
-            EXPECT_EQ(*it2, row[it2 - it->begin()]);
-    }
-*/
+    ASSERT_EQ(rates.size(), reaction.getReactionCount());
 }
 
 /* ************************************************************************ */
@@ -104,8 +94,8 @@ static void test_invalid_impl(int line, const String& code)
 
 TEST(Parser, empty)
 {
-    test("", {}, {}, {});
-    test(";", {}, {}, {});
+    test("", {}, {});
+    test(";", {}, {});
 }
 
 /* ************************************************************************ */
@@ -116,8 +106,7 @@ TEST(Parser, expression)
     test(
         "null > 0.453 > A;",
         {"A"},
-        {0.453},
-        {{1}}
+        {0.453}
     );
 
     // Multiple expressions
@@ -125,9 +114,7 @@ TEST(Parser, expression)
         "null > 0.1 > A;"
         "null > 0.2 > B;",
         {"A", "B"},
-        {0.1, 0.2},
-        {{+1,  0},
-         { 0, +1}}
+        {0.1, 0.2}
     );
 }
 
@@ -139,9 +126,7 @@ TEST(Parser, extract) // Can't remember the right name
         "A > 0.1 > null;"
         "B0 > 0.3 > null;",
         {"A", "B0"},
-        {0.1, 0.3},
-        {{-1,  0},
-         { 0, -1}}
+        {0.1, 0.3}
     );
 }
 
@@ -153,9 +138,7 @@ TEST(Parser, assembly)
         "A +B\n> 0.5\t> C;\n"
         "D + A + N32 > 1 > A61;",
         {"A", "B", "C", "D", "N32", "A61"},
-        {0.5, 1},
-        {{-1, -1, +1,  0,  0,  0},
-         {-1,  0,  0, -1, -1, +1}}
+        {0.5, 1}
     );
 }
 
@@ -166,8 +149,7 @@ TEST(Parser, disassembly)
     test(
         "A > 0.5 > B + XNa0;",
         {"A", "B", "XNa0"},
-        {0.5},
-        {{-1, +1, +1}}
+        {0.5}
     );
 }
 
@@ -178,22 +160,19 @@ TEST(Parser, arrow)
     test(
         "A -> 0.5 -> B;",
         {"A", "B"},
-        {0.5},
-        {{-1, +1}}
+        {0.5}
     );
 
     test(
         "A > 0.5 -> B;",
         {"A", "B"},
-        {0.5},
-        {{-1, +1}}
+        {0.5}
     );
 
     test(
         "A -> 0.5 > B;",
         {"A", "B"},
-        {0.5},
-        {{-1, +1}}
+        {0.5}
     );
 }
 
@@ -204,15 +183,13 @@ TEST(Parser, newline)
     test(
         "A > 0.5 > B;\n",
         {"A", "B"},
-        {0.5},
-        {{-1, +1}}
+        {0.5}
     );
 
     test(
         "A\n+ C\n ->0.5\n -> B\n;\n",
         {"A", "C", "B"},
-        {0.5},
-        {{-1, -1, +1}}
+        {0.5}
     );
 }
 
@@ -255,14 +232,57 @@ TEST(Parser, invalid)
 
 TEST(Parser, code1)
 {
-    test("A>0.3>B;", {"A", "B"}, {0.3}, {{-1, +1}});
+    test("A>0.3>B;", {"A", "B"}, {0.3});
 }
 
 /* ************************************************************************ */
 
 TEST(Parser, code2)
 {
-    test("A > 10 > B;", {"A", "B"}, {10}, {{-1, +1}});
+    test("A > 10 > B;", {"A", "B"}, {10});
+}
+
+/* ************************************************************************ */
+
+TEST(Parser, conditional)
+{
+    test(
+        "if A > 10: A > 0.3 > B;",
+        {"A", "B"},
+        {0.3}
+    );
+
+    test(
+        "if C > 10: A > 0.3 > B;",
+        {"C", "A", "B"},
+        {0.3}
+    );
+
+    test(
+        "if C > 10 and A > 5: A > 0.3 > B;",
+        {"C", "A", "B"},
+        {0.3}
+    );
+
+    // Reaction is inserted twice
+    test(
+        "if C > 10 or D > 50: A > 0.3 > B;",
+        {"C", "D", "A", "B"},
+        {0.3, 0.3}
+    );
+
+    test(
+        "if not E > 10: A > 0.5 > B;",
+        {"E", "A", "B"},
+        {0.5}
+    );
+
+    test(
+        "if not E > 10: A > 0.5 > B;"
+        "C > 1.5 > A + B;",
+        {"E", "A", "B", "C"},
+        {0.5, 1.5}
+    );
 }
 
 /* ************************************************************************ */

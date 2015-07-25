@@ -5,8 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Simulator
@@ -28,7 +28,7 @@ class StochasticReactionsApi : public PluginApi
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
         using namespace plugin::stochastic_reactions;
-        return ReactionsParser<IntracellularReactions>(code).parse();
+        return parseReactions<IntracellularReactions>(code, simulation.getParameters());
     }
 };
 

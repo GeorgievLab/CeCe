@@ -254,10 +254,12 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param code Source code to parse.
+     * @param code       Source code to parse.
+     * @param parameters Reactions parameters.
      */
-    explicit ReactionsParser(const String& code) noexcept
+    explicit ReactionsParser(const String& code, const Map<String, float>& parameters = {}) noexcept
         : ParentType(code.c_str(), code.c_str() + code.size())
+        , m_parameters(parameters)
     {
         // Nothing to do.
     }
@@ -347,7 +349,7 @@ protected:
             throw MissingArrowException();
 
         auto end = tokenizerRange.begin() - 1;
-        auto rate = parseExpression(makeRange(begin, end));
+        auto rate = parseExpression(makeRange(begin, end), m_parameters);
         next();
         return rate;
     }
@@ -377,7 +379,7 @@ protected:
 
         // Get position before token.
         auto end = tokenizerRange.begin() - token().value.size();
-        auto rate = parseExpression(makeRange(begin, end));
+        auto rate = parseExpression(makeRange(begin, end), m_parameters);
         next();
         return rate;
     }
@@ -405,7 +407,31 @@ protected:
         return array;
     }
 
+
+// Private Data Members
+private:
+
+
+    /// Parser parameters.
+    const Map<String, float>& m_parameters;
+
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse reactions code.
+ *
+ * @param code       Reactions code.
+ * @param parameters Map of variables.
+ *
+ * @return Result reactions.
+ */
+template<typename ReactionsType>
+inline ReactionsType parseReactions(const String& code, const Map<String, float>& parameters = {})
+{
+    return ReactionsParser<ReactionsType>(code, parameters).parse();
+}
 
 /* ************************************************************************ */
 
