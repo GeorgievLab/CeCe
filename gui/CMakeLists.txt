@@ -11,6 +11,11 @@ project(gui CXX)
 
 # ######################################################################### #
 
+if (APPLE)
+    # Static version on MacOSX
+    set(wxWidgets_USE_STATIC On)
+endif ()
+
 # wxWidgets
 if (WIN32)
     # On Windows the scintilla library is required
@@ -121,12 +126,6 @@ endif ()
 
 # Fixup shared libraries for bundle
 if (APPLE)
-    install(PROGRAMS
-        run.sh
-        DESTINATION "${INSTALL_DIR_RUNTIME}"
-        COMPONENT Runtime
-    )
-
     set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
     set(DIRS "/usr/local/lib;\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_LIBRARY}")
 
