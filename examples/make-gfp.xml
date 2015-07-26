@@ -3,7 +3,7 @@
 <![CDATA[
 def call(simulation):
     for i in range(0, 16):
-        object = simulation.buildObject("cell.Yeast");
+        object = simulation.buildObject("cell.Yeast", False);
         object.useProgram("make-gfp")
         object.useProgram("cell.store-molecules")
 ]]>

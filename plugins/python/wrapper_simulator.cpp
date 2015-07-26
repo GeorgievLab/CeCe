@@ -110,7 +110,7 @@ static PyObject* useProgram(ObjectWrapper<simulator::Object*>* self, PyObject* a
         return NULL;
 
     // Add program
-    self->value->addProgram(self->value->getSimulation().buildProgram(name));
+    self->value->addProgram(self->value->getSimulation().getProgram(name));
 
     return Py_BuildValue("");
 }

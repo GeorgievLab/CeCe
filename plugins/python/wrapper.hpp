@@ -429,7 +429,15 @@ struct MemberFunction
             cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
-        return cast<Ret>((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
+        try
+        {
+            return cast<Ret>((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
+        }
+        catch (const Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+            return nullptr;
+        }
     }
 
 
@@ -444,6 +452,12 @@ struct MemberFunction
      */
     static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) NOEXCEPT
     {
+        if (PyTuple_Size(args) != sizeof...(Args))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Arguments mismatch");
+            return nullptr;
+        }
+
         return call_inner(self, args, MakeIntegerSequence<0, sizeof...(Args)>{});
     }
 };
@@ -509,7 +523,16 @@ struct MemberFunction<Hash, T, void, Args...>
             cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
-        (ref(self->value).*fn)(std::get<I>(tupleArgs)...);
+        try
+        {
+            (ref(self->value).*fn)(std::get<I>(tupleArgs)...);
+        }
+        catch (const Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+            return nullptr;
+        }
+
         return cast().release();
     }
 
@@ -528,7 +551,16 @@ struct MemberFunction<Hash, T, void, Args...>
         assert(args);
         assert(fn);
 
-        (ref(self->value).*fn)();
+        try
+        {
+            (ref(self->value).*fn)();
+        }
+        catch (const Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+            return nullptr;
+        }
+
         return cast().release();
     }
 
@@ -609,7 +641,15 @@ struct MemberFunctionConst
             cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
-        return cast<Ret>((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
+        try
+        {
+            return cast<Ret>((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
+        }
+        catch (const Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+            return nullptr;
+        }
     }
 
 

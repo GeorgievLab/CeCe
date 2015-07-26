@@ -63,7 +63,7 @@ struct ValueCastScalar<long, T, Seq...>
      *
      * @return If object can be converted.
      */
-    static bool check(View<PyObject> value) NOEXCEPT
+    static bool check(View<PyObject> value) noexcept
     {
         return value != nullptr && PyLong_Check(value);
     }
@@ -76,7 +76,7 @@ struct ValueCastScalar<long, T, Seq...>
      *
      * @return New python object.
      */
-    static Handle<PyObject> convert(T value) NOEXCEPT
+    static Handle<PyObject> convert(T value) noexcept
     {
         static char seq[] = {Seq..., '\0'};
         return Py_BuildValue(seq, value);
@@ -90,7 +90,7 @@ struct ValueCastScalar<long, T, Seq...>
      *
      * @return Integer value.
      */
-    static T convert(View<PyObject> value) NOEXCEPT
+    static T convert(View<PyObject> value) noexcept
     {
         assert(value);
         assert(PyLong_Check(value));
@@ -119,7 +119,7 @@ struct ValueCastScalar<double, T, Seq...>
      *
      * @return If object can be converted.
      */
-    static bool check(View<PyObject> value) NOEXCEPT
+    static bool check(View<PyObject> value) noexcept
     {
         return value != nullptr && PyFloat_Check(value);
     }
@@ -132,7 +132,7 @@ struct ValueCastScalar<double, T, Seq...>
      *
      * @return New python object.
      */
-    static Handle<PyObject> convert(T value) NOEXCEPT
+    static Handle<PyObject> convert(T value) noexcept
     {
         static char seq[] = {Seq..., '\0'};
         return Py_BuildValue(seq, value);
@@ -146,7 +146,7 @@ struct ValueCastScalar<double, T, Seq...>
      *
      * @return Floating point value.
      */
-    static T convert(View<PyObject> value) NOEXCEPT
+    static T convert(View<PyObject> value) noexcept
     {
         assert(value);
         assert(PyFloat_Check(value));
@@ -203,7 +203,7 @@ struct ValueCast
      *
      * @return New python object.
      */
-    static Handle<PyObject> convert(T value) NOEXCEPT
+    static Handle<PyObject> convert(T value) noexcept
     {
         assert(definition::valid);
         return definition::wrap(value);
@@ -217,7 +217,7 @@ struct ValueCast
      *
      * @return Value.
      */
-    static plain_type convert(View<PyObject> value) NOEXCEPT
+    static plain_type convert(View<PyObject> value) noexcept
     {
         assert(definition::valid);
         return definition::unwrap(value);
@@ -275,6 +275,55 @@ struct ValueCast<float> : public ValueCastScalar<double, float, 'f'> {};
 /* ************************************************************************ */
 
 /**
+ * @brief Boolean type convertor.
+ */
+template<>
+struct ValueCast<bool>
+{
+
+    /**
+     * @brief Check if python object can be converted into boolean type.
+     *
+     * @param value Python object.
+     *
+     * @return If object can be converted.
+     */
+    static bool check(View<PyObject> value) noexcept
+    {
+        return (value != nullptr) && PyBool_Check(value);
+    }
+
+
+    /**
+     * @brief Convert value into python object.
+     *
+     * @param value Value to convert.
+     *
+     * @return New python object.
+     */
+    static Handle<PyObject> convert(bool value) noexcept
+    {
+        return value ? Py_True : Py_False;
+    }
+
+
+    /**
+     * @brief Convert python object into string value.
+     *
+     * @param value Python object view.
+     *
+     * @return Boolean value.
+     */
+    static bool convert(View<PyObject> value) noexcept
+    {
+        assert(PyBool_Check(value));
+        return value == Py_True;
+    }
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief String type convertor.
  */
 template<>
@@ -288,7 +337,7 @@ struct ValueCast<String>
      *
      * @return If object can be converted.
      */
-    static bool check(View<PyObject> value) NOEXCEPT
+    static bool check(View<PyObject> value) noexcept
     {
         return (value != nullptr) && PyString_Check(value);
     }
@@ -301,7 +350,7 @@ struct ValueCast<String>
      *
      * @return New python object.
      */
-    static Handle<PyObject> convert(const String& value) NOEXCEPT
+    static Handle<PyObject> convert(const String& value) noexcept
     {
         return PyString_FromString(value.c_str());
     }
@@ -314,7 +363,7 @@ struct ValueCast<String>
      *
      * @return String value.
      */
-    static String convert(View<PyObject> value) NOEXCEPT
+    static String convert(View<PyObject> value) noexcept
     {
         assert(PyString_Check(value));
         return PyString_AsString(value);
@@ -340,7 +389,7 @@ struct ValueCast<units::Unit<Nom, Denom>> : public ValueCast<units::Value>
      *
      * @return New python object.
      */
-    static Handle<PyObject> convert(units::Unit<Nom, Denom> value) NOEXCEPT
+    static Handle<PyObject> convert(units::Unit<Nom, Denom> value) noexcept
     {
         return ValueCast<units::Value>::convert(value.value());
     }
@@ -353,7 +402,7 @@ struct ValueCast<units::Unit<Nom, Denom>> : public ValueCast<units::Value>
      *
      * @return Units value.
      */
-    static units::Unit<Nom, Denom> convert(View<PyObject> value) NOEXCEPT
+    static units::Unit<Nom, Denom> convert(View<PyObject> value) noexcept
     {
         return units::Unit<Nom, Denom>(ValueCast<units::Value>::convert(value));
     }
@@ -369,7 +418,7 @@ struct ValueCast<units::Unit<Nom, Denom>> : public ValueCast<units::Value>
  * @return Result value.
  */
 template<typename T>
-inline bool check(View<PyObject> object) NOEXCEPT
+inline bool check(View<PyObject> object) noexcept
 {
     return ValueCast<T>::check(object);
 }
@@ -384,7 +433,22 @@ inline bool check(View<PyObject> object) NOEXCEPT
  * @return Result value.
  */
 template<typename T>
-inline auto cast(View<PyObject> object) NOEXCEPT -> decltype(ValueCast<T>::convert(object))
+inline auto cast(PyObject* object) noexcept -> decltype(ValueCast<T>::convert(View<PyObject>(object)))
+{
+    return ValueCast<T>::convert(View<PyObject>(object));
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Cast python object into value.
+ *
+ * @param object Object to cast.
+ *
+ * @return Result value.
+ */
+template<typename T>
+inline auto cast(View<PyObject> object) noexcept -> decltype(ValueCast<T>::convert(object))
 {
     return ValueCast<T>::convert(object);
 }
@@ -399,7 +463,7 @@ inline auto cast(View<PyObject> object) NOEXCEPT -> decltype(ValueCast<T>::conve
  * @return New python object.
  */
 template<typename T>
-inline Handle<PyObject> cast(T value) NOEXCEPT
+inline Handle<PyObject> cast(T value) noexcept
 {
     return ValueCast<T>::convert(value);
 }
@@ -411,7 +475,7 @@ inline Handle<PyObject> cast(T value) NOEXCEPT
  *
  * @return New python object.
  */
-inline Handle<PyObject> cast() NOEXCEPT
+inline Handle<PyObject> cast() noexcept
 {
     Py_RETURN_NONE;
 }
