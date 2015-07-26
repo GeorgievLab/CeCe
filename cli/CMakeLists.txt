@@ -84,12 +84,18 @@ install(TARGETS ${PROJECT_NAME}
 
 # Fixup shared libraries for bundle
 if (APPLE)
+    install(PROGRAMS
+        run.sh
+        DESTINATION "${INSTALL_DIR_RUNTIME}"
+        COMPONENT Runtime
+    )
+
     set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
-    set(DIRS "/usr/local")
+    set(DIRS "/usr/local/lib;\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_LIBRARY}")
 
     install(CODE
         "
-        file(GLOB PLUGINS
+        file(GLOB PLUGINS RELATIVE \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}\"
             \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}/*${CMAKE_SHARED_LIBRARY_SUFFIX}\"
         )
         include(BundleUtilities)

@@ -130,7 +130,6 @@ include(Functions)
 # ######################################################################### #
 
 # Install directories
-set(INSTALL_PREFIX "/usr") # CPack with DEB ignores CMAKE_INSTALL_PREFIX
 set(INSTALL_DIR_RUNTIME "bin")
 set(INSTALL_DIR_LIBRARY "lib")
 set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${CMAKE_PROJECT_NAME}")
@@ -141,16 +140,17 @@ set(INSTALL_DIR_DATA ".")
 
 # Linux installation directories
 if (UNIX AND NOT APPLE)
+    set(INSTALL_PREFIX "/usr") # CPack with DEB ignores CMAKE_INSTALL_PREFIX
     include(GNUInstallDirs)
     set(INSTALL_DIR_RUNTIME ${CMAKE_INSTALL_BINDIR})
     set(INSTALL_DIR_LIBRARY ${CMAKE_INSTALL_LIBDIR})
     set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${CMAKE_PROJECT_NAME}/${DIR_PLUGINS}")
     set(INSTALL_DIR_DATA "${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_PROJECT_NAME}")
 elseif (APPLE)
-    set(INSTALL_DIR_RUNTIME "../MacOS")
-    set(INSTALL_DIR_LIBRARY "../MacOS")
-    set(INSTALL_DIR_PLUGINS "../PlugIns")
-    set(INSTALL_DIR_BUNDLE  "../MacOS")
+    set(INSTALL_DIR_RUNTIME "bin")
+    set(INSTALL_DIR_LIBRARY "lib")
+    set(INSTALL_DIR_PLUGINS "plugins")
+    set(INSTALL_DIR_BUNDLE  "bin")
 elseif (WIN32)
     set(INSTALL_DIR_RUNTIME ".")
     set(INSTALL_DIR_LIBRARY ".")
@@ -296,6 +296,9 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples"
     DESTINATION "${INSTALL_DIR_DATA}"
     FILES_MATCHING PATTERN "*.xml"
 )
+
+# PostInstall
+add_subdirectory(PostInstall)
 
 # ######################################################################### #
 
