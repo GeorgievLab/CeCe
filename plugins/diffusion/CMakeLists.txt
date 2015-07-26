@@ -13,7 +13,11 @@ set(SRCS
     Module.cpp
     Generator.hpp
     Generator.cpp
+    StoreState.hpp
+    StoreState.cpp
 )
+
+# ######################################################################### #
 
 # Build plugin
 build_plugin(diffusion

@@ -139,6 +139,20 @@ public:
 
 
     /**
+     * @brief Returns signal name.
+     *
+     * @param id Signal identifier.
+     *
+     * @return Signal name or empty string.
+     */
+    const String& getSignalName(SignalId id) const noexcept
+    {
+        static const String empty;
+        return (id < m_names.size()) ? m_names[id] : empty;
+    }
+
+
+    /**
      * @brief Returns mutable signal value at given coordinates.
      *
      * @param id    Signal identifier.
