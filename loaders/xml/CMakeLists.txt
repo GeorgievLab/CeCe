@@ -30,8 +30,7 @@ add_library(${PROJECT_NAME}
 
 # Setup dependencies
 add_dependencies(${PROJECT_NAME}
-    core
-    parser
+    simulator
 )
 
 # ######################################################################### #
