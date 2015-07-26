@@ -18,6 +18,10 @@
 #include <stdlib.h>
 #endif
 
+#if __APPLE__ && __MACH__
+#include <libgen.h>
+#endif
+
 #if ENABLE_RENDER
 #include <GLFW/glfw3.h>
 #endif
@@ -101,7 +105,8 @@ void terminate_simulation(int param)
     _splitpath(name, NULL, NULL, fname, fext);
     auto bname = String(fname) + "." + fext;
 #else
-    const char* bname = basename(name);
+    DynamicArray<char> localName(name, name + strlen(name));
+    const char* bname = basename(localName.data());
 #endif
 
     std::cout <<
