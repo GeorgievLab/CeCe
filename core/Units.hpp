@@ -72,7 +72,7 @@ static constexpr Value MASS_COEFFICIENT = 1e9f;
         static constexpr unsigned int symbolLength = NARG(__VA_ARGS__) + 1; \
         static constexpr StaticArray<char, symbolLength> getSymbol() noexcept \
         { \
-            return {__VA_ARGS__, '\0'};\
+            return {{__VA_ARGS__, '\0'}};\
         } \
     }
 
@@ -503,7 +503,7 @@ struct SymbolGroup
         IntegerSequence<Indices...> indices
     ) noexcept
     {
-        return {std::get<Indices>(symbol)..., '0' + Count, '\0'};
+        return {{symbol[Indices]..., '0' + Count, '\0'}};
     }
 
 
@@ -689,7 +689,7 @@ struct Symbol<List<Types...>>
     {
         static_assert(N1 + N2 - 1 == sizeof...(Indices1) + sizeof...(Indices2) + 1, "Sizes doesn't match");
 
-        return {std::get<Indices1>(symbol1)..., std::get<Indices2>(symbol2)..., '\0'};
+        return {{symbol1[Indices1]..., symbol2[Indices2]..., '\0'}};
     }
 
 
@@ -700,7 +700,7 @@ struct Symbol<List<Types...>>
      */
     static constexpr StaticArray<char, 1> createSymbol() noexcept
     {
-        return {'\0'};
+        return {{'\0'}};
     }
 
 
@@ -839,12 +839,12 @@ struct Symbol<List<Nominators...>, List<Denominators...>>
         IntegerSequence<IndicesDenom...>
     ) noexcept
     {
-        return {
-            std::get<IndicesNom>(nominatorSymbol)...,
+        return {{
+            nominatorSymbol[IndicesNom]...,
             '/',
-            std::get<IndicesDenom>(denominatorSymbol)...,
+            denominatorSymbol[IndicesDenom]...,
             '\0'
-        };
+        }};
     }
 
 
@@ -865,7 +865,7 @@ struct Symbol<List<Nominators...>, List<Denominators...>>
         IntegerSequence<>
     ) noexcept
     {
-        return {std::get<IndicesNom>(nominatorSymbol)..., '\0'};
+        return {{nominatorSymbol[IndicesNom]..., '\0'}};
     }
 
 
