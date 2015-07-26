@@ -36,6 +36,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
 #include "simulator/LoaderManager.hpp"
+#include "simulator/version.hpp"
 #include "loaders/xml/SimulationLoader.hpp"
 #include "loaders/reactions/SimulationLoader.hpp"
 
@@ -113,6 +114,9 @@ void terminate_simulation(int param)
         "Simulator\n"
         "\n"
         "  TODO: description.\n"
+        "\n"
+        "Version:\n"
+        "    " VERSION "\n"
         "\n"
         "Usage:\n"
         "  " << bname << " "
@@ -591,6 +595,11 @@ private:
 // Private Data Members
 private:
 
+#if ENABLE_PHYSICS_DEBUG
+    // Physics engine debug draw.
+    render::PhysicsDebugger m_physicsDebugger;
+#endif
+
     // Simulator
     simulator::Simulator m_simulator;
 
@@ -609,11 +618,6 @@ private:
 
     /// If simulation is paused.
     bool m_paused = false;
-
-#if ENABLE_PHYSICS_DEBUG
-    // Physics engine debug draw.
-    render::PhysicsDebugger m_physicsDebugger;
-#endif
 
 #endif
 };

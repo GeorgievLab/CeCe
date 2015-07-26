@@ -30,7 +30,7 @@ endif ()
 
 # ######################################################################### #
 
-set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}")
+set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}-cli")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}")
 set(MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION}")
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}")

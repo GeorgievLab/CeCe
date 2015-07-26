@@ -50,7 +50,7 @@ endif ()
 
 # ######################################################################### #
 
-set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}")
+set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}-gui")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}")
 set(MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION}")
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}")
@@ -121,18 +121,22 @@ endif ()
 
 # Fixup shared libraries for bundle
 if (APPLE)
-#    install(CODE "
-#        execute_process(COMMAND
-#            ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle.sh
-#            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
-#        )
-#    " COMPONENT Runtime)
+    install(PROGRAMS
+        run.sh
+        DESTINATION "${INSTALL_DIR_RUNTIME}"
+        COMPONENT Runtime
+    )
+
     set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
+    set(DIRS "/usr/local/lib;\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_LIBRARY}")
 
     install(CODE
         "
+        file(GLOB PLUGINS RELATIVE \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}\"
+            \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}/*${CMAKE_SHARED_LIBRARY_SUFFIX}\"
+        )
         include(BundleUtilities)
-        fixup_bundle(\"${APP}\" \"\" \"\")
+        fixup_bundle(\"${APP}\" \"${PLUGINS}\" \"${DIRS}\")
         "
         COMPONENT Runtime
     )
