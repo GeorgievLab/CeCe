@@ -27,7 +27,7 @@ set(APP_NAME "Simulator")
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 3)
 set(VERSION_PATCH 0)
-set(VERSION_SPECIAL "alpha")
+set(VERSION_SPECIAL " alpha")
 
 # Full version string
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
