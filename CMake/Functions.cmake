@@ -101,6 +101,16 @@ function(build_plugin NAME)
             COMPONENT Plugins
         )
 
+        # Fixup shared plugins for bundle
+        if (APPLE)
+#            install(CODE "
+#                execute_process(COMMAND
+#                    ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle-plugin.sh
+#                    \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}/lib${PROJECT_NAME}.dylib
+#                )
+#            " COMPONENT Plugins)
+        endif ()
+
         #set(CPACK_COMPONENT_${NAME}_GROUP "Plugins")
     endif ()
 endfunction()

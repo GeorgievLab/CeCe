@@ -59,4 +59,23 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
 )
 
+# Fixup shared libraries for bundle
+if (APPLE)
+#    install(CODE "
+#        execute_process(COMMAND
+#            ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle.sh
+#            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
+#        )
+#    " COMPONENT Runtime)
+#    set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
+#
+#    install(CODE
+#        "
+#        include(BundleUtilities)
+#        fixup_bundle(\"${APP}\" \"\" \"/usr/local\")
+#        "
+#        COMPONENT Runtime
+#    )
+endif ()
+
 # ######################################################################### #

@@ -17,104 +17,147 @@ SOURCE_DIR=/usr/local
 DIRECTORY=`dirname $1`
 
 #DEBUG_FILE="update.log"
+#echo "" > $DEBUG_FILE
+
+#
+# Debug print
+#
+function debug()
+{
+    #echo -e $1 >> $DEBUG_FILE
+    :
+}
+
+#
+# Returns library ID. In case of executable, nothing is returned.
+#
+# $1: Path to binary.
+#
+function get_id()
+{
+    otool -D $1 | tail -n+2
+}
 
 #
 # Get dependency of given library
 #
-# $1: Path to binary.
+# $1: Binary ID. Can be empty.
+# $2: Path to binary.
 #
 function get_dependency()
 {
-    otool -L $1 | grep -oE "([^ ]*).dylib"
+    if [[ -n "$1" ]]
+    then
+        # Shared library, remove the first line that contains ID
+        otool -L $2 | tail -n+2 | grep -oE "([^ ]*).dylib" | tail -n+2 | grep -v "@executable_path"
+    else
+        # Executable
+        otool -L $2 | tail -n+2 | grep -oE "([^ ]*).dylib" | grep -v "@executable_path"
+    fi
+}
+
+#
+# Get path to real file from symbolic links.
+#
+# $1: Original file
+#
+function follow_symlink()
+{
+    local LIBRARY=$1
+
+    # Get real path
+    local REALPATH="${LIBRARY}"
+
+    while [ -h "${REALPATH}" ]
+    do
+        local DIR=`dirname ${REALPATH}`
+        local LINK=`readlink ${REALPATH}`
+        REALPATH="${DIR}/${LINK}"
+    done
+
+    echo $REALPATH
 }
 
 #
 # Fix libraries
 #
-# $1: Path to original binary/library.
-# $2: Path to copy binary/library.
-# $3: Path to library that needs to be fixed.
+# $1: Path to binary/library.
 #
-function fix_libraries()
+function fix_binary()
 {
     local BUNDLE_PATH="${DIRECTORY}/${FRAMEWORKS}"
 
     local BINARY=$1
-    local BINARY_COPY=$2
     local LIBRARY
 
-    #echo -e "START: $BINARY\n" >> $DEBUG_FILE
+    debug "START: $BINARY\n"
+
+    # Get library ID, is empty for
+    local ID=`get_id $BINARY`
+
+    debug "ID = ${ID}"
+
+    # Fix binary ID (only shared libraries)
+    if [[ -n "${ID}" ]]
+    then
+        local BASENAME=`basename ${BINARY}`
+
+        debug "ID:\ninstall_name_tool -id\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY}\n"
+
+        chmod a+w ${BINARY}
+        install_name_tool -id @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY}
+        chmod a-w ${BINARY}
+    fi
 
     # Foreach binary dependencies
-    for LIBRARY in `get_dependency $BINARY_COPY`
+    for LIBRARY in `get_dependency "${ID}" "${BINARY}"`
     do
-        if [[ $LIBRARY == *"@executable_path"* ]]
-        then
-            # Skip paths with @executable_path
-            continue
-        fi
-
         # If library contains separator is from system
         if [[ $LIBRARY == *"/"* ]]
         then
-            local BASENAME=`basename ${LIBRARY}`
+            # Get real path
+            local REALPATH=`follow_symlink "${LIBRARY}"`
+
+            local BASENAME=`basename ${REALPATH}`
             local FILEPATH="${BUNDLE_PATH}/${BASENAME}"
 
             # Only libraries from sources
-            # /usr/local/lib
+            # /usr/local
             if [[ $LIBRARY == *"${SOURCE_DIR}"* ]]
             then
                 if [[ ! -f "${FILEPATH}" ]]
                 then
-                    # Copy library into bundle
-                    #echo "Copy '${LIBRARY}' to '${BUNDLE_PATH}'"
-                    cp "${LIBRARY}" "${BUNDLE_PATH}"
+                    # Copy library (realpath) into bundle
+                    cp "${REALPATH}" "${BUNDLE_PATH}"
 
                     # Recursive fix
-                    fix_libraries $LIBRARY $FILEPATH
+                    fix_binary $FILEPATH
                 fi
 
-                if [[ $LIBRARY == $BINARY ]]
-                then
-                    chmod a+w ${BINARY_COPY}
-                    install_name_tool -id @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
-                    chmod a-w ${BINARY_COPY}
+                debug "SYSTEM:\ninstall_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY}\n"
 
-                    #echo -e "install_name_tool -id\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY_COPY}\n" >> $DEBUG_FILE
-                else
-                    chmod a+w ${BINARY_COPY}
-                    install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
-                    chmod a-w ${BINARY_COPY}
-
-                    #echo -e "install_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY_COPY}\n" >> $DEBUG_FILE
-                fi
+                chmod a+w ${BINARY}
+                install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY}
+                chmod a-w ${BINARY}
             fi
         else
-            if [[ $LIBRARY == $BINARY ]]
-            then
-                chmod a+w ${BINARY_COPY}
-                install_name_tool -id @executable_path/${FRAMEWORKS}/${BASENAME} ${BINARY_COPY}
-                chmod a-w ${BINARY_COPY}
 
-                #echo -e "LOCAL:\ninstall_name_tool -id\n@executable_path/${FRAMEWORKS}/${BASENAME}\n${BINARY_COPY}\n" >> $DEBUG_FILE
-            else
-                # Local
-                install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY_COPY}
+            debug "LOCAL:\ninstall_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${LIBRARY}\n${BINARY}\n"
 
-                #echo -e "LOCAL:\ninstall_name_tool -change\n${LIBRARY}\n@executable_path/${FRAMEWORKS}/${LIBRARY}\n${BINARY_COPY}\n" >> $DEBUG_FILE
+            # Local
+            chmod u+w ${BINARY}
+            install_name_tool -change ${LIBRARY} @executable_path/${FRAMEWORKS}/${LIBRARY} ${BINARY}
+            chmod u-w ${BINARY}
 
-                # Recursive fix
-                fix_libraries $LIBRARY $BUNDLE_PATH/$LIBRARY
-            fi
+            # Recursive fix
+            fix_binary $BUNDLE_PATH/$LIBRARY
         fi
     done
 
-    #echo -e "END: $BINARY\n\n" >> $DEBUG_FILE
+    debug "END: $BINARY\n\n"
 }
 
-#echo "" > $DEBUG_FILE
-
 # Source binary
-fix_libraries $1 $1
+fix_binary $1
 
 # ######################################################################### #
