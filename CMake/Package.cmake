@@ -15,8 +15,8 @@ set(CPACK_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "Simulator ${VERSION_MAJOR}.${VERSION_MINOR}")
-set(CPACK_PACKAGE_NAME "Simulator")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "${APP_NAME} ${VERSION_MAJOR}.${VERSION_MINOR}")
+set(CPACK_PACKAGE_NAME ${APP_NAME})
 set(CPACK_PACKAGE_CONTACT "Jiří Fatka <fatkaj@ntis.zcu.cz>")
 
 if (WIN32 AND NOT UNIX)
@@ -24,7 +24,7 @@ if (WIN32 AND NOT UNIX)
     # sure there is at least one set of four (4) backlasshes.
     #set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
     #set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Cell simulator")
+    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ${APP_NAME}")
     #set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.my-project-home-page.org")
     #set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.my-personal-home-page.com")
     #set(CPACK_NSIS_CONTACT "me@my-personal-home-page.com")
@@ -55,7 +55,7 @@ else ()
     set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 endif ()
 
-set(CPACK_PACKAGE_EXECUTABLES "Cell Simulator" "Cell Simulator")
+set(CPACK_PACKAGE_EXECUTABLES "${APP_NAME}" "${APP_NAME}")
 
 include(CPack)
 

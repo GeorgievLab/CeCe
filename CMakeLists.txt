@@ -16,15 +16,21 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
 # ######################################################################### #
 
 # Workspace name
-project(cell-sim)
+project(simulator)
 
 # ######################################################################### #
+
+# Application name
+set(APP_NAME "Simulator")
 
 # Application version
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 3)
 set(VERSION_PATCH 0)
 set(VERSION_SPECIAL "alpha")
+
+# Full version string
+set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Setup macros with application version
 add_definitions(

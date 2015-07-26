@@ -18,9 +18,31 @@ endif ()
 
 # ######################################################################### #
 
+# Sources
+set(SRCS
+    main.cpp
+)
+
+if (APPLE)
+    set(SRCS ${SRCS} icons/${APP_NAME}.icns)
+    set_source_files_properties(icons/${APP_NAME}.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+endif ()
+
+# ######################################################################### #
+
+set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}")
+set(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}")
+set(MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION}")
+set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}")
+set(MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2015 Georgiev Lab")
+set(MACOSX_BUNDLE_GUI_IDENTIFIER "cz.zcu.ccy.${APP_NAME}")
+set(MACOSX_BUNDLE_ICON_FILE "${APP_NAME}.icns")
+
+# ######################################################################### #
+
 # Create executable
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE
-    main.cpp
+    ${SRCS}
 )
 
 # ######################################################################### #
@@ -57,25 +79,24 @@ endif ()
 install(TARGETS ${PROJECT_NAME}
     BUNDLE  DESTINATION ${INSTALL_DIR_BUNDLE}
     RUNTIME DESTINATION ${INSTALL_DIR_RUNTIME}
+    COMPONENT Runtime
 )
 
 # Fixup shared libraries for bundle
 if (APPLE)
-#    install(CODE "
-#        execute_process(COMMAND
-#            ${CMAKE_SOURCE_DIR}/platform/MacOS/bundle.sh
-#            \${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}
-#        )
-#    " COMPONENT Runtime)
-#    set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
-#
-#    install(CODE
-#        "
-#        include(BundleUtilities)
-#        fixup_bundle(\"${APP}\" \"\" \"/usr/local\")
-#        "
-#        COMPONENT Runtime
-#    )
+    set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
+    set(DIRS "/usr/local")
+
+    install(CODE
+        "
+        file(GLOB PLUGINS
+            \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}/*${CMAKE_SHARED_LIBRARY_SUFFIX}\"
+        )
+        include(BundleUtilities)
+        fixup_bundle(\"${APP}\" \"\${PLUGINS}\" \"${DIRS}\")
+        "
+        COMPONENT Runtime
+    )
 endif ()
 
 # ######################################################################### #

@@ -9,6 +9,8 @@
 # Create project
 project(simulator CXX)
 
+# ######################################################################### #
+
 # Include Python API
 if (UNIX AND NOT APPLE)
     # Link boost dynamically on Linux
@@ -19,6 +21,8 @@ find_package(Boost REQUIRED filesystem system)
 
 # Include directories
 include_directories(${Boost_INCLUDE_DIRS})
+
+# ######################################################################### #
 
 # Sources
 set(SRCS
@@ -59,6 +63,8 @@ if (ENABLE_RENDER)
     set(SRCS ${SRCS} $<TARGET_OBJECTS:render>)
 endif ()
 
+# ######################################################################### #
+
 # Include build-in libraries
 set(PLUGINS_LIBS "")
 set(BUILTIN_PLUGINS "")
@@ -83,15 +89,17 @@ if (WIN32)
     add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()
 
-message(STATUS "Build simulator library as shared")
+# ######################################################################### #
 
 # Create library
 add_library(${PROJECT_NAME} SHARED
     ${SRCS}
 )
 
+# ######################################################################### #
+
 # Set framework flag
-set_target_properties(${PROJECT_NAME} PROPERTIES FRAMEWORK 1)
+#set_target_properties(${PROJECT_NAME} PROPERTIES FRAMEWORK 1)
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
@@ -117,6 +125,8 @@ endif ()
 set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "${CMAKE_PROJECT_NAME}"
 )
+
+# ######################################################################### #
 
 # Install
 install(TARGETS ${PROJECT_NAME}

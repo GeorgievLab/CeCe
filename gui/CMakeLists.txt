@@ -9,6 +9,8 @@
 # Project name
 project(gui CXX)
 
+# ######################################################################### #
+
 # wxWidgets
 if (WIN32)
     # On Windows the scintilla library is required
@@ -18,6 +20,8 @@ else ()
 endif ()
 
 include(${wxWidgets_USE_FILE})
+
+# ######################################################################### #
 
 # Sources
 set(SRCS
@@ -39,19 +43,47 @@ set(SRCS
     Logger.cpp
 )
 
+if (APPLE)
+    set(SRCS ${SRCS} icons/${APP_NAME}.icns)
+    set_source_files_properties(icons/${APP_NAME}.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+endif ()
+
+# ######################################################################### #
+
+set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}")
+set(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}")
+set(MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION}")
+set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}")
+set(MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2015 Georgiev Lab")
+set(MACOSX_BUNDLE_GUI_IDENTIFIER "cz.zcu.ccy.${APP_NAME}")
+set(MACOSX_BUNDLE_ICON_FILE "${APP_NAME}.icns")
+
+# ######################################################################### #
+
 # Create program
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
     ${SRCS}
 )
+
+# ######################################################################### #
 
 # Use different name
 set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}"
 )
 
+if (APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist.in
+    )
+endif ()
+
+# ######################################################################### #
+
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     loader-xml
+    loader-reactions
     simulator
     ${wxWidgets_LIBRARIES}
 )
@@ -79,11 +111,13 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 # Install icons
-if (NOT APPLE)
+if (UNIX AND NOT APPLE)
     install(FILES ${CMAKE_SOURCE_DIR}/icons/icon_128x128.png
         DESTINATION ${INSTALL_DIR_DATA}/icons
     )
 endif ()
+
+# ######################################################################### #
 
 # Fixup shared libraries for bundle
 if (APPLE)
@@ -94,7 +128,7 @@ if (APPLE)
 #        )
 #    " COMPONENT Runtime)
     set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
-    
+
     install(CODE
         "
         include(BundleUtilities)
