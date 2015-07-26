@@ -6,6 +6,7 @@ def call(simulation):
         object = simulation.buildObject("cell.Yeast", False);
         object.useProgram("make-gfp")
         object.useProgram("cell.store-molecules")
+        object.growthRate = 0.0
 ]]>
     </init>
     <program name="make-gfp" language="stochastic-reactions">

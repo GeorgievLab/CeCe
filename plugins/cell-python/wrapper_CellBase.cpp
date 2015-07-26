@@ -36,6 +36,7 @@ void python_wrapper_cell_CellBase()
 
     static PyGetSetDef properties[] = {
         defineProperty<1, type>("volume", &CellBase::getVolume, &CellBase::setVolume),
+        defineProperty<2, type>("growthRate", &CellBase::getGrowthRate, &CellBase::setGrowthRate),
         {NULL}  /* Sentinel */
     };
 
