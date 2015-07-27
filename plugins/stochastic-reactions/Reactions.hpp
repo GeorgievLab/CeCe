@@ -32,7 +32,7 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-using RateType = long double;
+using RateType = float;
 
 template<typename T>
 class Reactions
