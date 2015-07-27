@@ -295,7 +295,7 @@ endif()
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples"
     COMPONENT Examples
     DESTINATION "${INSTALL_DIR_DATA}"
-    FILES_MATCHING PATTERN "*.xml"
+    FILES_MATCHING PATTERN "*"
 )
 
 # PostInstall
