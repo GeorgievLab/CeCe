@@ -63,7 +63,10 @@ public:
 
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate);
 
-    void addCondition(const String& id, const unsigned int condition);
+    void addCondition(const String& id, const unsigned int condition)
+    {
+
+    }
 };
 
 /* ************************************************************************ */
