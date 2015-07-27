@@ -132,7 +132,7 @@ struct Constructor
      * @return
      */
     template<int... I>
-    static int construct_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<I...>) NOEXCEPT
+    static int construct_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
     {
         assert(self);
         assert(args);
@@ -160,7 +160,7 @@ struct Constructor
      */
     static int construct(ObjectWrapper<T>* self, PyObject* args, PyObject* kwds)
     {
-        return construct_inner(self, args, MakeIntegerSequence<0, sizeof...(Args)>{});
+        return construct_inner(self, args, MakeIntegerSequence<int, 0, sizeof...(Args)>{});
     }
 };
 
@@ -418,7 +418,7 @@ struct MemberFunction
      * @return
      */
     template<int... I>
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<I...>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
     {
         assert(self);
         assert(args);
@@ -458,7 +458,7 @@ struct MemberFunction
             return nullptr;
         }
 
-        return call_inner(self, args, MakeIntegerSequence<0, sizeof...(Args)>{});
+        return call_inner(self, args, MakeIntegerSequence<int, 0, sizeof...(Args)>{});
     }
 };
 
@@ -512,7 +512,7 @@ struct MemberFunction<Hash, T, void, Args...>
      * @return
      */
     template<int... I>
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<I...>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
     {
         assert(self);
         assert(args);
@@ -545,7 +545,7 @@ struct MemberFunction<Hash, T, void, Args...>
      *
      * @return
      */
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int>) NOEXCEPT
     {
         assert(self);
         assert(args);
@@ -576,7 +576,7 @@ struct MemberFunction<Hash, T, void, Args...>
      */
     static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) NOEXCEPT
     {
-        return call_inner(self, args, MakeIntegerSequence<0, sizeof...(Args)>{});
+        return call_inner(self, args, MakeIntegerSequence<int, 0, sizeof...(Args)>{});
     }
 };
 
@@ -630,7 +630,7 @@ struct MemberFunctionConst
      * @return
      */
     template<int... I>
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<I...>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
     {
         assert(self);
         assert(args);
@@ -664,7 +664,7 @@ struct MemberFunctionConst
      */
     static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) NOEXCEPT
     {
-        return call_inner(self, args, MakeIntegerSequence<0, sizeof...(Args)>{});
+        return call_inner(self, args, MakeIntegerSequence<int, 0, sizeof...(Args)>{});
     }
 };
 

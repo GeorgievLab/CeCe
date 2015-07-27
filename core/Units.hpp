@@ -69,7 +69,7 @@ static constexpr Value MASS_COEFFICIENT = 1e9f;
     struct Base ## name {\
         static constexpr Value coefficient = coeff; \
         static constexpr int order = ord;\
-        static constexpr unsigned int symbolLength = NARG(__VA_ARGS__) + 1; \
+        static constexpr std::size_t symbolLength = NARG(__VA_ARGS__) + 1; \
         static constexpr StaticArray<char, symbolLength> getSymbol() noexcept \
         { \
             return {{__VA_ARGS__, '\0'}};\
@@ -116,7 +116,7 @@ struct List
 {
 
     /// Number of types in list.
-    static constexpr unsigned int size = sizeof...(Types);
+    static constexpr std::size_t size = sizeof...(Types);
 
 };
 
@@ -234,7 +234,7 @@ template<typename T>
 struct Counter<T, List<>>
 {
     /// Number of occurences.
-    static constexpr unsigned int value = 0;
+    static constexpr std::size_t value = 0;
 };
 
 /* ************************************************************************ */
@@ -250,7 +250,7 @@ template<typename T, typename Type, typename... Types>
 struct Counter<T, List<Type, Types...>>
 {
     /// Number of occurences.
-    static constexpr unsigned int value =
+    static constexpr std::size_t value =
         (std::is_same<T, Type>::value ? 1 : 0) +
         Counter<T, List<Types...>>::value
     ;
@@ -277,7 +277,7 @@ template<>
 struct CounterFirst<List<>>
 {
     /// Number of occurences.
-    static constexpr unsigned int value = 0;
+    static constexpr std::size_t value = 0;
 };
 
 /* ************************************************************************ */
@@ -292,7 +292,7 @@ template<typename Type, typename... Types>
 struct CounterFirst<List<Type, Types...>>
 {
     /// Number of occurences.
-    static constexpr unsigned int value = Counter<Type, List<Type, Types...>>::value;
+    static constexpr std::size_t value = Counter<Type, List<Type, Types...>>::value;
 };
 
 /* ************************************************************************ */
@@ -431,7 +431,7 @@ struct RemoveAll<T, List<>>
     static constexpr bool value = false;
 
     // Number of occurences.
-    static constexpr unsigned int count = 0;
+    static constexpr std::size_t count = 0;
 
     // Remaining types.
     using type = List<>;
@@ -459,7 +459,7 @@ struct RemoveAll<T, List<Type, Types...>>
     static constexpr bool value = match || RemoveInnerType::value;
 
     // Number of occurences.
-    static constexpr unsigned int count = (match ? 1 : 0) + RemoveInnerType::count;
+    static constexpr std::size_t count = (match ? 1 : 0) + RemoveInnerType::count;
 
     /// List type without the required type.
     using type = typename std::conditional<match,
@@ -476,7 +476,7 @@ struct RemoveAll<T, List<Type, Types...>>
  * @tparam Type  Base unit type.
  * @tparam Count Number of base unit occurences.
  */
-template<typename Type, unsigned int Count>
+template<typename Type, std::size_t Count>
 struct SymbolGroup
 {
     static_assert(Count > 1, "Count must be greater than 1");
@@ -484,7 +484,7 @@ struct SymbolGroup
 
 
     /// Length of the base suffix.
-    static constexpr unsigned int length = Type::symbolLength + 1;
+    static constexpr std::size_t length = Type::symbolLength + 1;
 
 
     /**
@@ -497,10 +497,10 @@ struct SymbolGroup
      *
      * @return Result symbol.
      */
-    template<int... Indices>
+    template<std::size_t... Indices>
     static constexpr StaticArray<char, length> createSymbol(
         const StaticArray<char, length - 1>& symbol,
-        IntegerSequence<Indices...> indices
+        IntegerSequence<std::size_t, Indices...> indices
     ) noexcept
     {
         return {{symbol[Indices]..., '0' + Count, '\0'}};
@@ -514,7 +514,7 @@ struct SymbolGroup
      */
     static constexpr StaticArray<char, length> get() noexcept
     {
-        return createSymbol(Type::getSymbol(), MakeIntegerSequence<0, length - 2>{});
+        return createSymbol(Type::getSymbol(), MakeIntegerSequence<std::size_t, 0, length - 2>{});
     }
 };
 
@@ -529,7 +529,7 @@ template<typename Type>
 struct SymbolGroup<Type, 1>
 {
     /// Length of the base suffix.
-    static constexpr unsigned int length = Type::symbolLength;
+    static constexpr std::size_t length = Type::symbolLength;
 
 
     /**
@@ -635,7 +635,7 @@ struct SymbolLength<List<Types...>>
 
 
     /// Symbol length with '\0' and without '\0' of each type.
-    static constexpr unsigned int value = add(Types::length...) - sizeof...(Types) + 1;
+    static constexpr std::size_t value = add(Types::length...) - sizeof...(Types) + 1;
 
 };
 
@@ -661,7 +661,7 @@ struct Symbol<List<Types...>>
 {
 
     /// Symbol length.
-    static constexpr unsigned int length = SymbolLength<List<Types...>>::value;
+    static constexpr std::size_t length = SymbolLength<List<Types...>>::value;
 
 
     /**
@@ -679,12 +679,12 @@ struct Symbol<List<Types...>>
      *
      * @return Result symbol.
      */
-    template<unsigned long N1, unsigned long N2, int... Indices1, int... Indices2>
+    template<std::size_t N1, std::size_t N2, std::size_t... Indices1, std::size_t... Indices2>
     static constexpr StaticArray<char, N1 + N2 - 1> concat(
         const StaticArray<char, N1>& symbol1,
-        IntegerSequence<Indices1...> seq1,
+        IntegerSequence<std::size_t, Indices1...> seq1,
         const StaticArray<char, N2>& symbol2,
-        IntegerSequence<Indices2...> seq2
+        IntegerSequence<std::size_t, Indices2...> seq2
     ) noexcept
     {
         static_assert(N1 + N2 - 1 == sizeof...(Indices1) + sizeof...(Indices2) + 1, "Sizes doesn't match");
@@ -711,7 +711,7 @@ struct Symbol<List<Types...>>
      *
      * @param symbol Source symbol.
      */
-    template<unsigned long N1>
+    template<std::size_t N1>
     static constexpr StaticArray<char, N1> createSymbol(StaticArray<char, N1> symbol) noexcept
     {
         return symbol;
@@ -729,15 +729,15 @@ struct Symbol<List<Types...>>
      *
      * @return Result symbol.
      */
-    template<unsigned long N1, unsigned long N2>
+    template<std::size_t N1, std::size_t N2>
     static constexpr StaticArray<char, N1 + N2 - 1> createSymbol(
         const StaticArray<char, N1>& symbol1,
         const StaticArray<char, N2>& symbol2
     ) noexcept
     {
         return concat(
-            symbol1, MakeIntegerSequence<0, N1 - 1>{},
-            symbol2, MakeIntegerSequence<0, N2 - 1>{}
+            symbol1, MakeIntegerSequence<std::size_t, 0, N1 - 1>{},
+            symbol2, MakeIntegerSequence<std::size_t, 0, N2 - 1>{}
         );
     }
 
@@ -755,7 +755,7 @@ struct Symbol<List<Types...>>
      *
      * @return Result symbol.
      */
-    template<unsigned long N1, unsigned long N2, unsigned long N3>
+    template<std::size_t N1, std::size_t N2, std::size_t N3>
     static constexpr StaticArray<char, N1 + N2 + N3 - 2> createSymbol(
         const StaticArray<char, N1>& symbol1,
         const StaticArray<char, N2>& symbol2,
@@ -770,7 +770,7 @@ struct Symbol<List<Types...>>
      */
 #if 0
     // TODO: support for more symbols
-    template<unsigned long N1, typename... Arrays>
+    template<std::size_t N1, typename... Arrays>
     static constexpr auto createSymbol(const StaticArray<char, N1>& a1, Arrays&&... arrays) noexcept
         -> decltype(createSymbol(a1, createSymbol(std::forward<Arrays>(arrays)...)))
     {
@@ -811,13 +811,13 @@ struct Symbol<List<Nominators...>, List<Denominators...>>
 
 
     /// Length of nominator symbol.
-    static constexpr unsigned int nomLength = SymbolNominators::length;
+    static constexpr std::size_t nomLength = SymbolNominators::length;
 
     /// Length of denominator symbol.
-    static constexpr unsigned int denomLength = SymbolDenominators::length;
+    static constexpr std::size_t denomLength = SymbolDenominators::length;
 
     /// Total symbol length.
-    static constexpr unsigned int length = nomLength + (denomLength == 1 ? 0 : denomLength);
+    static constexpr std::size_t length = nomLength + (denomLength == 1 ? 0 : denomLength);
 
 
     /**
@@ -831,12 +831,12 @@ struct Symbol<List<Nominators...>, List<Denominators...>>
      *
      * @return Result symbol.
      */
-    template<int... IndicesNom, int... IndicesDenom>
+    template<std::size_t... IndicesNom, std::size_t... IndicesDenom>
     static constexpr StaticArray<char, length> concat(
         const StaticArray<char, nomLength>& nominatorSymbol,
-        IntegerSequence<IndicesNom...>,
+        IntegerSequence<std::size_t, IndicesNom...>,
         const StaticArray<char, denomLength>& denominatorSymbol,
-        IntegerSequence<IndicesDenom...>
+        IntegerSequence<std::size_t, IndicesDenom...>
     ) noexcept
     {
         return {{
@@ -857,12 +857,12 @@ struct Symbol<List<Nominators...>, List<Denominators...>>
      *
      * @return Result symbol.
      */
-    template<int... IndicesNom>
+    template<std::size_t... IndicesNom>
     static constexpr StaticArray<char, nomLength> concat(
         const StaticArray<char, nomLength>& nominatorSymbol,
-        IntegerSequence<IndicesNom...>,
+        IntegerSequence<std::size_t, IndicesNom...>,
         const StaticArray<char, 1>&,
-        IntegerSequence<>
+        IntegerSequence<std::size_t>
     ) noexcept
     {
         return {{nominatorSymbol[IndicesNom]..., '\0'}};
@@ -878,9 +878,9 @@ struct Symbol<List<Nominators...>, List<Denominators...>>
     {
         return concat(
             SymbolNominators::get(),
-            MakeIntegerSequence<0, nomLength - 1>{},
+            MakeIntegerSequence<std::size_t, 0, nomLength - 1>{},
             SymbolDenominators::get(),
-            MakeIntegerSequence<0, denomLength - 1>{}
+            MakeIntegerSequence<std::size_t, 0, denomLength - 1>{}
         );
     }
 };
@@ -922,7 +922,7 @@ public:
     static constexpr Value coefficient = Coefficient<Nom>::value / Coefficient<Denom>::value;
 
     /// Number of occurences of the first nominator.
-    static constexpr unsigned int firstCount = CounterFirst<Nom>::value;
+    static constexpr std::size_t firstCount = CounterFirst<Nom>::value;
 
 
 // Public Ctors & Dtors
