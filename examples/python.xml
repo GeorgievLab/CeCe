@@ -1,24 +1,29 @@
-<simulation world-size="100um 100um" iterations="10000">
-	<module name="python:pdt" color="red">
-<![CDATA[
-def configure(config):
-	print "Color:", config.get("color")
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="100um 100um" dt="1s" iterations="10000">
 
+    <!-- Prints information about simulation -->
+    <module name="python:printSimulation">
+<![CDATA[
 def update(dt, simulation):
-	print "Iteration:", simulation.iteration, "/", simulation.iterations
-	print "Object count:", simulation.objectsCount
-	print "Size: [", simulation.worldSize.width, ",", simulation.worldSize.height, "]"
+    print "Iteration:", simulation.iteration, "/", simulation.iterations
+    print "Object count:", simulation.objectsCount
+    print "Size: [", simulation.worldSize.width, ",", simulation.worldSize.height, "]"
+]]>
+    </module>
 
-]]>
-	</module>
-	<program name="print" language="python">
+    <!-- Prints information about object -->
+    <program name="printObject" language="python">
 <![CDATA[
-def call(self, dt):
-	pos = self.position
-	print "Object ID: ", self.id, "[", pos.x, ",", pos.y, "]"
+def call(self, simulation, dt):
+    pos = self.position
+    print "Object ID: ", self.id, "[", pos.x, ",", pos.y, "]"
 ]]>
-	</program>
-	<object class="cell.Yeast" programs="print" />
+    </program>
+
+    <!-- Create yeast cell -->
+    <object class="cell.Yeast" programs="printObject" position="10um 0" />
+    <object class="cell.Yeast" programs="printObject" position="-10um 0" />
 </simulation>
 
 

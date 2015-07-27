@@ -1,22 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
 <simulation world-size="160um 90um" dt="0.5ms" iterations="10000">
+    <!-- Produce GFP -->
     <program name="make-gfp" language="stochastic-reactions-diffusive">
 <![CDATA[
         null < 0.5, 0.001 > GFP;
         GFP > 0.5 > env;
 ]]>
     </program>
+
+    <!-- Produce RFP -->
     <program name="make-rfp" language="stochastic-reactions-diffusive">
 <![CDATA[
         null < 0.5, 0.001 > RFP;
         RFP > 0.5 > env;
 ]]>
     </program>
+
+    <!-- Produce YFP -->
     <program name="make-yfp" language="stochastic-reactions-diffusive">
 <![CDATA[
         null < 0.5, 0.001 > YFP;
         YFP > 0.5 > env;
 ]]>
     </program>
+
+    <!-- Produce BFP -->
     <program name="make-bfp" language="stochastic-reactions-diffusive">
 <![CDATA[
         env > 0.4 > GFP;
@@ -25,34 +34,32 @@
         BFP > 0.5 > env;
 ]]>
     </program>
+
+    <!-- Define diffusion module -->
     <module name="diffusion" grid="320 180">
         <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" />
         <signal name="RFP" diffusion-rate="50um2/s" color="red" />
         <signal name="YFP" diffusion-rate="50um2/s" color="yellow" />
         <signal name="BFP" diffusion-rate="50um2/s" color="blue" />
     </module>
+
+    <!-- Object generator -->
     <module name="object-generator">
         <object class="cell.Yeast" probability="0.004" programs="make-gfp" position-min="-80um -30um" position-max="-78um 30um" />
         <object class="cell.Yeast" probability="0.004" programs="make-rfp" position-min="-80um -30um" position-max="-78um 30um" />
         <object class="cell.Yeast" probability="0.004" programs="make-yfp" position-min="-80um -30um" position-max="-78um 30um" />
         <object class="cell.Yeast" probability="0.005" programs="make-bfp" position-min="-80um -30um" position-max="-78um 30um" />
     </module>
+
+    <!-- Enable streamlines with diffusion -->
     <module name="streamlines" grid="160 90" velocity-inflow="500um/s" kinematic-viscosity="60.58um2/s" />
     <module name="diffusion-streamlines" />
+
+    <!-- Put static cell into simulation center -->
     <object class="cell.Cell" type="static" volume="2000um3" />
 
-    <aobject class="cell.Yeast" position="-20um 0" programs="make-gfp" />
-    <aobject class="cell.Yeast" position="-20um 30um" programs="make-rfp" />
-    <aobject class="cell.Yeast" position="-20um -30um" programs="make-yfp" />
-    <aobject class="cell.Yeast" position="-20um 15um" programs="make-rfp" />
-    <aobject class="cell.Yeast" position="-20um -15um" programs="make-yfp" />
-
-    <aobject class="cell.Yeast" position="-40um 0" programs="make-gfp" />
-    <aobject class="cell.Yeast" position="-40um 30um" programs="make-rfp" />
-    <aobject class="cell.Yeast" position="-40um -30um" programs="make-yfp" />
-
+    <!-- Limit scene by rectangles -->
     <obstacle type="rectangle" position="0 46um" size="160um 4um" />
     <obstacle type="rectangle" position="0 -46um" size="160um 4um" />
-    <amodule name="video" />
 </simulation>
 

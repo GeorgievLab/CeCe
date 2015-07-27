@@ -1,3 +1,6 @@
-<simulation world-size="50um 50um" dt="1min" iterations="10000">
-    <object class="cell.Yeast" growth-rate="0.0003um3/s" />
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="50um 50um" dt="60s" iterations="10000">
+    <!-- Specify yeast cell growth rate -->
+    <object class="cell.Yeast" growth-rate="0.003um3/s" />
 </simulation>

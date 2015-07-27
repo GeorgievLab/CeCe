@@ -1,15 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
 <simulation world-size="20um 20um" dt="1s" iterations="500">
+    <!-- Define diffusion module -->
     <module name="diffusion" grid="200">
         <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="green" />
         <signal name="RFP" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="red" />
         <signal name="YFP" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="yellow" />
     </module>
+
+    <!-- Produce GFP -->
     <program name="make-gfp" language="stochastic-reactions-diffusive">
 <![CDATA[
         null < 0.001, 50 > GFP;
         GFP > 100 > env;
 ]]>
     </program>
+
+    <!-- Produce RFP in proximity of YFP -->
     <program name="make-rfp" language="stochastic-reactions-diffusive">
 <![CDATA[
         env > 100 > YFP;
@@ -17,6 +24,8 @@
         RFP > 100 > env;
 ]]>
     </program>
+
+    <!-- Produce YFP in proximity of GFP -->
     <program name="make-yfp" language="stochastic-reactions-diffusive">
 <![CDATA[
         env > 100 > GFP;
@@ -24,8 +33,10 @@
         YFP > 100 > env;
 ]]>
     </program>
-    <object class="cell.Yeast" position="0 5um" programs="make-rfp" />
-    <object class="cell.Yeast" position="0 0" programs="make-yfp" />
+
+    <!-- Create yeast -->
+    <object class="cell.Yeast" position="0 5um"  programs="make-rfp" />
+    <object class="cell.Yeast" position="0 0"    programs="make-yfp" />
     <object class="cell.Yeast" position="0 -5um" programs="make-gfp" />
 </simulation>
 

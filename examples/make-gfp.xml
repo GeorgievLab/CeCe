@@ -1,4 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
 <simulation world-size="100um 100um" dt="60s" iterations="10000">
+    <!-- Initialize simulation -->
     <init language="python">
 <![CDATA[
 def call(simulation):
@@ -9,15 +12,16 @@ def call(simulation):
         object.growthRate = 0.0
 ]]>
     </init>
+
+    <!-- Generate GFP -->
     <program name="make-gfp" language="stochastic-reactions">
         <!--
             alpha = -log(0.5) / 20.0;
             k1 = 100 * alpha; // 1.505149978
         -->
 <![CDATA[
-        null < 1.505149978, 0.001 > GFP;
+        null < 100 * (-log(0.5) / 20.0), 0.001 > GFP;
 ]]>
-        <!-- GFP > 0.001 > null;-->
     </program>
 </simulation>
 

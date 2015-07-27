@@ -1,5 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
 <simulation world-size="20um 20um" dt="1s" iterations="50">
+    <!-- Python plugin required (it autoloads python plugins for other plugins) -->
     <plugin name="python" />
+
+    <!-- Define diffusion -->
+    <module name="diffusion" grid="200">
+        <signal name="gfp" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="green" />
+    </module>
+
+    <!-- Generate signal -->
     <module name="python:generate">
 <![CDATA[
 import math
@@ -8,33 +18,16 @@ def update(dt, simulation):
     diffusion = simulation.useModule("diffusion")
     size = diffusion.gridSize
     radius = size.x / 20
+    signalAmount = 1
 
     for x in range(-radius, radius + 1):
         for y in range(-radius, radius + 1):
             if (math.sqrt(x * x + y * y) <= radius):
-                diffusion.setSignal(0, size.x / 2 + x, size.y / 2 + y, 1)
+                diffusion.setSignal(0, size.x / 2 + x, size.y / 2 + y, signalAmount)
 ]]>
     </module>
-    <module name="python:store">
-#import csv
-file = open("data.csv", 'wb')
-#writer = csv.writer(file, delimiter = ';')
-#writer.writerow(["iteration", "totalTime", "x", "y", "value"])
-file.write("iteration;totalTime;x;y;value\n");
 
-# Program code
-def update(dt, simulation):
-    diffusion = simulation.useModule("diffusion")
-    size = diffusion.gridSize
-
-    for x in range(0, size.width):
-        for y in range(0, size.height):
-            value = diffusion.getSignal(0, x, y)
-            #writer.writerow([simulation.iteration, simulation.totalTime, x, y, diffusion.getSignal(0, x, y)])
-            file.write(str(simulation.iteration) + ";" + str(simulation.totalTime) + ";" + str(x) + ";" + str(y) + ";" + str(value) + "\n");
-    </module>
-    <module name="diffusion" grid="200">
-        <signal name="gfp" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="green" />
-    </module>
+    <!-- Store diffusion state each iteration -->
+    <module name="diffusion.store-state">
 </simulation>
 

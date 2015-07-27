@@ -1,9 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
 <simulation world-size="100um 100um" dt="1ms" iterations="10000">
-    <module name="cell.generator" object="cell.Yeast" probability="0.05" />
+    <!-- Generate yeast cells -->
+    <module name="object-generator">
+        <object class="cell.Yeast" probability="0.05" />
+    </module>
+
+    <!-- Define streamlines -->
     <module name="streamlines" grid="100" velocity-inflow="200um/s" kinematic-viscosity="6.58um2/s" />
+
+    <!-- Enable agglutination -->
     <module name="agglutination" />
+
+    <!-- Initial objects -->
     <object class="cell.Cell" type="static" volume="2000um3" />
-    <object class="cell.Yeast" position="-20um 0" adensity="0.01" />
-    <object class="cell.Yeast" position="-20um 30um" adensity="0.01" />
+    <object class="cell.Yeast" position="-20um 0" />
+    <object class="cell.Yeast" position="-20um 30um" />
 </simulation>
 
