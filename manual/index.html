@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<title>Simulator Manual</title>
+<style>
+    table { border: 1px solid silver; }
+    table td, table th { border: 1px solid silver; padding: 3px 4px; }
+    code pre { border: 1px solid silver; padding: 5px; background-color: #FFFFEE; }
+    h2 a, h1 a { text-decoration: none; color: black; }
+    h2 a:hover:after, h1 a:hover:after { content: " #"; }
+</style>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<h1>Applications</h1>
+
+<!-- ---------------------------------------------------------------------- -->
+
+<h2>CLI</h2>
+<p>
+  Simple command line application that can run prepared simulations.
+  It takes simulation file and perform simulation with optional vizualization.
+</p>
+
+<table>
+  <caption>Parameters</caption>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Parameters</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>simulation-file</code></td>
+      <td><code>filepath</code></td>
+      <td>Path to simulation file.</td>
+    </tr>
+    <tr>
+      <td><code>--help</code></td>
+      <td></td>
+      <td>Prints help.</td>
+    </tr>
+    <tr>
+      <td><code>--vizualize</code></td>
+      <td></td>
+      <td>If simulation should be vizualized.</td>
+    </tr>
+    <tr>
+      <td><code>--novizualize</code></td>
+      <td></td>
+      <td>Don't vizualize simulation.</td>
+    </tr>
+    <tr>
+      <td><code>--fullscreen</code></td>
+      <td></td>
+      <td>Start vizualization window in fullscreen. You don't have to specify window width and height. In that case monitor size is used.</td>
+    </tr>
+    <tr>
+      <td><code>--width</code></td>
+      <td><code>int</code></td>
+      <td>Vizualization window width.</td>
+    </tr>
+    <tr>
+      <td><code>--height</code></td>
+      <td><code>int</code></td>
+      <td>Vizualization window height.</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  Specifying <code>--vizualize</code> or <code>--novizualize</code> override settings from simulation
+  (some simulation don't explicitly want vizualize).
+</p>
+
+<!-- ---------------------------------------------------------------------- -->
+
+<h2>GUI</h2>
+<p>TODO</p>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<h1>Loaders</h1>
+<p>
+  Loaders are responsible for loading different type of source files.
+  They understand the source file and create simulation from them.
+</p>
+
+<!-- ---------------------------------------------------------------------- -->
+
+<h2>XML</h2>
+<p>
+  Basic and most supported loader. It loads simulation from valid XML file.
+  Some basic knowledge of XML files is required.
+  The simplest simulation file looks like:
+</p>
+<code><pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="yes" ?&gt;
+&lt;simulation dt="1s"&gt;
+&lt;/simulation&gt;
+</pre></code>
+<p>This simulation does almost nothing just runs with iteration time step 1 second.</p>
+<p>
+  In the simulation element can be several other elements that specifies the simulation.
+  Those elements can have sub-elements but that mostly depends on element type and used plugin.
+</p>
+
+<table>
+  <caption>Main elements</caption>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Attributes</th>
+      <th>Description</th>
+      <th>Content</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>parameter</code></td>
+      <td><code>name:string</code>, <code>value:expression</code></td>
+      <td>Simulation parameter.</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><code>init</code></td>
+      <td><code>language:plugin-name</code></td>
+      <td>Simulation iteration step.</td>
+      <td>Source code of plugin initializer interpreter</td>
+    </tr>
+    <tr>
+      <td><code>plugin</code></td>
+      <td><code>name:plugin-name</code></td>
+      <td>Load required plugin. Some plugins might install some hooks (see "python" plugin).</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><code>module</code></td>
+      <td><code>name:plugin-name[.string]</code>, ...</td>
+      <td>Create a module from given plugin. Module name can be specified in case the plugin offers more than one module.</td>
+      <td>Depends on module.</td>
+    </tr>
+    <tr>
+      <td><code>program</code></td>
+      <td><code>name:string</code>, <code>language:plugin-name</code></td>
+      <td>Defines simulation program that can be used by objects.</td>
+      <td>Program source code that is understandable by plugin/language.</td>
+    </tr>
+    <tr>
+      <td><code>object</code></td>
+      <td>
+        <code>class:plugin-name.name</code>, <code>position:vector[m]</code>,
+        <code>density:density[g/m3]</code>,
+        <code>programs:names</code>, <code>static:bool</code>, ...
+      </td>
+      <td>Create an object in simulation.</td>
+      <td>Depending on object class.</td>
+    </tr>
+    <tr>
+      <td><code>obstacle</code></td>
+      <td><code>type:string</code>, <code>position:vector[m]</code>, ...</td>
+      <td>Setup an obstacle.</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- ---------------------------------------------------------------------- -->
+
+<h2>Reactions</h2>
+<p>
+  This loader loads simple files that contains reaction rules and some parameters.
+  Syntax of reaction rules is same as stochastic-reaction plugins.
+</p>
+<code><pre>
+@iterations 500
+@dt 1s
+null > 0.3 > A;
+A > 0.1 > B + C;
+</pre></code>
+<p>
+  Lines that begins with <code>@</code> symbol are considered as directives that setups simulation.
+  Remaining lines are parsed by reactions parser and used as program for cell.
+</p>
+<p>
+  Coresponding XML file looks like:
+</p>
+<code><pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="yes" ?&gt;
+&lt;simulation dt="1s" iterations="500"&gt;
+    &lt;program name="__local__" language="stochastic-reactions-intercellular"&gt;
+&lt;![CDATA[
+        null > 0.3 > A;
+        A > 0.1 > B + C;
+]]>
+    &lt;/program&gt;
+    &lt;object class="cell.Yeast" programs="__local__" /&gt;
+&lt;/simulation&gt;
+</pre></code>
+
+<table>
+  <caption>Directives</caption>
+  <thead>
+    <tr>
+      <th>Directive</th>
+      <th>Parameters</th>
+      <th>Description</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>iterations</code></td>
+      <td><code>int</code></td>
+      <td>Number of simulation iterations.</td>
+      <td><code>@iterations 100</code></td>
+    </tr>
+    <tr>
+      <td><code>dt</code></td>
+      <td><code>time</code></td>
+      <td>Simulation iteration step.</td>
+      <td><code>@dt 10s</code></td>
+    </tr>
+    <tr>
+      <td><code>molecule</code></td>
+      <td><code>string</code>, <code>int</code></td>
+      <td>Initial amount of specified molecule.</td>
+      <td><code>@molecule A 500</code></td>
+    </tr>
+    <tr>
+      <td><code>parameter</code></td>
+      <td><code>string</code>, <code>expression</code></td>
+      <td>Set simulation parameter that can be used in reaction rules.</td>
+      <td><code>@parameter kA 0.3</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<h1>Plugins</h1>
+
+<!-- ---------------------------------------------------------------------- -->
+
+<h2>Cell</h2>
+<p>Plugin offers predefined cell objects like Yeast.</p>
+
+<!-- ---------------------------------------------------------------------- -->
+
+<h3>Objects</h3>
+<p>Objects offered by "cell" plugin. All object share common (unavailable) ancestor that have following properties:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Units</th>
+      <th>Description</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>volume</code></td>
+      <td>m<sup>3</sup></td>
+      <td>Cell volume</td>
+      <td><code>300um3</code></td>
+    </tr>
+    <tr>
+      <td><code>growth-rate</code></td>
+      <td>m<sup>3</sup>/s</td>
+      <td>Cell growth rate</td>
+      <td><code>3um3/s</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>cell.Cell</h4>
+<p>Common cell object</p>
+
+<h4>cell.Yeast</h4>
+<p>Yeast object</p>
+
+<!-- ---------------------------------------------------------------------- -->
+
+<h2>Python</h2>
+
+<!-- ---------------------------------------------------------------------- -->
