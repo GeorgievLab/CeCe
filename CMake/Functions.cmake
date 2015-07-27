@@ -78,6 +78,10 @@ function(build_plugin NAME)
             simulator
         )
 
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+            INSTALL_RPATH ${PLUGINS_DIRECTORY}
+        )
+
         # Create symbolic link
         if (DEV_PLUGINS)
             if (UNIX)
