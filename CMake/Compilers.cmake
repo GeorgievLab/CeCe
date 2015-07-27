@@ -22,11 +22,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 
     # Debug flags
     if (CLANG_ASAN)
-        message("-- Using address sanitizer")
+        message(STATUS "Using address sanitizer")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
         set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
     elseif (CLANG_MSAN)
-        message("-- Using memory sanitizer")
+        message(STATUS "Using memory sanitizer")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
         set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=memory -fno-omit-frame-pointer")
     endif ()

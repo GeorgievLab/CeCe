@@ -2433,7 +2433,7 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
     using Type = Unit<List<Nominators...>, List<Denominators...>>;
 
     // Type symbol
-#if __APPLE__ && __MACH__
+#if _LIBCPP_VERSION
     // MACOSX use old stdlib that doesnt support constexpr std::array.
     static const auto typeSymbol = Type::symbol::get();
 #else

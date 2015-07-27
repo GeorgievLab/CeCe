@@ -36,14 +36,14 @@ namespace {
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-constexpr StaticArray<render::Color, 6> g_colors = {
+constexpr StaticArray<render::Color, 6> g_colors{{
     render::colors::CYAN,
     render::colors::MAGENTA,
     render::colors::YELLOW,
     render::colors::BLUE,
     render::colors::RED,
     render::colors::GREEN
-};
+}};
 #endif
 
 /* ************************************************************************ */

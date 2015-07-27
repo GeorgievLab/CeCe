@@ -59,7 +59,7 @@ DEFINE_EXPRESSION_EXCEPTION(UnknownFunctionException, "Unknown function name");
  *
  * @return Result value.
  */
-float parseExpressionRef(IteratorRange<const char*>& range, const Map<String, float>& parameters = {});
+float parseExpressionRef(IteratorRange<const char*>& range, const Map<String, float>& parameters = Map<String, float>{});
 
 /* ************************************************************************ */
 
@@ -71,7 +71,7 @@ float parseExpressionRef(IteratorRange<const char*>& range, const Map<String, fl
  *
  * @return Result value.
  */
-inline float parseExpression(IteratorRange<const char*> range, const Map<String, float>& parameters = {})
+inline float parseExpression(IteratorRange<const char*> range, const Map<String, float>& parameters = Map<String, float>{})
 {
     return parseExpressionRef(range, parameters);
 }
@@ -86,7 +86,7 @@ inline float parseExpression(IteratorRange<const char*> range, const Map<String,
  *
  * @return Result value.
  */
-inline float parseExpression(const StringView& expression, const Map<String, float>& parameters = {})
+inline float parseExpression(const StringView& expression, const Map<String, float>& parameters = Map<String, float>{})
 {
     return parseExpression(makeRange(
         expression.getData(), expression.getData() + expression.getLength()

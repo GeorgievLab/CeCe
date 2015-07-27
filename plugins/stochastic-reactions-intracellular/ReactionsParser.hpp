@@ -257,7 +257,7 @@ public:
      * @param code       Source code to parse.
      * @param parameters Reactions parameters.
      */
-    explicit ReactionsParser(const String& code, const Map<String, float>& parameters = {}) noexcept
+    explicit ReactionsParser(const String& code, const Map<String, float>& parameters = Map<String, float>{}) noexcept
         : ParentType(code.c_str(), code.c_str() + code.size())
         , m_parameters(parameters)
     {
@@ -428,7 +428,7 @@ private:
  * @return Result reactions.
  */
 template<typename ReactionsType>
-inline ReactionsType parseReactions(const String& code, const Map<String, float>& parameters = {})
+inline ReactionsType parseReactions(const String& code, const Map<String, float>& parameters = Map<String, float>{})
 {
     return ReactionsParser<ReactionsType>(code, parameters).parse();
 }
