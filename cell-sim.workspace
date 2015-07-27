@@ -14,16 +14,16 @@
   <Project Name="tool_shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <Project Name="python" Path="plugins/python/python.project" Active="No"/>
   <Project Name="streamlines" Path="plugins/streamlines/streamlines.project" Active="No"/>
-  <Project Name="stochastic-reactions" Path="plugins/stochastic-reactions/stochastic-reactions.project" Active="No"/>
   <Project Name="streamlines-python" Path="plugins/streamlines-python/streamlines-python.project" Active="No"/>
   <Project Name="cell-python" Path="plugins/cell-python/cell-python.project" Active="No"/>
   <Project Name="diffusion-python" Path="plugins/diffusion-python/diffusion-python.project" Active="No"/>
   <Project Name="diffusion-streamlines" Path="plugins/diffusion-streamlines/diffusion-streamlines.project" Active="No"/>
-  <Project Name="stochastic-reactions-diffusive" Path="plugins/stochastic-reactions-diffusive/stochastic-reactions-diffusive.project" Active="No"/>
   <Project Name="agglutination" Path="plugins/agglutination/agglutination.project" Active="No"/>
   <Project Name="object-generator" Path="plugins/object-generator/object-generator.project" Active="No"/>
   <Project Name="loader-xml" Path="loaders/xml/loader-xml.project" Active="No"/>
   <Project Name="loader-reactions" Path="loaders/reactions/loader-reactions.project" Active="No"/>
+  <Project Name="stochastic-reactions-intercellular" Path="plugins/stochastic-reactions-intercellular/stochastic-reactions-intercellular.project" Active="No"/>
+  <Project Name="stochastic-reactions-intracellular" Path="plugins/stochastic-reactions-intracellular/stochastic-reactions-intracellular.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -38,16 +38,16 @@
       <Project Name="tool_shader-convert" ConfigName="Debug"/>
       <Project Name="plugin_python" ConfigName="Debug"/>
       <Project Name="plugin_streamlines" ConfigName="Debug"/>
-      <Project Name="lib-stochastic-reactions" ConfigName="Debug"/>
       <Project Name="plugin_streamlines-python" ConfigName="Debug"/>
       <Project Name="plugin_cell-python" ConfigName="Debug"/>
       <Project Name="plugin_diffusion-python" ConfigName="Debug"/>
       <Project Name="plugin_diffusion-streamlines" ConfigName="Debug"/>
-      <Project Name="plugin_stochastic-reactions-diffusive" ConfigName="Debug"/>
       <Project Name="plugin_agglutination" ConfigName="Debug"/>
       <Project Name="plugin_object-generator" ConfigName="Debug"/>
       <Project Name="loader_xml" ConfigName="Debug"/>
       <Project Name="loader_reactions" ConfigName="Debug"/>
+      <Project Name="plugin_stochastic-reactions-intercellular" ConfigName="Debug"/>
+      <Project Name="plugin_stochastic-reactions-intracellular" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -62,16 +62,16 @@
       <Project Name="tool_shader-convert" ConfigName="Release"/>
       <Project Name="plugin_python" ConfigName="Release"/>
       <Project Name="plugin_streamlines" ConfigName="Release"/>
-      <Project Name="lib-stochastic-reactions" ConfigName="Release"/>
       <Project Name="plugin_streamlines-python" ConfigName="Release"/>
       <Project Name="plugin_cell-python" ConfigName="Release"/>
       <Project Name="plugin_diffusion-python" ConfigName="Release"/>
       <Project Name="plugin_diffusion-streamlines" ConfigName="Release"/>
-      <Project Name="plugin_stochastic-reactions-diffusive" ConfigName="Release"/>
       <Project Name="plugin_agglutination" ConfigName="Release"/>
       <Project Name="plugin_object-generator" ConfigName="Release"/>
       <Project Name="loader_xml" ConfigName="Release"/>
       <Project Name="loader_reactions" ConfigName="Release"/>
+      <Project Name="plugin_stochastic-reactions-intercellular" ConfigName="Release"/>
+      <Project Name="plugin_stochastic-reactions-intracellular" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
