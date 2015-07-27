@@ -102,8 +102,8 @@ private:
 #endif
 
 #if ENABLE_RENDER
-    render::ObjectPtr<render::Circle> m_drawCircle;
-    render::ObjectPtr<render::Rectangle> m_drawRectangle;
+    render::ObjectSharedPtr<render::Circle> m_drawCircle;
+    render::ObjectSharedPtr<render::Rectangle> m_drawRectangle;
 #endif
 };
 

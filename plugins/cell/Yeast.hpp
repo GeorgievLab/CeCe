@@ -156,7 +156,7 @@ private:
 #if ENABLE_RENDER
     /// Render object for Yeast.
     /// Shared between all instances, it's same for all instances.
-    static render::ObjectPtr<DrawableYeast> s_renderObject;
+    render::ObjectSharedPtr<DrawableYeast> m_renderObject;
 #endif
 
 #if ENABLE_PHYSICS

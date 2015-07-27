@@ -94,7 +94,7 @@ public:
 private:
 
 #if ENABLE_RENDER
-    render::ObjectPtr<DrawableCell> m_renderObject;
+    render::ObjectSharedPtr<DrawableCell> m_renderObject;
 #endif
 
 };
