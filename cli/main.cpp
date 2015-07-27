@@ -111,7 +111,7 @@ void terminate_simulation(int param)
 #endif
 
     std::cout <<
-        "Simulator\n"
+        APP_NAME "\n"
         "\n"
         "  TODO: description.\n"
         "\n"
@@ -485,7 +485,7 @@ private:
         m_window = glfwCreateWindow(
             m_windowWidth,
             m_windowHeight,
-            "Simulator",
+            APP_NAME,
             params.fullscreen ? monitor : nullptr,
             nullptr
         );

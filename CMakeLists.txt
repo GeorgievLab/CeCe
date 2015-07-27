@@ -34,6 +34,7 @@ set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Setup macros with application version
 add_definitions(
+    -DAPP_NAME="${APP_NAME}"
     -DVERSION_MAJOR=${VERSION_MAJOR}
     -DVERSION_MINOR=${VERSION_MINOR}
     -DVERSION_PATCH=${VERSION_PATCH}
