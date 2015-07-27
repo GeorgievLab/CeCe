@@ -201,10 +201,10 @@ Map<String, FilePath> PluginManager::scanDirectory(const FilePath& directory) no
 
         // Get path
         auto path = entry.path();
-        const auto filename = path.filename();
+        const auto filename = path.filename().string();
 
         // Match file name
-        if (!std::regex_match(filename.string(), matches, regex))
+        if (!std::regex_match(filename, matches, regex))
             continue;
 
         if (matches.size() == 2)

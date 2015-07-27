@@ -73,9 +73,9 @@ function(build_plugin NAME)
 
         # Link libraries
         target_link_libraries(${PROJECT_NAME}
-            simulator
-            ${ARG_LIBRARIES}
             ${PLUGINS_DEPENDENCIES}
+            ${ARG_LIBRARIES}
+            simulator
         )
 
         # Create symbolic link
@@ -97,7 +97,8 @@ function(build_plugin NAME)
 
         # Install shared library
         install(TARGETS ${PROJECT_NAME}
-            DESTINATION ${INSTALL_DIR_PLUGINS}
+            RUNTIME DESTINATION ${INSTALL_DIR_PLUGINS}
+            LIBRARY DESTINATION ${INSTALL_DIR_PLUGINS}
             COMPONENT Plugins
         )
 

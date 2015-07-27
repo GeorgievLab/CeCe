@@ -18,7 +18,7 @@
 
 /* ************************************************************************ */
 
-#if defined (_WIN32) && defined(_MSC_VER)
+#if defined(_MSC_VER)
     #if defined(SIMULATOR_DLL_EXPORT)
         #define DLL_EXPORT __declspec(dllexport)
         #define DLL_EXPORT_EXTERN

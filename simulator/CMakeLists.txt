@@ -126,9 +126,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # ######################################################################### #
 
 # Install
-install(TARGETS ${PROJECT_NAME}
-    DESTINATION ${INSTALL_DIR_LIBRARY}
-    FRAMEWORK ${INSTALL_DIR_FRAMEWORK}
+install(TARGETS ${PROJECT_NAME} 
+    RUNTIME DESTINATION ${INSTALL_DIR_LIBRARY}
+    LIBRARY DESTINATION ${INSTALL_DIR_LIBRARY}
 )
 
 # ######################################################################### #

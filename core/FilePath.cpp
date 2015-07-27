@@ -5,6 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 // Declaration
 #include "core/FilePath.hpp"
@@ -14,21 +16,17 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
-bool fileExists(const FilePath& path) NOEXCEPT
+bool fileExists(const FilePath& path) noexcept
 {
     return boost::filesystem::exists(path);
 }
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

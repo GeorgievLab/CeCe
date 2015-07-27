@@ -653,7 +653,7 @@ String getPluginsDirectory(const char* path) noexcept
 #if _WIN32
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
-    _splitpath(name, drive, dir, NULL, NULL);
+    _splitpath(path, drive, dir, NULL, NULL);
     return String(drive) + dir + DIR_PLUGINS;
 #else
     // Absolute path to plugins directory on Linux
