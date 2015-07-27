@@ -656,7 +656,6 @@ int main(int argc, char** argv)
     catch (const Exception& e)
     {
         Log::error(e.what());
-        help(argv[0]);
         return 1;
     }
 
