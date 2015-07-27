@@ -450,6 +450,9 @@ private:
         if (!m_visualize)
             return;
 
+        // Set callback
+        glfwSetErrorCallback(vizualizationErrorCallback);
+
         // Initialize the library
         if (!glfwInit())
             throw RuntimeException("Unable to initialize GLFW");
@@ -520,6 +523,20 @@ private:
         // Set callbacks
         glfwSetWindowSizeCallback(m_window, &Simulator::windowResizeCallback);
         glfwSetKeyCallback(m_window, &Simulator::keyboardCallback);
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Vizualization error callback.
+     *
+     * @param error
+     * @param description
+     */
+    static void vizualizationErrorCallback(int error, const char* description) noexcept
+    {
+        Log::warning(description);
     }
 #endif
 
