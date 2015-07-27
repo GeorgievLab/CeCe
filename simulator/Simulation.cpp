@@ -401,11 +401,15 @@ void Simulation::storeDataTables()
 
         std::ofstream file(item.first + ".csv");
 
+        Log::info("Saving data table '", item.first, "' into '", item.first, ".csv'");
+
         // Write headers
         writeCsvLine(file, table.getColumns());
 
         for (const auto& row : table.getRows())
             writeCsvLine(file, row);
+
+        Log::info("Data table '", item.first, "' saved.");
     }
 }
 

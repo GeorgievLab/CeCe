@@ -8,39 +8,66 @@
 /* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
-// Declaration
-#include "StoreMolecules.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // Simulator
-#include "core/DataTable.hpp"
+#include "core/ViewPtr.hpp"
+#include "simulator/Module.hpp"
 
 // Plugin
-#include "CellBase.hpp"
+#include "Module.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace cell {
+namespace streamlines {
 
 /* ************************************************************************ */
 
-void StoreMolecules::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration)
+/**
+ * @brief Streamlines store state module.
+ */
+class StoreState : public simulator::Module
 {
-    // Cast to cell
-    auto& cell = object.castThrow<CellBase>("Cell object required");
 
-    // Get data table
-    auto& table = simulation.getDataTable("molecules");
+// Public Ctors & Dtors
+public:
 
-    // Create new row
-    // iteration;totalTime;id;molecules...
-    table.addRow(
-        makePair("iteration", simulation.getIteration()),
-        makePair("totalTime", simulation.getTotalTime().value()),
-        makePair("id", object.getId()),
-        cell.getMolecules()
-    );
-}
+
+    /**
+     * @brief Constructor.
+     *
+     * @param module A pointer to streamlines module.
+     */
+    explicit StoreState(ViewPtr<plugin::streamlines::Module> module) noexcept
+        : m_streamlinesModule(module)
+    {
+        // Nothing to do
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Update module state.
+     *
+     * @param dt    Simulation time step.
+     * @param world World object.
+     */
+    void update(units::Duration dt, simulator::Simulation& simulation) override;
+
+
+// Private Data Members
+private:
+
+    /// A pointer to streamlines module.
+    ViewPtr<plugin::streamlines::Module> m_streamlinesModule;
+
+};
 
 /* ************************************************************************ */
 

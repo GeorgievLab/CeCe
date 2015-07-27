@@ -1,4 +1,6 @@
 # ######################################################################### #
+# Georgiev Lab (c) 2015                                                     #
+# ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
@@ -15,6 +17,10 @@ set(SRCS
     LatticeData.cpp
     ObstacleMap.hpp
     ObstacleMap.cpp
+    StoreState.hpp
+    StoreState.cpp
+    StoreObjectState.hpp
+    StoreObjectState.cpp
 )
 
 # Options

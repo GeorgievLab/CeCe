@@ -8,39 +8,67 @@
 /* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
-// Declaration
-#include "StoreMolecules.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // Simulator
-#include "core/DataTable.hpp"
+#include "core/ViewPtr.hpp"
+#include "simulator/Program.hpp"
 
 // Plugin
-#include "CellBase.hpp"
+#include "Module.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace cell {
+namespace streamlines {
 
 /* ************************************************************************ */
 
-void StoreMolecules::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration)
+/**
+ * @brief Object store state program.
+ */
+class StoreObjectState
 {
-    // Cast to cell
-    auto& cell = object.castThrow<CellBase>("Cell object required");
 
-    // Get data table
-    auto& table = simulation.getDataTable("molecules");
+// Public Ctors & Dtors
+public:
 
-    // Create new row
-    // iteration;totalTime;id;molecules...
-    table.addRow(
-        makePair("iteration", simulation.getIteration()),
-        makePair("totalTime", simulation.getTotalTime().value()),
-        makePair("id", object.getId()),
-        cell.getMolecules()
-    );
-}
+
+    /**
+     * @brief Constructor.
+     *
+     * @param module A pointer to streamlines module.
+     */
+    explicit StoreObjectState(ViewPtr<plugin::streamlines::Module> module) noexcept
+        : m_streamlinesModule(module)
+    {
+        // Nothing to do
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Update module state.
+     *
+     * @param object     Program owner.
+     * @param dt         Simulation time step.
+     * @param simulation Current simulation.
+     */
+    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration);
+
+
+// Private Data Members
+private:
+
+    /// A pointer to streamlines module.
+    ViewPtr<plugin::streamlines::Module> m_streamlinesModule;
+
+};
 
 /* ************************************************************************ */
 

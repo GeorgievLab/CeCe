@@ -9,36 +9,37 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "StoreMolecules.hpp"
+#include "StoreObjectState.hpp"
 
 // Simulator
 #include "core/DataTable.hpp"
-
-// Plugin
-#include "CellBase.hpp"
+#include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace cell {
+namespace streamlines {
 
 /* ************************************************************************ */
 
-void StoreMolecules::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration)
+void StoreObjectState::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration)
 {
-    // Cast to cell
-    auto& cell = object.castThrow<CellBase>("Cell object required");
-
     // Get data table
-    auto& table = simulation.getDataTable("molecules");
+    auto& table = simulation.getDataTable("object-state");
+
+    // Get states
+    const auto pos = object.getPosition();
+    const auto vel = object.getVelocity();
 
     // Create new row
-    // iteration;totalTime;id;molecules...
     table.addRow(
         makePair("iteration", simulation.getIteration()),
         makePair("totalTime", simulation.getTotalTime().value()),
         makePair("id", object.getId()),
-        cell.getMolecules()
+        makePair("x", pos.getX().value()),
+        makePair("y", pos.getY().value()),
+        makePair("velX", vel.getX().value()),
+        makePair("velY", vel.getY().value())
     );
 }
 
