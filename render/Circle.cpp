@@ -52,7 +52,7 @@ StaticArray<Vertex, VERTEX_COUNT> generateVertices()
 
     res[0] = Vertex{0.f, 0.f, 0.8f, 0.8f, 0.8f};
 
-    for (unsigned i = 1; i <= VERTEX_COUNT; ++i)
+    for (unsigned i = 1; i < VERTEX_COUNT; ++i)
     {
         const float angle = step * i;
         res[i] = Vertex{std::cos(angle), std::sin(angle), 0.8f, 0.8f, 0.8f};
