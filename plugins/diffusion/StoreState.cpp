@@ -29,7 +29,7 @@ void StoreState::update(units::Duration dt, simulator::Simulation& simulation)
     auto _ = measure_time("diffusion.store-state", simulator::TimeMeasurementIterationOutput(simulation));
 
     // Get data table
-    auto& table = simulation.getDataTable("store-molecules");
+    auto& table = simulation.getDataTable("diffusion");
 
     // Foreach coordinates
     for (auto&& c : range(m_diffusionModule->getGridSize()))
