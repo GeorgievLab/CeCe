@@ -82,9 +82,6 @@ endforeach ()
 # Pass build-in libraries list
 add_definitions(-DBUILTIN_PLUGINS=${BUILTIN_PLUGINS})
 
-# Set path to plugins directory
-add_definitions(-DDIR_PLUGINS="${PLUGINS_DIRECTORY}")
-
 if (WIN32)
     add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()

@@ -625,6 +625,28 @@ private:
 /* ************************************************************************ */
 
 /**
+ * @brief Returns plugins directory.
+ *
+ * @param path Executable path.
+ *
+ * @return
+ */
+String getPluginsDirectory(const char* path) noexcept
+{
+#if _WIN32
+    char drive[_MAX_DRIVE];
+    char dir[_MAX_DIR];
+    _splitpath(name, drive, dir, NULL, NULL);
+    return String(drive) + dir + DIR_PLUGINS;
+#else
+    // Absolute path to plugins directory on Linux
+    return DIR_PLUGINS;
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Entry function.
  *
  * @param argc
@@ -635,6 +657,9 @@ int main(int argc, char** argv)
     // Install signal handler
     signal(SIGTERM, terminate_simulation);
     signal(SIGINT, terminate_simulation);
+
+    // Register plugins directory
+    simulator::PluginManager::addDirectory(getPluginsDirectory(argv[0]));
 
     // Manage plugins by local variable
     auto pm = simulator::PluginManager::local();

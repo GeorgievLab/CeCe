@@ -16,6 +16,9 @@ if (ENABLE_RENDER)
     include_directories(${GLFW_INCLUDE_DIR})
 endif ()
 
+# Set path to plugins directory
+add_definitions(-DDIR_PLUGINS="${PLUGINS_DIRECTORY}")
+
 # ######################################################################### #
 
 # Sources

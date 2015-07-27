@@ -32,9 +32,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-DynamicArray<String> PluginManager::s_directories{
-    DIR_PLUGINS
-};
+DynamicArray<String> PluginManager::s_directories;
 
 /* ************************************************************************ */
 
