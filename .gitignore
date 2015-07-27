@@ -5,10 +5,8 @@ Box2D
 .clang/*
 .build-debug/*
 
-build-debug/*
-build-debug-cli/*
-build-release/*
-build-release-cli/*
+build-debug*
+build-release*
 
 core/core.mk
 core/core.txt
