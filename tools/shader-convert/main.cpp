@@ -1,18 +1,29 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // C++
 #include <iostream>
-#include <string>
-#include <exception>
 #include <fstream>
-#include <array>
 #include <sstream>
 #include <algorithm>
 #include <iterator>
 #include <ctime>
 #include <iomanip>
 #include <locale>
+
+// Simulator
+#include "core/String.hpp"
+#include "core/InStream.hpp"
+#include "core/OutStream.hpp"
+#include "core/StaticArray.hpp"
+#include "core/Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -21,7 +32,7 @@
  *
  * @param err Error message.
  */
-[[noreturn]] void error(const std::string& err)
+[[noreturn]] void error(const String& err)
 {
     std::cerr << err << std::endl;
     exit(1);
@@ -58,15 +69,15 @@ void put_time(std::basic_ostream<CharT, Traits>& out, const std::tm* tmb, const 
  * @param symbol
  * @param src
  */
-static void convert(std::ostream& out, const std::string& symbol, std::istream& src)
+static void convert(OutStream& out, const String& symbol, InStream& src)
 {
     unsigned int valueCounter = 0;
 
     std::time_t t = std::time(nullptr);
     std::tm tm = *std::localtime(&t);
-    std::hash<std::string> hasher;
+    std::hash<String> hasher;
 
-    std::string code;
+    String code;
     std::copy(std::istreambuf_iterator<char>(src), std::istreambuf_iterator<char>(), std::back_inserter(code));
 
     out << "#include <array>\n";
@@ -75,7 +86,7 @@ static void convert(std::ostream& out, const std::string& symbol, std::istream& 
     put_time(out, &tm, "%F %T %Z");
     out << "\n";
     out << "// #" << hasher(code) << "\n";
-    out << "static const std::array<char, " << code.length() + 1 << "> " << symbol << " = {\n  ";
+    out << "static const std::array<char, " << code.length() + 1 << "> " << symbol << " = {{\n  ";
 
     for (auto c : code)
     {
@@ -88,7 +99,7 @@ static void convert(std::ostream& out, const std::string& symbol, std::istream& 
         }
     }
 
-    out << "0x00\n};\n";
+    out << "0x00\n}};\n";
 }
 
 /* ************************************************************************ */
@@ -100,13 +111,13 @@ static void convert(std::ostream& out, const std::string& symbol, std::istream& 
  *
  * @return
  */
-std::array<std::string, 2> splitShaders(std::istream& src)
+StaticArray<String, 2> splitShaders(InStream& src)
 {
-    std::array<std::string, 2> shaders;
+    StaticArray<String, 2> shaders;
     shaders[0].reserve(1024);
     shaders[1].reserve(1024);
 
-    std::string line;
+    String line;
 
     auto readRest = [&](int id) {
         while (std::getline(src, line))
@@ -163,11 +174,11 @@ int main(int argc, char** argv)
                 error("not enough arguments: shaders <symbol1> <symbol2> <file> <outfile1> <outfile2>");
             }
 
-            const std::string symbol1 = argv[2];
-            const std::string symbol2 = argv[3];
-            const std::string filename = argv[4];
-            const std::string outFilename1 = argv[5];
-            const std::string outFilename2 = argv[6];
+            const String symbol1 = argv[2];
+            const String symbol2 = argv[3];
+            const String filename = argv[4];
+            const String outFilename1 = argv[5];
+            const String outFilename2 = argv[6];
 
             std::ifstream file(filename, std::ios::in | std::ios::binary);
             auto sources = splitShaders(file);
@@ -186,9 +197,9 @@ int main(int argc, char** argv)
         }
         else if (mode == "default")
         {
-            const std::string symbol = argv[2];
-            const std::string filename = argv[3];
-            const std::string outFilename = argv[4];
+            const String symbol = argv[2];
+            const String filename = argv[3];
+            const String outFilename = argv[4];
 
             std::ifstream file(filename, std::ios::in | std::ios::binary);
             std::ofstream outFile(outFilename, std::ios::out | std::ios::binary);
@@ -198,10 +209,10 @@ int main(int argc, char** argv)
         }
         else
         {
-            throw std::runtime_error("Unknown mode: " + mode);
+            throw RuntimeException("Unknown mode: " + mode);
         }
     }
-    catch (const std::exception& e)
+    catch (const Exception& e)
     {
         error(e.what());
     }
