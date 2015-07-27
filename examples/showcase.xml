@@ -2,7 +2,7 @@
 <!-- Simulation definition -->
 <simulation world-size="160um 90um" dt="0.5ms" iterations="10000">
     <!-- Produce GFP -->
-    <program name="make-gfp" language="stochastic-reactions-diffusive">
+    <program name="make-gfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         null < 0.5, 0.001 > GFP;
         GFP > 0.5 > env;
@@ -10,7 +10,7 @@
     </program>
 
     <!-- Produce RFP -->
-    <program name="make-rfp" language="stochastic-reactions-diffusive">
+    <program name="make-rfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         null < 0.5, 0.001 > RFP;
         RFP > 0.5 > env;
@@ -18,7 +18,7 @@
     </program>
 
     <!-- Produce YFP -->
-    <program name="make-yfp" language="stochastic-reactions-diffusive">
+    <program name="make-yfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         null < 0.5, 0.001 > YFP;
         YFP > 0.5 > env;
@@ -26,7 +26,7 @@
     </program>
 
     <!-- Produce BFP -->
-    <program name="make-bfp" language="stochastic-reactions-diffusive">
+    <program name="make-bfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         env > 0.4 > GFP;
         env > 0.4 > RFP;

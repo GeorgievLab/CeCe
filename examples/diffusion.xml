@@ -28,6 +28,6 @@ def update(dt, simulation):
     </module>
 
     <!-- Store diffusion state each iteration -->
-    <module name="diffusion.store-state">
+    <module name="diffusion.store-state" />
 </simulation>
 

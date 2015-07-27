@@ -14,13 +14,13 @@ def call(simulation):
     </init>
 
     <!-- Generate GFP -->
-    <program name="make-gfp" language="stochastic-reactions">
+    <program name="make-gfp" language="stochastic-reactions-intracellular">
         <!--
             alpha = -log(0.5) / 20.0;
             k1 = 100 * alpha; // 1.505149978
         -->
 <![CDATA[
-        null < 100 * (-log(0.5) / 20.0), 0.001 > GFP;
+        null < 1.505149978, 0.001 > GFP;
 ]]>
     </program>
 </simulation>

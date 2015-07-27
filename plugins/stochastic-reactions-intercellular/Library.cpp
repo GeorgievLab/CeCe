@@ -13,8 +13,10 @@
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
-// Reactions
-#include "../stochastic-reactions/ReactionsParser.hpp"
+// Plugins
+#include "plugins/stochastic-reactions-intracellular/ReactionsParser.hpp"
+
+// Plugin
 #include "IntercellularReactions.hpp"
 
 /************************************************************************** */

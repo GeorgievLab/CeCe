@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="plugin_stochastic-reactions" InternalType="Library">
+<CodeLite_Project Name="plugin_stochastic-reactions-intercellular" InternalType="Library">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -18,12 +18,12 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
-    <File Name="IntracellularReactions.cpp"/>
+    <File Name="Diffusion.cpp"/>
+    <File Name="IntercellularReactions.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="Reactions.hpp"/>
-    <File Name="IntracellularReactions.hpp"/>
-    <File Name="ReactionsParser.hpp"/>
+    <File Name="Diffusion.hpp"/>
+    <File Name="IntercellularReactions.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -114,14 +114,12 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="test">
+    <File Name="test/test.cpp"/>
+  </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="core"/>
     <Project Name="render"/>
   </Dependencies>
   <Dependencies Name="Release"/>
-  <VirtualDirectory Name="test">
-    <File Name="test/test.cpp"/>
-    <File Name="test/ReactionTest.cpp"/>
-    <File Name="test/ReactionsParserTest.cpp"/>
-  </VirtualDirectory>
 </CodeLite_Project>

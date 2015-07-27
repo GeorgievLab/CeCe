@@ -9,7 +9,7 @@
     </module>
 
     <!-- Produce GFP -->
-    <program name="make-gfp" language="stochastic-reactions-diffusive">
+    <program name="make-gfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         null < 0.001, 50 > GFP;
         GFP > 100 > env;
@@ -17,7 +17,7 @@
     </program>
 
     <!-- Produce RFP in proximity of YFP -->
-    <program name="make-rfp" language="stochastic-reactions-diffusive">
+    <program name="make-rfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         env > 100 > YFP;
         YFP < 50, 0.001 > RFP;
@@ -26,7 +26,7 @@
     </program>
 
     <!-- Produce YFP in proximity of GFP -->
-    <program name="make-yfp" language="stochastic-reactions-diffusive">
+    <program name="make-yfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         env > 100 > GFP;
         GFP < 50, 0.001 > YFP;

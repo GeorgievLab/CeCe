@@ -5,13 +5,14 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* Author: Václav Pelíšek <pelisekv@students.zcu.cz>                        */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
 
-#include "../stochastic-reactions/Reactions.hpp"
+// Plugins
+#include "plugins/stochastic-reactions-intracellular/Reactions.hpp"
 #include "plugins/diffusion/Module.hpp"
 
 /* ************************************************************************ */
