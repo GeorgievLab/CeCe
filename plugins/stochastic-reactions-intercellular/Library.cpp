@@ -25,7 +25,7 @@ using namespace simulator;
 
 /* ************************************************************************ */
 
-class StochasticReactionsDiffusiveApi : public PluginApi
+class StochasticReactionsIntercellularApi : public PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
@@ -38,6 +38,6 @@ class StochasticReactionsDiffusiveApi : public PluginApi
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(stochastic_reactions_diffusive, StochasticReactionsDiffusiveApi)
+DEFINE_PLUGIN(stochastic_reactions_intercellular, StochasticReactionsIntercellularApi)
 
 /* ************************************************************************ */
