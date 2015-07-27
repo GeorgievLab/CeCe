@@ -11,25 +11,25 @@
 
     <!-- Define production programs -->
     <program name="makeSig1" language="stochastic-reactions-intercellular">
-<![CDATA[[
+<![CDATA[
     null > 0.9 > Sig1;
     Sig1 > 0.3 > env;
 ]]>
     </program>
     <program name="makeSig2" language="stochastic-reactions-intercellular">
-<![CDATA[[
+<![CDATA[
     null > 0.8 > Sig2;
     Sig2 > 0.4 > env;
 ]]>
     </program>
     <program name="makeSig3" language="stochastic-reactions-intercellular">
-<![CDATA[[
+<![CDATA[
     null > 0.8 > Sig3;
     Sig3 > 0.5 > env;
 ]]>
     </program>
     <program name="makeSig4" language="stochastic-reactions-intercellular">
-<![CDATA[[
+<![CDATA[
     null > 0.9 > Sig4;
     Sig4 > 0.5 > env;
 ]]>
@@ -43,7 +43,7 @@
 
     <!-- Prints information every iteration -->
     <module name="python:objectCount">
-<![CDATA[[
+<![CDATA[
 def update(dt, simulation):
     print "Iteration:", simulation.iteration, "/", simulation.iterations
     print "Objects:", simulation.objectsCount
