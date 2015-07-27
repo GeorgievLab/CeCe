@@ -15,7 +15,6 @@
 #include <utility>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "render/Context.hpp"
 
 /* ************************************************************************ */
@@ -27,7 +26,7 @@ namespace render {
 /**
  * @brief Basic class for drawing objects.
  */
-class DLL_EXPORT Object
+class Object
 {
 
 
@@ -138,7 +137,7 @@ public:
     /**
      * @brief Check if pointer is set.
      */
-    explicit operator bool() const NOEXCEPT
+    explicit operator bool() const noexcept
     {
         return m_ptr != nullptr;
     }
@@ -149,7 +148,7 @@ public:
      *
      * @return
      */
-    T& operator*() const NOEXCEPT
+    T& operator*() const noexcept
     {
         assert(m_ptr);
         return *m_ptr;
@@ -161,7 +160,7 @@ public:
      *
      * @return
      */
-    T* operator->() const NOEXCEPT
+    T* operator->() const noexcept
     {
         assert(m_ptr);
         return m_ptr;
@@ -177,7 +176,7 @@ public:
      *
      * @return
      */
-    T* get() const NOEXCEPT
+    T* get() const noexcept
     {
         return m_ptr;
     }
@@ -206,7 +205,11 @@ public:
      */
     void release()
     {
-        if (m_ptr) m_ptr->release();
+        if (m_ptr)
+        {
+            m_ptr->release();
+            m_ptr = nullptr;
+        }
     }
 
 
@@ -217,6 +220,182 @@ private:
     ObjectWrapper<T>* m_ptr = nullptr;
 
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Smart pointer for render objects with reference counting.
+ *
+ * This pointer is usefull when same object is used in whole simulation
+ * multiple times and is expensive to create new ones.
+ *
+ * @tparam T
+ */
+template<typename T>
+class ObjectSharedPtr
+{
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~ObjectSharedPtr()
+    {
+        release();
+    }
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Check if pointer is set.
+     */
+    explicit operator bool() const noexcept
+    {
+        return m_ptr != nullptr;
+    }
+
+
+    /**
+     * @brief Dereference pointer.
+     *
+     * @return
+     */
+    T& operator*() const noexcept
+    {
+        assert(m_ptr);
+        return *m_ptr;
+    }
+
+
+    /**
+     * @brief Return pointer access.
+     *
+     * @return
+     */
+    T* operator->() const noexcept
+    {
+        assert(m_ptr);
+        return m_ptr;
+    }
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns pointer.
+     *
+     * @return
+     */
+    T* get() const noexcept
+    {
+        return m_ptr;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create static object if is required and increase usage counter.
+     *
+     * @param context
+     * @param args
+     *
+     * @return Object wrapper.
+     */
+    template<typename... Args>
+    ObjectWrapper<T>* createStatic(Context& context, Args&&... args)
+    {
+        if (s_ptr)
+        {
+            ++s_count;
+            return s_ptr;
+        }
+
+        // Create object
+        assert(s_count == 0);
+        s_ptr = context.createObject<ObjectWrapper<T>>(std::forward<Args>(args)...);
+        s_count = 1;
+
+        return s_ptr;
+    }
+
+
+    /**
+     * @brief Initialize object.
+     *
+     * @param context
+     * @param args
+     */
+    template<typename... Args>
+    void create(Context& context, Args&&... args)
+    {
+        // Create static if is required
+        m_ptr = createStatic(context, std::forward<Args>(args)...);
+    }
+
+
+    /**
+     * @brief Release pointer.
+     */
+    void release()
+    {
+        if (m_ptr)
+        {
+            releaseStatic();
+            m_ptr = nullptr;
+        }
+    }
+
+
+    /**
+     * @brief Release static pointer.
+     */
+    void releaseStatic()
+    {
+        // Release if counter is zero
+        if (s_ptr && --s_count == 0)
+        {
+            s_ptr->release();
+            assert(s_count == 0);
+        }
+    }
+
+
+// Private Data Members
+private:
+
+    /// Local pointer.
+    ObjectWrapper<T>* m_ptr = nullptr;
+
+    /// Static pointer.
+    static ObjectWrapper<T>* s_ptr;
+
+    /// Number of usages.
+    /// TODO: thread sync??
+    static unsigned int s_count;
+
+};
+
+/* ************************************************************************ */
+
+template<typename T>
+ObjectWrapper<T>* ObjectSharedPtr<T>::s_ptr = nullptr;
+
+/* ************************************************************************ */
+
+template<typename T>
+unsigned int ObjectSharedPtr<T>::s_count = 0;
 
 /* ************************************************************************ */
 
