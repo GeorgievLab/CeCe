@@ -36,8 +36,73 @@ class Simulation;
 class PluginManager final
 {
 
+// Public Structures
+public:
+
+
+    /**
+     * @brief Helper class for managing plugins at local scope.
+     */
+    struct Local
+    {
+
+        /**
+         * @brief Constructor.
+         */
+        Local() noexcept
+        {
+            PluginManager::rescanDirectories();
+        }
+
+
+        /**
+         * @brief Copy constructor.
+         */
+        Local(const Local&) = delete;
+
+
+        /**
+         * @brief Move constructor.
+         */
+        Local(Local&&) = default;
+
+
+        /**
+         * @brief Destructor.
+         */
+        ~Local()
+        {
+            PluginManager::releasePlugins();
+        }
+
+
+        /**
+         * @brief Copy assignment operator.
+         */
+        Local& operator=(const Local&) = delete;
+
+
+        /**
+         * @brief Move assignment operator.
+         */
+        Local& operator=(Local&&) = default;
+
+    };
+
+
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Create local scope helper.
+     *
+     * @return
+     */
+    static Local local() noexcept
+    {
+        return {};
+    }
 
 
     /**
@@ -184,6 +249,16 @@ public:
     static void rescanDirectories() noexcept
     {
         s_extern = scanDirectories();
+    }
+
+
+    /**
+     * @brief Release all loaded plugins.
+     */
+    static void releasePlugins() noexcept
+    {
+        // Release plugins
+        s_loaded.clear();
     }
 
 

@@ -88,7 +88,7 @@
         <LibraryPath Value="../simulator/Debug"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/cell-sim-$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug" Command="./cell-sim-$(ProjectName)" CommandArguments="../../examples/colony.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/cell-sim-$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug" Command="./simulator-$(ProjectName)" CommandArguments="../../examples/colony.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

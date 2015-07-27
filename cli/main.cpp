@@ -636,23 +636,22 @@ int main(int argc, char** argv)
     signal(SIGTERM, terminate_simulation);
     signal(SIGINT, terminate_simulation);
 
-    // Initialize plugins
-    simulator::PluginManager::rescanDirectories();
+    // Manage plugins by local variable
+    auto pm = simulator::PluginManager::local();
 
     // Register loaders
     simulator::LoaderManager::add<loader::xml::SimulationLoader>("xml");
     simulator::LoaderManager::add<loader::reactions::SimulationLoader>("reactions");
 
+#if ENABLE_MEASUREMENT
     std::ofstream time_file("time.csv");
     setMeasureTimeOutput(&time_file);
+#endif
 
     try
     {
-        // Parse arguments
-        auto params = parseArguments(argc, argv);
-
         // Create simulator and start it
-        Simulator(params).start();
+        Simulator(parseArguments(argc, argv)).start();
     }
     catch (const Exception& e)
     {
