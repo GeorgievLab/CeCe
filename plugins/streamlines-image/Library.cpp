@@ -8,28 +8,42 @@
 /* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
+// C++
+#include <cassert>
 
 // Simulator
-#include "core/Grid.hpp"
+#include "simulator/Plugin.hpp"
+#include "simulator/PluginApi.hpp"
+#include "simulator/Simulation.hpp"
+#include "simulator/SimulationListener.hpp"
+
+// Plugin
+#include "Module.hpp"
+
+// Plugins
+#include "plugins/streamlines/StoreState.hpp"
 
 /* ************************************************************************ */
 
-namespace plugin {
-namespace streamlines {
+using namespace simulator;
 
 /* ************************************************************************ */
 
-/**
- * @brief Class for loading obstacle map from file.
- */
-using ObstacleMap = core::Grid<int>;
+class SteamlinesImageApi : public PluginApi
+{
+
+    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+    {
+        if (name == "store-state")
+            return makeUnique<plugin::streamlines::StoreState>(simulation.useModule<plugin::streamlines::Module>("streamlines-image"));
+
+        return makeUnique<plugin::streamlines_image::Module>();
+    }
+
+};
 
 /* ************************************************************************ */
 
-}
-}
+DEFINE_PLUGIN(streamlines_image, SteamlinesImageApi)
 
 /* ************************************************************************ */

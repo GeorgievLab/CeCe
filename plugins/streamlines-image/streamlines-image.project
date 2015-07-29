@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="plugin_streamlines" InternalType="Library">
+<CodeLite_Project Name="plugin_streamlines-image" InternalType="Library">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -17,20 +17,11 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Module.cpp"/>
     <File Name="Library.cpp"/>
-    <File Name="Lattice.cpp"/>
-    <File Name="LatticeData.cpp"/>
-    <File Name="StoreState.cpp"/>
-    <File Name="StoreObjectState.cpp"/>
+    <File Name="Module.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
-    <File Name="Lattice.hpp"/>
-    <File Name="LatticeData.hpp"/>
-    <File Name="ObstacleMap.hpp"/>
-    <File Name="StoreState.hpp"/>
-    <File Name="StoreObjectState.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

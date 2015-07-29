@@ -13,19 +13,51 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/Grid.hpp"
+#include "core/String.hpp"
+
+// Plugins
+#include "plugins/streamlines/Module.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace streamlines {
+namespace streamlines_image {
 
 /* ************************************************************************ */
 
 /**
- * @brief Class for loading obstacle map from file.
+ * @brief Module for storing pictures.
  */
-using ObstacleMap = core::Grid<int>;
+class Module : public plugin::streamlines::Module
+{
+
+// Public Accessors
+public:
+
+
+
+// Public Mutators
+public:
+
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Configure module.
+     *
+     * @param config
+     * @param simulation
+     */
+    void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
+
+
+// Private Data Members
+private:
+
+};
 
 /* ************************************************************************ */
 

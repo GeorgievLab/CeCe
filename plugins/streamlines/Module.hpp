@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -26,8 +28,9 @@
 #include "render/GridVector.hpp"
 #endif
 
-// Module
+// Plugin
 #include "Lattice.hpp"
+#include "ObstacleMap.hpp"
 
 /* ************************************************************************ */
 
@@ -130,6 +133,14 @@ public:
     {
         m_kinematicViscosity = viscosity;
     }
+
+
+    /**
+     * @brief Setup static obstacle map.
+     *
+     * @param map
+     */
+    void setStaticObstacleMap(const ObstacleMap& map);
 
 
 // Public Operations

@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -16,6 +18,7 @@
 #include "core/constants.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Exception.hpp"
+#include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/ShapeToGrid.hpp"
@@ -37,6 +40,18 @@ Module::Module()
 Module::~Module()
 {
     // Nothing to do
+}
+
+/* ************************************************************************ */
+
+void Module::setStaticObstacleMap(const ObstacleMap& map)
+{
+    // Foreach obstacle map
+    for (auto&& c : range(map.getSize()))
+    {
+        if (map[c])
+            m_lattice[c + 1].setStaticObstacle(true);
+    }
 }
 
 /* ************************************************************************ */

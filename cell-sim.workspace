@@ -24,6 +24,7 @@
   <Project Name="loader-reactions" Path="loaders/reactions/loader-reactions.project" Active="No"/>
   <Project Name="stochastic-reactions-intercellular" Path="plugins/stochastic-reactions-intercellular/stochastic-reactions-intercellular.project" Active="No"/>
   <Project Name="stochastic-reactions-intracellular" Path="plugins/stochastic-reactions-intracellular/stochastic-reactions-intracellular.project" Active="No"/>
+  <Project Name="streamlines-image" Path="plugins/streamlines-image/streamlines-image.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -48,6 +49,7 @@
       <Project Name="loader_reactions" ConfigName="Debug"/>
       <Project Name="plugin_stochastic-reactions-intercellular" ConfigName="Debug"/>
       <Project Name="plugin_stochastic-reactions-intracellular" ConfigName="Debug"/>
+      <Project Name="plugin_streamlines-image" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -72,6 +74,7 @@
       <Project Name="loader_reactions" ConfigName="Release"/>
       <Project Name="plugin_stochastic-reactions-intercellular" ConfigName="Release"/>
       <Project Name="plugin_stochastic-reactions-intracellular" ConfigName="Release"/>
+      <Project Name="plugin_streamlines-image" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

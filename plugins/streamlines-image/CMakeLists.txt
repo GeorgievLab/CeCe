@@ -6,24 +6,15 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
+# Find OpenCV
+find_package(OpenCV REQUIRED)
+
 # Sources
 set(SRCS
     Module.hpp
     Module.cpp
     Library.cpp
-    Lattice.hpp
-    Lattice.cpp
-    LatticeData.hpp
-    LatticeData.cpp
-    ObstacleMap.hpp
-    StoreState.hpp
-    StoreState.cpp
-    StoreObjectState.hpp
-    StoreObjectState.cpp
 )
-
-# Options
-option(DEBUG_streamlines_RENDER "Enable or disable streamlines rendering" Off)
 
 # Enable debug rendering
 if (DEBUG_streamlines_RENDER)
@@ -31,8 +22,11 @@ if (DEBUG_streamlines_RENDER)
 endif ()
 
 # Build plugin
-build_plugin(streamlines
+build_plugin(streamlines-image
     SOURCES ${SRCS}
+    LIBRARIES ${OpenCV_LIBS}
+    PLUGINS_REQUIRED
+        streamlines
 )
 
 # ######################################################################### #
