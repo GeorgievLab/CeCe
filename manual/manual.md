@@ -20,6 +20,36 @@ It takes simulation file and perform simulation with optional vizualization.
 
 Specifying `--vizualize` or `--novizualize` override settings from simulation (some simulation don't explicitly want vizualize).
 
+### How to run
+
+CLI application is supported on all three platforms.
+
+#### Windows x64
+
+On Windows the ZIP package contains executable in the main directory and some subdirectories with examples and plugins. Application must be executed from command line (`cmd` or `PowerShell`).
+
+```
+PS > .\simulator.exe examples\showcase.xml
+```
+
+#### Mac OS X
+
+Application on Mac is shipped as bundle packed in TZG package. Package contains a few directories where the most important is `bin` where the application is stored. The directory `bin/simulator-cli.app` contains everything that CLI application needs to be executed. Run it from `Finder` is not viable (mostly for GUI apps that doesn't require arguments) so it must be executed from terminal. The bundle have some predefined structure where the executable is stored but it's not important because there is `bin/run.sh` that allows you to run CLI app without knowledge of bundle structure.
+
+Just run the simulator by typing this in terminal in directory of unpacked TZG package.
+
+```bash
+$ ./bin/run.sh examples/showcase.xml
+```
+
+#### Linux x64
+
+Only Ubuntu 14.04 LST and Linux Mint 17.x is supported. Just double click on DEB package and everything should be installed. Then just type following into terminal.
+
+```bash
+$ simulator-cli /usr/share/simulator/examples/showcase.xml
+```
+
 ## GUI
 TODO
 
