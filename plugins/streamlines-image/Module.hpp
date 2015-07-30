@@ -18,9 +18,12 @@
 // Simulator
 #include "core/String.hpp"
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
 #include "render/Object.hpp"
 #include "render/GridColor.hpp"
+#if DEV_DRAW_CONTOURS
+#include "render/Lines.hpp"
+#endif
 #endif
 
 // Plugins
@@ -53,7 +56,7 @@ public:
     void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
 
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /**
      * @brief Render module.
      *
@@ -70,9 +73,19 @@ private:
     /// Source image.
     cv::Mat m_img;
 
-#ifdef ENABLE_RENDER
+#if ENABLE_RENDER
     /// Drawable object.
     render::ObjectPtr<render::GridColor> m_drawable;
+#endif
+
+#if ENABLE_RENDER && DEV_DRAW_CONTOURS
+    /// Lines to draw
+    DynamicArray<Pair<render::Lines::PointType, render::Lines::PointType>> m_contours;
+#endif
+
+#if ENABLE_RENDER && DEV_DRAW_CONTOURS
+    /// Drawable object.
+    render::ObjectPtr<render::Lines> m_drawableContours;
 #endif
 };
 
