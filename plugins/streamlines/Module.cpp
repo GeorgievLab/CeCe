@@ -122,7 +122,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 #ifdef ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
-#if OPT_DRAW_VELOCITY
+#if DEV_DRAW_VELOCITY
     const auto size = m_lattice.getSize();
 
     if (!m_drawable)

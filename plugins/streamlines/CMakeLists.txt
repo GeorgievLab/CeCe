@@ -23,11 +23,11 @@ set(SRCS
 )
 
 # Options
-option(DEBUG_streamlines_RENDER "Enable or disable streamlines rendering" Off)
+option(DEV_streamlines_RENDER "Enable or disable streamlines rendering" Off)
 
 # Enable debug rendering
-if (DEBUG_streamlines_RENDER)
-    add_definitions(-DOPT_DRAW_VELOCITY=1)
+if (DEV_streamlines_RENDER)
+    add_definitions(-DDEV_DRAW_VELOCITY=1)
 endif ()
 
 # Build plugin
