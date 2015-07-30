@@ -12,8 +12,16 @@
 
 /* ************************************************************************ */
 
+// OpenCV
+#include <opencv2/opencv.hpp>
+
 // Simulator
 #include "core/String.hpp"
+
+#ifdef ENABLE_RENDER
+#include "render/Object.hpp"
+#include "render/GridColor.hpp"
+#endif
 
 // Plugins
 #include "plugins/streamlines/Module.hpp"
@@ -31,15 +39,6 @@ namespace streamlines_image {
 class Module : public plugin::streamlines::Module
 {
 
-// Public Accessors
-public:
-
-
-
-// Public Mutators
-public:
-
-
 
 // Public Operations
 public:
@@ -54,9 +53,27 @@ public:
     void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
 
 
+#ifdef ENABLE_RENDER
+    /**
+     * @brief Render module.
+     *
+     * @param context
+     * @param simulation
+     */
+    void draw(render::Context& context, const simulator::Simulation& simulation) override;
+#endif
+
+
 // Private Data Members
 private:
 
+    /// Source image.
+    cv::Mat m_img;
+
+#ifdef ENABLE_RENDER
+    /// Drawable object.
+    render::ObjectPtr<render::GridColor> m_drawable;
+#endif
 };
 
 /* ************************************************************************ */
