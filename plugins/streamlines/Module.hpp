@@ -70,7 +70,7 @@ public:
      *
      * @return
      */
-    Lattice& getLattice() NOEXCEPT
+    Lattice& getLattice() noexcept
     {
         return m_lattice;
     }
@@ -81,7 +81,7 @@ public:
      *
      * @return
      */
-    const Lattice& getLattice() const NOEXCEPT
+    const Lattice& getLattice() const noexcept
     {
         return m_lattice;
     }
@@ -92,7 +92,7 @@ public:
      *
      * @return
      */
-    VelocityVector getVelocityInflow() const NOEXCEPT
+    VelocityVector getVelocityInflow() const noexcept
     {
         return m_velocityInflow;
     }
@@ -103,7 +103,7 @@ public:
      *
      * @return
      */
-    units::KinematicViscosity getKinematicViscosity() const NOEXCEPT
+    units::KinematicViscosity getKinematicViscosity() const noexcept
     {
         return m_kinematicViscosity;
     }
@@ -118,7 +118,7 @@ public:
      *
      * @param velocity
      */
-    void setVelocityInflow(VelocityVector velocity) NOEXCEPT
+    void setVelocityInflow(VelocityVector velocity) noexcept
     {
         m_velocityInflow = velocity;
     }
@@ -129,7 +129,7 @@ public:
      *
      * @param viscosity
      */
-    void setKinematicViscosity(units::KinematicViscosity viscosity) NOEXCEPT
+    void setKinematicViscosity(units::KinematicViscosity viscosity) noexcept
     {
         m_kinematicViscosity = viscosity;
     }
@@ -222,12 +222,12 @@ private:
     /// Lattice.
     Lattice m_lattice;
 
-#if ENABLE_RENDER && OPT_DRAW_VELOCITY
+#if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Rendering grid with filled cells.
     render::ObjectPtr<render::GridColor> m_drawable;
 #endif
 
-#if ENABLE_RENDER && OPT_DRAW_VELOCITY
+#if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Render grid for velocities
     render::ObjectPtr<render::GridVector> m_drawableVector;
 #endif
