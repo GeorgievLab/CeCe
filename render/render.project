@@ -32,6 +32,7 @@
     <File Name="Circle.cpp"/>
     <File Name="Rectangle.cpp"/>
     <File Name="PhysicsDebugger.cpp"/>
+    <File Name="Lines.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
@@ -58,6 +59,7 @@
     <File Name="Circle.hpp"/>
     <File Name="Rectangle.hpp"/>
     <File Name="PhysicsDebugger.hpp"/>
+    <File Name="Lines.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

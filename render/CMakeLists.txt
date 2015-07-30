@@ -79,6 +79,8 @@ set(SRCS
     Rectangle.hpp
     Rectangle.cpp
     ImageData.hpp
+    Lines.hpp
+    Lines.cpp
     glext.h
 )
 
