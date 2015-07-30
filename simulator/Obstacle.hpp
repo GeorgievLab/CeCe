@@ -54,7 +54,7 @@ public:
     explicit Obstacle(Simulation& simulation) NOEXCEPT
         : Object(simulation, Type::Static)
     {
-        getMutableShapes().resize(1);
+        getMutableShapes().push_back(Shape::makeUndefined());
     }
 
 

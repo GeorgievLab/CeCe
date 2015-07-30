@@ -34,22 +34,28 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
     // Obstacle shape
     auto type = config.get("type");
 
+    // Shape type
+    ShapeType shapeType = ShapeType::Undefined;
+
     if (type == "circle")
-        shape.type = ShapeType::Circle;
+        shapeType = ShapeType::Circle;
     else if (type == "rectangle")
-        shape.type = ShapeType::Rectangle;
+        shapeType = ShapeType::Rectangle;
     // TODO: other shapes
 
     // Different configurations for different types
-    switch (shape.type)
+    switch (shapeType)
     {
     case ShapeType::Circle:
-        shape.circle.radius = config.get<units::Length>("radius");
+        shape = Shape::makeCircle(config.get<units::Length>("radius"));
         break;
 
     case ShapeType::Rectangle:
-        shape.rectangle.size = config.get<PositionVector>("size");
+        shape = Shape::makeRectangle(config.get<PositionVector>("size"));
         break;
+
+    case ShapeType::Edges:
+        throw RuntimeException("Unsupported shape");
 
     case ShapeType::Undefined:
         throw RuntimeException("Unknown shape type");
@@ -68,7 +74,7 @@ void Obstacle::draw(render::Context& context)
     // Foreach shapes
     for (const auto& shape : getShapes())
     {
-        switch (shape.type)
+        switch (shape.getType())
         {
         case ShapeType::Circle:
             if (!m_drawCircle)
@@ -76,7 +82,7 @@ void Obstacle::draw(render::Context& context)
 
             context.matrixPush();
             context.matrixTranslate(getPosition());
-            context.matrixScale(shape.circle.radius / units::Length(1));
+            context.matrixScale(get<ShapeCircle>(shape).radius / units::Length(1));
             m_drawCircle->draw(context);
             context.matrixPop();
             break;
@@ -87,7 +93,7 @@ void Obstacle::draw(render::Context& context)
 
             context.matrixPush();
             context.matrixTranslate(getPosition());
-            context.matrixScale(shape.rectangle.size / units::Length(1));
+            context.matrixScale(get<ShapeRectangle>(shape).size / units::Length(1));
             m_drawRectangle->draw(context);
             context.matrixPop();
             break;
@@ -111,23 +117,37 @@ void Obstacle::initShapes()
     // Foreach shapes
     for (const auto& shape : getShapes())
     {
-        switch (shape.type)
+        switch (shape.getType())
         {
         case ShapeType::Circle:
         {
-            auto* s = new b2CircleShape{};
-            s->m_radius = shape.circle.radius.value();
-            m_bodyShapes.emplace_back(s);
-            getBody()->CreateFixture(s, 1);
+            auto s = makeUnique<b2CircleShape>();
+            s->m_radius = get<ShapeCircle>(shape).radius.value();
+            getBody()->CreateFixture(s.get(), 1);
+            m_bodyShapes.emplace_back(s.release());
             break;
         }
         case ShapeType::Rectangle:
         {
-            const auto sh = shape.rectangle.size / 2.f;
-            auto* s = new b2PolygonShape{};
+            const auto sh = get<ShapeRectangle>(shape).size / 2.f;
+            auto s = makeUnique<b2PolygonShape>();
             s->SetAsBox(sh.getWidth().value(), sh.getHeight().value());
-            m_bodyShapes.emplace_back(s);
-            getBody()->CreateFixture(s, 1);
+            getBody()->CreateFixture(s.get(), 1);
+            m_bodyShapes.emplace_back(s.release());
+            break;
+        }
+        case ShapeType::Edges:
+        {
+            DynamicArray<b2Vec2> vertices;
+
+            auto s = makeUnique<b2ChainShape>();
+            for (const auto& v : get<ShapeEdges>(shape).edges)
+                vertices.push_back(b2Vec2(v.getX().value(), v.getY().value()));
+
+            // Create edges loop
+            s->CreateLoop(vertices.data(), vertices.size());
+            getBody()->CreateFixture(s.get(), 1);
+            m_bodyShapes.emplace_back(s.release());
             break;
         }
 

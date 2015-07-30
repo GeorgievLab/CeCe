@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -14,9 +16,10 @@
 #include <cassert>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
+#include "core/Variant.hpp"
 #include "core/VectorUnits.hpp"
+#include "core/DynamicArray.hpp"
 
 /* ************************************************************************ */
 
@@ -33,9 +36,10 @@ class Simulation;
  */
 enum class ShapeType
 {
-    Undefined,
-    Circle,
-    Rectangle
+    Undefined   = 0,
+    Circle      = 1,
+    Rectangle   = 2,
+    Edges       = 3
 };
 
 /* ************************************************************************ */
@@ -43,7 +47,14 @@ enum class ShapeType
 /**
  * @brief Structure for circle shape.
  */
-struct DLL_EXPORT ShapeCircle
+struct ShapeUndefined {};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Structure for circle shape.
+ */
+struct ShapeCircle
 {
     /// Shape center.
     PositionVector center;
@@ -57,7 +68,7 @@ struct DLL_EXPORT ShapeCircle
 /**
  * @brief Structure for rectangle shape.
  */
-struct DLL_EXPORT ShapeRectangle
+struct ShapeRectangle
 {
     /// Shape center.
     PositionVector center;
@@ -69,55 +80,88 @@ struct DLL_EXPORT ShapeRectangle
 /* ************************************************************************ */
 
 /**
+ * @brief Structure for edge chain shape.
+ */
+struct ShapeEdges
+{
+    /// Shape center.
+    PositionVector center;
+
+    /// List of edges.
+    DynamicArray<PositionVector> edges;
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Structure for storing shape.
  */
-struct DLL_EXPORT Shape
+class Shape : public Variant<
+    ShapeUndefined,
+    ShapeCircle,
+    ShapeRectangle,
+    ShapeEdges
+>
 {
-    /// Type of the shape.
-    ShapeType type;
 
-    /// Shapes data
-    union
+    /// Parent type
+    using Parent = Variant<
+        ShapeUndefined,
+        ShapeCircle,
+        ShapeRectangle,
+        ShapeEdges
+    >;
+
+
+// Public Structures
+public:
+
+
+    struct GetType : public VariantStaticVisitor<ShapeType>
     {
-        ShapeCircle circle;
-        ShapeRectangle rectangle;
+        ShapeType operator()(ShapeUndefined) const noexcept { return ShapeType::Undefined; }
+        ShapeType operator()(const ShapeCircle&) const noexcept { return ShapeType::Circle; }
+        ShapeType operator()(const ShapeRectangle&) const noexcept { return ShapeType::Rectangle; }
+        ShapeType operator()(const ShapeEdges&) const noexcept { return ShapeType::Edges; }
     };
 
+// Public Ctors & Dtors
+public:
+
 
     /**
-     * @brief Default constructor.
+     * @brief Parent's ctors.
      */
-    Shape() NOEXCEPT
-        : type(ShapeType::Undefined)
-        , circle()
+    using Parent::Parent;
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Get shape type.
+     *
+     * @return
+     */
+    ShapeType getType() const noexcept
     {
-        // Nothing to do
+        return variantApplyVisitor(GetType{}, *this);
     }
 
 
-    /**
-     * @brief Constructor.
-     *
-     * @param circle
-     */
-    Shape(ShapeCircle circle) NOEXCEPT
-        : type(ShapeType::Circle)
-        , circle(std::move(circle))
-    {
-        // Nothing to do
-    }
+// Public Operations
+public:
 
 
     /**
-     * @brief Constructor.
+     * @brief Create undefined shape.
      *
-     * @param rectangle
+     * @return
      */
-    Shape(ShapeRectangle rectangle) NOEXCEPT
-        : type(ShapeType::Rectangle)
-        , rectangle(std::move(rectangle))
+    static Shape makeUndefined() noexcept
     {
-        // Nothing to do
+        return Shape{ShapeUndefined{}};
     }
 
 
@@ -129,7 +173,7 @@ struct DLL_EXPORT Shape
      *
      * @return
      */
-    static Shape makeCircle(units::Length radius, PositionVector center = Zero) NOEXCEPT
+    static Shape makeCircle(units::Length radius, PositionVector center = Zero) noexcept
     {
         return Shape{ShapeCircle{center, radius}};
     }
@@ -143,9 +187,23 @@ struct DLL_EXPORT Shape
      *
      * @return
      */
-    static Shape makeRectangle(SizeVector size, PositionVector center = Zero) NOEXCEPT
+    static Shape makeRectangle(SizeVector size, PositionVector center = Zero) noexcept
     {
         return Shape{ShapeRectangle{center, size}};
+    }
+
+
+    /**
+     * @brief Create edges shape.
+     *
+     * @param edges  List of edges.
+     * @param center Shape center (position offset).
+     *
+     * @return
+     */
+    static Shape makeEdges(DynamicArray<PositionVector> edges, PositionVector center = Zero) noexcept
+    {
+        return Shape{ShapeEdges{center, std::move(edges)}};
     }
 
 };
