@@ -44,27 +44,27 @@ public:
 
 
     /// Maximum speed in lattice.
-    static CONSTEXPR_CONST ValueType MAX_SPEED = 0.5f;
+    static constexpr ValueType MAX_SPEED = 0.5f;
 
     /// Number of stored values.
-    static CONSTEXPR_CONST IndexType SIZE = 9;
+    static constexpr IndexType SIZE = 9;
 
     /// Direction weights
-    static CONSTEXPR_CONST StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
+    static constexpr StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
         4.f / 9.f, // Center
         1.f / 9.f, 1.f / 9.f, 1.f / 9.f, 1.f / 9.f, // Linear
         1.f / 36.f, 1.f / 36.f, 1.f / 36.f, 1.f / 36.f // Diagonal
     }};
 
     /// Direction velocities
-    static CONSTEXPR_CONST StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
+    static constexpr StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
         { 0,  0},
         { 1,  0}, { 0,  1}, {-1,  0}, { 0, -1},
         { 1,  1}, {-1,  1}, {-1, -1}, { 1, -1}
     }};
 
     /// Direction opposites
-    static CONSTEXPR_CONST StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {{
+    static constexpr StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {{
         0,
         3, 4, 1, 2,
         7, 8, 5, 6
@@ -98,7 +98,7 @@ public:
      *
      * @return
      */
-    ValueType operator[](IndexType pos) const NOEXCEPT
+    ValueType operator[](IndexType pos) const noexcept
     {
         return m_values[pos];
     }
@@ -111,7 +111,7 @@ public:
      *
      * @return
      */
-    ValueType& operator[](IndexType pos) NOEXCEPT
+    ValueType& operator[](IndexType pos) noexcept
     {
         return m_values[pos];
     }
@@ -126,7 +126,7 @@ public:
      *
      * @return
      */
-    bool isStaticObstacle() const NOEXCEPT
+    bool isStaticObstacle() const noexcept
     {
         return m_staticObstacle;
     }
@@ -137,7 +137,7 @@ public:
      *
      * @return
      */
-    bool isDynamicObstacle() const NOEXCEPT
+    bool isDynamicObstacle() const noexcept
     {
         return m_dynamicObstacle;
     }
@@ -148,7 +148,7 @@ public:
      *
      * @return
      */
-    bool isObstacle() const NOEXCEPT
+    bool isObstacle() const noexcept
     {
         return isStaticObstacle() || isDynamicObstacle();
     }
@@ -161,7 +161,7 @@ public:
      *
      * @return
      */
-    ValueType get(IndexType pos) const NOEXCEPT
+    ValueType get(IndexType pos) const noexcept
     {
         return m_values[pos];
     }
@@ -176,7 +176,7 @@ public:
      *
      * @param flag
      */
-    void setStaticObstacle(bool flag) NOEXCEPT
+    void setStaticObstacle(bool flag) noexcept
     {
         m_staticObstacle = flag;
     }
@@ -188,7 +188,7 @@ public:
      * @param flag If cell is dynamic obstacle.
      * @param u    Obstacle velocity.
      */
-    void setDynamicObstacle(bool flag, Vector<ValueType> u = Zero) NOEXCEPT
+    void setDynamicObstacle(bool flag, Vector<ValueType> u = Zero) noexcept
     {
         m_dynamicObstacle = flag;
         m_dynamicObstacleVelocity = std::move(u);
@@ -202,11 +202,9 @@ public:
     /**
      * @brief Clear values.
      */
-    void clear() NOEXCEPT
+    void clear() noexcept
     {
         m_values = calcEquilibrium({0, 0}, 1.f);
-        //for (auto& val : m_values)
-        //    val = 0.f;
     }
 
 
@@ -215,7 +213,7 @@ public:
      *
      * @return
      */
-    ValueType calcRho() const NOEXCEPT
+    ValueType calcRho() const noexcept
     {
         using std::begin;
         using std::end;
@@ -228,7 +226,7 @@ public:
      *
      * @return
      */
-    ValueType sumValues(std::initializer_list<IndexType> list) const NOEXCEPT
+    ValueType sumValues(std::initializer_list<IndexType> list) const noexcept
     {
         ValueType res{};
 
@@ -244,7 +242,7 @@ public:
      *
      * @return
      */
-    Vector<ValueType> calcVelocity() const NOEXCEPT
+    Vector<ValueType> calcVelocity() const noexcept
     {
         return Vector<ValueType>{
             sumValues({1, 5, 8}) - sumValues({3, 6, 7}),
@@ -258,7 +256,7 @@ public:
      *
      * @return
      */
-    Vector<ValueType> calcVelocityNormalized() const NOEXCEPT
+    Vector<ValueType> calcVelocityNormalized() const noexcept
     {
         const auto rho = calcRho();
 
@@ -298,7 +296,7 @@ public:
      *
      * @return
      */
-    static StaticArray<ValueType, SIZE> calcEquilibrium(const Vector<ValueType>& u, ValueType rho) NOEXCEPT;
+    static StaticArray<ValueType, SIZE> calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept;
 
 
 // Private Data Members

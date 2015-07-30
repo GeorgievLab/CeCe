@@ -50,7 +50,7 @@ void Module::setStaticObstacleMap(const ObstacleMap& map)
     for (auto&& c : range(map.getSize()))
     {
         if (map[c])
-            m_lattice[c + 1].setStaticObstacle(true);
+            m_lattice[c].setStaticObstacle(true);
     }
 }
 
@@ -63,10 +63,10 @@ void Module::init()
 
     // Set border obstacles
     // TODO: replace by physical obstacles
-    for (Lattice::SizeType x = 1; x < size.getWidth() - 1; ++x)
+    for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
     {
-        m_lattice[{x, 1}].setStaticObstacle(true);
-        m_lattice[{x, size.getHeight() - 2}].setStaticObstacle(true);
+        m_lattice[{x, 0}].setStaticObstacle(true);
+        m_lattice[{x, size.getHeight() - 1}].setStaticObstacle(true);
     }
 }
 
@@ -133,37 +133,33 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     Grid<Vector<float>> velocities(size);
 
     // Update texture
-    for (decltype(size.getHeight()) y = 0; y < size.getHeight(); ++y)
+    for (auto&& c : range(size))
     {
-        for (decltype(size.getWidth()) x = 0; x < size.getWidth(); ++x)
+        // Cell alias
+        const auto& cell = m_lattice[c];
+
+        // Background color
+        render::Color color = {1, 1, 1, 1};
+        //render::Color color = {0, 0, 0, 1};
+
+        if (!cell.isObstacle())
         {
-            // Cell alias
-            const auto& cell = m_lattice[{x + 1, y + 1}];
-            const Coordinate coord{x, y};
+            // Calculate velocity vector
+            const auto velocity = cell.calcVelocityNormalized();
 
-            // Background color
-            //render::Color color = {1, 1, 1, 1};
-            render::Color color = {0, 0, 0, 1};
+            // Cell color
+            color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
 
-            if (!cell.isObstacle())
-            {
-                // Calculate velocity vector
-                const auto velocity = cell.calcVelocityNormalized();
-
-                // Cell color
-                color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
-
-                // Cell velocity
-                velocities[coord] = velocity;
-            }
-            else
-            {
-                velocities[coord] = Zero;
-            }
-
-            // Set color
-            m_drawable->set(coord, color);
+            // Cell velocity
+            velocities[c] = velocity;
         }
+        else
+        {
+            velocities[c] = Zero;
+        }
+
+        // Set color
+        m_drawable->set(c, color);
     }
 
     if (!m_drawableVector)
@@ -216,8 +212,8 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
         {
             mapShapeToGrid(
                 [this, &velocity] (Coordinate&& coord) {
-                    assert(m_lattice.inRange(coord + 1));
-                    m_lattice[coord + 1].setDynamicObstacle(true, velocity);
+                    assert(m_lattice.inRange(coord));
+                    m_lattice[coord].setDynamicObstacle(true, velocity);
                 },
                 [] (Coordinate&& coord) {},
                 shape, step, coord, obj->getRotation(), m_lattice.getSize()
@@ -234,7 +230,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
     const auto step = simulation.getWorldSize() / m_lattice.getSize();
 
     // Velocity profile
-    const auto size = m_lattice.getRealSize();
+    const auto size = m_lattice.getSize();
     const auto velocity = getVelocityInflow();
 
     auto computePoiseuille = [&size, velocity](int i) {
@@ -269,7 +265,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Store velocity for each coordinate
             mapShapeBorderToGrid(
                 [this, &velocity, &v_max, &count] (Coordinate&& coord) {
-                    velocity += m_lattice[coord + 1].calcVelocityNormalized() * v_max;
+                    velocity += m_lattice[coord].calcVelocityNormalized() * v_max;
                     ++count;
                 },
                 [this, &velocity, &count, &computePoiseuille] (Coordinate&& coord) {
@@ -301,7 +297,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
 void Module::applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& v_max)
 {
     // maximum velocity of the Poiseuille inflow
-    const auto size = m_lattice.getRealSize();
+    const auto size = m_lattice.getSize();
     // Velocity in LB
     const auto velocity = getVelocityInflow() / v_max;
 
@@ -322,14 +318,14 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
 
             if (velocity.getX() < 0)
             {
-                in = {size.getWidth() - 2, y};
-                out = {1, y};
-                outPrev = {2, y};
+                in = {size.getWidth() - 1, y};
+                out = {0, y};
+                outPrev = {1, y};
             }
             else if (velocity.getX() > 0)
             {
-                in = {1, y};
-                out = {size.getWidth() - 2, y};
+                in = {0, y};
+                out = {size.getWidth() - 1, y};
                 outPrev = {out.getX() - 1, y};
             }
             else
@@ -338,8 +334,9 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
             }
 
             // Input
-            //m_lattice[{in, y}].init(velocity);
-            m_lattice[in].init({computePoiseuille(y), 0});
+            //m_lattice[in].init({velocity.getX(), 0});
+            if (!m_lattice[in].isStaticObstacle())
+                m_lattice[in].init({computePoiseuille(y), 0});
 
             // Output
             m_lattice[out] = m_lattice[outPrev];

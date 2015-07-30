@@ -73,8 +73,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             const auto vc = Vector<unsigned>(c * scale);
 
             // Get velocity
-            assert(velocityGrid.inRange(vc + 1));
-            const auto& velocity = velocityGrid[vc + 1].calcVelocity() * v_max;
+            assert(velocityGrid.inRange(vc));
+            const auto& velocity = velocityGrid[vc].calcVelocity() * v_max;
 
             // Calculate coordinate change
             Vector<float> dij = velocity * dt / step;

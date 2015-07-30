@@ -1,8 +1,18 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
 #include "Lattice.hpp"
+
+// Simulator
+#include "core/VectorRange.hpp"
 
 /* ************************************************************************ */
 
@@ -14,32 +24,16 @@ namespace streamlines {
 void Lattice::setSize(Size size)
 {
     // Data requires 1 cell margin
-    m_data.resize(size + 2);
-    m_dataTmp.resize(size + 2);
+    m_dataFront.resize(size + 2);
+    m_dataBack.resize(size + 2);
 }
 
 /* ************************************************************************ */
 
 void Lattice::collide(LatticeData::ValueType omega)
 {
-    /*
-    // Lattice data is linearized and we don't need cell coordinates, so
-    // foreach data as an array.
-    for (auto& cell : m_data)
-    {
-        // Update cell values for the next step
-        cell.collide(omega);
-    }
-    */
-    const auto size = m_data.getSize();
-
-    for (SizeType y = 1; y < size.getHeight() - 1; ++y)
-    {
-        for (SizeType x = 1; x < size.getWidth() - 1; ++x)
-        {
-            m_data[{x, y}].collide(omega);
-        }
-    }
+    for (auto&& c : range(getSize()))
+        get(c).collide(omega);
 }
 
 /* ************************************************************************ */
@@ -47,37 +41,29 @@ void Lattice::collide(LatticeData::ValueType omega)
 void Lattice::propagate()
 {
     // Clear result grid
-    for (auto& cell : m_dataTmp)
+    for (auto& cell : m_dataBack)
         cell.clear();
 
-    // TODO: linearize direction velocities
-    const auto size = m_data.getSize();
-
-    for (SizeType y = 1; y < size.getHeight() - 1; ++y)
+    for (auto&& c : range(getSize()))
     {
-        for (SizeType x = 1; x < size.getWidth() - 1; ++x)
+        for (LatticeData::IndexType i = 0; i < LatticeData::SIZE; ++i)
         {
-            const Vector<LatticeData::IndexType> coord{x, y};
-
-            for (LatticeData::IndexType i = 0; i < LatticeData::SIZE; ++i)
-            {
-                // Calculate new coordinates
-                Vector<LatticeData::IndexType> newCoord = coord + LatticeData::DIRECTION_VELOCITIES[i];
-                m_dataTmp[newCoord][i] = m_data[coord][i];
-            }
-
-            m_dataTmp[coord].setStaticObstacle(m_data[coord].isStaticObstacle());
+            // Calculate new coordinates
+            Vector<LatticeData::IndexType> newCoord = c + LatticeData::DIRECTION_VELOCITIES[i];
+            getBack(newCoord)[i] = getFront(c)[i];
         }
+
+        getBack(c).setStaticObstacle(getFront(c).isStaticObstacle());
     }
 
-    std::swap(m_data, m_dataTmp);
+    std::swap(m_dataFront, m_dataBack);
 }
 
 /* ************************************************************************ */
 
 void Lattice::clearDynamicObstacles()
 {
-    for (auto& cell : m_data)
+    for (auto& cell : m_dataFront)
         cell.setDynamicObstacle(false);
 }
 

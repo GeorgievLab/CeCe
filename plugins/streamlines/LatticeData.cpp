@@ -28,6 +28,8 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 void LatticeData::collide(ValueType omega)
 {
+    assert(omega < 1);
+
     if (isStaticObstacle())
     {
         // Static obstacle, bounce all back
@@ -67,7 +69,7 @@ void LatticeData::collide(ValueType omega)
             // No obstacle
 
             // Calculate
-            const auto feq = LatticeData::calcEquilibrium(calcVelocityNormalized(), calcRho());
+            const auto feq = calcEquilibrium(calcVelocityNormalized(), calcRho());
 
             // Update values
             for (IndexType alpha = 0; alpha < SIZE; ++alpha)
@@ -79,12 +81,13 @@ void LatticeData::collide(ValueType omega)
     else
     {
         // Calculate
-        const auto feq = LatticeData::calcEquilibrium(calcVelocityNormalized(), calcRho());
+        const auto feq = calcEquilibrium(calcVelocityNormalized(), calcRho());
 
         // Update values
         for (IndexType alpha = 0; alpha < SIZE; ++alpha)
         {
             m_values[alpha] += -omega * (m_values[alpha] - feq[alpha]);
+            assert(m_values[alpha] >= 0);
         }
     }
 }
@@ -92,11 +95,13 @@ void LatticeData::collide(ValueType omega)
 /* ************************************************************************ */
 
 StaticArray<LatticeData::ValueType, LatticeData::SIZE>
-LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) NOEXCEPT
+LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept
 {
-    static CONSTEXPR_CONST auto MAX_SPEED_SQ = MAX_SPEED * MAX_SPEED;
+    static constexpr auto MAX_SPEED_SQ = MAX_SPEED * MAX_SPEED;
     auto uCopy = u;
     auto uLenSq = uCopy.getLengthSquared();
+
+    assert(rho > 0);
 
     // Check if velocity is in range
     if (uLenSq > MAX_SPEED_SQ)

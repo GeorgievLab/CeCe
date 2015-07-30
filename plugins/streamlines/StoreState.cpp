@@ -44,7 +44,7 @@ void StoreState::update(units::Duration dt, simulator::Simulation& simulation)
     for (auto&& c : range(lattice.getSize()))
     {
         // Normalized LB velocity
-        const auto vel = v_max * lattice[c + 1].calcVelocityNormalized();
+        const auto vel = v_max * lattice[c].calcVelocityNormalized();
 
         // Create new row
         table.addRow(

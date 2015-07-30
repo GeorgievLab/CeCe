@@ -1,3 +1,12 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -7,7 +16,6 @@
 #include <algorithm>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "core/Grid.hpp"
@@ -69,9 +77,9 @@ public:
      *
      * @return
      */
-    LatticeData& operator[](const CoordinateType& coord) NOEXCEPT
+    LatticeData& operator[](const CoordinateType& coord) noexcept
     {
-        return m_data[coord];
+        return get(coord);
     }
 
 
@@ -82,9 +90,9 @@ public:
      *
      * @return
      */
-    const LatticeData& operator[](const CoordinateType& coord) const NOEXCEPT
+    const LatticeData& operator[](const CoordinateType& coord) const noexcept
     {
-        return m_data[coord];
+        return get(coord);
     }
 
 
@@ -97,21 +105,10 @@ public:
      *
      * @return
      */
-    Size getSize() const NOEXCEPT
+    Size getSize() const noexcept
     {
         // Lattice itself have 1 cell margin
-        return getRealSize() - 2;
-    }
-
-
-    /**
-     * @brief Returns real lattice size.
-     *
-     * @return
-     */
-    const Size& getRealSize() const NOEXCEPT
-    {
-        return m_data.getSize();
+        return m_dataFront.getSize() - 2;
     }
 
 
@@ -122,9 +119,87 @@ public:
      *
      * @return
      */
-    bool inRange(const CoordinateType& coord) const NOEXCEPT
+    bool inRange(const CoordinateType& coord) const noexcept
     {
-        return m_data.inRange(coord);
+        return coord.inRange(CoordinateType{Zero}, getSize());
+    }
+
+
+    /**
+     * @brief Get item from front buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    LatticeData& getFront(const CoordinateType& coord) noexcept
+    {
+        return m_dataFront[coord + 1];
+    }
+
+
+    /**
+     * @brief Get item from front buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    const LatticeData& getFront(const CoordinateType& coord) const noexcept
+    {
+        return m_dataFront[coord + 1];
+    }
+
+
+    /**
+     * @brief Get item from back buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    LatticeData& getBack(const CoordinateType& coord) noexcept
+    {
+        return m_dataBack[coord + 1];
+    }
+
+
+    /**
+     * @brief Get item from back buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    const LatticeData& getBack(const CoordinateType& coord) const noexcept
+    {
+        return m_dataBack[coord + 1];
+    }
+
+
+    /**
+     * @brief Get item from front buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    LatticeData& get(const CoordinateType& coord) noexcept
+    {
+        return getFront(coord);
+    }
+
+
+    /**
+     * @brief Get item from front buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    const LatticeData& get(const CoordinateType& coord) const noexcept
+    {
+        return getFront(coord);
     }
 
 
@@ -181,10 +256,10 @@ public:
 
 
     /// Current lattice data.
-    core::Grid<LatticeData> m_data;
+    core::Grid<LatticeData> m_dataFront;
 
     /// Temporaty lattice data.
-    core::Grid<LatticeData> m_dataTmp;
+    core::Grid<LatticeData> m_dataBack;
 
 };
 
