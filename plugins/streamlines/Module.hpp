@@ -121,6 +121,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns inner iteration count.
+     *
+     * @return
+     */
+    unsigned int getIterations() const noexcept
+    {
+        return m_iterations;
+    }
+
+
 // Public Mutators
 public:
 
@@ -163,6 +174,17 @@ public:
     void setCoefficient(RealType coefficient) noexcept
     {
         m_coefficient = coefficient;
+    }
+
+
+    /**
+     * @brief Set inner iteration count.
+     *
+     * @param iterations
+     */
+    void setIterations(unsigned int iterations) noexcept
+    {
+        m_iterations = iterations;
     }
 
 
@@ -243,7 +265,10 @@ private:
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
 
     /// Fixup coefficient.
-    RealType m_coefficient = 1000;
+    RealType m_coefficient = 1;
+
+    /// Number of inner iterations.
+    unsigned int m_iterations = 1;
 
     /// Lattice.
     Lattice m_lattice;

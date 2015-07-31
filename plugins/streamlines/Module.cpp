@@ -78,32 +78,46 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const auto dl = simulation.getWorldSize() / m_lattice.getSize();
 
     // Calculate maximum flow velocity
-    const VelocityVector v_max = LatticeData::MAX_SPEED * dl / dt;
+    const VelocityVector vMax = LatticeData::MAX_SPEED * dl / dt;
 
     // Dynamic obstacles
-    updateDynamicObstacleMap(simulation, v_max);
+    updateDynamicObstacleMap(simulation, vMax);
+
+    // Smooth time step
+    const auto dtSmooth = dt / getIterations();
 
     // Viscosity in LB units
-    const auto viscosity = getCoefficient() * (dt / (dl.getX() * dl.getX())) * getKinematicViscosity();
+    const auto viscosity =
+        getCoefficient() *
+        (dtSmooth / (dl.getX() * dl.getX())) *
+        getKinematicViscosity()
+    ;
 
     // Relaxation parameter
-    const float tau = (3.f * viscosity + 0.5f);
-    const float omega = 1.f / tau;
+    const auto tau = (3.f * viscosity + 0.5f);
+    const auto omega = 1.f / tau;
 
     // Collide and propagate
-    m_lattice.collideAndPropagate(omega);
+    for (auto it = getIterations(); it--; )
+    {
+        m_lattice.collideAndPropagate(omega);
 
-    // Apply boundary conditions
-    applyBoundaryConditions(simulation, v_max);
+        // Apply boundary conditions
+        applyBoundaryConditions(simulation, vMax);
+    }
 
     // Apply streamlines to world objects
-    applyToObjects(simulation, v_max);
+    applyToObjects(simulation, vMax);
 }
 
 /* ************************************************************************ */
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
+    // Number of inner iterations
+    setIterations(config.get("iterations", getIterations()));
+
+    // Convert coefficient
     setCoefficient(config.get("coefficient", getCoefficient()));
 
     // Inflow velocity
@@ -131,8 +145,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         m_drawable.create(context, size);
 
     // Temporary for velocities
-    // TODO: use Lattice velocity units
-    Grid<Vector<float>> velocities(size);
+    Grid<Vector<LatticeData::ValueType>> velocities(size);
 
     // Update texture
     for (auto&& c : range(size))
@@ -267,14 +280,14 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Store velocity for each coordinate
             mapShapeBorderToGrid(
                 [this, &velocity, &v_max, &count] (Coordinate&& coord) {
-                    velocity += m_lattice[coord].calcVelocityNormalized() * v_max;
+                    velocity += m_lattice[coord].calcVelocityNormalized() * getCoefficient() * v_max;
                     ++count;
                 },
                 [this, &velocity, &count, &computePoiseuille] (Coordinate&& coord) {
                     velocity += VelocityVector{computePoiseuille(coord.getY()), Zero};
                     ++count;
                 },
-                shape, step, coord, m_lattice.getSize(), {}, 5
+                shape, step, coord, m_lattice.getSize(), {}, 2
             );
 
             assert(count);
@@ -288,7 +301,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Set object velocity
             const auto force =
                 3 * constants::PI *
-                getKinematicViscosity() / getCoefficient() *
+                getKinematicViscosity() *
                 obj->getDensity() *
                 dv *
                 shape.getCircle().radius
@@ -342,13 +355,19 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
             }
 
             // Input
-            //m_lattice[in].init({velocity.getX(), 0});
             if (!m_lattice[in].isStaticObstacle())
-                m_lattice[in].init({computePoiseuille(y), 0});
+                m_lattice[in].init({velocity.getX(), 0});
+            //    m_lattice[in].init({computePoiseuille(y), 0});
 
             // Output
             m_lattice[out] = m_lattice[outPrev];
             //m_lattice[{grid_size.getWidth() - 1, y}].clear();
+        }
+
+        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
+        {
+            m_lattice[{x, 0}] = m_lattice[{x, 1}];
+            m_lattice[{x, size.getHeight() - 1}] = m_lattice[{x, size.getHeight() - 2}];
         }
     }
 /*

@@ -9,7 +9,7 @@
 #include <initializer_list>
 
 // Simulator
-#include "core/compatibility.hpp"
+#include "core/Real.hpp"
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
 #include "core/StaticArray.hpp"
@@ -33,7 +33,7 @@ public:
 
 
     /// Computation value type.
-    using ValueType = float;
+    using ValueType = RealType;
 
     /// Direction index type.
     using IndexType = unsigned int;
