@@ -54,9 +54,11 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const Shape& shape, const Vector<Ste
 
     case ShapeType::Circle:
         mapShapeToGrid(fnIn, fnOut, shape.getCircle(), steps, center, rotation, max, min);
+        break;
 
     case ShapeType::Rectangle:
         mapShapeToGrid(fnIn, fnOut, shape.getRectangle(), steps, center, rotation, max, min);
+        break;
     }
 }
 
