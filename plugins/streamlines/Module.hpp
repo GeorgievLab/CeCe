@@ -17,6 +17,7 @@
 #include "core/Vector.hpp"
 #include "core/Units.hpp"
 #include "core/Grid.hpp"
+#include "core/Real.hpp"
 #include "core/StaticArray.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
@@ -109,6 +110,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns fixup coefficient.
+     *
+     * @return
+     */
+    RealType getCoefficient() const noexcept
+    {
+        return m_coefficient;
+    }
+
+
 // Public Mutators
 public:
 
@@ -141,6 +153,17 @@ public:
      * @param map
      */
     void setStaticObstacleMap(const ObstacleMap& map);
+
+
+    /**
+     * @brief Set fixup coefficient.
+     *
+     * @param coefficient
+     */
+    void setCoefficient(RealType coefficient) noexcept
+    {
+        m_coefficient = coefficient;
+    }
 
 
 // Public Operations
@@ -218,6 +241,9 @@ private:
 
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
+
+    /// Fixup coefficient.
+    RealType m_coefficient = 1000;
 
     /// Lattice.
     Lattice m_lattice;

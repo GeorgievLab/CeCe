@@ -84,7 +84,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     updateDynamicObstacleMap(simulation, v_max);
 
     // Viscosity in LB units
-    const auto viscosity = (dt / (dl.getX() * dl.getX())) * getKinematicViscosity();
+    const auto viscosity = getCoefficient() * (dt / (dl.getX() * dl.getX())) * getKinematicViscosity();
 
     // Relaxation parameter
     const float tau = (3.f * viscosity + 0.5f);
@@ -104,6 +104,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
+    setCoefficient(config.get("coefficient", getCoefficient()));
+
     // Inflow velocity
     setVelocityInflow(config.get("velocity-inflow", getVelocityInflow()));
 
@@ -284,7 +286,13 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             const auto dv = velocity - obj->getVelocity();
 
             // Set object velocity
-            const auto force = 3 * constants::PI * getKinematicViscosity() * obj->getDensity() * dv * shape.getCircle().radius;
+            const auto force =
+                3 * constants::PI *
+                getKinematicViscosity() / getCoefficient() *
+                obj->getDensity() *
+                dv *
+                shape.getCircle().radius
+            ;
 
             // Apply force
             obj->applyForce(force, obj->getPosition() + shape.getCircle().center);
