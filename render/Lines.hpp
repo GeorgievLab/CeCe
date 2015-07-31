@@ -42,6 +42,9 @@ public:
     /// Point type
     using PointType = Vector<float>;
 
+    /// Line type.
+    using LineType = Pair<PointType, PointType>;
+
 
 // Public Ctors & Dtors
 public:

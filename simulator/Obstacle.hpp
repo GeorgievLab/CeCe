@@ -5,13 +5,14 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Shape.hpp"
 
@@ -19,6 +20,7 @@
 #include "render/Object.hpp"
 #include "render/Circle.hpp"
 #include "render/Rectangle.hpp"
+#include "render/Lines.hpp"
 #endif
 
 #if ENABLE_PHYSICS
@@ -39,7 +41,7 @@ class Configuration;
 /**
  * @brief Physical obstacle.
  */
-class DLL_EXPORT Obstacle : public Object
+class Obstacle : public Object
 {
 
 // Public Ctors & Dtors
@@ -51,7 +53,7 @@ public:
      *
      * @param simulation Simulation object reference.
      */
-    explicit Obstacle(Simulation& simulation) NOEXCEPT
+    explicit Obstacle(Simulation& simulation) noexcept
         : Object(simulation, Type::Static)
     {
         getMutableShapes().push_back(Shape::makeUndefined());
@@ -81,10 +83,6 @@ public:
 #endif
 
 
-// Protected Operations
-protected:
-
-
 #if ENABLE_PHYSICS
     /**
      * @brief Init obstacle physics shapes.
@@ -102,8 +100,17 @@ private:
 #endif
 
 #if ENABLE_RENDER
+    /// If shape should be drawn.
+    bool m_draw = false;
+
+    /// Shared object for drawing circle.
     render::ObjectSharedPtr<render::Circle> m_drawCircle;
+
+    /// Shared object for drawing rectangle.
     render::ObjectSharedPtr<render::Rectangle> m_drawRectangle;
+
+    /// Object for drawing lines
+    render::ObjectPtr<render::Lines> m_drawEdges;
 #endif
 };
 

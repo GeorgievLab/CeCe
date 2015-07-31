@@ -23,18 +23,24 @@ namespace render {
 
 void PhysicsDebugger::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
+    glPushAttrib(GL_CURRENT_BIT);
+
     glColor3f(color.r, color.g, color.b);
 
     glBegin(GL_LINES);
     glVertex2f(p1.x, p1.y);
     glVertex2f(p2.x, p2.y);
     glEnd();
+
+    glPopAttrib();
 }
 
 /* ************************************************************************ */
 
 void PhysicsDebugger::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
+    glPushAttrib(GL_CURRENT_BIT);
+
     glColor3f(color.r, color.g, color.b);
 
     glBegin(GL_LINE_LOOP);
@@ -43,12 +49,16 @@ void PhysicsDebugger::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, con
         glVertex2f(vertices[i].x, vertices[i].y);
 
     glEnd();
+
+    glPopAttrib();
 }
 
 /* ************************************************************************ */
 
 void PhysicsDebugger::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
+    glPushAttrib(GL_CURRENT_BIT);
+
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4f(0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f);
@@ -69,12 +79,16 @@ void PhysicsDebugger::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount
         glVertex2f(vertices[i].x, vertices[i].y);
 
     glEnd();
+
+    glPopAttrib();
 }
 
 /* ************************************************************************ */
 
 void PhysicsDebugger::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
+    glPushAttrib(GL_CURRENT_BIT);
+
     const float32 k_segments = 16.0f;
     const float32 k_increment = 2.0f * b2_pi / k_segments;
     float32 theta = 0.0f;
@@ -88,12 +102,16 @@ void PhysicsDebugger::DrawCircle(const b2Vec2& center, float32 radius, const b2C
         theta += k_increment;
     }
     glEnd();
+
+    glPopAttrib();
 }
 
 /* ************************************************************************ */
 
 void PhysicsDebugger::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
+    glPushAttrib(GL_CURRENT_BIT);
+
     const float32 k_segments = 16.0f;
     const float32 k_increment = 2.0f * b2_pi / k_segments;
     float32 theta = 0.0f;
@@ -126,12 +144,16 @@ void PhysicsDebugger::DrawSolidCircle(const b2Vec2& center, float32 radius, cons
     glVertex2f(center.x, center.y);
     glVertex2f(p.x, p.y);
     glEnd();
+
+    glPopAttrib();
 }
 
 /* ************************************************************************ */
 
 void PhysicsDebugger::DrawTransform(const b2Transform& xf)
 {
+    glPushAttrib(GL_CURRENT_BIT);
+
     b2Vec2 p1 = xf.p, p2;
     const float32 k_axisScale = 0.4f;
     glBegin(GL_LINES);
@@ -147,6 +169,8 @@ void PhysicsDebugger::DrawTransform(const b2Transform& xf)
     glVertex2f(p2.x, p2.y);
 
     glEnd();
+
+    glPopAttrib();
 }
 
 /* ************************************************************************ */

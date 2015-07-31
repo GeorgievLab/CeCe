@@ -63,8 +63,8 @@ void Lines::add(const DynamicArray<Pair<PointType, PointType>>& lines)
         const auto& p1 = line.first;
         const auto& p2 = line.second;
 
-        vertices.push_back(Vertex{p1.getX(), p1.getY(), 0, 1.f, 0});
-        vertices.push_back(Vertex{p2.getX(), p2.getY(), 0, 1.f, 0});
+        vertices.push_back(Vertex{p1.getX(), p1.getY(), 0.8f, 0.8f, 0.8f});
+        vertices.push_back(Vertex{p2.getX(), p2.getY(), 0.8f, 0.8f, 0.8f});
     }
 
     m_buffer.resize(

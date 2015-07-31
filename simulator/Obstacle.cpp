@@ -5,6 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 // Declaration
 #include "simulator/Obstacle.hpp"
@@ -26,6 +28,9 @@ namespace simulator {
 void Obstacle::configure(const Configuration& config, Simulation& simulation)
 {
     Object::configure(config, simulation);
+
+    // Draw configured
+    m_draw = true;
 
     auto& shapes = getMutableShapes();
     assert(!shapes.empty());
@@ -71,6 +76,13 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
 #if ENABLE_RENDER
 void Obstacle::draw(render::Context& context)
 {
+    // TODO: redesign
+
+    if (!m_draw)
+        return;
+
+    DynamicArray<render::Lines::LineType> lines;
+
     // Foreach shapes
     for (const auto& shape : getShapes())
     {
@@ -98,10 +110,44 @@ void Obstacle::draw(render::Context& context)
             context.matrixPop();
             break;
 
+        case ShapeType::Edges:
+            if (!m_drawEdges)
+            {
+                const auto& edges = shape.getEdges().edges;
+                lines.reserve(lines.size() + edges.size());
+
+                // Create lines from shape
+                for (std::size_t i = 1u; i < edges.size(); ++i)
+                {
+                    lines.push_back(makePair(
+                        render::Lines::PointType(edges[i - 1].getX().value(), edges[i - 1].getY().value()),
+                        render::Lines::PointType(edges[i].getX().value(), edges[i].getY().value())
+                    ));
+                }
+
+                lines.push_back(makePair(
+                    render::Lines::PointType(edges[edges.size() - 1].getX().value(), edges[edges.size() - 1].getY().value()),
+                    render::Lines::PointType(edges[0].getX().value(), edges[0].getY().value())
+                ));
+            }
+
         case ShapeType::Undefined:
             assert(false || "This shouldn't happend");
             break;
         }
+    }
+
+    if (!m_drawEdges)
+    {
+        if (!lines.empty())
+            m_drawEdges.create(context, std::move(lines));
+    }
+    else
+    {
+        context.matrixPush();
+        context.matrixTranslate(getPosition());
+        m_drawEdges->draw(context);
+        context.matrixPop();
     }
 }
 #endif
@@ -127,6 +173,7 @@ void Obstacle::initShapes()
             m_bodyShapes.emplace_back(s.release());
             break;
         }
+
         case ShapeType::Rectangle:
         {
             const auto sh = shape.getRectangle().size / 2.f;
@@ -136,6 +183,7 @@ void Obstacle::initShapes()
             m_bodyShapes.emplace_back(s.release());
             break;
         }
+
         case ShapeType::Edges:
         {
             DynamicArray<b2Vec2> vertices;

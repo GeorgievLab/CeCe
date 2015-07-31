@@ -18,6 +18,7 @@
 #include "core/DynamicArray.hpp"
 #include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"
+#include "simulator/Obstacle.hpp"
 
 /* ************************************************************************ */
 
@@ -95,38 +96,32 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
     for (std::size_t i = 0u; i < contoursSrc.size(); ++i)
     {
-        approxPolyDP(contoursSrc[i], contours[i], 2, true);
+        approxPolyDP(contoursSrc[i], contours[i], 1, true);
     }
 
-#if DEV_DRAW_CONTOURS
     // Coordinate scale
-    const auto scale = 1.f / size;
+    const auto scale = simulation.getWorldSize() / size;
     const auto off = size / 2;
+
+    // Create obstacle body
+    auto obstacle = simulation.createObject<simulator::Obstacle>();
+    auto& shapes = obstacle->getMutableShapes();
+    shapes.reserve(contours.size());
 
     for (const auto& cnt : contours)
     {
-        for (std::size_t i = 1u; i < cnt.size(); ++i)
-        {
-            const core::Vector<float> p1(cnt[i - 1].x, cnt[i - 1].y);
-            const core::Vector<float> p2(cnt[i].x, cnt[i].y);
+        simulator::ShapeEdges shape;
 
-            m_contours.push_back(makePair(
-                (p1 - off) * scale,
-                (p2 - off) * scale)
-            );
+        for (std::size_t i = 0u; i < cnt.size(); ++i)
+        {
+            const core::Vector<float> p(cnt[i].x, cnt[i].y);
+            shape.edges.push_back((p - off) * scale);
         }
 
-        const core::Vector<float> p1(cnt[cnt.size() - 1].x, cnt[cnt.size() - 1].y);
-        const core::Vector<float> p2(cnt[0].x, cnt[0].y);
-
-        m_contours.push_back(makePair(
-            (p1 - off) * scale,
-            (p2 - off) * scale)
-        );
+        shapes.push_back(std::move(shape));
     }
-#endif
 
-    // TODO: create obstacles in physical engine
+    obstacle->initShapes();
 }
 
 /* ************************************************************************ */
@@ -154,20 +149,10 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         m_drawable->set(c, render::Color{pix[2] / 255.f, pix[1] / 255.f, pix[0] / 255.f});
     }
 
-#if DEV_DRAW_CONTOURS
-    if (!m_drawableContours)
-        m_drawableContours.create(context, m_contours);
-#endif
-
     // Draw color grid
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
     m_drawable->draw(context);
-
-#if DEV_DRAW_CONTOURS
-    m_drawableContours->draw(context);
-#endif
-
     context.matrixPop();
 
     plugin::streamlines::Module::draw(context, simulation);

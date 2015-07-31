@@ -267,6 +267,21 @@ public:
 
 
     /**
+     * @brief Returns mutable object shapes.
+     *
+     * This version allows to update shapes regulary without allocating new
+     * memory for shapes vector and then replace the old one with the new one.
+     * Updating in place saves allocations and it's faster.
+     *
+     * @return
+     */
+    DynamicArray<Shape>& getMutableShapes() noexcept
+    {
+        return m_shapes;
+    }
+
+
+    /**
      * @brief Returns object programs.
      *
      * @return
@@ -503,25 +518,6 @@ public:
         // Nothing to do
     }
 #endif
-
-
-// Protected Accessors
-protected:
-
-
-    /**
-     * @brief Returns mutable object shapes.
-     *
-     * This version allows to update shapes regulary without allocating new
-     * memory for shapes vector and then replace the old one with the new one.
-     * Updating in place saves allocations and it's faster.
-     *
-     * @return
-     */
-    DynamicArray<Shape>& getMutableShapes() noexcept
-    {
-        return m_shapes;
-    }
 
 
 // Private Data Members
