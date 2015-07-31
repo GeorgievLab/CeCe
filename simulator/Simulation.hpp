@@ -37,6 +37,7 @@
 #if ENABLE_RENDER
 #include "core/TriBool.hpp"
 #include "render/Context.hpp"
+#include "render/Color.hpp"
 #endif
 
 #if ENABLE_PHYSICS
@@ -472,6 +473,19 @@ public:
 #endif
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Get background color.
+     *
+     * @return
+     */
+    render::Color getBackgroundColor() const noexcept
+    {
+        return m_backgroundColor;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -700,6 +714,19 @@ public:
 #endif
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Set background color.
+     *
+     * @param color
+     */
+    void setBackgroundColor(render::Color color) noexcept
+    {
+        m_backgroundColor = color;
+    }
+#endif
+
+
 // Public Operations
 public:
 
@@ -827,6 +854,11 @@ private:
     TriBool m_vizualize = Indeterminate;
 #endif
 
+#if ENABLE_RENDER
+    /// Background (clear) color.
+    render::Color m_backgroundColor = render::colors::WHITE;
+#endif
+
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     bool m_drawPhysics = true;
 #endif
@@ -837,7 +869,7 @@ private:
 /**
  * @brief Time measurement functor with printing current iteration.
  */
-struct DLL_EXPORT TimeMeasurementIterationOutput
+struct TimeMeasurementIterationOutput
 {
     /// Simulation.
     ViewPtr<const Simulation> m_simulation;

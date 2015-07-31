@@ -57,7 +57,7 @@ void PhysicsDebugger::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, con
 
 void PhysicsDebugger::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-    glPushAttrib(GL_CURRENT_BIT);
+    glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -110,7 +110,7 @@ void PhysicsDebugger::DrawCircle(const b2Vec2& center, float32 radius, const b2C
 
 void PhysicsDebugger::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
-    glPushAttrib(GL_CURRENT_BIT);
+    glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
 
     const float32 k_segments = 16.0f;
     const float32 k_increment = 2.0f * b2_pi / k_segments;

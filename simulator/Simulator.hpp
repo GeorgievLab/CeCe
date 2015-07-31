@@ -166,10 +166,12 @@ public:
 #if ENABLE_RENDER
     /**
      * @brief Initialize simulation for rendering.
+     *
+     * @param clearColor
      */
-    void drawInit()
+    void drawInit(const render::Color& clearColor = render::colors::WHITE)
     {
-        m_renderContext.init();
+        m_renderContext.init(clearColor);
     }
 #endif
 

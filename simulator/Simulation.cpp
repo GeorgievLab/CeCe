@@ -321,9 +321,19 @@ void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
 
-    // Render modules
+    // Store modules
+    DynamicArray<ViewPtr<Module>> modules;
     for (auto& module : getModules())
-        module.second->draw(context, *this);
+        modules.push_back(module.second);
+
+    // Sort modules by rendering order
+    std::sort(modules.begin(), modules.end(), [](const ViewPtr<Module>& lhs, const ViewPtr<Module>& rhs) {
+        return lhs->getZOrder() < rhs->getZOrder();
+    });
+
+    // Render modules
+    for (auto& module : modules)
+        module->draw(context, *this);
 
     // Draw objects
     for (const auto& obj : getObjects())

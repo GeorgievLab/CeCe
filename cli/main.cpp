@@ -576,7 +576,7 @@ private:
 #endif
 
         // Initialize simulator
-        m_simulator.drawInit();
+        m_simulator.drawInit(simulation->getBackgroundColor());
 
         // Initial zoom
         setOptimalZoom();

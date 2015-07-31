@@ -72,7 +72,7 @@ public:
     using DegradationRate = units::Unit<units::List<>, units::List<units::BaseTime>>;
 
 
-// Public Contants
+// Public Constants
 public:
 
 
@@ -85,6 +85,22 @@ public:
 
     /// Invalid signal ID.
     static constexpr SignalId INVALID_SIGNAL_ID = -1;
+
+
+// Public Ctors & Dtors
+public:
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Constructor.
+     */
+    Module() noexcept
+        : simulator::Module(100)
+    {
+        // Nothing to do
+    }
+#endif
 
 
 // Public Accessors
@@ -724,7 +740,7 @@ private:
 
 #if ENABLE_RENDER
     /// Background color.
-    render::Color m_background = render::colors::BLACK;
+    render::Color m_background = render::Color{0, 0, 0, 0};
 
     /// Signal colors.
     DynamicArray<render::Color> m_colors;

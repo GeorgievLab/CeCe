@@ -83,7 +83,7 @@ void Texture::resize(Size size, const Color& color)
     DynamicArray<Color> colors(width * height, color);
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_FLOAT, colors.data()));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, colors.data()));
 }
 
 /* ************************************************************************ */

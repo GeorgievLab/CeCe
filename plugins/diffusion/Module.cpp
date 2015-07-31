@@ -152,7 +152,10 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
+    context.colorPush();
+    context.enableAlpha();
     m_drawable->draw(context);
+    context.colorPop();
     context.matrixPop();
 }
 #endif

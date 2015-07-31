@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/VectorUnits.hpp"
@@ -19,6 +18,7 @@
 #include "render/Camera.hpp"
 #include "render/Program.hpp"
 #include "render/ImageData.hpp"
+#include "render/Color.hpp"
 
 /* ************************************************************************ */
 
@@ -27,7 +27,6 @@ namespace render {
 /* ************************************************************************ */
 
 class Buffer;
-class Color;
 class Object;
 class VertexFormat;
 class Texture;
@@ -50,7 +49,7 @@ enum class PrimitiveType
 /**
  * @brief Renderer context.
  */
-class DLL_EXPORT Context
+class Context
 {
 
 // Public Ctors & Dtors
@@ -78,7 +77,7 @@ public:
      *
      * @return
      */
-    bool isInitialized() NOEXCEPT
+    bool isInitialized() noexcept
     {
         return m_isInitialized;
     }
@@ -89,7 +88,7 @@ public:
      *
      * @return
      */
-    Camera& getCamera() NOEXCEPT
+    Camera& getCamera() noexcept
     {
         return m_camera;
     }
@@ -100,7 +99,7 @@ public:
      *
      * @return
      */
-    ImageData getData() const NOEXCEPT;
+    ImageData getData() const noexcept;
 
 
     /**
@@ -108,7 +107,7 @@ public:
      *
      * @return
      */
-    bool isWireframe() const NOEXCEPT;
+    bool isWireframe() const noexcept;
 
 
 // Public Mutators
@@ -120,7 +119,7 @@ public:
      *
      * @param flag
      */
-    void setWireframe(bool flag) NOEXCEPT;
+    void setWireframe(bool flag) noexcept;
 
 
 // Public Operations
@@ -129,8 +128,10 @@ public:
 
     /**
      * @brief Initialize context.
+     *
+     * @param clearColor
      */
-    void init() NOEXCEPT;
+    void init(const render::Color& clearColor = render::colors::WHITE) noexcept;
 
 
     /**
@@ -139,7 +140,7 @@ public:
      * @param width  View width.
      * @param height View height.
      */
-    void setView(int width, int height) NOEXCEPT;
+    void setView(int width, int height) noexcept;
 
 
     /**
@@ -148,7 +149,7 @@ public:
      * @param width  View width.
      * @param height View height.
      */
-    void setStencilBuffer(float width, float height) NOEXCEPT;
+    void setStencilBuffer(float width, float height) noexcept;
 
 
     /**
@@ -157,49 +158,73 @@ public:
      * @param width  View width.
      * @param height View height.
      */
-    void frameBegin(int width, int height) NOEXCEPT;
+    void frameBegin(int width, int height) noexcept;
 
 
     /**
      * @brief End frame rendering.
      */
-    void frameEnd() NOEXCEPT;
+    void frameEnd() noexcept;
+
+
+    /**
+     * @brief Enable alpha.
+     */
+    void enableAlpha() noexcept;
+
+
+    /**
+     * @brief Disable alpha.
+     */
+    void disableAlpha() noexcept;
+
+
+    /**
+     * @brief Push color attributes.
+     */
+    void colorPush() noexcept;
+
+
+    /**
+     * @brief Pop color attributes.
+     */
+    void colorPop() noexcept;
 
 
     /**
      * @brief Set matrix projecton mode.
      */
-    void matrixProjection() NOEXCEPT;
+    void matrixProjection() noexcept;
 
 
     /**
      * @brief Set matrix view mode.
      */
-    void matrixView() NOEXCEPT;
+    void matrixView() noexcept;
 
 
     /**
      * @brief Set matrix texture mode.
      */
-    void matrixTexture() NOEXCEPT;
+    void matrixTexture() noexcept;
 
 
     /**
      * @brief Push transformation matrix.
      */
-    void matrixPush() NOEXCEPT;
+    void matrixPush() noexcept;
 
 
     /**
      * @brief Pop transformation matrix.
      */
-    void matrixPop() NOEXCEPT;
+    void matrixPop() noexcept;
 
 
     /**
      * @brief Set transformation matrix to identity.
      */
-    void matrixIdentity() NOEXCEPT;
+    void matrixIdentity() noexcept;
 
 
     /**
@@ -207,7 +232,7 @@ public:
      *
      * @param pos Translation vector.
      */
-    void matrixTranslate(const PositionVector& pos) NOEXCEPT;
+    void matrixTranslate(const PositionVector& pos) noexcept;
 
 
     /**
@@ -215,7 +240,7 @@ public:
      *
      * @param scale Scale vector.
      */
-    void matrixScale(const ScaleVector& scale) NOEXCEPT;
+    void matrixScale(const ScaleVector& scale) noexcept;
 
 
     /**
@@ -223,7 +248,7 @@ public:
      *
      * @param scale Scale number.
      */
-    void matrixScale(float scale) NOEXCEPT
+    void matrixScale(float scale) noexcept
     {
         return matrixScale(ScaleVector{scale});
     }
@@ -234,7 +259,7 @@ public:
      *
      * @param angle Angle of the rotation.
      */
-    void matrixRotate(units::Angle angle) NOEXCEPT;
+    void matrixRotate(units::Angle angle) noexcept;
 
 
     /**
@@ -242,7 +267,7 @@ public:
      *
      * @param color
      */
-    void setColor(const Color& color) NOEXCEPT;
+    void setColor(const Color& color) noexcept;
 
 
     /**
@@ -250,7 +275,7 @@ public:
      *
      * @param buffer A pointer to used buffer. Can be nullptr to unbind buffer.
      */
-    void setVertexBuffer(Buffer* buffer) NOEXCEPT;
+    void setVertexBuffer(Buffer* buffer) noexcept;
 
 
     /**
@@ -258,7 +283,7 @@ public:
     *
     * @param format A pointer to vertex buffer format.
     */
-    void setVertexFormat(const VertexFormat* format) NOEXCEPT;
+    void setVertexFormat(const VertexFormat* format) noexcept;
 
 
     /**
@@ -266,7 +291,7 @@ public:
     *
     * @param texture Texture.
     */
-    void setTexture(Texture* texture) NOEXCEPT;
+    void setTexture(Texture* texture) noexcept;
 
 
     /**
@@ -274,7 +299,7 @@ public:
     *
     * @param program A pointer to shader program.
     */
-    void setProgram(Program* program) NOEXCEPT;
+    void setProgram(Program* program) noexcept;
 
 
     /**
@@ -283,7 +308,7 @@ public:
     * @param id    Parameter ID.
     * @param value Parameter value.
     */
-    void setProgramParam(Program::UniformId id, bool value) NOEXCEPT;
+    void setProgramParam(Program::UniformId id, bool value) noexcept;
 
 
     /**
@@ -292,7 +317,7 @@ public:
     * @param id    Parameter ID.
     * @param value Parameter value.
     */
-    void setProgramParam(Program::UniformId id, int value) NOEXCEPT;
+    void setProgramParam(Program::UniformId id, int value) noexcept;
 
 
     /**
@@ -301,7 +326,7 @@ public:
     * @param id    Parameter ID.
     * @param value Parameter value.
     */
-    void setProgramParam(Program::UniformId id, float value) NOEXCEPT;
+    void setProgramParam(Program::UniformId id, float value) noexcept;
 
 
     /**
@@ -311,7 +336,7 @@ public:
     * @param value1 Parameter value.
     * @param value2 Parameter value.
     */
-    void setProgramParam(Program::UniformId id, int value1, int value2) NOEXCEPT;
+    void setProgramParam(Program::UniformId id, int value1, int value2) noexcept;
 
 
     /**
@@ -320,7 +345,7 @@ public:
     * @param id    Parameter ID.
     * @param color Color value.
     */
-    void setProgramParam(Program::UniformId id, const render::Color& color) NOEXCEPT;
+    void setProgramParam(Program::UniformId id, const render::Color& color) noexcept;
 
 
     /**

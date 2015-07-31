@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -11,11 +13,10 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 
 #ifdef ENABLE_RENDER
-namespace render { class Context; }
+#include "render/Context.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -32,12 +33,35 @@ class Configuration;
 /**
  * @brief Abstract class for simulation modules.
  */
-class DLL_EXPORT Module
+class Module
 {
+
+// Public Types
+public:
+
+
+#if ENABLE_RENDER
+    /// Z order type.
+    using ZOrderType = int;
+#endif
 
 
 // Public Ctors & Dtors
 public:
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Constructor.
+     *
+     * @param zOrder Module draw Z order.
+     */
+    explicit Module(ZOrderType zOrder = 0) noexcept
+        : m_zOrder(zOrder)
+    {
+        // Nothing to do
+    }
+#endif
 
 
     /**
@@ -47,6 +71,23 @@ public:
     {
         // Nothing to do
     }
+
+
+// Public Accessors
+public:
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Returns module draw Z order.
+     *
+     * @return
+     */
+    ZOrderType getZOrder() const noexcept
+    {
+        return m_zOrder;
+    }
+#endif
 
 
 // Public Operations
@@ -90,6 +131,14 @@ public:
     }
 #endif
 
+
+// Private Data Members
+private:
+
+#if ENABLE_RENDER
+    /// Module Z order.
+    int m_zOrder;
+#endif
 };
 
 /* ************************************************************************ */

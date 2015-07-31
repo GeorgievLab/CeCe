@@ -66,7 +66,7 @@ namespace render {
  *
  * @return
  */
-static GLenum convert(PrimitiveType type) NOEXCEPT
+static GLenum convert(PrimitiveType type) noexcept
 {
     switch (type)
     {
@@ -124,7 +124,7 @@ Context::~Context()
 
 /* ************************************************************************ */
 
-ImageData Context::getData() const NOEXCEPT
+ImageData Context::getData() const noexcept
 {
     ImageData result;
 
@@ -147,7 +147,7 @@ ImageData Context::getData() const NOEXCEPT
 
 /* ************************************************************************ */
 
-bool Context::isWireframe() const NOEXCEPT
+bool Context::isWireframe() const noexcept
 {
     GLint val;
     glGetIntegerv(GL_POLYGON_MODE, &val);
@@ -156,7 +156,7 @@ bool Context::isWireframe() const NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setWireframe(bool flag) NOEXCEPT
+void Context::setWireframe(bool flag) noexcept
 {
     if (flag)
     {
@@ -170,17 +170,12 @@ void Context::setWireframe(bool flag) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::init() NOEXCEPT
+void Context::init(const render::Color& color) noexcept
 {
     assert(!isInitialized());
 
     // Clear color.
-    glClearColor(1.f, 1.f, 1.f, 1.f);
-    //glClearColor(0.f, 0.f, 0.f, 1.f);
-
-    // Enable blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -190,7 +185,7 @@ void Context::init() NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setView(int width, int height) NOEXCEPT
+void Context::setView(int width, int height) noexcept
 {
     if (!isInitialized())
         return;
@@ -224,7 +219,7 @@ void Context::setView(int width, int height) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setStencilBuffer(float width, float height) NOEXCEPT
+void Context::setStencilBuffer(float width, float height) noexcept
 {
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_STENCIL_TEST);
@@ -259,102 +254,126 @@ void Context::setStencilBuffer(float width, float height) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::frameBegin(int width, int height) NOEXCEPT
+void Context::frameBegin(int width, int height) noexcept
 {
     assert(isInitialized());
 
     // Clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_BLEND);
-
     setView(width, height);
 }
 
 /* ************************************************************************ */
 
-void Context::frameEnd() NOEXCEPT
+void Context::frameEnd() noexcept
 {
     assert(isInitialized());
-
-    glDisable(GL_BLEND);
-
     glFlush();
 }
 
 /* ************************************************************************ */
 
-void Context::matrixProjection() NOEXCEPT
+void Context::enableAlpha() noexcept
+{
+    gl(glEnable(GL_BLEND));
+    gl(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+}
+
+/* ************************************************************************ */
+
+void Context::disableAlpha() noexcept
+{
+    gl(glDisable(GL_BLEND));
+}
+
+/* ************************************************************************ */
+
+void Context::colorPush() noexcept
+{
+    gl(glPushAttrib(GL_COLOR_BUFFER_BIT));
+}
+
+/* ************************************************************************ */
+
+void Context::colorPop() noexcept
+{
+    gl(glPopAttrib());
+}
+
+/* ************************************************************************ */
+
+void Context::matrixProjection() noexcept
 {
     gl(glMatrixMode(GL_PROJECTION));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixView() NOEXCEPT
+void Context::matrixView() noexcept
 {
     gl(glMatrixMode(GL_MODELVIEW));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixTexture() NOEXCEPT
+void Context::matrixTexture() noexcept
 {
     gl(glMatrixMode(GL_TEXTURE));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixPush() NOEXCEPT
+void Context::matrixPush() noexcept
 {
     gl(glPushMatrix());
 }
 
 /* ************************************************************************ */
 
-void Context::matrixPop() NOEXCEPT
+void Context::matrixPop() noexcept
 {
     gl(glPopMatrix());
 }
 
 /* ************************************************************************ */
 
-void Context::matrixIdentity() NOEXCEPT
+void Context::matrixIdentity() noexcept
 {
     gl(glLoadIdentity());
 }
 
 /* ************************************************************************ */
 
-void Context::matrixTranslate(const PositionVector& pos) NOEXCEPT
+void Context::matrixTranslate(const PositionVector& pos) noexcept
 {
     gl(glTranslatef(pos.getX().value(), pos.getY().value(), 0));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixScale(const Vector<float>& scale) NOEXCEPT
+void Context::matrixScale(const Vector<float>& scale) noexcept
 {
     gl(glScalef(scale.getX(), scale.getY(), 1));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixRotate(units::Angle angle) NOEXCEPT
+void Context::matrixRotate(units::Angle angle) noexcept
 {
     gl(glRotatef(units::rad2deg(angle), 0.f, 0.f, 1.f));
 }
 
 /* ************************************************************************ */
 
-void Context::setColor(const Color& color) NOEXCEPT
+void Context::setColor(const Color& color) noexcept
 {
     gl(glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 }
 
 /* ************************************************************************ */
 
-void Context::setVertexBuffer(Buffer* buffer) NOEXCEPT
+void Context::setVertexBuffer(Buffer* buffer) noexcept
 {
 #ifdef _WIN32
     if (!glBindBuffer)
@@ -367,7 +386,7 @@ void Context::setVertexBuffer(Buffer* buffer) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setVertexFormat(const VertexFormat* format) NOEXCEPT
+void Context::setVertexFormat(const VertexFormat* format) noexcept
 {
     if (format)
     {
@@ -415,7 +434,7 @@ void Context::setVertexFormat(const VertexFormat* format) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setTexture(Texture* texture) NOEXCEPT
+void Context::setTexture(Texture* texture) noexcept
 {
     if (texture)
     {
@@ -432,7 +451,7 @@ void Context::setTexture(Texture* texture) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setProgram(Program* program) NOEXCEPT
+void Context::setProgram(Program* program) noexcept
 {
 #ifdef _WIN32
     if (!glUseProgram)
@@ -444,7 +463,7 @@ void Context::setProgram(Program* program) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setProgramParam(Program::UniformId id, bool value) NOEXCEPT
+void Context::setProgramParam(Program::UniformId id, bool value) noexcept
 {
 #ifdef _WIN32
     if (!glUniform1i)
@@ -456,7 +475,7 @@ void Context::setProgramParam(Program::UniformId id, bool value) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setProgramParam(Program::UniformId id, int value) NOEXCEPT
+void Context::setProgramParam(Program::UniformId id, int value) noexcept
 {
 #ifdef _WIN32
     if (!glUniform1i)
@@ -468,7 +487,7 @@ void Context::setProgramParam(Program::UniformId id, int value) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setProgramParam(Program::UniformId id, int value1, int value2) NOEXCEPT
+void Context::setProgramParam(Program::UniformId id, int value1, int value2) noexcept
 {
 #ifdef _WIN32
     if (!glUniform2i)
@@ -480,7 +499,7 @@ void Context::setProgramParam(Program::UniformId id, int value1, int value2) NOE
 
 /* ************************************************************************ */
 
-void Context::setProgramParam(Program::UniformId id, float value) NOEXCEPT
+void Context::setProgramParam(Program::UniformId id, float value) noexcept
 {
 #ifdef _WIN32
     if (!glUniform1f)
@@ -492,7 +511,7 @@ void Context::setProgramParam(Program::UniformId id, float value) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Context::setProgramParam(Program::UniformId id, const render::Color& color) NOEXCEPT
+void Context::setProgramParam(Program::UniformId id, const render::Color& color) noexcept
 {
 #ifdef _WIN32
     if (!glUniform4f)

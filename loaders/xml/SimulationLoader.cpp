@@ -301,9 +301,10 @@ void process_simulation_node(const pugi::xml_node& node, simulator::Simulation& 
     }
 
     // Number of iterations
-    {
-        simulation.setIterations(config.get("iterations", simulation.getIterations()));
-    }
+    simulation.setIterations(config.get("iterations", simulation.getIterations()));
+
+    // Background color
+    simulation.setBackgroundColor(config.get("background", simulation.getBackgroundColor()));
 
     // Parse parameters
     for (const auto& parameter : node.children("parameter"))
