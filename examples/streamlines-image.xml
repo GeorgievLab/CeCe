@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="200um 100um" dt="1s" iterations="10000">
+<simulation world-size="200um 100um" dt="10ms" iterations="10000">
     <!-- Generate yeast cells -->
     <module name="object-generator">
         <object class="cell.Yeast" probability="0.01" />
     </module>
 
     <!-- Define streamlines -->
-    <module name="streamlines-image" grid="200 100" velocity-inflow="200um/s" kinematic-viscosity="658um2/s" image="image.png" obstacle="obstacle.png" />
+    <module name="streamlines-image" coefficient="100" grid="200 100" velocity-inflow="10um/s" kinematic-viscosity="0.658um2/s" image="obstacle.png" aobstacle="obstacle2.png" />
 
     <!-- Center cell -->
     <object class="cell.Cell" type="static" volume="2000um3" />
