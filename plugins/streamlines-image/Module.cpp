@@ -36,9 +36,6 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Parent's
     plugin::streamlines::Module::configure(config, simulation);
 
-    // Returns grid size.
-    const auto size = getLattice().getSize();
-
     // Image name
     const auto imageName = config.get("image");
     const auto obstacleName = config.get("obstacle", imageName);
@@ -65,63 +62,76 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Flip image
     flip(imgObstacle, imgObstacle, 0);
 
-    // Resize image to grid size
-    resize(imgObstacle, imgObstacle, cv::Size(size.getX(), size.getY()));
-
     // Remove color
     cvtColor(imgObstacle, imgObstacle, CV_BGR2GRAY);
 
     // To Black & White
     imgObstacle = imgObstacle > THRESHOLD;
 
-    // Setup obstacle map
-    using plugin::streamlines::ObstacleMap;
-    ObstacleMap map(size);
-
-    assert(!imgObstacle.empty());
-
-    // Convert image to obstacle map
-    for (auto&& c : range(size))
-        map[c] = imgObstacle.at<uchar>(c.getY(), c.getX()) > THRESHOLD;
-
-    setStaticObstacleMap(map);
-
-    // Get contours
-    DynamicArray<DynamicArray<Point>> contoursSrc;
-    DynamicArray<Vec4i> hierarchy;
-    findContours(imgObstacle, contoursSrc, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
-
-    // For each contour compute aproximate version
-    DynamicArray<DynamicArray<Point>> contours(contoursSrc.size());
-
-    for (std::size_t i = 0u; i < contoursSrc.size(); ++i)
+    // Detect contours
     {
-        approxPolyDP(contoursSrc[i], contours[i], 1, true);
-    }
+        auto img = imgObstacle.clone();
 
-    // Coordinate scale
-    const auto scale = simulation.getWorldSize() / size;
-    const auto off = size / 2;
+        // Get contours
+        DynamicArray<DynamicArray<Point>> contoursSrc;
+        DynamicArray<Vec4i> hierarchy;
+        findContours(img, contoursSrc, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 
-    // Create obstacle body
-    auto obstacle = simulation.createObject<simulator::Obstacle>();
-    auto& shapes = obstacle->getMutableShapes();
-    shapes.reserve(contours.size());
+        // For each contour compute aproximate version
+        DynamicArray<DynamicArray<Point>> contours(contoursSrc.size());
 
-    for (const auto& cnt : contours)
-    {
-        simulator::ShapeEdges shape;
-
-        for (std::size_t i = 0u; i < cnt.size(); ++i)
+        for (std::size_t i = 0u; i < contoursSrc.size(); ++i)
         {
-            const core::Vector<float> p(cnt[i].x, cnt[i].y);
-            shape.edges.push_back((p - off) * scale);
+            approxPolyDP(contoursSrc[i], contours[i], 1, true);
         }
 
-        shapes.push_back(std::move(shape));
+        const auto size = core::Vector<unsigned>(img.size().width, img.size().height);
+
+        // Coordinate scale
+        const auto scale = simulation.getWorldSize() / size;
+        const auto off = size / 2;
+
+        // Create obstacle body
+        auto obstacle = simulation.createObject<simulator::Obstacle>();
+        auto& shapes = obstacle->getMutableShapes();
+        shapes.reserve(contours.size());
+
+        for (const auto& cnt : contours)
+        {
+            simulator::ShapeEdges shape;
+
+            for (std::size_t i = 0u; i < cnt.size(); ++i)
+            {
+                const core::Vector<float> p(cnt[i].x, cnt[i].y);
+                shape.edges.push_back((p - off) * scale);
+            }
+
+            shapes.push_back(std::move(shape));
+        }
+
+        obstacle->initShapes();
     }
 
-    obstacle->initShapes();
+    // Create obstacle map
+    {
+        // Returns grid size.
+        const auto size = getLattice().getSize();
+
+        // Resize image to grid size
+        resize(imgObstacle, imgObstacle, cv::Size(size.getX(), size.getY()));
+
+        // Setup obstacle map
+        using plugin::streamlines::ObstacleMap;
+        ObstacleMap map(size);
+
+        assert(!imgObstacle.empty());
+
+        // Convert image to obstacle map
+        for (auto&& c : range(size))
+            map[c] = imgObstacle.at<uchar>(c.getY(), c.getX()) > THRESHOLD;
+
+        setStaticObstacleMap(map);
+    }
 }
 
 /* ************************************************************************ */
