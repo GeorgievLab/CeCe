@@ -54,7 +54,7 @@ void Cell::update(units::Duration dt)
     // Update shape
     auto& shapes = getMutableShapes();
     assert(shapes.size() == 1);
-    shapes[0].circle.radius = getRadius();
+    shapes[0].getCircle().radius = getRadius();
 }
 
 /* ************************************************************************ */

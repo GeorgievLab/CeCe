@@ -82,7 +82,7 @@ void Obstacle::draw(render::Context& context)
 
             context.matrixPush();
             context.matrixTranslate(getPosition());
-            context.matrixScale(get<ShapeCircle>(shape).radius / units::Length(1));
+            context.matrixScale(shape.getCircle().radius / units::Length(1));
             m_drawCircle->draw(context);
             context.matrixPop();
             break;
@@ -93,7 +93,7 @@ void Obstacle::draw(render::Context& context)
 
             context.matrixPush();
             context.matrixTranslate(getPosition());
-            context.matrixScale(get<ShapeRectangle>(shape).size / units::Length(1));
+            context.matrixScale(shape.getRectangle().size / units::Length(1));
             m_drawRectangle->draw(context);
             context.matrixPop();
             break;
@@ -122,14 +122,14 @@ void Obstacle::initShapes()
         case ShapeType::Circle:
         {
             auto s = makeUnique<b2CircleShape>();
-            s->m_radius = get<ShapeCircle>(shape).radius.value();
+            s->m_radius = shape.getCircle().radius.value();
             getBody()->CreateFixture(s.get(), 1);
             m_bodyShapes.emplace_back(s.release());
             break;
         }
         case ShapeType::Rectangle:
         {
-            const auto sh = get<ShapeRectangle>(shape).size / 2.f;
+            const auto sh = shape.getRectangle().size / 2.f;
             auto s = makeUnique<b2PolygonShape>();
             s->SetAsBox(sh.getWidth().value(), sh.getHeight().value());
             getBody()->CreateFixture(s.get(), 1);
@@ -141,7 +141,7 @@ void Obstacle::initShapes()
             DynamicArray<b2Vec2> vertices;
 
             auto s = makeUnique<b2ChainShape>();
-            for (const auto& v : get<ShapeEdges>(shape).edges)
+            for (const auto& v : shape.getEdges().edges)
                 vertices.push_back(b2Vec2(v.getX().value(), v.getY().value()));
 
             // Create edges loop

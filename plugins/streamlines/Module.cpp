@@ -284,10 +284,10 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             const auto dv = velocity - obj->getVelocity();
 
             // Set object velocity
-            const auto force = 3 * constants::PI * getKinematicViscosity() * obj->getDensity() * dv * shape.circle.radius;
+            const auto force = 3 * constants::PI * getKinematicViscosity() * obj->getDensity() * dv * shape.getCircle().radius;
 
             // Apply force
-            obj->applyForce(force, obj->getPosition() + shape.circle.center);
+            obj->applyForce(force, obj->getPosition() + shape.getCircle().center);
         }
     }
 }

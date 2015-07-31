@@ -47,16 +47,16 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const Shape& shape, const Vector<Ste
     const Vector<T>& center, units::Angle rotation, const Vector<T>& max,
     const Vector<T>& min = {})
 {
-    switch (shape.type)
+    switch (shape.getType())
     {
     default:
         break;
 
     case ShapeType::Circle:
-        mapShapeToGrid(fnIn, fnOut, shape.circle, steps, center, rotation, max, min);
+        mapShapeToGrid(fnIn, fnOut, shape.getCircle(), steps, center, rotation, max, min);
 
     case ShapeType::Rectangle:
-        mapShapeToGrid(fnIn, fnOut, shape.rectangle, steps, center, rotation, max, min);
+        mapShapeToGrid(fnIn, fnOut, shape.getRectangle(), steps, center, rotation, max, min);
     }
 }
 
@@ -267,13 +267,13 @@ void mapShapeBorderToGrid(FnIn fnIn, FnOut fnOut, const Shape& shape, const Vect
     const Vector<T>& center, const Vector<T>& max, const Vector<T>& min = {},
     OffT off = OffT{})
 {
-    switch (shape.type)
+    switch (shape.getType())
     {
     default:
         break;
 
     case ShapeType::Circle:
-        return mapShapeBorderToGrid(fnIn, fnOut, shape.circle, steps, center, max, min, off);
+        return mapShapeBorderToGrid(fnIn, fnOut, shape.getCircle(), steps, center, max, min, off);
     }
 }
 

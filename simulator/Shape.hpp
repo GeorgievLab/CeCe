@@ -103,6 +103,7 @@ class Shape : public Variant<
     ShapeEdges
 >
 {
+    friend struct GetType;
 
     /// Parent type
     using Parent = Variant<
@@ -125,14 +126,55 @@ public:
         ShapeType operator()(const ShapeEdges&) const noexcept { return ShapeType::Edges; }
     };
 
+
 // Public Ctors & Dtors
 public:
 
 
     /**
-     * @brief Parent's ctors.
+     * @brief Default constructor.
      */
-    using Parent::Parent;
+    Shape()
+        : Parent()
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param circle
+     */
+    Shape(ShapeCircle circle)
+        : Parent(std::move(circle))
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param rectangle
+     */
+    Shape(ShapeRectangle rectangle)
+        : Parent(std::move(rectangle))
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param edges
+     */
+    Shape(ShapeEdges edges)
+        : Parent(std::move(edges))
+    {
+        // Nothing to do
+    }
 
 
 // Public Accessors
@@ -150,6 +192,72 @@ public:
     }
 
 
+    /**
+     * @brief Get circle shape.
+     *
+     * @return
+     */
+    ShapeCircle& getCircle() noexcept
+    {
+        return get<ShapeCircle>(*this);
+    }
+
+
+    /**
+     * @brief Get circle shape.
+     *
+     * @return
+     */
+    const ShapeCircle& getCircle() const noexcept
+    {
+        return get<ShapeCircle>(*this);
+    }
+
+
+    /**
+     * @brief Get rectangle shape.
+     *
+     * @return
+     */
+    ShapeRectangle& getRectangle() noexcept
+    {
+        return get<ShapeRectangle>(*this);
+    }
+
+
+    /**
+     * @brief Get rectangle shape.
+     *
+     * @return
+     */
+    const ShapeRectangle& getRectangle() const noexcept
+    {
+        return get<ShapeRectangle>(*this);
+    }
+
+
+    /**
+     * @brief Get edges shape.
+     *
+     * @return
+     */
+    ShapeEdges& getEdges() noexcept
+    {
+        return get<ShapeEdges>(*this);
+    }
+
+
+    /**
+     * @brief Get edges shape.
+     *
+     * @return
+     */
+    const ShapeEdges& getEdges() const noexcept
+    {
+        return get<ShapeEdges>(*this);
+    }
+
+
 // Public Operations
 public:
 
@@ -161,7 +269,7 @@ public:
      */
     static Shape makeUndefined() noexcept
     {
-        return Shape{ShapeUndefined{}};
+        return Shape{};
     }
 
 

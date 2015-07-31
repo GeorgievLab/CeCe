@@ -203,7 +203,7 @@ void Yeast::updateShape()
 
     // Update main shape
     assert(shapes.size() >= 1);
-    shapes[0].circle.radius = newRadius;
+    shapes[0].getCircle().radius = newRadius;
 
     // If bud shape is missing, create one.
     if (hasBud())
@@ -216,8 +216,8 @@ void Yeast::updateShape()
         }
         else
         {
-            shapes[1].circle.radius = newBudRadius;
-            shapes[1].circle.center = center;
+            shapes[1].getCircle().radius = newBudRadius;
+            shapes[1].getCircle().center = center;
         }
     }
     else
