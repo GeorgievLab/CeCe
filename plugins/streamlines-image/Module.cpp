@@ -140,13 +140,13 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
         // Resize image to requires size
         resize(m_img, m_img, cv::Size(size.getX(), size.getY()));
-    }
 
-    // Update data
-    for (auto&& c : range(size))
-    {
-        const auto pix = m_img.at<Vec3b>(c.getY(), c.getX());
-        m_drawable->set(c, render::Color{pix[2] / 255.f, pix[1] / 255.f, pix[0] / 255.f});
+        // Update data
+        for (auto&& c : range(size))
+        {
+            const auto pix = m_img.at<Vec3b>(c.getY(), c.getX());
+            m_drawable->set(c, render::Color{pix[2] / 255.f, pix[1] / 255.f, pix[0] / 255.f});
+        }
     }
 
     // Draw color grid
