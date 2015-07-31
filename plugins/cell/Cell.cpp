@@ -81,9 +81,10 @@ void Cell::draw(render::Context& context)
     context.matrixTranslate(pos);
     context.matrixScale(2 * radius.value());
     context.matrixRotate(getRotation());
-
+    context.colorPush();
+    context.enableAlpha();
     m_renderObject->draw(context, radius.value());
-
+    context.colorPop();
     context.matrixPop();
 }
 #endif
