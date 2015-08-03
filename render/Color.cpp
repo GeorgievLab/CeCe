@@ -91,7 +91,21 @@ InStream& operator>>(InStream& is, Color& color)
 
 OutStream& operator<<(OutStream& os, const Color& color) noexcept
 {
-    // TODO: implement
+    // Store predefined color
+    for (const auto& p : g_colors)
+    {
+        if (p.second == color)
+            return os << p.first;
+    }
+
+    const uint8_t bytes[4] = {
+        static_cast<uint8_t>(color.getRed()   * 255),
+        static_cast<uint8_t>(color.getGreen() * 255),
+        static_cast<uint8_t>(color.getBlue()  * 255),
+        static_cast<uint8_t>(color.getAlpha() * 255)
+    };
+
+    os << '#' << std::hex << bytes[0] << bytes[1] << bytes[2] << bytes[3];
 
     return os;
 }

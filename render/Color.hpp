@@ -10,14 +10,8 @@
 
 #pragma once
 
-/* ************************************************************************ */
-
-#if ENABLE_SSE && __SSE__
-#include <xmmintrin.h>
-#endif
-
 // Simulator
-#include "core/StaticArray.hpp"
+#include "core/Real.hpp"
 #include "core/InStream.hpp"
 #include "core/OutStream.hpp"
 
@@ -40,7 +34,7 @@ public:
     /**
      * @brief Component type.
      */
-    using ComponentType = float;
+    using ComponentType = RealType;
 
 
 // Public Ctors & Dtors
@@ -75,31 +69,13 @@ public:
      * @param alpha
      */
     constexpr Color(ComponentType red, ComponentType green, ComponentType blue, ComponentType alpha = 1.0f) noexcept
-#ifndef _MSC_VER
-        : m_components{{red, green, blue, alpha}}
-#endif
-    {
-#ifdef _MSC_VER
-        m_components[0] = red;
-        m_components[1] = green;
-        m_components[2] = blue;
-        m_components[3] = alpha;
-#endif
-    }
-
-
-#if ENABLE_SSE && __SSE__
-    /**
-     * @brief Constructor.
-     *
-     * @param values
-     */
-    constexpr Color(__m128 values)
-        : m_sse(values)
+        : m_red{red}
+        , m_green{green}
+        , m_blue{blue}
+        , m_alpha{alpha}
     {
         // Nothing to do
     }
-#endif
 
 
 // Public Operators
@@ -107,42 +83,68 @@ public:
 
 
     /**
-     * @brief Add colors into other one.
+     * @brief Compare operator.
      *
-     * @param c
+     * @param rhs Color compare to.
      *
      * @return
      */
-    Color operator+(const Color& c) const noexcept
+    constexpr bool operator==(const Color& rhs) const noexcept
     {
-#if ENABLE_SSE && __SSE__
-        return Color{_mm_add_ps(m_sse, c.m_sse)};
-#else
-        Color tmp(*this);
+        return (
+            m_red   == rhs.m_red   &&
+            m_green == rhs.m_green &&
+            m_blue  == rhs.m_blue  &&
+            m_alpha == rhs.m_alpha
+        );
+    }
 
-        for (unsigned i = 0; i < 4; ++i)
-            tmp.m_components[i] += c.m_components[i];
 
-        return tmp;
-#endif
+    /**
+     * @brief Compare operator.
+     *
+     * @param rhs Color compare to.
+     *
+     * @return
+     */
+    constexpr bool operator!=(const Color& rhs) const noexcept
+    {
+        return !operator==(rhs);
+    }
+
+
+    /**
+     * @brief Add colors into other one.
+     *
+     * @param rhs Color.
+     *
+     * @return
+     */
+    constexpr Color operator+(const Color& rhs) const noexcept
+    {
+        return Color{
+            m_red   + rhs.m_red,
+            m_green + rhs.m_green,
+            m_blue  + rhs.m_blue,
+            m_alpha + rhs.m_alpha
+        };
     }
 
 
     /**
      * @brief Add other color.
      *
-     * @param c
+     * @param rhs Color.
      *
      * @return
      */
-    Color& operator+=(const Color& c) noexcept
+    Color& operator+=(const Color& rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_add_ps(m_sse, c.m_sse);
-#else
-        for (unsigned i = 0; i < 4; ++i)
-            m_components[i] += c.m_components[i];
-#endif
+        m_red   += rhs.m_red;
+        m_green += rhs.m_green;
+        m_blue  += rhs.m_blue;
+        m_alpha += rhs.m_alpha;
+
         return *this;
     }
 
@@ -150,40 +152,35 @@ public:
     /**
      * @brief Substract colors into other one.
      *
-     * @param c
+     * @param rhs Color.
      *
      * @return
      */
-    Color operator-(const Color& c) const noexcept
+    constexpr Color operator-(const Color& rhs) const noexcept
     {
-#if ENABLE_SSE && __SSE__
-        return Color{_mm_sub_ps(m_sse, c.m_sse)};
-#else
-        Color tmp(*this);
-
-        for (unsigned i = 0; i < 4; ++i)
-            tmp.m_components[i] -= c.m_components[i];
-
-        return tmp;
-#endif
+        return Color{
+            m_red   - rhs.m_red,
+            m_green - rhs.m_green,
+            m_blue  - rhs.m_blue,
+            m_alpha - rhs.m_alpha
+        };
     }
 
 
     /**
      * @brief Substract other color.
      *
-     * @param c
+     * @param rhs Color.
      *
      * @return
      */
-    Color& operator-=(const Color& c) noexcept
+    Color& operator-=(const Color& rhs) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_sub_ps(m_sse, c.m_sse);
-#else
-        for (unsigned i = 0; i < 4; ++i)
-            m_components[i] -= c.m_components[i];
-#endif
+        m_red   -= rhs.m_red;
+        m_green -= rhs.m_green;
+        m_blue  -= rhs.m_blue;
+        m_alpha -= rhs.m_alpha;
+
         return *this;
     }
 
@@ -195,18 +192,14 @@ public:
      *
      * @return
      */
-    Color operator*(float val) const noexcept
+    constexpr Color operator*(RealType val) const noexcept
     {
-#if ENABLE_SSE && __SSE__
-        return Color{_mm_mul_ps(m_sse, _mm_set1_ps(val))};
-#else
-        Color tmp(*this);
-
-        for (unsigned i = 0; i < 4; ++i)
-            tmp.m_components[i] *= val;
-
-        return tmp;
-#endif
+        return Color{
+            m_red   * val,
+            m_green * val,
+            m_blue  * val,
+            m_alpha * val
+        };
     }
 
 
@@ -217,14 +210,13 @@ public:
      *
      * @return
      */
-    Color& operator*=(float val) noexcept
+    Color& operator*=(RealType val) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_mul_ps(m_sse, _mm_set1_ps(val));
-#else
-        for (unsigned i = 0; i < 4; ++i)
-            m_components[i] *= val;
-#endif
+        m_red   *= val;
+        m_green *= val;
+        m_blue  *= val;
+        m_alpha *= val;
+
         return *this;
     }
 
@@ -236,18 +228,14 @@ public:
      *
      * @return
      */
-    Color operator/(float val) const noexcept
+    constexpr Color operator/(RealType val) const noexcept
     {
-#if ENABLE_SSE && __SSE__
-        return Color{_mm_div_ps(m_sse, _mm_set1_ps(val))};
-#else
-        Color tmp(*this);
-
-        for (unsigned i = 0; i < 4; ++i)
-            tmp.m_components[i] /= val;
-
-        return tmp;
-#endif
+        return Color{
+            m_red   / val,
+            m_green / val,
+            m_blue  / val,
+            m_alpha / val
+        };
     }
 
 
@@ -258,14 +246,13 @@ public:
      *
      * @return
      */
-    Color& operator/=(float val) noexcept
+    Color& operator/=(RealType val) noexcept
     {
-#if ENABLE_SSE && __SSE__
-        m_sse = _mm_div_ps(m_sse, _mm_set1_ps(val));
-#else
-        for (unsigned i = 0; i < 4; ++i)
-            m_components[i] /= val;
-#endif
+        m_red   /= val;
+        m_green /= val;
+        m_blue  /= val;
+        m_alpha /= val;
+
         return *this;
     }
 
@@ -281,7 +268,7 @@ public:
      */
     ComponentType& red() noexcept
     {
-        return m_components[0];
+        return m_red;
     }
 
 
@@ -292,7 +279,7 @@ public:
      */
     constexpr ComponentType getRed() const noexcept
     {
-        return m_components[0];
+        return m_red;
     }
 
 
@@ -303,7 +290,7 @@ public:
      */
     ComponentType& green() noexcept
     {
-        return m_components[1];
+        return m_green;
     }
 
 
@@ -314,7 +301,7 @@ public:
      */
     constexpr ComponentType getGreen() const noexcept
     {
-        return m_components[1];
+        return m_green;
     }
 
 
@@ -325,7 +312,7 @@ public:
      */
     ComponentType& blue() noexcept
     {
-        return m_components[2];
+        return m_blue;
     }
 
 
@@ -336,7 +323,7 @@ public:
      */
     constexpr ComponentType getBlue() const noexcept
     {
-        return m_components[2];
+        return m_blue;
     }
 
 
@@ -347,7 +334,7 @@ public:
      */
     ComponentType& alpha() noexcept
     {
-        return m_components[3];
+        return m_alpha;
     }
 
 
@@ -358,7 +345,7 @@ public:
      */
     constexpr ComponentType getAlpha() const noexcept
     {
-        return m_components[3];
+        return m_alpha;
     }
 
 
@@ -373,7 +360,7 @@ public:
      */
     void setRed(ComponentType red) noexcept
     {
-        m_components[0] = red;
+        m_red = red;
     }
 
 
@@ -384,7 +371,7 @@ public:
      */
     void setGreen(ComponentType green) noexcept
     {
-        m_components[1] = green;
+        m_green = green;
     }
 
 
@@ -395,7 +382,7 @@ public:
      */
     void setBlue(ComponentType blue) noexcept
     {
-        m_components[2] = blue;
+        m_blue = blue;
     }
 
 
@@ -406,21 +393,25 @@ public:
      */
     void setAlpha(ComponentType alpha) noexcept
     {
-        m_components[3] = alpha;
+        m_alpha = alpha;
     }
 
 
 // Private Data Members
 private:
 
-#if ENABLE_SSE && __SSE__
-    union {
-        __m128 m_sse;
-#endif
-        StaticArray<ComponentType, 4> m_components;
-#if ENABLE_SSE && __SSE__
-    };
-#endif
+
+    /// Red component.
+    ComponentType m_red;
+
+    /// Green component.
+    ComponentType m_green;
+
+    /// Blue component.
+    ComponentType m_blue;
+
+    /// Alpha component.
+    ComponentType m_alpha;
 };
 
 /* ************************************************************************ */
