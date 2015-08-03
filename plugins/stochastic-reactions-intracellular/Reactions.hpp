@@ -17,6 +17,7 @@
 #include "core/String.hpp"
 #include "core/StringView.hpp"
 #include "core/Units.hpp"
+#include "core/Real.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Log.hpp"
 #include "core/Exception.hpp"
@@ -32,7 +33,7 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-using RateType = float;
+using RateType = RealType;
 
 template<typename T>
 class Reactions
