@@ -156,6 +156,39 @@ public:
     }
 
 
+    /**
+     * @brief Dereference operator.
+     *
+     * @return Reference to object.
+     */
+    T& operator*() noexcept
+    {
+        return *m_ptr;
+    }
+
+
+    /**
+     * @brief Dereference operator.
+     *
+     * @return Reference to object.
+     */
+    const T& operator*() const noexcept
+    {
+        return *m_ptr;
+    }
+
+
+    /**
+     * @brief Dereference operator.
+     *
+     * @return A pointer to object.
+     */
+    T* operator->() const noexcept
+    {
+        return m_ptr;
+    }
+
+
 // Public Accessors
 public:
 

@@ -65,7 +65,7 @@ struct ValueCastScalar<long, T, Seq...>
      */
     static bool check(View<PyObject> value) noexcept
     {
-        return value != nullptr && PyLong_Check(value);
+        return value != nullptr && (PyLong_Check(value) || PyInt_Check(value) || PyFloat_Check(value));
     }
 
 
@@ -93,8 +93,14 @@ struct ValueCastScalar<long, T, Seq...>
     static T convert(View<PyObject> value) noexcept
     {
         assert(value);
-        assert(PyLong_Check(value));
-        return PyLong_AsLong(value);
+        if (PyLong_Check(value))
+            return PyLong_AsLong(value);
+        else if (PyInt_Check(value))
+            return PyInt_AsLong(value);
+        else if (PyFloat_Check(value))
+            return PyFloat_AsDouble(value);
+        else
+            assert(false && "Object is not int or float");
     }
 };
 
@@ -121,7 +127,7 @@ struct ValueCastScalar<double, T, Seq...>
      */
     static bool check(View<PyObject> value) noexcept
     {
-        return value != nullptr && PyFloat_Check(value);
+        return value != nullptr && (PyFloat_Check(value) || PyLong_Check(value) || PyInt_Check(value));
     }
 
 
@@ -149,8 +155,14 @@ struct ValueCastScalar<double, T, Seq...>
     static T convert(View<PyObject> value) noexcept
     {
         assert(value);
-        assert(PyFloat_Check(value));
-        return PyFloat_AsDouble(value);
+        if (PyFloat_Check(value))
+            return PyFloat_AsDouble(value);
+        else if (PyInt_Check(value))
+            return PyInt_AsLong(value);
+        else if (PyLong_Check(value))
+            return PyLong_AsLong(value);
+        else
+            assert(false && "Object is not int or float");
     }
 };
 

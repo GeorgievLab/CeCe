@@ -11,8 +11,8 @@ def call(simulation):
         for y in range(-200, 200, 10):
             obj = simulation.buildObject("cell.Yeast", False)
             pos = obj.position
-            pos.x = float(x)
-            pos.y = float(y)
+            pos.x = x
+            pos.y = y
             obj.position = pos
             obj.useProgram("kill")
 ]]>
