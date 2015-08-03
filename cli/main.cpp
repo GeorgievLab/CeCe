@@ -564,9 +564,10 @@ private:
      */
     void initScene()
     {
-#if ENABLE_PHYSICS_DEBUG
         // Get simulation
         auto simulation = m_simulator.getSimulation();
+
+#if ENABLE_PHYSICS_DEBUG
 
         m_physicsDebugger.SetFlags(
             render::PhysicsDebugger::e_shapeBit |
