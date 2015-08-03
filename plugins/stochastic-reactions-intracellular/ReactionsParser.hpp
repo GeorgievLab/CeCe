@@ -39,7 +39,11 @@ enum class TokenCode
     Plus,
     Colon,
     Semicolon,
-    Comma
+    Comma,
+    And,
+    Or,
+    If,
+    Not
 };
 
 /* ************************************************************************ */
@@ -100,6 +104,16 @@ public:
             token.value.push_back(value());
             next();
         }
+
+        if (token.value == "and")
+            token.code = TokenCode::And;
+        else if (token.value == "or")
+            token.code = TokenCode::Or;
+        else if (token.value == "if")
+            token.code = TokenCode::If;
+        else if (token.value == "not")
+            token.code = TokenCode::Not;
+
 
         return token;
     }
@@ -329,6 +343,34 @@ protected:
 
     DynamicArray<std::pair<String, unsigned int>> parseConditions()
     {
+        if (is(TokenCode::If)
+        {
+            DynamicArray<StaticArray<String, unsigned int>> array;
+            unsigned int counter = 0;
+
+            do
+            {
+                do
+                {
+                    next();
+                    if (is(TokenCode::Not))
+                    {
+
+                    }
+                    if (is(TokenCode::Identifier)
+
+                    else
+                        throw MissingIdentifierException{};
+                    next();
+                }
+                while (is(TokenCode::And));
+                ++counter;
+            }
+            while (is(TokenCode::Or));
+
+            requireNext(TokenCode::Colon);
+            return array;
+        }
         return DynamicArray<std::pair<String, unsigned int>>();
     }
 
@@ -393,17 +435,14 @@ protected:
     DynamicArray<String> parseList()
     {
         DynamicArray<String> array;
-
         do
         {
             if (!is(TokenCode::Identifier))
                 throw MissingIdentifierException{};
-
             array.push_back(token().value);
             next();
         }
         while (match(TokenCode::Plus));
-
         return array;
     }
 
