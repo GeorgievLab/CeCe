@@ -73,7 +73,7 @@ PyTypeObject* findDynamic(const std::type_info& info);
  * @return
  */
 template<typename T>
-T& ref(T& obj) NOEXCEPT
+T& ref(T& obj) noexcept
 {
     return obj;
 }
@@ -88,7 +88,7 @@ T& ref(T& obj) NOEXCEPT
  * @return
  */
 template<typename T>
-T& ref(T* obj) NOEXCEPT
+T& ref(T* obj) noexcept
 {
     return *obj;
 }
@@ -117,7 +117,7 @@ struct Constructor
      *
      * @return
      */
-    static initproc to() NOEXCEPT
+    static initproc to() noexcept
     {
         return (initproc) &construct;
     }
@@ -132,7 +132,7 @@ struct Constructor
      * @return
      */
     template<int... I>
-    static int construct_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
+    static int construct_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) noexcept
     {
         assert(self);
         assert(args);
@@ -200,7 +200,7 @@ struct Property
      *
      * @return
      */
-    static PyGetSetDef to() NOEXCEPT
+    static PyGetSetDef to() noexcept
     {
         return {const_cast<char*>(name), (getter) get, (setter) set, nullptr, nullptr};
     }
@@ -214,7 +214,7 @@ struct Property
      *
      * @return
      */
-    static PyObject* get(ObjectWrapper<T>* self, void* closure) NOEXCEPT
+    static PyObject* get(ObjectWrapper<T>* self, void* closure) noexcept
     {
         assert(self);
         assert(getFn);
@@ -279,7 +279,7 @@ struct PropertyAlt
      *
      * @return
      */
-    static PyGetSetDef to() NOEXCEPT
+    static PyGetSetDef to() noexcept
     {
         return {const_cast<char*>(name), (getter) get, (setter) set, nullptr, nullptr};
     }
@@ -293,7 +293,7 @@ struct PropertyAlt
      *
      * @return
      */
-    static PyObject* get(ObjectWrapper<T>* self, void* closure) NOEXCEPT
+    static PyObject* get(ObjectWrapper<T>* self, void* closure) noexcept
     {
         assert(self);
         assert(getFn);
@@ -334,7 +334,7 @@ struct PropertyAlt
  * @return
  */
 template<HashValueType Hash, typename T, typename Val, typename TR = typename std::remove_pointer<T>::type>
-PyGetSetDef defineProperty(const char* name, Val(TR::*getter)() const, void(TR::*setter)(Val) = nullptr) NOEXCEPT
+PyGetSetDef defineProperty(const char* name, Val(TR::*getter)() const, void(TR::*setter)(Val) = nullptr) noexcept
 {
     using PropertyType = Property<Hash, T, Val>;
 
@@ -357,7 +357,7 @@ PyGetSetDef defineProperty(const char* name, Val(TR::*getter)() const, void(TR::
  * @return
  */
 template<HashValueType Hash, typename T, typename Val>
-PyGetSetDef defineProperty(const char* name, Val(*getter)(T), void(*setter)(T, Val) = nullptr) NOEXCEPT
+PyGetSetDef defineProperty(const char* name, Val(*getter)(T), void(*setter)(T, Val) = nullptr) noexcept
 {
     using PropertyType = PropertyAlt<Hash, T, Val>;
 
@@ -403,7 +403,7 @@ struct MemberFunction
      *
      * @return
      */
-    static PyMethodDef to() NOEXCEPT
+    static PyMethodDef to() noexcept
     {
         return {name, (PyCFunction) call, METH_VARARGS, nullptr};
     }
@@ -418,7 +418,7 @@ struct MemberFunction
      * @return
      */
     template<int... I>
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) noexcept
     {
         assert(self);
         assert(args);
@@ -450,7 +450,7 @@ struct MemberFunction
      *
      * @return
      */
-    static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) NOEXCEPT
+    static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) noexcept
     {
         if (PyTuple_Size(args) != sizeof...(Args))
         {
@@ -497,7 +497,7 @@ struct MemberFunction<Hash, T, void, Args...>
      *
      * @return
      */
-    static PyMethodDef to() NOEXCEPT
+    static PyMethodDef to() noexcept
     {
         return {name, (PyCFunction) call, METH_VARARGS, nullptr};
     }
@@ -512,7 +512,7 @@ struct MemberFunction<Hash, T, void, Args...>
      * @return
      */
     template<int... I>
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) noexcept
     {
         assert(self);
         assert(args);
@@ -545,7 +545,7 @@ struct MemberFunction<Hash, T, void, Args...>
      *
      * @return
      */
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int>) noexcept
     {
         assert(self);
         assert(args);
@@ -574,7 +574,7 @@ struct MemberFunction<Hash, T, void, Args...>
      *
      * @return
      */
-    static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) NOEXCEPT
+    static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) noexcept
     {
         return call_inner(self, args, MakeIntegerSequence<int, 0, sizeof...(Args)>{});
     }
@@ -615,7 +615,7 @@ struct MemberFunctionConst
      *
      * @return
      */
-    static PyMethodDef to() NOEXCEPT
+    static PyMethodDef to() noexcept
     {
         return {name, (PyCFunction) call, METH_VARARGS, nullptr};
     }
@@ -630,7 +630,7 @@ struct MemberFunctionConst
      * @return
      */
     template<int... I>
-    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) NOEXCEPT
+    static PyObject* call_inner(ObjectWrapper<T>* self, PyObject* args, IntegerSequence<int, I...>) noexcept
     {
         assert(self);
         assert(args);
@@ -662,7 +662,7 @@ struct MemberFunctionConst
      *
      * @return
      */
-    static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) NOEXCEPT
+    static PyObject* call(ObjectWrapper<T>* self, PyObject* args, void* closure) noexcept
     {
         return call_inner(self, args, MakeIntegerSequence<int, 0, sizeof...(Args)>{});
     }
@@ -679,7 +679,7 @@ struct MemberFunctionConst
  * @return
  */
 template<HashValueType Hash, typename T, typename Ret, typename... Args, typename TR = typename std::remove_pointer<T>::type>
-PyMethodDef defineMemberFunction(const char* name, Ret(TR::*fn)(Args...)) NOEXCEPT
+PyMethodDef defineMemberFunction(const char* name, Ret(TR::*fn)(Args...)) noexcept
 {
     using MemberFunctionType = MemberFunction<Hash, T, Ret, Args...>;
 
@@ -700,7 +700,7 @@ PyMethodDef defineMemberFunction(const char* name, Ret(TR::*fn)(Args...)) NOEXCE
  * @return
  */
 template<HashValueType Hash, typename T, typename Ret, typename... Args, typename TR = typename std::remove_pointer<T>::type>
-PyMethodDef defineMemberFunction(const char* name, Ret(TR::*fn)(Args...) const) NOEXCEPT
+PyMethodDef defineMemberFunction(const char* name, Ret(TR::*fn)(Args...) const) noexcept
 {
     using MemberFunctionType = MemberFunctionConst<Hash, T, Ret, Args...>;
 
@@ -737,7 +737,7 @@ struct TypeDefinition
      *
      * @return
      */
-    static void init(const char* name, const char* base = nullptr) NOEXCEPT
+    static void init(const char* name, const char* base = nullptr) noexcept
     {
         definition = {
             PyObject_HEAD_INIT(NULL)
@@ -788,7 +788,7 @@ struct TypeDefinition
      *
      * @return
      */
-    static bool ready() NOEXCEPT
+    static bool ready() noexcept
     {
         // Initialize type
         return (PyType_Ready(&definition) >= 0);
@@ -800,7 +800,7 @@ struct TypeDefinition
      *
      * @return
      */
-    static bool valid() NOEXCEPT
+    static bool valid() noexcept
     {
         return definition.tp_name != nullptr;
     }
@@ -809,11 +809,14 @@ struct TypeDefinition
     /**
      * @brief Wrap value.
      *
+     * @tparam Source Source type.
+     *
      * @param value
      *
      * @return
      */
-    static Handle<PyObject> wrap(T value) NOEXCEPT
+    template<typename Input>
+    static Handle<PyObject> wrap(Input&& value) noexcept
     {
         auto type = findDynamic(typeid(ref(value)));
 
@@ -823,7 +826,8 @@ struct TypeDefinition
         // Create new object
         ObjectWrapper<T>* obj = PyObject_New(ObjectWrapper<T>, type);
 
-        obj->value = std::move(value);
+        // Store value
+        obj->value = std::forward<Input>(value);
 
         return Handle<PyObject>(reinterpret_cast<PyObject*>(obj));
     }
@@ -836,7 +840,8 @@ struct TypeDefinition
      *
      * @return
      */
-    static T unwrap(View<PyObject> value) NOEXCEPT
+    template<typename Output>
+    static Output unwrap(View<PyObject> value) noexcept
     {
         assert(PyObject_TypeCheck(value, &definition));
 

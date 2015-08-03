@@ -5,13 +5,14 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Units.hpp"
 #include "core/String.hpp"
 
@@ -229,10 +230,10 @@ struct ValueCast
      *
      * @return Value.
      */
-    static plain_type convert(View<PyObject> value) noexcept
+    static T convert(View<PyObject> value) noexcept
     {
         assert(definition::valid);
-        return definition::unwrap(value);
+        return definition::template unwrap<T>(value);
     }
 };
 
