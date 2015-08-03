@@ -379,6 +379,14 @@ public:
 
         // Update zoom
         ptr->setOptimalZoom();
+
+        if (ptr->m_paused)
+        {
+            ptr->draw();
+
+            // Swap buffers
+            glfwSwapBuffers(win);
+        }
     }
 #endif
 
@@ -428,6 +436,10 @@ public:
 #if ENABLE_PHYSICS_DEBUG
         case GLFW_KEY_D:
             ptr->swapPhysicsDebug();
+            ptr->draw();
+
+            // Swap buffers
+            glfwSwapBuffers(win);
             break;
 #endif
         }
