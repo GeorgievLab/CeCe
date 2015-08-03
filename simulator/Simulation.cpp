@@ -13,12 +13,12 @@
 
 // C++
 #include <algorithm>
-#include <tuple>
 #include <chrono>
 #include <fstream>
 
 // Simulator
 #include "core/Log.hpp"
+#include "core/Tuple.hpp"
 #include "core/Exception.hpp"
 #include "core/OutStream.hpp"
 #include "simulator/Simulator.hpp"
@@ -36,7 +36,7 @@ namespace {
 
 /* ************************************************************************ */
 
-std::tuple<String, String> splitModulePath(const String& path) NOEXCEPT
+Tuple<String, String> splitModulePath(const String& path) noexcept
 {
     auto pos = path.find(':');
 
@@ -89,7 +89,7 @@ void writeCsvLine(OutStream& os, const Container& container)
 
 /* ************************************************************************ */
 
-Simulation::Simulation() NOEXCEPT
+Simulation::Simulation() noexcept
 #if ENABLE_PHYSICS
     : m_world{b2Vec2{0.0f, 0.0f}}
 #endif
@@ -159,7 +159,7 @@ Object* Simulation::buildObject(const String& name, bool dynamic)
     std::tie(library, type) = splitModulePath(name);
 
     if (type.empty())
-        throw std::invalid_argument("Missing object type");
+        throw InvalidArgumentException("Missing object type");
 
     // Get API
     PluginApi* api = requirePlugin(library);
@@ -187,7 +187,7 @@ Program Simulation::buildProgram(const String& path)
     std::tie(library, type) = splitModulePath(path);
 
     if (type.empty())
-        throw std::invalid_argument("Missing program type");
+        throw InvalidArgumentException("Missing program type");
 
     // Get API
     PluginApi* api = requirePlugin(library);
@@ -231,9 +231,8 @@ bool Simulation::update(units::Duration dt)
         auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
 
         // Update simulations objects
-        for (std::size_t i = 0; i < getObjects().size(); ++i)
+        for (auto& obj : getObjects())
         {
-            auto& obj = getObjects()[i];
             assert(obj);
             obj->update(dt);
         }
@@ -242,6 +241,14 @@ bool Simulation::update(units::Duration dt)
     // Remove objects that are outside world.
     {
         auto _ = measure_time("sim.delete", TimeMeasurementIterationOutput(this));
+
+        // Delete queued objects
+        for (auto obj : m_objectsToDelete)
+        {
+            m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [obj](const ObjectContainer::value_type& rhs) {
+                return obj.get() == rhs.get();
+            }), m_objects.end());
+        }
 
         const auto hh = getWorldSize() * 0.5f;
 
@@ -365,7 +372,7 @@ ViewPtr<PluginApi> Simulation::requirePlugin(const String& name)
 
 /* ************************************************************************ */
 
-ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) NOEXCEPT
+ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) noexcept
 {
     try
     {

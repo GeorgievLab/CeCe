@@ -255,6 +255,13 @@ void Object::applyForce(const ForceVector& force, const PositionVector& pos) NOE
 
 /* ************************************************************************ */
 
+void Object::destroy()
+{
+    m_simulation.deleteObject(this);
+}
+
+/* ************************************************************************ */
+
 void Object::update(units::Duration dt)
 {
 #if !ENABLE_PHYSICS

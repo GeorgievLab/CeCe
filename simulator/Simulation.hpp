@@ -84,6 +84,9 @@ public:
     /// Object container type.
     using ObjectContainer = DynamicArray<UniquePtr<Object>>;
 
+    /// Object container type for object views.
+    using ObjectViewContainer = DynamicArray<ViewPtr<Object>>;
+
     /// Container type for programs.
     using ProgramContainer = Map<String, Program>;
 
@@ -655,6 +658,21 @@ public:
     Object* buildObject(const String& name, bool dynamic = true);
 
 
+    /**
+     * @brief Add request to object deletion.
+     *
+     * @param obj Pointer to object.
+     *
+     * @note Object is not directly deleted, it just queued to be deleted (in update()).
+     * This is important in case the object is deleted from within (some program want
+     * to delete object) and direct deletion will cause crash.
+     */
+    void deleteObject(ViewPtr<Object> obj)
+    {
+        m_objectsToDelete.push_back(std::move(obj));
+    }
+
+
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     /**
      * @brief If physics debug data should be shown.
@@ -843,6 +861,9 @@ private:
     /// Simulation objects.
     ObjectContainer m_objects;
 
+    /// Objects that should be deleted.
+    ObjectViewContainer m_objectsToDelete;
+
     /// A map of preddefined programs.
     ProgramContainer m_programs;
 
@@ -850,7 +871,7 @@ private:
     DataTableContainer m_dataTables;
 
 #if ENABLE_RENDER
-    /// Option if vizualization should be enable.d
+    /// Option if vizualization should be enabled.
     TriBool m_vizualize = Indeterminate;
 #endif
 

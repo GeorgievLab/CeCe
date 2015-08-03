@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="500um 500um" dt="50ms" iterations="10000">
+
+    <!-- Initialization -->
+    <init language="python">
+<![CDATA[
+import core
+def call(simulation):
+    for x in range(-200, 200, 10):
+        for y in range(-200, 200, 10):
+            obj = simulation.buildObject("cell.Yeast", False)
+            pos = obj.position
+            pos.x = float(x)
+            pos.y = float(y)
+            obj.position = pos
+            obj.useProgram("kill")
+]]>
+    </init>
+
+    <!-- Define killing program -->
+    <program name="kill" language="python">
+<![CDATA[
+import random
+def call(object, simulation, dt):
+    if (random.uniform(0, 1) < 0.01):
+        object.kill()
+]]>
+    </program>
+
+    <!-- Prints information every iteration -->
+    <module name="python:objectCount">
+<![CDATA[
+def update(dt, simulation):
+    print "Iteration:", simulation.iteration, "/", simulation.iterations
+    print "Objects:", simulation.objectsCount
+]]>
+    </module>
+</simulation>
+
+
+

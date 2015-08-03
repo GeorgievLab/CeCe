@@ -119,19 +119,21 @@ static PyObject* useProgram(ObjectWrapper<simulator::Object*>* self, PyObject* a
 
 static void python_wrapper_simulator_Object(PyObject* module)
 {
-    using type = simulator::Object*;
+    using type_base = simulator::Object;
+    using type = type_base*;
     using type_def = TypeDefinition<type>;
 
     static PyGetSetDef properties[] = {
-        defineProperty<1, type>("id", &simulator::Object::getId),
-        defineProperty<2, type>("position", &simulator::Object::getPosition, &simulator::Object::setPosition),
-        defineProperty<3, type>("rotation", &simulator::Object::getRotation, &simulator::Object::setRotation),
-        defineProperty<4, type>("velocity", &simulator::Object::getVelocity, &simulator::Object::setVelocity),
+        defineProperty<1, type>("id", &type_base::getId),
+        defineProperty<2, type>("position", &type_base::getPosition, &type_base::setPosition),
+        defineProperty<3, type>("rotation", &type_base::getRotation, &type_base::setRotation),
+        defineProperty<4, type>("velocity", &type_base::getVelocity, &type_base::setVelocity),
         {NULL}  /* Sentinel */
     };
 
     static PyMethodDef fns[] = {
         {"useProgram", (PyCFunction) useProgram, METH_VARARGS, NULL},
+        defineMemberFunction<1, type>("destroy", &type_base::destroy),
         {NULL}  /* Sentinel */
     };
 

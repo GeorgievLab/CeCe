@@ -491,6 +491,14 @@ public:
 
 
     /**
+     * @brief Delete object.
+     *
+     * Queue object to be deleted/destroyed.
+     */
+    void destroy();
+
+
+    /**
      * @brief Update object state.
      *
      * @param dt Simulation time step.

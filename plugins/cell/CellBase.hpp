@@ -196,6 +196,15 @@ public:
 
 
     /**
+     * @brief Kill current cell.
+     */
+    void kill()
+    {
+        destroy();
+    }
+
+
+    /**
      * @brief Configure object.
      *
      * @param config

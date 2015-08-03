@@ -42,6 +42,7 @@ void python_wrapper_cell_CellBase()
 
     static PyMethodDef fns[] = {
         defineMemberFunction<1, type>("moleculeCount", &CellBase::getMoleculeCount),
+        defineMemberFunction<2, type>("kill", &CellBase::kill),
         {NULL}  /* Sentinel */
     };
 
