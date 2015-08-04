@@ -32,6 +32,20 @@ void CellBase::configure(const simulator::Configuration& config,
 
 /* ************************************************************************ */
 
+void CellBase::update(units::Time dt)
+{
+    // Volume change
+    // TODO: FixMe
+    units::Volume dV = Zero;//getGrowthRate() * (getVolumeMax() - getVolume()) * dt;
+
+    // Update volume
+    setVolume(getVolume() + dV);
+
+    Object::update(dt);
+}
+
+/* ************************************************************************ */
+
 }
 }
 

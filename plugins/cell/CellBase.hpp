@@ -38,7 +38,7 @@ public:
     using MoleculeCountDifference = typename std::make_signed<MoleculeCount>::type;
 
     /// Cell growth rate type.
-    using GrowthRate = typename units::Delta<units::Volume, units::Time>::type;
+    using GrowthRate = units::Unit<units::List<>, units::List<units::Time>>;
 
 
 // Public Ctors & Dtors
@@ -70,6 +70,17 @@ public:
     units::Volume getVolume() const noexcept
     {
         return m_volume;
+    }
+
+
+    /**
+     * @brief Returns cell maximum volume.
+     *
+     * @return
+     */
+    units::Volume getVolumeMax() const noexcept
+    {
+        return m_volumeMax;
     }
 
 
@@ -121,6 +132,17 @@ public:
     void setVolume(units::Volume volume) noexcept
     {
         m_volume = volume;
+    }
+
+
+    /**
+     * @brief Set cell maximum volume.
+     *
+     * @param volume
+     */
+    void setVolumeMax(units::Volume volume) noexcept
+    {
+        m_volumeMax = volume;
     }
 
 
@@ -215,6 +237,14 @@ public:
 
 
     /**
+     * @brief Update cell state.
+     *
+     * @param dt Time step.
+     */
+    void update(units::Time dt) override;
+
+
+    /**
      * @brief Calculate radius for sphere shapes - from cell volume.
      *
      * @param volume Cell volume.
@@ -234,8 +264,11 @@ private:
     /// Cell volume.
     units::Volume m_volume = units::um3(100);
 
+    /// Cell maximum volume.
+    units::Volume m_volumeMax = units::um3(100);
+
     /// Cell growth rate.
-    GrowthRate m_growthRate = GrowthRate(1e-3);
+    GrowthRate m_growthRate = Zero;
 
     /// Map of molecules.
     Map<String, MoleculeCount> m_molecules;

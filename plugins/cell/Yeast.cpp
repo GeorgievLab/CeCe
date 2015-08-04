@@ -52,16 +52,20 @@ Yeast::~Yeast()
 
 void Yeast::update(units::Duration dt)
 {
+    const auto V0 = getVolume();
+    CellBase::update(dt);
+    const auto V1 = getVolume();
+
     std::mt19937 eng(g_rd());
     std::bernoulli_distribution dist(0.01f * dt.value());
-    std::uniform_real_distribution<float> coeff(0.1f, 4.f);
 
     // Volume change
-    auto volumeDiff = getGrowthRate() * dt * coeff(eng);
+    const auto volumeDiff = V1 - V0;
 
     if (hasBud())
     {
         m_bud->volume += volumeDiff;
+        setVolume(getVolume() - volumeDiff);
 
         if (m_bud->volume >= units::um3(35))
         {
@@ -72,17 +76,12 @@ void Yeast::update(units::Duration dt)
     {
         budCreate();
     }
-    else
-    {
-        setVolume(getVolume() + volumeDiff);
-    }
 
 #if ENABLE_PHYSICS
     // Update cell shape
     updateShape();
 #endif
 
-    CellBase::update(dt);
 }
 
 /* ************************************************************************ */
