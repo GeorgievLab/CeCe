@@ -48,6 +48,7 @@ if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
         add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     else ()
         message(WARNING "OpenCV not found, disabling video capture")
+        set(CONFIG_CLI_ENABLE_VIDEO_CAPTURE Off)
     endif ()
 endif ()
 
@@ -108,7 +109,7 @@ if (UNIX AND NOT APPLE)
     )
 endif ()
 
-if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE AND OpenCV_FOUND)
+if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     target_link_libraries(${PROJECT_NAME}
         ${OpenCV_LIBS}
     )
