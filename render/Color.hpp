@@ -397,6 +397,24 @@ public:
     }
 
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create gray color.
+     *
+     * @param value Gray value.
+     * @param alpha Optional alpha value.
+     *
+     * @return
+     */
+    static constexpr fromGray(ComponentType value, ComponentType alpha = 1) noexcept
+    {
+        return Color{value, value, value, alpha};
+    }
+
+
 // Private Data Members
 private:
 
