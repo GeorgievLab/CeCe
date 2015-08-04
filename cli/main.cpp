@@ -26,12 +26,17 @@
 #include <GLFW/glfw3.h>
 #endif
 
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+#include <opencv2/opencv.hpp>
+#endif
+
 // Simulator
 #include "core/String.hpp"
 #include "core/StringView.hpp"
 #include "core/Exception.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "core/FilePath.hpp"
+#include "core/VectorRange.hpp"
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
@@ -71,6 +76,11 @@ struct Parameters
     // Vizualization window in fullscreen mode.
     bool fullscreen = false;
 #endif
+
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+    /// Path to output video file.
+    FilePath videoFileName;
+#endif
 };
 
 /* ************************************************************************ */
@@ -98,7 +108,7 @@ void terminate_simulation(int param)
  *
  * @param name Application name.
  */
-[[noreturn]] static void help(const char* name) noexcept
+[[noreturn]] static void printHelp(const char* name) noexcept
 {
 #if _WIN32
     char fname[_MAX_FNAME];
@@ -131,15 +141,18 @@ void terminate_simulation(int param)
             "] "
         "<simulation-file>\n"
         "\n"
-        "    --plugins          Prints a list of available plugins.\n"
+        "    --plugins            Prints a list of available plugins.\n"
 #if ENABLE_RENDER
-        "    --vizualize        Enable vizualization (default).\n"
-        "    --fullscreen       Vizualization window in fullscreen mode.\n"
-        "    --novizualize      Disable vizualization.\n"
-        "    --width <width>    Vizualization window width (default 800; fullscreen by monitor).\n"
-        "    --height <height>  Vizualization window height (default 600; fullscreen by monitor).\n"
+        "    --vizualize          Enable vizualization (default).\n"
+        "    --fullscreen         Vizualization window in fullscreen mode.\n"
+        "    --novizualize        Disable vizualization.\n"
+        "    --width <width>      Vizualization window width (default 800; fullscreen by monitor).\n"
+        "    --height <height>    Vizualization window height (default 600; fullscreen by monitor).\n"
 #endif
-        "    <simulation-file>   Path to simulation file.\n"
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+        "    --capture <filename> Capture video of the simulation.\n"
+#endif
+        "    <simulation-file>    Path to simulation file.\n"
     << std::endl;
 
     exit(1);
@@ -150,7 +163,7 @@ void terminate_simulation(int param)
 /**
  * @brief Prints a list of available plugins.
  */
-[[noreturn]] static void plugins() noexcept
+[[noreturn]] static void printPlugins() noexcept
 {
     std::cout <<
         "Plugins:\n";
@@ -201,30 +214,43 @@ Parameters parseArguments(int argc, char** argv)
             }
             else if (arg == "--width")
             {
-                if (i + 1 < argc)
+                if (i + 1 >= argc)
                     throw InvalidArgumentException("missing width value");
 
                 params.windowWidth = atoi(argv[i + 1]);
+                ++i;
 
                 if (!params.windowWidth)
                     throw InvalidArgumentException("invalid width value");
             }
             else if (arg == "--height")
             {
-                if (i + 1 < argc)
+                if (i + 1 >= argc)
                     throw InvalidArgumentException("missing height value");
 
                 params.windowHeight = atoi(argv[i + 1]);
+                ++i;
 
                 if (!params.windowHeight)
                     throw InvalidArgumentException("invalid height value");
             }
             else
 #endif
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+            if (arg == "--capture")
+            {
+                if (i + 1 >= argc)
+                    throw InvalidArgumentException("missing filename value");
+
+                params.videoFileName = argv[i + 1];
+                ++i;
+            }
+            else
+#endif
             if (arg == "--plugins")
-                plugins();
+                printPlugins();
             else if (arg == "--help")
-                help(argv[0]);
+                printHelp(argv[0]);
         }
         else if (params.simulationFile.empty())
         {
@@ -359,6 +385,16 @@ public:
     void draw()
     {
         m_simulator.draw(m_windowWidth, m_windowHeight);
+
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+        // Store image
+        if (m_videoWriter.isOpened())
+        {
+            // Store image
+            //cv::imwrite("test.png", getFrame());
+            m_videoWriter << getFrame();
+        }
+#endif
     }
 #endif
 
@@ -496,6 +532,20 @@ private:
             m_windowHeight = params.windowHeight ? params.windowHeight : 600;
         }
 
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+        // Open video writer
+        m_videoWriter.open(
+            params.videoFileName.string(),
+            CV_FOURCC('M', 'P', 'E', 'G'),
+            60,
+            cv::Size(m_windowWidth, m_windowHeight)
+        );
+
+        // Disable window resizing
+        if (m_videoWriter.isOpened())
+            glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+#endif
+
         // Create a windowed mode window and its OpenGL context
         m_window = glfwCreateWindow(
             m_windowWidth,
@@ -621,6 +671,22 @@ private:
     }
 #endif
 
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+    /**
+     * @brief Store current OpenGL frame.
+     *
+     * @return
+     */
+    cv::Mat getFrame() const noexcept
+    {
+        cv::Mat img(m_windowHeight, m_windowWidth, CV_8UC3);
+        glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
+        glPixelStorei(GL_PACK_ROW_LENGTH, img.step / img.elemSize());
+        glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
+        cv::flip(img, img, 0);
+        return img;
+    }
+#endif
 
 // Private Data Members
 private:
@@ -648,7 +714,11 @@ private:
 
     /// If simulation is paused.
     bool m_paused = false;
+#endif
 
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+    /// Video writer.
+    cv::VideoWriter m_videoWriter;
 #endif
 };
 

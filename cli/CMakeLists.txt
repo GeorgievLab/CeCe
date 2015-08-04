@@ -11,6 +11,11 @@ project(cli CXX)
 
 # ######################################################################### #
 
+# Options
+option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
+
+# ######################################################################### #
+
 if (ENABLE_RENDER)
     find_package(GLFW REQUIRED)
     include_directories(${GLFW_INCLUDE_DIR})
@@ -18,6 +23,24 @@ endif ()
 
 # Set path to plugins directory
 add_definitions(-DDIR_PLUGINS="${PLUGINS_DIRECTORY}")
+
+if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+    if (NOT ENABLE_RENDER)
+        message(FATAL_ERROR "Video capture requires rendering support")
+    endif ()
+
+    # Add support for OpenCV video capturing
+    find_package(OpenCV)
+
+    # OpenCV not found
+    if (OpenCV_FOUND)
+        message(STATUS "Video capture support: OpenCV ${OpenCV_VERSION}")
+        include_directories(${OpenCV_INCLUDE_DIR})
+        add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+    else ()
+        message(WARNING "OpenCV not found, disabling video capture")
+    endif ()
+endif ()
 
 # ######################################################################### #
 
@@ -73,6 +96,12 @@ endif ()
 if (UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME}
         -pthread
+    )
+endif ()
+
+if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE AND OpenCV_FOUND)
+    target_link_libraries(${PROJECT_NAME}
+        ${OpenCV_LIBS}
     )
 endif ()
 
