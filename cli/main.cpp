@@ -55,6 +55,16 @@
 
 /* ************************************************************************ */
 
+#if !CONFIG_CLI_VIZUALIZE_WIDTH
+#define CONFIG_CLI_VIZUALIZE_WIDTH 800
+#endif
+
+#if !CONFIG_CLI_VIZUALIZE_HEIGHT
+#define CONFIG_CLI_VIZUALIZE_HEIGHT 600
+#endif
+
+/* ************************************************************************ */
+
 /**
  * @brief Application parameters.
  */
@@ -146,8 +156,10 @@ void terminate_simulation(int param)
         "    --vizualize          Enable vizualization (default).\n"
         "    --fullscreen         Vizualization window in fullscreen mode.\n"
         "    --novizualize        Disable vizualization.\n"
-        "    --width <width>      Vizualization window width (default 800; fullscreen by monitor).\n"
-        "    --height <height>    Vizualization window height (default 600; fullscreen by monitor).\n"
+        "    --width <width>      Vizualization window width "
+            "(default " XSTR(CONFIG_CLI_VIZUALIZE_WIDTH) "; fullscreen by monitor).\n"
+        "    --height <height>    Vizualization window height "
+            "(default " XSTR(CONFIG_CLI_VIZUALIZE_HEIGHT) "; fullscreen by monitor).\n"
 #endif
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
         "    --capture <filename> Capture video of the simulation.\n"
@@ -528,8 +540,12 @@ private:
         }
         else
         {
-            m_windowWidth  = params.windowWidth  ? params.windowWidth  : 800;
-            m_windowHeight = params.windowHeight ? params.windowHeight : 600;
+            m_windowWidth  = params.windowWidth
+                ? params.windowWidth
+                : CONFIG_CLI_VIZUALIZE_WIDTH;
+            m_windowHeight = params.windowHeight
+                ? params.windowHeight
+                : CONFIG_CLI_VIZUALIZE_HEIGHT;
         }
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE

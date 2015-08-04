@@ -12,17 +12,26 @@ project(cli CXX)
 # ######################################################################### #
 
 # Options
-option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
+if (ENABLE_RENDER)
+    option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
+    set(CONFIG_CLI_VIZUALIZE_WIDTH  800 CACHE STRING "Vizualization window width")
+    set(CONFIG_CLI_VIZUALIZE_HEIGHT 600 CACHE STRING "Vizualization window height")
+endif ()
 
 # ######################################################################### #
+
+# Set path to plugins directory
+add_definitions(-DDIR_PLUGINS="${PLUGINS_DIRECTORY}")
 
 if (ENABLE_RENDER)
     find_package(GLFW REQUIRED)
     include_directories(${GLFW_INCLUDE_DIR})
-endif ()
 
-# Set path to plugins directory
-add_definitions(-DDIR_PLUGINS="${PLUGINS_DIRECTORY}")
+    add_definitions(
+        -DCONFIG_CLI_VIZUALIZE_WIDTH=${CONFIG_CLI_VIZUALIZE_WIDTH}
+        -DCONFIG_CLI_VIZUALIZE_HEIGHT=${CONFIG_CLI_VIZUALIZE_HEIGHT}
+    )
+endif ()
 
 if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     if (NOT ENABLE_RENDER)
