@@ -31,6 +31,7 @@
 #endif
 
 // Simulator
+#include "core/Macro.hpp"
 #include "core/String.hpp"
 #include "core/StringView.hpp"
 #include "core/Exception.hpp"

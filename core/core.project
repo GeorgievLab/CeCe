@@ -79,6 +79,7 @@
     <File Name="Pair.hpp"/>
     <File Name="SharedPtr.hpp"/>
     <File Name="TriBool.hpp"/>
+    <File Name="Macro.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

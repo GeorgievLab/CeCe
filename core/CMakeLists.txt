@@ -29,6 +29,7 @@ endif ()
 
 # Create library
 add_library(${PROJECT_NAME} OBJECT
+    Macro.hpp
     compatibility.hpp
     constants.hpp
     DynamicArray.hpp
