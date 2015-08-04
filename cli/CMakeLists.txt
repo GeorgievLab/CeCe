@@ -11,13 +11,45 @@ project(cli CXX)
 
 # ######################################################################### #
 
+# Options
 if (ENABLE_RENDER)
-    find_package(GLFW REQUIRED)
-    include_directories(${GLFW_INCLUDE_DIR})
+    option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
+    set(CONFIG_CLI_VIZUALIZE_WIDTH  800 CACHE STRING "Vizualization window width")
+    set(CONFIG_CLI_VIZUALIZE_HEIGHT 600 CACHE STRING "Vizualization window height")
 endif ()
+
+# ######################################################################### #
 
 # Set path to plugins directory
 add_definitions(-DDIR_PLUGINS="${PLUGINS_DIRECTORY}")
+
+if (ENABLE_RENDER)
+    find_package(GLFW REQUIRED)
+    include_directories(${GLFW_INCLUDE_DIR})
+
+    add_definitions(
+        -DCONFIG_CLI_VIZUALIZE_WIDTH=${CONFIG_CLI_VIZUALIZE_WIDTH}
+        -DCONFIG_CLI_VIZUALIZE_HEIGHT=${CONFIG_CLI_VIZUALIZE_HEIGHT}
+    )
+endif ()
+
+if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+    if (NOT ENABLE_RENDER)
+        message(FATAL_ERROR "Video capture requires rendering support")
+    endif ()
+
+    # Add support for OpenCV video capturing
+    find_package(OpenCV)
+
+    # OpenCV not found
+    if (OpenCV_FOUND)
+        message(STATUS "Video capture support: OpenCV ${OpenCV_VERSION}")
+        include_directories(${OpenCV_INCLUDE_DIR})
+        add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+    else ()
+        message(WARNING "OpenCV not found, disabling video capture")
+    endif ()
+endif ()
 
 # ######################################################################### #
 
@@ -73,6 +105,12 @@ endif ()
 if (UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME}
         -pthread
+    )
+endif ()
+
+if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE AND OpenCV_FOUND)
+    target_link_libraries(${PROJECT_NAME}
+        ${OpenCV_LIBS}
     )
 endif ()
 
