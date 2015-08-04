@@ -409,7 +409,7 @@ public:
      *
      * @return
      */
-    static constexpr fromGray(ComponentType value, ComponentType alpha = 1) noexcept
+    static constexpr Color fromGray(ComponentType value, ComponentType alpha = 1) noexcept
     {
         return Color{value, value, value, alpha};
     }
