@@ -64,9 +64,15 @@ if (APPLE)
     set_source_files_properties(icons/${APP_NAME}.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 endif ()
 
+if (WIN32)
+    configure_file(version.rc version.rc @ONLY NEWLINE_STYLE WIN32)
+
+    set(SRCS ${SRCS} ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+endif ()
+
 # ######################################################################### #
 
-set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}-cli")
+set(MACOSX_BUNDLE_BUNDLE_NAME "${APP_NAME}-${PROJECT_NAME}")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}")
 set(MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION}")
 set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}")

@@ -188,4 +188,8 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="resources">
+    <File Name="run.sh"/>
+    <File Name="version.rc"/>
+  </VirtualDirectory>
 </CodeLite_Project>
