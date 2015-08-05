@@ -19,6 +19,8 @@
 #include "core/DynamicArray.hpp"
 #include "core/Exception.hpp"
 #include "core/VectorRange.hpp"
+#include "core/constants.hpp"
+#include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/ShapeToGrid.hpp"
@@ -74,6 +76,8 @@ void Module::init()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    auto _ = measure_time("streamlines", simulator::TimeMeasurementIterationOutput(simulation));
+
     // Physical size of one lattice cell
     const auto dl = simulation.getWorldSize() / m_lattice.getSize();
 
@@ -164,7 +168,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
             // Cell color
             // TODO: change 50 coefficient
-            color = render::Color::fromGray(50 * LatticeData::MAX_SPEED * velocity.getLength());
+            color = render::Color::fromGray(LatticeData::MAX_SPEED * velocity.getLength());
 
             // Cell velocity
             velocities[c] = velocity;
@@ -179,7 +183,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     }
 
     if (!m_drawableVector)
-        m_drawableVector.create(context, size, velocities.getData(), 0.01);
+        m_drawableVector.create(context, size, velocities.getData(), 0.1);
     else
         m_drawableVector->update(velocities.getData());
 
