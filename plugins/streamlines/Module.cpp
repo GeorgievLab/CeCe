@@ -178,7 +178,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     }
 
     if (!m_drawableVector)
-        m_drawableVector.create(context, size, velocities.getData());
+        m_drawableVector.create(context, size, velocities.getData(), 0.01);
     else
         m_drawableVector->update(velocities.getData());
 

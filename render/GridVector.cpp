@@ -32,8 +32,9 @@ namespace render {
 
 /* ************************************************************************ */
 
-GridVector::GridVector(Context& context, Size size, const Vector<float>* data)
+GridVector::GridVector(Context& context, Size size, const Vector<float>* data, float scale)
     : m_buffer(context)
+    , m_scale(scale)
 {
     resize(std::move(size), data);
 }
@@ -97,7 +98,7 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
     }
 
     // Maximum value
-    const float max = std::sqrt(max_squared) * 0.4;
+    const float max = std::sqrt(max_squared) * m_scale;
 
     // Draw grid vectors
     for (Size::value_type j = 0; j < height; ++j)

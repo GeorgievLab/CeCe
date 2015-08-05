@@ -1,4 +1,6 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
@@ -11,7 +13,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "render/Buffer.hpp"
 #include "render/GridBase.hpp"
@@ -29,7 +30,7 @@ class Context;
 /**
  * @brief OpenGL grid for vectors object.
  */
-class DLL_EXPORT GridVector : public GridBase
+class GridVector : public GridBase
 {
 
 // Public Ctors & Dtors
@@ -43,7 +44,7 @@ public:
      * @param size    Grid size.
      * @param data    Vector data.
      */
-    GridVector(Context& context, Size size, const Vector<float>* data);
+    GridVector(Context& context, Size size, const Vector<float>* data, float scale = 1);
 
 
     /**
@@ -54,8 +55,8 @@ public:
      * @param data    Vector data.
      */
     template<typename T>
-    GridVector(Context& context, Size size, const Vector<T>* data)
-        : GridVector(context, std::move(size), reinterpret_cast<const Vector<float>*>(data))
+    GridVector(Context& context, Size size, const Vector<T>* data, float scale = 1)
+        : GridVector(context, std::move(size), reinterpret_cast<const Vector<float>*>(data), scale)
     {
         static_assert(sizeof(T) == sizeof(float), "T must have same size as float");
     }
@@ -70,7 +71,7 @@ public:
      *
      * @param context
      */
-    void draw(Context& context) NOEXCEPT;
+    void draw(Context& context) noexcept;
 
 
     /**
@@ -87,7 +88,7 @@ public:
      *
      * @param data
      */
-    void update(const Vector<float>* data) NOEXCEPT;
+    void update(const Vector<float>* data) noexcept;
 
 
     /**
@@ -98,7 +99,7 @@ public:
      * @param data
      */
     template<typename T>
-    void update(const Vector<T>* data) NOEXCEPT
+    void update(const Vector<T>* data) noexcept
     {
         static_assert(sizeof(T) == sizeof(float), "T must have same size as float");
         update(reinterpret_cast<const Vector<float>*>(data));
@@ -111,6 +112,8 @@ private:
     /// Buffer object.
     Buffer m_buffer;
 
+    /// Vector scaling.
+    float m_scale = 1;
 };
 
 /* ************************************************************************ */
