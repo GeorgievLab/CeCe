@@ -236,26 +236,37 @@ protected:
      * @brief Update dynamic obstacle map from dynamic objects.
      *
      * @param simulation
-     * @param v_max
+     * @param vMax
      */
-    void updateDynamicObstacleMap(const simulator::Simulation& simulation, const VelocityVector& v_max);
+    void updateDynamicObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax);
 
 
     /**
      * @brief Apply streamlines to objects.
      *
      * @param simulation
-     * @param v_max
+     * @param vMax
      */
-    void applyToObjects(const simulator::Simulation& simulation, const VelocityVector& v_max);
+    void applyToObjects(const simulator::Simulation& simulation, const VelocityVector& vMax);
 
 
     /**
      * @brief Apply boundary conditions.
      *
      * @param simulation
+     * @param vMax
      */
-    void applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& v_max);
+    void applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& vMax);
+
+
+    /**
+     * @brief Calculate input flow profile.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    VelocityVector inflowProfile(Lattice::CoordinateType coord) const noexcept;
 
 
 // Private Data Members
