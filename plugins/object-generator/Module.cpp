@@ -86,7 +86,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         std::uniform_real_distribution<float> distX(desc.positionMin.getX().value(), desc.positionMax.getX().value());
         std::uniform_real_distribution<float> distY(desc.positionMin.getY().value(), desc.positionMax.getY().value());
         object->setPosition({units::Length(distX(gen)), units::Length(distY(gen))});
-        object->setVelocity({units::um_s(10), Zero});
+        object->setVelocity(desc.velocity);
 
         // Create programs
         for (const auto& name : desc.programs)
@@ -107,8 +107,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     const auto half = simulation.getWorldSize() * 0.5f;
-    const auto minPos = PositionVector{-half.getX(), -half.getY()};
-    const auto maxPos = PositionVector{-half.getX() * 0.95, half.getY()};
+    const auto minPos = PositionVector{       -half.getX(), 0.9 * -half.getY()};
+    const auto maxPos = PositionVector{0.95 * -half.getX(), 0.9 *  half.getY()};
 
     for (auto&& cfg : config.getConfigurations("object"))
     {
@@ -116,8 +116,9 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
         desc.className = cfg.get("class");
         desc.probability = cfg.get<units::Probability>("probability");
         desc.positionMax = maxPos;
-        desc.positionMin = cfg.get<PositionVector>("position-min", minPos);
-        desc.positionMax = cfg.get<PositionVector>("position-max", maxPos);
+        desc.positionMin = cfg.get("position-min", minPos);
+        desc.positionMax = cfg.get("position-max", maxPos);
+        desc.velocity = cfg.get("velocity", VelocityVector{units::Velocity(10), Zero});
         desc.programs = split(cfg.get("programs", String()), ' ');
 
         add(std::move(desc));

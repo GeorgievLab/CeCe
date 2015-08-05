@@ -43,6 +43,9 @@ struct ObjectDesc
     /// Maximum spawn position.
     PositionVector positionMax;
 
+    /// Object starting velocity.
+    VelocityVector velocity;
+
     /// Object programs.
     DynamicArray<String> programs;
 };
@@ -54,13 +57,6 @@ struct ObjectDesc
  */
 class Module : public simulator::Module
 {
-
-// Public Accessors
-public:
-
-
-
-
 
 // Public Mutators
 public:
