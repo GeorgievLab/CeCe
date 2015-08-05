@@ -101,6 +101,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const auto tau = (3.f * viscosity + 0.5f);
     const auto omega = 1.f / tau;
 
+#if THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
+#endif
+
     // Collide and propagate
     for (auto it = getIterations(); it--; )
     {
@@ -151,35 +156,42 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     // Temporary for velocities
     Grid<Vector<LatticeData::ValueType>> velocities(size);
 
-    // Update texture
-    for (auto&& c : range(size))
     {
-        // Cell alias
-        const auto& cell = m_lattice[c];
+#if THREAD_SAFE
+        // Lock access
+        MutexGuard guard(m_mutex);
+#endif
 
-        // Background color
-        render::Color color = {1, 1, 1, 1};
-        //render::Color color = {0, 0, 0, 1};
-
-        if (!cell.isObstacle())
+        // Update texture
+        for (auto&& c : range(size))
         {
-            // Calculate velocity vector
-            const auto velocity = cell.calcVelocity();
+            // Cell alias
+            const auto& cell = m_lattice[c];
 
-            // Cell color
-            // TODO: change 50 coefficient
-            color = render::Color::fromGray(LatticeData::MAX_SPEED * velocity.getLength());
+            // Background color
+            render::Color color = {1, 1, 1, 1};
+            //render::Color color = {0, 0, 0, 1};
 
-            // Cell velocity
-            velocities[c] = velocity;
+            if (!cell.isObstacle())
+            {
+                // Calculate velocity vector
+                const auto velocity = cell.calcVelocity();
+
+                // Cell color
+                // TODO: change 50 coefficient
+                color = render::Color::fromGray(LatticeData::MAX_SPEED * velocity.getLength());
+
+                // Cell velocity
+                velocities[c] = velocity;
+            }
+            else
+            {
+                velocities[c] = Zero;
+            }
+
+            // Set color
+            m_drawable->set(c, color);
         }
-        else
-        {
-            velocities[c] = Zero;
-        }
-
-        // Set color
-        m_drawable->set(c, color);
     }
 
     if (!m_drawableVector)

@@ -58,6 +58,11 @@ Yeast::~Yeast()
 
 void Yeast::update(units::Duration dt)
 {
+#if THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
+#endif
+
     const auto V0 = getVolume();
     CellBase::update(dt);
     const auto V1 = getVolume();
@@ -161,18 +166,32 @@ void Yeast::draw(render::Context& context)
     if (!m_renderObject)
         m_renderObject.create(context);
 
-    auto pos = getPosition();
-    auto radius = calcSphereRadius(getVolume());
-    const auto angle = getRotation() - (m_bud ? m_bud->rotation : units::Angle(0));
-    const auto budRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
+    PositionVector pos;
+    units::Length radius;
+    units::Angle angle;
+    units::Length budRadius;
+    MoleculeCount rfp;
+    MoleculeCount gfp;
+
+    {
+#if THREAD_SAFE
+        // Lock access
+        MutexGuard guard(m_mutex);
+#endif
+
+        pos = getPosition();
+        radius = calcSphereRadius(getVolume());
+        angle = getRotation() - (m_bud ? m_bud->rotation : units::Angle(0));
+        budRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
+
+        gfp = getMoleculeCount("GFP");
+        rfp = getMoleculeCount("RFP");
+    }
 
     // Yeast color
     // TODO: compute better
     const auto color = render::Color{
-        getMoleculeCount("RFP") / 1000.f,
-        getMoleculeCount("GFP") / 1000.f,
-        0,
-        1,
+        rfp / 1000.f, gfp / 1000.f, 0, 1,
     };
 
     // Transform

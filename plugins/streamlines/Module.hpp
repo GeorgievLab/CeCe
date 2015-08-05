@@ -32,6 +32,10 @@
 #include "Lattice.hpp"
 #include "ObstacleMap.hpp"
 
+#if THREAD_SAFE
+#include "core/Mutex.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace plugin {
@@ -280,6 +284,11 @@ private:
 #if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Render grid for velocities
     render::ObjectPtr<render::GridVector> m_drawableVector;
+#endif
+
+#if THREAD_SAFE
+    /// Access mutex.
+    mutable Mutex m_mutex;
 #endif
 
 };

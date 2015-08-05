@@ -15,6 +15,10 @@
 #include "DrawableCell.hpp"
 #endif
 
+#if THREAD_SAFE
+#include "core/Mutex.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace plugin {
@@ -95,6 +99,11 @@ private:
 
 #if ENABLE_RENDER
     render::ObjectSharedPtr<DrawableCell> m_renderObject;
+#endif
+
+#if THREAD_SAFE
+    /// Access mutex.
+    mutable Mutex m_mutex;
 #endif
 
 };

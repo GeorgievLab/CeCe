@@ -95,7 +95,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Precompute values
     const auto step = simulation.getWorldSize() / getGridSize();
 
-#ifdef THREAD_SAFE
+#if THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);
 #endif
@@ -167,7 +167,7 @@ void Module::updateDrawable() const
 {
     assert(getGridSize() == m_drawable->getSize());
 
-#ifdef THREAD_SAFE
+#if THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);
 #endif

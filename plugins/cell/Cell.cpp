@@ -37,6 +37,11 @@ Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) NOEX
 
 void Cell::update(units::Duration dt)
 {
+#if THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
+#endif
+
     CellBase::update(dt);
 
 #if ENABLE_PHYSICS
@@ -73,8 +78,18 @@ void Cell::draw(render::Context& context)
     if (!m_renderObject)
         m_renderObject.create(context);
 
-    const auto pos = getPosition();
-    const auto radius = calcSphereRadius(getVolume());
+    PositionVector pos;
+    units::Length radius;
+
+    {
+#if THREAD_SAFE
+        // Lock access
+        MutexGuard guard(m_mutex);
+#endif
+
+        pos = getPosition();
+        radius = calcSphereRadius(getVolume());
+    }
 
     // Transform
     context.matrixPush();

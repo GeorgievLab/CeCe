@@ -54,6 +54,13 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     const auto velocityScale = 1.f / velocityGrid.getSize();
     const auto scale = signalScale / velocityScale;
 
+#if THREAD_SAFE
+    // Lock access to both modules
+    // No deadlock posibility
+    MutexGuard guardDiffusion(m_diffusion->getMutex());
+    MutexGuard guardStreamlines(m_streamlines->getMutex());
+#endif
+
     // Foreach signals
     for (auto id : m_diffusion->getSignalIds())
     {

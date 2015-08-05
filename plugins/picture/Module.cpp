@@ -59,6 +59,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     if (pos != String::npos)
         pattern.replace(pos, 2, std::to_string(stepNumber));
 
+#if THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
+#endif
+
     // Write image
     save(pattern);
 
@@ -128,21 +133,28 @@ void Module::save(const FilePath& filename)
 
     static_assert(sizeof(png_byte) == sizeof(uint8_t), "Size mismatch");
 
-    // Allocate memory for one row (3 bytes per pixel - RGB)
-    DynamicArray<png_byte> row(3 * width * sizeof(png_byte));
-    auto beg = m_image.data.begin();
-
-    // Write image data
-    for (int y = 0; y < height; y++)
     {
-        // Copy data
-        std::copy(beg, std::next(beg, row.size()), row.begin());
+#if THREAD_SAFE
+        // Lock access
+        MutexGuard guard(m_mutex);
+#endif
 
-        // Write row
-        png_write_row(png.get(), row.data());
+        // Allocate memory for one row (3 bytes per pixel - RGB)
+        DynamicArray<png_byte> row(3 * width * sizeof(png_byte));
+        auto beg = m_image.data.begin();
 
-        // Next row
-        std::advance(beg, row.size());
+        // Write image data
+        for (int y = 0; y < height; y++)
+        {
+            // Copy data
+            std::copy(beg, std::next(beg, row.size()), row.begin());
+
+            // Write row
+            png_write_row(png.get(), row.data());
+
+            // Next row
+            std::advance(beg, row.size());
+        }
     }
 
     // End write

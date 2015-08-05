@@ -27,6 +27,10 @@
 // Module
 #include "CellBase.hpp"
 
+#if THREAD_SAFE
+#include "core/Mutex.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace plugin {
@@ -175,6 +179,12 @@ private:
     /// If shape must be updated.
     bool m_shapeForceUpdate = false;
 #endif
+
+#if THREAD_SAFE
+    /// Access mutex.
+    mutable Mutex m_mutex;
+#endif
+
 };
 
 /* ************************************************************************ */

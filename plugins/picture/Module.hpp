@@ -19,6 +19,10 @@
 #include "render/Context.hpp"
 #include "render/ImageData.hpp"
 
+#if THREAD_SAFE
+#include "core/Mutex.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace plugin {
@@ -138,6 +142,12 @@ private:
 
     /// Image data.
     render::ImageData m_image;
+
+#if THREAD_SAFE
+    /// Access mutex.
+    mutable Mutex m_mutex;
+#endif
+
 };
 
 /* ************************************************************************ */

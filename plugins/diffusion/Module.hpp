@@ -29,7 +29,7 @@
 #include "render/GridColorSmooth.hpp"
 #endif
 
-#ifdef THREAD_SAFE
+#if THREAD_SAFE
 #include "core/Mutex.hpp"
 #endif
 
@@ -429,7 +429,7 @@ public:
     }
 
 
-#ifdef THREAD_SAFE
+#if THREAD_SAFE
     /**
      * @brief Returns module mutex.
      *
@@ -749,7 +749,7 @@ private:
     render::ObjectPtr<render::GridColorSmooth> m_drawable;
 #endif
 
-#ifdef THREAD_SAFE
+#if THREAD_SAFE
     /// Access mutex.
     mutable Mutex m_mutex;
 #endif
