@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="160um 90um" dt="0.5ms" iterations="10000">
+<simulation world-size="160um 90um" dt="0.5ms" iterations="10000" background="black">
     <!-- Produce GFP -->
     <program name="make-gfp" language="stochastic-reactions-intercellular">
 <![CDATA[
