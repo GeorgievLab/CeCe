@@ -47,7 +47,7 @@ void LatticeData::collide(ValueType omega)
     else if (isDynamicObstacle())
     {
         // Velocity difference
-        const auto diff = calcVelocityNormalized() - m_dynamicObstacleVelocity;
+        const auto diff = calcVelocity() - m_dynamicObstacleVelocity;
 
         if (diff > Zero)
         {

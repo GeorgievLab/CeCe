@@ -13,7 +13,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "core/Units.hpp"
 #include "core/Grid.hpp"

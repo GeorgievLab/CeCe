@@ -160,10 +160,11 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         if (!cell.isObstacle())
         {
             // Calculate velocity vector
-            const auto velocity = cell.calcVelocityNormalized();
+            const auto velocity = cell.calcVelocity();
 
             // Cell color
-            color = {velocity.getLength(), velocity.getLength(), velocity.getLength(), 1};
+            // TODO: change 50 coefficient
+            color = render::Color::fromGray(50 * LatticeData::MAX_SPEED * velocity.getLength());
 
             // Cell velocity
             velocities[c] = velocity;
@@ -280,7 +281,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Store velocity for each coordinate
             mapShapeBorderToGrid(
                 [this, &velocity, &v_max, &count] (Coordinate&& coord) {
-                    velocity += m_lattice[coord].calcVelocityNormalized() * getCoefficient() * v_max;
+                    velocity += m_lattice[coord].calcVelocity() * getCoefficient() * v_max;
                     ++count;
                 },
                 [this, &velocity, &count, &computePoiseuille] (Coordinate&& coord) {
@@ -298,13 +299,17 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Difference between velocities
             const auto dv = velocity - obj->getVelocity();
 
+            // Cell radius
+            const auto radius = shape.getCircle().radius;
+
             // Set object velocity
             const auto force =
                 3 * constants::PI *
                 getKinematicViscosity() *
                 obj->getDensity() *
                 dv *
-                shape.getCircle().radius
+                radius /
+                units::LENGTH_COEFFICIENT
             ;
 
             // Apply force
@@ -363,12 +368,13 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
             m_lattice[out] = m_lattice[outPrev];
             //m_lattice[{grid_size.getWidth() - 1, y}].clear();
         }
-
+/*
         for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
         {
             m_lattice[{x, 0}] = m_lattice[{x, 1}];
             m_lattice[{x, size.getHeight() - 1}] = m_lattice[{x, size.getHeight() - 2}];
         }
+*/
     }
 /*
     if (velocity.getY() != 0)
