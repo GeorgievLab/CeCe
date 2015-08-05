@@ -58,6 +58,7 @@ option(ENABLE_BUILTIN_PHYSICS_DEBUG "Enable or disable physics engine debugging"
 option(BUILD_TESTS                  "Build simulator part tests (requires GTest)" Off)
 option(BUILD_TOOLS                  "Build support tools" Off)
 
+option(DEV_TEST_EXAMPLES            "Enable examples testing" Off)
 option(DEV_PLUGINS                  "Enable special mode for developers that helps develop plugins (doesn't require installation)" Off)
 
 # Real type
@@ -299,6 +300,11 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples"
 
 # PostInstall
 add_subdirectory(PostInstall)
+
+# ######################################################################### #
+
+# Add testing by examples
+include(ExampleTests)
 
 # ######################################################################### #
 
