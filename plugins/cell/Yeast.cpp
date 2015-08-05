@@ -1,4 +1,11 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -32,7 +39,6 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) NO
     : CellBase(simulation, type)
 {
 	setVolume(units::um3(37));
-    // TODO: set density
     setDensity(units::kg(1200) / units::m3(1));
 
     // Max 2 shapes

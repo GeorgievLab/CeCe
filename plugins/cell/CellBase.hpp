@@ -1,3 +1,12 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
 
 #pragma once
 
@@ -38,7 +47,7 @@ public:
     using MoleculeCountDifference = typename std::make_signed<MoleculeCount>::type;
 
     /// Cell growth rate type.
-    using GrowthRate = units::Unit<units::List<>, units::List<units::Time>>;
+    using GrowthRate = units::Unit<units::List<>, units::List<units::BaseTime>>;
 
 
 // Public Ctors & Dtors
@@ -92,6 +101,19 @@ public:
     GrowthRate getGrowthRate() const noexcept
     {
         return m_growthRate;
+    }
+
+
+    /**
+     * @brief Returns cell radius.
+     *
+     * @note Only for cells with circle shape.
+     *
+     * @return
+     */
+    units::Length getRadius() const
+    {
+        return getShapes()[0].getCircle().radius;
     }
 
 

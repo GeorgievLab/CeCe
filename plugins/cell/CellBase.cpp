@@ -1,4 +1,11 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -22,6 +29,9 @@ void CellBase::configure(const simulator::Configuration& config,
     // Initial volume
     setVolume(config.get("volume", getVolume()));
 
+    // Maximum volume
+    setVolumeMax(config.get("volume-max", getVolumeMax()));
+
     // Growth rate
     setGrowthRate(config.get("growth-rate", getGrowthRate()));
 
@@ -35,8 +45,7 @@ void CellBase::configure(const simulator::Configuration& config,
 void CellBase::update(units::Time dt)
 {
     // Volume change
-    // TODO: FixMe
-    units::Volume dV = Zero;//getGrowthRate() * (getVolumeMax() - getVolume()) * dt;
+    const units::Volume dV = getGrowthRate() * (getVolumeMax() - getVolume()) * dt;
 
     // Update volume
     setVolume(getVolume() + dV);
