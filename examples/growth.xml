@@ -2,5 +2,5 @@
 <!-- Simulation definition -->
 <simulation world-size="50um 50um" dt="60s" iterations="10000">
     <!-- Specify yeast cell growth rate -->
-    <object class="cell.Yeast" growth-rate="0.003um3/s" />
+    <object class="cell.Yeast" growth-rate="0.00001/s" volume="10um3" volume-max="50um3" />
 </simulation>
