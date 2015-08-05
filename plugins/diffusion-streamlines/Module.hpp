@@ -63,17 +63,6 @@ public:
     void update(units::Duration dt, simulator::Simulation& simulation) override;
 
 
-#if ENABLE_RENDER
-    /**
-     * @brief Render module.
-     *
-     * @param context
-     * @param simulation
-     */
-    void draw(render::Context& context, const simulator::Simulation& simulation) override;
-#endif
-
-
 // Private Data Members
 private:
 
