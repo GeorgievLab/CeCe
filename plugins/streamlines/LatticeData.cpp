@@ -69,7 +69,7 @@ void LatticeData::collide(ValueType omega)
             // No obstacle
 
             // Calculate
-            const auto feq = calcEquilibrium(calcVelocityNormalized(), calcRho());
+            const auto feq = calcEquilibrium(calcVelocity(), calcRho());
 
             // Update values
             for (IndexType alpha = 0; alpha < SIZE; ++alpha)
@@ -81,7 +81,7 @@ void LatticeData::collide(ValueType omega)
     else
     {
         // Calculate
-        const auto feq = calcEquilibrium(calcVelocityNormalized(), calcRho());
+        const auto feq = calcEquilibrium(calcVelocity(), calcRho());
 
         // Update values
         for (IndexType alpha = 0; alpha < SIZE; ++alpha)
