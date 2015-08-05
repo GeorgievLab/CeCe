@@ -111,9 +111,9 @@ void GridVector::update(const Vector<float>* data) NOEXCEPT
                 start.getX() + i * step.getX() + step.getX() / 2.f,
                 start.getY() + j * step.getY() + step.getY() / 2.f
             };
-            const float red = 5 * fabs(vec.getX());
-            const float green = 5 * fabs(vec.getY());
-            const float blue = 0;//5 * vec.getLength();
+            const float red = 5 * vec.getLength();
+            const float green = 5 * vec.getLength();
+            const float blue = 5 * vec.getLength();
 
             const Vector<float> dest = pos + vec * step;
 
