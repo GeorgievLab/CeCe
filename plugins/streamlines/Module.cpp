@@ -76,20 +76,24 @@ void Module::init()
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    assert(m_lattice.getSize() != Zero);
+
     auto _ = measure_time("streamlines", simulator::TimeMeasurementIterationOutput(simulation));
 
     // Physical size of one lattice cell
     const auto dl = simulation.getWorldSize() / m_lattice.getSize();
 
+    // Modified time step
+    const auto dtInner = getCoefficient() * dt;
+
     // Smooth time step
-    const auto dtSmooth = dt / getIterations();
+    const auto dtSmooth = dtInner / getIterations();
 
     // Calculate maximum flow velocity
-    const VelocityVector vMax = LatticeData::MAX_SPEED * dl / dtSmooth / getCoefficient();
+    const VelocityVector vMax = LatticeData::MAX_SPEED * dl / dtSmooth;
 
     // Viscosity in LB units
     const auto viscosity =
-        getCoefficient() *
         (dtSmooth / (dl.getX() * dl.getX())) *
         getKinematicViscosity()
     ;
@@ -126,8 +130,14 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Number of inner iterations
     setIterations(config.get("iterations", getIterations()));
 
+    if (getIterations() == 0)
+        throw InvalidArgumentException("Number of inner iterations cannot be zero");
+
     // Convert coefficient
     setCoefficient(config.get("coefficient", getCoefficient()));
+
+    if (getCoefficient() == 0)
+        throw InvalidArgumentException("Coefficient cannot be zero");
 
     // Inflow velocity
     setVelocityInflow(config.get("velocity-inflow", getVelocityInflow()));
@@ -135,8 +145,14 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Viscosity
     setKinematicViscosity(config.get("kinematic-viscosity", getKinematicViscosity()));
 
+    if (getKinematicViscosity() == Zero)
+        throw InvalidArgumentException("Kinematic viscosity cannot be zero");
+
     // Grid size
     m_lattice.setSize(config.get<Vector<Lattice::SizeType>>("grid"));
+
+    if (m_lattice.getSize() == Zero)
+        throw InvalidArgumentException("Lattice size cannot be zero");
 
     // Initialize lattice
     init();
@@ -169,8 +185,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             const auto& cell = m_lattice[c];
 
             // Background color
-            render::Color color = {1, 1, 1, 1};
-            //render::Color color = {0, 0, 0, 1};
+            render::Color color = render::colors::RED;
 
             if (!cell.isObstacle())
             {
@@ -195,7 +210,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     }
 
     if (!m_drawableVector)
-        m_drawableVector.create(context, size, velocities.getData(), 0.01 * getCoefficient());
+        m_drawableVector.create(context, size, velocities.getData(), 0.05 * getCoefficient());
     else
         m_drawableVector->update(velocities.getData());
 
@@ -205,6 +220,26 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     m_drawable->draw(context);
     m_drawableVector->draw(context);
     context.matrixPop();
+
+    // Update simulations objects
+    for (auto& obj : simulation.getObjects())
+    {
+        // Ignore static objects
+        if (obj->getType() == simulator::Object::Type::Static)
+            continue;
+
+        context.drawLine(
+            obj->getPosition() / units::Length(1),
+            10000 * obj->getForce() / units::Force(1),
+            render::colors::YELLOW
+        );
+
+        context.drawLine(
+            obj->getPosition() / units::Length(1),
+            0.03 * obj->getVelocity() / units::Velocity(1),
+            render::colors::BLUE
+        );
+    }
 #endif
 }
 #endif
@@ -222,6 +257,10 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
     // Foreach all cells
     for (auto& obj : simulation.getObjects())
     {
+        // Ignore static objects
+        if (obj->getType() != simulator::Object::Type::Static)
+            continue;
+
         // Get object position
         const auto pos = obj->getPosition() - start;
 
@@ -287,8 +326,11 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Store velocity for each coordinate
             mapShapeBorderToGrid(
                 [this, &velocity, &vMax, &count] (Coordinate&& coord) {
-                    velocity += m_lattice[coord].calcVelocity() * vMax;
-                    ++count;
+                    if (!m_lattice[coord].isObstacle())
+                    {
+                        velocity += m_lattice[coord].calcVelocity() * vMax;
+                        ++count;
+                    }
                 },
                 [this, &velocity, &count] (Coordinate&& coord) {
                     velocity += inflowProfile(coord);
@@ -305,6 +347,8 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Difference between velocities
             const auto dv = velocity - obj->getVelocity();
 
+            //obj->setVelocity(velocity / getCoefficient());
+
             // Cell radius
             const auto radius = shape.getCircle().radius;
 
@@ -319,7 +363,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             ;
 
             // Apply force
-            obj->applyForce(force, obj->getPosition() + shape.getCircle().center);
+            obj->applyForce(100 * force, obj->getPosition() + shape.getCircle().center);
         }
     }
 }
@@ -367,13 +411,13 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
             m_lattice[out] = m_lattice[outPrev];
             //m_lattice[{grid_size.getWidth() - 1, y}].clear();
         }
-/*
+
         for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
         {
             m_lattice[{x, 0}] = m_lattice[{x, 1}];
             m_lattice[{x, size.getHeight() - 1}] = m_lattice[{x, size.getHeight() - 2}];
         }
-*/
+
     }
 /*
     if (velocity.getY() != 0)
