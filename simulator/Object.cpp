@@ -248,6 +248,7 @@ void Object::applyForce(const ForceVector& force, const PositionVector& pos) NOE
 #if ENABLE_PHYSICS
     assert(m_body);
     m_body->ApplyForce({force.getX().value(), force.getY().value()}, {pos.getX().value(), pos.getY().value()}, true);
+    m_force += force;
 #else
     m_velocity = force;
 #endif
