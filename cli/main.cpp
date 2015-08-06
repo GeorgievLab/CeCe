@@ -650,7 +650,8 @@ private:
 
         m_physicsDebugger.SetFlags(
             render::PhysicsDebugger::e_shapeBit |
-            render::PhysicsDebugger::e_centerOfMassBit
+            render::PhysicsDebugger::e_centerOfMassBit |
+            render::PhysicsDebugger::e_jointBit
         );
         simulation->getWorld().SetDebugDraw(&m_physicsDebugger);
 #endif
