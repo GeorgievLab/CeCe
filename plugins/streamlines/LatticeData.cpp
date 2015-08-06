@@ -28,7 +28,7 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 void LatticeData::collide(ValueType omega)
 {
-    assert(omega < 1);
+    //assert(omega < 1);
 
     if (isStaticObstacle())
     {

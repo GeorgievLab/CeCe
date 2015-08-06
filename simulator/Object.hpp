@@ -457,7 +457,7 @@ public:
      * @return Reference.
      */
     template<typename T, typename Message = const char*>
-    T& castThrow(Message msg = "Invalid cast") noexcept
+    T& castThrow(Message msg = "Invalid cast")
     {
         auto ptr = cast<T>();
 
@@ -479,7 +479,7 @@ public:
      * @return Constant reference.
      */
     template<typename T, typename Message = const char*>
-    const T& castThrow(Message msg = "Invalid cast") const noexcept
+    const T& castThrow(Message msg = "Invalid cast") const
     {
         auto ptr = cast<T>();
 

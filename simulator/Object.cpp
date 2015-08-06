@@ -114,6 +114,7 @@ Object::Object(Simulation& simulation, Type type) NOEXCEPT
 #if ENABLE_PHYSICS
     b2BodyDef bodyDef;
     bodyDef.type = convert(type);
+    bodyDef.userData = this;
 
     // Create body
     m_body = getSimulation().getWorld().CreateBody(&bodyDef);

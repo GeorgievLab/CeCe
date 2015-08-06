@@ -24,7 +24,11 @@
 // Simulator
 #include "core/DynamicArray.hpp"
 #include "core/String.hpp"
+#include "core/Real.hpp"
+#include "core/Tuple.hpp"
 #include "simulator/Module.hpp"
+#include "../cell/CellBase.hpp"
+
 
 // Physics
 #include "Box2D/Box2D.h"
@@ -102,8 +106,33 @@ public:
 private:
 
     /// List of bodies to join
-    // TODO: use Vector<b2Body*, 2>.
-    DynamicArray<std::pair<b2Body*, b2Body*>> m_toJoin;
+    // TODO: use Vector<b2Body*, 3>.
+    DynamicArray<Tuple<b2Body*, b2Body*, RealType>> m_toJoin;
+    units::Duration step;
+
+// Public Data Members
+public:
+    struct Bond
+    {
+        RealType aConst;
+        RealType dConst;
+        String ligand;
+        String receptor;
+        RealType receptorSize;
+        Bond(RealType association, RealType disassiociation, String ligand_name, String receptor_name, RealType size) noexcept
+        : aConst(association), dConst(disassiociation), ligand(ligand_name), receptor(receptor_name), receptorSize(size)
+        {
+            // Nothing to do
+        }
+    };
+    DynamicArray<Bond> m_bonds;
+};
+
+struct jointUserData
+{
+    char guard = '@';
+    Module* module;
+    RealType Kd;
 };
 
 /* ************************************************************************ */
