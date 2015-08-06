@@ -13,6 +13,17 @@
 #include <cassert>
 #include <cstdlib>
 
+#ifdef _WIN32
+#include <malloc.h>
+#endif
+
+/* ************************************************************************ */
+
+#if defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
+#define _aligned_malloc __mingw_aligned_malloc
+#define _aligned_free  __mingw_aligned_free
+#endif
+
 /* ************************************************************************ */
 
 #ifndef _MSC_VER
