@@ -363,7 +363,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             ;
 
             // Apply force
-            obj->applyForce(100 * force, obj->getPosition() + shape.getCircle().center);
+            obj->applyForce(force / getCoefficient(), obj->getPosition() + shape.getCircle().center);
         }
     }
 }
