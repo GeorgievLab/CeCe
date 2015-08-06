@@ -15,6 +15,7 @@
 // Simulator
 #include "core/Units.hpp"
 #include "core/String.hpp"
+#include "core/StringView.hpp"
 
 // Module
 #include "Python.hpp"
@@ -368,6 +369,55 @@ struct ValueCast<String>
     static Handle<PyObject> convert(const String& value) noexcept
     {
         return PyString_FromString(value.c_str());
+    }
+
+
+    /**
+     * @brief Convert python object into string value.
+     *
+     * @param value Python object view.
+     *
+     * @return String value.
+     */
+    static String convert(View<PyObject> value) noexcept
+    {
+        assert(PyString_Check(value));
+        return PyString_AsString(value);
+    }
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief String type convertor.
+ */
+template<>
+struct ValueCast<StringView>
+{
+
+    /**
+     * @brief Check if python object can be converted into string type.
+     *
+     * @param value Python object.
+     *
+     * @return If object can be converted.
+     */
+    static bool check(View<PyObject> value) noexcept
+    {
+        return (value != nullptr) && PyString_Check(value);
+    }
+
+
+    /**
+     * @brief Convert value into python object.
+     *
+     * @param value Value to convert.
+     *
+     * @return New python object.
+     */
+    static Handle<PyObject> convert(const StringView& value) noexcept
+    {
+        return PyString_FromStringAndSize(value.getData(), value.getLength());
     }
 
 
