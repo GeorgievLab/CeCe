@@ -11,12 +11,9 @@
 // Windows
 #include <windows.h>
 
-// Simulator
-#include "simulator/version.hpp"
-
 VS_VERSION_INFO     VERSIONINFO
-FILEVERSION         @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@,2
-PRODUCTVERSION      @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@,2
+FILEVERSION         @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@,0
+PRODUCTVERSION      @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@,0
 FILEFLAGSMASK       VS_FFI_FILEFLAGSMASK
 #ifdef _DEBUG
 FILEFLAGS           VS_FF_DEBUG|VS_FF_PRIVATEBUILD|VS_FF_PRERELEASE
@@ -35,12 +32,12 @@ FILESUBTYPE         VFT2_UNKNOWN
             VALUE "Comments",         "Simulator\0"
             VALUE "CompanyName",      "Georgiev Lab\0"
             VALUE "FileDescription",  "simulator\0"
-            VALUE "FileVersion",      VERSION "\0"
+            VALUE "FileVersion",      "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@\0"
             VALUE "InternalName",     "simulator\0"
             VALUE "LegalCopyright",   "none\0"
-            VALUE "OriginalFilename", "@CMAKE_PROJECT_NAME@-@PROJECT_NAME.exe\0"
-            VALUE "ProductName",      "@CMAKE_PROJECT_NAME@-@PROJECT_NAME\0"
-            VALUE "ProductVersion",   VERSION "\0"
+            VALUE "OriginalFilename", "@CMAKE_PROJECT_NAME@-@PROJECT_NAME@.exe\0"
+            VALUE "ProductName",      "@CMAKE_PROJECT_NAME@-@PROJECT_NAME@\0"
+            VALUE "ProductVersion",   "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@\0"
         }
     }
     BLOCK "VarFileInfo"
