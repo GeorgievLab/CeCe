@@ -100,8 +100,9 @@ struct ValueCastScalar<long, T, Seq...>
             return PyInt_AsLong(value);
         else if (PyFloat_Check(value))
             return PyFloat_AsDouble(value);
-        else
-            assert(false && "Object is not int or float");
+
+        assert(false && "Object is not int or float");
+        return T{};
     }
 };
 
@@ -162,8 +163,9 @@ struct ValueCastScalar<double, T, Seq...>
             return PyInt_AsLong(value);
         else if (PyLong_Check(value))
             return PyLong_AsLong(value);
-        else
-            assert(false && "Object is not int or float");
+
+        assert(false && "Object is not int or float");
+        return T{};
     }
 };
 
