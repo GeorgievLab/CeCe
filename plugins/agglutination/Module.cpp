@@ -5,8 +5,8 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* Author: Vaclav Pelisek <pelisekv@ntis.zcu.cz>                            */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
