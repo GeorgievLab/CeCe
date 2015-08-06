@@ -350,7 +350,7 @@ protected:
 
         auto end = tokenizerRange.begin() - 1;
         auto rate = parseExpression(makeRange(begin, end), m_parameters);
-        next();
+        //next();
         return rate;
     }
 
