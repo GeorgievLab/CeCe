@@ -107,8 +107,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     const auto half = simulation.getWorldSize() * 0.5f;
-    const auto minPos = PositionVector{       -half.getX(), 0.9 * -half.getY()};
-    const auto maxPos = PositionVector{0.95 * -half.getX(), 0.9 *  half.getY()};
+    const auto minPos = PositionVector{       -half.getX(), 0.8 * -half.getY()};
+    const auto maxPos = PositionVector{0.95 * -half.getX(), 0.8 *  half.getY()};
 
     for (auto&& cfg : config.getConfigurations("object"))
     {
