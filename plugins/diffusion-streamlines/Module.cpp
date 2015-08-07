@@ -43,8 +43,15 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
     // Physical size of one lattice cell
     const auto dl = simulation.getWorldSize() / velocityGrid.getSize();
+
+    // Modified time step
+    const auto dtInner = m_streamlines->getCoefficient() * dt;
+
+    // Smooth time step
+    const auto dtSmooth = dtInner / m_streamlines->getIterations();
+
     // Calculate maximum flow velocity
-    const VelocityVector v_max = plugin::streamlines::LatticeData::MAX_SPEED * dl / dt;
+    const VelocityVector v_max = plugin::streamlines::LatticeData::MAX_SPEED * dl / dtSmooth;
 
     // Precompute values
     const auto step = simulation.getWorldSize() / m_diffusion->getGridSize();

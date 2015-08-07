@@ -5,23 +5,23 @@
     <program name="make-gfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         null < 0.005, 10 > GFP;
-        #GFP > 0.5 > env;
+        GFP > 0.5 > env;
 ]]>
     </program>
 
     <!-- Produce RFP -->
     <program name="make-rfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null < 0.005, 10 > RFP;
-        #RFP > 0.5 > env;
+        null < 0.005, 1 > RFP;
+        RFP > 0.5 > env;
 ]]>
     </program>
 
     <!-- Produce YFP -->
     <program name="make-yfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null < 0.005, 10 > YFP;
-        #YFP > 0.5 > env;
+        null < 0.005, 1 > YFP;
+        YFP > 0.5 > env;
 ]]>
     </program>
 
@@ -30,7 +30,7 @@
 <![CDATA[
         env > 0.4 > GFP;
         env > 0.4 > RFP;
-        GFP + RFP > 5 > BFP;
+        GFP + RFP > 1 > BFP;
         BFP > 0.5 > env;
 ]]>
     </program>
