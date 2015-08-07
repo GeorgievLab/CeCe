@@ -87,6 +87,30 @@ public:
     }
 
 
+    /**
+     * @brief Constructor.
+     *
+     * @param values
+     */
+    explicit LatticeData(const StaticArray<ValueType, SIZE>& values) noexcept
+        : m_values(values)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Copy constructor.
+     */
+    LatticeData(const LatticeData&) = default;
+
+
+    /**
+     * @brief Move constructor.
+     */
+    LatticeData(LatticeData&&) = default;
+
+
 // Public Operators
 public:
 
@@ -115,6 +139,32 @@ public:
     {
         return m_values[pos];
     }
+
+
+    /**
+     * @brief Assignment operator.
+     *
+     * @param values
+     *
+     * @return *this.
+     */
+    LatticeData& operator=(const StaticArray<ValueType, SIZE>& values) noexcept
+    {
+        m_values = values;
+        return *this;
+    }
+
+
+    /**
+     * @brief Copy assignment operator.
+     */
+    LatticeData& operator=(const LatticeData&) = default;
+
+
+    /**
+     * @brief Move assignment operator.
+     */
+    LatticeData& operator=(LatticeData&&) = default;
 
 
 // Public Accessors
@@ -167,6 +217,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns values.
+     *
+     * @return
+     */
+    const StaticArray<ValueType, SIZE>& getValues() const noexcept
+    {
+        return m_values;
+    }
+
+
 // Public Mutators
 public:
 
@@ -193,6 +254,20 @@ public:
         m_dynamicObstacle = flag;
         m_dynamicObstacleVelocity = std::move(u);
     }
+
+
+    /**
+     * @brief Set as inlet.
+     *
+     * @param v Inlet velocity.
+     */
+    void inlet(const Vector<ValueType>& v) noexcept;
+
+
+    /**
+     * @brief Set as outlet.
+     */
+    void outlet() noexcept;
 
 
 // Public Operations
@@ -312,7 +387,7 @@ public:
     bool m_dynamicObstacle = false;
 
     // Velocity of dynamic obstacle.
-    Vector<ValueType> m_dynamicObstacleVelocity;
+    Vector<ValueType> m_dynamicObstacleVelocity = Zero;
 };
 
 /* ************************************************************************ */

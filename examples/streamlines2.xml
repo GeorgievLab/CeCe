@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="200um 100um" dt="1ms" iterations="1000">
+    <!-- Generate yeast cells -->
+    <module name="object-generator">
+        <object class="cell.Yeast" probability="0.01" velocity="50um/s 0" aprograms="streamlines.store-object-state" />
+    </module>
+
+    <!-- Define streamlines -->
+    <module name="streamlines-image" grid="200 100"
+            coefficient="0.01" iterations="3"
+            velocity-inflow="1000um/s"
+            kinematic-viscosity="0.658mm2/s"
+            image="obstacle2.png" />
+    <amodule name="streamlines-image.store-state" />
+
+    <!-- Center cell -->
+    <object class="cell.Cell" type="static" position="-30um 0" volume="2000um3" />
+</simulation>
+

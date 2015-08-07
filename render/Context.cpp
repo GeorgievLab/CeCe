@@ -530,6 +530,27 @@ void Context::draw(PrimitiveType type, unsigned int count, unsigned int offset)
 
 /* ************************************************************************ */
 
+void Context::drawLine(Vector<float> pos, Vector<float> size, const Color& color)
+{
+    if (size == Zero)
+        return;
+
+    const auto pos2 = pos + size;
+
+    glPushAttrib(GL_CURRENT_BIT);
+
+    glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+
+    glBegin(GL_LINES);
+    glVertex2f(pos.getX(), pos.getY());
+    glVertex2f(pos2.getX(), pos2.getY());
+    glEnd();
+
+    glPopAttrib();
+}
+
+/* ************************************************************************ */
+
 Object* Context::addObject(Object* obj)
 {
     m_objects.emplace_back(obj);

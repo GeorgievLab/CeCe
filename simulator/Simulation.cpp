@@ -219,6 +219,10 @@ bool Simulation::update(units::Duration dt)
     m_iteration++;
     m_totalTime += dt;
 
+    // Clear all stored forces
+    for (auto& obj : getObjects())
+        obj->setForce(Zero);
+
     // Update modules
     {
         auto _ = measure_time("sim.modules", TimeMeasurementIterationOutput(this));

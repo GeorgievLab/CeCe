@@ -359,6 +359,16 @@ public:
 
 
     /**
+     * @brief Draw single line.
+     *
+     * @param pos   Line position.
+     * @param size  Line size.
+     * @param color Line color.
+     */
+    void drawLine(Vector<float> pos, Vector<float> size, const Color& color = colors::WHITE);
+
+
+    /**
      * @brief Add rendering object.
      *
      * @param obj

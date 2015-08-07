@@ -242,6 +242,17 @@ public:
     VelocityVector getVelocity() const noexcept;
 
 
+    /**
+     * @brief Returns current force.
+     *
+     * @return
+     */
+    const ForceVector& getForce() const noexcept
+    {
+        return m_force;
+    }
+
+
 #if ENABLE_PHYSICS
     /**
      * @brief Returns physical body.
@@ -352,6 +363,17 @@ public:
      * @param vel
      */
     void setVelocity(VelocityVector vel) noexcept;
+
+
+    /**
+     * @brief Set current force.
+     *
+     * @param force
+     */
+    void setForce(ForceVector force) noexcept
+    {
+        m_force = std::move(force);
+    }
 
 
     /**
@@ -566,6 +588,8 @@ private:
     VelocityVector m_velocity;
 #endif
 
+    /// Box2D doesn't have accessor to force.
+    ForceVector m_force;
 };
 
 /* ************************************************************************ */
