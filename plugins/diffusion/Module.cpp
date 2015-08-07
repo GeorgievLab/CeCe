@@ -18,11 +18,12 @@
 #include <functional>
 
 // Simulator
-#include "core/StaticMatrix.hpp"
 #include "core/constants.hpp"
+#include "core/StaticMatrix.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"
+#include "simulator/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
 
@@ -62,6 +63,8 @@ void Module::setGridSize(SizeType size)
         m_gridsFront[id].resize(m_gridSize + 2 * OFFSET);
         m_gridsBack[id].resize(m_gridSize + 2 * OFFSET);
     }
+
+    m_obstacles.resize(m_gridSize, false);
 }
 
 /* ************************************************************************ */
@@ -95,6 +98,9 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Precompute values
     const auto step = simulation.getWorldSize() / getGridSize();
 
+    // Update obstacle map from scene
+    updateObstacles(simulation);
+
 #if THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);
@@ -120,13 +126,12 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
         auto id = registerSignal(
             signal.get("name"),
             signal.get<DiffusionRate>("diffusion-rate"),
-            signal.get<DegradationRate>("degradation-rate", DegradationRate{})
+            signal.get<DegradationRate>("degradation-rate", Zero)
         );
 
 #if ENABLE_RENDER
         // Set signal color
-        // FIXME: limited number of colors
-        setSignalColor(id, signal.get("color", g_colors[id]));
+        setSignalColor(id, signal.get("color", g_colors[id % g_colors.size()]));
 #endif
     }
 
@@ -218,6 +223,8 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         return A * std::exp(-q[i][j] / (4.f * getDiffusionRate(id) * dt));
     }).normalized();
 
+    // TODO: implement obstacle computation
+
     // Forech grid without borders
     for (auto&& c : range(getGridSize()))
     {
@@ -231,7 +238,7 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         // Degrade signal
         signal *= 1 - getDegradationRate(id) * dt;
 
-        // Diffuse signal
+        // Diffuse signal to grid cells around
         for (auto&& ab : range(Coordinate{2 * OFFSET + 1}))
         {
             getSignalBack(id, c + ab - OFFSET) += signal * M[ab];
@@ -240,6 +247,52 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
 
     // Swap grids
     swap(id);
+}
+
+/* ************************************************************************ */
+
+void Module::updateObstacles(simulator::Simulation& simulation)
+{
+    // Clear previous flag
+    std::fill(m_obstacles.begin(), m_obstacles.end(), false);
+
+    const PositionVector start = simulation.getWorldSize() * -0.5f;
+    const auto step = simulation.getWorldSize() / getGridSize();
+
+    // Foreach all cells
+    for (auto& obj : simulation.getObjects())
+    {
+        // Ignore non-static objects
+        if (obj->getType() != simulator::Object::Type::Static)
+            continue;
+
+        // Get object position
+        const auto pos = obj->getPosition() - start;
+
+        // Check if position is in range
+        if (!pos.inRange(Zero, simulation.getWorldSize()))
+            continue;
+
+        // Get grid position
+        const auto coord = Coordinate(pos / step);
+
+        // In this case duplicate coordinates doesn't harm and calling
+        // operation multiple times on same coordinate is faster than
+        // sorting and erasing non-unique coordinates.
+
+        // Map shapes to grid
+        for (const auto& shape : obj->getShapes())
+        {
+            mapShapeToGrid(
+                [this] (Coordinate&& coord) {
+                    assert(m_obstacles.inRange(coord));
+                    m_obstacles[coord] = true;
+                },
+                [] (Coordinate&& coord) {},
+                shape, step, coord, obj->getRotation(), getGridSize()
+            );
+        }
+    }
 }
 
 /* ************************************************************************ */

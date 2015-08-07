@@ -716,6 +716,14 @@ protected:
     void updateSignal(const PositionVector& step, units::Time dt, SignalId id);
 
 
+    /**
+     * @brief Update obstacle map.
+     *
+     * @param simulation
+     */
+    void updateObstacles(simulator::Simulation& simulation);
+
+
 // Private Data Members
 private:
 
@@ -737,6 +745,9 @@ private:
 
     /// Back signal grids.
     DynamicArray<GridType> m_gridsBack;
+
+    /// Grid with obstacle data. Cannot be bool, because of std::vector<bool>.
+    Grid<int> m_obstacles;
 
 #if ENABLE_RENDER
     /// Background color.
