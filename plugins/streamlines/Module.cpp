@@ -408,7 +408,7 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
                 m_lattice[in].init(inflowProfile(in) / vMax);
 
             // Output
-            m_lattice[out] = m_lattice[outPrev];
+            m_lattice[out] = m_lattice[outPrev].getValues();
             //m_lattice[{grid_size.getWidth() - 1, y}].clear();
         }
 
