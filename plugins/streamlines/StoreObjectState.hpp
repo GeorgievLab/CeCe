@@ -6,6 +6,7 @@
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
 /* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* Author: Hynek Kasl <hkasl@students.zcu.cz>                               */
 /* ************************************************************************ */
 
 #pragma once
