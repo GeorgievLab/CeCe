@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="50um 50um" dt="60s" iterations="10000">
+<simulation world-size="300um 300um" dt="60s" iterations="10000">
     <!-- Specify yeast cell growth rate -->
-    <object class="cell.Yeast" growth-rate="0.00001/s" volume="10um3" volume-max="50um3" />
+    <object class="cell.Yeast" growth-rate="0.0001/s" volume="10um3" position="100um 0" volume-max="80um3" />
+
+    <object class="cell.Yeast" growth-rate="0.0001/s" volume="10um3" position="-100um 0" volume-max="80um3" />
+
+    <!-- Prints information about simulation -->
+    <module name="python:printSimulation">
+<![CDATA[
+def update(dt, simulation):
+    print "Iteration:", simulation.iteration, "/", simulation.iterations
+    print "Object count:", simulation.objectsCount
+    print "Size: [", simulation.worldSize.width, ",", simulation.worldSize.height, "]"
+]]>
+    </module>
 </simulation>
