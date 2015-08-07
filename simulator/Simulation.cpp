@@ -235,8 +235,10 @@ bool Simulation::update(units::Duration dt)
         auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
 
         // Update simulations objects
-        for (auto& obj : getObjects())
+        //for (auto& obj : getObjects())
+        for (size_t i = 0; i < m_objects.size(); ++i)
         {
+            auto& obj = m_objects[i];
             assert(obj);
             obj->update(dt);
         }
