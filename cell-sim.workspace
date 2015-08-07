@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="cell-sim" Database="">
-  <Project Name="gui" Path="gui/gui.project" Active="Yes"/>
+<CodeLite_Workspace Name="cell-sim" Database="" SWTLW="No">
+  <Project Name="gui" Path="gui/gui.project" Active="No"/>
   <Project Name="core" Path="core/core.project" Active="No"/>
   <Project Name="simulator" Path="simulator/simulator.project"/>
   <Project Name="render" Path="render/render.project"/>
-  <Project Name="cli" Path="cli/cli.project" Active="No"/>
+  <Project Name="cli" Path="cli/cli.project" Active="Yes"/>
   <Project Name="diffusion" Path="plugins/diffusion/diffusion.project" Active="No"/>
   <Project Name="cell" Path="plugins/cell/cell.project" Active="No"/>
-  <Environment>
-    <![CDATA[]]>
-  </Environment>
   <Project Name="picture" Path="plugins/picture/picture.project" Active="No"/>
   <Project Name="tool_shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <Project Name="python" Path="plugins/python/python.project" Active="No"/>
@@ -77,4 +74,7 @@
       <Project Name="plugin_streamlines-image" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
 </CodeLite_Workspace>
