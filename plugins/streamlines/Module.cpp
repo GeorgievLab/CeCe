@@ -386,13 +386,13 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
             Lattice::CoordinateType out;
             Lattice::CoordinateType outPrev;
 
-            if (velocity.getX().value() < 0)
+            if (velocity.getX() < Zero)
             {
                 in = {size.getWidth() - 1, y};
                 out = {0, y};
                 outPrev = {1, y};
             }
-            else if (velocity.getX().value() > 0)
+            else if (velocity.getX() > Zero)
             {
                 in = {0, y};
                 out = {size.getWidth() - 1, y};

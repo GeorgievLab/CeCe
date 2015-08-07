@@ -1398,6 +1398,48 @@ inline constexpr bool operator<(
 /* ************************************************************************ */
 
 /**
+ * @brief Less operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Zero.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator<(
+    Unit<List<Nominators...>, List<Denominators...>> lhs, Zero_t
+) noexcept
+{
+    return lhs.value() < 0;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Zero.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator<(
+    Zero_t, Unit<List<Nominators...>, List<Denominators...>> rhs
+) noexcept
+{
+    return 0 < rhs.value();
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Less equals operator.
  *
  * @tparam Nominators   A list of nominators.
@@ -1415,6 +1457,48 @@ inline constexpr bool operator<=(
 ) noexcept
 {
     return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less equals operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Zero.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator<=(
+    Unit<List<Nominators...>, List<Denominators...>> lhs, Zero_t
+) noexcept
+{
+    return !operator>(lhs, Zero);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Less equals operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Zero.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator<=(
+    Zero_t, Unit<List<Nominators...>, List<Denominators...>> rhs
+) noexcept
+{
+    return !operator>(Zero, rhs);
 }
 
 /* ************************************************************************ */
@@ -1442,6 +1526,48 @@ inline constexpr bool operator>(
 /* ************************************************************************ */
 
 /**
+ * @brief Greater operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Zero.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator>(
+    Unit<List<Nominators...>, List<Denominators...>> lhs, Zero_t
+) noexcept
+{
+    return operator<(Zero, lhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Greater operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Zero.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator>(
+    Zero_t, Unit<List<Nominators...>, List<Denominators...>> rhs
+) noexcept
+{
+    return operator<(rhs, Zero);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Greater equals operator.
  *
  * @tparam Nominators   A list of nominators.
@@ -1459,6 +1585,48 @@ inline constexpr bool operator>=(
 ) noexcept
 {
     return !operator<(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Greater equals operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Left operand.
+ * @param rhs Zero.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator>=(
+    Unit<List<Nominators...>, List<Denominators...>> lhs, Zero_t
+) noexcept
+{
+    return !operator<(lhs, Zero);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Greater equals operator.
+ *
+ * @tparam Nominators   A list of nominators.
+ * @tparam Denominators A list of denominators.
+ *
+ * @param lhs Zero.
+ * @param rhs Right operand.
+ *
+ * @return Result value.
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr bool operator>=(
+    Zero_t, Unit<List<Nominators...>, List<Denominators...>> rhs
+) noexcept
+{
+    return !operator<(Zero, rhs);
 }
 
 /* ************************************************************************ */
