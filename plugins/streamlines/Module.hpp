@@ -260,13 +260,13 @@ protected:
 
 
     /**
-     * @brief Calculate input flow profile.
+     * @brief Calculate inlet velocity profile.
      *
      * @param coord
      *
      * @return
      */
-    VelocityVector inflowProfile(Lattice::CoordinateType coord) const noexcept;
+    VelocityVector inletVelocityProfile(Lattice::CoordinateType coord) const noexcept;
 
 
 // Private Data Members

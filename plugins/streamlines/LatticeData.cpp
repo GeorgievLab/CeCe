@@ -26,6 +26,84 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 /* ************************************************************************ */
 
+void LatticeData::inlet(const Vector<ValueType>& v) noexcept
+{
+    // rho(:,in,col) = 1 ./ (1-ux(:,in,col)) .* ( ...
+    // sum(fIn([1,3,5],in,col)) + 2*sum(fIn([4,7,8],in,col)) );
+    const ValueType rho =
+        RealType(1)
+        / (RealType(1) - v.getX())
+        * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7}));
+
+    // Initialize
+    init(v, rho);
+
+    // Get velocity
+    const auto vel = calcVelocity();
+
+    // Microscopic boundary conditions: inlet (Zou/He BC)
+    // fIn(2,in,col) = fIn(4,in,col) + 2/3*rho(:,in,col).*ux(:,in,col);
+    m_values[1] = m_values[3]
+        + RealType(2) / RealType(3) * rho * vel.getX()
+    ;
+
+    // fIn(6,in,col) = fIn(8,in,col) + 1/2*(fIn(5,in,col)-fIn(3,in,col)) ...
+    //                               + 1/2*rho(:,in,col).*uy(:,in,col) ...
+    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
+    m_values[5] = m_values[7]
+        + RealType(1) / RealType(2) * (m_values[4] - m_values[2])
+        + RealType(1) / RealType(2) * rho * vel.getY()
+        + RealType(1) / RealType(6) * rho * vel.getX()
+    ;
+
+    // fIn(9,in,col) = fIn(7,in,col) + 1/2*(fIn(3,in,col)-fIn(5,in,col)) ...
+    //                               - 1/2*rho(:,in,col).*uy(:,in,col) ...
+    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
+    m_values[8] = m_values[6]
+        + RealType(1) / RealType(2) * (m_values[2] - m_values[4])
+        - RealType(1) / RealType(2) * rho * vel.getY()
+        + RealType(1) / RealType(6) * rho * vel.getX()
+    ;
+}
+
+/* ************************************************************************ */
+
+void LatticeData::outlet() noexcept
+{
+    const ValueType rho = 1;
+    const auto vel = Vector<ValueType>(
+        RealType(-1) + RealType(1) / rho * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7})),
+        0
+    );
+
+    // Init
+    init(vel, ValueType(1));
+
+
+    // fIn(4,out,col) = fIn(2,out,col) - 2/3*rho(:,out,col).*ux(:,out,col);
+    m_values[3] = m_values[1] - RealType(2) / RealType(3) * rho * vel.getX();
+
+    // fIn(8,out,col) = fIn(6,out,col) + 1/2*(fIn(3,out,col)-fIn(5,out,col)) ...
+    //                                 - 1/2*rho(:,out,col).*uy(:,out,col) ...
+    //                                 - 1/6*rho(:,out,col).*ux(:,out,col);
+    m_values[7] = m_values[5]
+        + RealType(1) / RealType(2) * (m_values[2] - m_values[4])
+        - RealType(1) / RealType(2) * rho * vel.getY()
+        + RealType(1) / RealType(6) * rho * vel.getX()
+    ;
+
+    // fIn(7,out,col) = fIn(9,out,col) + 1/2*(fIn(5,out,col)-fIn(3,out,col)) ...
+    //                                 + 1/2*rho(:,out,col).*uy(:,out,col) ...
+    //                                 - 1/6*rho(:,out,col).*ux(:,out,col);
+    m_values[6] = m_values[8]
+        + RealType(1) / RealType(2) * (m_values[4] - m_values[2])
+        + RealType(1) / RealType(2) * rho * vel.getY()
+        - RealType(1) / RealType(6) * rho * vel.getX()
+    ;
+}
+
+/* ************************************************************************ */
+
 void LatticeData::collide(ValueType omega)
 {
     assert(omega < 1);

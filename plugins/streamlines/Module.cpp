@@ -193,8 +193,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
                 const auto velocity = cell.calcVelocity();
 
                 // Cell color
-                // TODO: change 50 coefficient
-                color = render::Color::fromGray(LatticeData::MAX_SPEED * velocity.getLength());
+                color = render::Color::fromGray(50 * LatticeData::MAX_SPEED * velocity.getLength());
 
                 // Cell velocity
                 velocities[c] = velocity;
@@ -258,8 +257,8 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
     for (auto& obj : simulation.getObjects())
     {
         // Ignore static objects
-        if (obj->getType() != simulator::Object::Type::Static)
-            continue;
+        //if (obj->getType() != simulator::Object::Type::Static)
+        //    continue;
 
         // Get object position
         const auto pos = obj->getPosition() - start;
@@ -333,7 +332,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                     }
                 },
                 [this, &velocity, &count] (Coordinate&& coord) {
-                    velocity += inflowProfile(coord);
+                    velocity += inletVelocityProfile(coord);
                     ++count;
                 },
                 shape, step, coord, m_lattice.getSize(), {}, 2
@@ -405,58 +404,27 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
 
             // Input
             if (!m_lattice[in].isStaticObstacle())
-                m_lattice[in].init(inflowProfile(in) / vMax);
+                m_lattice[in].inlet(inletVelocityProfile(in) / vMax);
 
-            // Output
-            m_lattice[out] = m_lattice[outPrev].getValues();
-            //m_lattice[{grid_size.getWidth() - 1, y}].clear();
+            // Outlet
+            if (!m_lattice[out].isStaticObstacle())
+                m_lattice[out].outlet();
         }
-
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-        {
-            m_lattice[{x, 0}] = m_lattice[{x, 1}];
-            m_lattice[{x, size.getHeight() - 1}] = m_lattice[{x, size.getHeight() - 2}];
-        }
-
-    }
 /*
-    if (velocity.getY() != 0)
-    {
         for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
         {
-            Lattice::CoordinateType::value_type in;
-            Lattice::CoordinateType::value_type out;
-            Lattice::CoordinateType::value_type outPrev;
-
-            if (velocity.getY() < 0)
-            {
-                in = size.getHeight() - 2;
-                out = 1;
-                outPrev = 2;
-            }
-            else if (velocity.getY() > 0)
-            {
-                in = 1;
-                out = size.getHeight() - 2;
-                outPrev = out - 1;
-            }
-
-            // Input
-            m_lattice[{x, in}].init(velocity);
-
-            // Output
-            m_lattice[{x, out}] = m_lattice[{x, outPrev}];
-            //m_lattice[{grid_size.getWidth() - 1, y}].clear();
+            m_lattice[{x, 0}] = m_lattice[{x, 1}].getValues();
+            m_lattice[{x, size.getHeight() - 1}] = m_lattice[{x, size.getHeight() - 2}].getValues();
         }
-    }
 */
+    }
 }
 
 /* ************************************************************************ */
 
-VelocityVector Module::inflowProfile(Lattice::CoordinateType coord) const noexcept
+VelocityVector Module::inletVelocityProfile(Lattice::CoordinateType coord) const noexcept
 {
-    return {getVelocityInflow().getX(), Zero};
+    //return {getVelocityInflow().getX(), Zero};
 
     // maximum velocity of the Poiseuille inflow
     const auto size = m_lattice.getSize();

@@ -256,6 +256,20 @@ public:
     }
 
 
+    /**
+     * @brief Set as inlet.
+     *
+     * @param v Inlet velocity.
+     */
+    void inlet(const Vector<ValueType>& v) noexcept;
+
+
+    /**
+     * @brief Set as outlet.
+     */
+    void outlet() noexcept;
+
+
 // Public Operations
 public:
 
