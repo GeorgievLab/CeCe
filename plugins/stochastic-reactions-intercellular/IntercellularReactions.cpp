@@ -33,14 +33,15 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
     PropensityType local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
-        if (m_rules[index][i].mustnt_have)
+        unsigned int number = cell.getMoleculeCount(m_ids[i])
+        if (m_rules[index][i].mustnt_have && number > 0)
             return 0;
         if (m_rules[index][i].requirement != 0u)
         {
-            unsigned int number = cell.getMoleculeCount(m_ids[i]);
             if (m_rules[index][i].requirement > number)
                 return 0;
             local *= number;
+            continue;
         }
         if (m_rules[index][i].env_requirement != 0u)
         {
@@ -48,11 +49,11 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
             auto id = diffusion->getSignalId(m_ids[i]);
             if (id == plugin::diffusion::Module::INVALID_SIGNAL_ID)
                 throw InvalidArgumentException("Unknown signal molecule '" + m_ids[i] + "' in diffusion");
-
             unsigned int number = getAmountOfMolecules(*diffusion, coords, id);
             if (m_rules[index][i].env_requirement > number)
                 return 0;
             local *= number;
+            continue;
         }
     }
     return local;

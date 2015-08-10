@@ -23,13 +23,14 @@ IntracellularReactions::PropensityType IntracellularReactions::computePropensity
     auto local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
-        if (m_rules[index][i].mustnt_have)
+        unsigned int number = cell.getMoleculeCount(m_ids[i]);
+        if (m_rules[index][i].mustnt_have && number > 0)
             return 0;
         if (m_rules[index][i].requirement == 0u)
             continue;
-        if (m_rules[index][i].requirement > cell.getMoleculeCount(m_ids[i]))
+        if (m_rules[index][i].requirement > number)
             return 0;
-        local *= cell.getMoleculeCount(m_ids[i]);
+        local *= number;
     }
     return local;
 }

@@ -19,6 +19,7 @@
 #include "core/Log.hpp"
 #include "core/Tokenizer.hpp"
 #include "core/Parser.hpp"
+#include "core/Tuple.hpp"
 
 /* ************************************************************************ */
 
@@ -313,9 +314,10 @@ public:
             reactions.extend(ids_plus, ids_minus, rate);
             if (reversible)
                 reactions.extend(ids_minus, ids_plus, rateR);
+            auto no_cond = reactions.m_rules[reactions.m_rules.size() - 1];
             for (unsigned int i = 0; i < conditions.size(); i++)
             {
-                reactions.addCondition(conditions[i].first, conditions[i].second);
+                reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), reversible, std::get<2>(conditions[i]), no_cond);
             }
         }
         catch (const Exception& ex)
@@ -341,37 +343,43 @@ protected:
     using ParentType::token;
     using ParentType::find;
 
-    DynamicArray<std::pair<String, unsigned int>> parseConditions()
+    DynamicArray<Tuple<String, unsigned int, bool>> parseConditions()
     {
-        if (is(TokenCode::If)
+        DynamicArray<Tuple<String, unsigned int, bool>> array;
+        if (is(TokenCode::If))
         {
-            DynamicArray<StaticArray<String, unsigned int>> array;
-            unsigned int counter = 0;
-
+            bool clone = false;
             do
             {
                 do
                 {
                     next();
+                    String name;
+                    unsigned int requirement = 1;
                     if (is(TokenCode::Not))
                     {
-
+                        requirement = 0;
+                        next();
                     }
-                    if (is(TokenCode::Identifier)
-
+                    if (is(TokenCode::Identifier))
+                    {
+                        name = token().value;
+                        next();
+                    }
                     else
                         throw MissingIdentifierException{};
-                    next();
+                    array.push_back(std::make_tuple(name, requirement, clone));
+                    clone = false;
                 }
                 while (is(TokenCode::And));
-                ++counter;
+                clone = true;
             }
             while (is(TokenCode::Or));
 
             requireNext(TokenCode::Colon);
             return array;
         }
-        return DynamicArray<std::pair<String, unsigned int>>();
+        return array;
     }
 
 /* ************************************************************************ */

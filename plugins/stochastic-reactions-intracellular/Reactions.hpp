@@ -13,6 +13,7 @@
 
 // C++
 #include <random>
+#include <algorithm>
 
 #include "core/String.hpp"
 #include "core/StringView.hpp"
@@ -38,7 +39,6 @@ using RateType = RealType;
 template<typename T>
 class Reactions
 {
-
 // Public Types
 public:
 
@@ -60,7 +60,11 @@ protected:
     DynamicArray<PropensityType> propensities;
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Execute reactions each step.
+     *
+     * @return
+     */
     template<typename Executor, typename Refresher>
     void executeReactions(units::Time step, Executor execute, Refresher refresh)
     {
@@ -99,7 +103,13 @@ protected:
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Casts object to cell type.
+     *
+     * @param Object.
+     *
+     * @return Cell.
+     */
     static plugin::cell::CellBase& getCell(simulator::Object& object)
     {
         // initialize cell
@@ -109,7 +119,13 @@ protected:
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Returns index of molecule's column in reactions matrix.
+     *
+     * @param Name of molucule.
+     *
+     * @return Index of column.
+     */
     int getIndexOfMoleculeColumn(const String& id)
     {
         auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
@@ -126,7 +142,13 @@ protected:
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Extend matrix using rules for intracellular rections.
+     *
+     * @param arrays of molucule's IDs, reaction rate
+     *
+     * @return
+     */
     void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
     {
         DynamicArray<T> array;
@@ -160,13 +182,36 @@ protected:
         m_rules.push_back(array);
     }
 
+/* ************************************************************************ */
+    /**
+     * @brief Edit reactions rule matrix to suit given reaction conditions.
+     *
+     * @param molecule name, requirement for execution, reversible flag and index
+     *
+     * @return
+     */
+    void addCondition(String& name, unsigned int requirement, bool reversible, bool clone, ReqProd& no_cond)
+    {
+        unsigned int column_index = getIndexOfMoleculeColumn(name);
+        if (clone)
+        {
+            m_rules.push_back(no_cond);
+            m_rates.push_back(m_rates[m_rates.size()]);
+        }
+        if (requirement == 0)
+            m_rules[m_rules.size()][column_index].musnt_have = true;
+        else
+            m_rules[m_rules.size()][column_index].requirement = std::max(m_rules[m_rules.size()][column_index].requirement, 1);
+    }
+
+/* ************************************************************************ */
 
 // Public Accessors:
 public:
 
-
+/* ************************************************************************ */
     /**
-     * @brief Returns number different molecules in reactions.
+     * @brief Returns number of different molecules in reactions.
      *
      * @return
      */
@@ -175,7 +220,7 @@ public:
         return m_ids.size();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Check if given molecule is used in reactions.
      *
@@ -188,7 +233,7 @@ public:
         return std::find(m_ids.begin(), m_ids.end(), name) != m_ids.end();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns molecule name.
      *
@@ -201,7 +246,7 @@ public:
         return m_ids[id];
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns number of reactions.
      *
@@ -212,7 +257,7 @@ public:
         return m_rules.size();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns number of rates.
      *
@@ -223,7 +268,7 @@ public:
         return m_rates.size();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns reaction rate.
      *
