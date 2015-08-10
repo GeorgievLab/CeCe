@@ -50,6 +50,34 @@ namespace streamlines {
 class Module : public simulator::Module
 {
 
+// Public Enums
+public:
+
+
+    /**
+     * @brief Layout type for side.
+     */
+    enum class LayoutType
+    {
+        None,
+        Barrier,
+        Inlet,
+        Outlet
+    };
+
+
+    /**
+     * @brief Layout position.
+     */
+    enum
+    {
+        LayoutTop       = 0,
+        LayoutRight     = 1,
+        LayoutBottom    = 2,
+        LayoutLeft      = 3
+    };
+
+
 // Public Ctors & Dtors
 public:
 
@@ -198,8 +226,10 @@ public:
 
     /**
      * @brief Initialize lattice.
+     *
+     * @param simulation
      */
-    void init();
+    void init(simulator::Simulation& simulation);
 
 
     /**
@@ -267,7 +297,17 @@ protected:
      *
      * @return
      */
-    VelocityVector inletVelocityProfile(Lattice::CoordinateType coord) const noexcept;
+    VelocityVector inletVelocityProfileX(Lattice::CoordinateType coord) const noexcept;
+
+
+    /**
+     * @brief Calculate inlet velocity profile.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    VelocityVector inletVelocityProfileY(Lattice::CoordinateType coord) const noexcept;
 
 
 // Private Data Members
@@ -287,6 +327,9 @@ private:
 
     /// Lattice.
     Lattice m_lattice;
+
+    /// Streamlines layout.
+    StaticArray<LayoutType, 4> m_layout;
 
 #if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Rendering grid with filled cells.

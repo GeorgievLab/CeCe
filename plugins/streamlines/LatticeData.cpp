@@ -88,7 +88,6 @@ void LatticeData::outlet() noexcept
     // Init
     init(vel, ValueType(1));
 
-
     // fIn(4,out,col) = fIn(2,out,col) - 2/3*rho(:,out,col).*ux(:,out,col);
     m_values[3] = m_values[1] - RealType(2) / RealType(3) * rho * vel.getX();
 
@@ -115,7 +114,7 @@ void LatticeData::outlet() noexcept
 
 void LatticeData::collide(ValueType omega)
 {
-    //assert(omega < 1);
+    assert(omega < 1);
 
     if (isStaticObstacle())
     {
