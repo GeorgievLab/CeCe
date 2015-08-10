@@ -14,6 +14,7 @@
 
 // C++
 #include <cassert>
+#include <cstdlib>
 
 /* ************************************************************************ */
 
@@ -40,7 +41,7 @@ void LatticeData::inlet(const Vector<ValueType>& v) noexcept
     // sum(fIn([1,3,5],in,col)) + 2*sum(fIn([4,7,8],in,col)) );
     const ValueType rho =
         RealType(1)
-        / (RealType(1) - v.getX())
+        / (RealType(1) - std::abs(v.getX()))
         * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7}));
 
     // Initialize
