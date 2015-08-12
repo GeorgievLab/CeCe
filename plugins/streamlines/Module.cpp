@@ -506,7 +506,7 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
     {
         for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
             if (!m_lattice[{x, size.getHeight() - 1}].isObstacle())
-                m_lattice[{x, size.getHeight() - 1}].inlet(inletVelocityProfileY({x, size.getHeight() - 1}) / vMax);
+                m_lattice[{x, size.getHeight() - 1}].inlet(-1 * inletVelocityProfileY({x, size.getHeight() - 1}) / vMax);
     }
 
     if (m_layout[LayoutBottom] == LayoutType::Outlet)
@@ -532,7 +532,7 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
     {
         for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
             if (!m_lattice[{size.getWidth() - 1, y}].isObstacle())
-                m_lattice[{size.getWidth() - 1, y}].inlet(inletVelocityProfileX({size.getWidth() - 1, y}) / vMax);
+                m_lattice[{size.getWidth() - 1, y}].inlet(-1 * inletVelocityProfileX({size.getWidth() - 1, y}) / vMax);
     }
 
     if (m_layout[LayoutLeft] == LayoutType::Outlet)
