@@ -58,7 +58,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Lock access to both modules
     // No deadlock posibility
     MutexGuard guardDiffusion(m_diffusion->getMutex());
-    MutexGuard guardStreamlines(m_streamlines->getMutex());
+    //MutexGuard guardStreamlines(m_streamlines->getMutex());
 #endif
 
     // Foreach signals

@@ -39,6 +39,7 @@ using RateType = RealType;
 template<typename T>
 class Reactions
 {
+
 // Public Types
 public:
 
@@ -57,7 +58,7 @@ protected:
     DynamicArray<RateType> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<T>> m_rules;
-    DynamicArray<PropensityType> propensities;
+    DynamicArray<PropensityType> m_propensities;
 
 /* ************************************************************************ */
     /**
@@ -68,7 +69,7 @@ protected:
     template<typename Executor, typename Refresher>
     void executeReactions(units::Time step, Executor execute, Refresher refresh)
     {
-        if (propensities.empty())
+        if (m_propensities.empty())
             refresh();
 
         // initialize random generators
@@ -82,15 +83,15 @@ protected:
         // Gillespie algorithm + tau-leaping
         while (time < step)
         {
-            PropensityType sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
+            PropensityType sum = std::accumulate(m_propensities.begin(), m_propensities.end(), 0.0f);
             if (sum == 0)
             {
-                propensities.clear();
+                m_propensities.clear();
                 refresh();
                 return;
             }
 
-            std::discrete_distribution<> distr(propensities.begin(), propensities.end());
+            std::discrete_distribution<> distr(m_propensities.begin(), m_propensities.end());
 
             // time of reaction
             auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
@@ -190,7 +191,7 @@ protected:
      *
      * @return
      */
-    void addCondition(String& name, unsigned int requirement, bool reversible, bool clone, ReqProd& no_cond)
+    void addCondition(String& name, unsigned int requirement, bool reversible, bool clone, T& no_cond)
     {
         unsigned int column_index = getIndexOfMoleculeColumn(name);
         if (clone)

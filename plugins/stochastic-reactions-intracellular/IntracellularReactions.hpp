@@ -33,8 +33,11 @@ struct ReqProd
     }
 };
 
+/* ************************************************************************ */
+
 class IntracellularReactions: public Reactions<ReqProd>
 {
+
 protected:
 
     PropensityType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell);

@@ -24,6 +24,8 @@ namespace stochastic_reactions_diffusive {
 
 using RateType = plugin::stochastic_reactions::RateType;
 
+/* ************************************************************************ */
+
 struct ReqProd
 {
     ReqProd() = default;
@@ -39,8 +41,11 @@ struct ReqProd
     }
 };
 
+/* ************************************************************************ */
+
 class IntercellularReactions: public stochastic_reactions::Reactions<ReqProd>
 {
+
 protected:
 
     PropensityType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);

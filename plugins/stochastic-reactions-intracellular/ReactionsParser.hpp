@@ -231,7 +231,6 @@ protected:
 };
 
 /* ************************************************************************ */
-
 /**
  * @brief Base expression parser exception.
  */
@@ -265,7 +264,7 @@ public:
 // Public Ctors & Dtors
 public:
 
-
+/* ************************************************************************ */
     /**
      * @brief Constructor.
      *
@@ -279,7 +278,7 @@ public:
         // Nothing to do.
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Parse source string into reactions.
      *
@@ -295,6 +294,7 @@ public:
         return reactions;
     }
 
+/* ************************************************************************ */
     void parseReaction(T& reactions)
     {
         try
@@ -329,10 +329,9 @@ public:
         }
     }
 
+/* ************************************************************************ */
 
 protected:
-
-
     // Use parent's member functions
     using ParentType::is;
     using ParentType::next;
@@ -343,6 +342,12 @@ protected:
     using ParentType::token;
     using ParentType::find;
 
+/* ************************************************************************ */
+    /**
+     * @brief Parse conditions for conditional reactions.
+     *
+     * @return tuple - conditions
+     */
     DynamicArray<Tuple<String, unsigned int, bool>> parseConditions()
     {
         DynamicArray<Tuple<String, unsigned int, bool>> array;
@@ -383,7 +388,11 @@ protected:
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Parse rate expression for reversible reaction.
+     *
+     * @return
+     */
     RateType parseRateReversible()
     {
         // Alias to tokenizer range.
@@ -405,7 +414,6 @@ protected:
     }
 
 /* ************************************************************************ */
-
     /**
      * @brief Parse rate expression.
      *
@@ -434,7 +442,7 @@ protected:
         return rate;
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Parse list of identifiers (molecule names).
      *
