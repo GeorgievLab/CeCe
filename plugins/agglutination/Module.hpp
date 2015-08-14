@@ -119,9 +119,8 @@ public:
         RealType dConst;
         String ligand;
         String receptor;
-        RealType receptorSize;
-        Bond(RealType association, RealType disassiociation, String ligand_name, String receptor_name, RealType size) noexcept
-        : aConst(association), dConst(disassiociation), ligand(ligand_name), receptor(receptor_name), receptorSize(size)
+        Bond(RealType association, RealType disassiociation, String ligand_name, String receptor_name) noexcept
+        : aConst(association), dConst(disassiociation), ligand(ligand_name), receptor(receptor_name)
         {
             // Nothing to do
         }

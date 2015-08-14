@@ -35,7 +35,7 @@ RealType getRelativeReceptorProportion(
     RealType radius,
     unsigned int numberOfRec)
 {
-    return 1 - std::exp(- numberOfRec / (4 * core::constants::PI * radius * radius);
+    return 1 - std::exp(- numberOfRec / (4 * core::constants::PI * radius * radius));
 }
 
 /* ************************************************************************ */
@@ -50,10 +50,6 @@ RealType getAssociationPropensity(
 {
     return  getRelativeReceptorProportion(radius1, numberOfRec1) *
             getRelativeReceptorProportion(radius2, numberOfRec2) *
-            (1 - std::exp(-Ka * step.value()))
-            +
-            getRelativeReceptorProportion(radius2, numberOfRec1) *
-            getRelativeReceptorProportion(radius1, numberOfRec2) *
             (1 - std::exp(-Ka * step.value()));
 }
 
@@ -160,20 +156,25 @@ void Module::BeginContact(b2Contact* contact)
 
     for (unsigned int i = 0; i < m_bonds.size(); i++)
     {
-        std::bernoulli_distribution dist(
-            getAssociationPropensity(
-                step,
-                radius1.value(),
-                radius2.value(),
-                oa.getMoleculeCount(m_bonds[i].receptor),
-                oa.getMoleculeCount(m_bonds[i].ligand),
-                m_bonds[i].aConst
-            )
-        );
-        if (dist(e1))
+        std::bernoulli_distribution dist1(
+            getAssociationPropensity(step, radius1.value(), radius2.value(),
+                oa.getMoleculeCount(m_bonds[i].receptor), ob.getMoleculeCount(m_bonds[i].ligand),
+                m_bonds[i].aConst));
+        if (dist1(e1))
         {
             Log::debug("Joined: ", ba, ", ", bb);
             m_toJoin.emplace_back(ba, bb, m_bonds[i].dConst);
+            continue;
+        }
+        std::bernoulli_distribution dist2(
+            getAssociationPropensity(step, radius1.value(), radius2.value(),
+                ob.getMoleculeCount(m_bonds[i].receptor), oa.getMoleculeCount(m_bonds[i].ligand),
+                m_bonds[i].aConst));
+        if (dist2(e1))
+        {
+            Log::debug("Joined: ", ba, ", ", bb);
+            m_toJoin.emplace_back(ba, bb, m_bonds[i].dConst);
+            continue;
         }
     }
 }
