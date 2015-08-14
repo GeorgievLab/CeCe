@@ -38,16 +38,17 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
     PropensityType local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
-        unsigned int number = cell.getMoleculeCount(m_ids[i])
+        unsigned int number = cell.getMoleculeCount(m_ids[i]);
         if (m_rules[index][i].mustnt_have && number > 0)
             return 0;
+
         if (m_rules[index][i].requirement != 0u)
         {
             if (m_rules[index][i].requirement > number)
                 return 0;
             local *= number;
-            continue;
         }
+
         if (m_rules[index][i].env_requirement != 0u)
         {
             // Get signal ID
@@ -58,7 +59,6 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
             if (m_rules[index][i].env_requirement > number)
                 return 0;
             local *= number;
-            continue;
         }
     }
     return local;
@@ -94,6 +94,7 @@ void IntercellularReactions::refreshPropensities(
     plugin::diffusion::Module* diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
 {
+    m_propensities.clear();
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {
         if (m_rules[i][index].requirement ||
@@ -256,7 +257,6 @@ void IntercellularReactions::extend(const DynamicArray<String>& ids_plus, const 
             Log::warning("This reaction is not valid. ENV tag must be alone.");
         return;
     }
-
     if (std::find(ids_plus.begin(), ids_plus.end(), "env") != ids_plus.end())
     {
         if (ids_plus.size() == 1)

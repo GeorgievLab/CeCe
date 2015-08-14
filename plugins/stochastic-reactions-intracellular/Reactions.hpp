@@ -72,21 +72,20 @@ protected:
         if (m_propensities.empty())
             refresh();
 
-        // initialize random generators
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> rand(0, 1);
-
         // initialize time
         units::Duration time = units::Duration(0);
 
-        // Gillespie algorithm + tau-leaping
+        // initialize random
+        std::mt19937 gen(std::random_device());
+        std::uniform_real_distribution<> rand(0, 1);
+
+        // Gillespie algorithm + tau-leaping + dependency graph(hidden inside execute reaction)
         while (time < step)
         {
             PropensityType sum = std::accumulate(m_propensities.begin(), m_propensities.end(), 0.0f);
+
             if (sum == 0)
             {
-                m_propensities.clear();
                 refresh();
                 return;
             }
