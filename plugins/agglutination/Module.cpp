@@ -33,10 +33,9 @@ namespace agglutination
 
 RealType getRelativeReceptorProportion(
     RealType radius,
-    RealType recSize,
     unsigned int numberOfRec)
 {
-    return numberOfRec * recSize / (4 * core::constants::PI * radius * radius);
+    return 1 - std::exp(- numberOfRec / (4 * core::constants::PI * radius * radius);
 }
 
 /* ************************************************************************ */
@@ -45,13 +44,16 @@ RealType getAssociationPropensity(
     units::Duration step,
     RealType radius1,
     RealType radius2,
-    RealType recSize,
     unsigned int numberOfRec1,
     unsigned int numberOfRec2,
     RealType Ka)
 {
-    return  std::min(getRelativeReceptorProportion(radius1, recSize, numberOfRec1), RealType(1)) *
-            std::min(getRelativeReceptorProportion(radius2, recSize, numberOfRec2), RealType(1)) *
+    return  getRelativeReceptorProportion(radius1, numberOfRec1) *
+            getRelativeReceptorProportion(radius2, numberOfRec2) *
+            (1 - std::exp(-Ka * step.value()))
+            +
+            getRelativeReceptorProportion(radius2, numberOfRec1) *
+            getRelativeReceptorProportion(radius1, numberOfRec2) *
             (1 - std::exp(-Ka * step.value()));
 }
 
@@ -134,8 +136,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
                 c_bond.get<RealType>("association-constant"),
                 c_bond.get<RealType>("disassociation-constant"),
                 c_bond.get("ligand"),
-                c_bond.get("receptor"),
-                c_bond.get<RealType>("receptor-size")
+                c_bond.get("receptor")
             )
         );
     }
@@ -164,7 +165,6 @@ void Module::BeginContact(b2Contact* contact)
                 step,
                 radius1.value(),
                 radius2.value(),
-                m_bonds[i].receptorSize,
                 oa.getMoleculeCount(m_bonds[i].receptor),
                 oa.getMoleculeCount(m_bonds[i].ligand),
                 m_bonds[i].aConst
