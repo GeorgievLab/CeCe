@@ -24,10 +24,12 @@
 
 /* ************************************************************************ */
 
-namespace plugin
-{
-namespace agglutination
-{
+namespace plugin {
+namespace agglutination {
+
+/* ************************************************************************ */
+
+namespace {
 
 /* ************************************************************************ */
 
@@ -64,22 +66,28 @@ RealType getDisassociationPropensity(
 
 /* ************************************************************************ */
 
+}
+
+/* ************************************************************************ */
+
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
+    // Store time step
+    m_step = dt;
+
     auto _ = measure_time("agglutination", simulator::TimeMeasurementIterationOutput(simulation));
-    step = dt;
 
     // Get physics world
     auto& world = simulation.getWorld();
 
     // Foreach pending bodies
-    for (auto p : m_toJoin) {
-        // b2RevoluteJointDef joint;
+    for (const auto& p : m_toJoin)
+    {
         b2WeldJointDef joint;
-        joint.Initialize(std::get<0>(p), std::get<1>(p), std::get<0>(p)->GetWorldCenter());
-        jointUserData* jUserData = new jointUserData();
+        joint.Initialize(p.bodyA, p.bodyB, p.bodyA->GetWorldCenter());
+        JointUserData* jUserData = new JointUserData();
         jUserData->module = this;
-        jUserData->Kd = std::get<2>(p);
+        jUserData->Kd = p.dConst;
         joint.userData = jUserData;
         world.CreateJoint(&joint);
     }
@@ -92,8 +100,9 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     std::default_random_engine e1(rd());
 
     // Foreach active joints
-    for (auto joint = world.GetJointList(); joint != nullptr; joint = joint->GetNext()) {
-        jointUserData* jUserData = (jointUserData*)joint->GetUserData();
+    for (auto joint = world.GetJointList(); joint != nullptr; joint = joint->GetNext())
+    {
+        const JointUserData* jUserData = reinterpret_cast<const JointUserData*>(joint->GetUserData());
         // Not our joint
         if (jUserData == nullptr)
             continue;
@@ -102,12 +111,13 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
         std::bernoulli_distribution dist(
             getDisassociationPropensity(
-                step,
+                m_step,
                 jUserData->Kd
             )
         );
 
-        if (dist(e1)) {
+        if (dist(e1))
+        {
             Log::debug("Released: ", joint->GetBodyA(), ", ", joint->GetBodyB());
             toRemove.push_back(joint);
             delete jUserData;
@@ -127,14 +137,12 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
     for (auto&& c_bond : config.getConfigurations("bond"))
     {
-        m_bonds.push_back(
-            Bond(
-                c_bond.get<RealType>("association-constant"),
-                c_bond.get<RealType>("disassociation-constant"),
-                c_bond.get("ligand"),
-                c_bond.get("receptor")
-            )
-        );
+        m_bonds.push_back(Bond{
+            c_bond.get<RealType>("association-constant"),
+            c_bond.get<RealType>("disassociation-constant"),
+            c_bond.get("ligand"),
+            c_bond.get("receptor")
+        });
     }
 }
 
@@ -157,23 +165,23 @@ void Module::BeginContact(b2Contact* contact)
     for (unsigned int i = 0; i < m_bonds.size(); i++)
     {
         std::bernoulli_distribution dist1(
-            getAssociationPropensity(step, radius1.value(), radius2.value(),
+            getAssociationPropensity(m_step, radius1.value(), radius2.value(),
                 oa.getMoleculeCount(m_bonds[i].receptor), ob.getMoleculeCount(m_bonds[i].ligand),
                 m_bonds[i].aConst));
         if (dist1(e1))
         {
             Log::debug("Joined: ", ba, ", ", bb);
-            m_toJoin.emplace_back(ba, bb, m_bonds[i].dConst);
+            m_toJoin.push_back(JointDef{ba, bb, m_bonds[i].dConst});
             continue;
         }
         std::bernoulli_distribution dist2(
-            getAssociationPropensity(step, radius1.value(), radius2.value(),
+            getAssociationPropensity(m_step, radius1.value(), radius2.value(),
                 ob.getMoleculeCount(m_bonds[i].receptor), oa.getMoleculeCount(m_bonds[i].ligand),
                 m_bonds[i].aConst));
         if (dist2(e1))
         {
             Log::debug("Joined: ", ba, ", ", bb);
-            m_toJoin.emplace_back(ba, bb, m_bonds[i].dConst);
+            m_toJoin.push_back(JointDef{ba, bb, m_bonds[i].dConst});
             continue;
         }
     }

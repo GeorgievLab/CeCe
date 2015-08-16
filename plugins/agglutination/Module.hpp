@@ -103,36 +103,55 @@ public:
     void EndContact(b2Contact* contact) override;
 
 
-// Private Data Members
+// Private Structures
 private:
 
-    /// List of bodies to join
-    // TODO: use Vector<b2Body*, 3>.
-    DynamicArray<Tuple<b2Body*, b2Body*, RealType>> m_toJoin;
-    units::Duration step;
 
-// Public Data Members
-public:
+    /**
+     * @brief Structure for storing bonds.
+     */
     struct Bond
     {
         RealType aConst;
         RealType dConst;
         String ligand;
         String receptor;
-        Bond(RealType association, RealType disassiociation, String ligand_name, String receptor_name) noexcept
-        : aConst(association), dConst(disassiociation), ligand(ligand_name), receptor(receptor_name)
-        {
-            // Nothing to do
-        }
     };
-    DynamicArray<Bond> m_bonds;
-};
 
-struct jointUserData
-{
-    char guard = '@';
-    Module* module;
-    RealType Kd;
+
+    /**
+     * @brief User data for joint.
+     */
+    struct JointUserData
+    {
+        const char guard = '@';
+        Module* module;
+        RealType Kd;
+    };
+
+
+    /**
+     * @brief Joint definition.
+     */
+    struct JointDef
+    {
+        b2Body* bodyA;
+        b2Body* bodyB;
+        RealType dConst;
+    };
+
+
+// Private Data Members
+private:
+
+    /// List of bodies to join
+    DynamicArray<JointDef> m_toJoin;
+
+    /// Used time step.
+    units::Duration m_step;
+
+    /// List of created bonds.
+    DynamicArray<Bond> m_bonds;
 };
 
 /* ************************************************************************ */
