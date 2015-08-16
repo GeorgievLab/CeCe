@@ -44,6 +44,8 @@ void LatticeData::inlet(const Vector<ValueType>& v) noexcept
         / (RealType(1) - std::abs(v.getX()))
         * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7}));
 
+    assert(rho > 0);
+
     // Initialize
     init(v, rho);
 
@@ -114,7 +116,7 @@ void LatticeData::outlet() noexcept
 
 void LatticeData::collide(ValueType omega)
 {
-    assert(omega < 1);
+    assert(omega <= 1);
 
     if (isStaticObstacle())
     {

@@ -17,6 +17,7 @@
 
 // Simulator
 #include "core/constants.hpp"
+#include "core/StaticArray.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Exception.hpp"
 #include "core/VectorRange.hpp"
@@ -34,41 +35,116 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
+/**
+ * @brief Read layout type from stream.
+ *
+ * @param is   Input stream.
+ * @param type Output type.
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Module::LayoutType& type)
+{
+    String desc;
+    is >> desc;
+
+    if (desc == "none")
+        type = Module::LayoutType::None;
+    else if (desc == "barrier")
+        type = Module::LayoutType::Barrier;
+    else if (desc == "inlet")
+        type = Module::LayoutType::Inlet;
+    else if (desc == "outlet")
+        type = Module::LayoutType::Outlet;
+    else
+        throw InvalidArgumentException("Unknown layout type");
+
+    return is;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse layout description.
+ *
+ * @param is     Input stream.
+ * @param layout Output layout.
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Module::Layout& layout)
+{
+    return is >> std::skipws >> layout.top >> layout.right >> layout.bottom >> layout.left;
+}
+
+/* ************************************************************************ */
+
 namespace {
 
 /* ************************************************************************ */
 
 /**
- * @brief Parse layout.
+ * @brief Initialize barrier.
  *
- * @param str
- *
- * @return
+ * @param simulation
+ * @param lattice
+ * @param rng
+ * @param edges
  */
-StaticArray<Module::LayoutType, 4> parseLayout(String str)
+void initBarrier(
+    simulator::Simulation& simulation, Lattice& lattice,
+    Vector<Lattice::SizeType> rngMin, Vector<Lattice::SizeType> rngMax,
+    Vector<int> edges1, Vector<int> edges2
+)
 {
-    StaticArray<Module::LayoutType, 4> res;
+    const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
 
-    InStringStream iss(std::move(str));
+    // Create barrier
+    auto obstacle = simulation.createObject<simulator::Obstacle>();
+    auto& shapes = obstacle->getMutableShapes();
+    shapes.resize(1);
 
-    for (std::size_t i = 0; i < res.size(); ++i)
+    // Init shape
+    shapes[0] = simulator::Shape::makeEdges({edges1 * worldSizeHalf, edges2 * worldSizeHalf});
+    obstacle->initShapes();
+
+    // Set obstacles
+    for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+            lattice[{x, y}].setStaticObstacle(true);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Init boundary condition.
+ *
+ * @param type
+ * @param lattice
+ * @param rngMin
+ * @param rngMax
+ */
+template<typename VelFn>
+void initBoundary(
+    Module::LayoutType type, Lattice& lattice,
+    Vector<Lattice::SizeType> rngMin, Vector<Lattice::SizeType> rngMax,
+    VelFn velFn
+)
+{
+    if (type == Module::LayoutType::Outlet)
     {
-        String desc;
-        iss >> desc;
-
-        if (desc == "none")
-            res[i] = Module::LayoutType::None;
-        else if (desc == "barrier")
-            res[i] = Module::LayoutType::Barrier;
-        else if (desc == "inlet")
-            res[i] = Module::LayoutType::Inlet;
-        else if (desc == "outlet")
-            res[i] = Module::LayoutType::Outlet;
-        else
-            throw InvalidArgumentException("Unknown layout type");
+        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+            for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+                if (!lattice[{x, y}].isObstacle())
+                    lattice[{x, y}].outlet();
     }
-
-    return res;
+    else if (type == Module::LayoutType::Inlet)
+    {
+        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+            for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+                if (!lattice[{x, y}].isObstacle())
+                    lattice[{x, y}].inlet(velFn({x, y}));
+    }
 }
 
 /* ************************************************************************ */
@@ -105,84 +181,65 @@ void Module::setStaticObstacleMap(const ObstacleMap& map)
 
 void Module::init(simulator::Simulation& simulation)
 {
-    const auto worldSize = simulation.getWorldSize();
-    const auto worldSizeHalf = worldSize * 0.5;
-
     // Initialize lattice data
     const auto& size = m_lattice.getSize();
 
-    // Create barriers
-    if (m_layout[LayoutTop] == LayoutType::Barrier)
+    // Physical size of one lattice cell
+    const auto dl = simulation.getWorldSize() / size;
+
+    // Create top barrier
+    if (m_layout.top == LayoutType::Barrier)
     {
-        // Create barrier
-        auto obstacle = simulation.createObject<simulator::Obstacle>();
-        auto& shapes = obstacle->getMutableShapes();
-        shapes.resize(1);
-
-        shapes[0] = simulator::Shape::makeEdges({
-            {-worldSizeHalf.getX(), worldSizeHalf.getY()},
-            { worldSizeHalf.getX(), worldSizeHalf.getY()}
-        });
-
-        obstacle->initShapes();
-
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-            m_lattice[{x, size.getHeight() - 1}].setStaticObstacle(true);
+        initBarrier(
+            simulation, m_lattice,
+            {0, size.getHeight() - 1}, {size.getWidth(), size.getHeight()},
+            {-1, 1}, {1, 1}
+        );
     }
 
-    if (m_layout[LayoutBottom] == LayoutType::Barrier)
+    // Create bottom barrier
+    if (m_layout.bottom == LayoutType::Barrier)
     {
-        // Create barrier
-        auto obstacle = simulation.createObject<simulator::Obstacle>();
-        auto& shapes = obstacle->getMutableShapes();
-        shapes.resize(1);
-
-        shapes[0] = simulator::Shape::makeEdges({
-            {-worldSizeHalf.getX(), -worldSizeHalf.getY()},
-            { worldSizeHalf.getX(), -worldSizeHalf.getY()}
-        });
-
-        obstacle->initShapes();
-
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-            m_lattice[{x, 0}].setStaticObstacle(true);
+        initBarrier(
+            simulation, m_lattice,
+            {0, 0}, {size.getWidth(), 1},
+            {-1, -1}, {1, -1}
+        );
     }
 
-    if (m_layout[LayoutRight] == LayoutType::Barrier)
+    // Create right barrier
+    if (m_layout.right == LayoutType::Barrier)
     {
-        // Create barrier
-        auto obstacle = simulation.createObject<simulator::Obstacle>();
-        auto& shapes = obstacle->getMutableShapes();
-        shapes.resize(1);
-
-        shapes[0] = simulator::Shape::makeEdges({
-            {-worldSizeHalf.getX(), -worldSizeHalf.getY()},
-            {-worldSizeHalf.getX(),  worldSizeHalf.getY()}
-        });
-
-        obstacle->initShapes();
-
-        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
-            m_lattice[{size.getWidth() - 1, y}].setStaticObstacle(true);
+        initBarrier(
+            simulation, m_lattice,
+            {size.getWidth() - 1, 0}, {size.getWidth(), size.getHeight()},
+            {-1, -1}, {-1, 1}
+        );
     }
 
-    if (m_layout[LayoutLeft] == LayoutType::Barrier)
+    // Create left barrier
+    if (m_layout.left == LayoutType::Barrier)
     {
-        // Create barrier
-        auto obstacle = simulation.createObject<simulator::Obstacle>();
-        auto& shapes = obstacle->getMutableShapes();
-        shapes.resize(1);
-
-        shapes[0] = simulator::Shape::makeEdges({
-            {worldSizeHalf.getX(), -worldSizeHalf.getY()},
-            {worldSizeHalf.getX(),  worldSizeHalf.getY()}
-        });
-
-        obstacle->initShapes();
-
-        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
-            m_lattice[{0, y}].setStaticObstacle(true);
+        initBarrier(
+            simulation, m_lattice,
+            {0, 0}, {1, size.getHeight()},
+            {1, -1}, {1, 1}
+        );
     }
+
+    // Calculate values
+    const auto vMax = calculateMaxVelocity(dl);
+    const auto omega = 1.0 / getTau();
+
+    // Initialization iterations
+    for (auto it = getInitIterations(); it--; )
+    {
+        m_lattice.collideAndPropagate(omega);
+
+        // Apply boundary conditions
+        applyBoundaryConditions(simulation, vMax);
+    }
+
 }
 
 /* ************************************************************************ */
@@ -196,24 +253,14 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Physical size of one lattice cell
     const auto dl = simulation.getWorldSize() / m_lattice.getSize();
 
-    // Modified time step
-    const auto dtInner = getCoefficient() * dt;
-
-    // Smooth time step
-    const auto dtSmooth = dtInner / getIterations();
-
     // Calculate maximum flow velocity
-    const VelocityVector vMax = LatticeData::MAX_SPEED * dl / dtSmooth;
-
-    // Viscosity in LB units
-    const auto viscosity =
-        (dtSmooth / (dl.getX() * dl.getX())) *
-        getKinematicViscosity()
-    ;
+    const auto vMax = calculateMaxVelocity(dl);
 
     // Relaxation parameter
-    const auto tau = (3.f * viscosity + 0.5f);
-    const auto omega = 1.f / tau;
+    const auto omega = 1.0 / getTau();
+
+    // Calculate conversion coefficient
+    setCoefficient(calculateCoefficient(dt, dl));
 
     // Dynamic obstacles
     updateDynamicObstacleMap(simulation, vMax);
@@ -240,17 +287,20 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
+    // Number of init iterations
+    setInitIterations(config.get("init-iterations", getInitIterations()));
+
     // Number of inner iterations
     setIterations(config.get("iterations", getIterations()));
 
     if (getIterations() == 0)
         throw InvalidArgumentException("Number of inner iterations cannot be zero");
 
-    // Convert coefficient
-    setCoefficient(config.get("coefficient", getCoefficient()));
+    // Convert relaxation time
+    setTau(config.get("tau", getTau()));
 
-    if (getCoefficient() == 0)
-        throw InvalidArgumentException("Coefficient cannot be zero");
+    if (getTau() == 0)
+        throw InvalidArgumentException("Relaxation time cannot be zero");
 
     // Inflow velocity
     setVelocityInflow(config.get("velocity-inflow", getVelocityInflow()));
@@ -267,11 +317,8 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     if (m_lattice.getSize() == Zero)
         throw InvalidArgumentException("Lattice size cannot be zero");
 
-    // Parse layout
-    if (config.has("layout"))
-        m_layout = parseLayout(config.get("layout"));
-    else
-        m_layout = {LayoutType::Barrier, LayoutType::Outlet, LayoutType::Barrier, LayoutType::Inlet};
+    // Layout
+    setLayout(config.get("layout", getLayout()));
 
     // Initialize lattice
     init(simulation);
@@ -493,111 +540,27 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
 {
     // maximum velocity of the Poiseuille inflow
     const auto size = m_lattice.getSize();
-    // Velocity in LB
-    const auto velocity = getVelocityInflow();
 
-    if (m_layout[LayoutTop] == LayoutType::Outlet)
-    {
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-            if (!m_lattice[{x, size.getHeight() - 1}].isObstacle())
-                m_lattice[{x, size.getHeight() - 1}].outlet();
-    }
-    else if (m_layout[LayoutTop] == LayoutType::Inlet)
-    {
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-            if (!m_lattice[{x, size.getHeight() - 1}].isObstacle())
-                m_lattice[{x, size.getHeight() - 1}].inlet(-1 * inletVelocityProfileY({x, size.getHeight() - 1}) / vMax);
-    }
-
-    if (m_layout[LayoutBottom] == LayoutType::Outlet)
-    {
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-            if (!m_lattice[{x, 0}].isObstacle())
-                m_lattice[{x, 0}].outlet();
-    }
-    else if (m_layout[LayoutBottom] == LayoutType::Inlet)
-    {
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-            if (!m_lattice[{x, 0}].isObstacle())
-                m_lattice[{x, 0}].inlet(inletVelocityProfileY({x, 0}) / vMax);
-    }
-
-    if (m_layout[LayoutRight] == LayoutType::Outlet)
-    {
-        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
-            if (!m_lattice[{size.getWidth() - 1, y}].isObstacle())
-                m_lattice[{size.getWidth() - 1, y}].outlet();
-    }
-    else if (m_layout[LayoutRight] == LayoutType::Inlet)
-    {
-        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
-            if (!m_lattice[{size.getWidth() - 1, y}].isObstacle())
-                m_lattice[{size.getWidth() - 1, y}].inlet(-1 * inletVelocityProfileX({size.getWidth() - 1, y}) / vMax);
-    }
-
-    if (m_layout[LayoutLeft] == LayoutType::Outlet)
-    {
-        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
-            if (!m_lattice[{0, y}].isObstacle())
-                m_lattice[{0, y}].outlet();
-    }
-    else if (m_layout[LayoutLeft] == LayoutType::Inlet)
-    {
-        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
-            if (!m_lattice[{0, y}].isObstacle())
-                m_lattice[{0, y}].inlet(inletVelocityProfileX({0, y}) / vMax);
-    }
-#if 0
-    // Left & Right active only if velocity has X-coordinate speed.
-    if (velocity.getX() != Zero)
-    {
-        for (Lattice::SizeType y = 0; y < size.getHeight(); ++y)
-        {
-            Lattice::CoordinateType in;
-            Lattice::CoordinateType out;
-            Lattice::CoordinateType outPrev;
-
-            if (velocity.getX() < Zero)
-            {
-                in = {size.getWidth() - 1, y};
-                out = {0, y};
-                outPrev = {1, y};
-            }
-            else if (velocity.getX() > Zero)
-            {
-                in = {0, y};
-                out = {size.getWidth() - 1, y};
-                outPrev = {out.getX() - 1, y};
-            }
-            else
-            {
-                continue;
-            }
-
-            // Input
-            if (!m_lattice[in].isStaticObstacle())
-                m_lattice[in].inlet(inletVelocityProfile(in) / vMax);
-
-            // Outlet
-            if (!m_lattice[out].isStaticObstacle())
-                m_lattice[out].outlet();
-        }
-/*
-        for (Lattice::SizeType x = 0; x < size.getWidth(); ++x)
-        {
-            m_lattice[{x, 0}] = m_lattice[{x, 1}].getValues();
-            m_lattice[{x, size.getHeight() - 1}] = m_lattice[{x, size.getHeight() - 2}].getValues();
-        }
-*/
-    }
-#endif
+    // Init boundaries
+    initBoundary(m_layout.top, m_lattice, {0, size.getHeight() - 1}, {size.getWidth(), size.getHeight()}, [&](Lattice::CoordinateType c) {
+        return -1 * inletVelocityProfileY({c.getX(), size.getHeight() - 1}) / vMax;
+    });
+    initBoundary(m_layout.right, m_lattice, {size.getWidth() - 1, 0}, {size.getWidth(), size.getHeight()}, [&](Lattice::CoordinateType c) {
+        return -1 * inletVelocityProfileX({size.getWidth() - 1, c.getY()}) / vMax;
+    });
+    initBoundary(m_layout.bottom, m_lattice, {0, 0}, {size.getWidth(), 1}, [&](Lattice::CoordinateType c) {
+        return inletVelocityProfileY({c.getX(), 0}) / vMax;
+    });
+    initBoundary(m_layout.left, m_lattice, {0, 0}, {1, size.getHeight()}, [&](Lattice::CoordinateType c) {
+        return inletVelocityProfileX({0, c.getY()}) / vMax;
+    });
 }
 
 /* ************************************************************************ */
 
 VelocityVector Module::inletVelocityProfileX(Lattice::CoordinateType coord) const noexcept
 {
-    //return {getVelocityInflow().getX(), Zero};
+    return {getVelocityInflow().getX(), Zero};
 
     // maximum velocity of the Poiseuille inflow
     const auto size = m_lattice.getSize();
@@ -611,7 +574,7 @@ VelocityVector Module::inletVelocityProfileX(Lattice::CoordinateType coord) cons
 
 VelocityVector Module::inletVelocityProfileY(Lattice::CoordinateType coord) const noexcept
 {
-    //return {Zero, getVelocityInflow().getY()};
+    return {Zero, getVelocityInflow().getY()};
 
     // maximum velocity of the Poiseuille inflow
     const auto size = m_lattice.getSize();
@@ -619,6 +582,25 @@ VelocityVector Module::inletVelocityProfileY(Lattice::CoordinateType coord) cons
     const RealType y = static_cast<RealType>(coord.getX() - 1);
     const RealType l = static_cast<RealType>(size.getWidth() - 1);
     return {Zero, 4.f * getVelocityInflow().getY() / (l * l) * (l * y - y * y)};
+}
+
+/* ************************************************************************ */
+
+RealType Module::calculateCoefficient(units::Time step, PositionVector dl) const noexcept
+{
+    const auto viscosity = (getTau() - 0.5) / 3.0;
+    return viscosity * (getIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / step;
+}
+
+/* ************************************************************************ */
+
+VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
+{
+    const auto viscosity = (getTau() - 0.5) / 3.0;
+    return (LatticeData::MAX_SPEED / viscosity) * VelocityVector{
+        getKinematicViscosity() / dl.getX(),
+        getKinematicViscosity() / dl.getY()
+    };
 }
 
 /* ************************************************************************ */

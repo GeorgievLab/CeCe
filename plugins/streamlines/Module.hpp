@@ -19,6 +19,7 @@
 #include "core/Grid.hpp"
 #include "core/Real.hpp"
 #include "core/StaticArray.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 
@@ -66,15 +67,19 @@ public:
     };
 
 
+// Public Structures
+public:
+
+
     /**
-     * @brief Layout position.
+     * @brief Streamlines layout.
      */
-    enum
+    struct Layout
     {
-        LayoutTop       = 0,
-        LayoutRight     = 1,
-        LayoutBottom    = 2,
-        LayoutLeft      = 3
+        LayoutType top;
+        LayoutType right;
+        LayoutType bottom;
+        LayoutType left;
     };
 
 
@@ -154,13 +159,46 @@ public:
 
 
     /**
+     * @brief Returns relaxation time.
+     *
+     * @return
+     */
+    RealType getTau() const noexcept
+    {
+        return m_tau;
+    }
+
+
+    /**
      * @brief Returns inner iteration count.
      *
      * @return
      */
-    unsigned int getIterations() const noexcept
+    simulator::IterationCount getIterations() const noexcept
     {
         return m_iterations;
+    }
+
+
+    /**
+     * @brief Returns init iteration count.
+     *
+     * @return
+     */
+    simulator::IterationCount getInitIterations() const noexcept
+    {
+        return m_initIterations;
+    }
+
+
+    /**
+     * @brief Returns layout description.
+     *
+     * @return
+     */
+    const Layout& getLayout() const noexcept
+    {
+        return m_layout;
     }
 
 
@@ -210,13 +248,46 @@ public:
 
 
     /**
+     * @brief Set relaxation time.
+     *
+     * @param tau
+     */
+    void setTau(RealType tau) noexcept
+    {
+        m_tau = tau;
+    }
+
+
+    /**
      * @brief Set inner iteration count.
      *
      * @param iterations
      */
-    void setIterations(unsigned int iterations) noexcept
+    void setIterations(simulator::IterationCount iterations) noexcept
     {
         m_iterations = iterations;
+    }
+
+
+    /**
+     * @brief Set init iteration count.
+     *
+     * @param iterations
+     */
+    void setInitIterations(simulator::IterationCount iterations) noexcept
+    {
+        m_initIterations = iterations;
+    }
+
+
+    /**
+     * @brief Set layout.
+     *
+     * @param layout
+     */
+    void setLayout(Layout layout) noexcept
+    {
+        m_layout = layout;
     }
 
 
@@ -310,6 +381,27 @@ protected:
     VelocityVector inletVelocityProfileY(Lattice::CoordinateType coord) const noexcept;
 
 
+    /**
+     * @brief Calculate coefficient.
+     *
+     * @param step Time step.
+     * @param dl   Grid cell size.
+     *
+     * @return
+     */
+    RealType calculateCoefficient(units::Time step, PositionVector dl) const noexcept;
+
+
+    /**
+     * @brief Calculate maximum velocity.
+     *
+     * @param dl Grid cell size.
+     *
+     * @return
+     */
+    VelocityVector calculateMaxVelocity(PositionVector dl) const noexcept;
+
+
 // Private Data Members
 private:
 
@@ -319,17 +411,23 @@ private:
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
 
+    /// Relaxation time.
+    RealType m_tau = 1;
+
     /// Fixup coefficient.
     RealType m_coefficient = 1;
 
     /// Number of inner iterations.
-    unsigned int m_iterations = 1;
+    simulator::IterationCount m_iterations = 5;
+
+    /// Number of init iterations.
+    simulator::IterationCount m_initIterations = 100;
 
     /// Lattice.
     Lattice m_lattice;
 
     /// Streamlines layout.
-    StaticArray<LayoutType, 4> m_layout;
+    Layout m_layout{LayoutType::Barrier, LayoutType::Outlet, LayoutType::Barrier, LayoutType::Inlet};
 
 #if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Rendering grid with filled cells.
