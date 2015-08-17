@@ -50,7 +50,6 @@ public:
     /// Molecule identifier type.
     using MoleculeId = unsigned int;
 
-
 protected:
 
     using PropensityType = RateType;
@@ -76,7 +75,8 @@ protected:
         units::Duration time = units::Duration(0);
 
         // initialize random
-        std::mt19937 gen(std::random_device());
+        std::random_device rd;
+        std::mt19937 gen(rd());
         std::uniform_real_distribution<> rand(0, 1);
 
         // Gillespie algorithm + tau-leaping + dependency graph(hidden inside execute reaction)
@@ -183,6 +183,10 @@ protected:
     }
 
 /* ************************************************************************ */
+
+public:
+
+/* ************************************************************************ */
     /**
      * @brief Edit reactions rule matrix to suit given reaction conditions.
      *
@@ -190,18 +194,21 @@ protected:
      *
      * @return
      */
-    void addCondition(String& name, unsigned int requirement, bool reversible, bool clone, T& no_cond)
+    void addCondition(const String& name, unsigned int requirement, bool clone, const DynamicArray<T>& no_cond)
     {
         unsigned int column_index = getIndexOfMoleculeColumn(name);
         if (clone)
         {
             m_rules.push_back(no_cond);
-            m_rates.push_back(m_rates[m_rates.size()]);
+            m_rates.push_back(m_rates[m_rates.size() - 1]);
         }
         if (requirement == 0)
-            m_rules[m_rules.size()][column_index].musnt_have = true;
+            m_rules[m_rules.size() - 1][column_index].mustnt_have = true;
         else
-            m_rules[m_rules.size()][column_index].requirement = std::max(m_rules[m_rules.size()][column_index].requirement, 1);
+        {
+            m_rules[m_rules.size() - 1][column_index].requirement = std::max(m_rules[m_rules.size() - 1][column_index].requirement, 1u);
+            m_rules[m_rules.size() - 1][column_index].product = std::max(m_rules[m_rules.size() - 1][column_index].product, 1u);
+        }
     }
 
 /* ************************************************************************ */
@@ -281,8 +288,17 @@ public:
         return m_rates[reaction];
     }
 
+/* ************************************************************************ */
+    /**
+     * @brief Returns the last row in reaction rule matrix.
+     *
+     * @return
+     */
+    const DynamicArray<T>& getLastReaction() const noexcept
+    {
+        return m_rules[m_rules.size() - 1];
+    }
 };
-
 /* ************************************************************************ */
 
 }

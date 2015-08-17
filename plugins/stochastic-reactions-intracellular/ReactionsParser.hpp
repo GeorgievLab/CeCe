@@ -299,25 +299,38 @@ public:
     {
         try
         {
+            // parse conditions
             auto conditions = parseConditions();
+            // parse LS
             auto ids_minus = parseList();
             if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd))
                 throw MissingArrowException();
+            // parse rate
             RateType rate;
             RateType rateR;
             bool reversible = is(TokenCode::ArrowBack);
             if (reversible)
                 rateR = parseRateReversible();
             rate = parseRate();
+            //parse RS
             auto ids_plus = parseList();
             requireNext(TokenCode::Semicolon);
+            // extending
             reactions.extend(ids_plus, ids_minus, rate);
-            if (reversible)
-                reactions.extend(ids_minus, ids_plus, rateR);
-            auto no_cond = reactions.m_rules[reactions.m_rules.size() - 1];
+            auto no_cond = reactions.getLastReaction();
             for (unsigned int i = 0; i < conditions.size(); i++)
             {
-                reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), reversible, std::get<2>(conditions[i]), no_cond);
+                reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), std::get<2>(conditions[i]), no_cond);
+            }
+            // extending reversible
+            if (reversible)
+            {
+                reactions.extend(ids_minus, ids_plus, rateR);
+                auto no_cond = reactions.getLastReaction();
+                for (unsigned int i = 0; i < conditions.size(); i++)
+                {
+                    reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), std::get<2>(conditions[i]), no_cond);
+                }
             }
         }
         catch (const Exception& ex)
