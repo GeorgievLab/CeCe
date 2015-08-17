@@ -465,8 +465,6 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Difference between velocities
             const auto dv = velocity - obj->getVelocity();
 
-            //obj->setVelocity(velocity / getCoefficient());
-
             // Cell radius
             const auto radius = shape.getCircle().radius;
 
@@ -537,7 +535,7 @@ VelocityVector Module::inletVelocityProfile(Lattice::CoordinateType coord, Layou
         break;
     }
 
-    return {Zero, Zero};
+    return Zero;
 }
 
 /* ************************************************************************ */
@@ -551,10 +549,7 @@ RealType Module::calculateCoefficient(units::Time step, PositionVector dl) const
 
 VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
 {
-    return (LatticeData::MAX_SPEED / calculateViscosity()) * VelocityVector{
-        getKinematicViscosity() / dl.getX(),
-        getKinematicViscosity() / dl.getY()
-    };
+    return (LatticeData::MAX_SPEED / calculateViscosity()) * getKinematicViscosity() / dl;
 }
 
 /* ************************************************************************ */
