@@ -67,6 +67,19 @@ public:
     };
 
 
+    /**
+     * @brief Layout position.
+     */
+    enum LayoutPosition
+    {
+        LayoutPosRight   = 0,
+        LayoutPosLeft    = 1,
+        LayoutPosTop     = 2,
+        LayoutPosBottom  = 3,
+        LayoutPosCount
+    };
+
+
 // Public Structures
 public:
 
@@ -74,12 +87,18 @@ public:
     /**
      * @brief Streamlines layout.
      */
-    struct Layout
+    struct Layout : public StaticArray<LayoutType, LayoutPosCount>
     {
-        LayoutType top;
-        LayoutType right;
-        LayoutType bottom;
-        LayoutType left;
+        using StaticArray<LayoutType, LayoutPosCount>::StaticArray;
+    };
+
+
+    /**
+     * @brief Layout inlet velocities.
+     */
+    struct InletVelocities : public StaticArray<units::Velocity, LayoutPosCount>
+    {
+        using StaticArray<units::Velocity, LayoutPosCount>::StaticArray;
     };
 
 
@@ -126,13 +145,13 @@ public:
 
 
     /**
-     * @brief Returns inflow velocity.
+     * @brief Returns layout inlet velocities.
      *
      * @return
      */
-    VelocityVector getVelocityInflow() const noexcept
+    InletVelocities getInletVelocities() const noexcept
     {
-        return m_velocityInflow;
+        return m_inletVelocities;
     }
 
 
@@ -207,13 +226,13 @@ public:
 
 
     /**
-     * @brief Set inflow velocity.
+     * @brief Set layout inlet velocities.
      *
-     * @param velocity
+     * @param velocities
      */
-    void setVelocityInflow(VelocityVector velocity) noexcept
+    void setInletVelocities(InletVelocities velocities) noexcept
     {
-        m_velocityInflow = velocity;
+        m_inletVelocities = velocities;
     }
 
 
@@ -365,20 +384,11 @@ protected:
      * @brief Calculate inlet velocity profile.
      *
      * @param coord
+     * @param pos
      *
      * @return
      */
-    VelocityVector inletVelocityProfileX(Lattice::CoordinateType coord) const noexcept;
-
-
-    /**
-     * @brief Calculate inlet velocity profile.
-     *
-     * @param coord
-     *
-     * @return
-     */
-    VelocityVector inletVelocityProfileY(Lattice::CoordinateType coord) const noexcept;
+    VelocityVector inletVelocityProfile(Lattice::CoordinateType coord, LayoutPosition pos) const noexcept;
 
 
     /**
@@ -402,11 +412,42 @@ protected:
     VelocityVector calculateMaxVelocity(PositionVector dl) const noexcept;
 
 
+    /**
+     * @brief Calculate viscosity from relaxation time.
+     *
+     * @return
+     */
+    RealType calculateViscosity() const noexcept
+    {
+        return (getTau() - 0.5) / 3.0;
+    }
+
+
+    /**
+     * @brief Init border barrier.
+     *
+     * @param simulation
+     * @param pos
+     */
+    void initBorderBarrier(simulator::Simulation& simulation, LayoutPosition pos);
+
+
+    /**
+     * @brief Init border inlet/outlet.
+     *
+     * @param simulation
+     * @param pos
+     * @param vMax
+     */
+    void initBorderInletOutlet(const simulator::Simulation& simulation,
+        LayoutPosition pos, const VelocityVector& vMax);
+
+
 // Private Data Members
 private:
 
-    /// In-flow velocity.
-    VelocityVector m_velocityInflow{units::um_s(10.f), Zero};
+    /// Inlet velocities
+    InletVelocities m_inletVelocities;
 
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
@@ -427,7 +468,7 @@ private:
     Lattice m_lattice;
 
     /// Streamlines layout.
-    Layout m_layout{LayoutType::Barrier, LayoutType::Outlet, LayoutType::Barrier, LayoutType::Inlet};
+    Layout m_layout;
 
 #if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Rendering grid with filled cells.

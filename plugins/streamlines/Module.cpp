@@ -74,7 +74,32 @@ InStream& operator>>(InStream& is, Module::LayoutType& type)
  */
 InStream& operator>>(InStream& is, Module::Layout& layout)
 {
-    return is >> std::skipws >> layout.top >> layout.right >> layout.bottom >> layout.left;
+    return is >> std::skipws >>
+        layout[Module::LayoutPosTop] >>
+        layout[Module::LayoutPosRight] >>
+        layout[Module::LayoutPosBottom] >>
+        layout[Module::LayoutPosLeft]
+    ;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Read inlet velocities.
+ *
+ * @param is         Input stream.
+ * @param velocities
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Module::InletVelocities& velocities)
+{
+    return is >> std::skipws >>
+        velocities[Module::LayoutPosTop] >>
+        velocities[Module::LayoutPosRight] >>
+        velocities[Module::LayoutPosBottom] >>
+        velocities[Module::LayoutPosLeft]
+    ;
 }
 
 /* ************************************************************************ */
@@ -83,68 +108,30 @@ namespace {
 
 /* ************************************************************************ */
 
-/**
- * @brief Initialize barrier.
- *
- * @param simulation
- * @param lattice
- * @param rng
- * @param edges
- */
-void initBarrier(
-    simulator::Simulation& simulation, Lattice& lattice,
-    Vector<Lattice::SizeType> rngMin, Vector<Lattice::SizeType> rngMax,
-    Vector<int> edges1, Vector<int> edges2
-)
-{
-    const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
-
-    // Create barrier
-    auto obstacle = simulation.createObject<simulator::Obstacle>();
-    auto& shapes = obstacle->getMutableShapes();
-    shapes.resize(1);
-
-    // Init shape
-    shapes[0] = simulator::Shape::makeEdges({edges1 * worldSizeHalf, edges2 * worldSizeHalf});
-    obstacle->initShapes();
-
-    // Set obstacles
-    for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-            lattice[{x, y}].setStaticObstacle(true);
-}
+constexpr StaticArray<StaticArray<Vector<int>, 2>, Module::LayoutPosCount> EDGES{{
+    {{{-1,  1}, { 1,  1}}},
+    {{{-1, -1}, { 1, -1}}},
+    {{{-1, -1}, {-1,  1}}},
+    {{{ 1, -1}, { 1,  1}}}
+}};
 
 /* ************************************************************************ */
 
 /**
- * @brief Init boundary condition.
+ * @brief Calculate Poiseuille flow profile.
  *
- * @param type
- * @param lattice
- * @param rngMin
- * @param rngMax
+ * @param max  Max speed.
+ * @param pos  Position from range.
+ * @param size Range size.
+ *
+ * @return
  */
-template<typename VelFn>
-void initBoundary(
-    Module::LayoutType type, Lattice& lattice,
-    Vector<Lattice::SizeType> rngMin, Vector<Lattice::SizeType> rngMax,
-    VelFn velFn
-)
+template<typename T>
+units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
 {
-    if (type == Module::LayoutType::Outlet)
-    {
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-            for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-                if (!lattice[{x, y}].isObstacle())
-                    lattice[{x, y}].outlet();
-    }
-    else if (type == Module::LayoutType::Inlet)
-    {
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-            for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-                if (!lattice[{x, y}].isObstacle())
-                    lattice[{x, y}].inlet(velFn({x, y}));
-    }
+    const RealType posF = static_cast<RealType>(pos) - 1.0;
+    const RealType sizeF = static_cast<RealType>(size) - 1.0;
+    return 4.f * max / (sizeF * sizeF) * (sizeF * posF - posF * posF);
 }
 
 /* ************************************************************************ */
@@ -155,7 +142,10 @@ void initBoundary(
 
 Module::Module()
 {
-    // Nothing to do
+    m_layout[LayoutPosTop]    = LayoutType::Barrier;
+    m_layout[LayoutPosBottom] = LayoutType::Barrier;
+    m_layout[LayoutPosLeft]   = LayoutType::Inlet;
+    m_layout[LayoutPosRight]  = LayoutType::Outlet;
 }
 
 /* ************************************************************************ */
@@ -181,51 +171,13 @@ void Module::setStaticObstacleMap(const ObstacleMap& map)
 
 void Module::init(simulator::Simulation& simulation)
 {
-    // Initialize lattice data
-    const auto& size = m_lattice.getSize();
-
     // Physical size of one lattice cell
-    const auto dl = simulation.getWorldSize() / size;
+    const auto dl = simulation.getWorldSize() / m_lattice.getSize();
 
-    // Create top barrier
-    if (m_layout.top == LayoutType::Barrier)
-    {
-        initBarrier(
-            simulation, m_lattice,
-            {0, size.getHeight() - 1}, {size.getWidth(), size.getHeight()},
-            {-1, 1}, {1, 1}
-        );
-    }
-
-    // Create bottom barrier
-    if (m_layout.bottom == LayoutType::Barrier)
-    {
-        initBarrier(
-            simulation, m_lattice,
-            {0, 0}, {size.getWidth(), 1},
-            {-1, -1}, {1, -1}
-        );
-    }
-
-    // Create right barrier
-    if (m_layout.right == LayoutType::Barrier)
-    {
-        initBarrier(
-            simulation, m_lattice,
-            {size.getWidth() - 1, 0}, {size.getWidth(), size.getHeight()},
-            {-1, -1}, {-1, 1}
-        );
-    }
-
-    // Create left barrier
-    if (m_layout.left == LayoutType::Barrier)
-    {
-        initBarrier(
-            simulation, m_lattice,
-            {0, 0}, {1, size.getHeight()},
-            {1, -1}, {1, 1}
-        );
-    }
+    // Create barriers
+    for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
+        if (m_layout[pos] == LayoutType::Barrier)
+            initBorderBarrier(simulation, static_cast<LayoutPosition>(pos));
 
     // Calculate values
     const auto vMax = calculateMaxVelocity(dl);
@@ -302,8 +254,8 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     if (getTau() == 0)
         throw InvalidArgumentException("Relaxation time cannot be zero");
 
-    // Inflow velocity
-    setVelocityInflow(config.get("velocity-inflow", getVelocityInflow()));
+    // Inlet velocities
+    setInletVelocities(config.get("inlet-velocities", getInletVelocities()));
 
     // Viscosity
     setKinematicViscosity(config.get("kinematic-viscosity", getKinematicViscosity()));
@@ -499,8 +451,8 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                 },
                 [this, &velocity, &count] (Coordinate&& coord) {
                     // TODO: based on layout
-                    velocity += inletVelocityProfileX(coord);
-                    ++count;
+                    //velocity += inletVelocityProfileX(coord);
+                    //++count;
                 },
                 shape, step, coord, m_lattice.getSize(), {}, 2
             );
@@ -538,69 +490,182 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
 
 void Module::applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& vMax)
 {
-    // maximum velocity of the Poiseuille inflow
-    const auto size = m_lattice.getSize();
-
     // Init boundaries
-    initBoundary(m_layout.top, m_lattice, {0, size.getHeight() - 1}, {size.getWidth(), size.getHeight()}, [&](Lattice::CoordinateType c) {
-        return -1 * inletVelocityProfileY({c.getX(), size.getHeight() - 1}) / vMax;
-    });
-    initBoundary(m_layout.right, m_lattice, {size.getWidth() - 1, 0}, {size.getWidth(), size.getHeight()}, [&](Lattice::CoordinateType c) {
-        return -1 * inletVelocityProfileX({size.getWidth() - 1, c.getY()}) / vMax;
-    });
-    initBoundary(m_layout.bottom, m_lattice, {0, 0}, {size.getWidth(), 1}, [&](Lattice::CoordinateType c) {
-        return inletVelocityProfileY({c.getX(), 0}) / vMax;
-    });
-    initBoundary(m_layout.left, m_lattice, {0, 0}, {1, size.getHeight()}, [&](Lattice::CoordinateType c) {
-        return inletVelocityProfileX({0, c.getY()}) / vMax;
-    });
+    for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
+        initBorderInletOutlet(simulation, static_cast<LayoutPosition>(pos), vMax);
 }
 
 /* ************************************************************************ */
 
-VelocityVector Module::inletVelocityProfileX(Lattice::CoordinateType coord) const noexcept
+VelocityVector Module::inletVelocityProfile(Lattice::CoordinateType coord, LayoutPosition pos) const noexcept
 {
-    return {getVelocityInflow().getX(), Zero};
-
-    // maximum velocity of the Poiseuille inflow
     const auto size = m_lattice.getSize();
 
-    const RealType y = static_cast<RealType>(coord.getY() - 1);
-    const RealType l = static_cast<RealType>(size.getHeight() - 1);
-    return {4.f * getVelocityInflow().getX() / (l * l) * (l * y - y * y), Zero};
-}
+    //return {getVelocityInflow().getX(), Zero};
 
-/* ************************************************************************ */
+    switch (pos)
+    {
+    case LayoutPosTop:
+        return {
+            Zero,
+            -calcPoiseuilleFlow(getInletVelocities()[pos], coord.getX(), size.getWidth())
+        };
+        break;
 
-VelocityVector Module::inletVelocityProfileY(Lattice::CoordinateType coord) const noexcept
-{
-    return {Zero, getVelocityInflow().getY()};
+    case LayoutPosBottom:
+        return {
+            Zero,
+            calcPoiseuilleFlow(getInletVelocities()[pos], coord.getX(), size.getWidth())
+        };
+        break;
 
-    // maximum velocity of the Poiseuille inflow
-    const auto size = m_lattice.getSize();
+    case LayoutPosRight:
+        return {
+            -calcPoiseuilleFlow(getInletVelocities()[pos], coord.getY(), size.getHeight()),
+            Zero
+        };
+        break;
 
-    const RealType y = static_cast<RealType>(coord.getX() - 1);
-    const RealType l = static_cast<RealType>(size.getWidth() - 1);
-    return {Zero, 4.f * getVelocityInflow().getY() / (l * l) * (l * y - y * y)};
+    case LayoutPosLeft:
+        return {
+            calcPoiseuilleFlow(getInletVelocities()[pos], coord.getY(), size.getHeight()),
+            Zero
+        };
+        break;
+
+    default:
+        break;
+    }
+
+    return {Zero, Zero};
 }
 
 /* ************************************************************************ */
 
 RealType Module::calculateCoefficient(units::Time step, PositionVector dl) const noexcept
 {
-    const auto viscosity = (getTau() - 0.5) / 3.0;
-    return viscosity * (getIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / step;
+    return calculateViscosity() * (getIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / step;
 }
 
 /* ************************************************************************ */
 
 VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
 {
-    const auto viscosity = (getTau() - 0.5) / 3.0;
-    return (LatticeData::MAX_SPEED / viscosity) * VelocityVector{
+    return (LatticeData::MAX_SPEED / calculateViscosity()) * VelocityVector{
         getKinematicViscosity() / dl.getX(),
         getKinematicViscosity() / dl.getY()
     };
+}
+
+/* ************************************************************************ */
+
+void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition pos)
+{
+    const auto& size = m_lattice.getSize();
+    const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
+
+    // Create barrier
+    auto obstacle = simulation.createObject<simulator::Obstacle>();
+    auto& shapes = obstacle->getMutableShapes();
+    shapes.resize(1);
+
+    // Init shape
+    shapes[0] = simulator::Shape::makeEdges({
+        EDGES[pos][0] * worldSizeHalf,
+        EDGES[pos][1] * worldSizeHalf
+    });
+    obstacle->initShapes();
+
+    Vector<Lattice::SizeType> rngMin;
+    Vector<Lattice::SizeType> rngMax;
+
+    switch (pos)
+    {
+    case LayoutPosTop:
+        rngMin = {0, size.getHeight() - 1};
+        rngMax = {size.getWidth(), size.getHeight()};
+        break;
+
+    case LayoutPosBottom:
+        rngMin = {0, 0};
+        rngMax = {size.getWidth(), 1};
+        break;
+
+    case LayoutPosRight:
+        rngMin = {size.getWidth() - 1, 0};
+        rngMax = {size.getWidth(), size.getHeight()};
+        break;
+
+    case LayoutPosLeft:
+        rngMin = {0, 0};
+        rngMax = {1, size.getHeight()};
+        break;
+
+    default:
+        break;
+    }
+
+    // Set obstacles
+    for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+            m_lattice[{x, y}].setStaticObstacle(true);
+}
+
+/* ************************************************************************ */
+
+void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
+    LayoutPosition pos, const VelocityVector& vMax)
+{
+    const auto& size = m_lattice.getSize();
+
+    Vector<Lattice::SizeType> rngMin;
+    Vector<Lattice::SizeType> rngMax;
+    LatticeData::Direction dir;
+
+    switch (pos)
+    {
+    case LayoutPosTop:
+        rngMin = {0, size.getHeight() - 1};
+        rngMax = {size.getWidth(), size.getHeight()};
+        dir = LatticeData::DirDown;
+        break;
+
+    case LayoutPosBottom:
+        rngMin = {0, 0};
+        rngMax = {size.getWidth(), 1};
+        dir = LatticeData::DirUp;
+        break;
+
+    case LayoutPosRight:
+        rngMin = {size.getWidth() - 1, 0};
+        rngMax = {size.getWidth(), size.getHeight()};
+        dir = LatticeData::DirLeft;
+        break;
+
+    case LayoutPosLeft:
+        rngMin = {0, 0};
+        rngMax = {1, size.getHeight()};
+        dir = LatticeData::DirRight;
+        break;
+
+    default:
+        break;
+    }
+
+    if (m_layout[pos] == LayoutType::Outlet)
+    {
+        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+            for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+                if (!m_lattice[{x, y}].isObstacle())
+                    m_lattice[{x, y}].outlet(dir);
+    }
+    else if (m_layout[pos] == LayoutType::Inlet)
+    {
+        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+            for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+                if (!m_lattice[{x, y}].isObstacle())
+                    m_lattice[{x, y}].inlet(inletVelocityProfile({x, y}, pos) / vMax, dir);
+    }
 }
 
 /* ************************************************************************ */

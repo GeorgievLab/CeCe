@@ -32,14 +32,14 @@ void python_wrapper_module()
 
     using type = plugin::streamlines::Module*;
     using type_def = TypeDefinition<type>;
-
+/*
     static PyGetSetDef properties[] = {
         defineProperty<1, type>("velocityInflow", &plugin::streamlines::Module::getVelocityInflow, &plugin::streamlines::Module::setVelocityInflow),
-        {NULL}  /* Sentinel */
+        {NULL}
     };
-
+*/
     type_def::init("streamlines.Module", "simulator.Module");
-    type_def::definition.tp_getset = properties;
+    //type_def::definition.tp_getset = properties;
     type_def::ready();
 
     Py_INCREF(&type_def::definition);

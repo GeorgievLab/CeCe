@@ -16,10 +16,60 @@
 #include <cassert>
 #include <cstdlib>
 
+// Simulator
+#include "core/StaticArray.hpp"
+
 /* ************************************************************************ */
 
 namespace plugin {
 namespace streamlines {
+
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> CENTER_LINE{{
+    {0, 2, 4},
+    {0, 2, 4},
+    {0, 1, 3},
+    {0, 1, 3}
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> NEXT_LINE{{
+    {1, 5, 8},
+    {3, 6, 7},
+    {2, 5, 6},
+    {4, 7, 8}
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> PREV_LINE{{
+    {3, 6, 7},
+    {1, 5, 8},
+    {4, 7, 8},
+    {2, 5, 6}
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<Vector<LatticeData::ValueType>, LatticeData::DirCount> VELOCITIES{{
+    { 1,  0}, {-1,  0}, { 0,  1}, { 0, -1}
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 2>, LatticeData::DirCount> INDICES1{{
+    {{3, 1}}, {{1, 3}}, {{2, 4}}, {{4, 2}}
+}};
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 
@@ -35,14 +85,14 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 /* ************************************************************************ */
 
-void LatticeData::inlet(const Vector<ValueType>& v) noexcept
+void LatticeData::inlet(const Vector<ValueType>& v, Direction dir) noexcept
 {
     // rho(:,in,col) = 1 ./ (1-ux(:,in,col)) .* ( ...
     // sum(fIn([1,3,5],in,col)) + 2*sum(fIn([4,7,8],in,col)) );
     const ValueType rho =
         RealType(1)
-        / (RealType(1) - std::abs(v.getX()))
-        * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7}));
+        / (RealType(1) - v.dot(VELOCITIES[dir]))
+        * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(PREV_LINE[dir]));
 
     assert(rho > 0);
 
@@ -51,11 +101,15 @@ void LatticeData::inlet(const Vector<ValueType>& v) noexcept
 
     // Get velocity
     const auto vel = calcVelocity();
+    const auto velDir = vel.dot(VELOCITIES[dir]);
+
+    // Alias
+    const auto& index1 = INDICES1[dir];
 
     // Microscopic boundary conditions: inlet (Zou/He BC)
     // fIn(2,in,col) = fIn(4,in,col) + 2/3*rho(:,in,col).*ux(:,in,col);
-    m_values[1] = m_values[3]
-        + RealType(2) / RealType(3) * rho * vel.getX()
+    m_values[index1[0]] = m_values[index1[1]]
+        + RealType(2) / RealType(3) * rho * velDir;
     ;
 
     // fIn(6,in,col) = fIn(8,in,col) + 1/2*(fIn(5,in,col)-fIn(3,in,col)) ...
@@ -79,19 +133,24 @@ void LatticeData::inlet(const Vector<ValueType>& v) noexcept
 
 /* ************************************************************************ */
 
-void LatticeData::outlet() noexcept
+void LatticeData::outlet(Direction dir) noexcept
 {
-    const ValueType rho = 1;
-    const auto vel = Vector<ValueType>(
-        RealType(-1) + RealType(1) / rho * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7})),
-        0
-    );
+    constexpr ValueType rho = 1.0;
+
+    // Speed
+    const auto speed = (-RealType(1) + RealType(1) / rho * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(NEXT_LINE[dir])));
+
+    // Velocity vector
+    const Vector<ValueType> vel = speed * VELOCITIES[dir];
 
     // Init
-    init(vel, ValueType(1));
+    init(vel, rho);
+
+    // Alias
+    const auto& index1 = INDICES1[dir];
 
     // fIn(4,out,col) = fIn(2,out,col) - 2/3*rho(:,out,col).*ux(:,out,col);
-    m_values[3] = m_values[1] - RealType(2) / RealType(3) * rho * vel.getX();
+    m_values[index1[0]] = m_values[index1[1]] - RealType(2) / RealType(3) * rho * speed;
 
     // fIn(8,out,col) = fIn(6,out,col) + 1/2*(fIn(3,out,col)-fIn(5,out,col)) ...
     //                                 - 1/2*rho(:,out,col).*uy(:,out,col) ...

@@ -38,6 +38,23 @@ class LatticeData
 {
 
 
+// Public Enums
+public:
+
+
+    /**
+     * @brief Inlet/Outlet direction.
+     */
+    enum Direction
+    {
+        DirRight   = 0,
+        DirLeft    = 1,
+        DirUp      = 2,
+        DirDown    = 3,
+        DirCount
+    };
+
+
 // Public Types
 public:
 
@@ -269,15 +286,18 @@ public:
     /**
      * @brief Set as inlet.
      *
-     * @param v Inlet velocity.
+     * @param v   Inlet velocity.
+     * @param dir Direction.
      */
-    void inlet(const Vector<ValueType>& v) noexcept;
+    void inlet(const Vector<ValueType>& v, Direction dir = DirRight) noexcept;
 
 
     /**
      * @brief Set as outlet.
+     *
+     * @param dir Direction.
      */
-    void outlet() noexcept;
+    void outlet(Direction dir = DirRight) noexcept;
 
 
 // Public Operations
@@ -312,6 +332,25 @@ public:
      * @return
      */
     ValueType sumValues(std::initializer_list<IndexType> list) const noexcept
+    {
+        ValueType res{};
+
+        for (auto i : list)
+            res += m_values[i];
+
+        return res;
+    }
+
+
+    /**
+     * @brief Compute of total sum of given value indices.
+     *
+     * @tparam N
+     *
+     * @return
+     */
+    template<std::size_t N>
+    ValueType sumValues(StaticArray<IndexType, N> list) const noexcept
     {
         ValueType res{};
 

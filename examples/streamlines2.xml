@@ -10,10 +10,8 @@
 
     <!-- Define streamlines -->
     <module name="streamlines-image" grid="200 100"
-            coefficient="0.01" iterations="3"
-            velocity-inflow="400um/s"
-            kinematic-viscosity="0.658mm2/s"
-            layout="outlet outlet barrier inlet"
+            inlet-velocities="0 0 1000um/s 100um/s"
+            layout="outlet outlet inlet inlet"
             image="obstacle2.png" />
     <amodule name="streamlines-image.store-state" />
 
