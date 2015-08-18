@@ -225,8 +225,19 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     if (getTau() == 0)
         throw InvalidArgumentException("Relaxation time cannot be zero");
 
-    // Inlet velocities
-    setInletVelocities(config.get("inlet-velocities", getInletVelocities()));
+    if (config.has("inlet-velocity"))
+    {
+        auto vel = config.get<units::Velocity>("inlet-velocity");
+        m_inletVelocities[LayoutPosTop]    = vel;
+        m_inletVelocities[LayoutPosBottom] = vel;
+        m_inletVelocities[LayoutPosLeft]   = vel;
+        m_inletVelocities[LayoutPosRight]  = vel;
+    }
+    else
+    {
+        // Inlet velocities
+        setInletVelocities(config.get("inlet-velocities", getInletVelocities()));
+    }
 
     // Viscosity
     setKinematicViscosity(config.get("kinematic-viscosity", getKinematicViscosity()));
