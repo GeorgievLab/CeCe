@@ -63,12 +63,6 @@ constexpr StaticArray<Vector<LatticeData::ValueType>, LatticeData::DirCount> VEL
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeData::IndexType, 2>, LatticeData::DirCount> INDICES1{{
-    {{3, 1}}, {{1, 3}}, {{2, 4}}, {{4, 2}}
-}};
-
-/* ************************************************************************ */
-
 }
 
 /* ************************************************************************ */
@@ -99,36 +93,8 @@ void LatticeData::inlet(const Vector<ValueType>& v, Direction dir) noexcept
     // Initialize
     init(v, rho);
 
-    // Get velocity
-    const auto vel = calcVelocity();
-    const auto velDir = vel.dot(VELOCITIES[dir]);
-
-    // Alias
-    const auto& index1 = INDICES1[dir];
-
-    // Microscopic boundary conditions: inlet (Zou/He BC)
-    // fIn(2,in,col) = fIn(4,in,col) + 2/3*rho(:,in,col).*ux(:,in,col);
-    m_values[index1[0]] = m_values[index1[1]]
-        + RealType(2) / RealType(3) * rho * velDir;
-    ;
-
-    // fIn(6,in,col) = fIn(8,in,col) + 1/2*(fIn(5,in,col)-fIn(3,in,col)) ...
-    //                               + 1/2*rho(:,in,col).*uy(:,in,col) ...
-    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
-    m_values[5] = m_values[7]
-        + RealType(1) / RealType(2) * (m_values[4] - m_values[2])
-        + RealType(1) / RealType(2) * rho * vel.getY()
-        + RealType(1) / RealType(6) * rho * vel.getX()
-    ;
-
-    // fIn(9,in,col) = fIn(7,in,col) + 1/2*(fIn(3,in,col)-fIn(5,in,col)) ...
-    //                               - 1/2*rho(:,in,col).*uy(:,in,col) ...
-    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
-    m_values[8] = m_values[6]
-        + RealType(1) / RealType(2) * (m_values[2] - m_values[4])
-        - RealType(1) / RealType(2) * rho * vel.getY()
-        + RealType(1) / RealType(6) * rho * vel.getX()
-    ;
+    // Zou/He
+    microscopicBc(dir, calcVelocity(), rho);
 }
 
 /* ************************************************************************ */
@@ -146,29 +112,8 @@ void LatticeData::outlet(Direction dir) noexcept
     // Init
     init(vel, rho);
 
-    // Alias
-    const auto& index1 = INDICES1[dir];
-
-    // fIn(4,out,col) = fIn(2,out,col) - 2/3*rho(:,out,col).*ux(:,out,col);
-    m_values[index1[0]] = m_values[index1[1]] - RealType(2) / RealType(3) * rho * speed;
-
-    // fIn(8,out,col) = fIn(6,out,col) + 1/2*(fIn(3,out,col)-fIn(5,out,col)) ...
-    //                                 - 1/2*rho(:,out,col).*uy(:,out,col) ...
-    //                                 - 1/6*rho(:,out,col).*ux(:,out,col);
-    m_values[7] = m_values[5]
-        + RealType(1) / RealType(2) * (m_values[2] - m_values[4])
-        - RealType(1) / RealType(2) * rho * vel.getY()
-        + RealType(1) / RealType(6) * rho * vel.getX()
-    ;
-
-    // fIn(7,out,col) = fIn(9,out,col) + 1/2*(fIn(5,out,col)-fIn(3,out,col)) ...
-    //                                 + 1/2*rho(:,out,col).*uy(:,out,col) ...
-    //                                 - 1/6*rho(:,out,col).*ux(:,out,col);
-    m_values[6] = m_values[8]
-        + RealType(1) / RealType(2) * (m_values[4] - m_values[2])
-        + RealType(1) / RealType(2) * rho * vel.getY()
-        - RealType(1) / RealType(6) * rho * vel.getX()
-    ;
+    // Zou/He
+    microscopicBc(dir, vel, rho);
 }
 
 /* ************************************************************************ */
@@ -237,6 +182,55 @@ void LatticeData::collide(ValueType omega)
             assert(m_values[alpha] >= 0);
         }
     }
+}
+
+/* ************************************************************************ */
+
+void LatticeData::microscopicBc(Direction dir, const Vector<ValueType>& vel, ValueType rho) noexcept
+{
+    // FIXME: broken
+#if BROKEN
+    constexpr StaticArray<StaticArray<IndexType, 2>, DirCount> INDICES1{{
+        {{1, 3}}, {{3, 1}}, {{2, 4}}, {{4, 2}}
+    }};
+    constexpr StaticArray<StaticArray<IndexType, 4>, DirCount> INDICES2{{
+        {{5, 7, 4, 2}}, {{7, 5, 2, 4}}, {{5, 7, 3, 1}}, {{7, 5, 1, 3}}
+    }};
+    constexpr StaticArray<StaticArray<IndexType, 4>, DirCount> INDICES3{{
+        {{8, 6, 2, 4}}, {{6, 8, 4, 2}}, {{6, 8, 1, 3}}, {{8, 6, 3, 1}}
+    }};
+    constexpr StaticArray<Vector<ValueType>, DirCount> VELOCITIES_ORT{{
+        { 0,  1}, { 0, -1}, { 1,  0}, {-1,  0}
+    }};
+    constexpr StaticArray<LatticeData::ValueType, DirCount> MULTIPLICATOR_ORT{{
+        -1, 1, -1, 1
+    }};
+
+    const auto velDir = vel.dot(VELOCITIES[dir]);
+    const auto velOrt = vel.dot(VELOCITIES_ORT[dir]);
+
+    // Alias
+    const auto& index1 = INDICES1[dir];
+    const auto& index2 = INDICES2[dir];
+    const auto& index3 = INDICES3[dir];
+
+    // First fix
+    m_values[index1[0]] = m_values[index1[1]] - RealType(2) / RealType(3) * rho * velDir;
+
+    // Second fix
+    m_values[index2[0]] = m_values[index2[1]]
+        + RealType(1) / RealType(2) * (m_values[index2[2]] - m_values[index2[3]])
+        + RealType(1) / RealType(2) * rho * velOrt
+        + RealType(1) / RealType(6) * rho * velDir
+    ;
+
+    // Third fix
+    m_values[index3[0]] = m_values[index3[1]]
+        + RealType(1) / RealType(2) * (m_values[index3[2]] - m_values[index3[3]])
+        + RealType(1) / RealType(2) * rho * MULTIPLICATOR_ORT[dir] * velOrt
+        + RealType(1) / RealType(6) * rho * velDir
+    ;
+#endif
 }
 
 /* ************************************************************************ */

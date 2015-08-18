@@ -413,6 +413,16 @@ public:
 
 
     /**
+     * @brief Microscopic boundary conditions (Zou/He).
+     *
+     * @param dir Direction.
+     * @param vel Velocity.
+     * @param rho Density.
+     */
+    void microscopicBc(Direction dir, const Vector<ValueType>& vel, ValueType rho) noexcept;
+
+
+    /**
      * @brief Calculate equilibrum values.
      *
      * @param u   Velocity vector.
