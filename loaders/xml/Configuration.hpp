@@ -95,6 +95,22 @@ public:
 
 
     /**
+     * @brief Returns list of configuration names.
+     *
+     * @return
+     */
+    DynamicArray<String> getNames() const noexcept override
+    {
+        DynamicArray<String> names;
+
+        for (auto attr : m_node.attributes())
+            names.push_back(attr.name());
+
+        return names;
+    }
+
+
+    /**
      * @brief Returns if content string is set.
      *
      * @return
@@ -149,6 +165,25 @@ public:
     }
 
 
+    /**
+     * @brief Returns list of sub-configuration names.
+     *
+     * @return
+     */
+    DynamicArray<String> getSubNames() const noexcept override
+    {
+        DynamicArray<String> names;
+
+        for (auto child : m_node.children())
+        {
+            if (std::find(names.begin(), names.end(), child.name()) == names.end())
+                names.push_back(child.name());
+        }
+
+        return names;
+    }
+
+
 // Public Mutators
 public:
 
@@ -189,7 +224,6 @@ public:
     {
         return makeUnique<ConfigImplementation>(m_node.append_child(name.getData()));
     }
-
 
 
 // Private Data Members

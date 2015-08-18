@@ -82,6 +82,14 @@ public:
 
 
         /**
+         * @brief Returns list of configuration names.
+         *
+         * @return
+         */
+        virtual DynamicArray<String> getNames() const noexcept = 0;
+
+
+        /**
          * @brief Returns string value.
          *
          * @param name Value name.
@@ -159,11 +167,25 @@ public:
          */
         virtual UniquePtr<Implementation> addSub(const StringView& name) noexcept = 0;
 
+
+        /**
+         * @brief Returns list of sub-configuration names.
+         *
+         * @return
+         */
+        virtual DynamicArray<String> getSubNames() const noexcept = 0;
+
     };
 
 
 // Public Ctors
 public:
+
+
+    /**
+     * @brief Default constructor.
+     */
+    Configuration() = default;
 
 
     /**
@@ -298,6 +320,17 @@ public:
 
 
     /**
+     * @brief Returns list of configuration names.
+     *
+     * @return
+     */
+    DynamicArray<String> getNames() const noexcept
+    {
+        return m_impl->getNames();
+    }
+
+
+    /**
      * @brief Returns if there is content.
      *
      * @return
@@ -373,6 +406,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns list of sub-configuration names.
+     *
+     * @return
+     */
+    DynamicArray<String> getConfigurationNames() const noexcept
+    {
+        return m_impl->getSubNames();
+    }
+
+
 // Public Mutators
 public:
 
@@ -441,6 +485,22 @@ public:
      * @return
      */
     FilePath buildFilePath(const FilePath& filename) const noexcept;
+
+
+    /**
+     * @brief Copy configuration from other one.
+     *
+     * @param config Source configuration.
+     */
+    void copyFrom(const Configuration& config);
+
+
+    /**
+     * @brief Clone configuration to memory.
+     *
+     * @return
+     */
+    Configuration toMemory() const;
 
 
 // Private Operations
