@@ -14,11 +14,56 @@
 
 // C++
 #include <cassert>
+#include <cstdlib>
+
+// Simulator
+#include "core/StaticArray.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
 namespace streamlines {
+
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> CENTER_LINE{{
+    {0, 2, 4},
+    {0, 2, 4},
+    {0, 1, 3},
+    {0, 1, 3}
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> NEXT_LINE{{
+    {1, 5, 8},
+    {3, 6, 7},
+    {2, 5, 6},
+    {4, 7, 8}
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> PREV_LINE{{
+    {3, 6, 7},
+    {1, 5, 8},
+    {4, 7, 8},
+    {2, 5, 6}
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<Vector<LatticeData::ValueType>, LatticeData::DirCount> VELOCITIES{{
+    { 1,  0}, {-1,  0}, { 0,  1}, { 0, -1}
+}};
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 
@@ -34,87 +79,48 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 /* ************************************************************************ */
 
-void LatticeData::inlet(const Vector<ValueType>& v) noexcept
+void LatticeData::inlet(const Vector<ValueType>& v, Direction dir) noexcept
 {
     // rho(:,in,col) = 1 ./ (1-ux(:,in,col)) .* ( ...
     // sum(fIn([1,3,5],in,col)) + 2*sum(fIn([4,7,8],in,col)) );
     const ValueType rho =
         RealType(1)
-        / (RealType(1) - v.getX())
-        * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7}));
+        / (RealType(1) - v.dot(VELOCITIES[dir]))
+        * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(PREV_LINE[dir]));
+
+    assert(rho > 0);
 
     // Initialize
     init(v, rho);
 
-    // Get velocity
-    const auto vel = calcVelocity();
-
-    // Microscopic boundary conditions: inlet (Zou/He BC)
-    // fIn(2,in,col) = fIn(4,in,col) + 2/3*rho(:,in,col).*ux(:,in,col);
-    m_values[1] = m_values[3]
-        + RealType(2) / RealType(3) * rho * vel.getX()
-    ;
-
-    // fIn(6,in,col) = fIn(8,in,col) + 1/2*(fIn(5,in,col)-fIn(3,in,col)) ...
-    //                               + 1/2*rho(:,in,col).*uy(:,in,col) ...
-    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
-    m_values[5] = m_values[7]
-        + RealType(1) / RealType(2) * (m_values[4] - m_values[2])
-        + RealType(1) / RealType(2) * rho * vel.getY()
-        + RealType(1) / RealType(6) * rho * vel.getX()
-    ;
-
-    // fIn(9,in,col) = fIn(7,in,col) + 1/2*(fIn(3,in,col)-fIn(5,in,col)) ...
-    //                               - 1/2*rho(:,in,col).*uy(:,in,col) ...
-    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
-    m_values[8] = m_values[6]
-        + RealType(1) / RealType(2) * (m_values[2] - m_values[4])
-        - RealType(1) / RealType(2) * rho * vel.getY()
-        + RealType(1) / RealType(6) * rho * vel.getX()
-    ;
+    // Zou/He
+    microscopicBc(dir, calcVelocity(), rho);
 }
 
 /* ************************************************************************ */
 
-void LatticeData::outlet() noexcept
+void LatticeData::outlet(Direction dir) noexcept
 {
-    const ValueType rho = 1;
-    const auto vel = Vector<ValueType>(
-        RealType(-1) + RealType(1) / rho * (sumValues({0, 2, 4}) + 2 * sumValues({3, 6, 7})),
-        0
-    );
+    constexpr ValueType rho = 1.0;
+
+    // Speed
+    const auto speed = (-RealType(1) + RealType(1) / rho * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(NEXT_LINE[dir])));
+
+    // Velocity vector
+    const Vector<ValueType> vel = speed * VELOCITIES[dir];
 
     // Init
-    init(vel, ValueType(1));
+    init(vel, rho);
 
-
-    // fIn(4,out,col) = fIn(2,out,col) - 2/3*rho(:,out,col).*ux(:,out,col);
-    m_values[3] = m_values[1] - RealType(2) / RealType(3) * rho * vel.getX();
-
-    // fIn(8,out,col) = fIn(6,out,col) + 1/2*(fIn(3,out,col)-fIn(5,out,col)) ...
-    //                                 - 1/2*rho(:,out,col).*uy(:,out,col) ...
-    //                                 - 1/6*rho(:,out,col).*ux(:,out,col);
-    m_values[7] = m_values[5]
-        + RealType(1) / RealType(2) * (m_values[2] - m_values[4])
-        - RealType(1) / RealType(2) * rho * vel.getY()
-        + RealType(1) / RealType(6) * rho * vel.getX()
-    ;
-
-    // fIn(7,out,col) = fIn(9,out,col) + 1/2*(fIn(5,out,col)-fIn(3,out,col)) ...
-    //                                 + 1/2*rho(:,out,col).*uy(:,out,col) ...
-    //                                 - 1/6*rho(:,out,col).*ux(:,out,col);
-    m_values[6] = m_values[8]
-        + RealType(1) / RealType(2) * (m_values[4] - m_values[2])
-        + RealType(1) / RealType(2) * rho * vel.getY()
-        - RealType(1) / RealType(6) * rho * vel.getX()
-    ;
+    // Zou/He
+    microscopicBc(dir, vel, rho);
 }
 
 /* ************************************************************************ */
 
 void LatticeData::collide(ValueType omega)
 {
-    //assert(omega < 1);
+    assert(omega <= 1);
 
     if (isStaticObstacle())
     {
@@ -176,6 +182,55 @@ void LatticeData::collide(ValueType omega)
             assert(m_values[alpha] >= 0);
         }
     }
+}
+
+/* ************************************************************************ */
+
+void LatticeData::microscopicBc(Direction dir, const Vector<ValueType>& vel, ValueType rho) noexcept
+{
+    // FIXME: broken
+#if BROKEN
+    constexpr StaticArray<StaticArray<IndexType, 2>, DirCount> INDICES1{{
+        {{1, 3}}, {{3, 1}}, {{2, 4}}, {{4, 2}}
+    }};
+    constexpr StaticArray<StaticArray<IndexType, 4>, DirCount> INDICES2{{
+        {{5, 7, 4, 2}}, {{7, 5, 2, 4}}, {{5, 7, 3, 1}}, {{7, 5, 1, 3}}
+    }};
+    constexpr StaticArray<StaticArray<IndexType, 4>, DirCount> INDICES3{{
+        {{8, 6, 2, 4}}, {{6, 8, 4, 2}}, {{6, 8, 1, 3}}, {{8, 6, 3, 1}}
+    }};
+    constexpr StaticArray<Vector<ValueType>, DirCount> VELOCITIES_ORT{{
+        { 0,  1}, { 0, -1}, { 1,  0}, {-1,  0}
+    }};
+    constexpr StaticArray<LatticeData::ValueType, DirCount> MULTIPLICATOR_ORT{{
+        -1, 1, -1, 1
+    }};
+
+    const auto velDir = vel.dot(VELOCITIES[dir]);
+    const auto velOrt = vel.dot(VELOCITIES_ORT[dir]);
+
+    // Alias
+    const auto& index1 = INDICES1[dir];
+    const auto& index2 = INDICES2[dir];
+    const auto& index3 = INDICES3[dir];
+
+    // First fix
+    m_values[index1[0]] = m_values[index1[1]] - RealType(2) / RealType(3) * rho * velDir;
+
+    // Second fix
+    m_values[index2[0]] = m_values[index2[1]]
+        + RealType(1) / RealType(2) * (m_values[index2[2]] - m_values[index2[3]])
+        + RealType(1) / RealType(2) * rho * velOrt
+        + RealType(1) / RealType(6) * rho * velDir
+    ;
+
+    // Third fix
+    m_values[index3[0]] = m_values[index3[1]]
+        + RealType(1) / RealType(2) * (m_values[index3[2]] - m_values[index3[3]])
+        + RealType(1) / RealType(2) * rho * MULTIPLICATOR_ORT[dir] * velOrt
+        + RealType(1) / RealType(6) * rho * velDir
+    ;
+#endif
 }
 
 /* ************************************************************************ */

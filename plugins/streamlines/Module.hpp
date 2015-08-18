@@ -19,6 +19,7 @@
 #include "core/Grid.hpp"
 #include "core/Real.hpp"
 #include "core/StaticArray.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 
@@ -49,6 +50,57 @@ namespace streamlines {
  */
 class Module : public simulator::Module
 {
+
+// Public Enums
+public:
+
+
+    /**
+     * @brief Layout type for side.
+     */
+    enum class LayoutType
+    {
+        None,
+        Barrier,
+        Inlet,
+        Outlet
+    };
+
+
+    /**
+     * @brief Layout position.
+     */
+    enum LayoutPosition
+    {
+        LayoutPosRight   = 0,
+        LayoutPosLeft    = 1,
+        LayoutPosTop     = 2,
+        LayoutPosBottom  = 3,
+        LayoutPosCount
+    };
+
+
+// Public Structures
+public:
+
+
+    /**
+     * @brief Streamlines layout.
+     */
+    struct Layout : public StaticArray<LayoutType, LayoutPosCount>
+    {
+        using StaticArray<LayoutType, LayoutPosCount>::StaticArray;
+    };
+
+
+    /**
+     * @brief Layout inlet velocities.
+     */
+    struct InletVelocities : public StaticArray<units::Velocity, LayoutPosCount>
+    {
+        using StaticArray<units::Velocity, LayoutPosCount>::StaticArray;
+    };
+
 
 // Public Ctors & Dtors
 public:
@@ -93,13 +145,13 @@ public:
 
 
     /**
-     * @brief Returns inflow velocity.
+     * @brief Returns layout inlet velocities.
      *
      * @return
      */
-    VelocityVector getVelocityInflow() const noexcept
+    InletVelocities getInletVelocities() const noexcept
     {
-        return m_velocityInflow;
+        return m_inletVelocities;
     }
 
 
@@ -126,13 +178,46 @@ public:
 
 
     /**
+     * @brief Returns relaxation time.
+     *
+     * @return
+     */
+    RealType getTau() const noexcept
+    {
+        return m_tau;
+    }
+
+
+    /**
      * @brief Returns inner iteration count.
      *
      * @return
      */
-    unsigned int getIterations() const noexcept
+    simulator::IterationCount getIterations() const noexcept
     {
         return m_iterations;
+    }
+
+
+    /**
+     * @brief Returns init iteration count.
+     *
+     * @return
+     */
+    simulator::IterationCount getInitIterations() const noexcept
+    {
+        return m_initIterations;
+    }
+
+
+    /**
+     * @brief Returns layout description.
+     *
+     * @return
+     */
+    const Layout& getLayout() const noexcept
+    {
+        return m_layout;
     }
 
 
@@ -141,13 +226,13 @@ public:
 
 
     /**
-     * @brief Set inflow velocity.
+     * @brief Set layout inlet velocities.
      *
-     * @param velocity
+     * @param velocities
      */
-    void setVelocityInflow(VelocityVector velocity) noexcept
+    void setInletVelocities(InletVelocities velocities) noexcept
     {
-        m_velocityInflow = velocity;
+        m_inletVelocities = velocities;
     }
 
 
@@ -182,13 +267,46 @@ public:
 
 
     /**
+     * @brief Set relaxation time.
+     *
+     * @param tau
+     */
+    void setTau(RealType tau) noexcept
+    {
+        m_tau = tau;
+    }
+
+
+    /**
      * @brief Set inner iteration count.
      *
      * @param iterations
      */
-    void setIterations(unsigned int iterations) noexcept
+    void setIterations(simulator::IterationCount iterations) noexcept
     {
         m_iterations = iterations;
+    }
+
+
+    /**
+     * @brief Set init iteration count.
+     *
+     * @param iterations
+     */
+    void setInitIterations(simulator::IterationCount iterations) noexcept
+    {
+        m_initIterations = iterations;
+    }
+
+
+    /**
+     * @brief Set layout.
+     *
+     * @param layout
+     */
+    void setLayout(Layout layout) noexcept
+    {
+        m_layout = layout;
     }
 
 
@@ -198,8 +316,10 @@ public:
 
     /**
      * @brief Initialize lattice.
+     *
+     * @param simulation
      */
-    void init();
+    void init(simulator::Simulation& simulation);
 
 
     /**
@@ -264,29 +384,91 @@ protected:
      * @brief Calculate inlet velocity profile.
      *
      * @param coord
+     * @param pos
      *
      * @return
      */
-    VelocityVector inletVelocityProfile(Lattice::CoordinateType coord) const noexcept;
+    VelocityVector inletVelocityProfile(Lattice::CoordinateType coord, LayoutPosition pos) const noexcept;
+
+
+    /**
+     * @brief Calculate coefficient.
+     *
+     * @param step Time step.
+     * @param dl   Grid cell size.
+     *
+     * @return
+     */
+    RealType calculateCoefficient(units::Time step, PositionVector dl) const noexcept;
+
+
+    /**
+     * @brief Calculate maximum velocity.
+     *
+     * @param dl Grid cell size.
+     *
+     * @return
+     */
+    VelocityVector calculateMaxVelocity(PositionVector dl) const noexcept;
+
+
+    /**
+     * @brief Calculate viscosity from relaxation time.
+     *
+     * @return
+     */
+    RealType calculateViscosity() const noexcept
+    {
+        return (getTau() - 0.5) / 3.0;
+    }
+
+
+    /**
+     * @brief Init border barrier.
+     *
+     * @param simulation
+     * @param pos
+     */
+    void initBorderBarrier(simulator::Simulation& simulation, LayoutPosition pos);
+
+
+    /**
+     * @brief Init border inlet/outlet.
+     *
+     * @param simulation
+     * @param pos
+     * @param vMax
+     */
+    void initBorderInletOutlet(const simulator::Simulation& simulation,
+        LayoutPosition pos, const VelocityVector& vMax);
 
 
 // Private Data Members
 private:
 
-    /// In-flow velocity.
-    VelocityVector m_velocityInflow{units::um_s(10.f), Zero};
+    /// Inlet velocities
+    InletVelocities m_inletVelocities;
 
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
+
+    /// Relaxation time.
+    RealType m_tau = 1;
 
     /// Fixup coefficient.
     RealType m_coefficient = 1;
 
     /// Number of inner iterations.
-    unsigned int m_iterations = 1;
+    simulator::IterationCount m_iterations = 5;
+
+    /// Number of init iterations.
+    simulator::IterationCount m_initIterations = 100;
 
     /// Lattice.
     Lattice m_lattice;
+
+    /// Streamlines layout.
+    Layout m_layout;
 
 #if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Rendering grid with filled cells.
@@ -304,6 +486,18 @@ private:
 #endif
 
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Read layout type from stream.
+ *
+ * @param is   Input stream.
+ * @param type Output type.
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Module::LayoutType& type);
 
 /* ************************************************************************ */
 

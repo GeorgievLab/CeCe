@@ -193,7 +193,11 @@ void Obstacle::initShapes()
                 vertices.push_back(b2Vec2(v.getX().value(), v.getY().value()));
 
             // Create edges loop
-            s->CreateLoop(vertices.data(), vertices.size());
+            if (vertices.size() < 3)
+                s->CreateChain(vertices.data(), vertices.size());
+            else
+                s->CreateLoop(vertices.data(), vertices.size());
+
             getBody()->CreateFixture(s.get(), 1);
             m_bodyShapes.emplace_back(s.release());
             break;

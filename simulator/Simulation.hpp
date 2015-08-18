@@ -64,6 +64,13 @@ using IterationNumber = unsigned long long;
 /* ************************************************************************ */
 
 /**
+ * @brief Type for iteration count.
+ */
+using IterationCount = IterationNumber;
+
+/* ************************************************************************ */
+
+/**
  * @brief Simulation class.
  */
 class Simulation
