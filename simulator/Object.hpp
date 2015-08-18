@@ -481,7 +481,7 @@ public:
     template<typename T, typename Message = const char*>
     T& castThrow(Message msg = "Invalid cast")
     {
-        auto ptr = cast<T>();
+        auto ptr = dynamic_cast<T*>(this);
 
         if (!ptr)
             throw InvalidCastException(msg);
@@ -503,7 +503,7 @@ public:
     template<typename T, typename Message = const char*>
     const T& castThrow(Message msg = "Invalid cast") const
     {
-        auto ptr = cast<T>();
+        const auto ptr = dynamic_cast<const T*>(this);
 
         if (!ptr)
             throw InvalidCastException(msg);
