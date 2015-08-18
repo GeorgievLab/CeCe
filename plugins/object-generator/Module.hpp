@@ -18,6 +18,7 @@
 #include "core/VectorUnits.hpp"
 #include "core/DynamicArray.hpp"
 #include "simulator/Module.hpp"
+#include "simulator/Configuration.hpp"
 
 /* ************************************************************************ */
 
@@ -43,11 +44,8 @@ struct ObjectDesc
     /// Maximum spawn position.
     PositionVector positionMax;
 
-    /// Object starting velocity.
-    VelocityVector velocity;
-
-    /// Object programs.
-    DynamicArray<String> programs;
+    /// Object configuration
+    simulator::Configuration config;
 };
 
 /* ************************************************************************ */
