@@ -53,9 +53,7 @@
 
     <!-- Enable streamlines with diffusion -->
     <module name="streamlines" grid="160 90"
-            coefficient="0.01"
-            iterations="3"
-            velocity-inflow="200um/s"
+            inlet-velocity="500um/s"
             kinematic-viscosity="0.658mm2/s"
     />
     <module name="diffusion-streamlines" />
