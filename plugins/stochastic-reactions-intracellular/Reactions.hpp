@@ -196,12 +196,12 @@ public:
      */
     void addCondition(const String& name, unsigned int requirement, bool clone, const DynamicArray<T>& no_cond)
     {
-        unsigned int column_index = getIndexOfMoleculeColumn(name);
         if (clone)
         {
             m_rules.push_back(no_cond);
             m_rates.push_back(m_rates[m_rates.size() - 1]);
         }
+        unsigned int column_index = getIndexOfMoleculeColumn(name);
         if (requirement == 0)
             m_rules[m_rules.size() - 1][column_index].mustnt_have = true;
         else
