@@ -112,7 +112,7 @@ protected:
      */
     static plugin::cell::CellBase& getCell(simulator::Object& object)
     {
-        // initialize cell
+        // cast object to cell
         if (!object.is<plugin::cell::CellBase>())
             throw RuntimeException("Only object type cell is allowed to have a reaction.");
         return *object.cast<plugin::cell::CellBase>();
@@ -129,6 +129,8 @@ protected:
     int getIndexOfMoleculeColumn(const String& id)
     {
         auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
+
+        // add given molucule when not present
         if (pointer == m_ids.end())
         {
             for (unsigned int i = 0; i < m_rules.size(); i++)
@@ -138,6 +140,8 @@ protected:
             m_ids.push_back(id);
             return m_ids.size() - 1;
         }
+
+        // return distance between pointers
         return std::distance(m_ids.begin(), pointer);
     }
 
@@ -151,9 +155,12 @@ protected:
      */
     void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
     {
+        // initialize array
         DynamicArray<T> array;
         if (m_rules.size() > 0)
             array.resize(m_rules[0].size());
+
+        // extend with requirements
         for (unsigned int i = 0; i < ids_minus.size(); i++)
         {
             if (ids_minus[i] == "null")
@@ -166,6 +173,8 @@ protected:
             }
             array[index].requirement += 1;
         }
+
+        //extend with products
         for (unsigned int i = 0; i < ids_plus.size(); i++)
         {
             if (ids_plus[i] == "null")
@@ -194,14 +203,22 @@ public:
      *
      * @return
      */
-    void addCondition(const String& name, unsigned int requirement, bool clone, const DynamicArray<T>& no_cond)
+    void addCondition(const String& name, unsigned int requirement, bool clone, DynamicArray<T>& no_cond)
     {
+        // add unmodified reaction rule after OR is reached
         if (clone)
         {
+            // backup of unmodified reaction can be outdated (shorter)
+            no_cond.resize(m_ids.size());
+
             m_rules.push_back(no_cond);
             m_rates.push_back(m_rates[m_rates.size() - 1]);
         }
+
+        // get index of required molecule
         unsigned int column_index = getIndexOfMoleculeColumn(name);
+
+        // add requirement
         if (requirement == 0)
             m_rules[m_rules.size() - 1][column_index].mustnt_have = true;
         else
