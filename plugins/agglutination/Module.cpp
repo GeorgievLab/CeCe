@@ -150,14 +150,16 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
 void Module::BeginContact(b2Contact* contact)
 {
-    auto fa = contact->GetFixtureA();
-    auto fb = contact->GetFixtureB();
-    auto ba = fa->GetBody();
-    auto bb = fb->GetBody();
-    auto& oa = static_cast<simulator::Object*>(ba->GetUserData())->castThrow<plugin::cell::CellBase>();
-    auto& ob = static_cast<simulator::Object*>(bb->GetUserData())->castThrow<plugin::cell::CellBase>();
-    auto radius1 = oa.getShapes()[0].getCircle().radius;
-    auto radius2 = ob.getShapes()[0].getCircle().radius;
+    auto ba = contact->GetFixtureA()->GetBody();
+    auto bb = contact->GetFixtureB()->GetBody();
+    auto oa = static_cast<simulator::Object*>(ba->GetUserData());
+    auto ob = static_cast<simulator::Object*>(bb->GetUserData());
+    if (!oa->is<plugin::cell::CellBase>() || !ob->is<plugin::cell::CellBase>())
+        return;
+    auto& ca = static_cast<simulator::Object*>(ba->GetUserData())->castThrow<plugin::cell::CellBase>();
+    auto& cb = static_cast<simulator::Object*>(bb->GetUserData())->castThrow<plugin::cell::CellBase>();
+    auto radius1 = ca.getShapes()[0].getCircle().radius;
+    auto radius2 = cb.getShapes()[0].getCircle().radius;
 
     std::random_device rd;
     std::default_random_engine e1(rd());
@@ -166,7 +168,7 @@ void Module::BeginContact(b2Contact* contact)
     {
         std::bernoulli_distribution dist1(
             getAssociationPropensity(m_step, radius1.value(), radius2.value(),
-                oa.getMoleculeCount(m_bonds[i].receptor), ob.getMoleculeCount(m_bonds[i].ligand),
+                ca.getMoleculeCount(m_bonds[i].receptor), cb.getMoleculeCount(m_bonds[i].ligand),
                 m_bonds[i].aConst));
         if (dist1(e1))
         {
@@ -176,7 +178,7 @@ void Module::BeginContact(b2Contact* contact)
         }
         std::bernoulli_distribution dist2(
             getAssociationPropensity(m_step, radius1.value(), radius2.value(),
-                ob.getMoleculeCount(m_bonds[i].receptor), oa.getMoleculeCount(m_bonds[i].ligand),
+                cb.getMoleculeCount(m_bonds[i].receptor), ca.getMoleculeCount(m_bonds[i].ligand),
                 m_bonds[i].aConst));
         if (dist2(e1))
         {
