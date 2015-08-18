@@ -76,6 +76,7 @@ void IntercellularReactions::initializePropensities(
     plugin::diffusion::Module* diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
 {
+    m_propensities.clear();
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {
         m_propensities.push_back(computePropensity(i, cell, diffusion, coords));
@@ -94,7 +95,6 @@ void IntercellularReactions::refreshPropensities(
     plugin::diffusion::Module* diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
 {
-    m_propensities.clear();
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {
         if (m_rules[i][index].requirement ||
