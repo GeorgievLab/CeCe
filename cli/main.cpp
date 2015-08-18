@@ -345,6 +345,9 @@ public:
             // Make the window's context current
             glfwMakeContextCurrent(m_window);
 
+            // VSync
+            glfwSwapInterval(1);
+
             // Initialize scene
             initScene();
 
@@ -595,9 +598,6 @@ private:
 
         //glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_STENCIL);
         glfwWindowHint(GLFW_SAMPLES, 8);
-
-        // VSync
-        glfwSwapInterval(1);
 
         // Set callbacks
         glfwSetWindowSizeCallback(m_window, &Simulator::windowResizeCallback);
