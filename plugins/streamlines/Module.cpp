@@ -320,6 +320,10 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
         // Map shapes border to grid
         for (const auto& shape : obj->getShapes())
         {
+            // Only circle shapes are supported
+            if (shape.getType() != simulator::ShapeType::Circle)
+                continue;
+
             VelocityVector velocity = Zero;
             unsigned long count = 0;
 
