@@ -489,6 +489,18 @@ private:
 
 /* ************************************************************************ */
 
+/**
+ * @brief Read layout type from stream.
+ *
+ * @param is   Input stream.
+ * @param type Output type.
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Module::LayoutType& type);
+
+/* ************************************************************************ */
+
 }
 }
 

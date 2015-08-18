@@ -36,35 +36,6 @@ namespace streamlines {
 /* ************************************************************************ */
 
 /**
- * @brief Read layout type from stream.
- *
- * @param is   Input stream.
- * @param type Output type.
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Module::LayoutType& type)
-{
-    String desc;
-    is >> desc;
-
-    if (desc == "none")
-        type = Module::LayoutType::None;
-    else if (desc == "barrier")
-        type = Module::LayoutType::Barrier;
-    else if (desc == "inlet")
-        type = Module::LayoutType::Inlet;
-    else if (desc == "outlet")
-        type = Module::LayoutType::Outlet;
-    else
-        throw InvalidArgumentException("Unknown layout type");
-
-    return is;
-}
-
-/* ************************************************************************ */
-
-/**
  * @brief Parse layout description.
  *
  * @param is     Input stream.
@@ -661,6 +632,27 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
                 if (!m_lattice[{x, y}].isObstacle())
                     m_lattice[{x, y}].inlet(inletVelocityProfile({x, y}, pos) / vMax, dir);
     }
+}
+
+/* ************************************************************************ */
+
+InStream& operator>>(InStream& is, Module::LayoutType& type)
+{
+    String desc;
+    is >> desc;
+
+    if (desc == "none")
+        type = Module::LayoutType::None;
+    else if (desc == "barrier")
+        type = Module::LayoutType::Barrier;
+    else if (desc == "inlet")
+        type = Module::LayoutType::Inlet;
+    else if (desc == "outlet")
+        type = Module::LayoutType::Outlet;
+    else
+        throw InvalidArgumentException("Unknown layout type");
+
+    return is;
 }
 
 /* ************************************************************************ */
