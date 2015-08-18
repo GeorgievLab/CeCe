@@ -112,6 +112,23 @@ public:
 
 
     /**
+     * @brief Returns list of configuration names.
+     *
+     * @return
+     */
+    DynamicArray<String> getNames() const noexcept override
+    {
+        DynamicArray<String> names;
+        names.reserve(m_data->values.size());
+
+        for (const auto& p : m_data->values)
+            names.push_back(std::move(p.first));
+
+        return names;
+    }
+
+
+    /**
      * @brief Returns if content string is set.
      *
      * @return
@@ -166,6 +183,23 @@ public:
             res.push_back(makeUnique<MemoryImplementation>(ptr));
 
         return res;
+    }
+
+
+    /**
+     * @brief Returns list of sub-configuration names.
+     *
+     * @return
+     */
+    DynamicArray<String> getSubNames() const noexcept override
+    {
+        DynamicArray<String> names;
+        names.reserve(m_data->data.size());
+
+        for (const auto& p : m_data->data)
+            names.push_back(p.first);
+
+        return names;
     }
 
 
@@ -246,6 +280,32 @@ FilePath Configuration::buildFilePath(const FilePath& filename) const noexcept
 
     // Return file path
     return sourceFile.parent_path() / filename;
+}
+
+/* ************************************************************************ */
+
+void Configuration::copyFrom(const Configuration& config)
+{
+    for (const auto& name : config.getNames())
+        set(name, config.get(name));
+
+    setContent(config.getContent());
+
+    // Copy subconfigurations
+    for (const auto& name : config.getConfigurationNames())
+    {
+        for (auto&& cfg : config.getConfigurations(name))
+            addConfiguration(name).copyFrom(cfg);
+    }
+}
+
+/* ************************************************************************ */
+
+Configuration Configuration::toMemory() const
+{
+    Configuration config{getSourcePath()};
+    config.copyFrom(*this);
+    return config;
 }
 
 /* ************************************************************************ */

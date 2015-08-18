@@ -29,38 +29,6 @@ namespace object_generator {
 
 /* ************************************************************************ */
 
-namespace {
-
-/* ************************************************************************ */
-
-/**
- * @brief Split string into multiple strings separated by separator.
- *
- * @param value
- * @param separator
- *
- * @return
- */
-DynamicArray<String> split(String value, char separator) noexcept
-{
-    DynamicArray<String> elems;
-    std::istringstream ss(std::move(value));
-    String item;
-
-    while (std::getline(ss, item, separator))
-    {
-        elems.push_back(item);
-    }
-
-    return elems;
-}
-
-/* ************************************************************************ */
-
-}
-
-/* ************************************************************************ */
-
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("object-generator", simulator::TimeMeasurementIterationOutput(simulation));
@@ -86,18 +54,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         std::uniform_real_distribution<float> distX(desc.positionMin.getX().value(), desc.positionMax.getX().value());
         std::uniform_real_distribution<float> distY(desc.positionMin.getY().value(), desc.positionMax.getY().value());
         object->setPosition({units::Length(distX(gen)), units::Length(distY(gen))});
-        object->setVelocity(desc.velocity);
-
-        // Create programs
-        for (const auto& name : desc.programs)
-        {
-            auto program = simulation.getProgram(name);
-
-            if (program)
-                object->addProgram(std::move(program));
-            else
-                Log::warning("Unable to create program: ", name);
-        }
+        object->configure(desc.config, simulation);
     }
 
 }
@@ -115,11 +72,9 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
         ObjectDesc desc;
         desc.className = cfg.get("class");
         desc.probability = cfg.get<units::Probability>("probability");
-        desc.positionMax = maxPos;
         desc.positionMin = cfg.get("position-min", minPos);
         desc.positionMax = cfg.get("position-max", maxPos);
-        desc.velocity = cfg.get("velocity", VelocityVector{units::Velocity(10), Zero});
-        desc.programs = split(cfg.get("programs", String()), ' ');
+        desc.config = cfg.toMemory();
 
         add(std::move(desc));
     }
