@@ -13,6 +13,7 @@
 
 // C++
 #include <random>
+#include <algorithm>
 
 #include "core/String.hpp"
 #include "core/StringView.hpp"
@@ -49,7 +50,6 @@ public:
     /// Molecule identifier type.
     using MoleculeId = unsigned int;
 
-
 protected:
 
     using PropensityType = RateType;
@@ -57,36 +57,40 @@ protected:
     DynamicArray<RateType> m_rates;
     DynamicArray<String> m_ids;
     DynamicArray<DynamicArray<T>> m_rules;
-    DynamicArray<PropensityType> propensities;
+    DynamicArray<PropensityType> m_propensities;
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Execute reactions each step.
+     *
+     * @return
+     */
     template<typename Executor, typename Refresher>
     void executeReactions(units::Time step, Executor execute, Refresher refresh)
     {
-        if (propensities.empty())
+        if (m_propensities.empty())
             refresh();
-
-        // initialize random generators
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> rand(0, 1);
 
         // initialize time
         units::Duration time = units::Duration(0);
 
-        // Gillespie algorithm + tau-leaping
+        // initialize random
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> rand(0, 1);
+
+        // Gillespie algorithm + tau-leaping + dependency graph(hidden inside execute reaction)
         while (time < step)
         {
-            PropensityType sum = std::accumulate(propensities.begin(), propensities.end(), 0.0f);
+            PropensityType sum = std::accumulate(m_propensities.begin(), m_propensities.end(), 0.0f);
+
             if (sum == 0)
             {
-                propensities.clear();
                 refresh();
                 return;
             }
 
-            std::discrete_distribution<> distr(propensities.begin(), propensities.end());
+            std::discrete_distribution<> distr(m_propensities.begin(), m_propensities.end());
 
             // time of reaction
             auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
@@ -99,7 +103,13 @@ protected:
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Casts object to cell type.
+     *
+     * @param Object.
+     *
+     * @return Cell.
+     */
     static plugin::cell::CellBase& getCell(simulator::Object& object)
     {
         // initialize cell
@@ -109,7 +119,13 @@ protected:
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Returns index of molecule's column in reactions matrix.
+     *
+     * @param Name of molucule.
+     *
+     * @return Index of column.
+     */
     int getIndexOfMoleculeColumn(const String& id)
     {
         auto pointer = std::find(m_ids.begin(), m_ids.end(), id);
@@ -126,7 +142,13 @@ protected:
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Extend matrix using rules for intracellular rections.
+     *
+     * @param arrays of molucule's IDs, reaction rate
+     *
+     * @return
+     */
     void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
     {
         DynamicArray<T> array;
@@ -160,13 +182,43 @@ protected:
         m_rules.push_back(array);
     }
 
+/* ************************************************************************ */
+
+public:
+
+/* ************************************************************************ */
+    /**
+     * @brief Edit reactions rule matrix to suit given reaction conditions.
+     *
+     * @param molecule name, requirement for execution, reversible flag and index
+     *
+     * @return
+     */
+    void addCondition(const String& name, unsigned int requirement, bool clone, const DynamicArray<T>& no_cond)
+    {
+        unsigned int column_index = getIndexOfMoleculeColumn(name);
+        if (clone)
+        {
+            m_rules.push_back(no_cond);
+            m_rates.push_back(m_rates[m_rates.size() - 1]);
+        }
+        if (requirement == 0)
+            m_rules[m_rules.size() - 1][column_index].mustnt_have = true;
+        else
+        {
+            m_rules[m_rules.size() - 1][column_index].requirement = std::max(m_rules[m_rules.size() - 1][column_index].requirement, 1u);
+            m_rules[m_rules.size() - 1][column_index].product = std::max(m_rules[m_rules.size() - 1][column_index].product, 1u);
+        }
+    }
+
+/* ************************************************************************ */
 
 // Public Accessors:
 public:
 
-
+/* ************************************************************************ */
     /**
-     * @brief Returns number different molecules in reactions.
+     * @brief Returns number of different molecules in reactions.
      *
      * @return
      */
@@ -175,7 +227,7 @@ public:
         return m_ids.size();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Check if given molecule is used in reactions.
      *
@@ -188,7 +240,7 @@ public:
         return std::find(m_ids.begin(), m_ids.end(), name) != m_ids.end();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns molecule name.
      *
@@ -201,7 +253,7 @@ public:
         return m_ids[id];
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns number of reactions.
      *
@@ -212,7 +264,7 @@ public:
         return m_rules.size();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns number of rates.
      *
@@ -223,7 +275,7 @@ public:
         return m_rates.size();
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Returns reaction rate.
      *
@@ -236,8 +288,17 @@ public:
         return m_rates[reaction];
     }
 
+/* ************************************************************************ */
+    /**
+     * @brief Returns the last row in reaction rule matrix.
+     *
+     * @return
+     */
+    const DynamicArray<T>& getLastReaction() const noexcept
+    {
+        return m_rules[m_rules.size() - 1];
+    }
 };
-
 /* ************************************************************************ */
 
 }

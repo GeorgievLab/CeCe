@@ -19,6 +19,7 @@
 #include "core/Log.hpp"
 #include "core/Tokenizer.hpp"
 #include "core/Parser.hpp"
+#include "core/Tuple.hpp"
 
 /* ************************************************************************ */
 
@@ -39,7 +40,11 @@ enum class TokenCode
     Plus,
     Colon,
     Semicolon,
-    Comma
+    Comma,
+    And,
+    Or,
+    If,
+    Not
 };
 
 /* ************************************************************************ */
@@ -100,6 +105,16 @@ public:
             token.value.push_back(value());
             next();
         }
+
+        if (token.value == "and")
+            token.code = TokenCode::And;
+        else if (token.value == "or")
+            token.code = TokenCode::Or;
+        else if (token.value == "if")
+            token.code = TokenCode::If;
+        else if (token.value == "not")
+            token.code = TokenCode::Not;
+
 
         return token;
     }
@@ -216,7 +231,6 @@ protected:
 };
 
 /* ************************************************************************ */
-
 /**
  * @brief Base expression parser exception.
  */
@@ -250,7 +264,7 @@ public:
 // Public Ctors & Dtors
 public:
 
-
+/* ************************************************************************ */
     /**
      * @brief Constructor.
      *
@@ -264,7 +278,7 @@ public:
         // Nothing to do.
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Parse source string into reactions.
      *
@@ -280,28 +294,43 @@ public:
         return reactions;
     }
 
+/* ************************************************************************ */
     void parseReaction(T& reactions)
     {
         try
         {
+            // parse conditions
             auto conditions = parseConditions();
+            // parse LS
             auto ids_minus = parseList();
             if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd))
                 throw MissingArrowException();
+            // parse rate
             RateType rate;
             RateType rateR;
             bool reversible = is(TokenCode::ArrowBack);
             if (reversible)
                 rateR = parseRateReversible();
             rate = parseRate();
+            //parse RS
             auto ids_plus = parseList();
             requireNext(TokenCode::Semicolon);
+            // extending
             reactions.extend(ids_plus, ids_minus, rate);
-            if (reversible)
-                reactions.extend(ids_minus, ids_plus, rateR);
+            auto no_cond = reactions.getLastReaction();
             for (unsigned int i = 0; i < conditions.size(); i++)
             {
-                reactions.addCondition(conditions[i].first, conditions[i].second);
+                reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), std::get<2>(conditions[i]), no_cond);
+            }
+            // extending reversible
+            if (reversible)
+            {
+                reactions.extend(ids_minus, ids_plus, rateR);
+                auto no_cond = reactions.getLastReaction();
+                for (unsigned int i = 0; i < conditions.size(); i++)
+                {
+                    reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), std::get<2>(conditions[i]), no_cond);
+                }
             }
         }
         catch (const Exception& ex)
@@ -313,10 +342,9 @@ public:
         }
     }
 
+/* ************************************************************************ */
 
 protected:
-
-
     // Use parent's member functions
     using ParentType::is;
     using ParentType::next;
@@ -327,13 +355,57 @@ protected:
     using ParentType::token;
     using ParentType::find;
 
-    DynamicArray<std::pair<String, unsigned int>> parseConditions()
+/* ************************************************************************ */
+    /**
+     * @brief Parse conditions for conditional reactions.
+     *
+     * @return tuple - conditions
+     */
+    DynamicArray<Tuple<String, unsigned int, bool>> parseConditions()
     {
-        return DynamicArray<std::pair<String, unsigned int>>();
+        DynamicArray<Tuple<String, unsigned int, bool>> array;
+        if (is(TokenCode::If))
+        {
+            bool clone = false;
+            do
+            {
+                do
+                {
+                    next();
+                    String name;
+                    unsigned int requirement = 1;
+                    if (is(TokenCode::Not))
+                    {
+                        requirement = 0;
+                        next();
+                    }
+                    if (is(TokenCode::Identifier))
+                    {
+                        name = token().value;
+                        next();
+                    }
+                    else
+                        throw MissingIdentifierException{};
+                    array.push_back(std::make_tuple(name, requirement, clone));
+                    clone = false;
+                }
+                while (is(TokenCode::And));
+                clone = true;
+            }
+            while (is(TokenCode::Or));
+
+            requireNext(TokenCode::Colon);
+            return array;
+        }
+        return array;
     }
 
 /* ************************************************************************ */
-
+    /**
+     * @brief Parse rate expression for reversible reaction.
+     *
+     * @return
+     */
     RateType parseRateReversible()
     {
         // Alias to tokenizer range.
@@ -355,7 +427,6 @@ protected:
     }
 
 /* ************************************************************************ */
-
     /**
      * @brief Parse rate expression.
      *
@@ -384,7 +455,7 @@ protected:
         return rate;
     }
 
-
+/* ************************************************************************ */
     /**
      * @brief Parse list of identifiers (molecule names).
      *
@@ -393,17 +464,14 @@ protected:
     DynamicArray<String> parseList()
     {
         DynamicArray<String> array;
-
         do
         {
             if (!is(TokenCode::Identifier))
                 throw MissingIdentifierException{};
-
             array.push_back(token().value);
             next();
         }
         while (match(TokenCode::Plus));
-
         return array;
     }
 

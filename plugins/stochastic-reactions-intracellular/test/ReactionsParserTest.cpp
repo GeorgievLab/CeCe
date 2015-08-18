@@ -232,7 +232,7 @@ TEST(Parser, invalid)
 
 TEST(Parser, code1)
 {
-    test("A>0.3>B;", {"A", "B"}, {0.3});
+    test("C<0.3, 0.6>B;", {"C", "B"}, {0.6, 0.3});
 }
 
 /* ************************************************************************ */
@@ -247,41 +247,41 @@ TEST(Parser, code2)
 TEST(Parser, conditional)
 {
     test(
-        "if A > 10: A > 0.3 > B;",
+        "if A: A > 0.3 > B;",
         {"A", "B"},
         {0.3}
     );
 
     test(
-        "if C > 10: A > 0.3 > B;",
-        {"C", "A", "B"},
+        "if C and D: A > 0.3 > B;",
+        {"A", "B", "C", "D"},
         {0.3}
     );
 
     test(
-        "if C > 10 and A > 5: A > 0.3 > B;",
-        {"C", "A", "B"},
+        "if C and A: A > 0.3 > B;",
+        { "A", "B", "C"},
         {0.3}
     );
 
     // Reaction is inserted twice
     test(
-        "if C > 10 or D > 50: A > 0.3 > B;",
-        {"C", "D", "A", "B"},
+        "if C or D: A > 0.3 > B;",
+        {"A", "B", "C", "D"},
         {0.3, 0.3}
     );
 
     test(
-        "if not E > 10: A > 0.5 > B;",
-        {"E", "A", "B"},
-        {0.5}
+        "if not E or B: A < 0.5, 1 > B;",
+        {"A", "B", "E"},
+        {1, 1, 0.5, 0.5}
     );
 
     test(
-        "if not E > 10: A > 0.5 > B;"
+        "if not E and B: A < 0.3, 0.5 > B;"
         "C > 1.5 > A + B;",
-        {"E", "A", "B", "C"},
-        {0.5, 1.5}
+        {"A", "B", "E", "C"},
+        {0.5, 0.3, 1.5}
     );
 }
 

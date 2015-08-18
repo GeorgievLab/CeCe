@@ -33,8 +33,11 @@ struct ReqProd
     }
 };
 
+/* ************************************************************************ */
+
 class IntracellularReactions: public Reactions<ReqProd>
 {
+
 protected:
 
     PropensityType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell);
@@ -50,11 +53,6 @@ public:
     void operator()(simulator::Object& object, simulator::Simulation&, units::Duration step);
 
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate);
-
-    void addCondition(const String& id, const unsigned int condition)
-    {
-        // TODO implement
-    }
 };
 
 /* ************************************************************************ */

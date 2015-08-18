@@ -1,78 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="160um 90um" dt="1ms" aiterations="5000" background="black">
+<simulation world-size="160um 90um" dt="0.5ms" iterations="10000" background="black">
     <!-- Produce GFP -->
     <program name="make-gfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null < 0.005, 10 > GFP;
+        null < 0.5, 10 > GFP;
         GFP > 0.5 > env;
 ]]>
     </program>
 
-    <!-- Produce RFP -->
-    <program name="make-rfp" language="stochastic-reactions-intercellular">
+	<program name="make-rfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null < 0.005, 1 > RFP;
-        RFP > 0.5 > env;
+        env > 10 > GFP;
+        GFP > 100 > RFP;
+        RFP > 0.1 > env;
 ]]>
-    </program>
+   </program>
 
-    <!-- Produce YFP -->
-    <program name="make-yfp" language="stochastic-reactions-intercellular">
+   <program name="make-yfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null < 0.005, 1 > YFP;
-        YFP > 0.5 > env;
+        env > 10 > RFP;
+        RFP > 100 > YFP;
+        YFP > 0.1 > env;
 ]]>
-    </program>
-
-    <!-- Produce BFP -->
-    <program name="make-bfp" language="stochastic-reactions-intercellular">
-<![CDATA[
-        env > 0.4 > GFP;
-        env > 0.4 > RFP;
-        GFP + RFP > 1 > BFP;
-        BFP > 0.5 > env;
-]]>
-    </program>
+   </program>
 
     <!-- Define diffusion module -->
     <module name="diffusion" grid="320 180">
         <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" />
-        <signal name="RFP" diffusion-rate="50um2/s" color="red" />
-        <signal name="YFP" diffusion-rate="50um2/s" color="yellow" />
-        <signal name="BFP" diffusion-rate="50um2/s" color="blue" />
+        <signal name="RFP" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="red" />
+        <signal name="YFP" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="yellow" />
     </module>
 
     <!-- Object generator -->
     <module name="object-generator">
-        <object class="cell.Yeast" probability="0.005" programs="make-gfp" position-min="-80um -30um" position-max="-78um 30um" />
-        <object class="cell.Yeast" probability="0.005" programs="make-rfp" position-min="-80um -30um" position-max="-78um 30um" />
-        <object class="cell.Yeast" probability="0.005" programs="make-yfp" position-min="-80um -30um" position-max="-78um 30um" />
-        <object class="cell.Yeast" probability="0.005" programs="make-bfp" position-min="-80um -30um" position-max="-78um 30um" />
+        <object class="cell.Yeast" probability="0.02" programs="make-gfp" position-min="-80um -30um" position-max="-78um 30um" >
+            <molecule name="REC1" amount="10000" />
+        </object>
+        <object class="cell.Yeast" probability="0.02" programs="make-rfp" position-min="-80um -30um" position-max="-78um 30um" >
+            <molecule name="REC2" amount="10000" />
+        </object>
+        <object class="cell.Yeast" probability="0.02" programs="make-yfp" position-min="-80um -30um" position-max="-78um 30um" >
+   	    <molecule name="REC3" amount="10000" />
+        </object>
     </module>
 
     <!-- Enable streamlines with diffusion -->
-    <module name="streamlines" grid="160 90"
-            inlet-velocity="500um/s"
-            kinematic-viscosity="0.658mm2/s"
-    />
+    <module name="streamlines" grid="160 90" velocity-inflow="500um/s" kinematic-viscosity="60.58um2/s" />
     <module name="diffusion-streamlines" />
 
     <module name="agglutination">
-        <bond ligand="GFP" receptor="RFP" receptor-size="1" association-constant="5000" disassociation-constant="3" />
-        <bond ligand="YFP" receptor="BFP" receptor-size="1" association-constant="5000" disassociation-constant="3" />
-        <bond ligand="GFP" receptor="YFP" receptor-size="1" association-constant="5000" disassociation-constant="3" />
-        <bond ligand="RFP" receptor="YFP" receptor-size="1" association-constant="5000" disassociation-constant="3" />
+        <bond ligand="LIG1" receptor="REC1" receptor-size="1" association-constant="50000" disassociation-constant="1" />
+        <bond ligand="LIG2" receptor="REC2" receptor-size="1" association-constant="50000" disassociation-constant="1" />
+        <bond ligand="LIG3" receptor="REC3" receptor-size="1" association-constant="50000" disassociation-constant="1" />
     </module>
 
-    <!-- Put static cell into simulation center -->
     <object class="cell.Cell" type="static" volume="2000um3">
-        <molecule name="GFP" amount="10000" />
-        <molecule name="RFP" amount="10000" />
+        <molecule name="LIG1" amount="10000" />
+        <molecule name="LIG2" amount="10000" />
+        <molecule name="LIG3" amount="10000" />
     </object>
-
-    <!-- Limit scene by rectangles -->
-    <obstacle type="rectangle" position="0 46um" size="160um 4um" />
-    <obstacle type="rectangle" position="0 -46um" size="160um 4um" />
 </simulation>
 
