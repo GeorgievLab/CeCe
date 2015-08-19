@@ -21,6 +21,7 @@ function(build_plugin NAME)
     # Get project name
     plugin_project_name(${NAME} FULLNAME)
 
+    include(CMakeParseArguments)
     cmake_parse_arguments(ARG "" "" "SOURCES;LIBRARIES;DEPENDENCIES;PLUGINS_REQUIRED" ${ARGN})
 
     # Modify list of plugins (add prefixes)
@@ -156,6 +157,7 @@ function(build_loader NAME)
     # Get project name
     loader_project_name(${NAME} FULLNAME)
 
+    include(CMakeParseArguments)
     cmake_parse_arguments(ARG "" "" "SOURCES;LIBRARIES;DEPENDENCIES" ${ARGN})
 
     project(${FULLNAME} CXX)
@@ -192,9 +194,10 @@ endfunction ()
 function(build_test PROJECT_NAME)
 
     # Only if tests are enabled
-    if (BUILD_TESTS)
+    if (DEV_TESTS_BUILD)
 
         # Parse arguments
+        include(CMakeParseArguments)
         cmake_parse_arguments(ARG "" "" "SOURCES;LIBRARIES;DEPENDENCIES;PLUGINS_REQUIRED" ${ARGN})
 
         # Modify list of plugins (add prefixes)

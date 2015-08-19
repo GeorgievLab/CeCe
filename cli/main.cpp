@@ -42,7 +42,6 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
 #include "simulator/LoaderManager.hpp"
-#include "simulator/version.hpp"
 #include "loaders/xml/SimulationLoader.hpp"
 #include "loaders/reactions/SimulationLoader.hpp"
 
@@ -53,6 +52,9 @@
 #include "render/PhysicsDebugger.hpp"
 #endif
 #endif
+
+// Version
+#include "version.hpp"
 
 /* ************************************************************************ */
 

@@ -23,10 +23,10 @@ set(SRCS
 )
 
 # Options
-option(DEV_streamlines_RENDER "Enable or disable streamlines rendering" Off)
+option(DEV_PLUGIN_streamlines_RENDER "Enable or disable streamlines rendering" Off)
 
 # Enable debug rendering
-if (DEV_streamlines_RENDER)
+if (DEV_PLUGIN_streamlines_RENDER)
     add_definitions(-DDEV_DRAW_VELOCITY=1)
 endif ()
 

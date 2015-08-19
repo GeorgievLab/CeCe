@@ -17,7 +17,7 @@ set(SRCS
 )
 
 # Enable debug rendering
-if (DEV_streamlines_RENDER)
+if (DEV_PLUGIN_streamlines_RENDER)
     add_definitions(-DDEV_DRAW_VELOCITY=1)
 endif ()
 

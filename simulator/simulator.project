@@ -36,7 +36,6 @@
     <File Name="Shape.hpp"/>
     <File Name="ShapeToGrid.hpp"/>
     <File Name="Program.hpp"/>
-    <File Name="version.hpp"/>
     <File Name="PluginApi.hpp"/>
     <File Name="Obstacle.hpp"/>
     <File Name="Plugin.hpp"/>

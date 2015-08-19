@@ -10,8 +10,8 @@ cmake_minimum_required(VERSION 2.8.8)
 
 # ######################################################################### #
 
-if (!ENABLE_RENDER)
-    message(FATAL_ERROR "Cannot build 'render' without ENABLE_RENDER")
+if (!DEV_PLUGIN_streamlines_RENDER)
+    message(DEV_PLUGIN_streamlines_RENDER "Cannot build 'render' without DEV_PLUGIN_streamlines_RENDER")
 endif ()
 
 # ######################################################################### #
@@ -34,10 +34,6 @@ include_directories(
 # Current version is unable to add object library into shared library.
 if (UNIX)
     add_compile_options(-fPIC)
-endif ()
-
-if (WIN32)
-    add_definitions(-DSIMULATOR_DLL_EXPORT=1)
 endif ()
 
 # ######################################################################### #
@@ -84,7 +80,7 @@ set(SRCS
     glext.h
 )
 
-if (ENABLE_BUILTIN_PHYSICS_DEBUG)
+if (DEV_PHYSICS_BUILTIN_DEBUG)
     set(SRCS ${SRCS}
         PhysicsDebugger.hpp
         PhysicsDebugger.cpp

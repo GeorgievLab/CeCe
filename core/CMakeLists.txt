@@ -20,11 +20,6 @@ if (UNIX)
     add_compile_options(-fPIC)
 endif ()
 
-# DLL export
-if (WIN32)
-    add_definitions(-DSIMULATOR_DLL_EXPORT=1)
-endif ()
-
 # ######################################################################### #
 
 # Create library

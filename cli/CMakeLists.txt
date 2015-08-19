@@ -12,7 +12,7 @@ project(cli CXX)
 # ######################################################################### #
 
 # Options
-if (ENABLE_RENDER)
+if (CONFIG_RENDER_ENABLE)
     option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
     set(CONFIG_CLI_VIZUALIZE_WIDTH  800 CACHE STRING "Vizualization window width")
     set(CONFIG_CLI_VIZUALIZE_HEIGHT 600 CACHE STRING "Vizualization window height")
@@ -20,10 +20,13 @@ endif ()
 
 # ######################################################################### #
 
-# Set path to plugins directory
-add_definitions(-DDIR_PLUGINS="${PLUGINS_DIRECTORY}")
+# Set some definitions
+add_definitions(
+    -DAPP_NAME="${APP_NAME}"
+    -DDIR_PLUGINS="${PLUGINS_DIRECTORY}"
+)
 
-if (ENABLE_RENDER)
+if (CONFIG_RENDER_ENABLE)
     find_package(GLFW REQUIRED)
     include_directories(${GLFW_INCLUDE_DIR})
 
@@ -34,7 +37,7 @@ if (ENABLE_RENDER)
 endif ()
 
 if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
-    if (NOT ENABLE_RENDER)
+    if (NOT CONFIG_RENDER_ENABLE)
         message(FATAL_ERROR "Video capture requires rendering support")
     endif ()
 
@@ -58,6 +61,10 @@ endif ()
 set(SRCS
     main.cpp
 )
+
+# Configure version file
+configure_file(version.hpp.in version.hpp @ONLY)
+include_directories(${PROJECT_BINARY_DIR})
 
 if (APPLE)
     set(SRCS ${SRCS} icons/${APP_NAME}.icns)
@@ -103,7 +110,7 @@ target_link_libraries(${PROJECT_NAME}
     simulator
 )
 
-if (ENABLE_RENDER)
+if (CONFIG_RENDER_ENABLE)
     target_link_libraries(${PROJECT_NAME}
         ${GLFW_LIBRARIES}
     )

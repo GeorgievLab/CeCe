@@ -6,8 +6,8 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
-if (!ENABLE_RENDER)
-    message(FATAL_ERROR "Cannot build module without ENABLE_RENDER")
+if (!CONFIG_RENDER_ENABLE)
+    message(FATAL_ERROR "Cannot build module without CONFIG_RENDER_ENABLE")
 endif ()
 
 # Use PNG images

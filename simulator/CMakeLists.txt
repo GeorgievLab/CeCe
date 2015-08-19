@@ -55,7 +55,7 @@ set(SRCS
     $<TARGET_OBJECTS:core>
 )
 
-if (ENABLE_RENDER)
+if (CONFIG_RENDER_ENABLE)
     find_package(OpenGL REQUIRED)
     include_directories(${OPENGL_INCLUDE_DIR})
 
@@ -82,10 +82,6 @@ endforeach ()
 # Pass build-in libraries list
 add_definitions(-DBUILTIN_PLUGINS=${BUILTIN_PLUGINS})
 
-if (WIN32)
-    add_definitions(-DSIMULATOR_DLL_EXPORT=1)
-endif ()
-
 # ######################################################################### #
 
 # Create library
@@ -105,7 +101,7 @@ target_link_libraries(${PROJECT_NAME}
     ${Boost_LIBRARIES}
 )
 
-if (ENABLE_BUILTIN_PHYSICS)
+if (CONFIG_PHYSICS_BUILTIN)
     # Link libraries
     target_link_libraries(${PROJECT_NAME}
         ${BOX2D_LIBRARIES}
@@ -126,7 +122,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # ######################################################################### #
 
 # Install
-install(TARGETS ${PROJECT_NAME} 
+install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${INSTALL_DIR_LIBRARY}
     LIBRARY DESTINATION ${INSTALL_DIR_LIBRARY}
 )

@@ -32,15 +32,6 @@ set(VERSION_SPECIAL " alpha")
 # Full version string
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-# Setup macros with application version
-add_definitions(
-    -DAPP_NAME="${APP_NAME}"
-    -DVERSION_MAJOR=${VERSION_MAJOR}
-    -DVERSION_MINOR=${VERSION_MINOR}
-    -DVERSION_PATCH=${VERSION_PATCH}
-    -DVERSION_SPECIAL="${VERSION_SPECIAL}"
-)
-
 # Directory with plugins
 set(DIR_PLUGINS "plugins")
 set(DIR_LOADERS "loaders")
@@ -48,22 +39,22 @@ set(DIR_LOADERS "loaders")
 # ######################################################################### #
 
 # Options
-option(ENABLE_GUI                   "Enable GUI" On)
-option(ENABLE_CLI                   "Enable CLI" Off)
-option(ENABLE_RENDER                "Enable simulation rendering" On)
-option(ENABLE_BUILTIN_PHYSICS       "Enable builtin physics engine (Box2D)" On)
-option(ENABLE_MEASUREMENT           "Enable or disable time measurement" Off)
-option(ENABLE_BUILTIN_PHYSICS_DEBUG "Enable or disable physics engine debugging" Off)
-
-option(BUILD_TESTS                  "Build simulator part tests (requires GTest)" Off)
-option(BUILD_TOOLS                  "Build support tools" Off)
-
-option(DEV_TEST_EXAMPLES            "Enable examples testing" Off)
-option(DEV_PLUGINS                  "Enable special mode for developers that helps develop plugins (doesn't require installation)" Off)
+option(CONFIG_CLI_ENABLE            "Build CLI application" On)
+option(CONFIG_GUI_ENABLE            "Build GUI application" Off)
+option(CONFIG_RENDER_ENABLE         "Enable simulation rendering (vizualization support)" On)
+option(CONFIG_PHYSICS_BUILTIN       "Enable builtin physics engine (Box2D)" On)
 
 # Real type
 set(CONFIG_REAL_TYPE "float" CACHE STRING "Type used for real values")
 set_property(CACHE CONFIG_REAL_TYPE PROPERTY STRINGS "float" "double" "long double")
+
+# Dev options
+option(DEV_TESTS_BUILD              "Build simulator part tests (requires GTest)" Off)
+option(DEV_TESTS_EXAMPLES           "Enable examples testing" Off)
+option(DEV_PLUGINS                  "Enable special mode for developers that helps develop plugins (doesn't require installation)" Off)
+option(DEV_PHYSICS_BUILTIN_DEBUG    "Enable or disable physics engine debugging" Off)
+option(DEV_PERFORMANCE_MEASUREMENT  "Enable or disable time measurement" Off)
+option(DEV_BUILD_TOOLS              "Build additional tools used for developing" Off)
 
 # If simulator should be thread safe
 set(THREAD_SAFE Off)
@@ -189,41 +180,35 @@ include_directories(${Boost_INCLUDE_DIRS})
 # ######################################################################### #
 
 # GUI enabled
-if (ENABLE_GUI)
+if (CONFIG_GUI_ENABLE)
     message(STATUS "Build GUI application")
-    set(ENABLE_RENDER 1)
+    set(CONFIG_RENDER_ENABLE On)
     set(THREAD_SAFE On)
 else ()
     # If GUI is disabled build CLI
-    set(ENABLE_CLI 1)
+    set(CONFIG_CLI_ENABLE On)
 endif ()
 
 # CLI enabled
-if (ENABLE_CLI)
+if (CONFIG_CLI_ENABLE)
     message(STATUS "Build CLI application")
 endif ()
 
 # Rendering enabled
-if (ENABLE_RENDER)
+if (CONFIG_RENDER_ENABLE)
     message(STATUS "OpenGL rendering support")
     add_definitions(-DENABLE_RENDER=1)
 endif ()
 
-if (ENABLE_SSE)
-    # TODO: detect SSE support
-    message(STATUS "Use SSE instructions")
-    add_definitions(-DENABLE_SSE=1)
-endif ()
-
 # Build-in physics enabled
-if (ENABLE_BUILTIN_PHYSICS)
+if (CONFIG_PHYSICS_BUILTIN)
     message(STATUS "Using build-in physics (Box2D)")
     find_package(BOX2D REQUIRED)
     include_directories(${BOX2D_INCLUDE_DIR})
 
     add_definitions(-DENABLE_PHYSICS=1)
 
-    if (ENABLE_BUILTIN_PHYSICS_DEBUG)
+    if (DEV_PHYSICS_BUILTIN_DEBUG)
         message(STATUS "Physics engine debugging enabled")
         add_definitions(-DENABLE_PHYSICS_DEBUG=1)
     endif ()
@@ -236,7 +221,7 @@ if (ENABLE_MEASUREMENT)
 endif ()
 
 # Build unit tests
-if (BUILD_TESTS)
+if (DEV_TESTS_BUILD)
     message(STATUS "Build unit tests")
     enable_testing()
     find_package(GTest REQUIRED)
@@ -257,7 +242,7 @@ add_definitions(-DREAL_TYPE=${CONFIG_REAL_TYPE})
 add_subdirectory(core)
 
 # Add render library
-if (ENABLE_RENDER)
+if (CONFIG_RENDER_ENABLE)
     add_subdirectory(render)
 endif ()
 
@@ -275,17 +260,17 @@ foreach (PLUGIN_NAME ${PLUGINS_BUILD})
 endforeach ()
 
 # Build GUI project
-if (ENABLE_GUI)
+if (CONFIG_GUI_ENABLE)
     add_subdirectory(gui)
 endif ()
 
 # Build CLI application
-if (ENABLE_CLI)
+if (CONFIG_CLI_ENABLE)
     add_subdirectory(cli)
 endif ()
 
 # Build additional tools
-if (BUILD_TOOLS)
+if (DEV_BUILD_TOOLS)
     add_subdirectory(tools/shader-convert)
 endif()
 

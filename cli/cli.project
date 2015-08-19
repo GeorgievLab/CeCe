@@ -43,6 +43,10 @@
   </Dependencies>
   <Dependencies Name="DebugCLI"/>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="resources">
+    <File Name="run.sh"/>
+    <File Name="version.rc"/>
+  </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -116,7 +120,7 @@
         <LibraryPath Value="../simulator/Debug"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/cell-sim-$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug-cli" Command="./simulator-$(ProjectName)" CommandArguments="../../examples/showcase.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug-cli/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/cell-sim-$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug-cli" Command="./simulator-$(ProjectName)" CommandArguments="../../examples/lb-python.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug-cli/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[LD_LIBRARY_PATH=${WorkspacePath}/build-debug-cli/modules/cell:${WorkspacePath}/build-debug-cli/modules/diffusion:${WorkspacePath}/build-debug-cli/modules/streamlines:${WorkspacePath}/build-debug-cli/modules/diffusion-streamlines]]>
       </Environment>
@@ -188,8 +192,7 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="resources">
-    <File Name="run.sh"/>
-    <File Name="version.rc"/>
+  <VirtualDirectory Name="include">
+    <File Name="version.hpp.in"/>
   </VirtualDirectory>
 </CodeLite_Project>
