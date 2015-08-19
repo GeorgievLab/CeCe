@@ -22,6 +22,7 @@
 #include "simulator/Simulation.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
+#include "simulator/Obstacle.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -323,6 +324,14 @@ public:
 
 
     /**
+     * @brief Initialize barriers.
+     *
+     * @param simulation
+     */
+    void initBarriers(simulator::Simulation& simulation);
+
+
+    /**
      * @brief Update module state.
      *
      * @param dt         Simulation time step.
@@ -469,6 +478,9 @@ private:
 
     /// Streamlines layout.
     Layout m_layout;
+
+    /// Barriers created for layout.
+    StaticArray<ViewPtr<simulator::Obstacle>, LayoutPosCount> m_layoutBarriers;
 
 #if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Rendering grid with filled cells.

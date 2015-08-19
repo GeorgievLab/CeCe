@@ -142,13 +142,10 @@ void Module::setStaticObstacleMap(const ObstacleMap& map)
 
 void Module::init(simulator::Simulation& simulation)
 {
+    initBarriers(simulation);
+
     // Physical size of one lattice cell
     const auto dl = simulation.getWorldSize() / m_lattice.getSize();
-
-    // Create barriers
-    for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
-        if (m_layout[pos] == LayoutType::Barrier)
-            initBorderBarrier(simulation, static_cast<LayoutPosition>(pos));
 
     // Calculate values
     const auto vMax = calculateMaxVelocity(dl);
@@ -163,6 +160,29 @@ void Module::init(simulator::Simulation& simulation)
         applyBoundaryConditions(simulation, vMax);
     }
 
+}
+
+/* ************************************************************************ */
+
+void Module::initBarriers(simulator::Simulation& simulation)
+{
+    // Create barriers
+    for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
+    {
+        if (m_layoutBarriers[pos])
+        {
+            // Barrier recreation is not needed
+            if (m_layout[pos] == LayoutType::Barrier)
+                continue;
+
+            simulation.deleteObject(m_layoutBarriers[pos].get());
+            m_layoutBarriers[pos] = nullptr;
+        }
+        else if (m_layout[pos] == LayoutType::Barrier)
+        {
+            initBorderBarrier(simulation, static_cast<LayoutPosition>(pos));
+        }
+    }
 }
 
 /* ************************************************************************ */
@@ -545,6 +565,9 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
     const auto& size = m_lattice.getSize();
     const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
 
+    // Physical size of one lattice cell
+    const auto dl = simulation.getWorldSize() / size;
+
     // Create barrier
     auto obstacle = simulation.createObject<simulator::Obstacle>();
     auto& shapes = obstacle->getMutableShapes();
@@ -552,10 +575,13 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
 
     // Init shape
     shapes[0] = simulator::Shape::makeEdges({
-        EDGES[pos][0] * worldSizeHalf,
-        EDGES[pos][1] * worldSizeHalf
+        EDGES[pos][0] * (worldSizeHalf - 0.5 * dl),
+        EDGES[pos][1] * (worldSizeHalf - 0.5 * dl)
     });
     obstacle->initShapes();
+
+    // Store obstacle view
+    m_layoutBarriers[pos] = obstacle;
 
     Vector<Lattice::SizeType> rngMin;
     Vector<Lattice::SizeType> rngMax;

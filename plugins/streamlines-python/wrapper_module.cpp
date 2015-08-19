@@ -28,6 +28,8 @@ using namespace plugin::python;
 
 static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, PyObject* args, void*) noexcept
 {
+    using namespace plugin::streamlines;
+
     PyObject* array;
 
     if (!PyArg_ParseTuple(args, "O", &array))
@@ -42,9 +44,15 @@ static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, Py
         return nullptr;
     }
 
-    plugin::streamlines::Module::Layout layout;
+    Module::Layout layout;
+    StaticArray<Module::LayoutPosition, Module::LayoutPosCount> order{{
+        Module::LayoutPosTop,
+        Module::LayoutPosRight,
+        Module::LayoutPosBottom,
+        Module::LayoutPosLeft
+    }};
 
-    for (auto& item : layout)
+    for (auto pos : order)
     {
         auto next = makeHandle(PyIter_Next(iter));
         if (!next)
@@ -54,7 +62,7 @@ static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, Py
         }
 
         InStringStream iss(cast<String>(next));
-        iss >> item;
+        iss >> layout[pos];
     }
 
     // Set layout
@@ -67,21 +75,47 @@ static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, Py
 
 /* ************************************************************************ */
 
+static PyObject* initBarriers(ObjectWrapper<plugin::streamlines::Module*>* self, PyObject* args, void*) noexcept
+{
+    PyObject* simulation;
+
+    if (!PyArg_ParseTuple(args, "O", &simulation))
+        return nullptr;
+
+    if (PyObject_TypeCheck(simulation, &TypeDefinition<simulator::Simulation*>::definition) <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Argument is not simulator.Simulation");
+        return nullptr;
+    }
+
+    auto sim = reinterpret_cast<ObjectWrapper<simulator::Simulation*>*>(simulation);
+
+    // Init barriers
+    self->value->initBarriers(*sim->value);
+
+    // Return None
+    Py_RETURN_NONE;
+}
+
+/* ************************************************************************ */
+
 void python_wrapper_module()
 {
     PyObject* module = Py_InitModule3("streamlines", nullptr, nullptr);
 
-    using type = plugin::streamlines::Module*;
-    using type_def = TypeDefinition<type>;
+    using type = plugin::streamlines::Module;
+    using type_ptr = type*;
+    using type_def = TypeDefinition<type_ptr>;
 /*
     static PyGetSetDef properties[] = {
-        defineProperty<1, type>("velocityInflow", &plugin::streamlines::Module::getVelocityInflow, &plugin::streamlines::Module::setVelocityInflow),
+        defineProperty<1, type_ptr>("velocityInflow", &type::getVelocityInflow, &type::setVelocityInflow),
         {NULL}
     };
 */
 
     static PyMethodDef fns[] = {
         {"setLayout", (PyCFunction) setLayout, METH_VARARGS, "Set streamlines module layout."},
+        {"initBarriers", (PyCFunction) initBarriers, METH_VARARGS, "Reinit barriers."},
         {NULL}  /* Sentinel */
     };
 
