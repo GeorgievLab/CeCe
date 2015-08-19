@@ -238,10 +238,31 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         // Degrade signal
         signal *= 1 - getDegradationRate(id) * dt;
 
+        Signal obstacle_signal = 0;
+        unsigned int obstacle_grid_cells = 0;
+
         // Diffuse signal to grid cells around
         for (auto&& ab : range(Coordinate{2 * OFFSET + 1}))
         {
+            if (m_obstacles[ab])
+            {
+                ++obstacle_grid_cells;
+                obstacle_signal += signal * M[ab];
+                continue;
+            }
+
             getSignalBack(id, c + ab - OFFSET) += signal * M[ab];
+        }
+
+        // Divide obstacle signal evenly to non-obstacle grid cells
+        // TODO: better model
+        Signal obstacle_signal_divided = obstacle_signal / obstacle_grid_cells;
+        for (auto&& ab : range(Coordinate{2 * OFFSET + 1}))
+        {
+            if (m_obstacles[ab])
+            {
+                getSignalBack(id, c + ab - OFFSET) += obstacle_signal_divided;
+            }
         }
     }
 
