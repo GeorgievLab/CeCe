@@ -101,15 +101,25 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Update obstacle map from scene
     updateObstacles(simulation);
 
-#if THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
-#endif
+    // For thread safety it is divided to two parts
+    // The first part update diffusion to back buffer that is not used elsewhere,
+    // so it's perfectly safe (it's not a critical section)
+    // The second part just swap buffers - it's critical section but it's fast.
 
     // Update all signals
     // TODO: use OpenMP
     for (auto id : getSignalIds())
         updateSignal(step, dt, id);
+
+    {
+#if THREAD_SAFE
+        // Lock access
+        MutexGuard guard(m_mutex);
+#endif
+        // Swap grids
+        for (auto id : getSignalIds())
+            swap(id);
+    }
 }
 
 /* ************************************************************************ */
@@ -238,36 +248,38 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         // Degrade signal
         signal *= 1 - getDegradationRate(id) * dt;
 
-        Signal obstacle_signal = 0;
-        unsigned int obstacle_grid_cells = 0;
+        Signal obstacleSignal = 0;
+        unsigned int obstacleCells = 0;
 
         // Diffuse signal to grid cells around
-        for (auto&& ab : range(Coordinate{2 * OFFSET + 1}))
+        for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
         {
-            if (m_obstacles[ab])
+            const auto coord = c + ab - OFFSET;
+
+            if (m_obstacles[coord])
             {
-                ++obstacle_grid_cells;
-                obstacle_signal += signal * M[ab];
+                ++obstacleCells;
+                obstacleSignal += signal * M[ab];
                 continue;
             }
 
-            getSignalBack(id, c + ab - OFFSET) += signal * M[ab];
+            getSignalBack(id, coord) += signal * M[ab];
         }
 
-        // Divide obstacle signal evenly to non-obstacle grid cells
-        // TODO: better model
-        Signal obstacle_signal_divided = obstacle_signal / obstacle_grid_cells;
-        for (auto&& ab : range(Coordinate{2 * OFFSET + 1}))
+        if (obstacleCells > 0)
         {
-            if (m_obstacles[ab])
+            // Divide obstacle signal between non-obstacle grid cells
+            const Signal signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE * obstacleCells);
+
+            for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
             {
-                getSignalBack(id, c + ab - OFFSET) += obstacle_signal_divided;
+                const auto coord = c + ab - OFFSET;
+
+                if (m_obstacles[coord])
+                    getSignalBack(id, coord) += signalAdd;
             }
         }
     }
-
-    // Swap grids
-    swap(id);
 }
 
 /* ************************************************************************ */
