@@ -36,7 +36,7 @@ using namespace plugin::stochastic_reactions;
 static void test_impl(int line, const String& code, std::initializer_list<String> names,
     std::initializer_list<float> rates)
 {
-    std::cout << "@" << line << ": `" << code << "`\n";
+    SCOPED_TRACE(code);
 
     // Parse code
     auto reaction = ReactionsParser<IntracellularReactions>(code).parse();
@@ -67,7 +67,7 @@ static void test_impl(int line, const String& code, std::initializer_list<String
  */
 static void test_invalid_impl(int line, const String& code)
 {
-    std::cout << "@" << line << ": `" << code << "`\n";
+    SCOPED_TRACE(code);
 
     // Parse code
     auto reaction = ReactionsParser<IntracellularReactions>(code).parse();
