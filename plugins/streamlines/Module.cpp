@@ -565,6 +565,9 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
     const auto& size = m_lattice.getSize();
     const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
 
+    // Physical size of one lattice cell
+    const auto dl = simulation.getWorldSize() / size;
+
     // Create barrier
     auto obstacle = simulation.createObject<simulator::Obstacle>();
     auto& shapes = obstacle->getMutableShapes();
@@ -572,8 +575,8 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
 
     // Init shape
     shapes[0] = simulator::Shape::makeEdges({
-        EDGES[pos][0] * 0.99 * worldSizeHalf,
-        EDGES[pos][1] * 0.99 * worldSizeHalf
+        EDGES[pos][0] * (worldSizeHalf - 0.5 * dl),
+        EDGES[pos][1] * (worldSizeHalf - 0.5 * dl)
     });
     obstacle->initShapes();
 
