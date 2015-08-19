@@ -1,24 +1,25 @@
 <simulation world-size="100um 100um" dt="1ms" iterations="10000">
-    <module name="streamlines" grid="200 100" inlet-velocities="0 500um/s 0 500um/s" />
-    <module name="streamlines-python" />
+    <plugin name="python" />
+    <module name="streamlines" grid="200 100" inlet-velocity="500um/s" />
     <object class="cell.Cell" type="static" volume="2000um3" />
     <object class="cell.Yeast" position="-20um 0" />
     <object class="cell.Yeast" position="-20um 30um" />
-    <obstacle type="rectangle" position="0 45um" size="100um 10um" />
-    <obstacle type="rectangle" position="0 -45um" size="100um 10um" />
+    <object class="cell.Yeast" position="-20um -30um" />
     <module name="python:shake">
 layouts = [
     ["barrier", "outlet", "barrier", "inlet"],
     ["barrier", "inlet", "barrier", "outlet"]
 ]
+
 mode = 1
 
 def update(dt, simulation):
+    global mode
     module = simulation.useModule("streamlines")
 
-    if (simulation.iteration % 500 == 0):
-        print mode
+    if (simulation.iteration % 200 == 0):
         module.setLayout(layouts[mode % 2])
+        module.initBarriers(simulation)
         mode = mode + 1
     </module>
 </simulation>
