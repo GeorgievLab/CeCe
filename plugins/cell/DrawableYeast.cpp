@@ -49,15 +49,17 @@ DrawableYeast::DrawableYeast(render::Context& context)
     m_program.init(m_vertexShader, m_fragmentShader);
 
     // Get variables
-    m_uniformHasBud = m_program.getUniformId("g_hasBud");
-    m_uniformSizeMain = m_program.getUniformId("g_sizeMain");
-    m_uniformSizeBud = m_program.getUniformId("g_sizeBud");
-    m_uniformColor = m_program.getUniformId("g_color");
+    m_uniformHasBud     = m_program.getUniformId("g_hasBud");
+    m_uniformSizeMain   = m_program.getUniformId("g_sizeMain");
+    m_uniformSizeBud    = m_program.getUniformId("g_sizeBud");
+    m_uniformColor      = m_program.getUniformId("g_color");
+    m_uniformIdColor    = m_program.getUniformId("g_idColor");
 }
 
 /* ************************************************************************ */
 
-void DrawableYeast::draw(render::Context& context, float size, float budSize, const render::Color& color) NOEXCEPT
+void DrawableYeast::draw(render::Context& context, RealType size, RealType budSize,
+    const render::Color& color, const render::Color& idColor) noexcept
 {
     static render::VertexFormat vformat{
         render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
@@ -69,10 +71,11 @@ void DrawableYeast::draw(render::Context& context, float size, float budSize, co
     context.setVertexBuffer(&m_buffer);
     context.setVertexFormat(&vformat);
 
-    context.setProgramParam(m_uniformHasBud, budSize != 0.0f);
+    context.setProgramParam(m_uniformHasBud, budSize != 0.0);
     context.setProgramParam(m_uniformSizeMain, size);
     context.setProgramParam(m_uniformSizeBud, budSize);
     context.setProgramParam(m_uniformColor, color);
+    context.setProgramParam(m_uniformIdColor, idColor);
 
     // Draw circle
     context.draw(render::PrimitiveType::Quads, 4);

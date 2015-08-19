@@ -4,9 +4,8 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
+#include "core/Real.hpp"
 #include "core/Units.hpp"
-#include "core/VectorUnits.hpp"
 #include "render/Color.hpp"
 #include "render/Buffer.hpp"
 #include "render/Shader.hpp"
@@ -48,12 +47,14 @@ public:
     /**
      * @brief Render at given position with given rotation.
      *
-     * @param context
-     * @param size
-     * @param budSize
-     * @param color
+     * @param context Render context.
+     * @param size    Yeast size.
+     * @param budSize Bud size.
+     * @param color   Yeast color.
+     * @param idColor Yeast identification color.
      */
-    void draw(render::Context& context, float size, float budSize, const render::Color& color) NOEXCEPT;
+    void draw(render::Context& context, RealType size, RealType budSize,
+        const render::Color& color, const render::Color& idColor) noexcept;
 
 
 // Private Data Members
@@ -73,6 +74,9 @@ private:
 
     /// Yeast color (GFP, YFP, RFP).
     render::Program::UniformId m_uniformColor;
+
+    /// Border color.
+    render::Program::UniformId m_uniformIdColor;
 
     /// If bud should be drawn.
     render::Program::UniformId m_uniformHasBud;

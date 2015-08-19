@@ -22,6 +22,10 @@
 #include "core/StringView.hpp"
 #include "simulator/Object.hpp"
 
+#if ENABLE_RENDER
+#include "render/Color.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace plugin {
@@ -142,6 +146,19 @@ public:
     }
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Returns cell identification color.
+     *
+     * @return
+     */
+    const render::Color& getIdentificationColor() const noexcept
+    {
+        return m_identificationColor;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -235,6 +252,19 @@ public:
     }
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Set cell identification color.
+     *
+     * @param color New color.
+     */
+    void setIdentificationColor(render::Color color) noexcept
+    {
+        m_identificationColor = std::move(color);
+    }
+#endif
+
+
 // Public Operations
 public:
 
@@ -295,6 +325,10 @@ private:
     /// Map of molecules.
     Map<String, MoleculeCount> m_molecules;
 
+#if ENABLE_RENDER
+    /// Cell identification color.
+    render::Color m_identificationColor = render::colors::TRANSPARENT;
+#endif
 };
 
 /* ************************************************************************ */

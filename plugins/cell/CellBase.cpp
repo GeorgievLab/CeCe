@@ -38,6 +38,9 @@ void CellBase::configure(const simulator::Configuration& config,
 	// Molecule initializations
     for (auto&& cfg : config.getConfigurations("molecule"))
         setMoleculeCount(cfg.get("name"), cfg.get<MoleculeCount>("amount"));
+
+    // Identification color
+    setIdentificationColor(config.get("identification-color", getIdentificationColor()));
 }
 
 /* ************************************************************************ */

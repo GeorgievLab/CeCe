@@ -462,14 +462,15 @@ namespace colors  {
 
 /* ************************************************************************ */
 
-constexpr Color BLACK  {0, 0, 0};
-constexpr Color WHITE  {1, 1, 1};
-constexpr Color RED    {1, 0, 0};
-constexpr Color GREEN  {0, 1, 0};
-constexpr Color BLUE   {0, 0, 1};
-constexpr Color YELLOW {1, 1, 0};
-constexpr Color CYAN   {0, 1, 1};
-constexpr Color MAGENTA{1, 0, 1};
+constexpr Color TRANSPARENT {0, 0, 0, 0};
+constexpr Color BLACK       {0, 0, 0};
+constexpr Color WHITE       {1, 1, 1};
+constexpr Color RED         {1, 0, 0};
+constexpr Color GREEN       {0, 1, 0};
+constexpr Color BLUE        {0, 0, 1};
+constexpr Color YELLOW      {1, 1, 0};
+constexpr Color CYAN        {0, 1, 1};
+constexpr Color MAGENTA     {1, 0, 1};
 
 /* ************************************************************************ */
 
