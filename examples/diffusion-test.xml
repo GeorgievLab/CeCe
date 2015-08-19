@@ -5,7 +5,7 @@
     <program name="make-gfp" language="stochastic-reactions-intercellular">
 <![CDATA[
         null < 0.5, 10 > GFP;
-        GFP > 0.5 > env;
+        GFP > 1 > env;
 ]]>
     </program>
 
@@ -17,5 +17,8 @@
     <object class="cell.Cell" type="static" volume="2000um3" />
 
     <object class="cell.Yeast" programs="make-gfp" position="10um 0" />
+    <object class="cell.Yeast" programs="make-gfp" position="-10um 0" />
+    <object class="cell.Yeast" programs="make-gfp" position="0 10um" />
+    <object class="cell.Yeast" programs="make-gfp" position="0 -10um" />
 </simulation>
 

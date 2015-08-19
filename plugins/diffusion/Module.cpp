@@ -64,7 +64,7 @@ void Module::setGridSize(SizeType size)
         m_gridsBack[id].resize(m_gridSize + 2 * OFFSET);
     }
 
-    m_obstacles.resize(m_gridSize, false);
+    m_obstacles.resize(m_gridSize + 2 * OFFSET, false);
 }
 
 /* ************************************************************************ */
@@ -256,7 +256,7 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         {
             const auto coord = c + ab - OFFSET;
 
-            if (m_obstacles[coord])
+            if (m_obstacles[coord + 1])
             {
                 ++obstacleCells;
                 obstacleSignal += signal * M[ab];
@@ -275,7 +275,7 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
             {
                 const auto coord = c + ab - OFFSET;
 
-                if (m_obstacles[coord])
+                if (m_obstacles[coord + 1])
                     getSignalBack(id, coord) += signalAdd;
             }
         }
@@ -318,8 +318,8 @@ void Module::updateObstacles(simulator::Simulation& simulation)
         {
             mapShapeToGrid(
                 [this] (Coordinate&& coord) {
-                    assert(m_obstacles.inRange(coord));
-                    m_obstacles[coord] = true;
+                    assert(m_obstacles.inRange(coord + OFFSET));
+                    m_obstacles[coord + OFFSET] = true;
                 },
                 [] (Coordinate&& coord) {},
                 shape, step, coord, obj->getRotation(), getGridSize()
