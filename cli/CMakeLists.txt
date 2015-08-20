@@ -73,7 +73,6 @@ endif ()
 
 if (WIN32)
     configure_file(version.rc version.rc @ONLY NEWLINE_STYLE WIN32)
-
     set(SRCS ${SRCS} ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 endif ()
 

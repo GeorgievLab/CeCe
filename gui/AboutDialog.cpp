@@ -5,8 +5,8 @@
 // wxWidgets
 #include <wx/app.h>
 
-// Simulator
-#include "simulator/version.hpp"
+// GUI
+#include "version.hpp"
 
 /* ************************************************************************ */
 

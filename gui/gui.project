@@ -47,10 +47,12 @@
     <File Name="Logger.hpp"/>
     <File Name="AboutDialog.h"/>
     <File Name="PluginsDialog.h"/>
+    <File Name="version.hpp.in"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
+    <File Name="version.rc"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="simulator"/>

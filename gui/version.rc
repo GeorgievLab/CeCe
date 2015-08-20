@@ -1,0 +1,49 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
+/* ************************************************************************ */
+
+// Windows
+#include <windows.h>
+
+VS_VERSION_INFO     VERSIONINFO
+FILEVERSION         @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@,0
+PRODUCTVERSION      @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@,0
+FILEFLAGSMASK       VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+FILEFLAGS           VS_FF_DEBUG|VS_FF_PRIVATEBUILD|VS_FF_PRERELEASE
+#else
+FILEFLAGS           0x0L
+#endif
+FILEOS              VOS_NT_WINDOWS32
+FILETYPE            VFT_APP
+FILESUBTYPE         VFT2_UNKNOWN
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "040904b0"
+        {
+            VALUE "Build",            __DATE__ "\0"
+            VALUE "Comments",         "Simulator\0"
+            VALUE "CompanyName",      "Georgiev Lab\0"
+            VALUE "FileDescription",  "simulator\0"
+            VALUE "FileVersion",      "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@\0"
+            VALUE "InternalName",     "simulator\0"
+            VALUE "LegalCopyright",   "none\0"
+            VALUE "OriginalFilename", "@CMAKE_PROJECT_NAME@-@PROJECT_NAME@.exe\0"
+            VALUE "ProductName",      "@CMAKE_PROJECT_NAME@-@PROJECT_NAME@\0"
+            VALUE "ProductVersion",   "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@\0"
+        }
+    }
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x409, 1200
+    }
+}
+
+/* ************************************************************************ */

@@ -11,6 +11,12 @@ project(gui CXX)
 
 # ######################################################################### #
 
+# Set some definitions
+add_definitions(
+    -DAPP_NAME="${APP_NAME}"
+    -DDIR_PLUGINS="${PLUGINS_DIRECTORY}"
+)
+
 if (APPLE)
     # Static version on MacOSX
     set(wxWidgets_USE_STATIC On)
@@ -48,9 +54,18 @@ set(SRCS
     Logger.cpp
 )
 
+# Configure version file
+configure_file(version.hpp.in version.hpp @ONLY)
+include_directories(${PROJECT_BINARY_DIR})
+
 if (APPLE)
     set(SRCS ${SRCS} icons/${APP_NAME}.icns)
     set_source_files_properties(icons/${APP_NAME}.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+endif ()
+
+if (WIN32)
+    configure_file(version.rc version.rc @ONLY NEWLINE_STYLE WIN32)
+    set(SRCS ${SRCS} ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 endif ()
 
 # ######################################################################### #
@@ -88,7 +103,6 @@ endif ()
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
     loader-xml
-    loader-reactions
     simulator
     ${wxWidgets_LIBRARIES}
 )

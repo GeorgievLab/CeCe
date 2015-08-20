@@ -12,26 +12,67 @@
 #include <wx/image.h>
 #include <wx/cmdline.h>
 #include <wx/scopedptr.h>
+#include <wx/filename.h>
 
 // GUI
 #include "MainFrame.h"
 
 // Simulator
+#include "core/String.hpp"
 #include "simulator/PluginManager.hpp"
 
 /* ************************************************************************ */
 
-// Define the MainApp
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns plugins directory.
+ *
+ * @return
+ */
+String getPluginsDirectory() noexcept
+{
+#if _WIN32
+    const wxFileName path = wxStandardPaths::GetExecutablePath();
+    path.SetFullName("");
+    path.AppendDir(DIR_PLUGINS);
+    return path.GetFullPath().ToStdString();
+#else
+    // Absolute path to plugins directory on Linux
+    return DIR_PLUGINS;
+#endif
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief GUI main application.
+ */
 class MainApp : public wxApp
 {
+
+// Public Operations
 public:
 
+
+    /**
+     * @brief Initialize application.
+     *
+     * @return
+     */
     bool OnInit() override
     {
         if (!wxApp::OnInit())
             return false;
 
-        // Initialize plugins
+        // Register plugins directory
+        simulator::PluginManager::addDirectory(getPluginsDirectory());
         simulator::PluginManager::rescanDirectories();
 
         // Add the common image handlers
@@ -51,11 +92,37 @@ public:
         return GetTopWindow()->Show();
     }
 
+
+    /**
+     * @brief On exit handler.
+     *
+     * @return
+     */
+    int OnExit() override
+    {
+        simulator::PluginManager::releasePlugins();
+        return OnExit();
+    }
+
+
+    /**
+     * @brief Initialize command line parser.
+     *
+     * @param parser
+     */
     void OnInitCmdLine(wxCmdLineParser& parser) override
     {
         parser.AddParam("Simulation file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
     }
 
+
+    /**
+     * @brief Process parsed command line.
+     *
+     * @param parser
+     *
+     * @return
+     */
     bool OnCmdLineParsed(wxCmdLineParser& parser) override
     {
         if (parser.GetParamCount() > 0)

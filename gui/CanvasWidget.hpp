@@ -262,7 +262,7 @@ private:
     unsigned long m_renderFrames = 0;
 
     /// Time from last FPS recalculation.
-    std::chrono::milliseconds m_renderFpsRecalc;
+    std::chrono::milliseconds m_renderFpsRecalc{0};
 
     /// Base zoom.
     float m_baseZoom = 1.f;
