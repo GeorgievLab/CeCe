@@ -95,7 +95,11 @@ void changeMolecules(
     const auto idx = distribution(g_randomEngine);
 
     // Change molecules
-    diffusion.getSignal(id, coords[idx]) += change;
+    auto& signal = diffusion.getSignal(id, coords[idx]);
+    signal += change;
+
+    signal = std::max<plugin::diffusion::Module::Signal>(signal, 0);
+    assert(signal >= 0);
 }
 
 /* ************************************************************************ */
@@ -106,13 +110,19 @@ unsigned int getAmountOfMolecules(
     plugin::diffusion::Module::SignalId id
 )
 {
-    plugin::diffusion::Module::Signal amount = 0u;
+    if (coords.empty())
+        return 0u;
+
+    plugin::diffusion::Module::Signal signal = 0;
 
     // Foreach all coordinates and calculate amount of molecules
     for (const auto& coord : coords)
-        amount += diffusion.getSignal(id, coord);
+        signal += diffusion.getSignal(id, coord);
 
-    return amount;
+    // Negative signal is invalid
+    assert(signal >= 0);
+
+    return signal;
 }
 
 /* ************************************************************************ */

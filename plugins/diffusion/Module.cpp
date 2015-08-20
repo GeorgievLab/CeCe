@@ -196,7 +196,7 @@ void Module::updateDrawable() const
         // Mixup signal colors
         for (auto id : getSignalIds())
         {
-            const auto signal = std::min(getSignal(id, c), Signal(1));
+            const auto signal = std::min<Signal>(getSignal(id, c), 1);
 
             pixel *= (1 - signal);
             pixel += m_colors[id] * signal;
@@ -268,8 +268,11 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         // Only in case there is obstacles
         if (obstacleCells > 0)
         {
+            assert(signal >= 0);
+
             // Divide obstacle signal between non-obstacle grid cells
             const Signal signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE - obstacleCells);
+            assert(signalAdd >= 0);
 
             for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
             {
