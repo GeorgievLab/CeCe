@@ -256,26 +256,28 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         {
             const auto coord = c + ab - OFFSET;
 
-            if (m_obstacles[coord + 1])
+            if (isObstacle(coord))
             {
                 ++obstacleCells;
                 obstacleSignal += signal * M[ab];
-                continue;
             }
-
-            getSignalBack(id, coord) += signal * M[ab];
+            else
+            {
+                getSignalBack(id, coord) += signal * M[ab];
+            }
         }
 
+        // Only in case there is obstacles
         if (obstacleCells > 0)
         {
             // Divide obstacle signal between non-obstacle grid cells
-            const Signal signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE * obstacleCells);
+            const Signal signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE - obstacleCells);
 
             for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
             {
                 const auto coord = c + ab - OFFSET;
 
-                if (m_obstacles[coord + 1])
+                if (!isObstacle(coord))
                     getSignalBack(id, coord) += signalAdd;
             }
         }

@@ -442,6 +442,19 @@ public:
 #endif
 
 
+    /**
+     * @brief Check if there is an obstacle at given coordinates.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    bool isObstacle(const Coordinate& coord) const noexcept
+    {
+        return m_obstacles[coord + OFFSET];
+    }
+
+
 // Public Mutators
 public:
 
