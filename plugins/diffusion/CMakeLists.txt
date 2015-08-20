@@ -6,6 +6,18 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
+if (CONFIG_RENDER_ENABLE)
+    option(CONFIG_PLUGIN_diffusion_SMOOTH "Render smooth diffusion" On)
+endif ()
+
+# ######################################################################### #
+
+if (CONFIG_PLUGIN_diffusion_SMOOTH)
+    add_definitions(-DCONFIG_PLUGIN_diffusion_SMOOTH)
+endif ()
+
+# ######################################################################### #
+
 # Sources
 set(SRCS
     Library.cpp

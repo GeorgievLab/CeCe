@@ -233,8 +233,6 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         return A * std::exp(-q[i][j] / (4.f * getDiffusionRate(id) * dt));
     }).normalized();
 
-    // TODO: implement obstacle computation
-
     // Forech grid without borders
     for (auto&& c : range(getGridSize()))
     {

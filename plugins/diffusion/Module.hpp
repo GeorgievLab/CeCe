@@ -23,14 +23,18 @@
 #include "simulator/Module.hpp"
 
 #if ENABLE_RENDER
-#include "render/Color.hpp"
-#include "render/Context.hpp"
-#include "render/Object.hpp"
-#include "render/GridColorSmooth.hpp"
+#  include "render/Color.hpp"
+#  include "render/Context.hpp"
+#  include "render/Object.hpp"
+#  if CONFIG_PLUGIN_diffusion_SMOOTH
+#    include "render/GridColorSmooth.hpp"
+#  else
+#    include "render/GridColor.hpp"
+#  endif
 #endif
 
 #if THREAD_SAFE
-#include "core/Mutex.hpp"
+#  include "core/Mutex.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -770,7 +774,11 @@ private:
     DynamicArray<render::Color> m_colors;
 
     /// Drawable signal grid.
+#  if CONFIG_PLUGIN_diffusion_SMOOTH
     render::ObjectPtr<render::GridColorSmooth> m_drawable;
+#  else
+    render::ObjectPtr<render::GridColor> m_drawable;
+#  endif
 #endif
 
 #if THREAD_SAFE
