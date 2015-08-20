@@ -46,7 +46,7 @@
     </module>
 
     <!-- Enable streamlines with diffusion -->
-    <module name="streamlines" grid="160 90" velocity-inflow="500um/s" kinematic-viscosity="60.58um2/s" />
+    <module name="streamlines" grid="160 90" inlet-velocity="500um/s" />
     <module name="diffusion-streamlines" />
 
     <module name="agglutination">
