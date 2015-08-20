@@ -39,7 +39,7 @@
             <molecule name="REC2" amount="10000" />
         </object>
         <object class="cell.Yeast" probability="0.02" programs="make-yfp" position-min="-80um -30um" position-max="-78um 30um" >
-   	    <molecule name="REC3" amount="10000" />
+            <molecule name="REC3" amount="10000" />
         </object>
     </module>
 

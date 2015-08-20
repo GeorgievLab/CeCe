@@ -53,6 +53,11 @@ public:
     /// Cell growth rate type.
     using GrowthRate = units::Unit<units::List<>, units::List<units::BaseTime>>;
 
+#if ENABLE_RENDER
+    /// Type of fluorescent saturation.
+    using FluorescentSaturation = units::Unit<units::List<>, units::List<units::BaseLength, units::BaseLength, units::BaseLength>>;
+#endif
+
 
 // Public Ctors & Dtors
 public:
@@ -155,6 +160,45 @@ public:
     const render::Color& getIdentificationColor() const noexcept
     {
         return m_identificationColor;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Returns GFP saturation.
+     *
+     * @return
+     */
+    FluorescentSaturation getGfpSaturation() const noexcept
+    {
+        return m_gfpSaturation;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Returns RFP saturation.
+     *
+     * @return
+     */
+    FluorescentSaturation getRfpSaturation() const noexcept
+    {
+        return m_rfpSaturation;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Returns YFP saturation.
+     *
+     * @return
+     */
+    FluorescentSaturation getYfpSaturation() const noexcept
+    {
+        return m_yfpSaturation;
     }
 #endif
 
@@ -265,6 +309,45 @@ public:
 #endif
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Set GFP saturation.
+     *
+     * @param saturation
+     */
+    void setGfpSaturation(FluorescentSaturation saturation) noexcept
+    {
+        m_gfpSaturation = saturation;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Set RFP saturation.
+     *
+     * @param saturation
+     */
+    void setRfpSaturation(FluorescentSaturation saturation) noexcept
+    {
+        m_rfpSaturation = saturation;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Set YFP saturation.
+     *
+     * @param saturation
+     */
+    void setYfpSaturation(FluorescentSaturation saturation) noexcept
+    {
+        m_yfpSaturation = saturation;
+    }
+#endif
+
+
 // Public Operations
 public:
 
@@ -310,6 +393,16 @@ public:
     }
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Calculate color of fluorescent proteins.
+     *
+     * @return
+     */
+    render::Color calcFluorescentColor() const noexcept;
+#endif
+
+
 // Private Data Members
 private:
 
@@ -324,6 +417,21 @@ private:
 
     /// Map of molecules.
     Map<String, MoleculeCount> m_molecules;
+
+#if ENABLE_RENDER
+    /// GFP saturation.
+    FluorescentSaturation m_gfpSaturation{25};
+#endif
+
+#if ENABLE_RENDER
+    /// RFP saturation.
+    FluorescentSaturation m_rfpSaturation{25};
+#endif
+
+#if ENABLE_RENDER
+    /// YFP saturation.
+    FluorescentSaturation m_yfpSaturation{25};
+#endif
 
 #if ENABLE_RENDER
     /// Cell identification color.

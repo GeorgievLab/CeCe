@@ -170,8 +170,7 @@ void Yeast::draw(render::Context& context)
     units::Length radius;
     units::Angle angle;
     units::Length budRadius;
-    MoleculeCount rfp;
-    MoleculeCount gfp;
+    render::Color color;
 
     {
 #if THREAD_SAFE
@@ -183,16 +182,8 @@ void Yeast::draw(render::Context& context)
         radius = calcSphereRadius(getVolume());
         angle = getRotation() - (m_bud ? m_bud->rotation : units::Angle(0));
         budRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
-
-        gfp = getMoleculeCount("GFP");
-        rfp = getMoleculeCount("RFP");
+        color = calcFluorescentColor();
     }
-
-    // Yeast color
-    // TODO: compute better
-    const auto color = render::Color{
-        rfp / 1000.f, gfp / 1000.f, 0, 1,
-    };
 
     // Transform
     context.matrixPush();
