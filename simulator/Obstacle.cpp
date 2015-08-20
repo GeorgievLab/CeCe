@@ -125,10 +125,13 @@ void Obstacle::draw(render::Context& context)
                     ));
                 }
 
-                lines.push_back(makePair(
-                    render::Lines::PointType(edges[edges.size() - 1].getX().value(), edges[edges.size() - 1].getY().value()),
-                    render::Lines::PointType(edges[0].getX().value(), edges[0].getY().value())
-                ));
+                if (edges.size() > 2)
+                {
+                    lines.push_back(makePair(
+                        render::Lines::PointType(edges.back().getX().value(), edges.back().getY().value()),
+                        render::Lines::PointType(edges.front().getX().value(), edges.front().getY().value())
+                    ));
+                }
             }
 
         case ShapeType::Undefined:
