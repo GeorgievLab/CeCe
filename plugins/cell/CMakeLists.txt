@@ -6,6 +6,16 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
+option(CONFIG_PLUGIN_cell_BFP_COLOR "Enable coloring cell by BFP protein" On)
+
+# ######################################################################### #
+
+if (CONFIG_PLUGIN_cell_BFP_COLOR)
+    add_definitions(-DCONFIG_PLUGIN_cell_BFP_COLOR=1)
+endif ()
+
+# ######################################################################### #
+
 # Sources
 set(SRCS
     Library.cpp

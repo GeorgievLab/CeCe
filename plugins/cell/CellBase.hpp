@@ -203,6 +203,32 @@ public:
 #endif
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Returns CFP saturation.
+     *
+     * @return
+     */
+    FluorescentSaturation getCfpSaturation() const noexcept
+    {
+        return m_cfpSaturation;
+    }
+#endif
+
+
+#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
+    /**
+     * @brief Returns BFP saturation.
+     *
+     * @return
+     */
+    FluorescentSaturation getBfpSaturation() const noexcept
+    {
+        return m_bfpSaturation;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -348,6 +374,32 @@ public:
 #endif
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Set CFP saturation.
+     *
+     * @param saturation
+     */
+    void setCfpSaturation(FluorescentSaturation saturation) noexcept
+    {
+        m_cfpSaturation = saturation;
+    }
+#endif
+
+
+#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
+    /**
+     * @brief Set BFP saturation.
+     *
+     * @param saturation
+     */
+    void setBfpSaturation(FluorescentSaturation saturation) noexcept
+    {
+        m_bfpSaturation = saturation;
+    }
+#endif
+
+
 // Public Operations
 public:
 
@@ -431,6 +483,16 @@ private:
 #if ENABLE_RENDER
     /// YFP saturation.
     FluorescentSaturation m_yfpSaturation{25};
+#endif
+
+#if ENABLE_RENDER
+    /// CFP saturation.
+    FluorescentSaturation m_cfpSaturation{25};
+#endif
+
+#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
+    /// BFP saturation.
+    FluorescentSaturation m_bfpSaturation{25};
 #endif
 
 #if ENABLE_RENDER

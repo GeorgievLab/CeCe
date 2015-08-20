@@ -13,7 +13,7 @@ endif ()
 # ######################################################################### #
 
 if (CONFIG_PLUGIN_diffusion_SMOOTH)
-    add_definitions(-DCONFIG_PLUGIN_diffusion_SMOOTH)
+    add_definitions(-DCONFIG_PLUGIN_diffusion_SMOOTH=1)
 endif ()
 
 # ######################################################################### #

@@ -55,6 +55,14 @@ void CellBase::configure(const simulator::Configuration& config,
 #if ENABLE_RENDER
     setYfpSaturation(config.get("saturation-yfp", getYfpSaturation()));
 #endif
+
+#if ENABLE_RENDER
+    setCfpSaturation(config.get("saturation-cfp", getCfpSaturation()));
+#endif
+
+#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
+    setBfpSaturation(config.get("saturation-bfp", getBfpSaturation()));
+#endif
 }
 
 /* ************************************************************************ */
@@ -79,12 +87,28 @@ render::Color CellBase::calcFluorescentColor() const noexcept
     const auto gfp = getMoleculeCount("GFP");
     const auto rfp = getMoleculeCount("RFP");
     const auto yfp = getMoleculeCount("YFP");
+    const auto cfp = getMoleculeCount("CFP");
+#if CONFIG_PLUGIN_cell_BFP_COLOR
+    const auto bfp = getMoleculeCount("BFP");
+#endif
 
     const auto rfpValue = rfp / (getRfpSaturation() * volume);
     const auto gfpValue = gfp / (getGfpSaturation() * volume);
     const auto yfpValue = yfp / (getYfpSaturation() * volume);
+    const auto cfpValue = cfp / (getYfpSaturation() * volume);
+#if CONFIG_PLUGIN_cell_BFP_COLOR
+    const auto bfpValue = bfp / (getYfpSaturation() * volume);
+#endif
 
-    return {rfpValue + yfpValue, gfpValue + yfpValue, 0, 1};
+    const auto red   = rfpValue + yfpValue;
+    const auto green = gfpValue + yfpValue + cfpValue;
+#if CONFIG_PLUGIN_cell_BFP_COLOR
+    const auto blue  = cfpValue + bfpValue;
+#else
+    const auto blue  = cfpValue;
+#endif
+
+    return {red, green, blue, 1};
 }
 #endif
 
