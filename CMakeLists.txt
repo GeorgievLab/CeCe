@@ -215,7 +215,7 @@ if (CONFIG_PHYSICS_BUILTIN)
 endif ()
 
 # Enable time measurement
-if (ENABLE_MEASUREMENT)
+if (DEV_PERFORMANCE_MEASUREMENT)
     message(STATUS "Time measurement enabled")
     add_definitions(-DENABLE_MEASUREMENT=1)
 endif ()
