@@ -67,6 +67,17 @@ public:
     void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step);
 
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate);
+
+
+    /**
+     * @brief Add condition for required reaction.
+     *
+     * @param name         Molecule name that is used in condition.
+     * @param requirements Amount of required molecule.
+     * @param clone        Clone reaction.
+     * @param noCond       Reaction.
+     */
+    void addCondition(const String& name, unsigned int requirement, bool clone, DynamicArray<ReqProd>& noCond);
 };
 
 /* ************************************************************************ */

@@ -270,6 +270,47 @@ void IntercellularReactions::extend(const DynamicArray<String>& ids_plus, const 
 
 /* ************************************************************************ */
 
+void IntercellularReactions::addCondition(const String& name, unsigned int requirement, bool clone, DynamicArray<ReqProd>& noCond)
+{
+    // Condition is based on environmental molecule
+    const bool fromEnv = (name.substr(0, 4) == "env_");
+
+    // Get real name
+    const String nameReal = fromEnv ? name.substr(4) : name;
+
+    // add unmodified reaction rule after OR is reached
+    if (clone)
+    {
+        // backup of unmodified reaction can be outdated (shorter)
+        noCond.resize(m_ids.size());
+
+        m_rules.push_back(noCond);
+        m_rates.push_back(m_rates[m_rates.size() - 1]);
+    }
+
+    // get index of required molecule
+    const auto moleculeId = getIndexOfMoleculeColumn(nameReal);
+
+    // Alias to last reaction
+    auto& reaction = m_rules[m_rules.size() - 1];
+
+    // add requirement
+    if (requirement == 0)
+    {
+        reaction[moleculeId].mustnt_have = true;
+    }
+    else if (fromEnv)
+    {
+        reaction[moleculeId].env_requirement = std::max(reaction[moleculeId].env_requirement, 1u);
+    }
+    else
+    {
+        reaction[moleculeId].requirement = std::max(reaction[moleculeId].requirement, 1u);
+    }
+}
+
+/* ************************************************************************ */
+
 }
 }
 
