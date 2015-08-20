@@ -358,6 +358,17 @@ public:
     void draw(render::Context& context, const simulator::Simulation& simulation) override;
 #endif
 
+
+    /**
+     * @brief Calculate maximum velocity.
+     *
+     * @param dl Grid cell size.
+     *
+     * @return
+     */
+    VelocityVector calculateMaxVelocity(PositionVector dl) const noexcept;
+
+
 // Protected Operations
 protected:
 
@@ -409,16 +420,6 @@ protected:
      * @return
      */
     RealType calculateCoefficient(units::Time step, PositionVector dl) const noexcept;
-
-
-    /**
-     * @brief Calculate maximum velocity.
-     *
-     * @param dl Grid cell size.
-     *
-     * @return
-     */
-    VelocityVector calculateMaxVelocity(PositionVector dl) const noexcept;
 
 
     /**

@@ -365,6 +365,13 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 
 /* ************************************************************************ */
 
+VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
+{
+    return (LatticeData::MAX_SPEED / calculateViscosity()) * getKinematicViscosity() / dl;
+}
+
+/* ************************************************************************ */
+
 void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax)
 {
     // Clear previous flag
@@ -549,13 +556,6 @@ VelocityVector Module::inletVelocityProfile(Lattice::CoordinateType coord, Layou
 RealType Module::calculateCoefficient(units::Time step, PositionVector dl) const noexcept
 {
     return calculateViscosity() * (getIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / step;
-}
-
-/* ************************************************************************ */
-
-VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
-{
-    return (LatticeData::MAX_SPEED / calculateViscosity()) * getKinematicViscosity() / dl;
 }
 
 /* ************************************************************************ */
