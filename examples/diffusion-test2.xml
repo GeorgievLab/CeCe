@@ -11,9 +11,8 @@
 
     <program name="make-rfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        env > 0.3 > GFP;
-        GFP > 10 > RFP;
-        RFP > 0.1 > env;
+        if env_GFP: null < 0.1, 10 > RFP;
+        RFP > 0.5 > env;
 ]]>
    </program>
 
