@@ -94,7 +94,7 @@ void LatticeData::inlet(const Vector<ValueType>& v, Direction dir) noexcept
     init(v, rho);
 
     // Zou/He
-    microscopicBc(dir, calcVelocity(), rho);
+    //microscopicBc(dir, calcVelocity(), rho);
 }
 
 /* ************************************************************************ */
@@ -104,7 +104,10 @@ void LatticeData::outlet(Direction dir) noexcept
     constexpr ValueType rho = 1.0;
 
     // Speed
-    const auto speed = (-RealType(1) + RealType(1) / rho * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(NEXT_LINE[dir])));
+    const auto speed =
+        (-RealType(1) + RealType(1) / calcRho()
+        * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(NEXT_LINE[dir]))
+    );
 
     // Velocity vector
     const Vector<ValueType> vel = speed * VELOCITIES[dir];
@@ -113,7 +116,7 @@ void LatticeData::outlet(Direction dir) noexcept
     init(vel, rho);
 
     // Zou/He
-    microscopicBc(dir, vel, rho);
+    //microscopicBc(dir, vel, rho);
 }
 
 /* ************************************************************************ */

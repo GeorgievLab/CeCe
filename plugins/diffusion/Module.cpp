@@ -180,6 +180,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 #if ENABLE_RENDER
 void Module::updateDrawable() const
 {
+    assert(m_drawable);
     assert(getGridSize() == m_drawable->getSize());
 
 #if THREAD_SAFE
