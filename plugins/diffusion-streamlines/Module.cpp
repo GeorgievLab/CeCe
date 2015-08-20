@@ -16,6 +16,7 @@
 #include <cassert>
 
 // Simulator
+#include "core/Real.hpp"
 #include "core/StaticMatrix.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "core/VectorRange.hpp"
@@ -44,29 +45,16 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Physical size of one lattice cell
     const auto dl = simulation.getWorldSize() / velocityGrid.getSize();
 
-    // Modified time step
-    const auto dtInner = m_streamlines->getCoefficient() * dt;
-
-    // Smooth time step
-    const auto dtSmooth = dtInner / m_streamlines->getIterations();
-
     // Calculate maximum flow velocity
-    const VelocityVector v_max = plugin::streamlines::LatticeData::MAX_SPEED * dl / dtSmooth;
+    const VelocityVector vMax = m_streamlines->calculateMaxVelocity(dl);
 
     // Precompute values
-    const auto step = simulation.getWorldSize() / m_diffusion->getGridSize();
+    const auto step = simulation.getWorldSize() / signalGridSize;
 
     // Scale grids to [0, 1]
     const auto signalScale = 1.f / signalGridSize;
     const auto velocityScale = 1.f / velocityGrid.getSize();
     const auto scale = signalScale / velocityScale;
-
-#if THREAD_SAFE
-    // Lock access to both modules
-    // No deadlock posibility
-    MutexGuard guardDiffusion(m_diffusion->getMutex());
-    //MutexGuard guardStreamlines(m_streamlines->getMutex());
-#endif
 
     // Foreach signals
     for (auto id : m_diffusion->getSignalIds())
@@ -77,7 +65,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         for (auto&& c : range(signalGridSize))
         {
             // Get current signal
-            auto& signal = m_diffusion->getSignal(id, c);
+            const auto signal = m_diffusion->getSignal(id, c);
 
             // No signal to send
             if (!signal)
@@ -88,29 +76,33 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
             // Get velocity
             assert(velocityGrid.inRange(vc));
-            const auto& velocity = velocityGrid[vc].calcVelocity() * v_max;
+            const auto& velocity = velocityGrid[vc].calcVelocity() * vMax;
 
             // Calculate coordinate change
-            Vector<float> dij = velocity * dt / step;
+            Vector<RealType> dij = velocity * dt / step;
             dij.x() = std::abs(dij.getX());
             dij.y() = std::abs(dij.getY());
 
-            StaticMatrix<float, 2> tmp;
+            // Integer value of coordinate change
+            const auto iij = Vector<RealType>{std::floor(dij.getX()), std::floor(dij.getY())};
+            const auto dij2 = dij - iij;
+
+            StaticMatrix<RealType, 2> tmp;
             int offset = 0;
 
-            if (velocity.getY() < units::Velocity(0))
+            if (velocity.getY() < Zero)
             {
-                tmp = StaticMatrix<float, 2>{{
-                    {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() },
-                    {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())}
+                tmp = StaticMatrix<RealType, 2>{{
+                    {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() },
+                    {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())}
                 }};
                 offset = 1;
             }
             else
             {
-                tmp = StaticMatrix<float, 2>{{
-                    {(1 - dij.getX()) * (1 - dij.getY()), dij.getX() * (1 - dij.getY())},
-                    {(1 - dij.getX()) *      dij.getY() , dij.getX() *      dij.getY() }
+                tmp = StaticMatrix<RealType, 2>{{
+                    {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())},
+                    {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() }
                 }};
                 offset = 0;
             }
@@ -118,16 +110,27 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             // Apply matrix
             for (auto&& ab : range(Vector<unsigned>(2)))
             {
-                const auto ab2 = c + ab - Vector<unsigned>(0, offset);
+                const auto ab2 = c + ab + Vector<unsigned>(iij) - Vector<unsigned>(0, offset);
 
                 // Update signal
                 if (m_diffusion->inRange(ab2))
+                {
                     m_diffusion->getSignalBack(id, ab2) += signal * tmp[ab];
+                    assert(m_diffusion->getSignalBack(id, ab2) >= 0);
+                }
             }
         }
+    }
+
+    {
+#if THREAD_SAFE
+        // Lock diffusion
+        MutexGuard guardDiffusion(m_diffusion->getMutex());
+#endif
 
         // Swap buffers
-        m_diffusion->swap(id);
+        for (auto id : m_diffusion->getSignalIds())
+            m_diffusion->swap(id);
     }
 }
 
