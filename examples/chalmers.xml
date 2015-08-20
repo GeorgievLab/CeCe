@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<simulation world-size="160um 90um" dt="0.5ms" iterations="10000" background="black">
+    <program name="make-pheromone" language="stochastic-reactions-intercellular">
+<![CDATA[
+        null > 0.3 > P;
+        P > 0.3 > env;
+]]>
+   </program>
+   <program name="make-yfp" language="stochastic-reactions-intercellular">
+<![CDATA[
+        env > 10 > P;
+        P > 100 > YFP;
+]]>
+   </program>
+
+    <!-- Define diffusion module -->
+    <module name="diffusion" grid="320 180">
+        <signal name="P" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" />
+    </module>
+
+    <!-- Object generator -->
+    <module name="object-generator">
+        <object class="cell.Yeast" probability="0.002" programs="make-pheromone">
+            <molecule name="RFP" amount="1000" />
+        </object>
+        <object class="cell.Yeast" probability="0.02" />
+    </module>
+
+    <!-- Enable streamlines with diffusion -->
+    <module name="streamlines" grid="160 90" inlet-velocity="500um/s" />
+    <module name="diffusion-streamlines" />
+
+    <object class="cell.Yeast" type="static" position="0 30um" />
+    <object class="cell.Yeast" type="static" position="0 20um" />
+    <object class="cell.Yeast" type="static" position="0 10um" />
+    <object class="cell.Yeast" type="static" position="0 0" />
+    <object class="cell.Yeast" type="static" position="0 -10um" />
+    <object class="cell.Yeast" type="static" position="0 -20um" />
+    <object class="cell.Yeast" type="static" position="0 -30um" />
+</simulation>
+
