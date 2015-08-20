@@ -38,14 +38,8 @@ void StoreState::update(units::Duration dt, simulator::Simulation& simulation)
     // Physical size of one lattice cell
     const auto dl = simulation.getWorldSize() / lattice.getSize();
 
-    // Modified time step
-    const auto dtInner = m_streamlinesModule->getCoefficient() * dt;
-
-    // Smooth time step
-    const auto dtSmooth = dtInner / m_streamlinesModule->getIterations();
-
     // Calculate maximum flow velocity
-    const auto vMax = LatticeData::MAX_SPEED * dl / dtSmooth;
+    const auto vMax = m_streamlinesModule->calculateMaxVelocity(dl);
 
     // Foreach coordinates
     for (auto&& c : range(lattice.getSize()))
