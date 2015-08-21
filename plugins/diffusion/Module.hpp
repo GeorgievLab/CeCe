@@ -16,6 +16,7 @@
 #include <algorithm>
 
 // Simulator
+#include "core/Real.hpp"
 #include "core/String.hpp"
 #include "core/Units.hpp"
 #include "core/Grid.hpp"
@@ -55,7 +56,7 @@ public:
 
 
     /// Signal value type.
-    using Signal = float;
+    using Signal = RealType;
 
     /// Signal identificator.
     using SignalId = unsigned int;
@@ -208,9 +209,14 @@ public:
      *
      * @return
      */
-    Signal& getSignalFront(const String& name, const Coordinate& coord) noexcept
+    Signal& getSignalFront(const String& name, const Coordinate& coord)
     {
-        return m_gridsFront[getSignalId(name)][coord + OFFSET];
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getSignalFront(id, coord);
     }
 
 
@@ -222,9 +228,14 @@ public:
      *
      * @return
      */
-    const Signal& getSignalFront(const String& name, const Coordinate& coord) const noexcept
+    const Signal& getSignalFront(const String& name, const Coordinate& coord) const
     {
-        return m_gridsFront[getSignalId(name)][coord + OFFSET];
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getSignalFront(id, coord);
     }
 
 
@@ -264,9 +275,14 @@ public:
      *
      * @return
      */
-    Signal& getSignalBack(const String& name, const Coordinate& coord) noexcept
+    Signal& getSignalBack(const String& name, const Coordinate& coord)
     {
-        return m_gridsBack[getSignalId(name)][coord + OFFSET];
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getSignalBack(id, coord);
     }
 
 
@@ -278,9 +294,14 @@ public:
      *
      * @return
      */
-    const Signal& getSignalBack(const String& name, const Coordinate& coord) const noexcept
+    const Signal& getSignalBack(const String& name, const Coordinate& coord) const
     {
-        return m_gridsBack[getSignalId(name)][coord + OFFSET];
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getSignalBack(id, coord);
     }
 
 
@@ -320,7 +341,7 @@ public:
      *
      * @return
      */
-    Signal& getSignal(const String& name, const Coordinate& coord) noexcept
+    Signal& getSignal(const String& name, const Coordinate& coord)
     {
         return getSignalFront(name, coord);
     }
@@ -334,7 +355,7 @@ public:
      *
      * @return
      */
-    const Signal& getSignal(const String& name, const Coordinate& coord) const noexcept
+    const Signal& getSignal(const String& name, const Coordinate& coord) const
     {
         return getSignalFront(name, coord);
     }
@@ -360,9 +381,14 @@ public:
      *
      * @return
      */
-    DiffusionRate getDiffusionRate(const String& name) const noexcept
+    DiffusionRate getDiffusionRate(const String& name) const
     {
-        return m_diffusionRates[getSignalId(name)];
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getDiffusionRate(id);
     }
 
 
@@ -386,9 +412,14 @@ public:
      *
      * @return
      */
-    DegradationRate getDegradationRate(const String& name) const noexcept
+    DegradationRate getDegradationRate(const String& name) const
     {
-        return m_degradationRates[getSignalId(name)];
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getDegradationRate(id);
     }
 
 
@@ -404,8 +435,10 @@ public:
     {
         return m_colors[id];
     }
+#endif
 
 
+#if ENABLE_RENDER
     /**
      * @brief Get signal color.
      *
@@ -413,9 +446,49 @@ public:
      *
      * @return Signal color.
      */
-    const render::Color& getSignalColor(const String& name) const noexcept
+    const render::Color& getSignalColor(const String& name) const
     {
-        return getSignalColor(getSignalId(name));
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getSignalColor(id);
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Get signal saturation (only for rendering).
+     *
+     * @param id Signal identifier.
+     *
+     * @return
+     */
+    Signal getSignalSaturation(SignalId id) const noexcept
+    {
+        return m_signalSaturation[id];
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Get signal saturation (only for rendering).
+     *
+     * @param name Signal name.
+     *
+     * @return
+     */
+    Signal getSignalSaturation(const String& name) const
+    {
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getSignalSaturation(id);
     }
 #endif
 
@@ -507,9 +580,14 @@ public:
      *
      * @return
      */
-    void setSignalFront(const String& name, const Coordinate& coord, Signal value) noexcept
+    void setSignalFront(const String& name, const Coordinate& coord, Signal value)
     {
-        m_gridsFront[getSignalId(name)][coord + OFFSET] = value;
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        m_gridsFront[id][coord + OFFSET] = value;
     }
 
 
@@ -537,9 +615,14 @@ public:
      *
      * @return
      */
-    void setSignalBack(const String& name, const Coordinate& coord, Signal value) noexcept
+    void setSignalBack(const String& name, const Coordinate& coord, Signal value)
     {
-        m_gridsBack[getSignalId(name)][coord + OFFSET] = value;
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        m_gridsBack[id][coord + OFFSET] = value;
     }
 
 
@@ -567,7 +650,7 @@ public:
      *
      * @return
      */
-    void setSignal(const String& name, const Coordinate& coord, Signal value) noexcept
+    void setSignal(const String& name, const Coordinate& coord, Signal value)
     {
         setSignalFront(name, coord, value);
     }
@@ -591,9 +674,14 @@ public:
      * @param name Signal name.
      * @param rate Diffusion rate.
      */
-    void setDiffusionRate(const String& name, DiffusionRate rate) noexcept
+    void setDiffusionRate(const String& name, DiffusionRate rate)
     {
-        setDiffusionRate(getSignalId(name), rate);
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        setDiffusionRate(id, rate);
     }
 
 
@@ -615,9 +703,14 @@ public:
      * @param name Signal name.
      * @param rate Degradation rate.
      */
-    void setDegradationRate(const String& name, DegradationRate rate) noexcept
+    void setDegradationRate(const String& name, DegradationRate rate)
     {
-        setDegradationRate(getSignalId(name), rate);
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        setDegradationRate(id, rate);
     }
 
 
@@ -632,17 +725,57 @@ public:
     {
         m_colors[id] = color;
     }
+#endif
 
 
+#if ENABLE_RENDER
     /**
      * @brief Set signal color.
      *
      * @param name  Signal name.
      * @param color New signal color.
      */
-    void setSignalColor(const String& name, render::Color color) noexcept
+    void setSignalColor(const String& name, render::Color color)
     {
-        setSignalColor(getSignalId(name), color);
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        setSignalColor(id, color);
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Change signal saturation.
+     *
+     * @param id         Signal identifier.
+     * @param saturation Signal value when color is max.
+     */
+    void setSignalSaturation(SignalId id, Signal saturation) noexcept
+    {
+        m_signalSaturation[id] = saturation;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Change signal saturation.
+     *
+     * @param name       Signal name.
+     * @param saturation Signal value when color is max.
+     */
+    void setSignalSaturation(const String& name, Signal saturation)
+    {
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        setSignalSaturation(id, saturation);
     }
 #endif
 
@@ -694,6 +827,17 @@ public:
     void swap(SignalId id) noexcept
     {
         std::swap(m_gridsFront[id], m_gridsBack[id]);
+    }
+
+
+    /**
+     * @brief Swap all signal grids.
+     */
+    void swapAll() noexcept
+    {
+        // Swap grids
+        for (auto id : getSignalIds())
+            swap(id);
     }
 
 
@@ -772,6 +916,9 @@ private:
 
     /// Signal colors.
     DynamicArray<render::Color> m_colors;
+
+    /// Signal color saturation.
+    DynamicArray<Signal> m_signalSaturation;
 
     /// Drawable signal grid.
 #  if CONFIG_PLUGIN_diffusion_SMOOTH

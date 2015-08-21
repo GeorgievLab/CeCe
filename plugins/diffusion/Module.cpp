@@ -80,7 +80,8 @@ Module::SignalId Module::registerSignal(String name, DiffusionRate rate, Degrada
     m_gridsBack.emplace_back(m_gridSize + 2 * OFFSET);
 
 #if ENABLE_RENDER
-    m_colors.push_back(g_colors[id]);
+    m_colors.push_back(g_colors[id % g_colors.size()]);
+    m_signalSaturation.push_back(1);
 #endif
 
     return id;
@@ -117,8 +118,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         MutexGuard guard(m_mutex);
 #endif
         // Swap grids
-        for (auto id : getSignalIds())
-            swap(id);
+        swapAll();
     }
 }
 
@@ -141,7 +141,8 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
 #if ENABLE_RENDER
         // Set signal color
-        setSignalColor(id, signal.get("color", g_colors[id % g_colors.size()]));
+        setSignalColor(id, signal.get("color", getSignalColor(id)));
+        setSignalSaturation(id, signal.get("saturation", getSignalSaturation(id)));
 #endif
     }
 
@@ -197,10 +198,14 @@ void Module::updateDrawable() const
         // Mixup signal colors
         for (auto id : getSignalIds())
         {
-            const auto signal = std::min<Signal>(getSignal(id, c), 1);
+            // Get signal
+            const auto signal = getSignal(id, c);
 
-            pixel *= (1 - signal);
-            pixel += m_colors[id] * signal;
+            // Calculate alpha value
+            const auto alpha = std::min<Signal>(signal / getSignalSaturation(id), 1);
+
+            pixel *= (1 - alpha);
+            pixel += m_colors[id] * alpha;
         }
 
         m_drawable->set(c, pixel);
