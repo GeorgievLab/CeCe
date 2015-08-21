@@ -233,7 +233,9 @@ void process_module_node(const pugi::xml_node& node, simulator::Simulation& simu
     const simulator::Configuration config(makeUnique<loader::xml::ConfigImplementation>(node), filename);
 
     // Create module by given name
-    simulator::Module* module = simulation.useModule(config.get("name"));
+    simulator::Module* module = simulation.useModule(
+        config.get("name"), config.get("access-name", String{})
+    );
 
     // Configure module
     if (module)

@@ -48,7 +48,7 @@
     </module>
 
     <!-- Define streamlines -->
-    <module name="streamlines" grid="200 100"
+    <module name="streamlines-image" access-name="streamlines" grid="200 100"
             inlet-velocity="400um/s"
             layout="outlet inlet outlet inlet"
             image="obstacle2.png" />

@@ -592,11 +592,15 @@ public:
     /**
      * @brief Load module from library and add it into simulation.
      *
-     * @param path Path to module.
+     * @param path      Path to module.
+     * @param storePath Path under what is module stored and can be accessed.
+     *                  If is empty, `path` is used. This is useful when module
+     *                  extends functionality of another module but the behaviour
+     *                  is same as original module.
      *
      * @return A pointer to created module.
      */
-    Module* useModule(const String& path);
+    Module* useModule(const String& path, String storePath = {});
 
 
     /**

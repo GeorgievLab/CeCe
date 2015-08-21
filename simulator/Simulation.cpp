@@ -114,11 +114,14 @@ Simulation::~Simulation()
 
 /* ************************************************************************ */
 
-Module* Simulation::useModule(const String& path)
+Module* Simulation::useModule(const String& path, String storePath)
 {
+    if (storePath.empty())
+        storePath = path;
+
     // Module exists, return the existing one
-    if (hasModule(path))
-        return getModule(path);
+    if (hasModule(storePath))
+        return getModule(storePath);
 
     Log::debug("Loading library: ", path);
 
@@ -141,11 +144,18 @@ Module* Simulation::useModule(const String& path)
     // Register module
     if (module)
     {
-        Log::info("Using module: ", path);
-        return addModule(path, std::move(module));
+        if (storePath != path)
+        {
+            Log::info("Using module '", path, "' as '", storePath, "'");
+        }
+        else
+        {
+            Log::info("Using module '", path, "'");
+        }
+        return addModule(storePath, std::move(module));
     }
 
-    Log::warning("Unable to create module: ", path, " (unsupported by library?)");
+    Log::warning("Unable to create module '", path, "' (unsupported by library?)");
 
     return nullptr;
 }
