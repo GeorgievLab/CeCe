@@ -208,6 +208,11 @@ void Module::updateDrawable() const
             pixel += m_colors[id] * alpha;
         }
 
+#if DEV_PLUGIN_diffusion_OBSTACLES_RENDER
+        if (isObstacle(c))
+            pixel = render::colors::BLUE;
+#endif
+
         m_drawable->set(c, pixel);
     }
 }

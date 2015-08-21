@@ -8,12 +8,17 @@
 
 if (CONFIG_RENDER_ENABLE)
     option(CONFIG_PLUGIN_diffusion_SMOOTH "Render smooth diffusion" On)
+    option(DEV_PLUGIN_diffusion_OBSTACLES_RENDER "Render obstacles" Off)
 endif ()
 
 # ######################################################################### #
 
 if (CONFIG_PLUGIN_diffusion_SMOOTH)
     add_definitions(-DCONFIG_PLUGIN_diffusion_SMOOTH=1)
+endif ()
+
+if (DEV_PLUGIN_diffusion_OBSTACLES_RENDER)
+    add_definitions(-DDEV_PLUGIN_diffusion_OBSTACLES_RENDER=1)
 endif ()
 
 # ######################################################################### #
