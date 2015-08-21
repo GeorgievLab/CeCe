@@ -20,9 +20,6 @@
 // Plugin
 #include "Module.hpp"
 
-// Plugins
-#include "plugins/streamlines/StoreState.hpp"
-
 /* ************************************************************************ */
 
 using namespace simulator;
@@ -31,15 +28,10 @@ using namespace simulator;
 
 class SteamlinesImageApi : public PluginApi
 {
-
     UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
-        if (name == "store-state")
-            return makeUnique<plugin::streamlines::StoreState>(simulation.useModule<plugin::streamlines::Module>("streamlines-image"));
-
         return makeUnique<plugin::streamlines_image::Module>();
     }
-
 };
 
 /* ************************************************************************ */
