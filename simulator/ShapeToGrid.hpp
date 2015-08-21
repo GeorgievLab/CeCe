@@ -336,7 +336,7 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const ShapeEdges& shape, const Vecto
                 if (nodes[i + 1] > static_cast<Ts>(max.getX()))
                     nodes[i + 1] = max.getX();
 
-                for (Ts x = nodes[i]; x < nodes[i + 1]; ++x)
+                for (Ts x = nodes[i]; x <= nodes[i + 1]; ++x)
                     fnIn(Vector<T>(x, y));
             }
             else
