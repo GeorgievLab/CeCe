@@ -473,7 +473,8 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                 shape, step, coord, m_lattice.getSize(), {}, 2
             );
 
-            assert(count);
+            if (count == 0)
+                continue;
 
             // Average
             velocity /= count;
