@@ -139,7 +139,7 @@ install(TARGETS ${PROJECT_NAME}
 # Fixup shared libraries for bundle
 if (APPLE)
     install(PROGRAMS
-        run.sh
+        "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.sh"
         DESTINATION "${INSTALL_DIR_RUNTIME}"
         COMPONENT Runtime
     )
