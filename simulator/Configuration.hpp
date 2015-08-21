@@ -520,7 +520,7 @@ private:
         //return lexical_cast<T>(value);
         InStringStream is(value);
         T res;
-        is >> std::noskipws >> res;
+        is >> std::noskipws >> std::boolalpha >> res;
         return res;
     }
 

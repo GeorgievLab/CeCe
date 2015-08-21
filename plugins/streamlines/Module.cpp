@@ -274,6 +274,9 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Layout
     setLayout(config.get("layout", getLayout()));
 
+    // Enable dynamic object obstacles
+    setDynamicObjectsObstacles(config.get("dynamic-object-obstacles", isDynamicObjectsObstacles()));
+
     // Initialize lattice
     init(simulation);
 }
@@ -383,9 +386,9 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
     // Foreach all cells
     for (auto& obj : simulation.getObjects())
     {
-        // Ignore static objects
-        //if (obj->getType() != simulator::Object::Type::Static)
-        //    continue;
+        // Ignore dynamic objects
+        if (!isDynamicObjectsObstacles() && obj->getType() != simulator::Object::Type::Static)
+            continue;
 
         // Get object position
         const auto pos = obj->getPosition() - start;

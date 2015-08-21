@@ -222,6 +222,17 @@ public:
     }
 
 
+    /**
+     * @brief If dynamic objects are used as obstacles.
+     *
+     * @return
+     */
+    bool isDynamicObjectsObstacles() const noexcept
+    {
+        return m_dynamicObjectsObstacles;
+    }
+
+
 // Public Mutators
 public:
 
@@ -308,6 +319,17 @@ public:
     void setLayout(Layout layout) noexcept
     {
         m_layout = layout;
+    }
+
+
+    /**
+     * @brief Enable or disable dynamic objects obstacles.
+     *
+     * @param flag
+     */
+    void setDynamicObjectsObstacles(bool flag) noexcept
+    {
+        m_dynamicObjectsObstacles = flag;
     }
 
 
@@ -482,6 +504,9 @@ private:
 
     /// Barriers created for layout.
     StaticArray<ViewPtr<simulator::Obstacle>, LayoutPosCount> m_layoutBarriers;
+
+    /// Use dynamic objects as obstacles
+    bool m_dynamicObjectsObstacles = true;
 
 #if ENABLE_RENDER && DEV_DRAW_VELOCITY
     /// Rendering grid with filled cells.
