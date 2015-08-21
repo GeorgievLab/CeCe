@@ -33,9 +33,10 @@ struct ReqProd
     unsigned int product = 0;
     unsigned int env_requirement = 0;
     unsigned int env_product = 0;
-    bool mustnt_have = false;
-    ReqProd(int req, int prod, int e_req = 0, int e_prod = 0, bool flag = false) noexcept
-    : requirement(req), product(prod), env_requirement(e_req), env_product(e_prod), mustnt_have(flag)
+    bool less = false;
+    bool env_less = false;
+    ReqProd(int req, int prod, int e_req = 0, int e_prod = 0, bool flag = false, bool flagEnv = false) noexcept
+    : requirement(req), product(prod), env_requirement(e_req), env_product(e_prod), less(flag), env_less(flagEnv)
     {
         // Nothing to do
     }
@@ -70,6 +71,16 @@ public:
 
 
     /**
+     * @brief Extend matrix using rules for intracellular rections.
+     *
+     * @param arrays of molucule's IDs, reaction rate
+     *
+     * @return
+     */
+    void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate);
+
+
+    /**
      * @brief Add condition for required reaction.
      *
      * @param name         Molecule name that is used in condition.
@@ -77,7 +88,7 @@ public:
      * @param clone        Clone reaction.
      * @param noCond       Reaction.
      */
-    void addCondition(const String& name, unsigned int requirement, bool clone, DynamicArray<ReqProd>& noCond);
+    void addCondition(const Condition& condition, DynamicArray<ReqProd>& noCond);
 };
 
 /* ************************************************************************ */

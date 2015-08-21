@@ -29,12 +29,20 @@ IntracellularReactions::PropensityType IntracellularReactions::computePropensity
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
         unsigned int number = cell.getMoleculeCount(m_ids[i]);
-        if (m_rules[index][i].mustnt_have && number > 0)
+
+        // TODO: check if it's OK
+        const bool cond =
+            // >
+            (m_rules[index][i].less && !(number <= m_rules[index][i].requirement)) ||
+            // <=
+            !(number >= m_rules[index][i].requirement)
+        ;
+
+        if (cond)
             return 0;
+
         if (m_rules[index][i].requirement == 0u)
             continue;
-        if (m_rules[index][i].requirement > number)
-            return 0;
         local *= number;
     }
     return local;

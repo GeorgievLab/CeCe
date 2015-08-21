@@ -50,6 +50,19 @@ public:
     /// Molecule identifier type.
     using MoleculeId = unsigned int;
 
+// Public Structures
+public:
+
+
+    struct Condition
+    {
+        String name;
+        unsigned int requirement;
+        bool clone;
+        bool less;
+    };
+
+
 protected:
 
     using PropensityType = RateType;
@@ -203,10 +216,10 @@ public:
      *
      * @return
      */
-    void addCondition(const String& name, unsigned int requirement, bool clone, DynamicArray<T>& no_cond)
+    void addCondition(const Condition& condition, DynamicArray<T>& no_cond)
     {
         // add unmodified reaction rule after OR is reached
-        if (clone)
+        if (condition.clone)
         {
             // backup of unmodified reaction can be outdated (shorter)
             no_cond.resize(m_ids.size());
@@ -216,16 +229,17 @@ public:
         }
 
         // get index of required molecule
-        unsigned int column_index = getIndexOfMoleculeColumn(name);
+        unsigned int moleculeId = getIndexOfMoleculeColumn(condition.name);
+
+        // Alias to last reaction
+        auto& reaction = m_rules[m_rules.size() - 1];
+
+        const auto diff = std::max(condition.requirement - reaction[moleculeId].requirement, 0u);
 
         // add requirement
-        if (requirement == 0)
-            m_rules[m_rules.size() - 1][column_index].mustnt_have = true;
-        else
-        {
-            m_rules[m_rules.size() - 1][column_index].requirement = std::max(m_rules[m_rules.size() - 1][column_index].requirement, 1u);
-            m_rules[m_rules.size() - 1][column_index].product = std::max(m_rules[m_rules.size() - 1][column_index].product, 1u);
-        }
+        reaction[moleculeId].less = condition.less;
+        reaction[moleculeId].requirement += diff;
+        reaction[moleculeId].product += diff;
     }
 
 /* ************************************************************************ */

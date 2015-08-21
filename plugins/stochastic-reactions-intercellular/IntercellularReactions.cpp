@@ -38,28 +38,41 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
     PropensityType local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
-        unsigned int number = cell.getMoleculeCount(m_ids[i]);
-        if (m_rules[index][i].mustnt_have && number > 0)
+        const auto number = cell.getMoleculeCount(m_ids[i]);
+
+        // TODO: check if it's OK
+        const bool cond =
+            // >
+            (m_rules[index][i].less && !(number <= m_rules[index][i].requirement)) ||
+            // <=
+            !(number >= m_rules[index][i].requirement)
+        ;
+
+        bool condEnv = true;
+        unsigned int numberEnv = 0u;
+
+        // Get signal ID
+        const auto id = diffusion->getSignalId(m_ids[i]);
+        if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
+        {
+            numberEnv = getAmountOfMolecules(*diffusion, coords, id);
+
+            condEnv =
+                // >
+                (m_rules[index][i].env_less && !(numberEnv <= m_rules[index][i].env_requirement)) ||
+                // <=
+                !(numberEnv >= m_rules[index][i].env_requirement)
+            ;
+        }
+
+        if (cond && condEnv)
             return 0;
 
         if (m_rules[index][i].requirement != 0u)
-        {
-            if (m_rules[index][i].requirement > number)
-                return 0;
             local *= number;
-        }
 
         if (m_rules[index][i].env_requirement != 0u)
-        {
-            // Get signal ID
-            auto id = diffusion->getSignalId(m_ids[i]);
-            if (id == plugin::diffusion::Module::INVALID_SIGNAL_ID)
-                throw InvalidArgumentException("Unknown signal molecule '" + m_ids[i] + "' in diffusion");
-            unsigned int number = getAmountOfMolecules(*diffusion, coords, id);
-            if (m_rules[index][i].env_requirement > number)
-                return 0;
-            local *= number;
-        }
+            local *= numberEnv;
     }
     return local;
 }
@@ -270,16 +283,90 @@ void IntercellularReactions::extend(const DynamicArray<String>& ids_plus, const 
 
 /* ************************************************************************ */
 
-void IntercellularReactions::addCondition(const String& name, unsigned int requirement, bool clone, DynamicArray<ReqProd>& noCond)
+void IntercellularReactions::extendIntracellular(
+    const DynamicArray<String>& ids_plus,
+    const DynamicArray<String>& ids_minus,
+    const RateType rate
+)
+{
+    // initialize array
+    DynamicArray<ReqProd> array;
+    if (m_rules.size() > 0)
+        array.resize(m_rules[0].size());
+
+    // extend with requirements
+    for (unsigned int i = 0; i < ids_minus.size(); i++)
+    {
+        if (ids_minus[i] == "null" || ids_minus[i] == "env_null")
+            continue;
+
+        // Produce to environment directly
+        const bool fromEnv = (ids_plus[i].substr(0, 4) == "env_");
+
+        // Get real name
+        const String nameReal = fromEnv ? ids_plus[i].substr(4) : ids_plus[i];
+
+        unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
+        if (index == array.size())
+        {
+            if (fromEnv)
+                array.push_back(ReqProd{0,0,1,0});
+            else
+                array.push_back(ReqProd{1,0});
+        }
+        else
+        {
+            if (fromEnv)
+                array[index].env_requirement += 1;
+            else
+                array[index].requirement += 1;
+        }
+    }
+
+    //extend with products
+    for (unsigned int i = 0; i < ids_plus.size(); i++)
+    {
+        if (ids_plus[i] == "null" || ids_plus[i] == "env_null")
+            continue;
+
+        // Produce to environment directly
+        const bool toEnv = (ids_plus[i].substr(0, 4) == "env_");
+
+        // Get real name
+        const String nameReal = toEnv ? ids_plus[i].substr(4) : ids_plus[i];
+
+        unsigned int index = getIndexOfMoleculeColumn(nameReal);
+        if (index == array.size())
+        {
+            if (toEnv)
+                array.push_back(ReqProd{0,0,0,1});
+            else
+                array.push_back(ReqProd{0,1});
+        }
+        else
+        {
+            if (toEnv)
+                array[index].env_product += 1;
+            else
+                array[index].product += 1;
+        }
+    }
+    m_rates.push_back(rate);
+    m_rules.push_back(array);
+}
+
+/* ************************************************************************ */
+
+void IntercellularReactions::addCondition(const Condition& condition, DynamicArray<ReqProd>& noCond)
 {
     // Condition is based on environmental molecule
-    const bool fromEnv = (name.substr(0, 4) == "env_");
+    const bool fromEnv = (condition.name.substr(0, 4) == "env_");
 
     // Get real name
-    const String nameReal = fromEnv ? name.substr(4) : name;
+    const String nameReal = fromEnv ? condition.name.substr(4) : condition.name;
 
     // add unmodified reaction rule after OR is reached
-    if (clone)
+    if (condition.clone)
     {
         // backup of unmodified reaction can be outdated (shorter)
         noCond.resize(m_ids.size());
@@ -295,17 +382,23 @@ void IntercellularReactions::addCondition(const String& name, unsigned int requi
     auto& reaction = m_rules[m_rules.size() - 1];
 
     // add requirement
-    if (requirement == 0)
+    if (fromEnv)
     {
-        reaction[moleculeId].mustnt_have = true;
-    }
-    else if (fromEnv)
-    {
-        reaction[moleculeId].env_requirement = std::max(reaction[moleculeId].env_requirement, 1u);
+        const auto diff = std::max(condition.requirement - reaction[moleculeId].env_requirement, 0u);
+
+        // add requirement
+        reaction[moleculeId].env_less = condition.less;
+        reaction[moleculeId].env_requirement += diff;
+        reaction[moleculeId].env_product += diff;
     }
     else
     {
-        reaction[moleculeId].requirement = std::max(reaction[moleculeId].requirement, 1u);
+        const auto diff = std::max(condition.requirement - reaction[moleculeId].requirement, 0u);
+
+        // add requirement
+        reaction[moleculeId].less = condition.less;
+        reaction[moleculeId].requirement += diff;
+        reaction[moleculeId].product += diff;
     }
 }
 

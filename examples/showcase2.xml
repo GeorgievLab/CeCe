@@ -3,47 +3,49 @@
 <simulation world-size="200um 100um" dt="1ms" aiterations="1000" background="black">
     <program name="cell1" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null < 0.5, 10 > S1;
-        S1 > 0.5 > env;
+        null < 0.5, 10 > env_S1;
 ]]>
     </program>
 
     <program name="cell2" language="stochastic-reactions-intercellular">
 <![CDATA[
-        #if env_S1 > 500: null < 0.5, 10 > LM5;
-        if env_S1: null < 0.5, 10 > LM5;
+        if env_S1 > 500: null < 0.5, 10 > LM5;
 ]]>
     </program>
 
     <program name="cell3" language="stochastic-reactions-intercellular">
 <![CDATA[
-        #if env_S1 > 500: null < 0.5, 10 > LM5;
-        if env_S1: null < 0.5, 10 > LM5;
-        if env_S1: null < 0.5, 10 > env_S1;
-        S1 > 0.5 > env;
+        if env_S1 > 500: null < 0.5, 10 > LM5;
+        if env_S1 > 500: null < 0.5, 10 > env_S1;
 ]]>
     </program>
 
     <!-- Generate yeast cells -->
     <module name="object-generator">
-        <object class="cell.Yeast" probability="0.05" velocity="50um/s 0" programs="cell1">
+        <object class="cell.Yeast" probability="0.02" velocity="50um/s 0" programs="cell1">
             <molecule name="LM3" amount="10000" />
+            <molecule name="GFP" amount="1000" />
         </object>
-        <object class="cell.Yeast" probability="0.05" velocity="50um/s 0" programs="cell2">
+        <object class="cell.Yeast" probability="0.02" velocity="50um/s 0" programs="cell2">
             <molecule name="LM4" amount="10000" />
+            <molecule name="RFP" amount="1000" />
         </object>
-        <object class="cell.Yeast" probability="0.05" velocity="50um/s 0" programs="cell3">
+        <object class="cell.Yeast" probability="0.02" velocity="50um/s 0" programs="cell3">
             <molecule name="LM6" amount="10000" />
+            <molecule name="BFP" amount="1000" />
         </object>
 
-        <object class="cell.Yeast" probability="0.05" velocity="50um/s 0" programs="cell1" position-min="90um -40um" position-max="95um 40um">
+        <object class="cell.Yeast" probability="0.02" velocity="50um/s 0" programs="cell1" position-min="90um -40um" position-max="95um 40um">
             <molecule name="LM3" amount="10000" />
+            <molecule name="GFP" amount="1000" />
         </object>
-        <object class="cell.Yeast" probability="0.05" velocity="50um/s 0" programs="cell2" position-min="90um -40um" position-max="95um 40um">
+        <object class="cell.Yeast" probability="0.02" velocity="50um/s 0" programs="cell2" position-min="90um -40um" position-max="95um 40um">
             <molecule name="LM4" amount="10000" />
+            <molecule name="RFP" amount="1000" />
         </object>
-        <object class="cell.Yeast" probability="0.05" velocity="50um/s 0" programs="cell3" position-min="90um -40um" position-max="95um 40um">
+        <object class="cell.Yeast" probability="0.02" velocity="50um/s 0" programs="cell3" position-min="90um -40um" position-max="95um 40um">
             <molecule name="LM6" amount="10000" />
+            <molecule name="BFP" amount="1000" />
         </object>
     </module>
 
@@ -55,14 +57,14 @@
     <module name="diffusion-streamlines" />
 
     <module name="agglutination">
-        <bond ligand="LM1" receptor="LM3" receptor-size="1" association-constant="50000" disassociation-constant="1" />
-        <bond ligand="LM2" receptor="LM4" receptor-size="1" association-constant="50000" disassociation-constant="1" />
-        <bond ligand="LM5" receptor="LM6" receptor-size="1" association-constant="50000" disassociation-constant="1" />
+        <bond ligand="LM1" receptor="LM3" association-constant="50000" disassociation-constant="1" />
+        <bond ligand="LM2" receptor="LM4" association-constant="50000" disassociation-constant="1" />
+        <bond ligand="LM5" receptor="LM6" association-constant="50000" disassociation-constant="1" />
     </module>
 
     <!-- Define diffusion module -->
     <module name="diffusion" grid="200 100">
-        <signal name="S1" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" />
+        <signal name="S1" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" saturation="5" />
     </module>
 
     <!-- Center cell -->

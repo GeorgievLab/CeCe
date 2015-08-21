@@ -44,7 +44,9 @@ enum class TokenCode
     And,
     Or,
     If,
-    Not
+    Not,
+    Less,
+    Greater
 };
 
 /* ************************************************************************ */
@@ -115,7 +117,6 @@ public:
         else if (token.value == "not")
             token.code = TokenCode::Not;
 
-
         return token;
     }
 
@@ -143,10 +144,6 @@ public:
         if (isIdentifierBegin())
             return tokenizeIdentifier();
 
-        // Full forward arrow string.
-        // Starts at '>'
-        const char* arrow_fwd_str = "->" + 1;
-
         switch (value())
         {
         case '-':
@@ -154,18 +151,20 @@ public:
             if (!is('>'))
                 fatalError("Invalid token");
 
-            // Reset to full arrow string
-            --arrow_fwd_str;
+            next();
+            return TokenType{TokenCode::ArrowFwrd, "->"};
 
         case '>':
             next();
-            return TokenType{TokenCode::ArrowFwrd, arrow_fwd_str};
+            return TokenType{TokenCode::Greater, ">"};
 
         case '<':
             next();
-            match('-');
 
-            return TokenType{TokenCode::ArrowBack};
+            if (match('-'))
+                return TokenType{TokenCode::ArrowFwrd, "<-"};
+
+            return TokenType{TokenCode::Less, "<"};
 
         case ':':
             next();
@@ -297,48 +296,38 @@ public:
 /* ************************************************************************ */
     void parseReaction(T& reactions)
     {
-        try
+        // parse conditions
+        auto conditions = parseConditions();
+        // parse LS
+        auto ids_minus = parseList();
+        if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd, TokenCode::Less, TokenCode::Greater))
+            throw MissingArrowException();
+        // parse rate
+        RateType rate;
+        RateType rateR;
+        bool reversible = is(TokenCode::ArrowBack, TokenCode::Less);
+        if (reversible)
+            rateR = parseRateReversible();
+        rate = parseRate();
+        //parse RS
+        auto ids_plus = parseList();
+        requireNext(TokenCode::Semicolon);
+        // extending
+        reactions.extend(ids_plus, ids_minus, rate);
+        auto no_cond = reactions.getLastReaction();
+        for (unsigned int i = 0; i < conditions.size(); i++)
         {
-            // parse conditions
-            auto conditions = parseConditions();
-            // parse LS
-            auto ids_minus = parseList();
-            if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd))
-                throw MissingArrowException();
-            // parse rate
-            RateType rate;
-            RateType rateR;
-            bool reversible = is(TokenCode::ArrowBack);
-            if (reversible)
-                rateR = parseRateReversible();
-            rate = parseRate();
-            //parse RS
-            auto ids_plus = parseList();
-            requireNext(TokenCode::Semicolon);
-            // extending
-            reactions.extend(ids_plus, ids_minus, rate);
+            reactions.addCondition(conditions[i], no_cond);
+        }
+        // extending reversible
+        if (reversible)
+        {
+            reactions.extend(ids_minus, ids_plus, rateR);
             auto no_cond = reactions.getLastReaction();
             for (unsigned int i = 0; i < conditions.size(); i++)
             {
-                reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), std::get<2>(conditions[i]), no_cond);
+                reactions.addCondition(conditions[i], no_cond);
             }
-            // extending reversible
-            if (reversible)
-            {
-                reactions.extend(ids_minus, ids_plus, rateR);
-                auto no_cond = reactions.getLastReaction();
-                for (unsigned int i = 0; i < conditions.size(); i++)
-                {
-                    reactions.addCondition(std::get<0>(conditions[i]), std::get<1>(conditions[i]), std::get<2>(conditions[i]), no_cond);
-                }
-            }
-        }
-        catch (const Exception& ex)
-        {
-            Log::warning(ex.what());
-            find(TokenCode::Semicolon);
-            next();
-            return;
         }
     }
 
@@ -361,43 +350,87 @@ protected:
      *
      * @return tuple - conditions
      */
-    DynamicArray<Tuple<String, unsigned int, bool>> parseConditions()
+    DynamicArray<typename T::Condition> parseConditions()
     {
-        DynamicArray<Tuple<String, unsigned int, bool>> array;
-        if (is(TokenCode::If))
+        DynamicArray<typename T::Condition> array;
+        if (!is(TokenCode::If))
+            return array;
+
+        bool clone = false;
+        do
         {
-            bool clone = false;
             do
             {
-                do
+                next();
+                String name;
+                unsigned int requirement = 1;
+                bool neg = false;
+                bool less = false;
+                if (is(TokenCode::Not))
                 {
+                    neg = true;
                     next();
-                    String name;
-                    unsigned int requirement = 1;
-                    if (is(TokenCode::Not))
-                    {
-                        requirement = 0;
-                        next();
-                    }
-                    if (is(TokenCode::Identifier))
-                    {
-                        name = token().value;
-                        next();
-                    }
-                    else
-                        throw MissingIdentifierException{};
-                    array.push_back(std::make_tuple(name, requirement, clone));
-                    clone = false;
                 }
-                while (is(TokenCode::And));
-                clone = true;
-            }
-            while (is(TokenCode::Or));
+                if (is(TokenCode::Identifier))
+                {
+                    name = token().value;
+                    next();
+                }
+                else
+                    throw MissingIdentifierException{};
 
-            requireNext(TokenCode::Colon);
-            return array;
+                if (is(TokenCode::Less))
+                {
+                    requirement = std::ceil(parseConditionValueRate());
+
+                    if (requirement == 0)
+                        throw InvalidArgumentException("Requirement cannot be zero");
+
+                    less = true;
+                }
+                else if (is(TokenCode::Greater))
+                {
+                    requirement = std::ceil(parseConditionValueRate());
+                }
+
+                if ((neg && !less) || (!neg && less))
+                    requirement -= 1;
+
+                array.push_back({name, requirement, clone, neg});
+                clone = false;
+            }
+            while (is(TokenCode::And));
+            clone = true;
         }
+        while (is(TokenCode::Or));
+
+        requireNext(TokenCode::Colon);
+
         return array;
+    }
+
+
+    /**
+     * @brief Parse condition value.
+     *
+     * @return
+     */
+    RateType parseConditionValueRate()
+    {
+        // Alias to tokenizer range.
+        const auto& tokenizerRange = getTokenizer().getRange();
+
+        // Store rate begin
+        auto begin = tokenizerRange.begin();
+
+        // Last token was the one before value
+        next();
+        // Find arrow or semicolon
+        find(TokenCode::Colon, TokenCode::And, TokenCode::Or);
+
+        // Get position before token.
+        auto end = tokenizerRange.begin() - token().value.size();
+        return parseExpression(makeRange(begin, end), m_parameters);
     }
 
 /* ************************************************************************ */
@@ -443,9 +476,9 @@ protected:
         // Last token was the one before rate - ArrowFwrd
         next();
         // Find arrow or semicolon
-        find(TokenCode::ArrowFwrd, TokenCode::Semicolon);
+        find(TokenCode::ArrowFwrd, TokenCode::Greater, TokenCode::Semicolon);
 
-        if (!is(TokenCode::ArrowFwrd))
+        if (!is(TokenCode::ArrowFwrd, TokenCode::Greater))
             throw MissingArrowException();
 
         // Get position before token.
