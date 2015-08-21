@@ -78,6 +78,9 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             assert(velocityGrid.inRange(vc));
             const auto& velocity = velocityGrid[vc].calcVelocity() * vMax;
 
+
+            // TODO: Completely redesign
+
             // Calculate coordinate change
             Vector<RealType> dij = velocity * dt / step;
             dij.x() = std::abs(dij.getX());
@@ -88,29 +91,51 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             const auto dij2 = dij - iij;
 
             StaticMatrix<RealType, 2> tmp;
-            int offset = 0;
+            Vector<unsigned> offset = Zero;
 
             if (velocity.getY() < Zero)
             {
-                tmp = StaticMatrix<RealType, 2>{{
-                    {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() },
-                    {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())}
-                }};
-                offset = 1;
+                offset.y() = 1;
+
+                if (velocity.getX() < Zero)
+                {
+                    offset.x() = 1;
+                    tmp = StaticMatrix<RealType, 2>{{
+                        {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() },
+                        {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())}
+                    }};
+                }
+                else
+                {
+                    tmp = StaticMatrix<RealType, 2>{{
+                        {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() },
+                        {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())}
+                    }};
+                }
             }
             else
             {
-                tmp = StaticMatrix<RealType, 2>{{
-                    {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())},
-                    {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() }
-                }};
-                offset = 0;
+                if (velocity.getX() < Zero)
+                {
+                    offset.x() = 1;
+                    tmp = StaticMatrix<RealType, 2>{{
+                        {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())},
+                        {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() }
+                    }};
+                }
+                else
+                {
+                    tmp = StaticMatrix<RealType, 2>{{
+                        {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())},
+                        {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() }
+                    }};
+                }
             }
 
             // Apply matrix
             for (auto&& ab : range(Vector<unsigned>(2)))
             {
-                const auto ab2 = c + ab + Vector<unsigned>(iij) - Vector<unsigned>(0, offset);
+                const auto ab2 = c + ab + Vector<unsigned>(iij) - offset;
 
                 // Update signal
                 if (m_diffusion->inRange(ab2))
