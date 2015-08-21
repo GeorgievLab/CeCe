@@ -555,17 +555,24 @@ private:
         }
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
-        // Open video writer
-        m_videoWriter.open(
-            params.videoFileName.string(),
-            CV_FOURCC('M', 'P', 'E', 'G'),
-            60,
-            cv::Size(m_windowWidth, m_windowHeight)
-        );
+        if (!params.videoFileName.empty())
+        {
+            Log::info("Video output '", params.videoFileName.string(), "'");
 
-        // Disable window resizing
-        if (m_videoWriter.isOpened())
-            glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+            // Open video writer
+            m_videoWriter.open(
+                params.videoFileName.string(),
+                CV_FOURCC('M', 'P', 'E', 'G'),
+                60,
+                cv::Size(m_windowWidth, m_windowHeight)
+            );
+
+            // Disable window resizing
+            if (m_videoWriter.isOpened())
+                glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+            else
+                Log::warning("Unable to capture video");
+        }
 #endif
 
         // Create a windowed mode window and its OpenGL context
