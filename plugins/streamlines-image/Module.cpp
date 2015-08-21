@@ -111,27 +111,6 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
         obstacle->initShapes();
     }
-
-    // Create obstacle map
-    {
-        // Returns grid size.
-        const auto size = getLattice().getSize();
-
-        // Resize image to grid size
-        resize(imgObstacle, imgObstacle, cv::Size(size.getX(), size.getY()));
-
-        // Setup obstacle map
-        using plugin::streamlines::ObstacleMap;
-        ObstacleMap map(size);
-
-        assert(!imgObstacle.empty());
-
-        // Convert image to obstacle map
-        for (auto&& c : range(size))
-            map[c] = imgObstacle.at<uchar>(c.getY(), c.getX()) > THRESHOLD;
-
-        setStaticObstacleMap(map);
-    }
 }
 
 /* ************************************************************************ */
