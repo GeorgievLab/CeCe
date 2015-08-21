@@ -702,7 +702,7 @@ private:
         cv::Mat img(m_windowHeight, m_windowWidth, CV_8UC3);
         glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
         glPixelStorei(GL_PACK_ROW_LENGTH, img.step / img.elemSize());
-        glReadPixels(0, 0, img.cols, img.rows, GL_BGR_EXT, GL_UNSIGNED_BYTE, img.data);
+        glReadPixels(0, 0, img.cols, img.rows, GL_BGR, GL_UNSIGNED_BYTE, img.data);
         cv::flip(img, img, 0);
         return img;
     }
