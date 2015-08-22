@@ -70,6 +70,14 @@ void Lattice::clearDynamicObstacles()
 
 /* ************************************************************************ */
 
+void Lattice::clearStaticObstacles()
+{
+    for (auto& cell : m_dataFront)
+        cell.setStaticObstacle(false);
+}
+
+/* ************************************************************************ */
+
 }
 }
 

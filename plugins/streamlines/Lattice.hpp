@@ -252,6 +252,12 @@ public:
     void clearDynamicObstacles();
 
 
+    /**
+     * @brief Set static obstacle flag to false for all cells.
+     */
+    void clearStaticObstacles();
+
+
 // Private Data Members
 public:
 

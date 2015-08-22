@@ -100,6 +100,10 @@ constexpr StaticArray<StaticArray<Vector<int>, 2>, Module::LayoutPosCount> EDGES
 template<typename T>
 units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
 {
+    assert(pos >= 0);
+    assert(pos < size);
+    assert(size > 1);
+
     const RealType posF = static_cast<RealType>(pos) - 1.0;
     const RealType sizeF = static_cast<RealType>(size) - 1.0;
     return 4.f * max / (sizeF * sizeF) * (sizeF * posF - posF * posF);
@@ -151,6 +155,9 @@ void Module::init(simulator::Simulation& simulation)
     const auto vMax = calculateMaxVelocity(dl);
     const auto omega = 1.0 / getTau();
 
+    // Obstacles
+    updateObstacleMap(simulation, vMax);
+
     // Initialization iterations
     for (auto it = getInitIterations(); it--; )
     {
@@ -159,7 +166,6 @@ void Module::init(simulator::Simulation& simulation)
         // Apply boundary conditions
         applyBoundaryConditions(simulation, vMax);
     }
-
 }
 
 /* ************************************************************************ */
@@ -205,8 +211,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Calculate conversion coefficient
     setCoefficient(calculateCoefficient(dt, dl));
 
-    // Dynamic obstacles
-    updateDynamicObstacleMap(simulation, vMax);
+    // Obstacles
+    updateObstacleMap(simulation, vMax);
 
 #if THREAD_SAFE
     // Lock access
@@ -375,10 +381,11 @@ VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
 
 /* ************************************************************************ */
 
-void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax)
+void Module::updateObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax)
 {
     // Clear previous flag
     m_lattice.clearDynamicObstacles();
+    m_lattice.clearStaticObstacles();
 
     const PositionVector start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / m_lattice.getSize();
@@ -386,8 +393,10 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
     // Foreach all cells
     for (auto& obj : simulation.getObjects())
     {
+        const bool isStatic = obj->getType() == simulator::Object::Type::Static;
+
         // Ignore dynamic objects
-        if (!isDynamicObjectsObstacles() && obj->getType() != simulator::Object::Type::Static)
+        if (!isDynamicObjectsObstacles() && !isStatic)
             continue;
 
         // Get object position
@@ -411,9 +420,12 @@ void Module::updateDynamicObstacleMap(const simulator::Simulation& simulation, c
         for (const auto& shape : obj->getShapes())
         {
             mapShapeToGrid(
-                [this, &velocity] (Coordinate&& coord) {
+                [this, &velocity, isStatic] (Coordinate&& coord) {
                     assert(m_lattice.inRange(coord));
-                    m_lattice[coord].setDynamicObstacle(true, velocity);
+                    if (isStatic)
+                        m_lattice[coord].setStaticObstacle(true);
+                    else
+                        m_lattice[coord].setDynamicObstacle(true, velocity);
                 },
                 [] (Coordinate&& coord) {},
                 shape, step, coord, obj->getRotation(), m_lattice.getSize()
@@ -512,38 +524,92 @@ void Module::applyBoundaryConditions(const simulator::Simulation& simulation, co
 
 /* ************************************************************************ */
 
-VelocityVector Module::inletVelocityProfile(Lattice::CoordinateType coord, LayoutPosition pos) const noexcept
+VelocityVector Module::inletVelocityProfile(
+    Lattice::CoordinateType coord, LayoutPosition pos,
+    DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets
+) const noexcept
 {
-    const auto size = m_lattice.getSize();
-
     //return {getVelocityInflow().getX(), Zero};
+
+    StaticArray<Lattice::CoordinateType, 2> inletRange{{Zero, Zero}};
+    bool found = false;
+
+    switch (pos)
+    {
+    case LayoutPosTop:
+    case LayoutPosBottom:
+        // Find inlet range
+        for (const auto& inlet : inlets)
+        {
+            if (inlet[0].getX() <= coord.getX() && coord.getX() <= inlet[1].getX())
+            {
+                inletRange = inlet;
+                found = true;
+                break;
+            }
+        }
+        break;
+
+    case LayoutPosLeft:
+    case LayoutPosRight:
+        // Find inlet range
+        for (const auto& inlet : inlets)
+        {
+            if (inlet[0].getY() <= coord.getY() && coord.getY() <= inlet[1].getY())
+            {
+                inletRange = inlet;
+                found = true;
+                break;
+            }
+        }
+        break;
+    }
+
+    if (!found)
+        return Zero;
 
     switch (pos)
     {
     case LayoutPosTop:
         return {
             Zero,
-            -calcPoiseuilleFlow(getInletVelocities()[pos], coord.getX(), size.getWidth())
+            -calcPoiseuilleFlow(
+                getInletVelocities()[pos],
+                coord.getX() - inletRange[0].getX(),
+                (inletRange[1] - inletRange[0]).getWidth() + 1
+            )
         };
         break;
 
     case LayoutPosBottom:
         return {
             Zero,
-            calcPoiseuilleFlow(getInletVelocities()[pos], coord.getX(), size.getWidth())
+            calcPoiseuilleFlow(
+                getInletVelocities()[pos],
+                coord.getX() - inletRange[0].getX(),
+                (inletRange[1] - inletRange[0]).getWidth() + 1
+            )
         };
         break;
 
     case LayoutPosRight:
         return {
-            -calcPoiseuilleFlow(getInletVelocities()[pos], coord.getY(), size.getHeight()),
+            -calcPoiseuilleFlow(
+                getInletVelocities()[pos],
+                coord.getY() - inletRange[0].getY(),
+                (inletRange[1] - inletRange[0]).getHeight() + 1
+            ),
             Zero
         };
         break;
 
     case LayoutPosLeft:
         return {
-            calcPoiseuilleFlow(getInletVelocities()[pos], coord.getY(), size.getHeight()),
+            calcPoiseuilleFlow(
+                getInletVelocities()[pos],
+                coord.getY() - inletRange[0].getY(),
+                (inletRange[1] - inletRange[0]).getHeight() + 1
+            ),
             Zero
         };
         break;
@@ -633,34 +699,129 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     Vector<Lattice::SizeType> rngMax;
     LatticeData::Direction dir;
 
+    // Detect multiple inlets at the layout position
+    DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets;
+
     switch (pos)
     {
     case LayoutPosTop:
         rngMin = {0, size.getHeight() - 1};
         rngMax = {size.getWidth(), size.getHeight()};
         dir = LatticeData::DirDown;
+
+        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+        {
+            const Lattice::CoordinateType c1 = {x, size.getHeight() - 1};
+            if (m_lattice[c1].isStaticObstacle())
+                continue;
+
+            auto c2 = c1;
+
+            ++x;
+            for (; x < rngMax.getX(); ++x)
+            {
+                const Lattice::CoordinateType cNext = {x, size.getHeight() - 1};
+                if (m_lattice[cNext].isStaticObstacle())
+                    break;
+
+                c2 = cNext;
+            }
+
+            if (c1.getX() - c2.getX() > 1)
+                inlets.push_back({c1, c2});
+        }
+
         break;
 
     case LayoutPosBottom:
         rngMin = {0, 0};
         rngMax = {size.getWidth(), 1};
         dir = LatticeData::DirUp;
+
+        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+        {
+            const Lattice::CoordinateType c1 = {x, 0};
+            if (m_lattice[c1].isStaticObstacle())
+                continue;
+
+            auto c2 = c1;
+
+            ++x;
+            for (; x < rngMax.getX(); ++x)
+            {
+                const Lattice::CoordinateType cNext = {x, 0};
+                if (m_lattice[cNext].isStaticObstacle())
+                    break;
+
+                c2 = cNext;
+            }
+
+            if (c1.getX() - c2.getX() > 1)
+                inlets.push_back({c1, c2});
+        }
+
         break;
 
     case LayoutPosRight:
         rngMin = {size.getWidth() - 1, 0};
         rngMax = {size.getWidth(), size.getHeight()};
         dir = LatticeData::DirLeft;
+
+        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+        {
+            const Lattice::CoordinateType c1 = {size.getWidth() - 1, y};
+            if (m_lattice[c1].isStaticObstacle())
+                continue;
+
+            auto c2 = c1;
+
+            ++y;
+            for (; y < rngMax.getY(); ++y)
+            {
+                const Lattice::CoordinateType cNext = {size.getWidth() - 1, y};
+                if (m_lattice[cNext].isStaticObstacle())
+                    break;
+
+                c2 = cNext;
+            }
+
+            if (c1.getY() - c2.getY() > 1)
+                inlets.push_back({c1, c2});
+        }
+
         break;
 
     case LayoutPosLeft:
         rngMin = {0, 0};
         rngMax = {1, size.getHeight()};
         dir = LatticeData::DirRight;
+
+        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+        {
+            const Lattice::CoordinateType c1 = {0, y};
+            if (m_lattice[c1].isStaticObstacle())
+                continue;
+
+            auto c2 = c1;
+
+            ++y;
+            for (; y < rngMax.getY(); ++y)
+            {
+                const Lattice::CoordinateType cNext = {0, y};
+                if (m_lattice[cNext].isStaticObstacle())
+                    break;
+
+                c2 = cNext;
+            }
+
+            if (c1.getY() - c2.getY() > 1)
+                inlets.push_back({c1, c2});
+        }
+
         break;
 
     default:
-        break;
+        throw RuntimeException("Invalid layout position");
     }
 
     if (m_layout[pos] == LayoutType::Outlet)
@@ -673,9 +834,13 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     else if (m_layout[pos] == LayoutType::Inlet)
     {
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
+        {
             for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+            {
                 if (!m_lattice[{x, y}].isObstacle())
-                    m_lattice[{x, y}].inlet(inletVelocityProfile({x, y}, pos) / vMax, dir);
+                    m_lattice[{x, y}].inlet(inletVelocityProfile({x, y}, pos, inlets) / vMax, dir);
+            }
+        }
     }
 }
 

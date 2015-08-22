@@ -396,12 +396,12 @@ protected:
 
 
     /**
-     * @brief Update dynamic obstacle map from dynamic objects.
+     * @brief Update obstacle map from objects.
      *
      * @param simulation
      * @param vMax
      */
-    void updateDynamicObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax);
+    void updateObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax);
 
 
     /**
@@ -427,10 +427,14 @@ protected:
      *
      * @param coord
      * @param pos
+     * @param inlets
      *
      * @return
      */
-    VelocityVector inletVelocityProfile(Lattice::CoordinateType coord, LayoutPosition pos) const noexcept;
+    VelocityVector inletVelocityProfile(
+        Lattice::CoordinateType coord, LayoutPosition pos,
+        DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets
+    ) const noexcept;
 
 
     /**
