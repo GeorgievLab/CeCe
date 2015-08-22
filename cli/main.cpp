@@ -151,6 +151,9 @@ void terminate_simulation(int param)
             "| --width <width> "
             "| --height <height> "
 #endif
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+            "| --capture <filename> "
+#endif
             "] "
         "<simulation-file>\n"
         "\n"
