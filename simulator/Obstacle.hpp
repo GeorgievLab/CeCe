@@ -101,7 +101,7 @@ private:
 
 #if ENABLE_RENDER
     /// If shape should be drawn.
-    bool m_draw = true;
+    bool m_draw = false;
 
     /// Shared object for drawing circle.
     render::ObjectSharedPtr<render::Circle> m_drawCircle;
