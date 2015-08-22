@@ -843,7 +843,7 @@ inline bool operator!=(Zero_t lhs, const Vector<T1>& rhs) noexcept
 template<typename T1, typename T2>
 inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
 {
-    using T = decltype(T1{} < T2{});
+    using T = decltype(T1{} + T2{});
 
     T x1 = lhs.getX();
     T y1 = lhs.getY();
