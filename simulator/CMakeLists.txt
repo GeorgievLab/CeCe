@@ -127,4 +127,12 @@ install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION ${INSTALL_DIR_LIBRARY}
 )
 
+if (MINGW)
+    # Install Box2D library
+    install(FILES
+        ${BOX2D_LIBRARIES}
+        DESTINATION ${INSTALL_DIR_LIBRARY}
+    )
+endif ()
+
 # ######################################################################### #
