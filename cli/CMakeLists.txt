@@ -123,7 +123,7 @@ endif ()
 
 if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     target_link_libraries(${PROJECT_NAME}
-        ${OpenCV_LIBS}
+        ${OpenCV_LIBRARIES}
     )
 endif ()
 

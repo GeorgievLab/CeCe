@@ -9,6 +9,9 @@
 # Find OpenCV
 find_package(OpenCV REQUIRED)
 
+# Include OpenCV
+include_directories(${OpenCV_INCLUDE_DIR})
+
 # Sources
 set(SRCS
     Module.hpp
@@ -24,7 +27,7 @@ endif ()
 # Build plugin
 build_plugin(streamlines-image
     SOURCES ${SRCS}
-    LIBRARIES ${OpenCV_LIBS}
+    LIBRARIES ${OpenCV_LIBRARIES}
     PLUGINS_REQUIRED
         streamlines
 )
