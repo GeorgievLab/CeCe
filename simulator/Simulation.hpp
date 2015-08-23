@@ -472,13 +472,13 @@ public:
 
 #if ENABLE_RENDER
     /**
-     * @brief Get vizualize flag.
+     * @brief Get visualize flag.
      *
      * @return
      */
-    TriBool getVizualize() const noexcept
+    TriBool getVisualize() const noexcept
     {
-        return m_vizualize;
+        return m_visualize;
     }
 #endif
 
@@ -732,13 +732,13 @@ public:
 
 #if ENABLE_RENDER
     /**
-     * @brief Set vizualize flag.
+     * @brief Set visualize flag.
      *
      * @param value
      */
-    void setVizualize(TriBool value) noexcept
+    void setVisualize(TriBool value) noexcept
     {
-        m_vizualize = value;
+        m_visualize = value;
     }
 #endif
 
@@ -882,8 +882,8 @@ private:
     DataTableContainer m_dataTables;
 
 #if ENABLE_RENDER
-    /// Option if vizualization should be enabled.
-    TriBool m_vizualize = Indeterminate;
+    /// Option if visualization should be enabled.
+    TriBool m_visualize = Indeterminate;
 #endif
 
 #if ENABLE_RENDER

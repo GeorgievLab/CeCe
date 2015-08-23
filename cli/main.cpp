@@ -58,12 +58,12 @@
 
 /* ************************************************************************ */
 
-#if !CONFIG_CLI_VIZUALIZE_WIDTH
-#define CONFIG_CLI_VIZUALIZE_WIDTH 800
+#if !CONFIG_CLI_VISUALIZE_WIDTH
+#define CONFIG_CLI_VISUALIZE_WIDTH 800
 #endif
 
-#if !CONFIG_CLI_VIZUALIZE_HEIGHT
-#define CONFIG_CLI_VIZUALIZE_HEIGHT 600
+#if !CONFIG_CLI_VISUALIZE_HEIGHT
+#define CONFIG_CLI_VISUALIZE_HEIGHT 600
 #endif
 
 /* ************************************************************************ */
@@ -86,7 +86,7 @@ struct Parameters
     /// Window height.
     unsigned int windowHeight = 0;
 
-    // Vizualization window in fullscreen mode.
+    // Visualization window in fullscreen mode.
     bool fullscreen = false;
 #endif
 
@@ -145,8 +145,8 @@ void terminate_simulation(int param)
         "  " << bname << " "
             "[ --plugins "
 #if ENABLE_RENDER
-            "| --vizualize "
-            "| --novizualize "
+            "| --visualize "
+            "| --novisualize "
             "| --fullscreen "
             "| --width <width> "
             "| --height <height> "
@@ -159,13 +159,13 @@ void terminate_simulation(int param)
         "\n"
         "    --plugins            Prints a list of available plugins.\n"
 #if ENABLE_RENDER
-        "    --vizualize          Enable vizualization (default).\n"
-        "    --fullscreen         Vizualization window in fullscreen mode.\n"
-        "    --novizualize        Disable vizualization.\n"
-        "    --width <width>      Vizualization window width "
-            "(default " XSTR(CONFIG_CLI_VIZUALIZE_WIDTH) "; fullscreen by monitor).\n"
-        "    --height <height>    Vizualization window height "
-            "(default " XSTR(CONFIG_CLI_VIZUALIZE_HEIGHT) "; fullscreen by monitor).\n"
+        "    --visualize          Enable visualization (default).\n"
+        "    --fullscreen         Visualization window in fullscreen mode.\n"
+        "    --novisualize        Disable visualization.\n"
+        "    --width <width>      Visualization window width "
+            "(default " XSTR(CONFIG_CLI_VISUALIZE_WIDTH) "; fullscreen by monitor).\n"
+        "    --height <height>    Visualization window height "
+            "(default " XSTR(CONFIG_CLI_VISUALIZE_HEIGHT) "; fullscreen by monitor).\n"
 #endif
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
         "    --capture <filename> Capture video of the simulation.\n"
@@ -218,11 +218,11 @@ Parameters parseArguments(int argc, char** argv)
         if (arg[0] == '-')
         {
 #if ENABLE_RENDER
-            if (arg == "--vizualize")
+            if (arg == "--visualize")
             {
                 params.visualize = true;
             }
-            else if (arg == "--novizualize")
+            else if (arg == "--novisualize")
             {
                 params.visualize = false;
             }
@@ -309,9 +309,9 @@ public:
         m_simulator.setSimulation(simulator::LoaderManager::create(params.simulationFile));
 
 #if ENABLE_RENDER
-        const auto simViz = m_simulator.getSimulation()->getVizualize();
+        const auto simViz = m_simulator.getSimulation()->getVisualize();
 
-        // Decide if simulation should be vizualized
+        // Decide if simulation should be visualized
         if (params.visualize)
             m_visualize = true;
         else if (!params.visualize)
@@ -319,7 +319,7 @@ public:
         else
             m_visualize = simViz || indeterminate(simViz);
 
-        initVizualization(params);
+        initVisualization(params);
 #endif
     }
 
@@ -330,7 +330,7 @@ public:
     ~Simulator()
     {
 #if ENABLE_RENDER
-        cleanupVizualization();
+        cleanupVisualization();
 #endif
     }
 
@@ -510,17 +510,17 @@ private:
 
 #if ENABLE_RENDER
     /**
-     * @brief Init vizualization.
+     * @brief Init visualization.
      *
      * @param params Parameters.
      */
-    void initVizualization(const Parameters& params)
+    void initVisualization(const Parameters& params)
     {
         if (!m_visualize)
             return;
 
         // Set callback
-        glfwSetErrorCallback(vizualizationErrorCallback);
+        glfwSetErrorCallback(visualizationErrorCallback);
 
         // Initialize the library
         if (!glfwInit())
@@ -551,10 +551,10 @@ private:
         {
             m_windowWidth  = params.windowWidth
                 ? params.windowWidth
-                : CONFIG_CLI_VIZUALIZE_WIDTH;
+                : CONFIG_CLI_VISUALIZE_WIDTH;
             m_windowHeight = params.windowHeight
                 ? params.windowHeight
-                : CONFIG_CLI_VIZUALIZE_HEIGHT;
+                : CONFIG_CLI_VISUALIZE_HEIGHT;
         }
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
@@ -620,12 +620,12 @@ private:
 
 #if ENABLE_RENDER
     /**
-     * @brief Vizualization error callback.
+     * @brief Visualization error callback.
      *
      * @param error
      * @param description
      */
-    static void vizualizationErrorCallback(int error, const char* description) noexcept
+    static void visualizationErrorCallback(int error, const char* description) noexcept
     {
         Log::warning(description);
     }
@@ -634,9 +634,9 @@ private:
 
 #if ENABLE_RENDER
     /**
-     * @brief Cleanup vizualization.
+     * @brief Cleanup visualization.
      */
-    void cleanupVizualization() noexcept
+    void cleanupVisualization() noexcept
     {
         if (!m_visualize)
             return;

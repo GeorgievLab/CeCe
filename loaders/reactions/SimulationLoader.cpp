@@ -102,7 +102,7 @@ UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
     String line;
 
     auto simulation = makeUnique<simulator::Simulation>();
-    simulation->setVizualize(false);
+    simulation->setVisualize(false);
 
     // Configuration
     simulator::Configuration config(filename);

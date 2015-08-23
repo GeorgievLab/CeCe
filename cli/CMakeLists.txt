@@ -14,8 +14,8 @@ project(cli CXX)
 # Options
 if (CONFIG_RENDER_ENABLE)
     option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
-    set(CONFIG_CLI_VIZUALIZE_WIDTH  800 CACHE STRING "Vizualization window width")
-    set(CONFIG_CLI_VIZUALIZE_HEIGHT 600 CACHE STRING "Vizualization window height")
+    set(CONFIG_CLI_VISUALIZE_WIDTH  800 CACHE STRING "Visualization window width")
+    set(CONFIG_CLI_VISUALIZE_HEIGHT 600 CACHE STRING "Visualization window height")
 endif ()
 
 # ######################################################################### #
@@ -31,8 +31,8 @@ if (CONFIG_RENDER_ENABLE)
     include_directories(${GLFW_INCLUDE_DIR})
 
     add_definitions(
-        -DCONFIG_CLI_VIZUALIZE_WIDTH=${CONFIG_CLI_VIZUALIZE_WIDTH}
-        -DCONFIG_CLI_VIZUALIZE_HEIGHT=${CONFIG_CLI_VIZUALIZE_HEIGHT}
+        -DCONFIG_CLI_VISUALIZE_WIDTH=${CONFIG_CLI_VISUALIZE_WIDTH}
+        -DCONFIG_CLI_VISUALIZE_HEIGHT=${CONFIG_CLI_VISUALIZE_HEIGHT}
     )
 endif ()
 
