@@ -310,7 +310,7 @@ void Module::updateObstacles(simulator::Simulation& simulation)
     for (auto& obj : simulation.getObjects())
     {
         // Ignore non-static objects
-        if (obj->getType() != simulator::Object::Type::Static)
+        if (obj->getType() == simulator::Object::Type::Dynamic)
             continue;
 
         // Get object position

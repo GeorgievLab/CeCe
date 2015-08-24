@@ -393,10 +393,10 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
     // Foreach all cells
     for (auto& obj : simulation.getObjects())
     {
-        const bool isStatic = obj->getType() == simulator::Object::Type::Static;
+        const bool isDynamic = obj->getType() == simulator::Object::Type::Dynamic;
 
         // Ignore dynamic objects
-        if (!isDynamicObjectsObstacles() && !isStatic)
+        if (!isDynamicObjectsObstacles() && isDynamic)
             continue;
 
         // Get object position
@@ -420,12 +420,12 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
         for (const auto& shape : obj->getShapes())
         {
             mapShapeToGrid(
-                [this, &velocity, isStatic] (Coordinate&& coord) {
+                [this, &velocity, isDynamic] (Coordinate&& coord) {
                     assert(m_lattice.inRange(coord));
-                    if (isStatic)
-                        m_lattice[coord].setStaticObstacle(true);
-                    else
+                    if (isDynamic)
                         m_lattice[coord].setDynamicObstacle(true, velocity);
+                    else
+                        m_lattice[coord].setStaticObstacle(true);
                 },
                 [] (Coordinate&& coord) {},
                 shape, step, coord, obj->getRotation(), m_lattice.getSize()
