@@ -53,7 +53,7 @@
         <bond ligand="LIG3" receptor="REC3" receptor-size="1" association-constant="50000" disassociation-constant="1" />
     </module>
 
-    <object class="cell.Cell" type="static" volume="2000um3">
+    <object class="cell.Cell" type="pinned" volume="2000um3">
         <molecule name="LIG1" amount="10000" />
         <molecule name="LIG2" amount="10000" />
         <molecule name="LIG3" amount="10000" />

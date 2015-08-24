@@ -68,7 +68,7 @@
     </module>
 
     <!-- Center cell -->
-    <object class="cell.Cell" type="static" position="15um 0" volume="2000um3">
+    <object class="cell.Cell" type="pinned" position="15um 0" volume="2000um3">
         <molecule name="LM1" amount="10000" />
         <molecule name="LM2" amount="10000" />
     </object>
