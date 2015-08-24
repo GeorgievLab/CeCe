@@ -105,11 +105,11 @@ public:
      *
      * @param simulation Simulation for that module is created.
      * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
+     * @param type       Object type.
      *
      * @return Created object.
      */
-    virtual UniquePtr<Object> createObject(Simulation& simulation, const String& name, bool dynamic = true)
+    virtual UniquePtr<Object> createObject(Simulation& simulation, const String& name, Object::Type type = Object::Type::Dynamic)
     {
         return nullptr;
     }

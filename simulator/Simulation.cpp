@@ -63,6 +63,30 @@ Tuple<String, String> splitModulePath(const String& path) noexcept
 /* ************************************************************************ */
 
 /**
+ * @brief Read object type from stream.
+ *
+ * @param is   Input stream.
+ * @param type
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Object::Type& type)
+{
+    String value;
+
+    if (value == "static")
+        type = Object::Type::Static;
+    else if (value == "pinned")
+        type = Object::Type::Pinned;
+    else
+        type = Object::Type::Dynamic; // Default
+
+    return is;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Write CSV line into output stream.
  *
  * @param os
@@ -164,28 +188,28 @@ Module* Simulation::useModule(const String& path, String storePath)
 
 /* ************************************************************************ */
 
-Object* Simulation::buildObject(const String& name, bool dynamic)
+ViewPtr<Object> Simulation::buildObject(const String& path, Object::Type type)
 {
     // Split path into parts
-    String library, type;
-    std::tie(library, type) = splitModulePath(name);
+    String library, name;
+    std::tie(library, name) = splitModulePath(path);
 
-    if (type.empty())
-        throw InvalidArgumentException("Missing object type");
+    if (name.empty())
+        throw InvalidArgumentException("Missing object type name");
 
     // Get API
     PluginApi* api = requirePlugin(library);
 
-    Log::debug("Create object '", library, ".", type, "'");
+    Log::debug("Create object '", library, ".", name, "'");
 
     // Create object with given name
-    auto object = api->createObject(*this, type, dynamic);
+    auto object = api->createObject(*this, name, type);
 
     // Register module
     if (object)
         return addObject(std::move(object));
 
-    Log::warning("Unable to create object: ", name, " (unsupported by library?)");
+    Log::warning("Unable to create object: ", path, " (unsupported by library?)");
 
     return nullptr;
 }
@@ -401,7 +425,7 @@ void Simulation::configure(const Configuration& config)
         // Create object
         auto object = buildObject(
             objectConfig.get("class"),
-            objectConfig.get("type", String("dynamic")) != "static"
+            objectConfig.get("type", Object::Type::Dynamic)
         );
 
         if (object)

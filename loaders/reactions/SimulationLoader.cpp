@@ -123,7 +123,7 @@ UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
     auto api = simulation->requirePlugin("stochastic-reactions-intracellular");
 
     // Create simple static object
-    auto object = simulation->buildObject("cell.Yeast", false);
+    auto object = simulation->buildObject("cell.Yeast", simulator::Object::Type::Static);
 
     // Configure cell
     object->configure(config, *simulation);

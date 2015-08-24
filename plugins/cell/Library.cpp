@@ -54,14 +54,12 @@ class CellApi : public PluginApi
      *
      * @param simulation Simulation for that module is created.
      * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
+     * @param type       Object type.
      *
      * @return Created object.
      */
-    UniquePtr<Object> createObject(Simulation& simulation, const String& name, bool dynamic = true) noexcept override
+    UniquePtr<Object> createObject(Simulation& simulation, const String& name, Object::Type type = Object::Type::Dynamic) noexcept override
     {
-        auto type = dynamic ? Object::Type::Dynamic : Object::Type::Static;
-
         if (name == "Yeast")
             return makeUnique<Yeast>(simulation, type);
         else if (name == "Cell")

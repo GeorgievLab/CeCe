@@ -47,7 +47,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             continue;
 
         // Create object
-        auto* object = simulation.buildObject(desc.className);
+        auto object = simulation.buildObject(desc.className);
         assert(object);
 
         // Generate position

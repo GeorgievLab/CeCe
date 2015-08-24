@@ -661,12 +661,12 @@ public:
     /**
      * @brief Build object by name.
      *
-     * @param name    Object name.
-     * @param dynamic Object is dynamic.
+     * @param name Object name.
+     * @param type Type of created object.
      *
-     * @return
+     * @return Created object.
      */
-    Object* buildObject(const String& name, bool dynamic = true);
+    ViewPtr<Object> buildObject(const String& name, Object::Type type = Object::Type::Dynamic);
 
 
     /**

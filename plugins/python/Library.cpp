@@ -58,7 +58,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @param simulation Simulation.
      */
-    void initSimulation(Simulation& simulation) NOEXCEPT override
+    void initSimulation(Simulation& simulation) noexcept override
     {
         if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
             throw std::runtime_error("Unable to initialize Python import table");
@@ -76,7 +76,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @param simulation Simulation.
      */
-    void finalizeSimulation(Simulation& simulation) NOEXCEPT override
+    void finalizeSimulation(Simulation& simulation) noexcept override
     {
         Py_Finalize();
     }
@@ -116,7 +116,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created module.
      */
-    std::unique_ptr<Module> createModule(Simulation& simulation, const String& name) NOEXCEPT override
+    std::unique_ptr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
         try
         {
@@ -140,7 +140,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created object.
      */
-    std::unique_ptr<Object> createObject(Simulation& simulation, const String& name, bool dynamic = true) NOEXCEPT override
+    std::unique_ptr<Object> createObject(Simulation& simulation, const String& name, Object::Type type = Object::Type::Dynamic) noexcept override
     {
         try
         {
@@ -164,7 +164,7 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created object.
      */
-    Program createProgram(Simulation& simulation, const String& name, String code = {}) NOEXCEPT override
+    Program createProgram(Simulation& simulation, const String& name, String code = {}) noexcept override
     {
         try
         {
