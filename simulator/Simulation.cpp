@@ -73,6 +73,7 @@ Tuple<String, String> splitModulePath(const String& path) noexcept
 InStream& operator>>(InStream& is, Object::Type& type)
 {
     String value;
+    is >> value;
 
     if (value == "static")
         type = Object::Type::Static;
