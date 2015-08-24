@@ -740,7 +740,7 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
             }
 
             if (c1.getX() - c2.getX() > 1)
-                inlets.push_back({c1, c2});
+                inlets.push_back({{c1, c2}});
         }
 
         break;
@@ -769,7 +769,7 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
             }
 
             if (c1.getX() - c2.getX() > 1)
-                inlets.push_back({c1, c2});
+                inlets.push_back({{c1, c2}});
         }
 
         break;
@@ -798,7 +798,7 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
             }
 
             if (c1.getY() - c2.getY() > 1)
-                inlets.push_back({c1, c2});
+                inlets.push_back({{c1, c2}});
         }
 
         break;
@@ -827,7 +827,7 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
             }
 
             if (c1.getY() - c2.getY() > 1)
-                inlets.push_back({c1, c2});
+                inlets.push_back({{c1, c2}});
         }
 
         break;
