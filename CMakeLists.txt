@@ -57,7 +57,7 @@ option(DEV_PERFORMANCE_MEASUREMENT  "Enable or disable time measurement" Off)
 option(DEV_BUILD_TOOLS              "Build additional tools used for developing" Off)
 
 if (APPLE)
-    set(MACOSX_VERSION_MIN "10.8" CACHE STRING "Minimum version of MacOS X to support")
+    set(MACOSX_VERSION_MIN "10.9" CACHE STRING "Minimum version of MacOS X to support")
 endif ()
 
 # If simulator should be thread safe
