@@ -25,8 +25,6 @@ set(SRCS
     Cell.cpp
     Yeast.hpp
     Yeast.cpp
-    Generator.hpp
-    Generator.cpp
     DrawableCell.hpp
     DrawableCell.cpp
     DrawableYeast.hpp

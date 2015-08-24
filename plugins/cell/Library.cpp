@@ -14,7 +14,6 @@
 #include "simulator/PluginApi.hpp"
 
 // Plugin
-#include "Generator.hpp"
 #include "Yeast.hpp"
 #include "Cell.hpp"
 #include "StoreMolecules.hpp"
@@ -42,9 +41,6 @@ class CellApi : public PluginApi
      */
     UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
-        if (name == "generator")
-            return makeUnique<Generator>();
-
         return nullptr;
     }
 

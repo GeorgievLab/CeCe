@@ -19,7 +19,6 @@
   <VirtualDirectory Name="src">
     <File Name="Cell.cpp"/>
     <File Name="Yeast.cpp"/>
-    <File Name="Generator.cpp"/>
     <File Name="Library.cpp"/>
     <File Name="DrawableCell.cpp"/>
     <File Name="CellBase.cpp"/>
@@ -29,7 +28,6 @@
   <VirtualDirectory Name="include">
     <File Name="Cell.hpp"/>
     <File Name="Yeast.hpp"/>
-    <File Name="Generator.hpp"/>
     <File Name="DrawableCell.hpp"/>
     <File Name="CellBase.hpp"/>
     <File Name="DrawableYeast.hpp"/>
