@@ -452,7 +452,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
     for (auto& obj : simulation.getObjects())
     {
         // Ignore static objects
-        if (obj->getType() == simulator::Object::Type::Static)
+        if (obj->getType() != simulator::Object::Type::Dynamic)
             continue;
 
         // Transform from [-size / 2, size / 2] to [0, size] space
