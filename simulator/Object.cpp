@@ -99,18 +99,15 @@ Object::Object(Simulation& simulation, Type type) noexcept
     m_body = world.CreateBody(&bodyDef);
 
     // Pin the body
-    if (type == Type::Pinned)
+    if (m_type == Type::Pinned)
     {
         b2BodyDef pivotDef;
         pivotDef.position = m_body->GetWorldCenter();
         m_pinBody = world.CreateBody(&pivotDef);
 
         b2RevoluteJointDef jointDef;
+        jointDef.collideConnected = false;
         jointDef.Initialize(m_pinBody, m_body, m_pinBody->GetPosition());
-        jointDef.motorSpeed =       1;
-        jointDef.maxMotorTorque =   10000000;
-        jointDef.enableMotor =      true;
-        jointDef.enableLimit =      false;
 
         m_pinJoint = world.CreateJoint(&jointDef);
     }
@@ -123,6 +120,13 @@ Object::~Object()
 {
 #if ENABLE_PHYSICS
     auto& world = getSimulation().getWorld();
+
+    // Pin the body
+    if (m_type == Type::Pinned)
+    {
+        world.DestroyJoint(m_pinJoint);
+        world.DestroyBody(m_pinBody);
+    }
 
     assert(m_body);
     world.DestroyBody(m_body);
