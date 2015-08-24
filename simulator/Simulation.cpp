@@ -63,31 +63,6 @@ Tuple<String, String> splitModulePath(const String& path) noexcept
 /* ************************************************************************ */
 
 /**
- * @brief Read object type from stream.
- *
- * @param is   Input stream.
- * @param type
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Object::Type& type)
-{
-    String value;
-    is >> value;
-
-    if (value == "static")
-        type = Object::Type::Static;
-    else if (value == "pinned")
-        type = Object::Type::Pinned;
-    else
-        type = Object::Type::Dynamic; // Default
-
-    return is;
-}
-
-/* ************************************************************************ */
-
-/**
  * @brief Write CSV line into output stream.
  *
  * @param os
@@ -112,6 +87,31 @@ void writeCsvLine(OutStream& os, const Container& container)
 
 /* ************************************************************************ */
 
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Read object type from stream.
+ *
+ * @param is   Input stream.
+ * @param type
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Object::Type& type)
+{
+    String value;
+    is >> value;
+
+    if (value == "static")
+        type = Object::Type::Static;
+    else if (value == "pinned")
+        type = Object::Type::Pinned;
+    else
+        type = Object::Type::Dynamic; // Default
+
+    return is;
 }
 
 /* ************************************************************************ */
