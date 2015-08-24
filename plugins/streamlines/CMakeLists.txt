@@ -6,6 +6,30 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
+# Options
+if (CONFIG_RENDER_ENABLE)
+    option(DEV_PLUGIN_streamlines_RENDER "Enable or disable streamlines rendering" Off)
+    option(DEV_PLUGIN_streamlines_VELOCITY_RENDER "Enable or disable streamlines velocity rendering" Off)
+    option(DEV_PLUGIN_streamlines_FORCE_RENDER "Enable or disable streamlines force rendering" Off)
+endif ()
+
+# ######################################################################### #
+
+# Enable debug rendering
+if (DEV_PLUGIN_streamlines_RENDER)
+    add_definitions(-DDEV_PLUGIN_streamlines_RENDER=1)
+endif ()
+
+if (DEV_PLUGIN_streamlines_VELOCITY_RENDER)
+    add_definitions(-DDEV_PLUGIN_streamlines_VELOCITY_RENDER=1)
+endif ()
+
+if (DEV_PLUGIN_streamlines_FORCE_RENDER)
+    add_definitions(-DDEV_PLUGIN_streamlines_FORCE_RENDER=1)
+endif ()
+
+# ######################################################################### #
+
 # Sources
 set(SRCS
     Module.hpp
@@ -21,14 +45,6 @@ set(SRCS
     StoreObjectState.hpp
     StoreObjectState.cpp
 )
-
-# Options
-option(DEV_PLUGIN_streamlines_RENDER "Enable or disable streamlines rendering" Off)
-
-# Enable debug rendering
-if (DEV_PLUGIN_streamlines_RENDER)
-    add_definitions(-DDEV_DRAW_VELOCITY=1)
-endif ()
 
 # Build plugin
 build_plugin(streamlines

@@ -12,17 +12,29 @@ find_package(OpenCV REQUIRED)
 # Include OpenCV
 include_directories(${OpenCV_INCLUDE_DIR})
 
+# ######################################################################### #
+
+# Enable debug rendering
+if (DEV_PLUGIN_streamlines_RENDER)
+    add_definitions(-DDEV_PLUGIN_streamlines_RENDER=1)
+endif ()
+
+if (DEV_PLUGIN_streamlines_VELOCITY_RENDER)
+    add_definitions(-DDEV_PLUGIN_streamlines_VELOCITY_RENDER=1)
+endif ()
+
+if (DEV_PLUGIN_streamlines_FORCE_RENDER)
+    add_definitions(-DDEV_PLUGIN_streamlines_FORCE_RENDER=1)
+endif ()
+
+# ######################################################################### #
+
 # Sources
 set(SRCS
     Module.hpp
     Module.cpp
     Library.cpp
 )
-
-# Enable debug rendering
-if (DEV_PLUGIN_streamlines_RENDER)
-    add_definitions(-DDEV_DRAW_VELOCITY=1)
-endif ()
 
 # Build plugin
 build_plugin(streamlines-image

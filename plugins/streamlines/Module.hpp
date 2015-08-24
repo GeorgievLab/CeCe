@@ -512,12 +512,12 @@ private:
     /// Use dynamic objects as obstacles
     bool m_dynamicObjectsObstacles = true;
 
-#if ENABLE_RENDER && DEV_DRAW_VELOCITY
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Rendering grid with filled cells.
     render::ObjectPtr<render::GridColor> m_drawable;
 #endif
 
-#if ENABLE_RENDER && DEV_DRAW_VELOCITY
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Render grid for velocities
     render::ObjectPtr<render::GridVector> m_drawableVector;
 #endif

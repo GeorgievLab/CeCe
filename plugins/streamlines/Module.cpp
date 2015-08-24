@@ -292,7 +292,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 #ifdef ENABLE_RENDER
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
-#if DEV_DRAW_VELOCITY
+#if DEV_PLUGIN_streamlines_RENDER
     const auto size = m_lattice.getSize();
 
     if (!m_drawable)
@@ -349,6 +349,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     m_drawableVector->draw(context);
     context.matrixPop();
 
+#if DEV_PLUGIN_streamlines_FORCE_RENDER || DEV_PLUGIN_streamlines_VELOCITY_RENDER
     // Update simulations objects
     for (auto& obj : simulation.getObjects())
     {
@@ -356,18 +357,24 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         if (obj->getType() == simulator::Object::Type::Static)
             continue;
 
+#if DEV_PLUGIN_streamlines_FORCE_RENDER
         context.drawLine(
             obj->getPosition() / units::Length(1),
             10000 * obj->getForce() / units::Force(1),
             render::colors::YELLOW
         );
+#endif
 
+#if DEV_PLUGIN_streamlines_VELOCITY_RENDER
         context.drawLine(
             obj->getPosition() / units::Length(1),
             0.03 * obj->getVelocity() / units::Velocity(1),
             render::colors::BLUE
         );
+#endif
     }
+#endif
+
 #endif
 }
 #endif
@@ -563,6 +570,10 @@ VelocityVector Module::inletVelocityProfile(
             }
         }
         break;
+
+    default:
+        assert(false);
+        break;
     }
 
     if (!found)
@@ -615,6 +626,7 @@ VelocityVector Module::inletVelocityProfile(
         break;
 
     default:
+        assert(false);
         break;
     }
 
