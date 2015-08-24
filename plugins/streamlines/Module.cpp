@@ -473,6 +473,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                 continue;
 
             VelocityVector velocity = Zero;
+            PositionVector offset = Zero;
             unsigned long count = 0;
 
             // Store velocity for each coordinate
@@ -484,11 +485,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                         ++count;
                     }
                 },
-                [this, &velocity, &count] (Coordinate&& coord) {
-                    // TODO: based on layout
-                    //velocity += inletVelocityProfileX(coord);
-                    //++count;
-                },
+                [] (Coordinate&& coord) { },
                 shape, step, coord, m_lattice.getSize(), {}, 2
             );
 
@@ -515,7 +512,10 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             ;
 
             // Apply force
-            obj->applyForce(force / getCoefficient(), obj->getPosition() + shape.getCircle().center);
+            obj->applyForce(
+                force / getCoefficient(),
+                obj->getPosition() + offset + shape.getCircle().center
+            );
         }
     }
 }
