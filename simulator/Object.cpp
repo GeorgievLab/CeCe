@@ -37,38 +37,17 @@ namespace {
  *
  * @return
  */
-b2BodyType convert(Object::Type type) NOEXCEPT
+b2BodyType convert(Object::Type type) noexcept
 {
     switch (type)
     {
     default:                    return b2_staticBody;
     case Object::Type::Static:  return b2_staticBody;
     case Object::Type::Dynamic: return b2_dynamicBody;
+    case Object::Type::Pinned:  return b2_dynamicBody;
     }
 }
 #endif
-
-/* ************************************************************************ */
-
-#if ENABLE_PHYSICS
-/**
- * @brief Convert Box2 body type into object type.
- *
- * @param type
- *
- * @return
- */
-Object::Type convert(b2BodyType type) NOEXCEPT
-{
-    switch (type)
-    {
-    default:                return Object::Type::Static;
-    case b2_staticBody:     return Object::Type::Static;
-    case b2_dynamicBody:    return Object::Type::Dynamic;
-    }
-}
-#endif
-
 
 /* ************************************************************************ */
 
@@ -80,7 +59,7 @@ Object::Type convert(b2BodyType type) NOEXCEPT
  *
  * @return
  */
-DynamicArray<String> split(String value, char separator) NOEXCEPT
+DynamicArray<String> split(String value, char separator) noexcept
 {
     DynamicArray<String> elems;
     std::istringstream ss(std::move(value));
@@ -104,20 +83,37 @@ Object::IdType s_id = 0;
 
 /* ************************************************************************ */
 
-Object::Object(Simulation& simulation, Type type) NOEXCEPT
+Object::Object(Simulation& simulation, Type type) noexcept
     : m_simulation(simulation)
     , m_id(++s_id)
-#if !ENABLE_PHYSICS
     , m_type(type)
-#endif
 {
 #if ENABLE_PHYSICS
+    auto& world = getSimulation().getWorld();
+
     b2BodyDef bodyDef;
     bodyDef.type = convert(type);
     bodyDef.userData = this;
 
     // Create body
-    m_body = getSimulation().getWorld().CreateBody(&bodyDef);
+    m_body = world.CreateBody(&bodyDef);
+
+    // Pin the body
+    if (type == Type::Pinned)
+    {
+        b2BodyDef pivotDef;
+        pivotDef.position = m_body->GetWorldCenter();
+        m_pinBody = world.CreateBody(&pivotDef);
+
+        b2RevoluteJointDef jointDef;
+        jointDef.Initialize(m_pinBody, m_body, m_pinBody->GetPosition());
+        jointDef.motorSpeed =       1;
+        jointDef.maxMotorTorque =   10000000;
+        jointDef.enableMotor =      true;
+        jointDef.enableLimit =      false;
+
+        m_pinJoint = world.CreateJoint(&jointDef);
+    }
 #endif
 }
 
@@ -126,26 +122,16 @@ Object::Object(Simulation& simulation, Type type) NOEXCEPT
 Object::~Object()
 {
 #if ENABLE_PHYSICS
+    auto& world = getSimulation().getWorld();
+
     assert(m_body);
-    getSimulation().getWorld().DestroyBody(m_body);
+    world.DestroyBody(m_body);
 #endif
 }
 
 /* ************************************************************************ */
 
-Object::Type Object::getType() const NOEXCEPT
-{
-#if ENABLE_PHYSICS
-    assert(m_body);
-    return convert(m_body->GetType());
-#else
-    return m_type;
-#endif
-}
-
-/* ************************************************************************ */
-
-PositionVector Object::getPosition() const NOEXCEPT
+PositionVector Object::getPosition() const noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -158,7 +144,7 @@ PositionVector Object::getPosition() const NOEXCEPT
 
 /* ************************************************************************ */
 
-units::Angle Object::getRotation() const NOEXCEPT
+units::Angle Object::getRotation() const noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -170,7 +156,7 @@ units::Angle Object::getRotation() const NOEXCEPT
 
 /* ************************************************************************ */
 
-VelocityVector Object::getVelocity() const NOEXCEPT
+VelocityVector Object::getVelocity() const noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -183,19 +169,18 @@ VelocityVector Object::getVelocity() const NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::setType(Type type) NOEXCEPT
+void Object::setType(Type type) noexcept
 {
+    m_type = type;
 #if ENABLE_PHYSICS
     assert(m_body);
     m_body->SetType(convert(type));
-#else
-    m_type = type;
 #endif
 }
 
 /* ************************************************************************ */
 
-void Object::setPosition(PositionVector pos) NOEXCEPT
+void Object::setPosition(PositionVector pos) noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -207,7 +192,7 @@ void Object::setPosition(PositionVector pos) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::setRotation(units::Angle angle) NOEXCEPT
+void Object::setRotation(units::Angle angle) noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -219,7 +204,7 @@ void Object::setRotation(units::Angle angle) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::setVelocity(VelocityVector vel) NOEXCEPT
+void Object::setVelocity(VelocityVector vel) noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -231,7 +216,7 @@ void Object::setVelocity(VelocityVector vel) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::applyForce(const ForceVector& force) NOEXCEPT
+void Object::applyForce(const ForceVector& force) noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
@@ -244,7 +229,7 @@ void Object::applyForce(const ForceVector& force) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Object::applyForce(const ForceVector& force, const PositionVector& pos) NOEXCEPT
+void Object::applyForce(const ForceVector& force, const PositionVector& pos) noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);

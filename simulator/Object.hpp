@@ -57,8 +57,14 @@ public:
      */
     enum class Type
     {
+        /// Static body.
         Static,
-        Dynamic
+
+        /// Dynamic body.
+        Dynamic,
+
+        /// Dynamic body pinned to initial position.
+        Pinned
     };
 
 
@@ -204,7 +210,10 @@ public:
      *
      * @return
      */
-    Type getType() const noexcept;
+    Type getType() const noexcept
+    {
+        return m_type;
+    }
 
 
     /**
@@ -571,13 +580,19 @@ private:
     /// Object density.
     units::Density m_density = units::Density(1); // FIXME: use better value
 
-#if ENABLE_PHYSICS
-    /// Physics body.
-    b2Body* m_body;
-#else
     /// Object type.
     Type m_type;
 
+#if ENABLE_PHYSICS
+    /// Physics body.
+    b2Body* m_body;
+
+    /// Physics body for pin.
+    b2Body* m_pinBody = nullptr;
+
+    /// Joint for pinned body.
+    b2Joint* m_pinJoint = nullptr;
+#else
     /// Object position
     PositionVector m_position;
 
