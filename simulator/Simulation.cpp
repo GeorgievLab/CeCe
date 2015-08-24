@@ -17,6 +17,7 @@
 #include <fstream>
 
 // Simulator
+#include "core/Real.hpp"
 #include "core/Log.hpp"
 #include "core/Tuple.hpp"
 #include "core/Exception.hpp"
@@ -25,6 +26,7 @@
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 #include "simulator/PluginManager.hpp"
+#include "simulator/Obstacle.hpp"
 
 /* ************************************************************************ */
 
@@ -306,6 +308,115 @@ void Simulation::initialize()
         init(*this);
 
     m_initialized = true;
+}
+
+/* ************************************************************************ */
+
+void Simulation::configure(const Configuration& config)
+{
+    // Resize world
+    {
+        auto size = config.get<SizeVector>("world-size");
+
+        if (size.getWidth() == Zero || size.getHeight() == Zero)
+            throw simulator::ConfigException("Width or height is zero!");
+
+        setWorldSize(size);
+    }
+
+    // Time step
+    {
+        String dtStr = config.get("dt");
+
+        // Real-time time step
+        if (dtStr.empty() || dtStr == "auto")
+        {
+            setTimeStep(Zero);
+        }
+        else
+        {
+            // Parse time step
+            setTimeStep(config.get<units::Time>("dt"));
+        }
+    }
+
+    // Number of iterations
+    setIterations(config.get("iterations", getIterations()));
+
+    // Background color
+    setBackgroundColor(config.get("background", getBackgroundColor()));
+
+    // Parse parameters
+    for (auto&& parameterConfig : config.getConfigurations("parameter"))
+    {
+        setParameter(parameterConfig.get("name"), parameterConfig.get<RealType>("value"));
+    }
+
+    // Parse init
+    for (auto&& initConfig : config.getConfigurations("init"))
+    {
+        // Plugin is required
+        auto api = requirePlugin(initConfig.get("language"));
+
+        // Register program
+        addInitializer(api->createInitializer(*this, initConfig.getContent()));
+    }
+
+    // Parse plugins
+    for (auto&& pluginConfig : config.getConfigurations("plugin"))
+    {
+        requirePlugin(pluginConfig.get("name"));
+    }
+
+    // Parse modules
+    for (auto&& moduleConfig : config.getConfigurations("module"))
+    {
+        // Create module by given name
+        auto module = useModule(
+            moduleConfig.get("name"),
+            moduleConfig.get("access-name", String{})
+        );
+
+        // Configure module
+        if (module)
+            module->configure(moduleConfig, *this);
+    }
+
+    // Parse programs
+    for (auto&& programConfig : config.getConfigurations("program"))
+    {
+        // Plugin is required
+        auto api = requirePlugin(programConfig.get("language"));
+
+        // Program name
+        const auto name = programConfig.get("name");
+
+        // Register program
+        addProgram(name, api->createProgram(*this, name, programConfig.getContent()));
+    }
+
+    // Parse objects
+    for (auto&& objectConfig : config.getConfigurations("object"))
+    {
+        // Create object
+        auto object = buildObject(
+            objectConfig.get("class"),
+            objectConfig.get("type", String("dynamic")) != "static"
+        );
+
+        if (object)
+            object->configure(objectConfig, *this);
+    }
+
+    // Parse obstacles
+    for (auto&& obstacleConfig : config.getConfigurations("obstacle"))
+    {
+        // Create object
+        auto object = createObject<simulator::Obstacle>();
+
+        if (object)
+            object->configure(obstacleConfig, *this);
+    }
 }
 
 /* ************************************************************************ */

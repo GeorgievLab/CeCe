@@ -773,6 +773,14 @@ public:
 
 
     /**
+     * @brief Configure simulation.
+     *
+     * @param config
+     */
+    void configure(const Configuration& config);
+
+
+    /**
      * @brief Update simulation.
      *
      * @param dt
