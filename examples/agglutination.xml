@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="100um 100um" dt="1ms" iterations="10000">
-    <program name="make-ligand" language="stochastic-reactions-intracellular">
-    <![CDATA[
-       	null < 0.5, 0.001 > GFP;
-    ]]>
-    </program>
-    <program name="make-receptor" language="stochastic-reactions-intracellular">
-    <![CDATA[
-        null < 0.5, 0.001 > RFP;
-    ]]>
-    </program>
+<simulation world-size="200um 100um" dt="1ms" aiterations="10000">
     <module name="object-generator">
-        <object class="cell.Yeast" programs="make-ligand" probability="0.05" />
-        <object class="cell.Yeast" programs="make-receptor" probability="0.05" />
+        <object class="cell.Yeast" probability="0.05">
+            <molecule name="LM1" amount="5000" />
+        </object>
+        <object class="cell.Yeast" probability="0.05">
+            <molecule name="LM2" amount="5000" />
+        </object>
     </module>
-    <module name="streamlines" grid="100" velocity-inflow="200um/s" />
+    <module name="streamlines" grid="200 100" inlet-velocity="500um/s" />
     <module name="agglutination" >
-        <bond association-constant="5" disassociation-constant="3" ligand="GFP" receptor="RFP" receptor-size="0.1" />
+        <bond association-constant="500" disassociation-constant="3" ligand="LM1" receptor="LM2" receptor-size="0.1" />
     </module>
 
     <!-- Initial objects -->
-    <object class="cell.Cell" type="static" volume="2000um3">
-        <molecule name="RFP" amount="500" />
-        <molecule name="GFP" amount="500" />
+    <object class="cell.Cell" type="pinned" volume="2000um3">
+        <molecule name="LM1" amount="5000" />
+        <molecule name="LM2" amount="5000" />
     </object>
 </simulation>
 
