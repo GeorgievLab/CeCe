@@ -21,6 +21,8 @@ namespace cell {
 Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) NOEXCEPT
     : CellBase(simulation, type)
 {
+    setDensity(units::kg(1200) / units::m3(1));
+
 #if ENABLE_PHYSICS
     b2CircleShape shape;
     shape.m_radius = getRadius().value();
