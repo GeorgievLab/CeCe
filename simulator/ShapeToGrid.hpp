@@ -282,6 +282,9 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const ShapeEdges& shape, const Vecto
     // Get signed type
     using Ts = typename std::make_signed<T>::type;
 
+    const auto maxS = Vector<Ts>(max);
+    const auto minS = Vector<Ts>(min);
+
     DynamicArray<Ts> nodes;
     nodes.reserve(10);
 
@@ -292,56 +295,117 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const ShapeEdges& shape, const Vecto
     for (const auto& edge : shape.edges)
         edges.push_back(center + edge / steps);
 
-    //  Loop through the rows of the image.
-    for (auto y = Ts(min.getY()); y < Ts(max.getY()); ++y)
+    // Single line
+    if (edges.size() == 2)
     {
-        nodes.clear();
+        const bool inverse = edges[0].getX() > edges[1].getX();
+        const auto v1 = inverse ? edges[1] : edges[0];
+        const auto v2 = inverse ? edges[0] : edges[1];
+        const auto diff = v2 - v1;
 
-        // Build a list of nodes
-        auto j = edges.size() - 1;
-        for (std::size_t i = 0u; i < edges.size(); ++i)
+        auto d = 2 * diff.getY() - diff.getX();
+        fnIn(Vector<T>(v1));
+        Ts y = v1.getY();
+
+        // Vertical line
+        if (Ts(v1.getX()) == Ts(v2.getX()))
         {
-            const auto yi = edges[i].getY();
-            const auto yj = edges[j].getY();
+            const auto x = Ts(v1.getX());
 
-            if ((yi <  static_cast<RealType>(y) &&
-                 yj >= static_cast<RealType>(y)) ||
-                (yj <  static_cast<RealType>(y) &&
-                 yi >= static_cast<RealType>(y)))
+            for (auto y = Ts(v1.getY()); y <= Ts(v2.getY()); ++y)
             {
-                nodes.push_back(
-                    edges[i].getX() + (y - yi)
-                    / (yj - yi)
-                    * (edges[j].getX() - edges[i].getX())
-                );
+                // Calculate grid coordinates
+                const auto coord = Vector<Ts>{x, y};
+
+                // Check if coordinates are in range
+                if (coord.inRange(minS, maxS))
+                    fnIn(Vector<T>(coord));
+                else
+                    fnOut(Vector<T>(coord));
             }
-            j = i;
         }
-
-        // Sort the nodes
-        std::sort(nodes.begin(), nodes.end());
-
-        //  Fill the pixels between node pairs.
-        for (std::size_t i = 0u; i < nodes.size(); i += 2)
+        else
         {
-            if (nodes[i] >= static_cast<Ts>(max.getX()))
+            for (auto x = Ts(v1.getX()); x <= Ts(v2.getX()); ++x)
             {
-                fnOut(Vector<T>(nodes[i], y));
-            }
-            else if (nodes[i + 1] > static_cast<Ts>(min.getX()))
-            {
-                if (nodes[i] < static_cast<Ts>(min.getX()))
-                    nodes[i] = min.getX();
+                if (d > 0)
+                {
+                    ++y;
+                    d += 2 * (diff.getY() - diff.getX());
+                }
+                else
+                {
+                    d += 2 * diff.getY();
+                }
 
-                if (nodes[i + 1] > static_cast<Ts>(max.getX()))
-                    nodes[i + 1] = max.getX();
+                // Calculate grid coordinates
+                const auto coord = Vector<Ts>{x, y};
 
-                for (Ts x = nodes[i]; x <= nodes[i + 1]; ++x)
-                    fnIn(Vector<T>(x, y));
+                // Check if coordinates are in range
+                if (coord.inRange(minS, maxS))
+                    fnIn(Vector<T>(coord));
+                else
+                    fnOut(Vector<T>(coord));
             }
-            else
+        }
+    }
+    else
+    {
+        //  Loop through the rows of the image.
+        for (auto y = Ts(min.getY()); y < Ts(max.getY()); ++y)
+        {
+            nodes.clear();
+
+            // Build a list of nodes
+            auto j = edges.size() - 1;
+            for (std::size_t i = 0u; i < edges.size(); ++i)
             {
-                fnOut(Vector<T>(nodes[i], y));
+                const auto yi = edges[i].getY();
+                const auto yj = edges[j].getY();
+                const auto yiI = static_cast<Ts>(yi);
+                const auto yjI = static_cast<Ts>(yj);
+
+                // Horizontal line
+                if ((yiI < y && yjI >= y) ||
+                    (yjI < y && yiI >= y))
+                {
+                    nodes.push_back(
+                        edges[i].getX() + (y - yi)
+                        / (yj - yi)
+                        * (edges[j].getX() - edges[i].getX())
+                    );
+                }
+
+                j = i;
+            }
+
+            assert(nodes.size() % 2 == 0);
+
+            // Sort the nodes
+            std::sort(nodes.begin(), nodes.end());
+
+            //  Fill the pixels between node pairs.
+            for (std::size_t i = 0u; i < nodes.size(); i += 2)
+            {
+                if (nodes[i] >= static_cast<Ts>(max.getX()))
+                {
+                    fnOut(Vector<T>(nodes[i], y));
+                }
+                else if (nodes[i + 1] > static_cast<Ts>(min.getX()))
+                {
+                    if (nodes[i] < static_cast<Ts>(min.getX()))
+                        nodes[i] = min.getX();
+
+                    if (nodes[i + 1] > static_cast<Ts>(max.getX()))
+                        nodes[i + 1] = max.getX();
+
+                    for (Ts x = nodes[i]; x < nodes[i + 1]; ++x)
+                        fnIn(Vector<T>(x, y));
+                }
+                else
+                {
+                    fnOut(Vector<T>(nodes[i], y));
+                }
             }
         }
     }
