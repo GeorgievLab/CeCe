@@ -46,6 +46,12 @@ public:
 #endif
 
 
+#if ENABLE_RENDER
+    /// Flags for module drawing.
+    using DrawFlags = int;
+#endif
+
+
 // Public Ctors & Dtors
 public:
 
@@ -86,6 +92,36 @@ public:
     ZOrderType getZOrder() const noexcept
     {
         return m_zOrder;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Returns module draw flags.
+     *
+     * @return
+     */
+    DrawFlags getDrawFlags() const noexcept
+    {
+        return m_drawFlags;
+    }
+#endif
+
+
+// Public Mutators
+public:
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Set module draw flags.
+     *
+     * @param flags
+     */
+    void setDrawFlags(DrawFlags flags) noexcept
+    {
+        m_drawFlags = flags;
     }
 #endif
 
@@ -137,7 +173,12 @@ private:
 
 #if ENABLE_RENDER
     /// Module Z order.
-    int m_zOrder;
+    ZOrderType m_zOrder;
+#endif
+
+#if ENABLE_RENDER
+    /// Module draw flags.
+    DrawFlags m_drawFlags = 0;
 #endif
 };
 
