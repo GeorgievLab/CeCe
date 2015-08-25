@@ -133,24 +133,28 @@ set(INSTALL_DIR_PLUGINS_FULL "${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}")
 set(INSTALL_DIR_FRAMEWORK "")
 set(INSTALL_DIR_BUNDLE ".")
 set(INSTALL_DIR_DATA ".")
+set(INSTALL_DIR_MANUAL ".")
 
 # Linux installation directories
 if (UNIX AND NOT APPLE)
     set(INSTALL_PREFIX "/usr") # CPack with DEB ignores CMAKE_INSTALL_PREFIX
     include(GNUInstallDirs)
-    set(INSTALL_DIR_RUNTIME ${CMAKE_INSTALL_BINDIR})
-    set(INSTALL_DIR_LIBRARY ${CMAKE_INSTALL_LIBDIR})
+    set(INSTALL_DIR_RUNTIME "${CMAKE_INSTALL_BINDIR}")
+    set(INSTALL_DIR_LIBRARY "${CMAKE_INSTALL_LIBDIR}")
     set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${CMAKE_PROJECT_NAME}/${DIR_PLUGINS}")
-    set(INSTALL_DIR_DATA "${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_PROJECT_NAME}")
+    set(INSTALL_DIR_DATA    "${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_PROJECT_NAME}")
+    set(INSTALL_DIR_MANUAL  "${CMAKE_INSTALL_DOCDIR}")
 elseif (APPLE)
     set(INSTALL_DIR_RUNTIME "bin")
     set(INSTALL_DIR_LIBRARY "lib")
     set(INSTALL_DIR_PLUGINS "plugins")
     set(INSTALL_DIR_BUNDLE  "bin")
+    set(INSTALL_DIR_MANUAL  "manual")
 elseif (WIN32)
     set(INSTALL_DIR_RUNTIME ".")
     set(INSTALL_DIR_LIBRARY ".")
     set(INSTALL_DIR_PLUGINS "plugins")
+    set(INSTALL_DIR_MANUAL  "manual")
 endif ()
 
 # Default plugins directory
@@ -169,6 +173,7 @@ message(STATUS "Library directory: ${INSTALL_DIR_LIBRARY}")
 message(STATUS "Framework directory: ${INSTALL_DIR_FRAMEWORK}")
 message(STATUS "Bundle directory: ${INSTALL_DIR_BUNDLE}")
 message(STATUS "Data directory: ${INSTALL_DIR_DATA}")
+message(STATUS "Manual directory: ${INSTALL_DIR_MANUAL}")
 message(STATUS "Plugins directory: ${PLUGINS_DIRECTORY}")
 
 # ######################################################################### #
@@ -303,5 +308,10 @@ include(ExampleTests)
 
 # Setup packages creation
 include(Package)
+
+# ######################################################################### #
+
+# Generate manual
+include(Manual)
 
 # ######################################################################### #
