@@ -900,7 +900,7 @@ private:
 #endif
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
-    bool m_drawPhysics = true;
+    bool m_drawPhysics = false;
 #endif
 };
 
