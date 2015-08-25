@@ -81,6 +81,16 @@ public:
     };
 
 
+// Public Constants
+public:
+
+
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    /// Flag for drawing velocities
+    static constexpr DrawFlags DRAW_VELOCITY = 0x1;
+#endif
+
+
 // Public Structures
 public:
 
@@ -233,6 +243,19 @@ public:
     }
 
 
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    /**
+     * @brief If velocity vectors are drawn.
+     *
+     * @return
+     */
+    bool isDrawVectors() const noexcept
+    {
+        return getDrawFlags() & DRAW_VELOCITY;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -331,6 +354,19 @@ public:
     {
         m_dynamicObjectsObstacles = flag;
     }
+
+
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    /**
+     * @brief Draw velocity vectors.
+     *
+     * @param flag
+     */
+    void setDrawVectors(bool flag) noexcept
+    {
+        setDrawFlags(getDrawFlags() | DRAW_VELOCITY);
+    }
+#endif
 
 
 // Public Operations
@@ -513,13 +549,8 @@ private:
     bool m_dynamicObjectsObstacles = true;
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
-    /// Rendering grid with filled cells.
-    render::ObjectPtr<render::GridColor> m_drawable;
-#endif
-
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Render grid for velocities
-    render::ObjectPtr<render::GridVector> m_drawableVector;
+    render::ObjectPtr<render::GridVector> m_drawable;
 #endif
 
 #if THREAD_SAFE

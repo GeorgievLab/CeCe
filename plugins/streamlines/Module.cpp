@@ -293,10 +293,10 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
 #if DEV_PLUGIN_streamlines_RENDER
-    const auto size = m_lattice.getSize();
+    if (!isDrawVectors())
+        return;
 
-    if (!m_drawable)
-        m_drawable.create(context, size);
+    const auto size = m_lattice.getSize();
 
     // Temporary for velocities
     Grid<Vector<LatticeData::ValueType>> velocities(size);
@@ -313,40 +313,27 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             // Cell alias
             const auto& cell = m_lattice[c];
 
-            // Background color
-            render::Color color = render::colors::RED;
-
             if (!cell.isObstacle())
             {
-                // Calculate velocity vector
-                const auto velocity = cell.calcVelocity();
-
-                // Cell color
-                color = render::Color::fromGray(50 * LatticeData::MAX_SPEED * velocity.getLength());
-
                 // Cell velocity
-                velocities[c] = velocity;
+                velocities[c] = cell.calcVelocity();
             }
             else
             {
                 velocities[c] = Zero;
             }
-
-            // Set color
-            m_drawable->set(c, color);
         }
     }
 
-    if (!m_drawableVector)
-        m_drawableVector.create(context, size, velocities.getData(), 0.05 * getCoefficient());
+    if (!m_drawable)
+        m_drawable.create(context, size, velocities.getData(), 0.05 * getCoefficient());
     else
-        m_drawableVector->update(velocities.getData());
+        m_drawable->update(velocities.getData());
 
     // Draw color grid
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
     m_drawable->draw(context);
-    m_drawableVector->draw(context);
     context.matrixPop();
 
 #if DEV_PLUGIN_streamlines_FORCE_RENDER || DEV_PLUGIN_streamlines_VELOCITY_RENDER
