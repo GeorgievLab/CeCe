@@ -86,8 +86,8 @@ public:
 
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
-    /// Flag for drawing velocities
-    static constexpr DrawFlags DRAW_VELOCITY = 0x1;
+    /// Flag for debug drawing.
+    static constexpr DrawFlags DRAW_DEBUG = 0x1;
 #endif
 
 
@@ -245,13 +245,13 @@ public:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /**
-     * @brief If velocity vectors are drawn.
+     * @brief If debug data is drawn.
      *
      * @return
      */
-    bool isDrawVectors() const noexcept
+    bool isDebugDraw() const noexcept
     {
-        return getDrawFlags() & DRAW_VELOCITY;
+        return getDrawFlags() & DRAW_DEBUG;
     }
 #endif
 
@@ -358,13 +358,13 @@ public:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /**
-     * @brief Draw velocity vectors.
+     * @brief Draw debug data.
      *
      * @param flag
      */
-    void setDrawVectors(bool flag) noexcept
+    void setDebugDraw(bool flag) noexcept
     {
-        setDrawFlags(getDrawFlags() | DRAW_VELOCITY);
+        setDrawFlags(getDrawFlags() | DRAW_DEBUG);
     }
 #endif
 
@@ -550,7 +550,12 @@ private:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Render grid for velocities
-    render::ObjectPtr<render::GridVector> m_drawable;
+    render::ObjectPtr<render::GridVector> m_drawableVelocities;
+#endif
+
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    /// Rendering grid with filled cells.
+    render::ObjectPtr<render::GridColor> m_drawableObstacles;
 #endif
 
 #if THREAD_SAFE

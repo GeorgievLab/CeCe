@@ -293,10 +293,13 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 void Module::draw(render::Context& context, const simulator::Simulation& simulation)
 {
 #if DEV_PLUGIN_streamlines_RENDER
-    if (!isDrawVectors())
+    if (!isDebugDraw())
         return;
 
     const auto size = m_lattice.getSize();
+
+    if (!m_drawableObstacles)
+        m_drawableObstacles.create(context, size);
 
     // Temporary for velocities
     Grid<Vector<LatticeData::ValueType>> velocities(size);
@@ -313,27 +316,30 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
             // Cell alias
             const auto& cell = m_lattice[c];
 
-            if (!cell.isObstacle())
+            if (cell.isObstacle())
             {
-                // Cell velocity
-                velocities[c] = cell.calcVelocity();
+                velocities[c] = Zero;
+                m_drawableObstacles->set(c, render::colors::RED);
             }
             else
             {
-                velocities[c] = Zero;
+                // Cell velocity
+                velocities[c] = cell.calcVelocity();
+                m_drawableObstacles->set(c, render::colors::BLACK);
             }
         }
     }
 
-    if (!m_drawable)
-        m_drawable.create(context, size, velocities.getData(), 0.05 * getCoefficient());
+    if (!m_drawableVelocities)
+        m_drawableVelocities.create(context, size, velocities.getData(), 0.05 * getCoefficient());
     else
-        m_drawable->update(velocities.getData());
+        m_drawableVelocities->update(velocities.getData());
 
     // Draw color grid
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
-    m_drawable->draw(context);
+    m_drawableObstacles->draw(context);
+    m_drawableVelocities->draw(context);
     context.matrixPop();
 
 #if DEV_PLUGIN_streamlines_FORCE_RENDER || DEV_PLUGIN_streamlines_VELOCITY_RENDER
