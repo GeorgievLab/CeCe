@@ -11,7 +11,20 @@
 // Declaration
 #include "render/PhysicsDebugger.hpp"
 
+// OpenGL
+#ifdef __linux__
+#define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
+#elif defined(_WIN32)
+#include <GL/gl.h>
+#include "render/glext.h"
+#ifdef _MSC_VER
+#pragma comment(lib, "opengl32.lib")
+#endif
+#elif __APPLE__ && __MACH__
+#include <OpenGL/gl.h>
+#endif
+
 #include <stdio.h>
 #include <stdarg.h>
 
