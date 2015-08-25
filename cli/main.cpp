@@ -334,6 +334,20 @@ public:
 #endif
     }
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns simulation.
+     *
+     * @return
+     */
+    simulator::Simulation* getSimulation() const noexcept
+    {
+        return m_simulator.getSimulation();
+    }
+
 
 // Public Operations
 public:
@@ -497,6 +511,24 @@ public:
 
             // Swap buffers
             glfwSwapBuffers(win);
+            break;
+#endif
+
+#if ENABLE_RENDER
+        case GLFW_KEY_V:
+            auto streamlines = ptr->getSimulation()->getModule("streamlines");
+
+            if (streamlines)
+            {
+                if (streamlines->getDrawFlags() & 0x1)
+                    streamlines->setDrawFlags(streamlines->getDrawFlags() & ~0x1);
+                else
+                    streamlines->setDrawFlags(streamlines->getDrawFlags() | 0x1);
+
+                // Swap buffers
+                glfwSwapBuffers(win);
+            }
+
             break;
 #endif
         }
