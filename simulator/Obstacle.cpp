@@ -46,6 +46,8 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
         shapeType = ShapeType::Circle;
     else if (type == "rectangle")
         shapeType = ShapeType::Rectangle;
+    else if (type == "polygon")
+        shapeType = ShapeType::Edges;
     // TODO: other shapes
 
     // Different configurations for different types
@@ -60,7 +62,17 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
         break;
 
     case ShapeType::Edges:
-        throw RuntimeException("Unsupported shape");
+    {
+        DynamicArray<PositionVector> edges;
+        InStringStream iss(config.get("vertices"));
+        PositionVector vector;
+
+        while (iss >> vector)
+            edges.push_back(vector);
+
+        shape = Shape::makeEdges(std::move(edges));
+        break;
+    }
 
     case ShapeType::Undefined:
         throw RuntimeException("Unknown shape type");
