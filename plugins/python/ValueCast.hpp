@@ -55,7 +55,7 @@ struct ValueCastScalar;
 template<typename T, char... Seq>
 struct ValueCastScalar<long, T, Seq...>
 {
-    static_assert(std::is_integral<T>::value, "T must be integral");
+    static_assert(std::is_integral<T>::value || std::is_enum<T>::value, "T must be integral or enum");
 
 
     /**
@@ -81,7 +81,7 @@ struct ValueCastScalar<long, T, Seq...>
     static Handle<PyObject> convert(T value) noexcept
     {
         static char seq[] = {Seq..., '\0'};
-        return Py_BuildValue(seq, value);
+        return Py_BuildValue(seq, static_cast<long>(value));
     }
 
 
@@ -96,11 +96,11 @@ struct ValueCastScalar<long, T, Seq...>
     {
         assert(value);
         if (PyLong_Check(value))
-            return PyLong_AsLong(value);
+            return static_cast<T>(PyLong_AsLong(value));
         else if (PyInt_Check(value))
-            return PyInt_AsLong(value);
+            return static_cast<T>(PyInt_AsLong(value));
         else if (PyFloat_Check(value))
-            return PyFloat_AsDouble(value);
+            return static_cast<T>(PyFloat_AsDouble(value));
 
         assert(false && "Object is not int or float");
         return T{};
@@ -177,7 +177,7 @@ struct ValueCastScalar<double, T, Seq...>
  *
  * @tparam T Value type.
  */
-template<typename T>
+template<typename T, typename = void>
 struct ValueCast
 {
 
@@ -238,6 +238,20 @@ struct ValueCast
         assert(definition::valid);
         return definition::template unwrap<T>(value);
     }
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Value cast for enums.
+ *
+ * @tparam T Enum type.
+ */
+template<typename T>
+struct ValueCast<T, typename std::enable_if<std::is_enum<T>::value>::type>
+    : public ValueCastScalar<long, T, 'i'>
+{
+    // Nothing
 };
 
 /* ************************************************************************ */
