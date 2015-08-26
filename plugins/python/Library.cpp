@@ -92,19 +92,9 @@ class PythonApi : public PluginApi, public SimulationListener
      */
     Simulation::Initializer createInitializer(Simulation& simulation, String code) override
     {
-        try
-        {
-            plugin::python::Initializer init;
-            init.initSource(code);
-
-            return init;
-        }
-        catch (const Exception& e)
-        {
-            Log::warning(e.what());
-        }
-
-        return {};
+        plugin::python::Initializer init;
+        init.initSource(code);
+        return init;
     }
 
 
@@ -116,11 +106,11 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created module.
      */
-    std::unique_ptr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
         try
         {
-            return std::unique_ptr<Module>(new plugin::python::Module{name});
+            return makeUnique<plugin::python::Module>(name);
         }
         catch (const std::exception& e)
         {
@@ -140,11 +130,11 @@ class PythonApi : public PluginApi, public SimulationListener
      *
      * @return Created object.
      */
-    std::unique_ptr<Object> createObject(Simulation& simulation, const String& name, Object::Type type = Object::Type::Dynamic) noexcept override
+    UniquePtr<Object> createObject(Simulation& simulation, const String& name, Object::Type type = Object::Type::Dynamic) noexcept override
     {
         try
         {
-            return std::unique_ptr<Object>(new plugin::python::Object{simulation, name});
+            return makeUnique<plugin::python::Object>(simulation, name);
         }
         catch (const std::exception& e)
         {
