@@ -7,7 +7,13 @@
 # ######################################################################### #
 
 # Find OpenCV
-find_package(OpenCV REQUIRED core imgproc highgui imgcodecs)
+if (UNIX AND NOT APPLE)
+    # OpenCV 2 (Ubuntu LTS)
+    find_package(OpenCV REQUIRED core imgproc highgui)
+else ()
+    # OpenCV 3
+    find_package(OpenCV REQUIRED core imgproc highgui imgcodecs)
+endif ()
 
 # Include OpenCV
 include_directories(${OpenCV_INCLUDE_DIR})
