@@ -144,6 +144,11 @@ static void python_wrapper_simulator_Object(PyObject* module)
 
     Py_INCREF(&type_def::definition);
     PyModule_AddObject(module, "Object", reinterpret_cast<PyObject*>(&type_def::definition));
+
+    // Define constants
+    PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));
+    PyModule_AddIntConstant(module, "OBJECT_TYPE_DYNAMIC", static_cast<int>(simulator::Object::Type::Dynamic));
+    PyModule_AddIntConstant(module, "OBJECT_TYPE_PINNED", static_cast<int>(simulator::Object::Type::Pinned));
 }
 
 /* ************************************************************************ */
