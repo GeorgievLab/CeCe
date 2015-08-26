@@ -7,7 +7,7 @@
 # ######################################################################### #
 
 # Find OpenCV
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED core imgproc highgui imgcodecs)
 
 # Include OpenCV
 include_directories(${OpenCV_INCLUDE_DIR})

@@ -42,7 +42,7 @@ if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     endif ()
 
     # Add support for OpenCV video capturing
-    find_package(OpenCV)
+    find_package(OpenCV COMPONENTS core videoio)
 
     # OpenCV not found
     if (OpenCV_FOUND)
