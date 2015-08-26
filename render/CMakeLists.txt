@@ -6,13 +6,14 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
-cmake_minimum_required(VERSION 2.8.8)
-
-# ######################################################################### #
-
 if (!DEV_PLUGIN_streamlines_RENDER)
     message(DEV_PLUGIN_streamlines_RENDER "Cannot build 'render' without DEV_PLUGIN_streamlines_RENDER")
 endif ()
+
+# ######################################################################### #
+
+# Options
+option(DEV_RENDER_GL_ERRORS "Enable OpenGL errors checking." On)
 
 # ######################################################################### #
 
@@ -34,6 +35,11 @@ include_directories(
 # Current version is unable to add object library into shared library.
 if (UNIX)
     add_compile_options(-fPIC)
+endif ()
+
+# Enable errors
+if (DEV_RENDER_GL_ERRORS)
+    add_definitions(-DDEV_RENDER_GL_ERRORS=1)
 endif ()
 
 # ######################################################################### #

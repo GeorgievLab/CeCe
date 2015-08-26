@@ -35,7 +35,7 @@
  *
  * @param op Operation
  */
-#ifdef NDEBUG
+#if !DEV_RENDER_GL_ERRORS
 #define gl(op) op
 #else
 #define gl(op) op; ::render::checkGlError(# op)
