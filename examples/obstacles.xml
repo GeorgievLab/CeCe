@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="200um 100um" dt="1ms" background="black">
+
+    <!-- Circles -->
+    <obstacle type="circle" position="10um 10um" radius="10um" />
+
+    <!-- Rectangles -->
+    <obstacle type="rectangle" position="0 50um" size="50um 10um" />
+
+    <!-- Polygons -->
+    <obstacle type="polygon" position="-80um 0" vertices="5um 10um -5um 0 5um -10um" />
+
+</simulation>
+
