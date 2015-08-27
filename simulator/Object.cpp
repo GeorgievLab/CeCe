@@ -189,6 +189,9 @@ void Object::setPosition(PositionVector pos) noexcept
 #if ENABLE_PHYSICS
     assert(m_body);
     m_body->SetTransform({pos.getX().value(), pos.getY().value()}, m_body->GetAngle());
+
+    if (m_pinBody)
+        m_pinBody->SetTransform({pos.getX().value(), pos.getY().value()}, 0);
 #else
     m_position = std::move(pos);
 #endif
