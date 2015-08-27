@@ -53,6 +53,7 @@
     <module name="streamlines-image" access-name="streamlines" grid="200 100"
             inlet-velocity="400um/s"
             layout="outlet inlet outlet inlet"
+            dynamic-object-obstacles="false"
             image="obstacle2.png" />
     <module name="diffusion-streamlines" />
 
@@ -64,7 +65,7 @@
 
     <!-- Define diffusion module -->
     <module name="diffusion" grid="200 100">
-        <signal name="S1" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" saturation="5" />
+        <signal name="S1" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" saturation="5umol/m3" />
     </module>
 
     <!-- Center cell -->
