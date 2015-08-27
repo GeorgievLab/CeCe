@@ -67,9 +67,6 @@ void Yeast::update(units::Duration dt)
     CellBase::update(dt);
     const auto V1 = getVolume();
 
-    std::mt19937 eng(g_rd());
-    std::bernoulli_distribution dist(0.01f * dt.value());
-
     // Volume change
     const auto volumeDiff = V1 - V0;
 
@@ -83,7 +80,7 @@ void Yeast::update(units::Duration dt)
             budRelease();
         }
     }
-    else if (getVolume() >= units::um3(42) && dist(eng))
+    else if (getVolume() >= units::um3(42))
     {
         budCreate();
     }
