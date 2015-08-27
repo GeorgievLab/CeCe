@@ -27,7 +27,7 @@ using namespace plugin::python;
 
 /* ************************************************************************ */
 
-static PyObject* get_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args, void*) NOEXCEPT
+static PyObject* get_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args, void*) noexcept
 {
     int id;
     int x;
@@ -36,25 +36,29 @@ static PyObject* get_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyO
     if(!PyArg_ParseTuple(args, "iii", &id, &x, &y))
         return NULL;
 
-    const float value = self->value->getSignal(id, plugin::diffusion::Module::Coordinate(x, y));
+    const auto value = self->value->getSignal(id, plugin::diffusion::Module::Coordinate(x, y));
 
-    return Py_BuildValue("f", value);
+    return Py_BuildValue("f", value.value());
 }
 
 /* ************************************************************************ */
 
-static PyObject* set_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args, void*) NOEXCEPT
+static PyObject* set_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args, void*) noexcept
 {
     int id;
     int x;
     int y;
-    float value;
+    RealType value;
 
     if(!PyArg_ParseTuple(args, "iiif", &id, &x, &y, &value))
         return NULL;
 
     // Set signal value
-    self->value->setSignal(id, plugin::diffusion::Module::Coordinate(x, y), value);
+    self->value->setSignal(
+        id,
+        plugin::diffusion::Module::Coordinate(x, y),
+        plugin::diffusion::Module::SignalConcentration(value)
+    );
 
     Py_RETURN_NONE;
 }

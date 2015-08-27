@@ -141,7 +141,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
                 if (m_diffusion->inRange(ab2))
                 {
                     m_diffusion->getSignalBack(id, ab2) += signal * tmp[ab];
-                    assert(m_diffusion->getSignalBack(id, ab2) >= 0);
+                    assert(m_diffusion->getSignalBack(id, ab2) >= Zero);
                 }
             }
         }

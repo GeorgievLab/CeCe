@@ -49,24 +49,80 @@ class IntercellularReactions: public stochastic_reactions::Reactions<ReqProd>
 
 protected:
 
+
+    /**
+     * @brief Computes propensity of given reaction.
+     *
+     * @param index of row, cell, diffusion
+     * @return propensity
+     */
     PropensityType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
+
+    /**
+     * @brief Computes propensities of all reactions.
+     *
+     * @param cell, diffusion
+     * @return
+     */
     void initializePropensities(const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
+
+    /**
+     * @brief Refreshes propensities of ractions which have requirements of specific molecule.
+     *
+     * @param index of column, cell, diffusion
+     */
     void refreshPropensities(const unsigned int index, const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
+
+    /**
+     * @brief Executes reaction which ocuured.
+     *
+     * @param index of rection, cell, diffusion
+     */
     void executeReaction(const unsigned int index, plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
-    void changeMoleculesInEnvironment(const String& id, const int change, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
+    /**
+     * @brief Function that releases or absorbs the molecules outside the cell.
+     *
+     * @param id of molecule, number of molecules, diffusion
+     */
+    void changeMoleculesInEnvironment(const simulator::Simulation& simulation, const String& id, const int change, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+
+
+    /**
+     * @brief Function that extends reaction rule matrix with reaction that absorbs signal from the outside.
+     *
+     * @param array of IDs, reation rate
+     */
     void extendAbsorption(const DynamicArray<String>& ids_plus, const RateType rate);
 
+
+    /**
+     * @brief Function that extends reaction rule matrix with reaction that releases signal outside the cell.
+     *
+     * @param array of IDs, reation rate
+     */
     void extendExpression(const DynamicArray<String>& ids_minus, const RateType rate);
+
 
 public:
 
+
+    /**
+     * @brief Main function of this plugin.
+     *
+     */
     void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step);
 
+
+    /**
+     * @brief Function that extends reaction rule matrix.
+     *
+     * @param array of molecule IDs reation rate
+     */
     void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate);
 
 

@@ -15,6 +15,7 @@
 #include <random>
 
 // Simulator
+#include "simulator/Simulation.hpp"
 #include "simulator/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
@@ -31,6 +32,13 @@ namespace {
 // Random generators
 std::random_device g_randomDevice;
 std::mt19937 g_randomEngine(g_randomDevice());
+
+/* ************************************************************************ */
+
+/**
+ * @brief Avogadro constant.
+ */
+constexpr units::Unit<units::List<>, units::List<units::BaseAmountOfSubstance>> NA(6.022140857e23);
 
 /* ************************************************************************ */
 
@@ -76,35 +84,46 @@ DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
         coords.erase(std::unique(coords.begin(), coords.end()), coords.end());
     }
 
+    // Cell must be in at least one grid cell for diffusion
+    if (coords.empty())
+        coords.push_back(coord);
+
     return coords;
 }
 
 /* ************************************************************************ */
 
 void changeMolecules(
+    const simulator::Simulation& simulation,
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
-    plugin::diffusion::Module::SignalId id, int change)
+    plugin::diffusion::Module::SignalId id,
+    int molecules)
 {
     // No coordinates
     if (coords.empty())
         return;
+
+    // Calculate on cell volume
+    const auto size = simulation.getWorldSize() / diffusion.getGridSize();
+    const units::Volume volume = size.getX() * size.getY() * units::Length(1);
 
     // Select random coordinate
     std::uniform_int_distribution<> distribution(0, coords.size() - 1);
     const auto idx = distribution(g_randomEngine);
 
     // Change molecules
-    auto& signal = diffusion.getSignal(id, coords[idx]);
-    signal += change;
+    auto& concentration = diffusion.getSignal(id, coords[idx]);
+    concentration += molecules / (NA * volume);
 
-    signal = std::max<plugin::diffusion::Module::Signal>(signal, 0);
-    assert(signal >= 0);
+    concentration = std::max<plugin::diffusion::Module::SignalConcentration>(concentration, Zero);
+    assert(concentration >= Zero);
 }
 
 /* ************************************************************************ */
 
 unsigned int getAmountOfMolecules(
+    const simulator::Simulation& simulation,
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
     plugin::diffusion::Module::SignalId id
@@ -113,16 +132,37 @@ unsigned int getAmountOfMolecules(
     if (coords.empty())
         return 0u;
 
-    plugin::diffusion::Module::Signal signal = 0;
+    // Calculate on cell volume
+    const auto size = simulation.getWorldSize() / diffusion.getGridSize();
+    const units::Volume volume = size.getX() * size.getY() * units::Length(1);
 
-    // Foreach all coordinates and calculate amount of molecules
+    // Get concentration
+    const auto concentration = getMolarConcentration(diffusion, coords, id);
+
+    return concentration * NA * volume;
+}
+
+/* ************************************************************************ */
+
+units::MolarConcentration getMolarConcentration(
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id
+)
+{
+    if (coords.empty())
+        return Zero;
+
+    plugin::diffusion::Module::SignalConcentration concentration = Zero;
+
+    // Foreach all coordinates and sum concentration
     for (const auto& coord : coords)
-        signal += diffusion.getSignal(id, coord);
+        concentration += diffusion.getSignal(id, coord);
 
-    // Negative signal is invalid
-    assert(signal >= 0);
+    // Negative concentration is invalid
+    assert(concentration >= Zero);
 
-    return signal;
+    return concentration;
 }
 
 /* ************************************************************************ */

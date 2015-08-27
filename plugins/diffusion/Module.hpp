@@ -56,13 +56,13 @@ public:
 
 
     /// Signal value type.
-    using Signal = RealType;
+    using SignalConcentration = units::MolarConcentration;
 
     /// Signal identificator.
     using SignalId = unsigned int;
 
     /// Grid type.
-    using GridType = Grid<Signal>;
+    using GridType = Grid<SignalConcentration>;
 
     /// Grid type.
     using Coordinate = typename GridType::CoordinateType;
@@ -181,7 +181,7 @@ public:
      *
      * @return
      */
-    Signal& getSignalFront(SignalId id, const Coordinate& coord) noexcept
+    SignalConcentration& getSignalFront(SignalId id, const Coordinate& coord) noexcept
     {
         return m_gridsFront[id][coord + OFFSET];
     }
@@ -195,7 +195,7 @@ public:
      *
      * @return
      */
-    const Signal& getSignalFront(SignalId id, const Coordinate& coord) const noexcept
+    const SignalConcentration& getSignalFront(SignalId id, const Coordinate& coord) const noexcept
     {
         return m_gridsFront[id][coord + OFFSET];
     }
@@ -209,7 +209,7 @@ public:
      *
      * @return
      */
-    Signal& getSignalFront(const String& name, const Coordinate& coord)
+    SignalConcentration& getSignalFront(const String& name, const Coordinate& coord)
     {
         const auto id = getSignalId(name);
 
@@ -228,7 +228,7 @@ public:
      *
      * @return
      */
-    const Signal& getSignalFront(const String& name, const Coordinate& coord) const
+    const SignalConcentration& getSignalFront(const String& name, const Coordinate& coord) const
     {
         const auto id = getSignalId(name);
 
@@ -247,7 +247,7 @@ public:
      *
      * @return
      */
-    Signal& getSignalBack(SignalId id, const Coordinate& coord) noexcept
+    SignalConcentration& getSignalBack(SignalId id, const Coordinate& coord) noexcept
     {
         return m_gridsBack[id][coord + OFFSET];
     }
@@ -261,7 +261,7 @@ public:
      *
      * @return
      */
-    const Signal& getSignalBack(SignalId id, const Coordinate& coord) const noexcept
+    const SignalConcentration& getSignalBack(SignalId id, const Coordinate& coord) const noexcept
     {
         return m_gridsBack[id][coord + OFFSET];
     }
@@ -275,7 +275,7 @@ public:
      *
      * @return
      */
-    Signal& getSignalBack(const String& name, const Coordinate& coord)
+    SignalConcentration& getSignalBack(const String& name, const Coordinate& coord)
     {
         const auto id = getSignalId(name);
 
@@ -294,7 +294,7 @@ public:
      *
      * @return
      */
-    const Signal& getSignalBack(const String& name, const Coordinate& coord) const
+    const SignalConcentration& getSignalBack(const String& name, const Coordinate& coord) const
     {
         const auto id = getSignalId(name);
 
@@ -313,7 +313,7 @@ public:
      *
      * @return
      */
-    Signal& getSignal(SignalId id, const Coordinate& coord) noexcept
+    SignalConcentration& getSignal(SignalId id, const Coordinate& coord) noexcept
     {
         return getSignalFront(id, coord);
     }
@@ -327,7 +327,7 @@ public:
      *
      * @return
      */
-    const Signal& getSignal(SignalId id, const Coordinate& coord) const noexcept
+    const SignalConcentration& getSignal(SignalId id, const Coordinate& coord) const noexcept
     {
         return getSignalFront(id, coord);
     }
@@ -341,7 +341,7 @@ public:
      *
      * @return
      */
-    Signal& getSignal(const String& name, const Coordinate& coord)
+    SignalConcentration& getSignal(const String& name, const Coordinate& coord)
     {
         return getSignalFront(name, coord);
     }
@@ -355,7 +355,7 @@ public:
      *
      * @return
      */
-    const Signal& getSignal(const String& name, const Coordinate& coord) const
+    const SignalConcentration& getSignal(const String& name, const Coordinate& coord) const
     {
         return getSignalFront(name, coord);
     }
@@ -466,7 +466,7 @@ public:
      *
      * @return
      */
-    Signal getSignalSaturation(SignalId id) const noexcept
+    SignalConcentration getSignalSaturation(SignalId id) const noexcept
     {
         return m_signalSaturation[id];
     }
@@ -481,7 +481,7 @@ public:
      *
      * @return
      */
-    Signal getSignalSaturation(const String& name) const
+    SignalConcentration getSignalSaturation(const String& name) const
     {
         const auto id = getSignalId(name);
 
@@ -565,7 +565,7 @@ public:
      *
      * @return
      */
-    void setSignalFront(SignalId id, const Coordinate& coord, Signal value) noexcept
+    void setSignalFront(SignalId id, const Coordinate& coord, SignalConcentration value) noexcept
     {
         m_gridsFront[id][coord + OFFSET] = value;
     }
@@ -580,7 +580,7 @@ public:
      *
      * @return
      */
-    void setSignalFront(const String& name, const Coordinate& coord, Signal value)
+    void setSignalFront(const String& name, const Coordinate& coord, SignalConcentration value)
     {
         const auto id = getSignalId(name);
 
@@ -600,7 +600,7 @@ public:
      *
      * @return
      */
-    void setSignalBack(SignalId id, const Coordinate& coord, Signal value) noexcept
+    void setSignalBack(SignalId id, const Coordinate& coord, SignalConcentration value) noexcept
     {
         m_gridsBack[id][coord + OFFSET] = value;
     }
@@ -615,7 +615,7 @@ public:
      *
      * @return
      */
-    void setSignalBack(const String& name, const Coordinate& coord, Signal value)
+    void setSignalBack(const String& name, const Coordinate& coord, SignalConcentration value)
     {
         const auto id = getSignalId(name);
 
@@ -635,7 +635,7 @@ public:
      *
      * @return
      */
-    void setSignal(SignalId id, const Coordinate& coord, Signal value) noexcept
+    void setSignal(SignalId id, const Coordinate& coord, SignalConcentration value) noexcept
     {
         setSignalFront(id, coord, value);
     }
@@ -650,7 +650,7 @@ public:
      *
      * @return
      */
-    void setSignal(const String& name, const Coordinate& coord, Signal value)
+    void setSignal(const String& name, const Coordinate& coord, SignalConcentration value)
     {
         setSignalFront(name, coord, value);
     }
@@ -754,7 +754,7 @@ public:
      * @param id         Signal identifier.
      * @param saturation Signal value when color is max.
      */
-    void setSignalSaturation(SignalId id, Signal saturation) noexcept
+    void setSignalSaturation(SignalId id, SignalConcentration saturation) noexcept
     {
         m_signalSaturation[id] = saturation;
     }
@@ -768,7 +768,7 @@ public:
      * @param name       Signal name.
      * @param saturation Signal value when color is max.
      */
-    void setSignalSaturation(const String& name, Signal saturation)
+    void setSignalSaturation(const String& name, SignalConcentration saturation)
     {
         const auto id = getSignalId(name);
 
@@ -848,7 +848,7 @@ public:
      */
     void clearFront(SignalId id) noexcept
     {
-        std::fill(m_gridsFront[id].begin(), m_gridsFront[id].end(), Signal{});
+        std::fill(m_gridsFront[id].begin(), m_gridsFront[id].end(), SignalConcentration{});
     }
 
 
@@ -859,7 +859,7 @@ public:
      */
     void clearBack(SignalId id) noexcept
     {
-        std::fill(m_gridsBack[id].begin(), m_gridsBack[id].end(), Signal{});
+        std::fill(m_gridsBack[id].begin(), m_gridsBack[id].end(), SignalConcentration{});
     }
 
 
@@ -918,7 +918,7 @@ private:
     DynamicArray<render::Color> m_colors;
 
     /// Signal color saturation.
-    DynamicArray<Signal> m_signalSaturation;
+    DynamicArray<SignalConcentration> m_signalSaturation;
 
     /// Drawable signal grid.
 #  if CONFIG_PLUGIN_diffusion_SMOOTH

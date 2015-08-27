@@ -23,12 +23,7 @@ namespace plugin {
 namespace stochastic_reactions_diffusive {
 
 /* ************************************************************************ */
-/**
- * @brief Computes propensity of given reaction.
- *
- * @param index of row, cell, diffusion
- * @return propensity
- */
+
 IntercellularReactions::PropensityType IntercellularReactions::computePropensity(
     const unsigned int index,
     const plugin::cell::CellBase& cell,
@@ -55,7 +50,7 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
         const auto id = diffusion->getSignalId(m_ids[i]);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
-            numberEnv = getAmountOfMolecules(*diffusion, coords, id);
+            numberEnv = getAmountOfMolecules(cell.getSimulation(), *diffusion, coords, id);
 
             condEnv =
                 // >
@@ -78,12 +73,7 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
 }
 
 /* ************************************************************************ */
-/**
- * @brief Computes propensities of all reactions.
- *
- * @param cell, diffusion
- * @return
- */
+
 void IntercellularReactions::initializePropensities(
     const plugin::cell::CellBase& cell,
     plugin::diffusion::Module* diffusion,
@@ -97,11 +87,7 @@ void IntercellularReactions::initializePropensities(
 }
 
 /* ************************************************************************ */
-/**
- * @brief Refreshes propensities of ractions which have requirements of specific molecule.
- *
- * @param index of column, cell, diffusion
- */
+
 void IntercellularReactions::refreshPropensities(
     const unsigned int index,
     const plugin::cell::CellBase& cell,
@@ -119,11 +105,7 @@ void IntercellularReactions::refreshPropensities(
 }
 
 /* ************************************************************************ */
-/**
- * @brief Executes reaction which ocuured.
- *
- * @param index of rection, cell, diffusion
- */
+
 void IntercellularReactions::executeReaction(
     const unsigned int index,
     plugin::cell::CellBase& cell,
@@ -141,17 +123,14 @@ void IntercellularReactions::executeReaction(
         change = m_rules[index][i].env_product - m_rules[index][i].env_requirement;
         if (change != 0)
         {
-            changeMoleculesInEnvironment(m_ids[i], change, diffusion, coords);
+            changeMoleculesInEnvironment(cell.getSimulation(), m_ids[i], change, diffusion, coords);
             refreshPropensities(i, cell, diffusion, coords);
         }
     }
 }
 
 /* ************************************************************************ */
-/**
- * @brief Main function of this plugin.
- *
- */
+
 void IntercellularReactions::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step)
 {
     auto& cell = getCell(object);
@@ -168,12 +147,9 @@ void IntercellularReactions::operator()(simulator::Object& object, simulator::Si
 }
 
 /* ************************************************************************ */
-/**
- * @brief Function that releases or absorbs the molecules outside the cell.
- *
- * @param id of molecule, number of molecules, diffusion
- */
+
 void IntercellularReactions::changeMoleculesInEnvironment(
+    const simulator::Simulation& simulation,
     const String& name,
     const int change,
     plugin::diffusion::Module* diffusion,
@@ -188,16 +164,11 @@ void IntercellularReactions::changeMoleculesInEnvironment(
         throw InvalidArgumentException("Unknown signal molecule '" + name + "' in diffusion");
 
     // Change amount of molecules
-    // FIXME: #36
-    changeMolecules(*diffusion, coords, id, change);
+    changeMolecules(simulation, *diffusion, coords, id, change);
 }
 
 /* ************************************************************************ */
-/**
- * @brief Function that extends reaction rule matrix with reaction that absorbs signal from the outside.
- *
- * @param array of IDs, reation rate
- */
+
 void IntercellularReactions::extendAbsorption(const DynamicArray<String>& ids_plus, const RateType rate)
 {
     DynamicArray<ReqProd> array;
@@ -224,11 +195,7 @@ void IntercellularReactions::extendAbsorption(const DynamicArray<String>& ids_pl
 }
 
 /* ************************************************************************ */
-/**
- * @brief Function that extends reaction rule matrix with reaction that releases signal outside the cell.
- *
- * @param array of IDs, reation rate
- */
+
 void IntercellularReactions::extendExpression(const DynamicArray<String>& ids_minus, const RateType rate)
 {
     DynamicArray<ReqProd> array;
@@ -255,11 +222,7 @@ void IntercellularReactions::extendExpression(const DynamicArray<String>& ids_mi
 }
 
 /* ************************************************************************ */
-/**
- * @brief Function that extends reaction rule matrix.
- *
- * @param array of molecule IDs reation rate
- */
+
 void IntercellularReactions::extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
 {
     if (std::find(ids_minus.begin(), ids_minus.end(), "env") != ids_minus.end())

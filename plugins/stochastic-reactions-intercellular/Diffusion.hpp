@@ -40,15 +40,18 @@ DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
 /**
  * @brief Change amount of molecules outside of cell.
  *
- * @param diffusion Diffusion module.
- * @param coords    Coordinates.
- * @param id        Molecule signal identifier.
- * @param change    Number of molecules to change. Positive to add and negative to remove.
+ * @param simulation Current simulation.
+ * @param diffusion  Diffusion module.
+ * @param coords     Coordinates.
+ * @param id         Molecule signal identifier.
+ * @param change     Number of molecules to change. Positive to add and negative to remove.
  */
 void changeMolecules(
+    const simulator::Simulation& simulation,
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
-    plugin::diffusion::Module::SignalId id, int change
+    plugin::diffusion::Module::SignalId id,
+    int change
 );
 
 /* ************************************************************************ */
@@ -56,18 +59,21 @@ void changeMolecules(
 /**
  * @brief Increase amount of molecules outside of cell.
  *
- * @param diffusion Diffusion module.
- * @param coords    Coordinates.
- * @param id        Molecule signal identifier.
- * @param amount    Number of molecules to add.
+ * @param simulation Current simulation.
+ * @param diffusion  Diffusion module.
+ * @param coords     Coordinates.
+ * @param id         Molecule signal identifier.
+ * @param amount     Number of molecules to add.
  */
 inline void addMolecules(
+    const simulator::Simulation& simulation,
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
-    plugin::diffusion::Module::SignalId id, unsigned int amount = 1
+    plugin::diffusion::Module::SignalId id,
+    unsigned int amount = 1
 )
 {
-    changeMolecules(diffusion, coords, id, amount);
+    changeMolecules(simulation, diffusion, coords, id, amount);
 }
 
 /* ************************************************************************ */
@@ -75,18 +81,21 @@ inline void addMolecules(
 /**
  * @brief Decrease amount of molecules outside of cell.
  *
- * @param diffusion Diffusion module.
- * @param coords    Coordinates.
- * @param id        Molecule signal identifier.
- * @param amount    Number of molecules to remove.
+ * @param simulation Current simulation.
+ * @param diffusion  Diffusion module.
+ * @param coords     Coordinates.
+ * @param id         Molecule signal identifier.
+ * @param amount     Number of molecules to remove.
  */
 inline void removeMolecules(
+    const simulator::Simulation& simulation,
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
-    plugin::diffusion::Module::SignalId id, unsigned int amount = 1
+    plugin::diffusion::Module::SignalId id,
+    unsigned int amount = 1
 )
 {
-    changeMolecules(diffusion, coords, id, -amount);
+    changeMolecules(simulation, diffusion, coords, id, -amount);
 }
 
 /* ************************************************************************ */
@@ -94,11 +103,28 @@ inline void removeMolecules(
 /**
  * @brief Receive amount of molecules outside of cell.
  *
- * @param diffusion Diffusion module.
- * @param coords    Coordinates.
- * @param id        Molecule signal identifier.
+ * @param simulation Current simulation.
+ * @param diffusion  Diffusion module.
+ * @param coords     Coordinates.
+ * @param id         Molecule signal identifier.
  */
 unsigned int getAmountOfMolecules(
+    const simulator::Simulation& simulation,
+    plugin::diffusion::Module& diffusion,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
+    plugin::diffusion::Module::SignalId id
+);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Receive molecule molar concentration outside of cell.
+ *
+ * @param diffusion  Diffusion module.
+ * @param coords     Coordinates.
+ * @param id         Molecule signal identifier.
+ */
+units::MolarConcentration getMolarConcentration(
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
     plugin::diffusion::Module::SignalId id

@@ -81,7 +81,7 @@ Module::SignalId Module::registerSignal(String name, DiffusionRate rate, Degrada
 
 #if ENABLE_RENDER
     m_colors.push_back(g_colors[id % g_colors.size()]);
-    m_signalSaturation.push_back(1);
+    m_signalSaturation.push_back(SignalConcentration{1});
 #endif
 
     return id;
@@ -199,10 +199,10 @@ void Module::updateDrawable() const
         for (auto id : getSignalIds())
         {
             // Get signal
-            const auto signal = getSignal(id, c);
+            const auto concentration = getSignal(id, c);
 
             // Calculate alpha value
-            const auto alpha = std::min<Signal>(signal / getSignalSaturation(id), 1);
+            const auto alpha = std::min<RealType>(concentration / getSignalSaturation(id), 1);
 
             pixel *= (1 - alpha);
             pixel += m_colors[id] * alpha;
@@ -239,8 +239,10 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         return (step * DISTANCES[i][j]).getLengthSquared();
     });
 
+    using MT = units::Unit<units::List<>, units::List<units::BaseLength, units::BaseLength>>;
+
     // Create distribution matrix
-    const auto M = StaticMatrix<units::Area, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
+    const auto M = StaticMatrix<MT, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
         return A * std::exp(-q[i][j] / (4.f * getDiffusionRate(id) * dt));
     }).normalized();
 
@@ -251,14 +253,14 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         auto signal = getSignalFront(id, c);
 
         // Nothing to diffuse
-        if (signal < std::numeric_limits<Signal>::epsilon())
+        if (signal < std::numeric_limits<SignalConcentration>::epsilon())
             continue;
 
         // Degrade signal
         signal *= 1 - getDegradationRate(id) * dt;
 
-        Signal obstacleSignal = 0;
-        unsigned int obstacleCells = 0;
+        SignalConcentration obstacleSignal = Zero;
+        unsigned int obstacleCells = 0u;
 
         // Diffuse signal to grid cells around
         for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
@@ -279,11 +281,11 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         // Only in case there is obstacles
         if (obstacleCells > 0)
         {
-            assert(signal >= 0);
+            assert(signal >= Zero);
 
             // Divide obstacle signal between non-obstacle grid cells
-            const Signal signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE - obstacleCells);
-            assert(signalAdd >= 0);
+            const SignalConcentration signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE - obstacleCells);
+            assert(signalAdd >= Zero);
 
             for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
             {

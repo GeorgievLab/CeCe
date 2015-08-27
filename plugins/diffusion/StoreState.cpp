@@ -48,7 +48,7 @@ void StoreState::update(units::Duration dt, simulator::Simulation& simulation)
             table.setData(row,
                 makePair(
                     m_diffusionModule->getSignalName(signalId),
-                    m_diffusionModule->getSignal(signalId, c)
+                    m_diffusionModule->getSignal(signalId, c).value()
                 )
             );
         }
