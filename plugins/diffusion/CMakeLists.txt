@@ -28,8 +28,6 @@ set(SRCS
     Library.cpp
     Module.hpp
     Module.cpp
-    Generator.hpp
-    Generator.cpp
     StoreState.hpp
     StoreState.cpp
 )

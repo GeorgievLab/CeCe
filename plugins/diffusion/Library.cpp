@@ -15,7 +15,6 @@
 
 // Plugin
 #include "Module.hpp"
-#include "Generator.hpp"
 #include "StoreState.hpp"
 
 /* ************************************************************************ */
@@ -28,9 +27,7 @@ class DiffusionApi : public PluginApi
 {
     UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
     {
-        if (name == "generator")
-            return makeUnique<plugin::diffusion::Generator>(simulation.useModule<plugin::diffusion::Module>("diffusion"));
-        else if (name == "store-state")
+        if (name == "store-state")
             return makeUnique<plugin::diffusion::StoreState>(simulation.useModule<plugin::diffusion::Module>("diffusion"));
 
         return makeUnique<plugin::diffusion::Module>();
