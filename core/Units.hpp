@@ -1915,6 +1915,13 @@ using KinematicViscosity = Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
 /* ************************************************************************ */
 
 /**
+ * @brief Molar concentration.
+ */
+using MolarConcentration = Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing volume.
  */
 using Angle = Value;
