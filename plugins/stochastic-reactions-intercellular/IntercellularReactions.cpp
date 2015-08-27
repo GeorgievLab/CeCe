@@ -38,36 +38,32 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
         // TODO: check if it's OK
         const bool cond =
             // >
-            (m_rules[index][i].less && !(number <= m_rules[index][i].requirement)) ||
+            (m_rules[index][i].less && (number <= m_rules[index][i].requirement)) ||
             // <=
-            !(number >= m_rules[index][i].requirement)
+            (!m_rules[index][i].less && (number >= m_rules[index][i].requirement))
         ;
 
         bool condEnv = true;
-        unsigned int numberEnv = 0u;
 
         // Get signal ID
         const auto id = diffusion->getSignalId(m_ids[i]);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
-            numberEnv = getAmountOfMolecules(cell.getSimulation(), *diffusion, coords, id);
+            const auto numberEnv = getMolarConcentration(*diffusion, coords, id).value();
 
             condEnv =
                 // >
-                (m_rules[index][i].env_less && !(numberEnv <= m_rules[index][i].env_requirement)) ||
+                (m_rules[index][i].env_less && (numberEnv <= m_rules[index][i].env_requirement)) ||
                 // <=
-                !(numberEnv >= m_rules[index][i].env_requirement)
+                (!m_rules[index][i].env_less && (numberEnv >= m_rules[index][i].env_requirement))
             ;
         }
 
-        if (cond && condEnv)
+        if (!cond || !condEnv)
             return 0;
 
         if (m_rules[index][i].requirement != 0u)
             local *= number;
-
-        if (m_rules[index][i].env_requirement != 0u)
-            local *= numberEnv;
     }
     return local;
 }
@@ -347,7 +343,7 @@ void IntercellularReactions::addCondition(const Condition& condition, DynamicArr
     // add requirement
     if (fromEnv)
     {
-        const auto diff = std::max(condition.requirement - reaction[moleculeId].env_requirement, 0u);
+        const auto diff = std::max<RealType>(condition.requirement - reaction[moleculeId].env_requirement, 0.0);
 
         // add requirement
         reaction[moleculeId].env_less = condition.less;

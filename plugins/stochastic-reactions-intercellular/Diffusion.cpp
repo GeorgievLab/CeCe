@@ -162,7 +162,7 @@ units::MolarConcentration getMolarConcentration(
     // Negative concentration is invalid
     assert(concentration >= Zero);
 
-    return concentration;
+    return concentration / coords.size();
 }
 
 /* ************************************************************************ */

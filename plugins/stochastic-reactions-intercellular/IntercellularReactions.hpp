@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "core/Real.hpp"
+
 // Plugins
 #include "plugins/stochastic-reactions-intracellular/Reactions.hpp"
 #include "plugins/diffusion/Module.hpp"
@@ -31,7 +33,7 @@ struct ReqProd
     ReqProd() = default;
     unsigned int requirement = 0;
     unsigned int product = 0;
-    unsigned int env_requirement = 0;
+    RealType env_requirement = 0;
     unsigned int env_product = 0;
     bool less = false;
     bool env_less = false;
