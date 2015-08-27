@@ -533,6 +533,9 @@ void mapShapeBorderToGrid(FnIn fnIn, FnOut fnOut, const ShapeCircle& shape, cons
     const auto maxS = Vector<Ts>(max);
     const auto minS = Vector<Ts>(min);
 
+    if (radius == Zero)
+        return;
+
     auto putCoord = [&fnIn, &fnOut, &shapeCenter, &minS, &maxS](Vector<Ts> xy) {
         // Calculate grid coordinates
         const auto coord = shapeCenter + xy;
