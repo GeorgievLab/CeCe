@@ -628,9 +628,9 @@ VelocityVector Module::inletVelocityProfile(
 
 /* ************************************************************************ */
 
-RealType Module::calculateCoefficient(units::Time step, PositionVector dl) const noexcept
+RealType Module::calculateCoefficient(units::Time dt, PositionVector dl) const noexcept
 {
-    return calculateViscosity() * (getIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / step;
+    return calculateViscosity() * (getIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / dt;
 }
 
 /* ************************************************************************ */
