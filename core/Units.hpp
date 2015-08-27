@@ -1823,16 +1823,47 @@ typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., N
 /* ************************************************************************ */
 
 /**
- * @brief Delta type - used for change nominator per denominator.
+ * @brief Division type - used for change nominator per denominator.
  *
  * @tparam Nom
  * @tparam Denom
  */
 template<typename Nom, typename Denom>
-struct Delta
+struct Divide
 {
     using type = decltype(Nom{} / Denom{});
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Calculate inverse type (1 / type).
+ *
+ * @tparam T Unit type.
+ */
+template<typename Type>
+struct Inverse;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Calculate inverse type (1 / type).
+ *
+ * @tparam Nominators
+ * @tparam Denominators
+ */
+template<typename... Nominators, typename... Denominators>
+struct Inverse<Unit<List<Nominators...>, List<Denominators...>>>
+{
+    using type = Unit<List<Denominators...>, List<Nominators...>>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type without units.
+ */
+using None = Unit<List<>, List<>>;
 
 /* ************************************************************************ */
 
@@ -1911,6 +1942,13 @@ using DynamicViscosity = Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
  * @brief Class for representing kinematic viscosity.
  */
 using KinematicViscosity = Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Amount of substance.
+ */
+using AmountOfSubstance = Unit<List<BaseAmountOfSubstance>, List<>>;
 
 /* ************************************************************************ */
 
