@@ -65,7 +65,7 @@ DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
     // Get coordinates from shapes
     for (const auto& shape : shapes)
     {
-        coordIt = mapShapeBorderToGrid(coordIt, shape, step, coord, gridSize);
+        coordIt = mapShapeToGrid(coordIt, shape, step, coord, cell.getRotation(), gridSize);
     }
 
     // In case of single shape, all coordinates are unique
