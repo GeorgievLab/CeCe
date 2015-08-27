@@ -1785,12 +1785,12 @@ Unit<List<Nominators...>, List<Denominators...>> operator/(
  */
 template<typename... Nominators, typename... Denominators>
 inline constexpr
-Unit<List<Nominators...>, List<Denominators...>> operator/(
+Unit<List<Denominators...>, List<Nominators...>> operator/(
     typename Unit<List<Nominators...>, List<Denominators...>>::value_type lhs,
     Unit<List<Nominators...>, List<Denominators...>> rhs
 ) noexcept
 {
-    return rhs /= lhs;
+    return Unit<List<Denominators...>, List<Nominators...>>(lhs / rhs.value());
 }
 
 /* ************************************************************************ */
