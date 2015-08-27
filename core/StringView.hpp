@@ -17,6 +17,8 @@
 
 // Simulator
 #include "core/String.hpp"
+#include "core/OutStream.hpp"
+#include "core/InStream.hpp"
 
 /* ************************************************************************ */
 
@@ -194,6 +196,35 @@ inline bool operator!=(const StringView& lhs, const StringView& rhs)
 {
     return !operator==(lhs, rhs);
 }
+
+/* ************************************************************************ */
+
+/**
+ * @brief Output stream operator for StringView.
+ *
+ * @param os   Output stream.
+ * @param view View to print.
+ *
+ * @return os.
+ */
+inline OutStream& operator<<(OutStream& os, const StringView& view) noexcept
+{
+    return os.write(view.getData(), view.getLength());
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Input stream operator for StringView.
+ *
+ * @note StringView cannot be used as string storage.
+ *
+ * @param is   Input stream.
+ * @param view Output view.
+ *
+ * @return is.
+ */
+inline InStream& operator<<(InStream& is, StringView& view) noexcept = delete;
 
 /* ************************************************************************ */
 
