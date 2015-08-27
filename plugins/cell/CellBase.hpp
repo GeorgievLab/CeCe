@@ -51,11 +51,11 @@ public:
     using MoleculeCountDifference = typename std::make_signed<MoleculeCount>::type;
 
     /// Cell growth rate type.
-    using GrowthRate = units::Unit<units::List<>, units::List<units::BaseTime>>;
+    using GrowthRate = units::Inverse<units::Time>::type;
 
 #if ENABLE_RENDER
     /// Type of fluorescent saturation.
-    using FluorescentSaturation = units::Unit<units::List<>, units::List<units::BaseLength, units::BaseLength, units::BaseLength>>;
+    using FluorescentSaturation = units::Inverse<units::Volume>::type;
 #endif
 
 

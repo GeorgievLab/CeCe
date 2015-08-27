@@ -71,10 +71,10 @@ public:
     using SizeType = Vector<typename GridType::SizeType>;
 
     /// Diffusion rate (m^2/s).
-    using DiffusionRate = units::Unit<units::List<units::BaseLength, units::BaseLength>, units::List<units::BaseTime>>;
+    using DiffusionRate = units::Divide<units::Area, units::Time>::type;
 
     /// Degradation rate (%/s).
-    using DegradationRate = units::Unit<units::List<>, units::List<units::BaseTime>>;
+    using DegradationRate = units::Inverse<units::Time>::type;
 
 
 // Public Constants

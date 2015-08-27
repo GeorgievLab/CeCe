@@ -239,7 +239,7 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         return (step * DISTANCES[i][j]).getLengthSquared();
     });
 
-    using MT = units::Unit<units::List<>, units::List<units::BaseLength, units::BaseLength>>;
+    using MT = units::Inverse<units::Area>::type;
 
     // Create distribution matrix
     const auto M = StaticMatrix<MT, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
