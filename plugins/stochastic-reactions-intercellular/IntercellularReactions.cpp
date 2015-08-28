@@ -343,7 +343,7 @@ void IntercellularReactions::addCondition(const Condition& condition, DynamicArr
     // add requirement
     if (fromEnv)
     {
-        const auto diff = std::max<RealType>(condition.requirement - reaction[moleculeId].env_requirement, 0.0);
+        const auto diff = std::max<RealType>(condition.requirement - reaction[moleculeId].env_requirement, 0);
 
         // add requirement
         reaction[moleculeId].env_less = condition.less;
@@ -352,7 +352,7 @@ void IntercellularReactions::addCondition(const Condition& condition, DynamicArr
     }
     else
     {
-        const auto diff = std::max(condition.requirement - reaction[moleculeId].requirement, 0u);
+        const auto diff = std::max<RealType>(condition.requirement - reaction[moleculeId].requirement, 0);
 
         // add requirement
         reaction[moleculeId].less = condition.less;
