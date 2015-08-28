@@ -38,7 +38,7 @@ std::mt19937 g_randomEngine(g_randomDevice());
 /**
  * @brief Avogadro constant.
  */
-constexpr units::Inverse<units::AmountOfSubstance>::type NA(6.022140857e23);
+constexpr units::Inverse<units::AmountOfSubstance>::type NA = 6.022140857e23 / units::mol(1);
 
 /* ************************************************************************ */
 
