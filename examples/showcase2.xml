@@ -3,7 +3,7 @@
 <simulation world-size="200um 100um" dt="1ms" aiterations="1000" background="black">
     <program name="cell1" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null < 0.5, 10 > env_S1;
+        null > 10 > env_S1;
 ]]>
     </program>
 
@@ -16,7 +16,7 @@
     <program name="cell3" language="stochastic-reactions-intercellular">
 <![CDATA[
         if env_S1 > 500: null < 0.5, 10 > LM5;
-        if env_S1 > 500: null < 0.5, 10 > env_S1;
+        if env_S1 > 500: null > 10 > env_S1;
 ]]>
     </program>
 
@@ -65,7 +65,7 @@
 
     <!-- Define diffusion module -->
     <module name="diffusion" grid="200 100">
-        <signal name="S1" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" saturation="5umol/m3" />
+        <signal name="S1" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" saturation="5mM" />
     </module>
 
     <!-- Center cell -->
