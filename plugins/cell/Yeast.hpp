@@ -104,6 +104,54 @@ public:
     }
 
 
+    /**
+     * @brief Return volume when buds are produced.
+     *
+     * @return
+     */
+    units::Volume getVolumeBudCreate() const noexcept
+    {
+        return m_volumeBudCreate;
+    }
+
+
+    /**
+     * @brief Return volume (bud) when buds are released.
+     *
+     * @return
+     */
+    units::Volume getVolumeBudRelease() const noexcept
+    {
+        return m_volumeBudRelease;
+    }
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Set volume when buds are produced.
+     *
+     * @param volume
+     */
+    void setVolumeBudCreate(units::Volume volume) noexcept
+    {
+        m_volumeBudCreate = std::move(volume);
+    }
+
+
+    /**
+     * @brief Set volume (bud) when buds are released.
+     *
+     * @param volume
+     */
+    void setVolumeBudRelease(units::Volume volume) noexcept
+    {
+        m_volumeBudRelease = std::move(volume);
+    }
+
+
 // Public Operations
 public:
 
@@ -165,6 +213,12 @@ private:
 
     /// Bud cell.
     boost::optional<Bud> m_bud;
+
+    /// Volume that is needed to bud creation.
+    units::Volume m_volumeBudCreate = units::um3(42);
+
+    /// Volume (bud) that is needed to bud release.
+    units::Volume m_volumeBudRelease = units::um3(35);
 
 #if ENABLE_RENDER
     /// Render object for Yeast.

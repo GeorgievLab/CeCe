@@ -63,24 +63,24 @@ void Yeast::update(units::Duration dt)
     MutexGuard guard(m_mutex);
 #endif
 
-    const auto V0 = getVolume();
+    const auto volume0 = getVolume();
     CellBase::update(dt);
-    const auto V1 = getVolume();
+    const auto volume1 = getVolume();
 
     // Volume change
-    const auto volumeDiff = V1 - V0;
+    const auto volumeDiff = volume1 - volume0;
 
     if (hasBud())
     {
         m_bud->volume += volumeDiff;
         setVolume(getVolume() - volumeDiff);
 
-        if (m_bud->volume >= units::um3(35))
+        if (m_bud->volume >= getVolumeBudRelease())
         {
             budRelease();
         }
     }
-    else if (getVolume() >= units::um3(42))
+    else if (getVolume() >= getVolumeBudCreate())
     {
         budCreate();
     }
@@ -98,6 +98,9 @@ void Yeast::configure(const simulator::Configuration& config,
                       simulator::Simulation& simulation)
 {
     CellBase::configure(config, simulation);
+
+    setVolumeBudCreate(config.get("volume-bud-create", getVolumeBudCreate()));
+    setVolumeBudRelease(config.get("volume-bud-release", getVolumeBudRelease()));
 }
 
 /* ************************************************************************ */
@@ -178,7 +181,7 @@ void Yeast::draw(render::Context& context)
         pos = getPosition();
         radius = calcSphereRadius(getVolume());
         angle = getRotation() - (m_bud ? m_bud->rotation : units::Angle(0));
-        budRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
+        budRadius = m_bud ? calcSphereRadius(m_bud->volume) : Zero;
         color = calcFluorescentColor();
     }
 
@@ -208,8 +211,8 @@ void Yeast::updateShape()
     // Calculate new radius
     const auto newRadius = calcSphereRadius(getVolume());
     const auto oldRadius = units::Length(m_shape.m_radius);
-    const auto newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : units::Length(0);
-    const auto oldBudRadius = m_bud ? units::Length(m_bud->shape.m_radius) : units::Length(0);
+    const auto newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : Zero;
+    const auto oldBudRadius = m_bud ? units::Length(m_bud->shape.m_radius) : Zero;
 
     const bool needs_update = m_shapeForceUpdate ||
         ((newRadius - oldRadius) > MIN_CHANGE) ||
