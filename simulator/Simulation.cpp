@@ -374,7 +374,7 @@ void Simulation::configure(const Configuration& config)
     // Parse parameters
     for (auto&& parameterConfig : config.getConfigurations("parameter"))
     {
-        setParameter(parameterConfig.get("name"), parameterConfig.get<RealType>("value"));
+        setParameter(parameterConfig.get("name"), units::parse(parameterConfig.get("value")));
     }
 
     // Parse init
