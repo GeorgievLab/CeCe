@@ -57,7 +57,7 @@ public:
     struct Condition
     {
         String name;
-        unsigned int requirement;
+        RealType requirement;
         bool clone;
         bool less;
     };
@@ -234,7 +234,7 @@ public:
         // Alias to last reaction
         auto& reaction = m_rules[m_rules.size() - 1];
 
-        const auto diff = std::max(condition.requirement - reaction[moleculeId].requirement, 0u);
+        const auto diff = std::max<RealType>(condition.requirement - reaction[moleculeId].requirement, 0);
 
         // add requirement
         reaction[moleculeId].less = condition.less;

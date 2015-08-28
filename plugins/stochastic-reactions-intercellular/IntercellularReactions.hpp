@@ -11,6 +11,7 @@
 
 #pragma once
 
+// Simulator
 #include "core/Real.hpp"
 
 // Plugins
@@ -30,14 +31,14 @@ using RateType = plugin::stochastic_reactions::RateType;
 
 struct ReqProd
 {
-    ReqProd() = default;
-    unsigned int requirement = 0;
-    unsigned int product = 0;
-    RealType env_requirement = 0;
-    unsigned int env_product = 0;
-    bool less = false;
-    bool env_less = false;
-    ReqProd(int req, int prod, int e_req = 0, int e_prod = 0, bool flag = false, bool flagEnv = false) noexcept
+    unsigned int requirement;
+    unsigned int product;
+    RealType env_requirement;
+    unsigned int env_product;
+    bool less;
+    bool env_less;
+
+    ReqProd(int req = 0, int prod = 0, RealType e_req = 0, int e_prod = 0, bool flag = false, bool flagEnv = false) noexcept
     : requirement(req), product(prod), env_requirement(e_req), env_product(e_prod), less(flag), env_less(flagEnv)
     {
         // Nothing to do

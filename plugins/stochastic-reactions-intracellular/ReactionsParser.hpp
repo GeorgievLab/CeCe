@@ -363,7 +363,7 @@ protected:
             {
                 next();
                 String name;
-                unsigned int requirement = 1;
+                RealType requirement = 1.0;
                 bool neg = false;
                 bool less = false;
                 if (is(TokenCode::Not))
@@ -381,7 +381,7 @@ protected:
 
                 if (is(TokenCode::Less))
                 {
-                    requirement = std::ceil(parseConditionValueRate());
+                    requirement = parseConditionValueRate();
 
                     if (requirement == 0)
                         throw InvalidArgumentException("Requirement cannot be zero");
@@ -390,11 +390,11 @@ protected:
                 }
                 else if (is(TokenCode::Greater))
                 {
-                    requirement = std::ceil(parseConditionValueRate());
+                    requirement = parseConditionValueRate();
                 }
 
                 if ((neg && !less) || (!neg && less))
-                    requirement -= 1;
+                    requirement -= 1.0;
 
                 array.push_back({name, requirement, clone, neg});
                 clone = false;
