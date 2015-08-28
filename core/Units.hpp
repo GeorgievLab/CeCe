@@ -98,6 +98,25 @@ DEFINE_BASE_UNIT(LuminousIntensity,        LUMINOUS_INTENSITY_EXPONENT,        6
 /* ************************************************************************ */
 
 /**
+ * @brief Calculate coefficient from exponent.
+ *
+ * @param exponent
+ *
+ * @return Result coefficient
+ */
+inline constexpr Value exponentToCoefficient(int exponent) noexcept
+{
+    return (exponent == 0)
+        ? 1
+        : (exponent > 0)
+            ? 10 * exponentToCoefficient(exponent - 1)
+            : 0.1 * exponentToCoefficient(exponent + 1)
+    ;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Less structure.
  *
  * @tparam T1 First base unit type.
@@ -2159,7 +2178,7 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
     ;
 
     // Value coefficient
-    const Value coefficient = std::pow(10, exponent);
+    const Value coefficient = exponentToCoefficient(exponent);
 
     // Set unit
     unit = Type(val * coefficient);

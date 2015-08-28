@@ -219,7 +219,7 @@ Value parse(InStream& is)
         }
     }
 
-    return value * std::pow(10, exponent);
+    return value * exponentToCoefficient(exponent);
 }
 
 /* ************************************************************************ */

@@ -501,7 +501,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                 obj->getDensity() *
                 dv *
                 radius *
-                std::pow(10, -units::LENGTH_EXPONENT)
+                units::exponentToCoefficient(-units::LENGTH_EXPONENT)
             ;
 
             // Apply force

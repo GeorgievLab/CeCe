@@ -33,7 +33,7 @@ namespace units {
 inline constexpr Length m(Value value) noexcept
 {
     // 1m = 1'000mm
-    return Length(value * std::pow(10, LENGTH_EXPONENT));
+    return Length(value * exponentToCoefficient(LENGTH_EXPONENT));
 }
 
 /* ************************************************************************ */
@@ -77,7 +77,7 @@ inline constexpr Length um(Value value) noexcept
  */
 inline constexpr Mass kg(Value value) noexcept
 {
-    return Mass(value * std::pow(10, MASS_EXPONENT));
+    return Mass(value * exponentToCoefficient(MASS_EXPONENT));
 }
 
 /* ************************************************************************ */
@@ -167,7 +167,7 @@ inline constexpr Mass pg(Value value) noexcept
 inline constexpr Time s(Value value) noexcept
 {
     // 1s
-    return Time(value * std::pow(10, TIME_EXPONENT));
+    return Time(value * exponentToCoefficient(TIME_EXPONENT));
 }
 
 /* ************************************************************************ */
@@ -605,7 +605,7 @@ inline constexpr KinematicViscosity um2_s(Value value) noexcept
  */
 inline constexpr AmountOfSubstance mol(Value value) noexcept
 {
-    return AmountOfSubstance(value * std::pow(10, AMOUNT_OF_SUBSTANCE_EXPONENT));
+    return AmountOfSubstance(value * exponentToCoefficient(AMOUNT_OF_SUBSTANCE_EXPONENT));
 }
 
 /* ************************************************************************ */

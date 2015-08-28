@@ -15,6 +15,31 @@
 
 /* ************************************************************************ */
 
+TEST(UnitsTest, exponentToCoefficient)
+{
+    EXPECT_FLOAT_EQ(1e0, units::exponentToCoefficient(0));
+
+    EXPECT_FLOAT_EQ(1e1, units::exponentToCoefficient(1));
+    EXPECT_FLOAT_EQ(1e2, units::exponentToCoefficient(2));
+    EXPECT_FLOAT_EQ(1e3, units::exponentToCoefficient(3));
+    EXPECT_FLOAT_EQ(1e4, units::exponentToCoefficient(4));
+    EXPECT_FLOAT_EQ(1e5, units::exponentToCoefficient(5));
+    EXPECT_FLOAT_EQ(1e6, units::exponentToCoefficient(6));
+    EXPECT_FLOAT_EQ(1e7, units::exponentToCoefficient(7));
+    EXPECT_FLOAT_EQ(1e8, units::exponentToCoefficient(8));
+
+    EXPECT_FLOAT_EQ(1e-1, units::exponentToCoefficient(-1));
+    EXPECT_FLOAT_EQ(1e-2, units::exponentToCoefficient(-2));
+    EXPECT_FLOAT_EQ(1e-3, units::exponentToCoefficient(-3));
+    EXPECT_FLOAT_EQ(1e-4, units::exponentToCoefficient(-4));
+    EXPECT_FLOAT_EQ(1e-5, units::exponentToCoefficient(-5));
+    EXPECT_FLOAT_EQ(1e-6, units::exponentToCoefficient(-6));
+    EXPECT_FLOAT_EQ(1e-7, units::exponentToCoefficient(-7));
+    EXPECT_FLOAT_EQ(1e-8, units::exponentToCoefficient(-8));
+}
+
+/* ************************************************************************ */
+
 TEST(UnitsTest, lengthValues)
 {
     EXPECT_EQ(units::m(1), units::mm(1000));
