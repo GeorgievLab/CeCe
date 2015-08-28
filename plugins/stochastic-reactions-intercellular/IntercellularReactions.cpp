@@ -108,19 +108,29 @@ void IntercellularReactions::executeReaction(
     plugin::diffusion::Module* diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
 {
-    for (unsigned int i = 0; i < m_ids.size(); i++)
+    // Alias for reaction row
+    const auto& reaction = m_rules[index];
+
+    // Foreach molecules in reaction
+    for (unsigned int moleculeId = 0; moleculeId < m_ids.size(); ++moleculeId)
     {
-        int change = m_rules[index][i].product - m_rules[index][i].requirement;
+        const auto& moleculeName = m_ids[moleculeId];
+
+        // Intracellular reaction
+        const auto change = reaction[moleculeId].product - reaction[moleculeId].requirement;
         if (change != 0)
         {
-            cell.changeMoleculeCount(m_ids[i], change);
-            refreshPropensities(i, cell, diffusion, coords);
+            cell.changeMoleculeCount(moleculeName, change);
+            refreshPropensities(moleculeId, cell, diffusion, coords);
         }
-        change = m_rules[index][i].env_product - m_rules[index][i].env_requirement;
-        if (change != 0)
+
+        // Intercellular reaction
+        // No need to substract env_requirement because the reaction is executed only when requirement
+        // is satisfied.
+        if (reaction[moleculeId].env_product)
         {
-            changeMoleculesInEnvironment(cell.getSimulation(), m_ids[i], change, diffusion, coords);
-            refreshPropensities(i, cell, diffusion, coords);
+            changeMoleculesInEnvironment(cell.getSimulation(), moleculeName, reaction[moleculeId].env_product, diffusion, coords);
+            refreshPropensities(moleculeId, cell, diffusion, coords);
         }
     }
 }
@@ -134,8 +144,7 @@ void IntercellularReactions::operator()(simulator::Object& object, simulator::Si
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
 
-    executeReactions(step, [this, &cell, &diffusion, &coords](unsigned int index)
-    {
+    executeReactions(step, [this, &cell, &diffusion, &coords](unsigned int index) {
         executeReaction(index, cell, diffusion, coords);
     }, [this, &cell, &diffusion, &coords] () {
         initializePropensities(cell, diffusion, coords);
@@ -154,10 +163,7 @@ void IntercellularReactions::changeMoleculesInEnvironment(
     assert(change != 0);
 
     // Get signal ID
-    auto id = diffusion->getSignalId(name);
-
-    if (id == plugin::diffusion::Module::INVALID_SIGNAL_ID)
-        throw InvalidArgumentException("Unknown signal molecule '" + name + "' in diffusion");
+    const auto id = diffusion->requireSignalId(name);
 
     // Change amount of molecules
     changeMolecules(simulation, *diffusion, coords, id, change);
@@ -180,7 +186,7 @@ void IntercellularReactions::extendAbsorption(const DynamicArray<String>& ids_pl
         unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
         if (index == array.size())
         {
-            array.push_back(ReqProd{0,1,1,0});
+            array.push_back(ReqProd{0, 1, 1, 0});
             continue;
         }
         array[index].env_requirement += 1;
@@ -207,7 +213,7 @@ void IntercellularReactions::extendExpression(const DynamicArray<String>& ids_mi
         unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
         if (index == array.size())
         {
-            array.push_back(ReqProd{1,0,0,1});
+            array.push_back(ReqProd{1, 0, 0, 1});
             continue;
         }
         array[index].env_product += 1;
@@ -269,9 +275,9 @@ void IntercellularReactions::extendIntracellular(
         if (index == array.size())
         {
             if (fromEnv)
-                array.push_back(ReqProd{0,0,1,0});
+                array.push_back(ReqProd{0, 0, 1, 0});
             else
-                array.push_back(ReqProd{1,0});
+                array.push_back(ReqProd{1, 0});
         }
         else
         {
@@ -298,9 +304,9 @@ void IntercellularReactions::extendIntracellular(
         if (index == array.size())
         {
             if (toEnv)
-                array.push_back(ReqProd{0,0,0,1});
+                array.push_back(ReqProd{0, 0, 0, 1});
             else
-                array.push_back(ReqProd{0,1});
+                array.push_back(ReqProd{0, 1});
         }
         else
         {
