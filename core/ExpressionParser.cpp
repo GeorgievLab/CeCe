@@ -102,6 +102,21 @@ public:
             next();
         }
 
+        if (is('e'))
+        {
+            if (is('-'))
+            {
+                token.value.push_back(value());
+                next();
+            }
+
+            while (isDigit() || is('.'))
+            {
+                token.value.push_back(value());
+                next();
+            }
+        }
+
         // Suffix
         if (is('f'))
         {
@@ -231,7 +246,7 @@ class ExpressionParser
 
 private:
 
-    const String operators = "+-*/^();<> \n\r\t\v\b";
+    const String operators = "+-*/^();<> \n\r\t\v\b:";
     const String whitespace = " \n\r\t\v\b";
     const Map<String, float>& parameters;
     IteratorRange<const char*>& iterator;
