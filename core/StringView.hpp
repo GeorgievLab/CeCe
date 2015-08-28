@@ -19,6 +19,8 @@
 #include "core/String.hpp"
 #include "core/OutStream.hpp"
 #include "core/InStream.hpp"
+#include "core/StaticArray.hpp"
+#include "core/DynamicArray.hpp"
 
 /* ************************************************************************ */
 
@@ -91,6 +93,33 @@ public:
     StringView(const String& str) noexcept
         : m_ptr(str.c_str())
         , m_length(str.length())
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param str String.
+     */
+    StringView(const DynamicArray<CharType>& str) noexcept
+        : m_ptr(str.data())
+        , m_length(str.size())
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param str String.
+     */
+    template<std::size_t N>
+    StringView(const StaticArray<CharType, N>& str) noexcept
+        : m_ptr(str.data())
+        , m_length(str.size())
     {
         // Nothing to do
     }

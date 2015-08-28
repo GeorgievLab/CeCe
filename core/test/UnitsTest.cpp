@@ -11,6 +11,7 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "core/UnitsCtors.hpp"
 
 /* ************************************************************************ */
 
@@ -155,6 +156,28 @@ TEST(UnitsTest, istream)
         EXPECT_EQ(units::um2(2), val);
     }
 
+    {
+        std::istringstream is("1umol/um3");
+
+        units::MolarConcentration val;
+        is >> val;
+
+        EXPECT_EQ(units::umol_um3(1), val);
+    }
+}
+
+/* ************************************************************************ */
+
+TEST(UnitsTest, abbr)
+{
+    {
+        std::istringstream is("15mM"); // 1mM = 1mol/m3
+
+        units::MolarConcentration val;
+        is >> val;
+
+        EXPECT_EQ(units::mol_m3(15), val);
+    }
 }
 
 /* ************************************************************************ */

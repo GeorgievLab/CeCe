@@ -18,6 +18,7 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "core/UnitsCtors.hpp"
 #include "core/Vector.hpp"
 #include "core/Log.hpp"
 #include "core/String.hpp"

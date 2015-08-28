@@ -16,6 +16,7 @@
 
 // Simulator
 #include "core/VectorUnits.hpp"
+#include "core/UnitsCtors.hpp"
 
 /* ************************************************************************ */
 

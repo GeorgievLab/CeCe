@@ -500,8 +500,8 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                 getKinematicViscosity() *
                 obj->getDensity() *
                 dv *
-                radius /
-                units::LENGTH_COEFFICIENT
+                radius *
+                std::pow(10, -units::LENGTH_EXPONENT)
             ;
 
             // Apply force

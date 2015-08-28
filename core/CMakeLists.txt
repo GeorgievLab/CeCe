@@ -32,6 +32,7 @@ add_library(${PROJECT_NAME} OBJECT
     StaticMatrix.hpp
     Units.hpp
     Units.cpp
+    UnitsCtors.hpp
     Vector.hpp
     Vector.cpp
     VectorUnits.hpp
@@ -92,6 +93,8 @@ build_test(core
         test/TokenizerTest.cpp
         ExpressionParser.hpp
         ExpressionParser.cpp
+        Units.hpp
+        Units.cpp
 )
 
 # ######################################################################### #

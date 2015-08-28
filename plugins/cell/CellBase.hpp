@@ -17,6 +17,7 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "core/UnitsCtors.hpp"
 #include "core/Map.hpp"
 #include "core/String.hpp"
 #include "core/StringView.hpp"

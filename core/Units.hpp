@@ -21,6 +21,7 @@
 #include "core/Real.hpp"
 #include "core/Zero.hpp"
 #include "core/String.hpp"
+#include "core/StringView.hpp"
 #include "core/StaticArray.hpp"
 #include "core/IntegerSequence.hpp"
 #include "core/InStream.hpp"
@@ -44,11 +45,14 @@ using Value = RealType;
 
 /* ************************************************************************ */
 
-/// Base units coefficients
-static constexpr Value LENGTH_COEFFICIENT = 1e6f;
-static constexpr Value TIME_COEFFICIENT = 1e0f;
-static constexpr Value MASS_COEFFICIENT = 1e9f;
-static constexpr Value AMOUNT_OF_SUBSTANCE_COEFFICIENT = 1e9f;
+/// Base units exponents
+static constexpr int LENGTH_EXPONENT = 6;
+static constexpr int TIME_EXPONENT = 0;
+static constexpr int MASS_EXPONENT = 9;
+static constexpr int ELECTRIC_CURRENT_EXPONENT = 0;
+static constexpr int THERMODYNAMIC_TEMPERATURE_EXPONENT = 0;
+static constexpr int AMOUNT_OF_SUBSTANCE_EXPONENT = 6;
+static constexpr int LUMINOUS_INTENSITY_EXPONENT = 0;
 
 /* ************************************************************************ */
 
@@ -62,14 +66,14 @@ static constexpr Value AMOUNT_OF_SUBSTANCE_COEFFICIENT = 1e9f;
 /**
  * @brief Defines base unit.
  *
- * @param name  Unit Name.
- * @param ord   Unit order.
- * @param coeff Value coefficient.
- * @param ...   Characters of unit symbol.
+ * @param name Unit Name.
+ * @param ord  Unit order.
+ * @param exp  Value coefficient exponent.
+ * @param ...  Characters of unit symbol.
  */
-#define DEFINE_BASE_UNIT(name, coeff, ord, ...) \
+#define DEFINE_BASE_UNIT(name, exp, ord, ...) \
     struct Base ## name {\
-        static constexpr Value coefficient = coeff; \
+        static constexpr int exponent = exp; \
         static constexpr int order = ord;\
         static constexpr std::size_t symbolLength = NARG(__VA_ARGS__) + 1; \
         static constexpr StaticArray<char, symbolLength> getSymbol() noexcept \
@@ -83,13 +87,13 @@ static constexpr Value AMOUNT_OF_SUBSTANCE_COEFFICIENT = 1e9f;
 /**
  * @brief Base SI units.
  */
-DEFINE_BASE_UNIT(Length, LENGTH_COEFFICIENT,    0, 'm');
-DEFINE_BASE_UNIT(Time,   TIME_COEFFICIENT,      1, 's');
-DEFINE_BASE_UNIT(Mass,   MASS_COEFFICIENT,      2, 'g');
-DEFINE_BASE_UNIT(ElectricCurrent, 1.f,          3, 'A');
-DEFINE_BASE_UNIT(ThermodynamicTemperature, 1.f, 4, 'K');
-DEFINE_BASE_UNIT(AmountOfSubstance, AMOUNT_OF_SUBSTANCE_COEFFICIENT, 5, 'm', 'o', 'l');
-DEFINE_BASE_UNIT(LuminousIntensity, 1.f,        6, 'c', 'd');
+DEFINE_BASE_UNIT(Length,                   LENGTH_EXPONENT,                    0, 'm');
+DEFINE_BASE_UNIT(Time,                     TIME_EXPONENT,                      1, 's');
+DEFINE_BASE_UNIT(Mass,                     MASS_EXPONENT,                      2, 'g');
+DEFINE_BASE_UNIT(ElectricCurrent,          ELECTRIC_CURRENT_EXPONENT,          3, 'A');
+DEFINE_BASE_UNIT(ThermodynamicTemperature, THERMODYNAMIC_TEMPERATURE_EXPONENT, 4, 'K');
+DEFINE_BASE_UNIT(AmountOfSubstance,        AMOUNT_OF_SUBSTANCE_EXPONENT,       5, 'm', 'o', 'l');
+DEFINE_BASE_UNIT(LuminousIntensity,        LUMINOUS_INTENSITY_EXPONENT,        6, 'c', 'd');
 
 /* ************************************************************************ */
 
@@ -125,52 +129,52 @@ struct List
 /* ************************************************************************ */
 
 /**
- * @brief Struct for calculating total coefficient of given list.
+ * @brief Struct for calculating total coefficient exponent of given list.
  *
  * @tparam Types A list of unit types.
  */
 template<typename... Types>
-struct Coefficient;
+struct Exponent;
 
 /* ************************************************************************ */
 
 /**
- * @brief Struct for calculating total coefficient of given list.
+ * @brief Struct for calculating total coefficient exponent of given list.
  *
  * @tparam Types A list of unit types.
  */
 template<typename... Types>
-struct Coefficient<List<Types...>>
+struct Exponent<List<Types...>>
 {
 
     /**
-     * @brief Multiply coefficients.
+     * @brief Add coefficient exponents.
      *
-     * @param arg  The first coefficient.
-     * @param args Rest of the coefficients.
+     * @param arg  The first coefficient exponent.
+     * @param args Rest of the coefficient exponents.
      *
-     * @return Result coefficient.
+     * @return Result exponent.
      */
     template<typename Arg, typename... Args>
-    static constexpr Value multiply(Arg&& arg, Args&&... args) noexcept
+    static constexpr int add(Arg&& arg, Args&&... args) noexcept
     {
-        return arg * multiply(args...);
+        return arg + add(args...);
     }
 
 
     /**
-     * @brief Multiply coefficients.
+     * @brief Add coefficient exponents.
      *
      * @return 1.
      */
-    static constexpr Value multiply() noexcept
+    static constexpr int add() noexcept
     {
-        return Value(1);
+        return 0;
     }
 
 
-    /// Calculate types coefficient.
-    static constexpr Value value = multiply(Types::coefficient...);
+    /// Calculate types coefficient exponent.
+    static constexpr int value = add(Types::exponent...);
 
 };
 
@@ -915,16 +919,25 @@ public:
     /// Unit symbol type.
     using symbol = Symbol<Nom, Denom>;
 
+    /// Symbol for nominators.
+    using symbolNominators = typename symbol::SymbolNominators;
+
+    /// Symbol for denominators.
+    using symbolDenominators = typename symbol::SymbolDenominators;
+
 
 // Public Constants
 public:
 
 
     /// Total unit coefficient.
-    static constexpr Value coefficient = Coefficient<Nom>::value / Coefficient<Denom>::value;
+    static constexpr int exponent = Exponent<Nom>::value - Exponent<Denom>::value;
 
     /// Number of occurences of the first nominator.
-    static constexpr std::size_t firstCount = CounterFirst<Nom>::value;
+    static constexpr std::size_t firstCountNom = CounterFirst<Nom>::value;
+
+    /// Number of occurences of the first denominator.
+    static constexpr std::size_t firstCountDenom = CounterFirst<Denom>::value;
 
 
 // Public Ctors & Dtors
@@ -2020,617 +2033,27 @@ inline constexpr Value rad2deg(Value value) noexcept
 /* ************************************************************************ */
 
 /**
- * @brief Meter value.
+ * @brief Calculate prefix coefficient exponent.
  *
- * @param value Value.
+ * @param c     SI prefix character.
+ * @param count Number of first SI base unit after prefix.
  *
- * @return Length value.
+ * @return Coefficient exponent.
  */
-inline constexpr Length m(Value value) noexcept
-{
-    // 1m = 1'000mm
-    return Length(LENGTH_COEFFICIENT * value);
-}
+int calcPrefixExponent(char c, unsigned int count = 1);
 
 /* ************************************************************************ */
 
 /**
- * @brief Millimeter value.
+ * @brief Calculate prefix coefficient exponent.
  *
- * @param value Value.
+ * @param symbol     SI unit symbol (or list of symbols).
+ * @param typeSymbol Required symbol (or list of symbols).
+ * @param count      Number of first SI base unit after prefix.
  *
- * @return Length value.
+ * @return Coefficient exponent.
  */
-inline constexpr Length mm(Value value) noexcept
-{
-    // 1mm = 1/1'000m
-    return m(value * 1e-3f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrometer value.
- *
- * @param value Value.
- *
- * @return Length value.
- */
-inline constexpr Length um(Value value) noexcept
-{
-    // 1um = 1/1'000'000m
-    return m(value * 1e-6f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Kilograms value.
- *
- * @param value Value.
- *
- * @return Mass value.
- */
-inline constexpr Mass kg(Value value) noexcept
-{
-    return Mass(MASS_COEFFICIENT * value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Grams value.
- *
- * @param value Value.
- *
- * @return Mass value.
- */
-inline constexpr Mass g(Value value) noexcept
-{
-    // 1g = 1/1'000 kg
-    return kg(value * 1e-3f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Milligrams value.
- *
- * @param value Value.
- *
- * @return Mass value.
- */
-inline constexpr Mass mg(Value value) noexcept
-{
-    // 1mg = 1/1'000 g
-    return g(value * 1e-3f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrograms value.
- *
- * @param value Value.
- *
- * @return Mass value.
- */
-inline constexpr Mass ug(Value value) noexcept
-{
-    // 1ug = 1/1'000 mg
-    return mg(value * 1e-3f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Nanograms value.
- *
- * @param value Value.
- *
- * @return Mass value.
- */
-inline constexpr Mass ng(Value value) noexcept
-{
-    // 1ng = 1/1'000 ug
-    return ug(value * 1e-3f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrograms value.
- *
- * @param value Value.
- *
- * @return Mass value.
- */
-inline constexpr Mass pg(Value value) noexcept
-{
-    // 1pg = 1/1'000 ng
-    return ng(value * 1e-3f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Seconds value.
- *
- * @param value Value.
- *
- * @return Time value.
- */
-inline constexpr Time s(Value value) noexcept
-{
-    // 1s
-    return Time(TIME_COEFFICIENT * value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Milliseconds value.
- *
- * @param value Value.
- *
- * @return Time value.
- */
-inline constexpr Time ms(Value value) noexcept
-{
-    // 1s = 1'000ms
-    return s(value / 1000.f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Microseconds value.
- *
- * @param value Value.
- *
- * @return Time value.
- */
-inline constexpr Time us(Value value) noexcept
-{
-    // 1ms = 1'000us
-    return ms(value / 1000.f);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Minutes value.
- *
- * @param value Value.
- *
- * @return Time value.
- */
-inline constexpr Time min(Value value) noexcept
-{
-    // 60s = 1min
-    return s(60 * value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Hours value.
- *
- * @param value Value.
- *
- * @return Time value.
- */
-inline constexpr Time h(Value value) noexcept
-{
-    // 60min = 1h
-    return min(60 * value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Meters^2 value.
- *
- * @param value Value.
- *
- * @return Area value.
- */
-inline constexpr Area m2(Value value) noexcept
-{
-    return m(value) * m(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Millimeters^2 value.
- *
- * @param value Value.
- *
- * @return Area value.
- */
-inline constexpr Area mm2(Value value) noexcept
-{
-    return mm(value) * mm(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrometers^2 value.
- *
- * @param value Value.
- *
- * @return Area value.
- */
-inline constexpr Area um2(Value value) noexcept
-{
-    return um(value) * um(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Meters^3 value.
- *
- * @param value Value.
- *
- * @return Volume value.
- */
-inline constexpr Volume m3(Value value) noexcept
-{
-    return m2(value) * m(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Millimeters^3 value.
- *
- * @param value Value.
- *
- * @return Volume value.
- */
-inline constexpr Volume mm3(Value value) noexcept
-{
-    return mm2(value) * mm(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrometers^3 value.
- *
- * @param value Value.
- *
- * @return Volume value.
- */
-inline constexpr Volume um3(Value value) noexcept
-{
-    return um2(value) * um(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Meters per second value.
- *
- * @param value Value.
- *
- * @return Velocity value.
- */
-inline constexpr Velocity m_s(Value value) noexcept
-{
-    return m(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Millimeters per second value.
- *
- * @param value Value.
- *
- * @return Velocity value.
- */
-inline constexpr Velocity mm_s(Value value) noexcept
-{
-    return mm(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrometers per second value.
- *
- * @param value Value.
- *
- * @return Velocity value.
- */
-inline constexpr Velocity um_s(Value value) noexcept
-{
-    return um(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Meters per second^2 value.
- *
- * @param value Value.
- *
- * @return Acceleration value.
- */
-inline constexpr Acceleration m_s2(Value value) noexcept
-{
-    return m_s(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Millimeters per second^2 value.
- *
- * @param value Value.
- *
- * @return Acceleration value.
- */
-inline constexpr Acceleration mm_s2(Value value) noexcept
-{
-    return mm_s(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrometers per second^2 value.
- *
- * @param value Value.
- *
- * @return Acceleration value.
- */
-inline constexpr Acceleration um_s2(Value value) noexcept
-{
-    return um_s(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Kilogram meter per second^2 value.
- *
- * @param value Value.
- *
- * @return Force value.
- */
-inline constexpr Force kgm_s2(Value value) noexcept
-{
-    return kg(value) * m_s2(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Gram meter per second^2 value.
- *
- * @param value Value.
- *
- * @return Force value.
- */
-inline constexpr Force gm_s2(Value value) noexcept
-{
-    return g(value) * m_s2(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Milligram meter per second^2 value.
- *
- * @param value Value.
- *
- * @return Force value.
- */
-inline constexpr Force mgm_s2(Value value) noexcept
-{
-    return kg(value) * m_s2(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Newton value.
- *
- * @param value Value.
- *
- * @return Force value.
- */
-inline constexpr Force N(Value value) noexcept
-{
-    return kgm_s2(value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Millinewton value.
- *
- * @param value Value.
- *
- * @return Force value.
- */
-inline constexpr Force mN(Value value) noexcept
-{
-    return gm_s2(value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micronewton value.
- *
- * @param value Value.
- *
- * @return Force value.
- */
-inline constexpr Force uN(Value value) noexcept
-{
-    return mgm_s2(value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Kilogram per meter and second value.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr DynamicViscosity kg_m_s(Value value) noexcept
-{
-    return kg(value) / (m(1) * s(1));
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Kilogram per meter and second value.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr DynamicViscosity g_m_s(Value value) noexcept
-{
-    return g(value) / (m(1) * s(1));
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Newton second per meter square value.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr DynamicViscosity Ns_m2(Value value) noexcept
-{
-    return N(value) * s(1) / m2(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Newton second per meter square value.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr DynamicViscosity Pas(Value value) noexcept
-{
-    return N(value) * s(1) / m2(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Newton second per meter square value.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr DynamicViscosity mPas(Value value) noexcept
-{
-    return mN(value) * s(1) / m2(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Meter square per second.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr KinematicViscosity m2_s(Value value) noexcept
-{
-    return m2(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Millimeter square per second.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr KinematicViscosity mm2_s(Value value) noexcept
-{
-    return mm2(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Micrometer square per second.
- *
- * @param value Value.
- *
- * @return Viscosity value.
- */
-inline constexpr KinematicViscosity um2_s(Value value) noexcept
-{
-    return um2(value) / s(1);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Radian constructor.
- *
- * @param value Value in radians.
- *
- * @return Angle.
- */
-inline constexpr Angle rad(Value value) noexcept
-{
-    return Angle(value);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Degree constructor.
- *
- * @param value Value in degrees.
- *
- * @return Angle.
- */
-inline constexpr Angle deg(Value value) noexcept
-{
-    return rad(deg2rad(value));
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Probability constructor.
- *
- * @param value Value in precent.
- *
- * @return
- */
-inline constexpr Probability precent(Value value) noexcept
-{
-    return value / 100.f;
-}
+int calcPrefixExponent(const String& symbol, StringView typeSymbol, unsigned int count = 1);
 
 /* ************************************************************************ */
 
@@ -2650,9 +2073,11 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
     // Type symbol
 #if _LIBCPP_VERSION
     // MACOSX use old stdlib that doesnt support constexpr std::array.
-    static const auto typeSymbol = Type::symbol::get();
+    static const auto typeSymbolNom   = Type::symbolNominators::get();
+    static const auto typeSymbolDenom = Type::symbolDenominators::get();
 #else
-    static constexpr auto typeSymbol = Type::symbol::get();
+    static constexpr auto typeSymbolNom   = Type::symbolNominators::get();
+    static constexpr auto typeSymbolDenom = Type::symbolDenominators::get();
 #endif
 
     Value val;
@@ -2665,54 +2090,47 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
         return is;
 
     // Symbol is given
-    if (is >> std::noskipws >> symbol)
+    if (!(is >> std::noskipws >> symbol))
     {
-        // Find real symbol
-        auto pos = symbol.find(typeSymbol.data());
-        if (pos == String::npos)
-        {
-            throw InvalidArgumentException(
-                "Invalid units symbol. "
-                "Expected '(m|u|n)" + String(typeSymbol.data()) + "' "
-                "given '" + symbol + "'"
-            );
-        }
+        is.clear();
 
-        // Modify base value
-        val *= Type::coefficient;
+        // Set value
+        unit = Type{val};
+        return is;
+    }
 
-        // Get unit prefix
-        if (pos == 1)
-        {
-            if (Type::firstCount == 0)
-                throw InvalidArgumentException("Unit symbol prefix doesn't make sence without nominator");
+    // Split symbol to two parts
+    const auto sepPos = symbol.find('/');
 
-            // Unit prefix
-            switch (symbol.front())
-            {
-            default:
-                throw InvalidArgumentException("Unknown/unsupported unit symbol prefix: " + String(1, symbol.front()));
+    String symbolNom;
+    String symbolDenom;
 
-            case 'n':
-                val *= std::pow(1e-3, Type::firstCount);
-            case 'u':
-                val *= std::pow(1e-3, Type::firstCount);
-            case 'm':
-                val *= std::pow(1e-3, Type::firstCount);
-            }
-        }
-        else if (pos != 0)
-        {
-            throw InvalidArgumentException("Unit symbol prefix is longer than expected");
-        }
+    // Only nominators
+    if (sepPos == String::npos)
+    {
+        symbolNom = symbol;
     }
     else
     {
-        is.clear();
+        symbolNom = symbol.substr(0, sepPos);
+        symbolDenom = symbol.substr(sepPos + 1);
     }
 
+    // Get coefficient exponent
+    const int exponent = 0
+        // Base given by type
+        + Type::exponent
+        // Nominators
+        + calcPrefixExponent(symbolNom, typeSymbolNom, Type::firstCountNom)
+        // Denominators
+        - calcPrefixExponent(symbolDenom, typeSymbolDenom, Type::firstCountDenom)
+    ;
+
+    // Value coefficient
+    const Value coefficient = std::pow(10, exponent);
+
     // Set unit
-    unit = Type{val};
+    unit = Type(val * coefficient);
 
     return is;
 }
