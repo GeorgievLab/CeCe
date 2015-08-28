@@ -13,6 +13,7 @@
 
 // Simulator
 #include "core/Map.hpp"
+#include "core/StringStream.hpp"
 
 /* ************************************************************************ */
 
@@ -140,6 +141,93 @@ int calcPrefixExponent(const String& symbol, StringView typeSymbol, unsigned int
     }
 
     return 0;
+}
+
+/* ************************************************************************ */
+
+Value parse(InStream& is)
+{
+    static const Map<String, int> predefinedSymbols = {
+        // Millimolar - mol/m3
+        {"mM", AMOUNT_OF_SUBSTANCE_EXPONENT - 3 * LENGTH_EXPONENT},
+        // Micromolar - 10e-3 mol/m3
+        {"uM", AMOUNT_OF_SUBSTANCE_EXPONENT - 3 * LENGTH_EXPONENT - 3},
+        // Nanomolar - 10e-6 mol/m3
+        {"nM", AMOUNT_OF_SUBSTANCE_EXPONENT - 3 * LENGTH_EXPONENT - 6}
+    };
+
+    Value value;
+    String symbol;
+
+    is >> std::ws >> value;
+
+    // Unable to load unit
+    if (!is)
+        throw InvalidArgumentException("Cannot parse unit value");
+
+    // No symbol given
+    if (!(is >> std::noskipws >> symbol))
+    {
+        is.clear();
+
+        // Return value without symbol
+        return value;
+    }
+
+    int exponent = 0;
+
+    // Try to find predefined symbols
+    const auto it = predefinedSymbols.find(symbol);
+
+    if (it != predefinedSymbols.end())
+    {
+        exponent = it->second;
+    }
+    else
+    {
+        // Foreach characters
+        for (auto it = symbol.begin(); it != symbol.end(); ++it)
+        {
+            switch (*it)
+            {
+            case 'g':
+                exponent += MASS_EXPONENT;
+                break;
+
+            case 's':
+                exponent += TIME_EXPONENT;
+                break;
+
+            case 'm':
+                // This is problematic, because it can be 'm' or 'mol'
+                if (*(it + 1) == 'o')
+                {
+                    // Skip other two characters
+                    it += 2;
+
+                    exponent += AMOUNT_OF_SUBSTANCE_EXPONENT;
+                }
+                else
+                {
+                    exponent += LENGTH_EXPONENT;
+                }
+                break;
+
+            default:
+                throw InvalidArgumentException("Unsupported unit character '" + String(1, *it) + "' in '" + symbol + "'");
+            }
+        }
+    }
+
+    return value * std::pow(10, exponent);
+}
+
+/* ************************************************************************ */
+
+Value parse(StringView value)
+{
+    InStringStream is(value.getData());
+    return parse(is);
 }
 
 /* ************************************************************************ */

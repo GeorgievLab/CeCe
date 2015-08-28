@@ -2058,6 +2058,38 @@ int calcPrefixExponent(const String& symbol, StringView typeSymbol, unsigned int
 /* ************************************************************************ */
 
 /**
+ * @brief Parse units value.
+ *
+ * This function can handle unit suffix and convert it into proper coefficient.
+ *
+ * @note Unit prefix is not supported because there is issue with meters:
+ * `mg` - it's milligram or metergram?
+ *
+ * @param is Input stream.
+ *
+ * @return Result value.
+ */
+Value parse(InStream& is);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse units value.
+ *
+ * This function can handle unit suffix and convert it into proper coefficient.
+ *
+ * @note Unit prefix is not supported because there is issue with meters:
+ * `mg` - it's milligram or metergram?
+ *
+ * @param value Value to parse.
+ *
+ * @return Result value.
+ */
+Value parse(StringView value);
+
+/* ************************************************************************ */
+
+/**
  * @brief Input stream operator.
  *
  * @param is   Input stream.
@@ -2089,7 +2121,7 @@ InStream& operator>>(InStream& is, Unit<List<Nominators...>, List<Denominators..
     if (!is)
         return is;
 
-    // Symbol is given
+    // No symbol given
     if (!(is >> std::noskipws >> symbol))
     {
         is.clear();
