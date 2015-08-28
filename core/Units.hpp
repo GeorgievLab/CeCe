@@ -18,6 +18,7 @@
 #include <type_traits>
 
 // Simulator
+#include "core/Real.hpp"
 #include "core/Zero.hpp"
 #include "core/String.hpp"
 #include "core/StaticArray.hpp"
@@ -39,7 +40,7 @@ namespace units {
 /**
  * @brief Basic value.
  */
-using Value = float;
+using Value = RealType;
 
 /* ************************************************************************ */
 
@@ -47,6 +48,7 @@ using Value = float;
 static constexpr Value LENGTH_COEFFICIENT = 1e6f;
 static constexpr Value TIME_COEFFICIENT = 1e0f;
 static constexpr Value MASS_COEFFICIENT = 1e9f;
+static constexpr Value AMOUNT_OF_SUBSTANCE_COEFFICIENT = 1e9f;
 
 /* ************************************************************************ */
 
@@ -86,7 +88,7 @@ DEFINE_BASE_UNIT(Time,   TIME_COEFFICIENT,      1, 's');
 DEFINE_BASE_UNIT(Mass,   MASS_COEFFICIENT,      2, 'g');
 DEFINE_BASE_UNIT(ElectricCurrent, 1.f,          3, 'A');
 DEFINE_BASE_UNIT(ThermodynamicTemperature, 1.f, 4, 'K');
-DEFINE_BASE_UNIT(AmountOfSubstance, 1.f,        5, 'm', 'o', 'l');
+DEFINE_BASE_UNIT(AmountOfSubstance, AMOUNT_OF_SUBSTANCE_COEFFICIENT, 5, 'm', 'o', 'l');
 DEFINE_BASE_UNIT(LuminousIntensity, 1.f,        6, 'c', 'd');
 
 /* ************************************************************************ */
