@@ -160,6 +160,24 @@ public:
 
 
     /**
+     * @brief Returns signal identifier and throw if not exists.
+     *
+     * @param name Signal name.
+     *
+     * @return Signal identifier.
+     */
+    SignalId requireSignalId(const String& name) const
+    {
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return id;
+    }
+
+
+    /**
      * @brief Returns signal name.
      *
      * @param id Signal identifier.
