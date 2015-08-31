@@ -14,6 +14,7 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "simulator/Configuration.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -26,7 +27,6 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulation;
-class Configuration;
 
 /* ************************************************************************ */
 
@@ -115,6 +115,19 @@ public:
 
 #if ENABLE_RENDER
     /**
+     * @brief Set module draw Z order.
+     *
+     * @param zOrder
+     */
+    void setZOrder(ZOrderType zOrder) noexcept
+    {
+        m_zOrder = zOrder;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
      * @brief Set module draw flags.
      *
      * @param flags
@@ -150,7 +163,9 @@ public:
      */
     virtual void configure(const Configuration& config, Simulation& simulation)
     {
-        // Nothing to do
+#if ENABLE_RENDER
+        setZOrder(config.get("z-order", getZOrder()));
+#endif
     }
 
 
