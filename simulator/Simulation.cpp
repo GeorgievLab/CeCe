@@ -390,7 +390,8 @@ void Simulation::configure(const Configuration& config)
     // Parse plugins
     for (auto&& pluginConfig : config.getConfigurations("plugin"))
     {
-        requirePlugin(pluginConfig.get("name"));
+        // Returns valid pointer or throw an exception
+        requirePlugin(pluginConfig.get("name"))->configure(pluginConfig);
     }
 
     // Parse modules

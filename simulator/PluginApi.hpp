@@ -13,13 +13,13 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/String.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Simulation.hpp"
+#include "simulator/Configuration.hpp"
 
 /* ************************************************************************ */
 
@@ -30,7 +30,7 @@ namespace simulator {
 /**
  * @brief Library API type.
  */
-class DLL_EXPORT PluginApi
+class PluginApi
 {
 
 // Public Ctors & Dtors
@@ -67,6 +67,17 @@ public:
      * @param simulation Simulation.
      */
     virtual void finalizeSimulation(Simulation& simulation)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Configure plugin.
+     *
+     * @param config Plugin configuration
+     */
+    virtual void configure(const Configuration& config)
     {
         // Nothing to do
     }
