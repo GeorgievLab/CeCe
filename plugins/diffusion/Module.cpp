@@ -192,21 +192,27 @@ void Module::updateDrawable() const
     // Foreach grid
     for (auto&& c : range(getGridSize()))
     {
+        RealType alphaSum = 0;
+
+        for (auto id : getSignalIds())
+            alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+
+        // Alpha for background
+        const auto alphaBg = std::max<RealType>(1 - alphaSum, 0);
+
         // Initial pixel colour
-        auto pixel = m_background;
+        render::Color pixelSignals{};
 
         // Mixup signal colors
         for (auto id : getSignalIds())
         {
-            // Get signal
-            const auto concentration = getSignal(id, c);
-
             // Calculate alpha value
-            const auto alpha = std::min<RealType>(concentration / getSignalSaturation(id), 1);
+            const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
 
-            pixel *= (1 - alpha);
-            pixel += m_colors[id] * alpha;
+            pixelSignals += m_colors[id] * alpha / alphaSum;
         }
+
+        auto pixel = m_background * alphaBg + (1 - alphaBg) * pixelSignals;
 
 #if DEV_PLUGIN_diffusion_OBSTACLES_RENDER
         if (isObstacle(c))
