@@ -13,6 +13,7 @@ project(cli CXX)
 
 # Options
 if (CONFIG_RENDER_ENABLE)
+    option(CONFIG_CLI_ENABLE_IMAGE_CAPTURE "Enable support for image capturing" On)
     option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
     set(CONFIG_CLI_VISUALIZE_WIDTH  800 CACHE STRING "Visualization window width")
     set(CONFIG_CLI_VISUALIZE_HEIGHT 600 CACHE STRING "Visualization window height")
@@ -36,28 +37,50 @@ if (CONFIG_RENDER_ENABLE)
     )
 endif ()
 
-if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     if (NOT CONFIG_RENDER_ENABLE)
-        message(FATAL_ERROR "Video capture requires rendering support")
+        message(FATAL_ERROR "Video/image capture requires rendering support")
     endif ()
 
-    # Add support for OpenCV video capturing
-    if (UNIX AND NOT APPLE)
-        # OpenCV 2
-        find_package(OpenCV COMPONENTS core highgui)
-    else ()
-        # OpenCV 3
-        find_package(OpenCV COMPONENTS core videoio)
+    set(OPENCV_COMPONENTS core)
+
+    if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
+        set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} imgproc highgui)
+        if (WIN32 OR APPLE)
+            # OpenCV 3
+            set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} imgcodecs)
+        endif ()
     endif ()
+
+    if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+        if (UNIX AND NOT APPLE)
+            # OpenCV 2
+            set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} highgui)
+        else ()
+            # OpenCV 3
+            set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} videoio)
+        endif ()
+    endif ()
+
+    # Find OpenCV
+    find_package(OpenCV COMPONENTS ${OPENCV_COMPONENTS})
 
     # OpenCV not found
     if (OpenCV_FOUND)
-        message(STATUS "Video capture support: OpenCV ${OpenCV_VERSION}")
+        message(STATUS "Video/image capture support: OpenCV ${OpenCV_VERSION}")
         include_directories(${OpenCV_INCLUDE_DIR})
-        add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+
+        if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
+            add_definitions(-DCONFIG_CLI_ENABLE_IMAGE_CAPTURE=1)
+        endif ()
+
+        if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+            add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=1)
+        endif ()
     else ()
-        message(WARNING "OpenCV not found, disabling video capture")
+        message(WARNING "OpenCV not found, disabling video/image capture")
         set(CONFIG_CLI_ENABLE_VIDEO_CAPTURE Off)
+        set(CONFIG_CLI_ENABLE_IMAGE_CAPTURE Off)
     endif ()
 endif ()
 

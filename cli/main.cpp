@@ -45,6 +45,10 @@
 #include "loaders/xml/SimulationLoader.hpp"
 #include "loaders/reactions/SimulationLoader.hpp"
 
+#if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
+#include "core/StringStream.hpp"
+#endif
+
 #if ENABLE_RENDER
 #include "core/TriBool.hpp"
 #include "render/Context.hpp"
@@ -305,8 +309,10 @@ public:
      */
     explicit Simulator(const Parameters& params)
     {
+        m_simulationFile = params.simulationFile;
+
         // Create simulation
-        m_simulator.setSimulation(simulator::LoaderManager::create(params.simulationFile));
+        m_simulator.setSimulation(simulator::LoaderManager::create(m_simulationFile));
 
 #if ENABLE_RENDER
         const auto simViz = m_simulator.getSimulation()->getVisualize();
@@ -503,6 +509,20 @@ public:
                 glfwSwapBuffers(win);
             }
             break;
+
+#if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
+        case GLFW_KEY_F12:
+        {
+            OutStringStream oss;
+            oss << ptr->m_simulationFile.stem().string() << "_" << ptr->getSimulation()->getIteration() << ".png";
+
+            const String filename = oss.str();
+
+            cv::imwrite(filename, ptr->getFrame());
+            Log::info("Image captured: ", filename);
+            break;
+        }
+#endif
 
 #if ENABLE_PHYSICS_DEBUG
         case GLFW_KEY_D:
@@ -733,11 +753,12 @@ private:
     }
 #endif
 
-#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+
+#if CONFIG_CLI_ENABLE_IMAGE_CAPTURE || CONFIG_CLI_ENABLE_VIDEO_CAPTURE
     /**
-     * @brief Store current OpenGL frame.
+     * @brief Get current OpenGL frame.
      *
-     * @return
+     * @return Current frame.
      */
     cv::Mat getFrame() const noexcept
     {
@@ -757,6 +778,9 @@ private:
     // Physics engine debug draw.
     render::PhysicsDebugger m_physicsDebugger;
 #endif
+
+    /// Path to simulation file.
+    FilePath m_simulationFile;
 
     // Simulator
     simulator::Simulator m_simulator;
