@@ -33,6 +33,7 @@
     <File Name="Rectangle.cpp"/>
     <File Name="PhysicsDebugger.cpp"/>
     <File Name="Lines.cpp"/>
+    <File Name="Color.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
