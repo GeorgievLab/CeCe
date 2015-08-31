@@ -313,7 +313,7 @@ public:
      * @return
      */
     template<typename T>
-    T get(const StringView& name, T def) const noexcept
+    T get(const StringView& name, T def) const
     {
         return has(name) ? castFrom<T>(m_impl->get(name)) : std::move(def);
     }
