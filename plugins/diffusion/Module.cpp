@@ -201,18 +201,23 @@ void Module::updateDrawable() const
         const auto alphaBg = std::max<RealType>(1 - alphaSum, 0);
 
         // Initial pixel colour
-        render::Color pixelSignals{};
+        auto pixel = m_background * alphaBg;
 
-        // Mixup signal colors
-        for (auto id : getSignalIds())
+        if (alphaSum)
         {
-            // Calculate alpha value
-            const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+            render::Color pixelSignals{};
 
-            pixelSignals += m_colors[id] * alpha / alphaSum;
+            // Mixup signal colors
+            for (auto id : getSignalIds())
+            {
+                // Calculate alpha value
+                const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+
+                pixelSignals += m_colors[id] * alpha / alphaSum;
+            }
+
+            pixel += (1 - alphaBg) * pixelSignals;
         }
-
-        auto pixel = m_background * alphaBg + (1 - alphaBg) * pixelSignals;
 
 #if DEV_PLUGIN_diffusion_OBSTACLES_RENDER
         if (isObstacle(c))
