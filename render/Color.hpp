@@ -114,24 +114,6 @@ public:
 
 
     /**
-     * @brief Add colors into other one.
-     *
-     * @param rhs Color.
-     *
-     * @return
-     */
-    constexpr Color operator+(const Color& rhs) const noexcept
-    {
-        return Color{
-            m_red   + rhs.m_red,
-            m_green + rhs.m_green,
-            m_blue  + rhs.m_blue,
-            m_alpha + rhs.m_alpha
-        };
-    }
-
-
-    /**
      * @brief Add other color.
      *
      * @param rhs Color.
@@ -146,24 +128,6 @@ public:
         m_alpha += rhs.m_alpha;
 
         return *this;
-    }
-
-
-    /**
-     * @brief Substract colors into other one.
-     *
-     * @param rhs Color.
-     *
-     * @return
-     */
-    constexpr Color operator-(const Color& rhs) const noexcept
-    {
-        return Color{
-            m_red   - rhs.m_red,
-            m_green - rhs.m_green,
-            m_blue  - rhs.m_blue,
-            m_alpha - rhs.m_alpha
-        };
     }
 
 
@@ -192,24 +156,6 @@ public:
      *
      * @return
      */
-    constexpr Color operator*(RealType val) const noexcept
-    {
-        return Color{
-            m_red   * val,
-            m_green * val,
-            m_blue  * val,
-            m_alpha * val
-        };
-    }
-
-
-    /**
-     * @brief Multiple color by real value.
-     *
-     * @param val
-     *
-     * @return
-     */
     Color& operator*=(RealType val) noexcept
     {
         m_red   *= val;
@@ -218,24 +164,6 @@ public:
         m_alpha *= val;
 
         return *this;
-    }
-
-
-    /**
-     * @brief Divide color by real value.
-     *
-     * @param val
-     *
-     * @return
-     */
-    constexpr Color operator/(RealType val) const noexcept
-    {
-        return Color{
-            m_red   / val,
-            m_green / val,
-            m_blue  / val,
-            m_alpha / val
-        };
     }
 
 
@@ -431,6 +359,96 @@ private:
     /// Alpha component.
     ComponentType m_alpha;
 };
+
+/* ************************************************************************ */
+
+/**
+ * @brief Color addition.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+inline Color operator+(Color lhs, const Color& rhs) noexcept
+{
+    return lhs += rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Color substraction.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+inline Color operator-(Color lhs, const Color& rhs) noexcept
+{
+    return lhs -= rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Color multiplication.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+inline Color operator*(Color lhs, RealType rhs) noexcept
+{
+    return lhs *= rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Color multiplication.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+inline Color operator*(RealType lhs, Color rhs) noexcept
+{
+    return rhs *= lhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Color division.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+inline Color operator/(Color lhs, RealType rhs) noexcept
+{
+    return lhs /= rhs;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Color division.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+inline Color operator/(RealType lhs, Color rhs) noexcept
+{
+    return rhs /= lhs;
+}
 
 /* ************************************************************************ */
 
