@@ -48,7 +48,7 @@ static void test_impl(int line, const String& code, std::initializer_list<String
         EXPECT_EQ(*it, reaction.getMoleculeName(it - names.begin()));
 
     // Reaction rates
-    ASSERT_EQ(rates.size(), reaction.getRateCount());
+    ASSERT_EQ(rates.size(), reaction.getReactionCount());
 
     for (auto it = rates.begin(); it != rates.end(); ++it)
         EXPECT_EQ(*it, reaction.getRate(it - rates.begin()));
@@ -74,9 +74,6 @@ static void test_invalid_impl(int line, const String& code)
 
     // Reaction IDs
     EXPECT_EQ(0, reaction.getMoleculeCount());
-
-    // Reaction rates
-    ASSERT_EQ(0, reaction.getRateCount());
 
     // Reaction table
     ASSERT_EQ(0, reaction.getReactionCount());

@@ -260,6 +260,10 @@ public:
     >;
 
 
+    /// Rate type.
+    using RateType = typename T::RateType;
+
+
 // Public Ctors & Dtors
 public:
 

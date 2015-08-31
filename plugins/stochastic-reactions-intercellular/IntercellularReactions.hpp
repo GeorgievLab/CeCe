@@ -11,6 +11,8 @@
 
 #pragma once
 
+/* ************************************************************************ */
+
 // Simulator
 #include "core/Real.hpp"
 
@@ -22,10 +24,6 @@
 
 namespace plugin {
 namespace stochastic_reactions_diffusive {
-
-/* ************************************************************************ */
-
-using RateType = plugin::stochastic_reactions::RateType;
 
 /* ************************************************************************ */
 

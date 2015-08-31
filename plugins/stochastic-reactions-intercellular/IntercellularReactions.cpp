@@ -33,7 +33,7 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
     PropensityType local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
-        const auto number = cell.getMoleculeCount(m_ids[i]);
+        const auto number = cell.getMoleculeCount(m_moleculeNames[i]);
 
         // TODO: check if it's OK
         const bool cond =
@@ -46,7 +46,7 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
         bool condEnv = true;
 
         // Get signal ID
-        const auto id = diffusion->getSignalId(m_ids[i]);
+        const auto id = diffusion->getSignalId(m_moleculeNames[i]);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
             const auto numberEnv = getMolarConcentration(*diffusion, coords, id).value();
@@ -112,9 +112,9 @@ void IntercellularReactions::executeReaction(
     const auto& reaction = m_rules[index];
 
     // Foreach molecules in reaction
-    for (unsigned int moleculeId = 0; moleculeId < m_ids.size(); ++moleculeId)
+    for (unsigned int moleculeId = 0; moleculeId < m_moleculeNames.size(); ++moleculeId)
     {
-        const auto& moleculeName = m_ids[moleculeId];
+        const auto& moleculeName = m_moleculeNames[moleculeId];
 
         // Intracellular reaction
         const auto change = reaction[moleculeId].product - reaction[moleculeId].requirement;
@@ -139,7 +139,7 @@ void IntercellularReactions::executeReaction(
 
 void IntercellularReactions::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step)
 {
-    auto& cell = getCell(object);
+    auto& cell = object.castThrow<cell::CellBase>();
     auto diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
@@ -183,7 +183,7 @@ void IntercellularReactions::extendAbsorption(const DynamicArray<String>& ids_pl
             Log::warning("NULL tag doesnt make sense here.");
             return;
         }
-        unsigned int index = getIndexOfMoleculeColumn(ids_plus[i]);
+        unsigned int index = getMoleculeId(ids_plus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{0, 1, 1, 0});
@@ -210,7 +210,7 @@ void IntercellularReactions::extendExpression(const DynamicArray<String>& ids_mi
             Log::warning("NULL tag doesnt make sense here.");
             return;
         }
-        unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
+        unsigned int index = getMoleculeId(ids_minus[i]);
         if (index == array.size())
         {
             array.push_back(ReqProd{1, 0, 0, 1});
@@ -271,7 +271,7 @@ void IntercellularReactions::extendIntracellular(
         // Get real name
         const String nameReal = fromEnv ? ids_plus[i].substr(4) : ids_plus[i];
 
-        unsigned int index = getIndexOfMoleculeColumn(ids_minus[i]);
+        unsigned int index = getMoleculeId(ids_minus[i]);
         if (index == array.size())
         {
             if (fromEnv)
@@ -300,7 +300,7 @@ void IntercellularReactions::extendIntracellular(
         // Get real name
         const String nameReal = toEnv ? ids_plus[i].substr(4) : ids_plus[i];
 
-        unsigned int index = getIndexOfMoleculeColumn(nameReal);
+        unsigned int index = getMoleculeId(nameReal);
         if (index == array.size())
         {
             if (toEnv)
@@ -334,14 +334,14 @@ void IntercellularReactions::addCondition(const Condition& condition, DynamicArr
     if (condition.clone)
     {
         // backup of unmodified reaction can be outdated (shorter)
-        noCond.resize(m_ids.size());
+        noCond.resize(m_moleculeNames.size());
 
         m_rules.push_back(noCond);
         m_rates.push_back(m_rates[m_rates.size() - 1]);
     }
 
     // get index of required molecule
-    const auto moleculeId = getIndexOfMoleculeColumn(nameReal);
+    const auto moleculeId = getMoleculeId(nameReal);
 
     // Alias to last reaction
     auto& reaction = m_rules[m_rules.size() - 1];

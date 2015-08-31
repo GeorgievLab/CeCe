@@ -28,7 +28,7 @@ IntracellularReactions::PropensityType IntracellularReactions::computePropensity
     auto local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
     {
-        unsigned int number = cell.getMoleculeCount(m_ids[i]);
+        unsigned int number = cell.getMoleculeCount(m_moleculeNames[i]);
 
         // TODO: check if it's OK
         const bool cond =
@@ -89,12 +89,12 @@ void IntracellularReactions::refreshPropensities(const unsigned int index, const
  */
 void IntracellularReactions::executeReaction(const unsigned int index, plugin::cell::CellBase& cell)
 {
-    for (unsigned int i = 0; i < m_ids.size(); i++)
+    for (unsigned int i = 0; i < m_moleculeNames.size(); i++)
     {
         int change = m_rules[index][i].product - m_rules[index][i].requirement;
         if (change != 0)
         {
-            cell.addMolecules(m_ids[i], change);
+            cell.addMolecules(m_moleculeNames[i], change);
             refreshPropensities(i, cell);
         }
     }
@@ -107,7 +107,7 @@ void IntracellularReactions::executeReaction(const unsigned int index, plugin::c
  */
 void IntracellularReactions::operator()(simulator::Object& object, simulator::Simulation&, units::Duration step)
 {
-    auto& cell = getCell(object);
+    auto& cell = object.castThrow<cell::CellBase>();
 
     executeReactions(step, [this, &cell](unsigned int index)
     {
