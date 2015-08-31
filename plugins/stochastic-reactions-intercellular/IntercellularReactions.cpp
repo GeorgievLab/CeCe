@@ -130,7 +130,7 @@ void IntercellularReactions::executeReaction(
         if (reaction[moleculeId].env_product)
         {
             changeMoleculesInEnvironment(cell.getSimulation(), moleculeName, reaction[moleculeId].env_product, diffusion, coords);
-            refreshPropensities(moleculeId, cell, diffusion, coords);
+            initializePropensities(cell, diffusion, coords);
         }
     }
 }
