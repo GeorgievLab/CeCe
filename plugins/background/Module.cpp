@@ -26,13 +26,16 @@ namespace background {
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
+    // Configure parent
+    simulator::Module::configure(config, simulation);
+
     using namespace cv;
 
     // Get image file path
     const auto imagePath = config.buildFilePath(config.get("image"));
 
     // Load image
-    m_img = imread(imagePath.string());
+    m_img = imread(imagePath.string(), cv::IMREAD_UNCHANGED);
 
     if (m_img.empty())
         throw InvalidArgumentException("Cannot open source image: " + imagePath.string());
@@ -52,21 +55,37 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     if (!m_drawable)
     {
         const Size texSize(size.width, size.height);
+        const bool rgba = m_img.elemSize() == 4;
 
         m_drawable.create(context, texSize);
 
         // Update data
         for (auto&& c : range(texSize))
         {
-            const auto pix = m_img.at<cv::Vec3b>(c.getY(), c.getX());
-            m_drawable->set(c, render::Color{pix[2] / 255.f, pix[1] / 255.f, pix[0] / 255.f});
+            render::Color pixel;
+
+            if (rgba)
+            {
+                const auto pix = m_img.at<cv::Vec4b>(c.getY(), c.getX());
+                pixel = render::Color::fromUchar(pix[2], pix[1], pix[0], pix[3]);
+            }
+            else
+            {
+                const auto pix = m_img.at<cv::Vec3b>(c.getY(), c.getX());
+                pixel = render::Color::fromUchar(pix[2], pix[1], pix[0]);
+            }
+
+            m_drawable->set(c, pixel);
         }
     }
 
     // Draw color grid
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
+    context.colorPush();
+    context.enableAlpha();
     m_drawable->draw(context);
+    context.colorPop();
     context.matrixPop();
 }
 #endif
