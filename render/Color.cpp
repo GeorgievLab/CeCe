@@ -35,6 +35,7 @@ namespace {
 
 // Predefined colors
 const Map<String, render::Color> g_colors{{
+    {"transparent", render::colors::TRANSPARENT},
     {"black", render::colors::BLACK},
     {"white", render::colors::WHITE},
     {"red", render::colors::RED},
@@ -77,11 +78,11 @@ InStream& operator>>(InStream& is, Color& color)
     // Alpha value
     if (bytes[0] > 0)
     {
-        color = {bytes[0] / 255.f, bytes[1] / 255.f, bytes[2] / 255.f, bytes[3] / 255.f};
+        color = Color::fromUchar(bytes[0], bytes[1], bytes[2], bytes[3]);
     }
     else
     {
-        color = {bytes[1] / 255.f, bytes[2] / 255.f, bytes[3] / 255.f, 1.f};
+        color = Color::fromUchar(bytes[1], bytes[2], bytes[3]);
     }
 
     return is;

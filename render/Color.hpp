@@ -31,9 +31,11 @@ class Color
 public:
 
 
-    /**
-     * @brief Component type.
-     */
+    /// Unsigned character type.
+    using UCharType = unsigned char;
+
+
+    /// Component type.
     using ComponentType = RealType;
 
 
@@ -340,6 +342,22 @@ public:
     static constexpr Color fromGray(ComponentType value, ComponentType alpha = 1) noexcept
     {
         return Color{value, value, value, alpha};
+    }
+
+
+    /**
+     * @brief Create color from unsigned char values.
+     *
+     * @param red   Red color.
+     * @param green Green color.
+     * @param blue  Blue color.
+     * @param alpha Optional alpha value.
+     *
+     * @return
+     */
+    static constexpr Color fromUchar(UCharType red, UCharType green, UCharType blue, UCharType alpha = 255) noexcept
+    {
+        return Color{red / 255.f, green / 255.f, blue / 255.f, alpha / 255.f};
     }
 
 
