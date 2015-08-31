@@ -14,6 +14,9 @@
 // C++
 #include <cassert>
 
+// OpenCV
+#include <opencv2/opencv.hpp>
+
 // Simulation
 #include "core/DynamicArray.hpp"
 #include "core/VectorRange.hpp"
@@ -43,15 +46,6 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Get image file path
     const auto imagePath = config.buildFilePath(imageName);
     const auto obstaclePath = config.buildFilePath(obstacleName);
-
-    // Load image
-    m_img = imread(imagePath.string());
-
-    if (m_img.empty())
-        throw InvalidArgumentException("Cannot open source image: " + imagePath.string());
-
-    // Flip image
-    flip(m_img, m_img, 0);
 
     // Load obstacle image
     Mat imgObstacle = imread(obstaclePath.string());
@@ -112,41 +106,6 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
         obstacle->initShapes();
     }
 }
-
-/* ************************************************************************ */
-
-#ifdef ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::Simulation& simulation)
-{
-    using namespace cv;
-
-    // Returns grid size.
-    const auto size = 2 * getLattice().getSize();
-
-    if (!m_drawable)
-    {
-        m_drawable.create(context, size);
-
-        // Resize image to requires size
-        resize(m_img, m_img, cv::Size(size.getX(), size.getY()));
-
-        // Update data
-        for (auto&& c : range(size))
-        {
-            const auto pix = m_img.at<Vec3b>(c.getY(), c.getX());
-            m_drawable->set(c, render::Color{pix[2] / 255.f, pix[1] / 255.f, pix[0] / 255.f});
-        }
-    }
-
-    // Draw color grid
-    context.matrixPush();
-    context.matrixScale(simulation.getWorldSize() / units::Length(1));
-    m_drawable->draw(context);
-    context.matrixPop();
-
-    plugin::streamlines::Module::draw(context, simulation);
-}
-#endif
 
 /* ************************************************************************ */
 
