@@ -511,7 +511,7 @@ public:
             break;
 
 #if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
-        case GLFW_KEY_F12:
+        case GLFW_KEY_C:
         {
             OutStringStream oss;
             oss << ptr->m_simulationFile.stem().string() << "_" << ptr->getSimulation()->getIteration() << ".png";
@@ -762,10 +762,10 @@ private:
      */
     cv::Mat getFrame() const noexcept
     {
-        cv::Mat img(m_windowHeight, m_windowWidth, CV_8UC3);
+        cv::Mat img(m_windowHeight, m_windowWidth, CV_8UC4);
         glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
         glPixelStorei(GL_PACK_ROW_LENGTH, img.step / img.elemSize());
-        glReadPixels(0, 0, img.cols, img.rows, GL_BGR, GL_UNSIGNED_BYTE, img.data);
+        glReadPixels(0, 0, img.cols, img.rows, GL_BGRA, GL_UNSIGNED_BYTE, img.data);
         cv::flip(img, img, 0);
         return img;
     }
