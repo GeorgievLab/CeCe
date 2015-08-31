@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="200um 100um" dt="10ms" iterations="10000">
+<simulation world-size="200um 100um" dt="1ms" iterations="10000">
     <!-- Generate yeast cells -->
     <module name="object-generator">
         <object class="cell.Yeast" probability="0.01" />
     </module>
 
+    <module name="background" image="image.png" />
+
     <!-- Define streamlines -->
-    <module name="streamlines-image" coefficient="100" grid="200 100" velocity-inflow="10um/s" kinematic-viscosity="0.658um2/s" image="obstacle.png" aobstacle="obstacle2.png" />
+    <!-- image attribute defines obstacle image -->
+    <module name="streamlines-image" access-name="streamlines" grid="200 100" inlet-velocity="200um/s" image="obstacle.png" />
 
     <!-- Center cell -->
     <object class="cell.Cell" type="static" volume="2000um3" />
-
-    <amodule name="streamlines-image.store-state" />
 </simulation>
 
