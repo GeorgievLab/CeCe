@@ -16,6 +16,8 @@
 #include <arpa/inet.h>
 #elif defined(__MINGW32__) || defined(__MINGW64__)
 #include <winsock.h>
+// Everyone likes WINAPI macros...
+#undef TRANSPARENT
 #endif
 
 // Simulator
