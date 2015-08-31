@@ -16,7 +16,7 @@ else ()
 endif ()
 
 # Include OpenCV
-include_directories(${OpenCV_INCLUDE_DIR})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # ######################################################################### #
 

@@ -68,7 +68,7 @@ if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     # OpenCV not found
     if (OpenCV_FOUND)
         message(STATUS "Video/image capture support: OpenCV ${OpenCV_VERSION}")
-        include_directories(${OpenCV_INCLUDE_DIR})
+        include_directories(${OpenCV_INCLUDE_DIRS})
 
         if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
             add_definitions(-DCONFIG_CLI_ENABLE_IMAGE_CAPTURE=1)
