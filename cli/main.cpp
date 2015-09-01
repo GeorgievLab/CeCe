@@ -432,8 +432,7 @@ public:
         if (m_videoWriter.isOpened())
         {
             // Store image
-            //cv::imwrite("test.png", getFrame());
-            m_videoWriter << getFrame();
+            m_videoWriter << getFrame(false);
         }
 #endif
     }
@@ -530,7 +529,7 @@ public:
 
             const String filename = oss.str();
 
-            cv::imwrite(filename, ptr->getFrame());
+            cv::imwrite(filename, ptr->getFrame(true));
             Log::info("Image captured: ", filename);
             break;
         }
@@ -770,16 +769,18 @@ private:
     /**
      * @brief Get current OpenGL frame.
      *
+     * @param alpha If alfa should be stored.
+     *
      * @return Current frame.
      */
-    cv::Mat getFrame() const noexcept
+    cv::Mat getFrame(bool alpha) const noexcept
     {
         const auto& context = m_simulator.getRenderContext();
         const auto size = context.getSize();
 
         // Get image data
-        cv::Mat img(size.getHeight(), size.getWidth(), CV_8UC4);
-        context.getData(img.data, true);
+        cv::Mat img(size.getHeight(), size.getWidth(), alpha ? CV_8UC4 : CV_8UC3);
+        context.getData(img.data, alpha, true);
         cv::flip(img, img, 0);
         return img;
     }

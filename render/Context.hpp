@@ -105,19 +105,23 @@ public:
     /**
      * @brief Get current image data.
      *
-     * @param data Output buffer pointer. Expected size is
+     * @param data  Output buffer pointer. Expected size is
      * `4 * sizeof(uchar8_t) * getSize().getWidth() * getSize().getHeight()`.
-     * @param bgra If pixels should be in BGRA instead of RGBA.
+     * @param alpha If result data should contains alpha channel.
+     * @param bgra  If pixels should be in BGRA instead of RGBA.
      */
-    void getData(void* data, bool bgra = false) const noexcept;
+    void getData(void* data, bool alpha = false, bool bgra = false) const noexcept;
 
 
     /**
      * @brief Get current image data.
      *
+     * @param alpha If result data should contains alpha channel.
+     * @param bgra  If pixels should be in BGRA instead of RGBA.
+     *
      * @return
      */
-    ImageData getData() const noexcept;
+    ImageData getData(bool alpha = false, bool bgra = false) const noexcept;
 
 
     /**

@@ -137,7 +137,7 @@ Size Context::getSize() const noexcept
 
 /* ************************************************************************ */
 
-void Context::getData(void* data, bool bgra) const noexcept
+void Context::getData(void* data, bool alpha, bool bgra) const noexcept
 {
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -147,23 +147,28 @@ void Context::getData(void* data, bool bgra) const noexcept
     const auto width = viewport[2];
     const auto height = viewport[3];
 
-    gl(glPixelStorei(GL_PACK_ALIGNMENT, 4));
+    gl(glPixelStorei(GL_PACK_ALIGNMENT, alpha ? 4 : 1));
     gl(glPixelStorei(GL_PACK_ROW_LENGTH, width));
 
+    const GLenum type = alpha
+        ? (bgra ? GL_BGRA : GL_RGBA)
+        : (bgra ? GL_BGR : GL_RGB)
+    ;
+
     gl(glReadBuffer(GL_FRONT));
-    gl(glReadPixels(x, y, width, height, bgra ? GL_BGRA : GL_RGBA, GL_UNSIGNED_BYTE, data));
+    gl(glReadPixels(x, y, width, height, type, GL_UNSIGNED_BYTE, data));
 }
 
 /* ************************************************************************ */
 
-ImageData Context::getData() const noexcept
+ImageData Context::getData(bool alpha, bool bgra) const noexcept
 {
     ImageData result;
 
     result.size = getSize();
-    result.data.resize(4 * result.size.getWidth() * result.size.getHeight());
+    result.data.resize((alpha ? 4 : 3) * result.size.getWidth() * result.size.getHeight());
 
-    getData(result.data.data());
+    getData(result.data.data(), alpha, bgra);
 
     return result;
 }
