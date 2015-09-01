@@ -51,6 +51,7 @@ static PFNGLUNIFORM1IPROC glUniform1i = nullptr;
 static PFNGLUNIFORM2IPROC glUniform2i = nullptr;
 static PFNGLUNIFORM1FPROC glUniform1f = nullptr;
 static PFNGLUNIFORM4FPROC glUniform4f = nullptr;
+static PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = nullptr;
 #endif
 
 /* ************************************************************************ */
@@ -304,6 +305,11 @@ void Context::frameEnd() noexcept
 
 void Context::enableAlpha() noexcept
 {
+#if _WIN32
+    if (!glBlendFuncSeparate)
+        glBlendFuncSeparate = (PFNGLBLENDFUNCSEPARATEPROC)wglGetProcAddress("glBlendFuncSeparate");
+#endif
+
     gl(glEnable(GL_BLEND));
     //gl(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     gl(glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE));
