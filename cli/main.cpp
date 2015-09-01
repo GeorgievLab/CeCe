@@ -492,7 +492,7 @@ public:
             break;
 
         case GLFW_KEY_Q:
-            glfwSetWindowShouldClose(win, GL_TRUE);
+            glfwSetWindowShouldClose(win, true);
             break;
 
         case GLFW_KEY_P:
@@ -624,7 +624,7 @@ private:
 
             // Disable window resizing
             if (m_videoWriter.isOpened())
-                glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+                glfwWindowHint(GLFW_RESIZABLE, false);
             else
                 Log::warning("Unable to capture video");
         }
@@ -762,10 +762,12 @@ private:
      */
     cv::Mat getFrame() const noexcept
     {
-        cv::Mat img(m_windowHeight, m_windowWidth, CV_8UC4);
-        glPixelStorei(GL_PACK_ALIGNMENT, (img.step & 3) ? 1 : 4);
-        glPixelStorei(GL_PACK_ROW_LENGTH, img.step / img.elemSize());
-        glReadPixels(0, 0, img.cols, img.rows, GL_BGRA, GL_UNSIGNED_BYTE, img.data);
+        const auto& context = m_simulator.getRenderContext();
+        const auto size = context.getSize();
+
+        // Get image data
+        cv::Mat img(size.getHeight(), size.getWidth(), CV_8UC4);
+        context.getData(img.data, true);
         cv::flip(img, img, 0);
         return img;
     }
