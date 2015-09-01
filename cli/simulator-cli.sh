@@ -10,7 +10,7 @@ BASEDIR=`dirname $0`
 BINARY=${BASEDIR}/${NAME}.app/Contents/MacOS/${NAME}
 
 # Set working directory
-export WORKING_DIR=${BASEDIR}
+export WORKING_DIR=`pwd`
 
 # Run binary
 ${BINARY} $@
