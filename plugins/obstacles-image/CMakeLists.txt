@@ -16,7 +16,7 @@ else ()
 endif ()
 
 # Include OpenCV
-include_directories(${OpenCV_INCLUDE_DIR})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # ######################################################################### #
 
@@ -30,5 +30,26 @@ build_plugin(obstacles-image
     SOURCES ${SRCS}
     LIBRARIES ${OpenCV_LIBRARIES}
 )
+
+# ######################################################################### #
+
+if (WIN32)
+    set(LIBRARIES "")
+
+    foreach (DIR ${OpenCV_LIB_DIR})
+        set(DIR "${DIR}/../bin")
+
+        foreach (COMPONENT ${OpenCV_LIB_COMPONENTS})
+            file(GLOB FILES "${DIR}/lib${COMPONENT}*.dll")
+            set(LIBRARIES ${LIBRARIES} ${FILES})
+        endforeach ()
+    endforeach ()
+
+    list(REMOVE_DUPLICATES LIBRARIES)
+
+    install(FILES ${LIBRARIES}
+        DESTINATION ${INSTALL_DIR_LIBRARY}
+    )
+endif ()
 
 # ######################################################################### #

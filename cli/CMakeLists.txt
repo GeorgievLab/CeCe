@@ -188,4 +188,23 @@ if (APPLE)
     )
 endif ()
 
+if (WIN32 AND (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE))
+    set(LIBRARIES "")
+
+    foreach (DIR ${OpenCV_LIB_DIR})
+        set(DIR "${DIR}/../bin")
+
+        foreach (COMPONENT ${OpenCV_LIB_COMPONENTS})
+            file(GLOB FILES "${DIR}/lib${COMPONENT}*.dll")
+            set(LIBRARIES ${LIBRARIES} ${FILES})
+        endforeach ()
+    endforeach ()
+
+    list(REMOVE_DUPLICATES LIBRARIES)
+
+    install(FILES ${LIBRARIES}
+        DESTINATION ${INSTALL_DIR_LIBRARY}
+    )
+endif ()
+
 # ######################################################################### #

@@ -34,3 +34,24 @@ build_plugin(background
 )
 
 # ######################################################################### #
+
+if (WIN32)
+    set(LIBRARIES "")
+
+    foreach (DIR ${OpenCV_LIB_DIR})
+        set(DIR "${DIR}/../bin")
+
+        foreach (COMPONENT ${OpenCV_LIB_COMPONENTS})
+            file(GLOB FILES "${DIR}/lib${COMPONENT}*.dll")
+            set(LIBRARIES ${LIBRARIES} ${FILES})
+        endforeach ()
+    endforeach ()
+
+    list(REMOVE_DUPLICATES LIBRARIES)
+
+    install(FILES ${LIBRARIES}
+        DESTINATION ${INSTALL_DIR_LIBRARY}
+    )
+endif ()
+
+# ######################################################################### #
