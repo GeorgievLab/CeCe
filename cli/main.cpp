@@ -623,11 +623,24 @@ private:
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
         if (!params.videoFileName.empty())
         {
-            Log::info("Video output '", params.videoFileName.string(), "'");
+            String filename;
+
+// Use working directory on Mac OS X
+#if __APPLE__ && __MACH__
+            // Get working directory
+            const char* dir = getenv("WORKING_DIR");
+
+            // Add directory
+            if (dir)
+                filename += String(dir) + "/";
+#endif
+            filename += params.videoFileName.string();
+
+            Log::info("Video output '", filename, "'");
 
             // Open video writer
             m_videoWriter.open(
-                params.videoFileName.string(),
+                filename,
                 CV_FOURCC('M', 'P', 'E', 'G'),
                 60,
                 cv::Size(m_windowWidth, m_windowHeight)
