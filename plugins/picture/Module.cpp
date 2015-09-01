@@ -13,7 +13,6 @@
 
 // C++
 #include <cstdio>
-#include <png.h>
 
 // Simulation
 #include "core/Log.hpp"
@@ -59,11 +58,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     if (pos != String::npos)
         pattern.replace(pos, 2, std::to_string(stepNumber));
 
-#if THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
-#endif
-
     // Write image
     save(pattern);
 
@@ -78,87 +72,24 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     if (simulation.getIteration() == 0)
         return;
 
+#if THREAD_SAFE
+        // Lock access
+        MutexGuard guard(m_mutex);
+#endif
+
+    const auto size = context.getSize();
+
     // Get image data
-    m_image = context.getData();
+    m_image = cv::Mat(size.getWidth(), size.getHeight(), CV_8UC4);
+    context.getData(m_image.data, true);
 }
 
 /* ************************************************************************ */
 
 void Module::save(const FilePath& filename)
 {
-    // Open C file
-    auto file = makeUniqueCustom(
-        fopen(filename.string().c_str(), "wb"),
-        fclose
-    );
-
-    if (!file)
-        throw RuntimeException("Could not open file '" + filename.string() + "' for writing");
-
-    // Initialize write structure
-    auto png = makeUniqueCustom(
-        png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL),
-        [] (png_structp ptr) { png_destroy_write_struct(&ptr, (png_infopp) NULL); }
-    );
-
-    if (!png)
-        throw RuntimeException("Could not allocate write struct");
-
-    // Initialize info structure
-    auto info = makeUniqueCustom(
-        png_create_info_struct(png.get()),
-        [&png] (png_infop ptr) { png_free_data(png.get(), ptr, PNG_FREE_ALL, -1); }
-    );
-
-    if (!png)
-        throw RuntimeException("Could not allocate info struct");
-
-    // Setup Exception handling
-    if (setjmp(png_jmpbuf(png.get())))
-        throw RuntimeException("Error during png creation");
-
-    const int width = m_image.size.getWidth();
-    const int height = m_image.size.getHeight();
-
-    // Initialize IO
-    png_init_io(png.get(), file.get());
-
-    // Write header (8 bit colour depth)
-    png_set_IHDR(png.get(), info.get(), width, height, 8,
-        PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
-        PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-    // Write info
-    png_write_info(png.get(), info.get());
-
-    static_assert(sizeof(png_byte) == sizeof(uint8_t), "Size mismatch");
-
-    {
-#if THREAD_SAFE
-        // Lock access
-        MutexGuard guard(m_mutex);
-#endif
-
-        // Allocate memory for one row (3 bytes per pixel - RGB)
-        DynamicArray<png_byte> row(3 * width * sizeof(png_byte));
-        auto beg = m_image.data.begin();
-
-        // Write image data
-        for (int y = 0; y < height; y++)
-        {
-            // Copy data
-            std::copy(beg, std::next(beg, row.size()), row.begin());
-
-            // Write row
-            png_write_row(png.get(), row.data());
-
-            // Next row
-            std::advance(beg, row.size());
-        }
-    }
-
-    // End write
-    png_write_end(png.get(), NULL);
+    cv::flip(m_image, m_image, 0);
+    cv::imwrite(filename.string(), m_image);
 }
 
 /* ************************************************************************ */

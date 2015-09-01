@@ -5,12 +5,13 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
-/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
+
+// OpenCV
+#include <opencv2/opencv.hpp>
 
 // Simulator
 #include "core/String.hpp"
@@ -125,7 +126,7 @@ protected:
 
 
     /**
-     * @brief Save image-
+     * @brief Save image.
      */
     void save(const FilePath& filename);
 
@@ -141,7 +142,7 @@ private:
     unsigned int m_saveIteration = 1;
 
     /// Image data.
-    render::ImageData m_image;
+    cv::Mat m_image;
 
 #if THREAD_SAFE
     /// Access mutex.

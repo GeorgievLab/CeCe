@@ -10,14 +10,19 @@ if (!CONFIG_RENDER_ENABLE)
     message(FATAL_ERROR "Cannot build module without CONFIG_RENDER_ENABLE")
 endif ()
 
-# Use PNG images
-find_package(PNG REQUIRED)
+# Find OpenCV
+if (UNIX AND NOT APPLE)
+    # OpenCV 2 (Ubuntu LTS)
+    find_package(OpenCV REQUIRED core imgproc highgui)
+else ()
+    # OpenCV 3
+    find_package(OpenCV REQUIRED core imgproc highgui imgcodecs)
+endif ()
 
-# Include diretories
-include_directories(${PNG_INCLUDE_DIRS})
+# Include OpenCV
+include_directories(${OpenCV_INCLUDE_DIRS})
 
-# PNG definitions
-add_definitions(${PNG_DEFINITIONS})
+# ######################################################################### #
 
 # Sources
 set(SRCS
@@ -29,7 +34,7 @@ set(SRCS
 # Build plugin
 build_plugin(picture
     SOURCES ${SRCS}
-    LIBRARIES ${PNG_LIBRARIES}
+    LIBRARIES ${OpenCV_LIBRARIES}
 )
 
 # ######################################################################### #
