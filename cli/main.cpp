@@ -514,6 +514,18 @@ public:
         case GLFW_KEY_C:
         {
             OutStringStream oss;
+
+// Use working directory on Mac OS X
+#if __APPLE__ && __MACH__
+            // Get working directory
+            const char* dir = getenv("WORKING_DIR");
+
+            // Add directory
+            if (dir)
+                oss << dir << "/";
+#endif
+
+            // Add filename
             oss << ptr->m_simulationFile.stem().string() << "_" << ptr->getSimulation()->getIteration() << ".png";
 
             const String filename = oss.str();
