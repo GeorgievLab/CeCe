@@ -94,6 +94,19 @@ public:
 
 #if ENABLE_RENDER
     /**
+     * @brief Returns rendering context.
+     *
+     * @return
+     */
+    const render::Context& getRenderContext() const noexcept
+    {
+        return m_renderContext;
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
      * @brief Returns if rendering context is initialized.
      *
      * @return
