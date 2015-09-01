@@ -300,7 +300,8 @@ void Context::frameEnd() noexcept
 void Context::enableAlpha() noexcept
 {
     gl(glEnable(GL_BLEND));
-    gl(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    //gl(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    gl(glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE));
 }
 
 /* ************************************************************************ */
