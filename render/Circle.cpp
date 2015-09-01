@@ -27,8 +27,8 @@ namespace {
 
 /* ************************************************************************ */
 
-CONSTEXPR_CONST unsigned PARTS = 32;
-CONSTEXPR_CONST unsigned VERTEX_COUNT = PARTS + 2;
+constexpr unsigned PARTS = 32;
+constexpr unsigned VERTEX_COUNT = PARTS + 2;
 
 /* ************************************************************************ */
 
@@ -48,7 +48,7 @@ StaticArray<Vertex, VERTEX_COUNT> generateVertices()
 {
     StaticArray<Vertex, VERTEX_COUNT> res;
 
-    CONSTEXPR_CONST float step = 2 * constants::PI / PARTS;
+    constexpr float step = 2 * constants::PI / PARTS;
 
     res[0] = Vertex{0.f, 0.f, 0.8f, 0.8f, 0.8f};
 
@@ -86,7 +86,7 @@ Circle::Circle(Context& context)
 
 /* ************************************************************************ */
 
-void Circle::draw(Context& context) NOEXCEPT
+void Circle::draw(Context& context) noexcept
 {
     // Set parameters
     context.setVertexBuffer(&m_buffer);

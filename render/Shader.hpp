@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/StaticArray.hpp"
 
 /* ************************************************************************ */
@@ -23,7 +22,7 @@ namespace render {
 /**
  * @brief OpenGL shader object.
  */
-class DLL_EXPORT Shader
+class Shader
 {
 
 // Public Types
@@ -69,7 +68,7 @@ public:
      *
      * @return
      */
-    Id getId() const NOEXCEPT
+    Id getId() const noexcept
     {
         return m_id;
     }

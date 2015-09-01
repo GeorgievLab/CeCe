@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -63,7 +63,7 @@ Program::~Program()
 
 /* ************************************************************************ */
 
-Program::UniformId Program::getUniformId(const char* name) const NOEXCEPT
+Program::UniformId Program::getUniformId(const char* name) const noexcept
 {
 #ifdef _WIN32
     if (!glGetUniformLocation)

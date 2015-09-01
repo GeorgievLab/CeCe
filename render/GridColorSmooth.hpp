@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "render/GridColor.hpp"
 #include "render/Shader.hpp"
 #include "render/Program.hpp"
@@ -29,7 +28,7 @@ class Context;
 /**
  * @brief Texture-like grid with color interpolation.
  */
-class DLL_EXPORT GridColorSmooth : public GridColor
+class GridColorSmooth : public GridColor
 {
 
 
@@ -68,7 +67,7 @@ public:
      *
      * @param context Rendering context.
      */
-    void draw(Context& context) NOEXCEPT;
+    void draw(Context& context) noexcept;
 
 
 // Private Data Members

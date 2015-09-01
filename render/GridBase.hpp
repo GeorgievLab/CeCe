@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -14,7 +14,6 @@
 #include <utility>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 
 /* ************************************************************************ */
@@ -30,7 +29,7 @@ class Context;
 /**
  * @brief Rendering grid object - base class.
  */
-class DLL_EXPORT GridBase
+class GridBase
 {
 
 // Public Accessors
@@ -42,7 +41,7 @@ public:
      *
      * @return
      */
-    const Size& getSize() const NOEXCEPT
+    const Size& getSize() const noexcept
     {
         return m_size;
     }
@@ -58,7 +57,7 @@ public:
      *
      * @param size
      */
-    void resize(Size size) NOEXCEPT
+    void resize(Size size) noexcept
     {
         m_size = std::move(size);
     }

@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "core/Grid.hpp"
 #include "render/Buffer.hpp"
@@ -32,7 +31,7 @@ class Context;
 /**
  * @brief Texture-like grid.
  */
-class DLL_EXPORT GridColor : public GridBase
+class GridColor : public GridBase
 {
 
 
@@ -68,7 +67,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& operator[](const Coordinate& coord) NOEXCEPT
+    Color& operator[](const Coordinate& coord) noexcept
     {
         return get(coord);
     }
@@ -80,7 +79,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& operator[](const Coordinate& coord) const NOEXCEPT
+    const Color& operator[](const Coordinate& coord) const noexcept
     {
         return get(coord);
     }
@@ -93,7 +92,7 @@ public:
     /**
      * @brief Returns if object is initialized.
      */
-    bool isInitialized() const NOEXCEPT
+    bool isInitialized() const noexcept
     {
         return m_buffer.isInitialized()/* && m_texture.isInitialized() */;
     }
@@ -105,7 +104,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    Color& get(const Coordinate& coord) NOEXCEPT
+    Color& get(const Coordinate& coord) noexcept
     {
         return m_colors[coord];
     }
@@ -117,7 +116,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    const Color& get(const Coordinate& coord) const NOEXCEPT
+    const Color& get(const Coordinate& coord) const noexcept
     {
         return m_colors[coord];
     }
@@ -133,7 +132,7 @@ public:
      * @param coord Pixel coordinates.
      * @param color Pixel color.
      */
-    void set(const Coordinate& coord, const Color& color) NOEXCEPT
+    void set(const Coordinate& coord, const Color& color) noexcept
     {
         // Set color
         m_colors[coord] = color;
@@ -144,7 +143,7 @@ public:
     /**
      * @brief Set flag that indicates the texture on GPU should be updated.
      */
-    void colorsUpdated() NOEXCEPT
+    void colorsUpdated() noexcept
     {
         m_colorsUpdated = true;
     }
@@ -159,7 +158,7 @@ public:
      *
      * @param context Rendering context.
      */
-    void draw(Context& context) NOEXCEPT;
+    void draw(Context& context) noexcept;
 
 
     /**

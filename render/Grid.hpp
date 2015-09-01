@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "render/Buffer.hpp"
 #include "render/GridBase.hpp"
@@ -29,7 +28,7 @@ class Context;
 /**
  * @brief Rendering grid object.
  */
-class DLL_EXPORT Grid : public GridBase
+class Grid : public GridBase
 {
 
 
@@ -54,7 +53,7 @@ public:
      *
      * @param context Rendering context.
      */
-    void draw(Context& context) NOEXCEPT;
+    void draw(Context& context) noexcept;
 
 
     /**
@@ -62,7 +61,7 @@ public:
      *
      * @param size New grid size.
      */
-    void resize(Size size) NOEXCEPT;
+    void resize(Size size) noexcept;
 
 
 // Private Data Members

@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -58,7 +58,7 @@ GridColor::GridColor(Context& context, Size size)
 
 /* ************************************************************************ */
 
-void GridColor::draw(Context& context) NOEXCEPT
+void GridColor::draw(Context& context) noexcept
 {
     static render::VertexFormat vformat{
         render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),

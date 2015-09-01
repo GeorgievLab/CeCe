@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Vector.hpp"
 #include "render/Color.hpp"
 
@@ -28,7 +27,7 @@ class Context;
 /**
  * @brief Texture object.
  */
-class DLL_EXPORT Texture
+class Texture
 {
 
 // Public Types
@@ -78,7 +77,7 @@ public:
      *
      * @return
      */
-    Id getId() const NOEXCEPT
+    Id getId() const noexcept
     {
         return m_id;
     }
@@ -89,7 +88,7 @@ public:
      *
      * @return
      */
-    bool isInitialized() const NOEXCEPT
+    bool isInitialized() const noexcept
     {
         return m_id != 0;
     }

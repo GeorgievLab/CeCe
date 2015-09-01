@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -34,7 +34,7 @@ GridColorSmooth::GridColorSmooth(Context& context)
 
 /* ************************************************************************ */
 
-void GridColorSmooth::draw(Context& context) NOEXCEPT
+void GridColorSmooth::draw(Context& context) noexcept
 {
     context.setProgram(&m_program);
     context.setProgramParam(m_sizePtr, getSize().getWidth(), getSize().getHeight());

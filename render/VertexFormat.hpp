@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/DynamicArray.hpp"
 #include "render/VertexElement.hpp"
 
@@ -24,7 +23,7 @@ namespace render {
 /**
  * @brief Description of vertices stored in vertex buffer.
  */
-class DLL_EXPORT VertexFormat
+class VertexFormat
 {
 
 // Public Ctors & Dtors
@@ -43,11 +42,7 @@ public:
      * @param elements A list of source elements.
      */
     VertexFormat(std::initializer_list<VertexElement> elements)
-#if _MSC_VER
-        : m_elements(elements.begin(), elements.end())
-#else
         : m_elements{elements}
-#endif
     {
         // Nothing to do
     }
@@ -64,7 +59,7 @@ public:
      *
      * @return A reference to vertex element.
      */
-    const VertexElement& operator[](unsigned int pos) const NOEXCEPT
+    const VertexElement& operator[](unsigned int pos) const noexcept
     {
         return m_elements[pos];
     }
@@ -92,7 +87,7 @@ public:
      *
      * @return
      */
-    size_t getCount() const NOEXCEPT
+    size_t getCount() const noexcept
     {
         return m_elements.size();
     }
@@ -103,7 +98,7 @@ public:
      *
      * @return
      */
-    bool isEmpty() const NOEXCEPT
+    bool isEmpty() const noexcept
     {
         return m_elements.empty();
     }
@@ -114,7 +109,7 @@ public:
      *
      * @return
      */
-    size_t getSize() const NOEXCEPT
+    size_t getSize() const noexcept
     {
         size_t sum = 0;
 
@@ -130,7 +125,7 @@ public:
      *
      * @return
      */
-    const DynamicArray<VertexElement>& getElements() const NOEXCEPT
+    const DynamicArray<VertexElement>& getElements() const noexcept
     {
         return m_elements;
     }
@@ -141,7 +136,7 @@ public:
      *
      * @return
      */
-    DynamicArray<VertexElement>::const_iterator begin() const NOEXCEPT
+    DynamicArray<VertexElement>::const_iterator begin() const noexcept
     {
         return m_elements.begin();
     }
@@ -152,7 +147,7 @@ public:
      *
      * @return
      */
-    DynamicArray<VertexElement>::const_iterator end() const NOEXCEPT
+    DynamicArray<VertexElement>::const_iterator end() const noexcept
     {
         return m_elements.end();
     }

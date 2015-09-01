@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -41,7 +41,7 @@ GridVector::GridVector(Context& context, Size size, const Vector<float>* data, f
 
 /* ************************************************************************ */
 
-void GridVector::draw(Context& context) NOEXCEPT
+void GridVector::draw(Context& context) noexcept
 {
     static render::VertexFormat vformat{
         render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
@@ -70,11 +70,11 @@ void GridVector::resize(Size size, const Vector<float>* data)
 
 /* ************************************************************************ */
 
-void GridVector::update(const Vector<float>* data) NOEXCEPT
+void GridVector::update(const Vector<float>* data) noexcept
 {
     const auto size = getSize();
 
-    CONSTEXPR Vector<float> start{-0.5f};
+    constexpr Vector<float> start{-0.5f};
     const Vector<float> step = getSize().inversed<float>();
 
     const auto width = size.getWidth();

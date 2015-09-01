@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/VectorUnits.hpp"
 
 /* ************************************************************************ */
@@ -23,7 +22,7 @@ namespace render {
 /**
  * @brief Render camera.
  */
-class DLL_EXPORT Camera
+class Camera
 {
 
 // Public Ctors & Dtors
@@ -45,7 +44,7 @@ public:
      *
      * @return
      */
-    const PositionVector& getPosition() const NOEXCEPT
+    const PositionVector& getPosition() const noexcept
     {
         return m_position;
     }
@@ -56,7 +55,7 @@ public:
      *
      * @return
      */
-    float getZoom() const NOEXCEPT
+    float getZoom() const noexcept
     {
         return m_zoom;
     }
@@ -71,7 +70,7 @@ public:
      *
      * @param pos
      */
-    void setPosition(PositionVector pos) NOEXCEPT
+    void setPosition(PositionVector pos) noexcept
     {
         m_position = std::move(pos);
     }
@@ -82,7 +81,7 @@ public:
      *
      * @param zoom
      */
-    void setZoom(float zoom) NOEXCEPT
+    void setZoom(float zoom) noexcept
     {
         m_zoom = zoom;
     }

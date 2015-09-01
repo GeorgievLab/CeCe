@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -28,7 +28,7 @@ Grid::Grid(Context& context)
 
 /* ************************************************************************ */
 
-void Grid::draw(Context& context) NOEXCEPT
+void Grid::draw(Context& context) noexcept
 {
     static VertexFormat vformat{
         VertexElement(VertexElementType::Position, DataType::Float, 2)
@@ -51,7 +51,7 @@ void Grid::draw(Context& context) NOEXCEPT
 
 /* ************************************************************************ */
 
-void Grid::resize(Size size) NOEXCEPT
+void Grid::resize(Size size) noexcept
 {
     GridBase::resize(std::move(size));
 
@@ -59,7 +59,7 @@ void Grid::resize(Size size) NOEXCEPT
     const auto width = getSize().getWidth();
     const auto height = getSize().getHeight();
 
-    CONSTEXPR_CONST Vector<float> start{-0.5f};
+    constexpr Vector<float> start{-0.5f};
     const Vector<float> step = getSize().inversed<float>();
 
     struct Vertex { float x, y; };

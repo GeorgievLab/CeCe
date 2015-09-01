@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "render/Buffer.hpp"
 
 /* ************************************************************************ */
@@ -27,7 +26,7 @@ class Context;
 /**
  * @brief Drawing object for rectangle.
  */
-class DLL_EXPORT Rectangle
+class Rectangle
 {
 
 
@@ -51,7 +50,7 @@ public:
     /**
      * @brief Returns if object is initialized.
      */
-    bool isInitialized() const NOEXCEPT
+    bool isInitialized() const noexcept
     {
         return m_buffer.isInitialized()/* && m_texture.isInitialized() */;
     }
@@ -66,7 +65,7 @@ public:
      *
      * @param context Rendering context.
      */
-    void draw(Context& context) NOEXCEPT;
+    void draw(Context& context) noexcept;
 
 
 // Private Data Members

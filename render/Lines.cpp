@@ -5,8 +5,6 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
-/* ************************************************************************ */
 
 // Declaration
 #include "render/Lines.hpp"
@@ -34,7 +32,7 @@ namespace render {
 
 /* ************************************************************************ */
 
-void Lines::draw(Context& context) NOEXCEPT
+void Lines::draw(Context& context) noexcept
 {
     static render::VertexFormat vformat{
         render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),

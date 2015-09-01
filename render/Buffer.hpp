@@ -1,17 +1,12 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
-/* ************************************************************************ */
 
 #pragma once
-
-/* ************************************************************************ */
-
-// Simulator
-#include "core/compatibility.hpp"
 
 /* ************************************************************************ */
 
@@ -26,7 +21,7 @@ class Context;
 /**
  * @brief GPU buffer.
  */
-class DLL_EXPORT Buffer
+class Buffer
 {
 
 // Public Types
@@ -82,7 +77,7 @@ public:
      *
      * @return
      */
-    Id getId() const NOEXCEPT
+    Id getId() const noexcept
     {
         return m_id;
     }
@@ -93,7 +88,7 @@ public:
      *
      * @return
      */
-    bool isInitialized() const NOEXCEPT
+    bool isInitialized() const noexcept
     {
         return m_id != 0;
     }

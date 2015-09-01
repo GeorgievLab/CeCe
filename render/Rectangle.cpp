@@ -60,7 +60,7 @@ Rectangle::Rectangle(Context& context)
 
 /* ************************************************************************ */
 
-void Rectangle::draw(Context& context) NOEXCEPT
+void Rectangle::draw(Context& context) noexcept
 {
     // Set parameters
     context.setVertexBuffer(&m_buffer);

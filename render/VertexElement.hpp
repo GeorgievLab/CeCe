@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "render/datatype.hpp"
 
 /* ************************************************************************ */
@@ -40,7 +39,7 @@ enum class VertexElementType
 /**
  * @brief Vertex format element.
  */
-class DLL_EXPORT VertexElement
+class VertexElement
 {
 
 // Public Ctors
@@ -54,7 +53,7 @@ public:
      * @param dataType Data type.
      * @param count    Number of values.
      */
-    CONSTEXPR VertexElement(VertexElementType type, DataType dataType, unsigned int count)
+    constexpr VertexElement(VertexElementType type, DataType dataType, unsigned int count)
         : m_type(type)
         , m_dataType(dataType)
         , m_count(count)
@@ -72,7 +71,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR VertexElementType getType() const NOEXCEPT
+    constexpr VertexElementType getType() const noexcept
     {
         return m_type;
     }
@@ -83,7 +82,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR DataType getDataType() const NOEXCEPT
+    constexpr DataType getDataType() const noexcept
     {
         return m_dataType;
     }
@@ -94,7 +93,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR unsigned int getCount() const NOEXCEPT
+    constexpr unsigned int getCount() const noexcept
     {
         return m_count;
     }
@@ -109,7 +108,7 @@ public:
      *
      * @return
      */
-    CONSTEXPR size_t getSize() const NOEXCEPT
+    constexpr size_t getSize() const noexcept
     {
         return getCount() * data_type_size(getDataType());
     }
