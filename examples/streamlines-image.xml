@@ -6,11 +6,12 @@
         <object class="cell.Yeast" probability="0.01" />
     </module>
 
+    <!-- image attribute defines obstacle image -->
     <module name="background" image="image.png" />
+    <plugin name="obstacles-image" image="obstacle.png" />
 
     <!-- Define streamlines -->
-    <!-- image attribute defines obstacle image -->
-    <module name="streamlines-image" access-name="streamlines" grid="200 100" inlet-velocity="200um/s" image="obstacle.png" />
+    <module name="streamlines" grid="200 100" inlet-velocity="200um/s" />
 
     <!-- Center cell -->
     <object class="cell.Cell" type="static" volume="2000um3" />
