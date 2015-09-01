@@ -95,6 +95,24 @@ public:
 
 
     /**
+     * @brief Returns buffer size.
+     *
+     * @return
+     */
+    Size getSize() const noexcept;
+
+
+    /**
+     * @brief Get current image data.
+     *
+     * @param data Output buffer pointer. Expected size is
+     * `4 * sizeof(uchar8_t) * getSize().getWidth() * getSize().getHeight()`.
+     * @param bgra If pixels should be in BGRA instead of RGBA.
+     */
+    void getData(void* data, bool bgra = false) const noexcept;
+
+
+    /**
      * @brief Get current image data.
      *
      * @return
