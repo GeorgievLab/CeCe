@@ -82,6 +82,7 @@ void Cell::draw(render::Context& context)
 
     PositionVector pos;
     units::Length radius;
+    render::Color color;
 
     {
 #if THREAD_SAFE
@@ -91,6 +92,7 @@ void Cell::draw(render::Context& context)
 
         pos = getPosition();
         radius = calcSphereRadius(getVolume());
+        color = calcFluorescentColor();
     }
 
     // Transform
@@ -100,7 +102,7 @@ void Cell::draw(render::Context& context)
     context.matrixRotate(getRotation());
     context.colorPush();
     context.enableAlpha();
-    m_renderObject->draw(context, radius.value());
+    m_renderObject->draw(context, radius / units::Length(1), color);
     context.colorPop();
     context.matrixPop();
 }

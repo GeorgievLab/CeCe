@@ -1,15 +1,23 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
 
 #pragma once
 
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
+#include "core/Real.hpp"
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
 #include "render/Buffer.hpp"
 #include "render/Shader.hpp"
 #include "render/Program.hpp"
+#include "render/Color.hpp"
 
 /* ************************************************************************ */
 
@@ -48,8 +56,10 @@ public:
      * @brief Render at given position with given rotation.
      *
      * @param context
+     * @param scale
+     * @param color
      */
-    void draw(render::Context& context, float scale) NOEXCEPT;
+    void draw(render::Context& context, RealType scale, const render::Color& color) noexcept;
 
 
 // Private Data Members
@@ -66,6 +76,9 @@ private:
 
     /// Shader program.
     render::Program m_program;
+
+    /// Cell color (GFP, YFP, RFP).
+    render::Program::UniformId m_uniformColor;
 
     /// Cell size variable.
     render::Program::UniformId m_uniformSize;

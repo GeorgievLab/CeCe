@@ -10,6 +10,7 @@ uniform vec2 membraneCenter = vec2(0.5, 0.5);
 uniform vec2 nucleusCenter = vec2(0.55, 0.43);
 uniform float membraneSize = 0.48;
 uniform float nucleusSize = 0.2;
+uniform vec4 g_color = vec4(0.5, 0.5, 0.5, 0.5);
 
 const vec4 membraneColor = vec4(0.5, 0.5, 0.5, 0.7);
 const vec4 nucleusColor = vec4(0.5, 0.5, 0.5, 0.5);
@@ -51,9 +52,12 @@ vec4 draw_circle(vec4 curColor, vec4 color, vec2 center, float size, float offse
 	{
 		float alpha = smoothstep(sizeMax - 0.08, sizeMax, dist);
 		curColor = mix(curColor, color, base + alpha * alpha);
+			
+		curColor = mix(curColor, g_color, 0.5);
 	}
 	else
 	{
+		color = mix(color, g_color, 0.5);
 		float alpha = 1 - smoothstep(sizeMax, sizeMax + 0.01, dist);
 		curColor = mix(curColor, color * (1.0 + base), alpha);
 	}
@@ -78,6 +82,7 @@ void main()
 }
 [Parameters]
 vec2 membraneCenter = vec2(0.5, 0.5);
-float membraneSize = 0.48;
 vec2 nucleusCenter = vec2(0.55, 0.43);
+float membraneSize = 0.48;
 float nucleusSize = 0.2;
+vec4 g_color = vec4(0, 0, 1, 1);

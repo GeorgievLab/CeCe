@@ -1,4 +1,9 @@
-
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
 
 // Declaration
@@ -49,12 +54,13 @@ DrawableCell::DrawableCell(render::Context& context)
     m_program.init(m_vertexShader, m_fragmentShader);
 
     // Get size variable
-    m_uniformSize = m_program.getUniformId("g_size");
+    m_uniformSize  = m_program.getUniformId("g_size");
+    m_uniformColor = m_program.getUniformId("g_color");
 }
 
 /* ************************************************************************ */
 
-void DrawableCell::draw(render::Context& context, float scale) NOEXCEPT
+void DrawableCell::draw(render::Context& context, RealType scale, const render::Color& color) noexcept
 {
     static render::VertexFormat vformat{
         render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
@@ -65,6 +71,9 @@ void DrawableCell::draw(render::Context& context, float scale) NOEXCEPT
     context.setProgram(&m_program);
     context.setVertexBuffer(&m_buffer);
     context.setVertexFormat(&vformat);
+
+    // Set parameters
+    context.setProgramParam(m_uniformColor, color);
 
     // Draw circle
     context.draw(render::PrimitiveType::Quads, 4);
