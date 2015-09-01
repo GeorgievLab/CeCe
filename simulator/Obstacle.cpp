@@ -30,7 +30,7 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
     Object::configure(config, simulation);
 
     // Draw configured
-    m_draw = true;
+    m_draw = config.get("show", false);
 
     auto& shapes = getMutableShapes();
     assert(!shapes.empty());
