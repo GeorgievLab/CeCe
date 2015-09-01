@@ -196,7 +196,10 @@ void Module::updateDrawable() const
         RealType alphaSum = 0;
 
         for (auto id : getSignalIds())
-            alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+        {
+            if (m_colors[id] != render::colors::TRANSPARENT)
+                alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+        }
 
         // Alpha for background
         const auto alphaBg = std::max<RealType>(1 - alphaSum, 0);
@@ -211,6 +214,9 @@ void Module::updateDrawable() const
             // Mixup signal colors
             for (auto id : getSignalIds())
             {
+                if (m_colors[id] == render::colors::TRANSPARENT)
+                    continue;
+
                 // Calculate alpha value
                 const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
 
