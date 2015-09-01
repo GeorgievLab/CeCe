@@ -103,6 +103,7 @@ void Cell::draw(render::Context& context)
     context.colorPush();
     context.enableAlpha();
     m_renderObject->draw(context, radius / units::Length(1), color);
+    context.disableAlpha();
     context.colorPop();
     context.matrixPop();
 }

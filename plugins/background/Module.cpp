@@ -85,6 +85,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     context.colorPush();
     context.enableAlpha();
     m_drawable->draw(context);
+    context.disableAlpha();
     context.colorPop();
     context.matrixPop();
 }

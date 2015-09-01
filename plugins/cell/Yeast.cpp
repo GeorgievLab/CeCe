@@ -193,6 +193,7 @@ void Yeast::draw(render::Context& context)
     context.colorPush();
     context.enableAlpha();
     m_renderObject->draw(context, 0.5f, 0.5f * (budRadius / radius), color, getIdentificationColor());
+    context.disableAlpha();
     context.colorPop();
     context.matrixPop();
 }
