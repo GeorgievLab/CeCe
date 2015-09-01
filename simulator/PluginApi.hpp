@@ -75,9 +75,10 @@ public:
     /**
      * @brief Configure plugin.
      *
-     * @param config Plugin configuration
+     * @param simulation Current simulation.
+     * @param config     Plugin configuration.
      */
-    virtual void configure(const Configuration& config)
+    virtual void configure(Simulation& simulation, const Configuration& config)
     {
         // Nothing to do
     }
