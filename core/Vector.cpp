@@ -11,13 +11,11 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
-#if !_MSC_VER && !defined(__GNUC__)
+#if !defined(__GNUC__)
 template class Vector<float>;
 template class Vector<unsigned int>;
 template class Vector<int>;
@@ -25,8 +23,6 @@ template class Vector<int>;
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

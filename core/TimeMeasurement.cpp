@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -14,9 +14,7 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -24,22 +22,20 @@ OutStream* g_output = &std::cout;
 
 /* ************************************************************************ */
 
-OutStream* getMeasureTimeOutput() NOEXCEPT
+OutStream* getMeasureTimeOutput() noexcept
 {
     return g_output;
 }
 
 /* ************************************************************************ */
 
-void setMeasureTimeOutput(OutStream* output) NOEXCEPT
+void setMeasureTimeOutput(OutStream* output) noexcept
 {
     g_output = output;
 }
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

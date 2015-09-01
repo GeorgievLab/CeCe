@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -21,17 +21,9 @@
 #include <memory>
 #include <type_traits>
 
-// Simulator
-#include "core/compatibility.hpp"
-
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
-
-/* ************************************************************************ */
-
 namespace memory {
 
 /* ************************************************************************ */
@@ -42,7 +34,7 @@ namespace memory {
  * @param align Memory alignment.
  * @param size  Number of required bytes.
  */
-DLL_EXPORT void* allocate_aligned_memory(std::size_t align, std::size_t size);
+void* allocate_aligned_memory(std::size_t align, std::size_t size);
 
 /* ************************************************************************ */
 
@@ -51,7 +43,7 @@ DLL_EXPORT void* allocate_aligned_memory(std::size_t align, std::size_t size);
  *
  * @param ptr
  */
-DLL_EXPORT void deallocate_aligned_memory(void* ptr) NOEXCEPT;
+void deallocate_aligned_memory(void* ptr) noexcept;
 
 /* ************************************************************************ */
 
@@ -65,11 +57,7 @@ DLL_EXPORT void deallocate_aligned_memory(void* ptr) NOEXCEPT;
  * @tparam T
  * @tparam Align
  */
-#ifdef _MSC_VER
-template <typename T, std::size_t Align = ((__alignof(T) > sizeof(void*)) ? __alignof(T) : sizeof(void*))>
-#else
 template <typename T, std::size_t Align = ((alignof(T) > sizeof(void*)) ? alignof(T) : sizeof(void*))>
-#endif
 class AlignedAllocator;
 
 /* ************************************************************************ */
@@ -139,7 +127,7 @@ public:
      * @param src
      */
     template <class U>
-    AlignedAllocator(const AlignedAllocator<U, Align>& src) NOEXCEPT
+    AlignedAllocator(const AlignedAllocator<U, Align>& src) noexcept
     {
         // Nothing to do
     }
@@ -154,7 +142,7 @@ public:
      *
      * @return
      */
-    size_type max_size() const NOEXCEPT
+    size_type max_size() const noexcept
     {
         return (size_type(~0) - size_type(Align)) / sizeof(T);
     }
@@ -171,7 +159,7 @@ public:
      *
      * @return
      */
-    pointer address(reference x) const NOEXCEPT
+    pointer address(reference x) const noexcept
     {
         return std::addressof(x);
     }
@@ -184,7 +172,7 @@ public:
      *
      * @return
      */
-    const_pointer address(const_reference x) const NOEXCEPT
+    const_pointer address(const_reference x) const noexcept
     {
         return std::addressof(x);
     }
@@ -213,7 +201,7 @@ public:
      *
      * @param p
      */
-    void deallocate(pointer p, size_type) NOEXCEPT
+    void deallocate(pointer p, size_type) noexcept
     {
         return memory::deallocate_aligned_memory(p);
     }
@@ -237,11 +225,7 @@ public:
      *
      * @param p Pointer to object.
      */
-#ifdef _MSC_VER
-    void destroy(pointer p)
-#else
     void destroy(pointer p) noexcept(noexcept(p->~T()))
-#endif
     {
         p->~T();
     }
@@ -258,7 +242,7 @@ public:
  * @return
  */
 template <typename T, std::size_t TAlign, typename U, std::size_t UAlign>
-inline bool operator==(const AlignedAllocator<T, TAlign>& t, const AlignedAllocator<U, UAlign>& u) NOEXCEPT
+inline bool operator==(const AlignedAllocator<T, TAlign>& t, const AlignedAllocator<U, UAlign>& u) noexcept
 {
     return TAlign == UAlign;
 }
@@ -274,15 +258,13 @@ inline bool operator==(const AlignedAllocator<T, TAlign>& t, const AlignedAlloca
  * @return
  */
 template <typename T, std::size_t TAlign, typename U, std::size_t UAlign>
-inline bool operator!=(const AlignedAllocator<T, TAlign>& t, const AlignedAllocator<U, UAlign>& u) NOEXCEPT
+inline bool operator!=(const AlignedAllocator<T, TAlign>& t, const AlignedAllocator<U, UAlign>& u) noexcept
 {
     return operator!=(t, u);
 }
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

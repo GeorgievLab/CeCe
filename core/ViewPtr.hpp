@@ -11,14 +11,11 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/UniquePtr.hpp"
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -44,7 +41,7 @@ public:
      *
      * @param ptr Object pointer.
      */
-    ViewPtr(T* ptr) NOEXCEPT
+    ViewPtr(T* ptr) noexcept
         : m_ptr(ptr)
     {
         // Nothing to do
@@ -56,7 +53,7 @@ public:
      *
      * @param ptr Unique pointer.
      */
-    ViewPtr(const UniquePtr<T>& ptr) NOEXCEPT
+    ViewPtr(const UniquePtr<T>& ptr) noexcept
         : m_ptr(ptr.get())
     {
         // Nothing to do
@@ -70,7 +67,7 @@ public:
     /**
      * @brief Returns if pointer is set.
      */
-    explicit operator bool() const NOEXCEPT
+    explicit operator bool() const noexcept
     {
         return m_ptr != nullptr;
     }
@@ -79,7 +76,7 @@ public:
     /**
      * @brief Implicit cast to operator.
      */
-    operator T*() const NOEXCEPT
+    operator T*() const noexcept
     {
         return m_ptr;
     }
@@ -90,7 +87,7 @@ public:
      *
      * @return Reference.
      */
-    T& operator*() NOEXCEPT
+    T& operator*() noexcept
     {
         return *m_ptr;
     }
@@ -101,7 +98,7 @@ public:
      *
      * @return Reference.
      */
-    const T& operator*() const NOEXCEPT
+    const T& operator*() const noexcept
     {
         return *m_ptr;
     }
@@ -112,7 +109,7 @@ public:
      *
      * @return Pointer.
      */
-    T* operator->() NOEXCEPT
+    T* operator->() noexcept
     {
         return m_ptr;
     }
@@ -123,7 +120,7 @@ public:
      *
      * @return Pointer.
      */
-    const T* operator->() const NOEXCEPT
+    const T* operator->() const noexcept
     {
         return m_ptr;
     }
@@ -136,7 +133,7 @@ public:
     /**
      * @brief Returns stored pointer.
      */
-    T* get() const NOEXCEPT
+    T* get() const noexcept
     {
         return m_ptr;
     }
@@ -151,7 +148,7 @@ public:
      *
      * @param ptr New pointer.
      */
-    void reset(T* ptr = nullptr) NOEXCEPT
+    void reset(T* ptr = nullptr) noexcept
     {
         m_ptr = ptr;
     }
@@ -162,7 +159,7 @@ public:
      *
      * @return Previously stored pointer.
      */
-    T* release() NOEXCEPT
+    T* release() noexcept
     {
         T* tmp = m_ptr;
         m_ptr = nullptr;
@@ -189,15 +186,13 @@ private:
  * @return
  */
 template<typename T>
-ViewPtr<T> makeView(T* ptr) NOEXCEPT
+ViewPtr<T> makeView(T* ptr) noexcept
 {
     return ViewPtr<T>(ptr);
 }
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

@@ -15,9 +15,7 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -39,7 +37,7 @@ using Tuple = std::tuple<Args...>;
  * @return
  */
 template<unsigned I, class... Types>
-CONSTEXPR auto get(Tuple<Types...>& t) -> decltype(std::get<I>(t))
+constexpr auto get(Tuple<Types...>& t) -> decltype(std::get<I>(t))
 {
    return std::get<I>(t);
 }
@@ -54,7 +52,7 @@ CONSTEXPR auto get(Tuple<Types...>& t) -> decltype(std::get<I>(t))
  * @return
  */
 template<unsigned I, class... Types>
-CONSTEXPR auto get(Tuple<Types...>&& t) -> decltype(std::get<I>(t))
+constexpr auto get(Tuple<Types...>&& t) -> decltype(std::get<I>(t))
 {
    return std::get<I>(t);
 }
@@ -69,15 +67,13 @@ CONSTEXPR auto get(Tuple<Types...>&& t) -> decltype(std::get<I>(t))
  * @return
  */
 template<unsigned I, class... Types>
-CONSTEXPR auto get(const Tuple<Types...>& t) -> decltype(std::get<I>(t))
+constexpr auto get(const Tuple<Types...>& t) -> decltype(std::get<I>(t))
 {
    return std::get<I>(t);
 }
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

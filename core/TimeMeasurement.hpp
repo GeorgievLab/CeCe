@@ -14,15 +14,12 @@
 #include <chrono>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/OutStream.hpp"
 #include "core/String.hpp"
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -38,7 +35,7 @@ using Clock = std::chrono::high_resolution_clock;
  *
  * @return
  */
-OutStream* getMeasureTimeOutput() NOEXCEPT;
+OutStream* getMeasureTimeOutput() noexcept;
 
 /* ************************************************************************ */
 
@@ -47,14 +44,14 @@ OutStream* getMeasureTimeOutput() NOEXCEPT;
  *
  * @param output
  */
-void setMeasureTimeOutput(OutStream* output) NOEXCEPT;
+void setMeasureTimeOutput(OutStream* output) noexcept;
 
 /* ************************************************************************ */
 
 /**
  * @brief Default functor for writing measurement output.
  */
-struct DLL_EXPORT DefaultMeasurementOutput
+struct DefaultMeasurementOutput
 {
 
     /**
@@ -64,7 +61,7 @@ struct DLL_EXPORT DefaultMeasurementOutput
      * @param name Measurement name.
      * @param dt   Measured time.
      */
-    void operator()(OutStream& out, const String& name, Clock::duration dt) const NOEXCEPT
+    void operator()(OutStream& out, const String& name, Clock::duration dt) const noexcept
     {
         using namespace std::chrono;
         out << name << ";" << duration_cast<microseconds>(dt).count() << "\n";
@@ -134,7 +131,7 @@ private:
  */
 struct TimeMeasurementDummy
 {
-    TimeMeasurementDummy() NOEXCEPT {}
+    TimeMeasurementDummy() noexcept {}
     ~TimeMeasurementDummy() {}
 };
 
@@ -148,7 +145,7 @@ struct TimeMeasurementDummy
  * @return
  */
 template<typename... Args>
-inline TimeMeasurementDummy measure_time(Args&&... args) NOEXCEPT
+inline TimeMeasurementDummy measure_time(Args&&... args) noexcept
 {
     return {};
 }
@@ -166,7 +163,7 @@ inline TimeMeasurementDummy measure_time(Args&&... args) NOEXCEPT
  * @return
  */
 template<typename Fn>
-inline TimeMeasurementBase<Fn> measure_time(String name, Fn fn) NOEXCEPT
+inline TimeMeasurementBase<Fn> measure_time(String name, Fn fn) noexcept
 {
     return TimeMeasurementBase<Fn>{std::move(name), fn};
 }
@@ -182,7 +179,7 @@ inline TimeMeasurementBase<Fn> measure_time(String name, Fn fn) NOEXCEPT
  *
  * @return
  */
-inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(String name) NOEXCEPT
+inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(String name) noexcept
 {
     return TimeMeasurementBase<DefaultMeasurementOutput>{std::move(name), DefaultMeasurementOutput{}};
 }
@@ -190,8 +187,6 @@ inline TimeMeasurementBase<DefaultMeasurementOutput> measure_time(String name) N
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

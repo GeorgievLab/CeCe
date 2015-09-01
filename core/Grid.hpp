@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 #pragma once
@@ -20,9 +20,7 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -118,7 +116,7 @@ public:
      *
      * @return
      */
-    ValueType& operator[](SizeType offset) NOEXCEPT
+    ValueType& operator[](SizeType offset) noexcept
     {
         return m_data[offset];
     }
@@ -131,7 +129,7 @@ public:
      *
      * @return
      */
-    const ValueType& operator[](SizeType offset) const NOEXCEPT
+    const ValueType& operator[](SizeType offset) const noexcept
     {
         return m_data[offset];
     }
@@ -144,7 +142,7 @@ public:
      *
      * @return
      */
-    ValueType& operator[](const CoordinateType& coord) NOEXCEPT
+    ValueType& operator[](const CoordinateType& coord) noexcept
     {
         return m_data[calcOffset(coord)];
     }
@@ -157,7 +155,7 @@ public:
      *
      * @return
      */
-    const ValueType& operator[](const CoordinateType& coord) const NOEXCEPT
+    const ValueType& operator[](const CoordinateType& coord) const noexcept
     {
         return m_data[calcOffset(coord)];
     }
@@ -172,7 +170,7 @@ public:
      *
      * @return
      */
-    const Vector<SizeType>& getSize() const NOEXCEPT
+    const Vector<SizeType>& getSize() const noexcept
     {
         return m_size;
     }
@@ -183,7 +181,7 @@ public:
      *
      * @return
      */
-    const T* getData() const NOEXCEPT
+    const T* getData() const noexcept
     {
         return m_data.data();
     }
@@ -194,7 +192,7 @@ public:
      *
      * @return
      */
-    const ContainerType& getContainer() const NOEXCEPT
+    const ContainerType& getContainer() const noexcept
     {
         return m_data;
     }
@@ -205,7 +203,7 @@ public:
      *
      * @return
      */
-    ContainerType& getContainer() NOEXCEPT
+    ContainerType& getContainer() noexcept
     {
         return m_data;
     }
@@ -216,7 +214,7 @@ public:
      *
      * @return
      */
-    typename ContainerType::iterator begin() NOEXCEPT
+    typename ContainerType::iterator begin() noexcept
     {
         return m_data.begin();
     }
@@ -227,7 +225,7 @@ public:
      *
      * @return
      */
-    typename ContainerType::const_iterator begin() const NOEXCEPT
+    typename ContainerType::const_iterator begin() const noexcept
     {
         return m_data.begin();
     }
@@ -238,7 +236,7 @@ public:
      *
      * @return
      */
-    typename ContainerType::const_iterator cbegin() const NOEXCEPT
+    typename ContainerType::const_iterator cbegin() const noexcept
     {
         return m_data.cbegin();
     }
@@ -249,7 +247,7 @@ public:
      *
      * @return
      */
-    typename ContainerType::iterator end() NOEXCEPT
+    typename ContainerType::iterator end() noexcept
     {
         return m_data.end();
     }
@@ -260,7 +258,7 @@ public:
      *
      * @return
      */
-    typename ContainerType::const_iterator end() const NOEXCEPT
+    typename ContainerType::const_iterator end() const noexcept
     {
         return m_data.end();
     }
@@ -271,7 +269,7 @@ public:
      *
      * @return
      */
-    typename ContainerType::const_iterator cend() const NOEXCEPT
+    typename ContainerType::const_iterator cend() const noexcept
     {
         return m_data.cend();
     }
@@ -336,7 +334,7 @@ public:
      *
      * @return
      */
-    bool inRange(const CoordinateType& coord) const NOEXCEPT
+    bool inRange(const CoordinateType& coord) const noexcept
     {
         // Unsigned type for SizeType is allways greater than or equal to zero,
         // the optimizer should remove that checks
@@ -356,7 +354,7 @@ public:
      *
      * @return
      */
-    SizeType calcOffset(const CoordinateType& coord) const NOEXCEPT
+    SizeType calcOffset(const CoordinateType& coord) const noexcept
     {
         return coord.getX() + coord.getY() * getSize().getWidth();
     }
@@ -375,8 +373,6 @@ private:
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

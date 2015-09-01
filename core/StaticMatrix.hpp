@@ -20,9 +20,7 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -44,13 +42,13 @@ public:
     /**
      * @brief Matrix width.
      */
-    static CONSTEXPR_CONST auto WIDTH = Width;
+    static constexpr auto WIDTH = Width;
 
 
     /**
      * @brief Matrix height.
      */
-    static CONSTEXPR_CONST auto HEIGHT = Height;
+    static constexpr auto HEIGHT = Height;
 
 
 // Public Ctors
@@ -60,7 +58,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    CONSTEXPR StaticMatrix() = default;
+    constexpr StaticMatrix() = default;
 
 
     /**
@@ -68,7 +66,7 @@ public:
      *
      * @param src Initial data
      */
-    StaticMatrix(const T (&src)[Width][Height]) NOEXCEPT
+    StaticMatrix(const T (&src)[Width][Height]) noexcept
     {
         for (decltype(Width) i = 0; i < WIDTH; ++i)
             for (decltype(Height) j = 0; j < HEIGHT; ++j)
@@ -87,7 +85,7 @@ public:
      *
      * @return
      */
-    StaticMatrix& operator=(const StaticMatrix& v) NOEXCEPT
+    StaticMatrix& operator=(const StaticMatrix& v) noexcept
     {
         std::memcpy(m_data, v.m_data, sizeof(m_data));
         return *this;
@@ -101,7 +99,7 @@ public:
      *
      * @return
      */
-    T* operator[](decltype(Height) i) NOEXCEPT
+    T* operator[](decltype(Height) i) noexcept
     {
         return m_data[i];
     }
@@ -114,7 +112,7 @@ public:
      *
      * @return
      */
-    const T* operator[](decltype(Height) i) const NOEXCEPT
+    const T* operator[](decltype(Height) i) const noexcept
     {
         return m_data[i];
     }
@@ -127,7 +125,7 @@ public:
      *
      * @return
      */
-    T& operator[](Vector<decltype(Height)> coord) NOEXCEPT
+    T& operator[](Vector<decltype(Height)> coord) noexcept
     {
         return m_data[coord.getY()][coord.getX()];
     }
@@ -140,7 +138,7 @@ public:
      *
      * @return
      */
-    const T& operator[](Vector<decltype(Height)> coord) const NOEXCEPT
+    const T& operator[](Vector<decltype(Height)> coord) const noexcept
     {
         return m_data[coord.getY()][coord.getX()];
     }
@@ -153,7 +151,7 @@ public:
      *
      * @return
      */
-    StaticMatrix& operator+=(const StaticMatrix& rhs) NOEXCEPT
+    StaticMatrix& operator+=(const StaticMatrix& rhs) noexcept
     {
         for (decltype(Width) i = 0; i < WIDTH; ++i)
             for (decltype(Height) j = 0; j < HEIGHT; ++j)
@@ -170,7 +168,7 @@ public:
      *
      * @return
      */
-    StaticMatrix& operator-=(const StaticMatrix& rhs) NOEXCEPT
+    StaticMatrix& operator-=(const StaticMatrix& rhs) noexcept
     {
         for (decltype(Width) i = 0; i < WIDTH; ++i)
             for (decltype(Height) j = 0; j < HEIGHT; ++j)
@@ -187,7 +185,7 @@ public:
      *
      * @return
      */
-    StaticMatrix& operator*=(T rhs) NOEXCEPT
+    StaticMatrix& operator*=(T rhs) noexcept
     {
         for (decltype(Width) i = 0; i < WIDTH; ++i)
             for (decltype(Height) j = 0; j < HEIGHT; ++j)
@@ -204,7 +202,7 @@ public:
      *
      * @return
      */
-    StaticMatrix& operator/=(T rhs) NOEXCEPT
+    StaticMatrix& operator/=(T rhs) noexcept
     {
         for (decltype(Width) i = 0; i < WIDTH; ++i)
             for (decltype(Height) j = 0; j < HEIGHT; ++j)
@@ -223,7 +221,7 @@ public:
      *
      * @return
      */
-    T sum() const NOEXCEPT
+    T sum() const noexcept
     {
         T res{};
 
@@ -240,7 +238,7 @@ public:
      *
      * @return
      */
-    StaticMatrix& normalize() NOEXCEPT
+    StaticMatrix& normalize() noexcept
     {
         *this /= sum();
         return *this;
@@ -252,7 +250,7 @@ public:
      *
      * @return
      */
-    StaticMatrix<decltype(T{} / T{}), Width, Height> normalized() NOEXCEPT
+    StaticMatrix<decltype(T{} / T{}), Width, Height> normalized() noexcept
     {
         return *this / sum();
     }
@@ -264,7 +262,7 @@ public:
      * @return
      */
     template<typename F>
-    static StaticMatrix generate(F fn) NOEXCEPT
+    static StaticMatrix generate(F fn) noexcept
     {
         StaticMatrix res;
 
@@ -281,12 +279,12 @@ public:
      *
      * @return
      */
-    static StaticMatrix<Vector<T>, Width, Height> makeDistances() NOEXCEPT
+    static StaticMatrix<Vector<T>, Width, Height> makeDistances() noexcept
     {
         static_assert(Width % 2 == 1, "Width must be odd");
         static_assert(Height % 2 == 1, "Height must be odd");
-        static CONSTEXPR_CONST T HALF_X = Width / T(2);
-        static CONSTEXPR_CONST T HALF_Y = Height / T(2);
+        static constexpr T HALF_X = Width / T(2);
+        static constexpr T HALF_Y = Height / T(2);
 
         StaticMatrix<Vector<T>, Width, Height> res;
 
@@ -323,7 +321,7 @@ template<typename T1, typename T2, unsigned Width, unsigned Height>
 inline StaticMatrix<decltype(T1{} + T2{}), Width, Height> operator+(
     StaticMatrix<T1, Width, Height> lhs,
     const StaticMatrix<T2, Width, Height>& rhs
-) NOEXCEPT
+) noexcept
 {
     return lhs += rhs;
 }
@@ -345,7 +343,7 @@ template<typename T1, typename T2, unsigned Width, unsigned Height>
 inline StaticMatrix<decltype(T1{} - T2{}), Width, Height> operator-(
     StaticMatrix<T1, Width, Height> lhs,
     const StaticMatrix<T2, Width, Height>& rhs
-) NOEXCEPT
+) noexcept
 {
     return lhs -= rhs;
 }
@@ -366,7 +364,7 @@ inline StaticMatrix<decltype(T1{} - T2{}), Width, Height> operator-(
 template<typename T1, typename T2, unsigned Width, unsigned Height>
 inline StaticMatrix<decltype(T1{} * T2{}), Width, Height> operator*(
     StaticMatrix<T1, Width, Height> lhs, T2 rhs
-) NOEXCEPT
+) noexcept
 {
     StaticMatrix<decltype(T1{} / T2{}), Width, Height> res;
 
@@ -393,7 +391,7 @@ inline StaticMatrix<decltype(T1{} * T2{}), Width, Height> operator*(
 template<typename T1, typename T2, unsigned Width, unsigned Height>
 inline StaticMatrix<decltype(T1{} / T2{}), Width, Height> operator/(
     StaticMatrix<T1, Width, Height> lhs, T2 rhs
-) NOEXCEPT
+) noexcept
 {
     StaticMatrix<decltype(T1{} / T2{}), Width, Height> res;
 
@@ -406,9 +404,7 @@ inline StaticMatrix<decltype(T1{} / T2{}), Width, Height> operator/(
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */
 

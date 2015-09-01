@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/String.hpp"
 
 /* ************************************************************************ */
@@ -27,7 +26,7 @@ class Simulation;
 /**
  * @brief Event listener class for events in simulation.
  */
-class DLL_EXPORT SimulationListener
+class SimulationListener
 {
 
 // Public Ctors & Dtors

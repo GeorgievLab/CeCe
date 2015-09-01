@@ -16,9 +16,7 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
@@ -64,12 +62,7 @@ using SizeVector = Vector<units::Length>;
 
 /* ************************************************************************ */
 
-#if _MSC_VER
-DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Length>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Velocity>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Acceleration>;
-DLL_EXPORT_EXTERN template class DLL_EXPORT Vector<units::Force>;
-#elif !defined(__GNUC__) // NOTE: GCC have problem with =default constructor in linking stage.
+#if !defined(__GNUC__) // NOTE: GCC have problem with =default constructor in linking stage.
 extern template class Vector<units::Length>;
 extern template class Vector<units::Velocity>;
 extern template class Vector<units::Acceleration>;
@@ -78,8 +71,6 @@ extern template class Vector<units::Force>;
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

@@ -1,9 +1,9 @@
 /* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
-/* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
 /* ************************************************************************ */
 
 // Declaration
@@ -26,17 +26,12 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
-
-/* ************************************************************************ */
-
 namespace memory {
 
 /* ************************************************************************ */
 
-bool is_power_of_two(std::size_t x) NOEXCEPT
+bool is_power_of_two(std::size_t x) noexcept
 {
     size_t powerOfTwo = 1ul;
 
@@ -71,7 +66,7 @@ void* allocate_aligned_memory(std::size_t align, std::size_t size)
 
 /* ************************************************************************ */
 
-void deallocate_aligned_memory(void* ptr) NOEXCEPT
+void deallocate_aligned_memory(void* ptr) noexcept
 {
 #ifdef _WIN32
     _aligned_free(ptr);
@@ -82,12 +77,7 @@ void deallocate_aligned_memory(void* ptr) NOEXCEPT
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
-
-/* ************************************************************************ */
-
 }
 
 /* ************************************************************************ */

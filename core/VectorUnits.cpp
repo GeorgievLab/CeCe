@@ -11,13 +11,11 @@
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
-#if !_MSC_VER && !defined(__GNUC__)
+#if !defined(__GNUC__)
 template class Vector<units::Length>;
 template class Vector<units::Velocity>;
 template class Vector<units::Acceleration>;
@@ -26,8 +24,6 @@ template class Vector<units::Force>;
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */

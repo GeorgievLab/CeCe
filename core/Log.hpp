@@ -11,21 +11,18 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/OutStream.hpp"
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 inline namespace core {
-#endif
 
 /* ************************************************************************ */
 
 /**
  * @brief Logging class.
  */
-class DLL_EXPORT Log
+class Log
 {
 
 // Private Types
@@ -47,7 +44,7 @@ public:
      *
      * @param os
      */
-    static void setOutput(OutStream* os) NOEXCEPT
+    static void setOutput(OutStream* os) noexcept
     {
         m_output = os;
     }
@@ -58,7 +55,7 @@ public:
      *
      * @param os
      */
-    static void setError(OutStream* os) NOEXCEPT
+    static void setError(OutStream* os) noexcept
     {
         m_error = os;
     }
@@ -170,8 +167,6 @@ private:
 
 /* ************************************************************************ */
 
-#ifndef _MSC_VER
 }
-#endif
 
 /* ************************************************************************ */
