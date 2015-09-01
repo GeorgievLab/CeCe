@@ -48,9 +48,7 @@ static void python_wrapper_core_Vector(const char* fullname, PyObject* module)
     type_def::definition.tp_init = Constructor<type, T, T>::to();
     type_def::definition.tp_getset = properties;
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, name, reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, name);
 }
 
 /* ************************************************************************ */

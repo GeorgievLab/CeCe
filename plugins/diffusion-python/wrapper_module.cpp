@@ -94,9 +94,7 @@ void python_wrapper_module()
     type_def::definition.tp_getset = properties;
     type_def::definition.tp_methods = fns;
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "Module", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "Module");
 
     // Register dynamic type
     registerDynamic(typeid(type), &type_def::definition);

@@ -45,9 +45,7 @@ static void python_wrapper_simulator_Configuration(PyObject* module)
     type_def::init("simulator.Configuration");
     type_def::definition.tp_methods = fns;
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "Configuration", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "Configuration");
 }
 
 /* ************************************************************************ */
@@ -81,9 +79,7 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
     type_def::definition.tp_getset = properties;
     type_def::definition.tp_methods = fns;
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "Simulation", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "Simulation");
 }
 
 /* ************************************************************************ */
@@ -95,9 +91,7 @@ static void python_wrapper_simulator_Module(PyObject* module)
 
     type_def::init("simulator.Module");
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "Module", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "Module");
 }
 
 /* ************************************************************************ */
@@ -141,9 +135,7 @@ static void python_wrapper_simulator_Object(PyObject* module)
     type_def::definition.tp_getset = properties;
     type_def::definition.tp_methods = fns;
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "Object", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "Object");
 
     // Define constants
     PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));

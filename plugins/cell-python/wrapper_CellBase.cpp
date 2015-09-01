@@ -50,9 +50,7 @@ void python_wrapper_cell_CellBase()
     type_def::definition.tp_getset = properties;
     type_def::definition.tp_methods = fns;
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "CellBase", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "CellBase");
 
     // Register dynamic type
     registerDynamic(typeid(CellBase), &type_def::definition);

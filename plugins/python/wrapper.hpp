@@ -784,6 +784,27 @@ struct TypeDefinition
 
 
     /**
+     * @brief Finish type definition.
+     *
+     * @param module
+     * @param name
+     *
+     * @return
+     */
+    static bool finish(PyObject* module, const char* name) noexcept
+    {
+        const auto res = ready();
+
+        auto obj = reinterpret_cast<PyObject*>(&definition);
+
+        Py_INCREF(obj);
+        PyModule_AddObject(module, name, obj);
+
+        return res;
+    }
+
+
+    /**
      * @brief Ready type.
      *
      * @return

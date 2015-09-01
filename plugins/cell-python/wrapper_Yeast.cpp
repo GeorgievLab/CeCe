@@ -36,9 +36,7 @@ void python_wrapper_cell_Yeast()
 
     type_def::init("cell.Yeast", "cell.CellBase");
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "Yeast", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "Yeast");
 
     // Register dynamic type
     registerDynamic(typeid(Yeast), &type_def::definition);

@@ -53,9 +53,7 @@ static void python_wrapper_render_Context(PyObject* module)
     type_def::init("render.Context");
     type_def::definition.tp_methods = fns;
     type_def::ready();
-
-    Py_INCREF(&type_def::definition);
-    PyModule_AddObject(module, "Context", reinterpret_cast<PyObject*>(&type_def::definition));
+    type_def::finish(module, "Context");
 #endif
 }
 
