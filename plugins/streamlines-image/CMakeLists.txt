@@ -54,12 +54,13 @@ build_plugin(streamlines-image
 
 if (WIN32)
     set(LIBRARIES "")
+    set(COMPONENTS "core;imgproc;highgui;imgcodecs")
 
     foreach (DIR ${OpenCV_LIB_DIR})
         set(DIR "${DIR}/../bin")
 
-        foreach (COMPONENT ${OpenCV_LIB_COMPONENTS})
-            file(GLOB FILES "${DIR}/lib${COMPONENT}*.dll")
+        foreach (COMPONENT ${COMPONENTS})
+            file(GLOB FILES "${DIR}/libopencv_${COMPONENT}*.dll")
             set(LIBRARIES ${LIBRARIES} ${FILES})
         endforeach ()
     endforeach ()

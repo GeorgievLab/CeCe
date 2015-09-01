@@ -190,12 +190,13 @@ endif ()
 
 if (WIN32 AND (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE))
     set(LIBRARIES "")
+    set(COMPONENTS ${OPENCV_COMPONENTS})
 
     foreach (DIR ${OpenCV_LIB_DIR})
         set(DIR "${DIR}/../bin")
 
-        foreach (COMPONENT ${OpenCV_LIB_COMPONENTS})
-            file(GLOB FILES "${DIR}/lib${COMPONENT}*.dll")
+        foreach (COMPONENT ${COMPONENTS})
+            file(GLOB FILES "${DIR}/libopencv_${COMPONENT}*.dll")
             set(LIBRARIES ${LIBRARIES} ${FILES})
         endforeach ()
     endforeach ()
