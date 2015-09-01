@@ -32,6 +32,8 @@ namespace streamlines_image {
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
+    Log::warning("'streamlines-image' plugin is obsolete, use 'obstacles-image' instead");
+
     static constexpr int THRESHOLD = 127;
 
     using namespace cv;
