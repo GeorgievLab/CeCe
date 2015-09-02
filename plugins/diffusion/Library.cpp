@@ -5,8 +5,6 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
-/* ************************************************************************ */
 
 // Simulator
 #include "simulator/Simulation.hpp"
@@ -15,6 +13,7 @@
 
 // Plugin
 #include "Module.hpp"
+#include "Generator.hpp"
 #include "StoreState.hpp"
 
 /* ************************************************************************ */
@@ -29,6 +28,8 @@ class DiffusionApi : public PluginApi
     {
         if (name == "store-state")
             return makeUnique<plugin::diffusion::StoreState>(simulation.useModule<plugin::diffusion::Module>("diffusion"));
+        else if (name == "generator")
+            return makeUnique<plugin::diffusion::Generator>(simulation.useModule<plugin::diffusion::Module>("diffusion"));
 
         return makeUnique<plugin::diffusion::Module>();
     }

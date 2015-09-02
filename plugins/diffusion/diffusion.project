@@ -20,10 +20,12 @@
     <File Name="Module.cpp"/>
     <File Name="Library.cpp"/>
     <File Name="StoreState.cpp"/>
+    <File Name="Generator.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
     <File Name="StoreState.hpp"/>
+    <File Name="Generator.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
