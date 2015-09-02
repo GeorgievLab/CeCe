@@ -60,7 +60,7 @@ void Generator::update(units::Time dt, simulator::Simulation& simulation)
 
         // No coordinates
         if (coords.empty())
-            continue;
+            coords.push_back(coord);
 
         const auto add = (source.production * dt) / coords.size();
 
