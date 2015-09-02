@@ -316,7 +316,7 @@ bool Simulation::update(units::Duration dt)
     {
         auto _ = measure_time("sim.physics", TimeMeasurementIterationOutput(this));
 
-        m_world.Step(dt.value(), 5, 5);
+        m_world.Step(getPhysicsEngineTimeStep().value(), 10, 10);
     }
 #endif
 
@@ -350,20 +350,7 @@ void Simulation::configure(const Configuration& config)
     }
 
     // Time step
-    {
-        String dtStr = config.get("dt");
-
-        // Real-time time step
-        if (dtStr.empty() || dtStr == "auto")
-        {
-            setTimeStep(Zero);
-        }
-        else
-        {
-            // Parse time step
-            setTimeStep(config.get<units::Time>("dt"));
-        }
-    }
+    setTimeStep(config.get<units::Time>("dt"));
 
     // Number of iterations
     setIterations(config.get("iterations", getIterations()));
@@ -442,35 +429,6 @@ void Simulation::configure(const Configuration& config)
 
         if (object)
             object->configure(obstacleConfig, *this);
-    }
-}
-
-/* ************************************************************************ */
-
-bool Simulation::update()
-{
-    if (isTimeStepRealTime())
-    {
-        using clock_type = std::chrono::high_resolution_clock;
-        using duration_type = std::chrono::duration<float, std::chrono::seconds::period>;
-
-        // Last update duration
-        static clock_type::duration diff{1};
-
-        // Get start time
-        auto start = clock_type::now();
-
-        static_assert(std::chrono::treat_as_floating_point<duration_type::rep>::value, "ehm...");
-        bool res = update(units::Time(std::chrono::duration_cast<duration_type>(diff).count()));
-
-        // Calculate time that takes to update simulation (then use it in next step)
-        diff = clock_type::now() - start;
-
-        return res;
-    }
-    else
-    {
-        return update(getTimeStep());
     }
 }
 

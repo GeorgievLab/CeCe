@@ -17,6 +17,7 @@
 #include <functional>
 
 // Simulator
+#include "core/Real.hpp"
 #include "core/Units.hpp"
 #include "core/UnitsCtors.hpp"
 #include "core/Vector.hpp"
@@ -371,6 +372,19 @@ public:
 #endif
 
 
+#if ENABLE_PHYSICS
+    /**
+     * @brief Returns physics engine time step.
+     *
+     * @return
+     */
+    units::Time getPhysicsEngineTimeStep() const noexcept
+    {
+        return m_physicsEngineTimeStep;
+    }
+#endif
+
+
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     /**
      * @brief Returns if physics debug data is shown.
@@ -527,7 +541,7 @@ public:
     /**
      * @brief Set simulation time step.
      *
-     * @param dt Time step. If value is units::Zero, real-time step is enabled.
+     * @param dt Time step.
      */
     void setTimeStep(units::Time dt) noexcept
     {
@@ -685,6 +699,19 @@ public:
     }
 
 
+#if ENABLE_PHYSICS
+    /**
+     * @brief Set physics engine simulation time step.
+     *
+     * @param dt Time step.
+     */
+    void setPhysicsEngineTimeStep(units::Time dt) noexcept
+    {
+        m_physicsEngineTimeStep = dt;
+    }
+#endif
+
+
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     /**
      * @brief If physics debug data should be shown.
@@ -796,7 +823,10 @@ public:
      *
      * @return If next step can be calculated.
      */
-    bool update();
+    bool update()
+    {
+        return update(getTimeStep());
+    }
 
 
 #if ENABLE_RENDER
@@ -876,6 +906,11 @@ private:
 
 #ifdef ENABLE_PHYSICS
     b2World m_world;
+#endif
+
+#if ENABLE_PHYSICS
+    /// Physics engine time step
+    units::Time m_physicsEngineTimeStep = units::s(1.0 / 60.0);
 #endif
 
     /// Simulation objects.
