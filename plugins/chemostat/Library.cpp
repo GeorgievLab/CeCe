@@ -26,11 +26,14 @@ class ChemostatApi : public PluginApi
 {
     void configure(Simulation& simulation, const Configuration& config) override
     {
+        constexpr auto SLOPE = units::um(5);
+
         const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
 
         const auto pipeTop = config.get<units::Length>("pipe-top");
         const auto pipeRadius = config.get<units::Length>("pipe-radius");
         const auto size = config.get<Vector<units::Length>>("size");
+        const auto visible = config.get("visible", false);
 
         // Upper part
         {
@@ -58,6 +61,7 @@ class ChemostatApi : public PluginApi
             shapes[0] = Shape::makeEdges(vertices);
 
             obstacle->initShapes();
+            obstacle->setVisible(visible);
         }
 
         // Bottom part
@@ -85,13 +89,17 @@ class ChemostatApi : public PluginApi
             // Top left
             vertices.push_back(PositionVector{borders[0], borders[6]});
             // Middle top left
-            vertices.push_back(PositionVector{borders[2], borders[6]});
+            vertices.push_back(PositionVector{borders[2] - SLOPE, borders[6]});
+            vertices.push_back(PositionVector{borders[2], borders[6] - SLOPE});
             // Middle bottom left
-            vertices.push_back(PositionVector{borders[2], borders[7]});
+            vertices.push_back(PositionVector{borders[2], borders[7] + SLOPE});
+            vertices.push_back(PositionVector{borders[2] + SLOPE, borders[7]});
             // Middle bottom right
-            vertices.push_back(PositionVector{borders[3], borders[7]});
+            vertices.push_back(PositionVector{borders[3] - SLOPE, borders[7]});
+            vertices.push_back(PositionVector{borders[3], borders[7] + SLOPE});
             // Middle top right
-            vertices.push_back(PositionVector{borders[3], borders[6]});
+            vertices.push_back(PositionVector{borders[3], borders[6] - SLOPE});
+            vertices.push_back(PositionVector{borders[3] + SLOPE, borders[6]});
             // Top right
             vertices.push_back(PositionVector{borders[1], borders[6]});
             // Bottom right
@@ -100,6 +108,7 @@ class ChemostatApi : public PluginApi
             shapes[0] = Shape::makeEdges(vertices);
 
             obstacle->initShapes();
+            obstacle->setVisible(visible);
         }
     }
 };
