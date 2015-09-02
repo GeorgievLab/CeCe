@@ -499,7 +499,8 @@ void Simulation::draw(render::Context& context)
     for (const auto& obj : getObjects())
     {
         assert(obj);
-        obj->draw(context);
+        if (obj->isVisible())
+            obj->draw(context);
     }
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG

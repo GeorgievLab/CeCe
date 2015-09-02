@@ -29,9 +29,6 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
 {
     Object::configure(config, simulation);
 
-    // Draw configured
-    m_draw = config.get("show", false);
-
     auto& shapes = getMutableShapes();
     assert(!shapes.empty());
     auto& shape = shapes[0];
@@ -89,9 +86,6 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
 void Obstacle::draw(render::Context& context)
 {
     // TODO: redesign
-
-    if (!m_draw)
-        return;
 
     DynamicArray<render::Lines::LineType> lines;
 

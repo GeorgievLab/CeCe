@@ -272,8 +272,16 @@ void Object::update(units::Duration dt)
 
 void Object::configure(const Configuration& config, Simulation& simulation)
 {
+#if ENABLE_RENDER
+    // Set object position
+    setVisible(config.get("visible", isVisible()));
+#endif
+
     // Set object position
     setPosition(config.get("position", getPosition()));
+
+    // Set object velocity
+    setVelocity(config.get("velocity", getVelocity()));
 
     // Set object density
     setDensity(config.get("density", getDensity()));

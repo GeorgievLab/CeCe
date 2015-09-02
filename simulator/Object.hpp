@@ -216,6 +216,19 @@ public:
     }
 
 
+#if ENABLE_RENDER
+    /**
+     * @brief Returns if object is visible.
+     *
+     * @return
+     */
+    bool isVisible() const noexcept
+    {
+        return m_visible;
+    }
+#endif
+
+
     /**
      * @brief Returns current object density.
      *
@@ -337,6 +350,19 @@ public:
      * @return
      */
     void setType(Type type) noexcept;
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Set if object is visible.
+     *
+     * @param flag
+     */
+    void setVisible(bool flag) noexcept
+    {
+        m_visible = flag;
+    }
+#endif
 
 
     /**
@@ -582,6 +608,11 @@ private:
 
     /// Object type.
     Type m_type;
+
+#if ENABLE_RENDER
+    // If object is visible.
+    bool m_visible = true;
+#endif
 
 #if ENABLE_PHYSICS
     /// Physics body.
