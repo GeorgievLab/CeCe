@@ -546,7 +546,7 @@ private:
     StaticArray<ViewPtr<simulator::Obstacle>, LayoutPosCount> m_layoutBarriers;
 
     /// Use dynamic objects as obstacles
-    bool m_dynamicObjectsObstacles = true;
+    bool m_dynamicObjectsObstacles = false;
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Render grid for velocities
