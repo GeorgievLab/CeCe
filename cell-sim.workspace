@@ -24,6 +24,7 @@
   <Project Name="streamlines-image" Path="plugins/streamlines-image/streamlines-image.project" Active="No"/>
   <Project Name="background" Path="plugins/background/background.project" Active="No"/>
   <Project Name="obstacles-image" Path="plugins/obstacles-image/obstacles-image.project" Active="No"/>
+  <Project Name="chemostat" Path="plugins/chemostat/chemostat.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -51,6 +52,7 @@
       <Project Name="plugin_streamlines-image" ConfigName="Debug"/>
       <Project Name="plugin_background" ConfigName="Debug"/>
       <Project Name="plugin_obstacles-image" ConfigName="Debug"/>
+      <Project Name="plugin_chemostat" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -78,6 +80,7 @@
       <Project Name="plugin_streamlines-image" ConfigName="Release"/>
       <Project Name="plugin_background" ConfigName="Release"/>
       <Project Name="plugin_obstacles-image" ConfigName="Release"/>
+      <Project Name="plugin_chemostat" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
   <Environment>
