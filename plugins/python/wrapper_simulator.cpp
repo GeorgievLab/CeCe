@@ -52,26 +52,27 @@ static void python_wrapper_simulator_Configuration(PyObject* module)
 
 static void python_wrapper_simulator_Simulation(PyObject* module)
 {
-    using type = simulator::Simulation*;
-    using type_def = TypeDefinition<type>;
+    using type = simulator::Simulation;
+    using type_ptr = simulator::Simulation*;
+    using type_def = TypeDefinition<type_ptr>;
 
     static PyGetSetDef properties[] = {
-        defineProperty<1, type>("worldSize", &simulator::Simulation::getWorldSize),
-        defineProperty<2, type>("iteration", &simulator::Simulation::getIteration),
-        defineProperty<3, type>("iterations", &simulator::Simulation::getIterations),
-        defineProperty<4, type>("timeStep", &simulator::Simulation::getTimeStep),
-        defineProperty<5, type>("totalTime", &simulator::Simulation::getTotalTime),
-        defineProperty<6, type>("objectsCount", +[](type obj) {
+        defineProperty<1, type_ptr>("worldSize", &type::getWorldSize),
+        defineProperty<2, type_ptr>("iteration", &type::getIteration),
+        defineProperty<3, type_ptr>("iterations", &type::getIterations),
+        defineProperty<4, type_ptr>("timeStep", &type::getTimeStep, &type::setTimeStep),
+        defineProperty<5, type_ptr>("totalTime", &type::getTotalTime),
+        defineProperty<6, type_ptr>("objectsCount", +[](type_ptr obj) {
             return obj->getObjects().size();
         }),
         {NULL}  /* Sentinel */
     };
 
     static PyMethodDef fns[] = {
-        defineMemberFunction<1, type>("useModule",
-            static_cast<simulator::Module*(simulator::Simulation::*)(const String&)>(&simulator::Simulation::useModule)
+        defineMemberFunction<1, type_ptr>("useModule",
+            static_cast<simulator::Module*(type::*)(const String&)>(&type::useModule)
         ),
-        defineMemberFunction<2, type>("buildObject", &simulator::Simulation::buildObject),
+        defineMemberFunction<2, type_ptr>("buildObject", &type::buildObject),
         {NULL}  /* Sentinel */
     };
 
