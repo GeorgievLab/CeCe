@@ -543,8 +543,11 @@ public:
      *
      * @param dt Time step.
      */
-    void setTimeStep(units::Time dt) noexcept
+    void setTimeStep(units::Time dt)
     {
+        if (dt == Zero)
+            throw InvalidArgumentException("Time step cannot be zero");
+
         m_timeStep = dt;
     }
 
