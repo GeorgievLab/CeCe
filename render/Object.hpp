@@ -367,6 +367,7 @@ public:
         if (s_ptr && --s_count == 0)
         {
             s_ptr->release();
+            s_ptr = nullptr;
             assert(s_count == 0);
         }
     }
