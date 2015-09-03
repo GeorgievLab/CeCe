@@ -495,22 +495,34 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Difference between velocities
             const auto dv = velocity - obj->getVelocity();
 
+            // Velocity difference
+            if (dv == Zero)
+                continue;
+
             // Cell radius
             const auto radius = shape.getCircle().radius;
 
-            // Set object velocity
+            // Calculate force used to increase object velocity
             const auto force =
                 3 * constants::PI *
                 getKinematicViscosity() *
                 obj->getDensity() *
                 dv *
-                radius *
-                units::exponentToCoefficient(-units::LENGTH_EXPONENT)
+                radius
+            ;
+
+            // Calculate force required to increase current velocity to environment velocity
+            const auto forceLimit = dv * obj->getMass() / simulation.getTimeStep();
+
+            // Limit calculated force by limit force.
+            const auto forceApply = force.getLengthSquared() > forceLimit.getLengthSquared()
+                ? forceLimit
+                : force
             ;
 
             // Apply force
             obj->applyForce(
-                force / getCoefficient(),
+                forceApply,
                 obj->getPosition() + offset + shape.getCircle().center
             );
         }
