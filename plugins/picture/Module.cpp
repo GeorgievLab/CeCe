@@ -58,8 +58,22 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     if (pos != String::npos)
         pattern.replace(pos, 2, std::to_string(stepNumber));
 
+    FilePath filename;
+
+// Use working directory on Mac OS X
+#if __APPLE__ && __MACH__
+    // Get working directory
+    const char* dir = getenv("WORKING_DIR");
+
+    // Add directory
+    if (dir)
+        filename /= dir;
+#endif
+
+    filename /= pattern;
+
     // Write image
-    save(pattern);
+    save(filename);
 
     Log::info("Image saved: ", pattern);
 }
