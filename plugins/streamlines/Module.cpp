@@ -331,7 +331,11 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     }
 
     if (!m_drawableVelocities)
-        m_drawableVelocities.create(context, size, velocities.getData(), 0.05 * getCoefficient());
+    {
+        const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
+
+        m_drawableVelocities.create(context, size, velocities.getData(), 1e-7 * LatticeData::MAX_SPEED * maxInlet.value());
+    }
     else
         m_drawableVelocities->update(velocities.getData());
 

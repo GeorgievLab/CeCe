@@ -41,8 +41,9 @@ public:
      * @param context Render context.
      * @param size    Grid size.
      * @param data    Vector data.
+     * @param max     Maximum value.
      */
-    GridVector(Context& context, Size size, const Vector<float>* data, float scale = 1);
+    GridVector(Context& context, Size size, const Vector<float>* data, float max = 1);
 
 
     /**
@@ -51,10 +52,11 @@ public:
      * @param context Render context.
      * @param size    Grid size.
      * @param data    Vector data.
+     * @param max     Maximum value.
      */
     template<typename T>
-    GridVector(Context& context, Size size, const Vector<T>* data, float scale = 1)
-        : GridVector(context, std::move(size), reinterpret_cast<const Vector<float>*>(data), scale)
+    GridVector(Context& context, Size size, const Vector<T>* data, float max = 1)
+        : GridVector(context, std::move(size), reinterpret_cast<const Vector<float>*>(data), max)
     {
         static_assert(sizeof(T) == sizeof(float), "T must have same size as float");
     }
@@ -110,8 +112,8 @@ private:
     /// Buffer object.
     Buffer m_buffer;
 
-    /// Vector scaling.
-    float m_scale = 1;
+    /// Maximum value.
+    float m_max = 1;
 };
 
 /* ************************************************************************ */

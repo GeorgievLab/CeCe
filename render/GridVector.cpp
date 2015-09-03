@@ -32,9 +32,9 @@ namespace render {
 
 /* ************************************************************************ */
 
-GridVector::GridVector(Context& context, Size size, const Vector<float>* data, float scale)
+GridVector::GridVector(Context& context, Size size, const Vector<float>* data, float max)
     : m_buffer(context)
-    , m_scale(scale)
+    , m_max(max)
 {
     resize(std::move(size), data);
 }
@@ -83,42 +83,23 @@ void GridVector::update(const Vector<float>* data) noexcept
     DynamicArray<Vertex> vertices;
     vertices.reserve(2 * width * height);
 
-    // Get maximum value
-    float max_squared = 1.f;
-    for (Size::value_type j = 0; j < height; ++j)
-    {
-        for (Size::value_type i = 0; i < width; ++i)
-        {
-            const auto& vec = data[i + j * width];
-            const float len_squared = vec.getLengthSquared();
-
-            if (max_squared < len_squared)
-                max_squared = len_squared;
-        }
-    }
-
-    // Maximum value
-    const float max = std::sqrt(max_squared) * m_scale;
-
     // Draw grid vectors
     for (Size::value_type j = 0; j < height; ++j)
     {
         for (Size::value_type i = 0; i < width; ++i)
         {
             // Get vector normalized by max length
-            const auto vec = data[i + j * width] / max;
+            const auto vec = data[i + j * width] / m_max;
             const Vector<float> pos{
                 start.getX() + i * step.getX() + step.getX() / 2.f,
                 start.getY() + j * step.getY() + step.getY() / 2.f
             };
-            const float red = 5 * vec.getLength();
-            const float green = 5 * vec.getLength();
-            const float blue = 5 * vec.getLength();
+            const float gray = std::min(vec.getLength(), 1.0f);
 
             const Vector<float> dest = pos + vec * step;
 
             vertices.push_back(Vertex{pos.getX(), pos.getY(), 0, 0, 0});
-            vertices.push_back(Vertex{dest.getX(), dest.getY(), red, green, blue});
+            vertices.push_back(Vertex{dest.getX(), dest.getY(), gray, gray, gray});
         }
     }
 
