@@ -275,6 +275,14 @@ public:
     }
 
 
+    /**
+     * @brief Returns object mass.
+     *
+     * @return
+     */
+    units::Mass getMass() const noexcept;
+
+
 #if ENABLE_PHYSICS
     /**
      * @brief Returns physical body.

@@ -871,6 +871,18 @@ public:
     void storeDataTables();
 
 
+    /**
+     * @brief Calculate coefficient used to transform simulation units (time step)
+     * to physical engine.
+     *
+     * @return
+     */
+    RealType calcPhysicalEngineCoefficient() const noexcept
+    {
+        return getPhysicsEngineTimeStep() / getTimeStep();
+    }
+
+
 // Private Data Members
 private:
 

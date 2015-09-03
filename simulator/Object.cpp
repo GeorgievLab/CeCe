@@ -139,8 +139,11 @@ PositionVector Object::getPosition() const noexcept
 {
 #if ENABLE_PHYSICS
     assert(m_body);
-    auto pos = m_body->GetPosition();
-    return {units::Length(pos.x), units::Length(pos.y)};
+    const auto posPhys = m_body->GetPosition();
+    return {
+        units::Length(posPhys.x),
+        units::Length(posPhys.y)
+    };
 #else
     return m_position;
 #endif
@@ -163,11 +166,28 @@ units::Angle Object::getRotation() const noexcept
 VelocityVector Object::getVelocity() const noexcept
 {
 #if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+
     assert(m_body);
-    auto vel = m_body->GetLinearVelocity();
-    return {units::Velocity(vel.x), units::Velocity(vel.y)};
+    const auto velPhys = m_body->GetLinearVelocity();
+    return {
+        units::Velocity(coeff * velPhys.x),
+        units::Velocity(coeff * velPhys.y)
+    };
 #else
     return m_velocity;
+#endif
+}
+
+/* ************************************************************************ */
+
+units::Mass Object::getMass() const noexcept
+{
+#if ENABLE_PHYSICS
+    assert(m_body);
+    return units::Mass(m_body->GetMass());
+#else
+    return {1};
 #endif
 }
 
@@ -187,11 +207,16 @@ void Object::setType(Type type) noexcept
 void Object::setPosition(PositionVector pos) noexcept
 {
 #if ENABLE_PHYSICS
+    const b2Vec2 posPhys{
+        pos.getX().value(),
+        pos.getY().value()
+    };
+
     assert(m_body);
-    m_body->SetTransform({pos.getX().value(), pos.getY().value()}, m_body->GetAngle());
+    m_body->SetTransform(posPhys, m_body->GetAngle());
 
     if (m_pinBody)
-        m_pinBody->SetTransform({pos.getX().value(), pos.getY().value()}, 0);
+        m_pinBody->SetTransform(posPhys, 0);
 #else
     m_position = std::move(pos);
 #endif
@@ -214,8 +239,15 @@ void Object::setRotation(units::Angle angle) noexcept
 void Object::setVelocity(VelocityVector vel) noexcept
 {
 #if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+
+    const b2Vec2 velPhys{
+        vel.getX().value() / coeff,
+        vel.getY().value() / coeff
+    };
+
     assert(m_body);
-    m_body->SetLinearVelocity({vel.getX().value(), vel.getY().value()});
+    m_body->SetLinearVelocity(velPhys);
 #else
     m_velocity = std::move(vel);
 #endif
@@ -226,8 +258,15 @@ void Object::setVelocity(VelocityVector vel) noexcept
 void Object::applyForce(const ForceVector& force) noexcept
 {
 #if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+
+    const b2Vec2 forcePhys{
+        force.getX().value() / (coeff * coeff),
+        force.getY().value() / (coeff * coeff)
+    };
+
     assert(m_body);
-    m_body->ApplyForceToCenter({force.getX().value(), force.getY().value()}, true);
+    m_body->ApplyForceToCenter(forcePhys, true);
 #else
     // NOTE: This is a little bit weird
     m_velocity = force;
@@ -239,8 +278,20 @@ void Object::applyForce(const ForceVector& force) noexcept
 void Object::applyForce(const ForceVector& force, const PositionVector& pos) noexcept
 {
 #if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+
+    const b2Vec2 forcePhys{
+        force.getX().value() / (coeff * coeff),
+        force.getY().value() / (coeff * coeff)
+    };
+
+    const b2Vec2 posPhys{
+        pos.getX().value(),
+        pos.getY().value()
+    };
+
     assert(m_body);
-    m_body->ApplyForce({force.getX().value(), force.getY().value()}, {pos.getX().value(), pos.getY().value()}, true);
+    m_body->ApplyForce(forcePhys, posPhys, true);
     m_force += force;
 #else
     m_velocity = force;
