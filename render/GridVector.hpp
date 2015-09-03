@@ -62,6 +62,21 @@ public:
     }
 
 
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set maximum value.
+     *
+     * @param max
+     */
+    void setMax(float max) noexcept
+    {
+        m_max = max;
+    }
+
+
 // Public Operations
 public:
 
