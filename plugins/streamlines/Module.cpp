@@ -330,14 +330,19 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
         }
     }
 
+    // Calculate grid max velocity
+    const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
+    const auto maxVel = 1e-7 * LatticeData::MAX_SPEED * maxInlet.value();
+
     if (!m_drawableVelocities)
     {
-        const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
-
-        m_drawableVelocities.create(context, size, velocities.getData(), 1e-7 * LatticeData::MAX_SPEED * maxInlet.value());
+        m_drawableVelocities.create(context, size, velocities.getData(), maxVel);
     }
     else
+    {
+        m_drawableVelocities->setMax(maxVel);
         m_drawableVelocities->update(velocities.getData());
+    }
 
     // Draw color grid
     context.matrixPush();
@@ -357,7 +362,7 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
 #if DEV_PLUGIN_streamlines_FORCE_RENDER
         context.drawLine(
             obj->getPosition() / units::Length(1),
-            10000 * obj->getForce() / units::Force(1),
+            100 * obj->getForce() / units::Force(1),
             render::colors::YELLOW
         );
 #endif

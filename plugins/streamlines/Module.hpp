@@ -272,6 +272,18 @@ public:
 
 
     /**
+     * @brief Set layout inlet velocities.
+     *
+     * @param position Inlet position.
+     * @param velocity
+     */
+    void setInletVelocity(LayoutPosition position, units::Velocity velocity) noexcept
+    {
+        m_inletVelocities[position] = velocity;
+    }
+
+
+    /**
      * @brief Set fluid viscosity.
      *
      * @param viscosity

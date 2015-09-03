@@ -108,14 +108,14 @@ void python_wrapper_module()
     using type_def = TypeDefinition<type_ptr>;
 /*
     static PyGetSetDef properties[] = {
-        defineProperty<1, type_ptr>("velocityInflow", &type::getVelocityInflow, &type::setVelocityInflow),
+        defineProperty<1, type_ptr>("inletVelocity", &type::getInletVelocity, &type::setInletVelocity),
         {NULL}
     };
 */
-
     static PyMethodDef fns[] = {
         {"setLayout", (PyCFunction) setLayout, METH_VARARGS, "Set streamlines module layout."},
         {"initBarriers", (PyCFunction) initBarriers, METH_VARARGS, "Reinit barriers."},
+        defineMemberFunction<1, type_ptr>("setInletVelocity", &type::setInletVelocity),
         {NULL}  /* Sentinel */
     };
 
@@ -127,6 +127,12 @@ void python_wrapper_module()
 
     // Register dynamic type
     registerDynamic(typeid(plugin::streamlines::Module), &type_def::definition);
+
+    // Define constants
+    PyModule_AddIntConstant(module, "LEFT", static_cast<int>(type::LayoutPosLeft));
+    PyModule_AddIntConstant(module, "RIGHT", static_cast<int>(type::LayoutPosRight));
+    PyModule_AddIntConstant(module, "TOP", static_cast<int>(type::LayoutPosTop));
+    PyModule_AddIntConstant(module, "BOTTOM", static_cast<int>(type::LayoutPosBottom));
 }
 
 /* ************************************************************************ */
