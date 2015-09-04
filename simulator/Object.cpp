@@ -275,7 +275,7 @@ void Object::applyForce(const ForceVector& force) noexcept
 
 /* ************************************************************************ */
 
-void Object::applyForce(const ForceVector& force, const PositionVector& pos) noexcept
+void Object::applyForce(const ForceVector& force, const PositionVector& offset) noexcept
 {
 #if ENABLE_PHYSICS
     const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
@@ -285,13 +285,13 @@ void Object::applyForce(const ForceVector& force, const PositionVector& pos) noe
         force.getY().value() / (coeff * coeff)
     };
 
-    const b2Vec2 posPhys{
-        pos.getX().value(),
-        pos.getY().value()
+    const b2Vec2 offsetPhys{
+        offset.getX().value(),
+        offset.getY().value()
     };
 
     assert(m_body);
-    m_body->ApplyForce(forcePhys, posPhys, true);
+    m_body->ApplyForce(forcePhys, m_body->GetWorldPoint(offsetPhys), true);
     m_force += force;
 #else
     m_velocity = force;

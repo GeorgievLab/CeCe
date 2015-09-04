@@ -443,9 +443,9 @@ public:
      * @brief Push into object by given force.
      *
      * @param force
-     * @param pos
+     * @param offset Body world center offset.
      */
-    void applyForce(const ForceVector& force, const PositionVector& pos) noexcept;
+    void applyForce(const ForceVector& force, const PositionVector& offset) noexcept;
 
 
     /**

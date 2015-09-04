@@ -475,7 +475,6 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
                 continue;
 
             VelocityVector velocity = Zero;
-            PositionVector offset = Zero;
             unsigned long count = 0;
 
             // Store velocity for each coordinate
@@ -528,7 +527,7 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
             // Apply force
             obj->applyForce(
                 forceApply,
-                obj->getPosition() + offset + shape.getCircle().center
+                shape.getCircle().center
             );
         }
     }
