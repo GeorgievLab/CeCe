@@ -94,8 +94,8 @@ void Module::draw(render::Context& context, const simulator::Simulation& simulat
     const auto size = context.getSize();
 
     // Get image data
-    m_image = cv::Mat(size.getWidth(), size.getHeight(), CV_8UC4);
-    context.getData(m_image.data, true);
+    m_image = cv::Mat(size.getHeight(), size.getWidth(), CV_8UC4);
+    context.getData(m_image.data, true, true);
 }
 
 /* ************************************************************************ */
