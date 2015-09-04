@@ -6,8 +6,8 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
-if (!DEV_PLUGIN_streamlines_RENDER)
-    message(DEV_PLUGIN_streamlines_RENDER "Cannot build 'render' without DEV_PLUGIN_streamlines_RENDER")
+if (!CONFIG_RENDER_ENABLE)
+    message(WARNING "Cannot build 'render' without CONFIG_RENDER_ENABLE")
 endif ()
 
 # ######################################################################### #
@@ -40,6 +40,11 @@ endif ()
 # Enable errors
 if (DEV_RENDER_GL_ERRORS)
     add_definitions(-DDEV_RENDER_GL_ERRORS=1)
+endif ()
+
+if (CONFIG_RENDER_TEXT_ENABLE)
+    include_directories(${FREETYPE_INCLUDE_DIRS})
+    add_definitions(-DCONFIG_RENDER_TEXT_ENABLE=1)
 endif ()
 
 # ######################################################################### #
@@ -85,6 +90,13 @@ set(SRCS
     Lines.cpp
     glext.h
 )
+
+if (CONFIG_RENDER_TEXT_ENABLE)
+    set(SRCS ${SRCS}
+        Font.hpp
+        Font.cpp
+    )
+endif ()
 
 if (DEV_PHYSICS_BUILTIN_DEBUG)
     set(SRCS ${SRCS}

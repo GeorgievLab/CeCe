@@ -60,6 +60,10 @@ if (APPLE)
     set(MACOSX_VERSION_MIN "10.9" CACHE STRING "Minimum version of MacOS X to support")
 endif ()
 
+if (CONFIG_RENDER_ENABLE)
+    option(CONFIG_RENDER_TEXT_ENABLE "Enable support for text rendering" On)
+endif ()
+
 # If simulator should be thread safe
 set(THREAD_SAFE Off)
 
@@ -185,6 +189,16 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(Boost_USE_STATIC_LIBS On)
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+
+if (CONFIG_RENDER_TEXT_ENABLE)
+    # FreeType is used for rendering
+    find_package(Freetype)
+
+    if (NOT FREETYPE_FOUND)
+        message(WARNING "FreeType not found, disabling support")
+        set(CONFIG_RENDER_TEXT_ENABLE Off)
+    endif ()
+endif ()
 
 # ######################################################################### #
 
