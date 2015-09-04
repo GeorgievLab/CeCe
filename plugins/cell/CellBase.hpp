@@ -82,6 +82,17 @@ public:
 
 
     /**
+     * @brief Return object class name.
+     *
+     * @return
+     */
+    StringView getClassName() const noexcept override
+    {
+        return "cell.CellBase";
+    }
+
+
+    /**
      * @brief Returns cell volume.
      *
      * @return

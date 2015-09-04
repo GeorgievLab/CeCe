@@ -94,6 +94,17 @@ public:
 
 
     /**
+     * @brief Return object class name.
+     *
+     * @return
+     */
+    StringView getClassName() const noexcept override
+    {
+        return "cell.Yeast";
+    }
+
+
+    /**
      * @brief Returns if yeast has bud.
      *
      * @return

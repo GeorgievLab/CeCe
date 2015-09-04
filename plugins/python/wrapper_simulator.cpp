@@ -62,9 +62,7 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
         defineProperty<3, type_ptr>("iterations", &type::getIterations),
         defineProperty<4, type_ptr>("timeStep", &type::getTimeStep, &type::setTimeStep),
         defineProperty<5, type_ptr>("totalTime", &type::getTotalTime),
-        defineProperty<6, type_ptr>("objectsCount", +[](type_ptr obj) {
-            return obj->getObjects().size();
-        }),
+        defineProperty<6, type_ptr>("objectCount", &type::getObjectCount),
         {NULL}  /* Sentinel */
     };
 
@@ -73,6 +71,7 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
             static_cast<simulator::Module*(type::*)(const String&)>(&type::useModule)
         ),
         defineMemberFunction<2, type_ptr>("buildObject", &type::buildObject),
+        defineMemberFunction<3, type_ptr>("objectCountType", &type::getObjectCountType),
         {NULL}  /* Sentinel */
     };
 

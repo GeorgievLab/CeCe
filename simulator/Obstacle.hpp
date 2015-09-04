@@ -60,6 +60,21 @@ public:
     }
 
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Return object class name.
+     *
+     * @return
+     */
+    StringView getClassName() const noexcept override
+    {
+        return "simulator.Obstacle";
+    }
+
+
 // Public Operations
 public:
 

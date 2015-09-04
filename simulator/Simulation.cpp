@@ -141,6 +141,21 @@ Simulation::~Simulation()
 
 /* ************************************************************************ */
 
+unsigned long Simulation::getObjectCountType(const String& className) const noexcept
+{
+    unsigned long res = 0ul;
+
+    for (const auto& obj : getObjects())
+    {
+        if (obj->getClassName() == className)
+            ++res;
+    }
+
+    return res;
+}
+
+/* ************************************************************************ */
+
 Module* Simulation::useModule(const String& path, String storePath)
 {
     if (storePath.empty())

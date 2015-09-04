@@ -20,6 +20,7 @@
 #include "core/VectorUnits.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Map.hpp"
+#include "core/StringView.hpp"
 #include "simulator/Shape.hpp"
 #include "simulator/Configuration.hpp"
 #include "simulator/Program.hpp"
@@ -97,6 +98,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Return object class name.
+     *
+     * @return
+     */
+    virtual StringView getClassName() const noexcept
+    {
+        return "simulator.Object";
+    }
 
 
     /**

@@ -52,6 +52,17 @@ public:
 
 
     /**
+     * @brief Return object class name.
+     *
+     * @return
+     */
+    StringView getClassName() const noexcept override
+    {
+        return "cell.Cell";
+    }
+
+
+    /**
      * @brief Returns cell radius.
      *
      * @return

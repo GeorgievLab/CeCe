@@ -297,6 +297,27 @@ public:
 
 
     /**
+     * @brief Return a number of objects.
+     *
+     * @return
+     */
+    unsigned long getObjectCount() const noexcept
+    {
+        return m_objects.size();
+    }
+
+
+    /**
+     * @brief Return a number of objects by type.
+     *
+     * @param className Name of required class.
+     *
+     * @return
+     */
+    unsigned long getObjectCountType(const String& className) const noexcept;
+
+
+    /**
      * @brief Returns world size.
      *
      * @return
