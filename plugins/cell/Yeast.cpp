@@ -5,8 +5,6 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
-/* ************************************************************************ */
 
 // Declaration
 #include "Yeast.hpp"
@@ -35,7 +33,7 @@ static std::random_device g_rd;
 
 /* ************************************************************************ */
 
-Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) NOEXCEPT
+Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
     : CellBase(simulation, type)
 {
 	setVolume(units::um3(37));
@@ -204,7 +202,7 @@ void Yeast::draw(render::Context& context)
 #if ENABLE_PHYSICS
 void Yeast::updateShape()
 {
-    static CONSTEXPR_CONST auto MIN_CHANGE = units::Length(0.2f);
+    static constexpr auto MIN_CHANGE = units::Length(0.1f);
 
     // Alias for yeast shapes
     auto& shapes = getMutableShapes();

@@ -5,8 +5,6 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
-/* ************************************************************************ */
 
 #pragma once
 
@@ -14,9 +12,6 @@
 
 // Boost
 #include <boost/optional.hpp>
-
-// Simulator
-#include "core/compatibility.hpp"
 
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
@@ -57,7 +52,7 @@ public:
         units::Angle rotation = units::deg(0);
 
         /// Bud volume.
-        units::Volume volume = units::um3(1);
+        units::Volume volume = units::um3(0.1);
 
 #if ENABLE_PHYSICS
         /// Bud shape.
@@ -80,7 +75,7 @@ public:
      * @param type       Cell type.
      */
     explicit Yeast(simulator::Simulation& simulation,
-                   simulator::Object::Type type = simulator::Object::Type::Dynamic) NOEXCEPT;
+                   simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
 
 
     /**
@@ -109,7 +104,7 @@ public:
      *
      * @return
      */
-    bool hasBud() const NOEXCEPT
+    bool hasBud() const noexcept
     {
         return m_bud.is_initialized();
     }
