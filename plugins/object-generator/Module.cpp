@@ -15,9 +15,10 @@
 #include <cassert>
 #include <random>
 #include <string>
-#include <sstream>
 
 // Simulator
+#include "core/Pair.hpp"
+#include "core/StringStream.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
@@ -29,9 +30,81 @@ namespace object_generator {
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse list of active iterations.
+ *
+ * @param str
+ *
+ * @return
+ */
+DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parseActive(String str)
+{
+    DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> res;
+
+    InStringStream iss(std::move(str));
+
+    while (true)
+    {
+        simulator::IterationNumber it;
+
+        if (!(iss >> it))
+            break;
+
+        if (iss.peek() == '-')
+        {
+            simulator::IterationNumber itEnd;
+            iss.ignore();
+            iss >> itEnd;
+
+            res.push_back({it, itEnd});
+        }
+        else
+        {
+            // Single item range
+            res.push_back({it, it});
+        }
+    }
+
+    return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Check if iteration is in range.
+ *
+ * @param list
+ * @param it
+ *
+ * @return
+ */
+bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>>& list, simulator::IterationNumber it)
+{
+    for (const auto& p : list)
+    {
+        if (it >= p.first && it <= p.second)
+            return true;
+    }
+
+    return false;
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("object-generator", simulator::TimeMeasurementIterationOutput(simulation));
+
+    // Get current iteration number
+    const auto iteration = simulation.getIteration();
 
     // Random engine
     std::random_device rd;
@@ -40,6 +113,10 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Foreach generated objects
     for (const auto& desc : m_objects)
     {
+        // Skip inactive generators
+        if (!inRange(desc.active, iteration))
+            continue;
+
         std::bernoulli_distribution distSpawn(desc.probability);
 
         // Spawn?
@@ -74,6 +151,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
         desc.probability = cfg.get<units::Probability>("probability");
         desc.positionMin = cfg.get("position-min", minPos);
         desc.positionMax = cfg.get("position-max", maxPos);
+        desc.active = parseActive(cfg.get("active", String{}));
         desc.config = cfg.toMemory();
 
         add(std::move(desc));

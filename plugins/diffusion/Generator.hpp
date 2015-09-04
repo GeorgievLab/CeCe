@@ -15,7 +15,9 @@
 #include "core/String.hpp"
 #include "core/Units.hpp"
 #include "core/ViewPtr.hpp"
+#include "core/Pair.hpp"
 #include "simulator/Module.hpp"
+#include "simulator/Simulation.hpp"
 
 // Plugin
 #include "Module.hpp"
@@ -99,6 +101,9 @@ private:
 
         /// Rectangle size.
         PositionVector size;
+
+        /// List of iteration ranges when the generator is active.
+        DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> active;
     };
 
 

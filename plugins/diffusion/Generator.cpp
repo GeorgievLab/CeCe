@@ -14,7 +14,6 @@
 
 // Simulator
 #include "core/TimeMeasurement.hpp"
-#include "simulator/Simulation.hpp"
 #include "simulator/Shape.hpp"
 #include "simulator/ShapeToGrid.hpp"
 
@@ -25,9 +24,81 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Parse list of active iterations.
+ *
+ * @param str
+ *
+ * @return
+ */
+DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parseActive(String str)
+{
+    DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> res;
+
+    InStringStream iss(std::move(str));
+
+    while (true)
+    {
+        simulator::IterationNumber it;
+
+        if (!(iss >> it))
+            break;
+
+        if (iss.peek() == '-')
+        {
+            simulator::IterationNumber itEnd;
+            iss.ignore();
+            iss >> itEnd;
+
+            res.push_back({it, itEnd});
+        }
+        else
+        {
+            // Single item range
+            res.push_back({it, it});
+        }
+    }
+
+    return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Check if iteration is in range.
+ *
+ * @param list
+ * @param it
+ *
+ * @return
+ */
+bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>>& list, simulator::IterationNumber it)
+{
+    for (const auto& p : list)
+    {
+        if (it >= p.first && it <= p.second)
+            return true;
+    }
+
+    return false;
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 void Generator::update(units::Time dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("diffusion.generator", simulator::TimeMeasurementIterationOutput(simulation));
+
+    // Get current iteration number
+    const auto iteration = simulation.getIteration();
 
     assert(m_diffusionModule);
     const auto gridSize = m_diffusionModule->getGridSize();
@@ -39,6 +110,10 @@ void Generator::update(units::Time dt, simulator::Simulation& simulation)
     // Foreach sources
     for (const auto& source : m_sources)
     {
+        // Skip inactive generators
+        if (!inRange(source.active, iteration))
+            continue;
+
         const auto id = m_diffusionModule->getSignalId(source.name);
 
         // Transform from [-size / 2, size / 2] to [0, size] space
@@ -75,13 +150,14 @@ void Generator::update(units::Time dt, simulator::Simulation& simulation)
 void Generator::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
     // Foreach signal configurations
-    for (auto&& signal : config.getConfigurations("source"))
+    for (auto&& cfg : config.getConfigurations("source"))
     {
         m_sources.push_back(Source{
-            signal.get("signal"),
-            signal.get<PositionVector>("position"),
-            signal.get<ProductionRate>("production"),
-            signal.get<PositionVector>("size")
+            cfg.get("signal"),
+            cfg.get<PositionVector>("position"),
+            cfg.get<ProductionRate>("production"),
+            cfg.get<PositionVector>("size"),
+            parseActive(cfg.get("active", String{}))
         });
     }
 }

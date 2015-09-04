@@ -18,6 +18,7 @@
 #include "core/VectorUnits.hpp"
 #include "core/DynamicArray.hpp"
 #include "simulator/Module.hpp"
+#include "simulator/Simulation.hpp"
 #include "simulator/Configuration.hpp"
 
 /* ************************************************************************ */
@@ -43,6 +44,9 @@ struct ObjectDesc
 
     /// Maximum spawn position.
     PositionVector positionMax;
+
+    /// List of iteration ranges when the generator is active.
+    DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> active;
 
     /// Object configuration
     simulator::Configuration config;
