@@ -466,6 +466,15 @@ void Simulation::draw(render::Context& context)
         m_world.DrawDebugData();
 #endif
 
+#if CONFIG_RENDER_TEXT_ENABLE
+    if (!m_font)
+    {
+        m_font.create(context, "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
+        m_font->setSize(18);
+    }
+
+    m_font->draw(context, "Hello World", render::colors::WHITE, {0, 0});
+#endif
 }
 #endif
 

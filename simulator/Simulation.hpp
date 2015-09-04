@@ -40,6 +40,10 @@
 #include "core/TriBool.hpp"
 #include "render/Context.hpp"
 #include "render/Color.hpp"
+#include "render/Object.hpp"
+#if CONFIG_RENDER_TEXT_ENABLE
+#include "render/Font.hpp"
+#endif
 #endif
 
 #if ENABLE_PHYSICS
@@ -952,6 +956,10 @@ private:
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
     bool m_drawPhysics = false;
+#endif
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    render::ObjectPtr<render::Font> m_font;
 #endif
 };
 

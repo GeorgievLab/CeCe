@@ -166,9 +166,14 @@ void Font::draw(Context& context, const String& text, const Color& color, const 
 
     float x = pos.getX();
     float y = pos.getY();
-    float sx = 1;
-    float sy = 1;
+    float sx = 0.01;
+    float sy = 0.01;
 
+    context.matrixProjection();
+    context.matrixPush();
+    //context.matrixIdentity();
+
+    context.matrixView();
     context.matrixPush();
 
     // Translate to initial position
@@ -225,6 +230,11 @@ void Font::draw(Context& context, const String& text, const Color& color, const 
     context.setVertexBuffer(nullptr);
 
     context.matrixPop();
+
+    context.matrixProjection();
+    context.matrixPop();
+
+    context.matrixView();
 }
 
 /* ************************************************************************ */

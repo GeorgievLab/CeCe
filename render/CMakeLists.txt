@@ -44,7 +44,6 @@ endif ()
 
 if (CONFIG_RENDER_TEXT_ENABLE)
     include_directories(${FREETYPE_INCLUDE_DIRS})
-    add_definitions(-DCONFIG_RENDER_TEXT_ENABLE=1)
 endif ()
 
 # ######################################################################### #

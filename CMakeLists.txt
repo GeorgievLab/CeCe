@@ -194,7 +194,9 @@ if (CONFIG_RENDER_TEXT_ENABLE)
     # FreeType is used for rendering
     find_package(Freetype)
 
-    if (NOT FREETYPE_FOUND)
+    if (FREETYPE_FOUND)
+        add_definitions(-DCONFIG_RENDER_TEXT_ENABLE=1)
+    else ()
         message(WARNING "FreeType not found, disabling support")
         set(CONFIG_RENDER_TEXT_ENABLE Off)
     endif ()
