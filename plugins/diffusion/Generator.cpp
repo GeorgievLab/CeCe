@@ -78,6 +78,10 @@ DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parse
  */
 bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>>& list, simulator::IterationNumber it)
 {
+    // No limitation
+    if (list.empty())
+        return true;
+
     for (const auto& p : list)
     {
         if (it >= p.first && it <= p.second)
