@@ -332,6 +332,19 @@ public:
 
 
     /**
+     * @brief Return inverted color.
+     *
+     * @param alpha Invert alpha.
+     *
+     * @return
+     */
+    Color inverted(bool alpha = false) const noexcept
+    {
+        return {1 - getRed(), 1 - getGreen(), 1 - getBlue(), alpha ? 1 - getAlpha() : getAlpha()};
+    }
+
+
+    /**
      * @brief Create gray color.
      *
      * @param value Gray value.
