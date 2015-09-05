@@ -72,12 +72,27 @@ Texture::~Texture()
 
 /* ************************************************************************ */
 
+void Texture::clear(const Color& color)
+{
+    const auto width = m_size.getWidth();
+    const auto height = m_size.getHeight();
+
+    DynamicArray<Color> colors(width * height, color);
+
+    gl(glBindTexture(GL_TEXTURE_2D, m_id));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, colors.data()));
+}
+
+/* ************************************************************************ */
+
 void Texture::resize(Size size, const Color& color)
 {
     assert(isInitialized());
 
-    const auto width = size.getWidth();
-    const auto height = size.getHeight();
+    m_size = std::move(size);
+
+    const auto width = m_size.getWidth();
+    const auto height = m_size.getHeight();
 
     // Create initial buffer
     DynamicArray<Color> colors(width * height, color);
@@ -88,13 +103,43 @@ void Texture::resize(Size size, const Color& color)
 
 /* ************************************************************************ */
 
-void Texture::update(const Size& size, const Color* colors)
+void Texture::update(const Color* colors)
 {
-    const int width = size.getWidth();
-    const int height = size.getHeight();
+    const auto width = m_size.getWidth();
+    const auto height = m_size.getHeight();
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
     gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, colors));
+}
+
+/* ************************************************************************ */
+
+void Texture::create(Size size, const Color* colors)
+{
+    assert(isInitialized());
+
+    m_size = std::move(size);
+
+    const auto width = m_size.getWidth();
+    const auto height = m_size.getHeight();
+
+    gl(glBindTexture(GL_TEXTURE_2D, m_id));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, colors));
+}
+
+/* ************************************************************************ */
+
+void Texture::createGray(Size size, const unsigned char* colors)
+{
+    assert(isInitialized());
+
+    m_size = std::move(size);
+
+    const auto width = m_size.getWidth();
+    const auto height = m_size.getHeight();
+
+    gl(glBindTexture(GL_TEXTURE_2D, m_id));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, colors));
 }
 
 /* ************************************************************************ */
