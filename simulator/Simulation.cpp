@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 
 // Simulator
 #include "core/Real.hpp"
@@ -27,6 +28,10 @@
 #include "simulator/PluginApi.hpp"
 #include "simulator/PluginManager.hpp"
 #include "simulator/Obstacle.hpp"
+
+#if CONFIG_RENDER_TEXT_ENABLE
+#include "simulator/font.hpp"
+#endif
 
 /* ************************************************************************ */
 
@@ -373,6 +378,18 @@ void Simulation::configure(const Configuration& config)
     // Background color
     setBackgroundColor(config.get("background", getBackgroundColor()));
 
+#if CONFIG_RENDER_TEXT_ENABLE
+    setFontColor(config.get("text-color", getBackgroundColor().inverted(true)));
+#endif
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    setFontSize(config.get("text-size", getFontSize()));
+#endif
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    setSimulationTimeRender(config.get("show-simulation-time", isSimulationTimeRender()));
+#endif
+
     // Parse parameters
     for (auto&& parameterConfig : config.getConfigurations("parameter"))
     {
@@ -452,7 +469,7 @@ void Simulation::configure(const Configuration& config)
 #ifdef ENABLE_RENDER
 void Simulation::draw(render::Context& context)
 {
-    context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
+    //context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
 
     // Store modules
     DynamicArray<ViewPtr<Module>> modules;
@@ -481,6 +498,43 @@ void Simulation::draw(render::Context& context)
         m_world.DrawDebugData();
 #endif
 
+#if CONFIG_RENDER_TEXT_ENABLE
+    if (isSimulationTimeRender())
+    {
+        if (!m_font)
+        {
+            m_font.create(context, g_fontData);
+            m_font->setSize(getFontSize());
+        }
+
+        OutStringStream oss;
+        {
+            auto time = getTotalTime().value();
+            unsigned int seconds = time;
+            unsigned int milliseconds = static_cast<unsigned int>(time * 1000) % 1000;
+
+            const unsigned int hours = seconds / (60 * 60);
+            seconds %= (60 * 60);
+            const unsigned int minutes = seconds / 60;
+            seconds %= 60;
+
+            if (hours)
+            {
+                oss << std::setw(2) << std::setfill('0') << hours << ":";
+                oss << std::setw(2) << std::setfill('0') << minutes << ":";
+            }
+            else if (minutes)
+            {
+                oss << std::setw(2) << std::setfill('0') << minutes << ":";
+            }
+
+            oss << std::setw(2) << std::setfill('0') << seconds << ".";
+            oss << std::setw(3) << std::setfill('0') << milliseconds;
+        }
+
+        m_font->draw(context, oss.str(), getFontColor());
+    }
+#endif
 }
 #endif
 

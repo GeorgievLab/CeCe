@@ -84,6 +84,17 @@ public:
 
 
     /**
+     * @brief Returns texture size.
+     *
+     * @return
+     */
+    const Size& getSize() const noexcept
+    {
+        return m_size;
+    }
+
+
+    /**
      * @brief Return if buffer is initialized.
      *
      * @return
@@ -99,6 +110,14 @@ public:
 
 
     /**
+     * @brief Fill texture with given color.
+     *
+     * @param color   Initialization color.
+     */
+    void clear(const Color& color = colors::BLACK);
+
+
+    /**
      * @brief Resize texture object.
      *
      * @param context Rendering context.
@@ -111,10 +130,27 @@ public:
     /**
      * @brief Update texture.
      *
-     * @param size   Texture data size.
      * @param colors New texture data.
      */
-    void update(const Size& size, const Color* colors);
+    void update(const Color* colors);
+
+
+    /**
+     * @brief (Re)create texture object.
+     *
+     * @param size    Texture size.
+     * @param color   Initialization color.
+     */
+    void create(Size size, const Color* colors);
+
+
+    /**
+     * @brief (Re)create texture object.
+     *
+     * @param size   Texture size.
+     * @param colors Texture colors.
+     */
+    void createGray(Size size, const unsigned char* colors);
 
 
 // Private Data Members
@@ -123,6 +159,8 @@ private:
     /// Texture identifier.
     Id m_id = 0;
 
+    /// Texture size.
+    Size m_size;
 };
 
 /* ************************************************************************ */

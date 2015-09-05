@@ -348,6 +348,15 @@ public:
     * @param id    Parameter ID.
     * @param value Parameter value.
     */
+    void setProgramParam(Program::UniformId id, unsigned int value) noexcept;
+
+
+    /**
+    * @brief Set shader program parameter.
+    *
+    * @param id    Parameter ID.
+    * @param value Parameter value.
+    */
     void setProgramParam(Program::UniformId id, float value) noexcept;
 
 

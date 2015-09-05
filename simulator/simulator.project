@@ -43,6 +43,7 @@
     <File Name="PluginManager.hpp"/>
     <File Name="SimulationLoader.hpp"/>
     <File Name="LoaderManager.hpp"/>
+    <File Name="font.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

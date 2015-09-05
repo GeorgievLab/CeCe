@@ -86,11 +86,12 @@ static void convert(OutStream& out, const String& symbol, InStream& src)
     put_time(out, &tm, "%F %T %Z");
     out << "\n";
     out << "// #" << hasher(code) << "\n";
-    out << "static const std::array<char, " << code.length() + 1 << "> " << symbol << " = {{\n  ";
+    out << "static const std::array<unsigned char, " << code.length() + 1 << "> " << symbol << " = {{\n  ";
 
     for (auto c : code)
     {
-        out << "0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(c) << ", ";
+        out << "0x" << std::hex << std::setw(2) << std::setfill('0')
+            << static_cast<unsigned int>(static_cast<unsigned char>(c)) << ", ";
 
         if (++valueCounter >= 8)
         {

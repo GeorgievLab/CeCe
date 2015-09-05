@@ -107,7 +107,7 @@ void GridColor::clear(const Color& color)
 
 void GridColor::sync()
 {
-    m_texture.update(m_colors.getSize(), m_colors.getData());
+    m_texture.update(m_colors.getData());
     m_colorsUpdated = false;
 }
 
