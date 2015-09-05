@@ -522,6 +522,18 @@ void Context::setProgramParam(Program::UniformId id, int value) noexcept
 
 /* ************************************************************************ */
 
+void Context::setProgramParam(Program::UniformId id, unsigned int value) noexcept
+{
+#ifdef _WIN32
+    if (!glUniform1i)
+        glUniform1i = (PFNGLUNIFORM1IPROC) wglGetProcAddress("glUniform1i");
+#endif
+
+    gl(glUniform1i(id, value));
+}
+
+/* ************************************************************************ */
+
 void Context::setProgramParam(Program::UniformId id, int value1, int value2) noexcept
 {
 #ifdef _WIN32
