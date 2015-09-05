@@ -26,7 +26,7 @@
 #include <GLFW/glfw3.h>
 #endif
 
-#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE || CONFIG_CLI_ENABLE_IMAGE_CAPTURE
 #include <opencv2/opencv.hpp>
 #endif
 
