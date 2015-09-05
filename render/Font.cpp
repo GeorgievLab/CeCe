@@ -63,15 +63,16 @@ UniquePtr<FT_LibraryRec_, decltype(&libraryDeleter)> g_library(nullptr, &library
 struct Vertex
 {
     float x, y;
+    float u, v;
 };
 
 /* ************************************************************************ */
 
 const StaticArray<Vertex, 4> g_vertices = {{
-    { 0.0f, 0.0f},
-    { 0.0f, 1.0f},
-    { 1.0f, 0.0f},
-    { 1.0f, 1.0f}
+    { 0.0f, 0.0f, 0.0f, 0.0f},
+    { 1.0f, 0.0f, 1.0f, 0.0f},
+    { 1.0f, 1.0f, 1.0f, 1.0f},
+    { 0.0f, 1.0f, 0.0f, 1.0f}
 }};
 
 /* ************************************************************************ */
@@ -80,12 +81,9 @@ const StaticArray<Vertex, 4> g_vertices = {{
 const char g_vertexShader[] =
     "#version 120\n"
     "\n"
-    "attribute vec4 coord;\n"
-    "varying vec2 texcoord;\n"
-    "\n"
     "void main(void) {\n"
-    "    gl_Position = vec4(coord.xy, 0, 1);\n"
-    "    texcoord = coord.zw;\n"
+    "    gl_Position = ftransform();\n"
+    "    gl_TexCoord[0] = gl_MultiTexCoord0;\n"
     "}\n"
 ;
 
@@ -95,12 +93,11 @@ const char g_vertexShader[] =
 const char g_fragmentShader[] =
     "#version 120\n"
     "\n"
-    "varying vec2 texcoord;\n"
-    "uniform sampler2D tex;\n"
-    "uniform vec4 color;\n"
+    "uniform sampler2D g_tex;\n"
+    "uniform vec4 g_color;\n"
     "\n"
     "void main(void) {\n"
-    "    gl_FragColor = vec4(1, 1, 1, texture2D(tex, texcoord).r) * color;\n"
+    "    gl_FragColor = vec4(1, 1, 1, texture2D(g_tex, gl_TexCoord[0].xy).r) * g_color;\n"
     "}\n"
 ;
 
@@ -113,6 +110,7 @@ const char g_fragmentShader[] =
 struct Font::Impl
 {
     FT_Face face;
+    unsigned int size = 0;
 };
 
 /* ************************************************************************ */
@@ -139,6 +137,35 @@ Font::Font(Context& context, const String& name)
     m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShader, sizeof g_fragmentShader);
     m_program.init(m_vertexShader, m_fragmentShader);
 
+    m_texPtr = m_program.getUniformId("g_tex");
+    m_colorPtr = m_program.getUniformId("g_color");
+}
+
+/* ************************************************************************ */
+
+Font::Font(Context& context, const unsigned char* data, unsigned int size)
+    : m_impl(new Impl{})
+    , m_buffer(context, g_vertices.size() * sizeof(decltype(g_vertices)::value_type), g_vertices.data())
+    , m_texture(context)
+{
+    if (!g_library)
+    {
+        FT_LibraryRec_* lib;
+
+        if (FT_Init_FreeType(&lib))
+            throw RuntimeException("Could not init freetype library");
+
+        g_library.reset(lib);
+    }
+
+    if (FT_New_Memory_Face(g_library.get(), data, size, 0, &m_impl->face))
+        throw RuntimeException("Could not open font from memory");
+
+    m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShader, sizeof g_vertexShader);
+    m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShader, sizeof g_fragmentShader);
+    m_program.init(m_vertexShader, m_fragmentShader);
+
+    m_texPtr = m_program.getUniformId("g_tex");
     m_colorPtr = m_program.getUniformId("g_color");
 }
 
@@ -154,6 +181,7 @@ Font::~Font()
 void Font::setSize(unsigned int size) noexcept
 {
     FT_Set_Pixel_Sizes(m_impl->face, 0, size);
+    m_impl->size = size;
 }
 
 /* ************************************************************************ */
@@ -161,20 +189,26 @@ void Font::setSize(unsigned int size) noexcept
 void Font::draw(Context& context, const String& text, const Color& color, const Vector<float> pos) noexcept
 {
     static render::VertexFormat vformat{
-        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2)
+        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
+        render::VertexElement(render::VertexElementType::TexCoord, render::DataType::Float, 2)
     };
 
-    float x = pos.getX();
-    float y = pos.getY();
-    float sx = 0.01;
-    float sy = 0.01;
+    // Viewport size
+    const auto size = context.getSize();
+
+    const float sx = 1.0 / size.getWidth();
+    const float sy = 1.0 / size.getHeight();
+
+    //context.setWireframe(true);
 
     context.matrixProjection();
     context.matrixPush();
-    //context.matrixIdentity();
+    context.matrixIdentity();
 
     context.matrixView();
     context.matrixPush();
+    context.matrixIdentity();
+    context.matrixTranslate({units::Length(-1.f), units::Length(1.f - sy * m_impl->size)});
 
     // Translate to initial position
     context.matrixTranslate(pos * units::Length(1));
@@ -185,7 +219,11 @@ void Font::draw(Context& context, const String& text, const Color& color, const 
     context.setTexture(&m_texture);
 
     context.setProgram(&m_program);
+    context.setProgramParam(m_texPtr, 0);
     context.setProgramParam(m_colorPtr, color);
+
+    context.colorPush();
+    context.enableAlpha();
 
     FT_GlyphSlot glyph = m_impl->face->glyph;
 
@@ -194,26 +232,25 @@ void Font::draw(Context& context, const String& text, const Color& color, const 
         if (FT_Load_Char(m_impl->face, c, FT_LOAD_RENDER))
             continue;
 
-        // TODO: replace by render::Texture::<something>
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RED,
-            glyph->bitmap.width,
-            glyph->bitmap.rows,
-            0,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            glyph->bitmap.buffer
-        );
+        // Recreate texture
+        m_texture.createGray({glyph->bitmap.width, glyph->bitmap.rows}, glyph->bitmap.buffer);
 
-        float x2 = x + glyph->bitmap_left * sx;
-        float y2 = -y - glyph->bitmap_top * sy;
-        float w = glyph->bitmap.width * sx;
-        float h = glyph->bitmap.rows * sy;
+        // Transformation for glyph
+        context.matrixPush();
+
+        context.matrixTranslate({
+            units::Length(glyph->bitmap_left * sx),
+            units::Length(glyph->bitmap_top * sy)
+        });
+
+        context.matrixScale({
+            glyph->bitmap.width * sx,
+            -(glyph->bitmap.rows * sy)
+        });
 
         // Draw
         context.draw(PrimitiveType::Quads, 4);
+        context.matrixPop();
 
         // Translate to next position
         context.matrixTranslate({
@@ -221,6 +258,9 @@ void Font::draw(Context& context, const String& text, const Color& color, const 
             units::Length((glyph->advance.y >> 6) * sy)
         });
     }
+
+    context.disableAlpha();
+    context.colorPop();
 
     context.setProgram(nullptr);
 

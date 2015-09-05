@@ -14,6 +14,7 @@
 #include "core/String.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/Vector.hpp"
+#include "core/StaticArray.hpp"
 #include "render/Color.hpp"
 #include "render/Buffer.hpp"
 #include "render/Shader.hpp"
@@ -50,6 +51,31 @@ public:
 
 
     /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     * @param data    Font data.
+     * @param size    Data size.
+     */
+    Font(Context& context, const unsigned char* data, unsigned int size);
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     * @param data    Font data.
+     * @param size    Data size.
+     */
+    template<std::size_t N>
+    Font(Context& context, const StaticArray<unsigned char, N>& data)
+        : Font(context, data.data(), N)
+    {
+        // Nothing to do
+    }
+
+
+    /**
      * @brief Destructor.
      */
     ~Font();
@@ -79,7 +105,7 @@ public:
      * @param color   Text color.
      * @parma pos     Text position.
      */
-    void draw(Context& context, const String& text, const Color& color, const Vector<float> pos) noexcept;
+    void draw(Context& context, const String& text, const Color& color, const Vector<float> pos = Zero) noexcept;
 
 
 // Private Data Members
@@ -104,7 +130,10 @@ private:
     /// Shader program.
     Program m_program;
 
-    /// Size color pointer.
+    /// Texture pointer.
+    Program::UniformId m_texPtr;
+
+    /// Color pointer.
     Program::UniformId m_colorPtr;
 
 };
