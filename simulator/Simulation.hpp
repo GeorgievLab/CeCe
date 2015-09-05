@@ -1074,7 +1074,7 @@ private:
 
 #if CONFIG_RENDER_TEXT_ENABLE
     /// If time should be rendered.
-    bool m_simulationTimeRender = true;
+    bool m_simulationTimeRender = false;
 #endif
 };
 
