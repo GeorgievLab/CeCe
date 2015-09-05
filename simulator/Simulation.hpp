@@ -508,9 +508,48 @@ public:
      *
      * @return
      */
-    render::Color getBackgroundColor() const noexcept
+    const render::Color& getBackgroundColor() const noexcept
     {
         return m_backgroundColor;
+    }
+#endif
+
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /**
+     * @brief Returns font color.
+     *
+     * return
+     */
+    const render::Color& getFontColor() const noexcept
+    {
+        return m_fontColor;
+    }
+#endif
+
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /**
+     * @brief Get font size.
+     *
+     * @return
+     */
+    unsigned int getFontSize() const noexcept
+    {
+        return m_fontSize;
+    }
+#endif
+
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /**
+     * @brief Returns if simulation time should be rendered.
+     *
+     * @return
+     */
+    bool isSimulationTimeRender() const noexcept
+    {
+        return m_simulationTimeRender;
     }
 #endif
 
@@ -791,6 +830,45 @@ public:
 #endif
 
 
+#if CONFIG_RENDER_TEXT_ENABLE
+    /**
+     * @brief Set font color.
+     *
+     * @param color
+     */
+    void setFontColor(render::Color color) noexcept
+    {
+        m_fontColor = color;
+    }
+#endif
+
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /**
+     * @brief Set font size.
+     *
+     * @param size
+     */
+    void setFontSize(unsigned int size) noexcept
+    {
+        m_fontSize = size;
+    }
+#endif
+
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /**
+     * @brief Set if simulation time should be rendered.
+     *
+     * @param flag
+     */
+    void setSimulationTimeRender(bool flag) noexcept
+    {
+        m_simulationTimeRender = flag;
+    }
+#endif
+
+
 // Public Operations
 public:
 
@@ -959,7 +1037,23 @@ private:
 #endif
 
 #if CONFIG_RENDER_TEXT_ENABLE
+    /// Font renderer.
     render::ObjectPtr<render::Font> m_font;
+#endif
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /// Font color.
+    render::Color m_fontColor = render::colors::WHITE;
+#endif
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /// Font size.
+    unsigned int m_fontSize = 35;
+#endif
+
+#if CONFIG_RENDER_TEXT_ENABLE
+    /// If time should be rendered.
+    bool m_simulationTimeRender = true;
 #endif
 };
 
