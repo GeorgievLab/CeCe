@@ -235,6 +235,9 @@ struct ValueCast
      */
     static T convert(View<PyObject> value) noexcept
     {
+        if (!value)
+            throw InvalidArgumentException("NULL PyObject");
+
         assert(definition::valid);
         return definition::template unwrap<T>(value);
     }

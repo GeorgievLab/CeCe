@@ -50,6 +50,21 @@ static void python_wrapper_simulator_Configuration(PyObject* module)
 
 /* ************************************************************************ */
 
+static PyObject* getObject(ObjectWrapper<simulator::Simulation*>* self, PyObject* args, void*) noexcept
+{
+    int i;
+
+    if(!PyArg_ParseTuple(args, "i", &i))
+        return NULL;
+
+    // Get object
+    auto object = self->value->getObjects()[i].get();
+
+    return plugin::python::makeObject(object);
+}
+
+/* ************************************************************************ */
+
 static void python_wrapper_simulator_Simulation(PyObject* module)
 {
     using type = simulator::Simulation;
@@ -72,6 +87,13 @@ static void python_wrapper_simulator_Simulation(PyObject* module)
         ),
         defineMemberFunction<2, type_ptr>("buildObject", &type::buildObject),
         defineMemberFunction<3, type_ptr>("objectCountType", &type::getObjectCountType),
+        defineMemberFunction<4, type_ptr>("getParameter",
+            static_cast<type::ParameterValueType (type::*)(const String&) const>(&type::getParameter)
+        ),
+        defineMemberFunction<5, type_ptr>("getParameterDef",
+            static_cast<type::ParameterValueType (type::*)(const String&, type::ParameterValueType) const>(&type::getParameter)
+        ),
+        {"getObject", (PyCFunction) getObject, METH_VARARGS, "Get n-th object"},
         {NULL}  /* Sentinel */
     };
 
@@ -122,6 +144,7 @@ static void python_wrapper_simulator_Object(PyObject* module)
         defineProperty<2, type>("position", &type_base::getPosition, &type_base::setPosition),
         defineProperty<3, type>("rotation", &type_base::getRotation, &type_base::setRotation),
         defineProperty<4, type>("velocity", &type_base::getVelocity, &type_base::setVelocity),
+        defineProperty<5, type>("className", &type_base::getClassName),
         {NULL}  /* Sentinel */
     };
 

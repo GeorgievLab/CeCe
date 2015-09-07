@@ -429,6 +429,9 @@ struct MemberFunction
             cast<RemoveConstRef<Args>>(PyTuple_GetItem(args, I))...
         };
 
+        if (PyErr_Occurred())
+            throw Exception{};
+
         try
         {
             return cast<Ret>((ref(self->value).*fn)(std::get<I>(tupleArgs)...)).release();
