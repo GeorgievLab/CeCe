@@ -469,7 +469,7 @@ void Simulation::configure(const Configuration& config)
 #ifdef ENABLE_RENDER
 void Simulation::draw(render::Context& context)
 {
-    //context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
+    context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
 
     // Store modules
     DynamicArray<ViewPtr<Module>> modules;
@@ -499,6 +499,8 @@ void Simulation::draw(render::Context& context)
 #endif
 
 #if CONFIG_RENDER_TEXT_ENABLE
+    context.disableStencilBuffer();
+
     if (isSimulationTimeRender())
     {
         if (!m_font)

@@ -175,6 +175,12 @@ public:
 
 
     /**
+     * @brief Disable stencil buffer.
+     */
+    void disableStencilBuffer() noexcept;
+
+
+    /**
      * @brief Begin frame rendering.
      *
      * @param width  View width.

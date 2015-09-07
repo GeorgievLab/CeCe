@@ -277,8 +277,13 @@ void Context::setStencilBuffer(float width, float height) noexcept
     glStencilMask(0x00);
     glStencilFunc(GL_EQUAL, 0, 0xFF);
     glStencilFunc(GL_EQUAL, 1, 0xFF);
+}
 
-    //glDisable(GL_STENCIL_TEST);
+/* ************************************************************************ */
+
+void Context::disableStencilBuffer() noexcept
+{
+    gl(glDisable(GL_STENCIL_TEST));
 }
 
 /* ************************************************************************ */
