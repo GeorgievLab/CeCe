@@ -360,11 +360,28 @@ public:
      * @brief Returns parameter by name.
      *
      * @param name Parameter name.
+     *
+     * @return Parameter value.
+     */
+    ParameterValueType getParameter(const String& name) const
+    {
+        auto it = m_parameters.find(name);
+        if (it == m_parameters.end())
+            throw InvalidArgumentException("Unknown parameter: " + name);
+
+        return it->second;
+    }
+
+
+    /**
+     * @brief Returns parameter by name.
+     *
+     * @param name Parameter name.
      * @param def  Default value if parameter is not set.
      *
      * @return Parameter value or default value.
      */
-    ParameterValueType getParameter(const String& name, ParameterValueType def = {}) const noexcept
+    ParameterValueType getParameter(const String& name, ParameterValueType def) const noexcept
     {
         auto it = m_parameters.find(name);
         return it != m_parameters.end() ? it->second : def;
@@ -1069,7 +1086,7 @@ private:
 
 #if CONFIG_RENDER_TEXT_ENABLE
     /// Font size.
-    unsigned int m_fontSize = 35;
+    unsigned int m_fontSize = 30;
 #endif
 
 #if CONFIG_RENDER_TEXT_ENABLE

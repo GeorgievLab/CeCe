@@ -534,6 +534,15 @@ void Simulation::draw(render::Context& context)
             oss << std::setw(3) << std::setfill('0') << milliseconds;
         }
 
+        if (hasUnlimitedIterations())
+        {
+            oss << " (" << getIteration() << " / -)";
+        }
+        else
+        {
+            oss << " (" << getIteration() << " / " << getIterations() << ")";
+        }
+
         m_font->draw(context, oss.str(), getFontColor());
     }
 #endif
