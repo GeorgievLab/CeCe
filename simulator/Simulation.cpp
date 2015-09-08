@@ -379,7 +379,7 @@ void Simulation::configure(const Configuration& config)
     setBackgroundColor(config.get("background", getBackgroundColor()));
 
 #if CONFIG_RENDER_TEXT_ENABLE
-    setFontColor(config.get("text-color", getBackgroundColor().inverted(true)));
+    setFontColor(config.get("text-color", getBackgroundColor().inverted()));
 #endif
 
 #if CONFIG_RENDER_TEXT_ENABLE
