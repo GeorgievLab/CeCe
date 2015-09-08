@@ -48,8 +48,9 @@ public:
      * @brief Constructor.
      *
      * @param context Rendering context.
+     * @param filter  Min/Mag filter.
      */
-    explicit Texture(Context& context);
+    explicit Texture(Context& context, bool filter = true);
 
 
     /**
@@ -58,8 +59,9 @@ public:
      * @param context Rendering context.
      * @param size    Texture size.
      * @param color   Initialization color.
+     * @param filter  Min/Mag filter.
      */
-    Texture(Context& context, Size size, const Color& color = colors::BLACK);
+    Texture(Context& context, Size size, const Color& color = colors::BLACK, bool filter = true);
 
 
     /**

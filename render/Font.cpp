@@ -118,7 +118,7 @@ struct Font::Impl
 Font::Font(Context& context, const String& name)
     : m_impl(new Impl{})
     , m_buffer(context, g_vertices.size() * sizeof(decltype(g_vertices)::value_type), g_vertices.data())
-    , m_texture(context)
+    , m_texture(context, false)
 {
     if (!g_library)
     {

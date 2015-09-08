@@ -40,23 +40,32 @@ namespace render {
 
 /* ************************************************************************ */
 
-Texture::Texture(Context& context)
+Texture::Texture(Context& context, bool filter)
 {
     // Generate texture
     gl(glGenTextures(1, &m_id));
     assert(m_id != 0);
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
-    gl(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+
+    if (filter)
+    {
+        gl(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+        gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    }
+    else
+    {
+        gl(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    }
 }
 
 /* ************************************************************************ */
 
-Texture::Texture(Context& context, Size size, const Color& color)
-    : Texture(context)
+Texture::Texture(Context& context, Size size, const Color& color, bool filter)
+    : Texture(context, filter)
 {
     // Init texture
     resize(std::move(size), color);
