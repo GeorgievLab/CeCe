@@ -148,6 +148,25 @@ void Yeast::budRelease()
     // TODO: When yeast is rotating and bud is released it should be throw
     // away by some force.
 
+    // Split molecules between yeast and bud
+
+    // Total volume
+    const auto totalVolume = getVolume() + m_bud->volume;
+
+    // Copy old state
+    const auto molecules = getMolecules();
+
+    // Foreach molecules
+    for (const auto& p : molecules)
+    {
+        // Molecules per volume unit
+        const auto concentration = p.second / totalVolume;
+
+        // Set molecule count to Yeast and bud
+        setMoleculeCount(p.first, concentration * getVolume());
+        bud->setMoleculeCount(p.first, concentration * bud->getVolume());
+    }
+
     // Release bud
     m_bud.reset();
 
