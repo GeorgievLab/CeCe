@@ -461,9 +461,24 @@ public:
     /**
      * @brief Calculate color of fluorescent proteins.
      *
+     * @param volume
+     *
      * @return
      */
-    render::Color calcFluorescentColor() const noexcept;
+    render::Color calcFluorescentColor(units::Volume volume) const noexcept;
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Calculate color of fluorescent proteins.
+     *
+     * @return
+     */
+    render::Color calcFluorescentColor() const noexcept
+    {
+        return calcFluorescentColor(getVolume());
+    }
 #endif
 
 
@@ -484,27 +499,27 @@ private:
 
 #if ENABLE_RENDER
     /// GFP saturation.
-    FluorescentSaturation m_gfpSaturation{25};
+    FluorescentSaturation m_gfpSaturation{20};
 #endif
 
 #if ENABLE_RENDER
     /// RFP saturation.
-    FluorescentSaturation m_rfpSaturation{25};
+    FluorescentSaturation m_rfpSaturation{20};
 #endif
 
 #if ENABLE_RENDER
     /// YFP saturation.
-    FluorescentSaturation m_yfpSaturation{25};
+    FluorescentSaturation m_yfpSaturation{20};
 #endif
 
 #if ENABLE_RENDER
     /// CFP saturation.
-    FluorescentSaturation m_cfpSaturation{25};
+    FluorescentSaturation m_cfpSaturation{20};
 #endif
 
 #if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
     /// BFP saturation.
-    FluorescentSaturation m_bfpSaturation{25};
+    FluorescentSaturation m_bfpSaturation{20};
 #endif
 
 #if ENABLE_RENDER

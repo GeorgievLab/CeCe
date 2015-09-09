@@ -81,9 +81,8 @@ void CellBase::update(units::Time dt)
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-render::Color CellBase::calcFluorescentColor() const noexcept
+render::Color CellBase::calcFluorescentColor(const units::Volume volume) const noexcept
 {
-    const auto volume = getVolume();
     const auto gfp = getMoleculeCount("GFP");
     const auto rfp = getMoleculeCount("RFP");
     const auto yfp = getMoleculeCount("YFP");
