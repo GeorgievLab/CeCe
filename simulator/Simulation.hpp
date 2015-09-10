@@ -471,7 +471,7 @@ public:
      *
      * @return Pointer to program.
      */
-    Program getProgram(const String& name) noexcept
+    Program getProgram(const String& name)
     {
         auto it = m_programs.find(name);
 
