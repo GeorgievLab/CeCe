@@ -118,7 +118,7 @@ static void python_wrapper_simulator_Module(PyObject* module)
 
 /* ************************************************************************ */
 
-static PyObject* useProgram(ObjectWrapper<simulator::Object*>* self, PyObject* args, void*) NOEXCEPT
+static PyObject* useProgram(ObjectWrapper<simulator::Object*>* self, PyObject* args, void*) noexcept
 {
     char* name;
 

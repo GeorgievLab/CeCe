@@ -11,9 +11,6 @@
 // wxWidgets
 #include <wx/event.h>
 
-// Simulator
-#include "core/compatibility.hpp"
-
 /* ************************************************************************ */
 
 wxDECLARE_EVENT(EVT_LOG, wxCommandEvent);
@@ -66,7 +63,7 @@ public:
      *
      * @return
      */
-    Buffer& GetBuffer() NOEXCEPT
+    Buffer& GetBuffer() noexcept
     {
         return m_buffer;
     }

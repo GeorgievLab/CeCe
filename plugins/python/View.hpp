@@ -13,9 +13,6 @@
 // C++
 #include <utility>
 
-// Simulator
-#include "core/compatibility.hpp"
-
 /* ************************************************************************ */
 
 namespace plugin {
@@ -45,7 +42,7 @@ public:
      *
      * @param ptr Object pointer.
      */
-    View(T* ptr) NOEXCEPT
+    View(T* ptr) noexcept
         : m_ptr(ptr)
     {
         // Nothing to do
@@ -59,7 +56,7 @@ public:
     /**
      * @brief Returns if handle is set.
      */
-    explicit operator bool() const NOEXCEPT
+    explicit operator bool() const noexcept
     {
         return m_ptr != nullptr;
     }
@@ -68,7 +65,7 @@ public:
     /**
      * @brief Implicit cast to operator.
      */
-    operator T*() const NOEXCEPT
+    operator T*() const noexcept
     {
         return m_ptr;
     }
@@ -114,7 +111,7 @@ public:
     /**
      * @brief Returns stored pointer.
      */
-    T* get() const NOEXCEPT
+    T* get() const noexcept
     {
         return m_ptr;
     }
@@ -123,12 +120,10 @@ public:
     /**
      * @brief Returns mutable stored pointer.
      */
-#ifndef _MSC_VER
-    T*& getRef()& NOEXCEPT
+    T*& getRef()& noexcept
     {
         return m_ptr;
     }
-#endif
 
 
 // Private Data Members
@@ -150,7 +145,7 @@ private:
  * @return
  */
 template<typename T>
-View<T> makeView(T* ptr) NOEXCEPT
+View<T> makeView(T* ptr) noexcept
 {
     return View<T>(ptr);
 }

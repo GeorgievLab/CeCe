@@ -7,7 +7,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"

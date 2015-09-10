@@ -46,7 +46,6 @@
     <File Name="VectorUnits.hpp"/>
     <File Name="TimeMeasurement.hpp"/>
     <File Name="Grid.hpp"/>
-    <File Name="compatibility.hpp"/>
     <File Name="DynamicArray.hpp"/>
     <File Name="String.hpp"/>
     <File Name="FilePath.hpp"/>

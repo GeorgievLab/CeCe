@@ -374,7 +374,7 @@ void MainFrame::OnCodeUpdateUi(wxUpdateUIEvent& event)
 
 /* ************************************************************************ */
 
-void MainFrame::OnLogMessage(wxCommandEvent& event) NOEXCEPT
+void MainFrame::OnLogMessage(wxCommandEvent& event) noexcept
 {
     // Append text
     wxASSERT(m_textCtrlLog);
@@ -383,7 +383,7 @@ void MainFrame::OnLogMessage(wxCommandEvent& event) NOEXCEPT
 
 /* ************************************************************************ */
 
-void MainFrame::InitCodeViewer() NOEXCEPT
+void MainFrame::InitCodeViewer() noexcept
 {
     wxASSERT(m_stcCode);
     wxFont font = m_stcCode->GetFont();

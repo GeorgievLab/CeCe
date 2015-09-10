@@ -7,7 +7,6 @@
 #include <typeindex>
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/Exception.hpp"
 #include "core/Units.hpp"
 #include "core/Tuple.hpp"

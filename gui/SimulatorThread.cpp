@@ -12,7 +12,7 @@ wxDEFINE_EVENT(EVT_ERROR, wxCommandEvent);
 
 /* ************************************************************************ */
 
-SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationLoader* loader) NOEXCEPT
+SimulatorThread::SimulatorThread(wxEvtHandler* handler, simulator::SimulationLoader* loader) noexcept
     : m_handler(handler)
     , m_simulationLoader(loader)
 {
@@ -44,7 +44,7 @@ SimulatorThread::~SimulatorThread()
 
 /* ************************************************************************ */
 
-wxThread::ExitCode SimulatorThread::Entry() NOEXCEPT
+wxThread::ExitCode SimulatorThread::Entry() noexcept
 {
     // Check if thread is still alive
     while (!GetThread()->TestDestroy())
@@ -60,42 +60,42 @@ wxThread::ExitCode SimulatorThread::Entry() NOEXCEPT
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendNew() NOEXCEPT
+void SimulatorThread::SendNew() noexcept
 {
     m_queue.Post({Message::NEW});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendStart() NOEXCEPT
+void SimulatorThread::SendStart() noexcept
 {
     m_queue.Post({Message::START});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendStep() NOEXCEPT
+void SimulatorThread::SendStep() noexcept
 {
     m_queue.Post({Message::STEP});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendStop() NOEXCEPT
+void SimulatorThread::SendStop() noexcept
 {
     m_queue.Post({Message::STOP});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendLoad(const wxString& code) NOEXCEPT
+void SimulatorThread::SendLoad(const wxString& code) noexcept
 {
     m_queue.Post({Message::LOAD, code});
 }
 
 /* ************************************************************************ */
 
-void SimulatorThread::HandleMessages() NOEXCEPT
+void SimulatorThread::HandleMessages() noexcept
 {
     Message msg;
 
@@ -135,7 +135,7 @@ void SimulatorThread::HandleMessages() NOEXCEPT
 
 /* ************************************************************************ */
 
-void SimulatorThread::DoNew() NOEXCEPT
+void SimulatorThread::DoNew() noexcept
 {
     // Stop previous simulation
     DoStop();
@@ -147,7 +147,7 @@ void SimulatorThread::DoNew() NOEXCEPT
 
 /* ************************************************************************ */
 
-void SimulatorThread::DoStart() NOEXCEPT
+void SimulatorThread::DoStart() noexcept
 {
     // Do not start simulation when there is none
     if (!m_simulation)
@@ -159,7 +159,7 @@ void SimulatorThread::DoStart() NOEXCEPT
 
 /* ************************************************************************ */
 
-void SimulatorThread::DoStep() NOEXCEPT
+void SimulatorThread::DoStep() noexcept
 {
     // No simulation
     if (!m_simulation)
@@ -183,7 +183,7 @@ void SimulatorThread::DoStep() NOEXCEPT
 
 /* ************************************************************************ */
 
-void SimulatorThread::DoStop() NOEXCEPT
+void SimulatorThread::DoStop() noexcept
 {
     if (isRunning())
         wxAtomicDec(m_running);
@@ -191,7 +191,7 @@ void SimulatorThread::DoStop() NOEXCEPT
 
 /* ************************************************************************ */
 
-void SimulatorThread::DoLoad(const wxString& code) NOEXCEPT
+void SimulatorThread::DoLoad(const wxString& code) noexcept
 {
     try
     {
@@ -212,7 +212,7 @@ void SimulatorThread::DoLoad(const wxString& code) NOEXCEPT
 
 /* ************************************************************************ */
 
-void SimulatorThread::SendError(const wxString& msg) NOEXCEPT
+void SimulatorThread::SendError(const wxString& msg) noexcept
 {
     wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_ERROR));
     event->SetString(msg);

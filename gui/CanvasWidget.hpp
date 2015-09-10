@@ -68,7 +68,7 @@ public:
      *
      * @return
      */
-    wxGLContext* GetContext() const NOEXCEPT
+    wxGLContext* GetContext() const noexcept
     {
         return m_context.get();
     }
@@ -79,7 +79,7 @@ public:
      *
      * @return
      */
-    render::Context& GetRenderContext() NOEXCEPT
+    render::Context& GetRenderContext() noexcept
     {
         return m_renderContext;
     }
@@ -90,7 +90,7 @@ public:
      *
      * @return
      */
-    simulator::Simulation* GetSimulation() const NOEXCEPT
+    simulator::Simulation* GetSimulation() const noexcept
     {
         assert(m_simulator);
         return m_simulator->GetSimulation();
@@ -106,7 +106,7 @@ public:
      *
      * @param simulator Pointer to simulator thread.
      */
-    void SetSimulator(SimulatorThread* simulator) NOEXCEPT
+    void SetSimulator(SimulatorThread* simulator) noexcept
     {
         m_simulator = simulator;
     }
@@ -119,13 +119,13 @@ public:
     /**
      * @brief Update view.
      */
-    void Update() NOEXCEPT;
+    void Update() noexcept;
 
 
     /**
      * @brief Reset view.
      */
-    void ViewReset() NOEXCEPT;
+    void ViewReset() noexcept;
 
 
 // Public Event Handlers
@@ -156,7 +156,7 @@ public:
      *
      * @param event
      */
-    void OnZoom(wxMouseEvent& event) NOEXCEPT;
+    void OnZoom(wxMouseEvent& event) noexcept;
 
 
     /**
@@ -228,13 +228,13 @@ protected:
     /**
      * @brief Render content.
      */
-    void Render() NOEXCEPT;
+    void Render() noexcept;
 
 
     /**
      * @brief Update render FPS.
      */
-    void UpdateFps() NOEXCEPT;
+    void UpdateFps() noexcept;
 
 
 // Private Data Members

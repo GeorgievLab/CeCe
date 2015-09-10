@@ -4,7 +4,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/String.hpp"
 #include "core/FilePath.hpp"
 
@@ -45,7 +44,7 @@ public:
      *
      * @return
      */
-    bool isInitialized() const NOEXCEPT
+    bool isInitialized() const noexcept
     {
         return m_initialized;
     }
@@ -62,7 +61,7 @@ public:
      *
      * @return Pointer to function or nullptr.
      */
-    Handle<PyObject> getFunction(const char* name) const NOEXCEPT;
+    Handle<PyObject> getFunction(const char* name) const noexcept;
 
 
     /**
@@ -72,7 +71,7 @@ public:
      *
      * @return Pointer to function or nullptr.
      */
-    Handle<PyObject> getFunction(const String& name) const NOEXCEPT
+    Handle<PyObject> getFunction(const String& name) const noexcept
     {
         return getFunction(name.c_str());
     }

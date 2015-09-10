@@ -54,7 +54,7 @@ public:
      *
      * @return
      */
-    simulator::Simulation* GetSimulation() const NOEXCEPT
+    simulator::Simulation* GetSimulation() const noexcept
     {
         return m_glCanvasView->GetSimulation();
     }
@@ -252,7 +252,7 @@ protected:
      *
      * @param event
      */
-    void OnLogMessage(wxCommandEvent& event) NOEXCEPT;
+    void OnLogMessage(wxCommandEvent& event) noexcept;
 
 
     /**
@@ -273,7 +273,7 @@ public:
     /**
      * @brief Initialize code viewer.
      */
-    void InitCodeViewer() NOEXCEPT;
+    void InitCodeViewer() noexcept;
 
 
     /**

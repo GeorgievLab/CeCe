@@ -63,6 +63,7 @@
     <File Name="PhysicsDebugger.hpp"/>
     <File Name="Lines.hpp"/>
     <File Name="Font.hpp"/>
+    <File Name="datatype.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

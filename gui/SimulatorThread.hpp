@@ -58,7 +58,7 @@ public:
      * @param handler Event handler.
      * @param loader Simulation loader.
      */
-    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationLoader* loader) NOEXCEPT;
+    explicit SimulatorThread(wxEvtHandler* handler, simulator::SimulationLoader* loader) noexcept;
 
 
     /**
@@ -76,7 +76,7 @@ public:
      *
      * @return
      */
-    bool isRunning() const NOEXCEPT
+    bool isRunning() const noexcept
     {
         return m_running != 0;
     }
@@ -87,7 +87,7 @@ public:
      *
      * @return
      */
-    wxMessageQueue<Message>& GetQueue() NOEXCEPT
+    wxMessageQueue<Message>& GetQueue() noexcept
     {
         return m_queue;
     }
@@ -98,7 +98,7 @@ public:
      *
      * @return
      */
-    simulator::Simulation* GetSimulation() NOEXCEPT
+    simulator::Simulation* GetSimulation() noexcept
     {
         return m_simulation.get();
     }
@@ -109,7 +109,7 @@ public:
      *
      * @return
      */
-    wxMutex* GetMutex() NOEXCEPT
+    wxMutex* GetMutex() noexcept
     {
         return &m_mutex;
     }
@@ -124,31 +124,31 @@ public:
      *
      * @return Thread return value.
      */
-    wxThread::ExitCode Entry() NOEXCEPT override;
+    wxThread::ExitCode Entry() noexcept override;
 
 
     /**
      * @brief Send new simulation message.
      */
-    void SendNew() NOEXCEPT;
+    void SendNew() noexcept;
 
 
     /**
      * @brief Send start message.
      */
-    void SendStart() NOEXCEPT;
+    void SendStart() noexcept;
 
 
     /**
      * @brief Send step message.
      */
-    void SendStep() NOEXCEPT;
+    void SendStep() noexcept;
 
 
     /**
      * @brief Send stop message.
      */
-    void SendStop() NOEXCEPT;
+    void SendStop() noexcept;
 
 
     /**
@@ -156,7 +156,7 @@ public:
      *
      * @param code Source code.
      */
-    void SendLoad(const wxString& code) NOEXCEPT;
+    void SendLoad(const wxString& code) noexcept;
 
 
 // Protected Operations
@@ -166,31 +166,31 @@ protected:
     /**
      * @brief Handle incomming messages.
      */
-    void HandleMessages() NOEXCEPT;
+    void HandleMessages() noexcept;
 
 
     /**
      * @brief Perform simulation deleting.
      */
-    void DoNew() NOEXCEPT;
+    void DoNew() noexcept;
 
 
     /**
      * @brief Perform simulation start.
      */
-    void DoStart() NOEXCEPT;
+    void DoStart() noexcept;
 
 
     /**
      * @brief Perform simulation step.
      */
-    void DoStep() NOEXCEPT;
+    void DoStep() noexcept;
 
 
     /**
      * @brief Perform simulation stop.
      */
-    void DoStop() NOEXCEPT;
+    void DoStop() noexcept;
 
 
     /**
@@ -198,7 +198,7 @@ protected:
      *
      * @param code Source code.
      */
-    void DoLoad(const wxString& code) NOEXCEPT;
+    void DoLoad(const wxString& code) noexcept;
 
 
     /**
@@ -206,7 +206,7 @@ protected:
      *
      * @param msg Error message.
      */
-    void SendError(const wxString& msg) NOEXCEPT;
+    void SendError(const wxString& msg) noexcept;
 
 
 // Private Data Members

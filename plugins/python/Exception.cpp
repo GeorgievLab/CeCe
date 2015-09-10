@@ -37,29 +37,16 @@ namespace {
  *
  * @return Formatted error message.
  */
-String get_message() NOEXCEPT
+String get_message() noexcept
 {
     assert(PyErr_Occurred());
 
-#ifdef _MSC_VER
-    PyObject* exc;
-    PyObject* val;
-    PyObject* tb;
-
-    PyErr_Fetch(&exc, &val, &tb);
-    PyErr_NormalizeException(&exc, &val, &tb);
-
-    Handle<PyObject> hexc(exc);
-    Handle<PyObject> hval(val);
-    Handle<PyObject> htb(tb);
-#else
     Handle<PyObject> hexc;
     Handle<PyObject> hval;
     Handle<PyObject> htb;
 
     PyErr_Fetch(&hexc.getRef(), &hval.getRef(), &htb.getRef());
     PyErr_NormalizeException(&hexc.getRef(), &hval.getRef(), &htb.getRef());
-#endif
 
     assert(hexc);
 

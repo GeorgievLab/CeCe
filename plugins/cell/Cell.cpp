@@ -18,7 +18,7 @@ namespace cell {
 
 /* ************************************************************************ */
 
-Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) NOEXCEPT
+Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
     : CellBase(simulation, type)
 {
     setDensity(units::kg(1200) / units::m3(1));

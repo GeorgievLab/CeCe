@@ -11,7 +11,6 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/compatibility.hpp"
 #include "core/String.hpp"
 #include "core/Exception.hpp"
 
@@ -53,7 +52,7 @@ public:
     /**
      * @brief Returns the explanatory string.
      */
-    const char* what() const NOEXCEPT
+    const char* what() const noexcept
     {
         return m_message.c_str();
     }

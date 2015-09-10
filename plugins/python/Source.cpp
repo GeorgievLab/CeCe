@@ -40,7 +40,7 @@ Source::Source()
 
 /* ************************************************************************ */
 
-Handle<PyObject> Source::getFunction(const char* name) const NOEXCEPT
+Handle<PyObject> Source::getFunction(const char* name) const noexcept
 {
     // Attribute not found
     if (!PyMapping_HasKeyString(m_dictionary, const_cast<char*>(name)))

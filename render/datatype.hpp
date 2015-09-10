@@ -7,9 +7,6 @@
 #include <cstddef>
 #include <type_traits>
 
-// Simulator
-#include "core/compatibility.hpp"
-
 /* ************************************************************************ */
 
 namespace render {
@@ -95,7 +92,7 @@ struct to_data_type<double> : std::integral_constant<DataType, DataType::Double>
  * @param type Data type.
  * @return Size of type.
  */
-inline CONSTEXPR size_t data_type_size(DataType type) NOEXCEPT
+inline constexpr size_t data_type_size(DataType type) noexcept
 {
     // Very ugly code, but can be evaluated at compile-time
     return
