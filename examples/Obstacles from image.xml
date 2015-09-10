@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="200um 100um" dt="1ms" aiterations="1000" background="black">
+
+    <!-- Generate yeast cells -->
+    <module name="object-generator">
+        <object class="cell.Yeast" probability="0.1" velocity="50um/s 0" />
+        <object class="cell.Yeast" probability="0.1" velocity="50um/s 0" position-min="90um -40um" position-max="95um 40um"/>
+    </module>
+
+    <!-- Define streamlines -->
+    <module name="streamlines" grid="200 100" inlet-velocity="500um/s" layout="outlet inlet outlet inlet"/>
+    <plugin name="obstacles-image"
+            image="obstacle2.png" />
+
+</simulation>
+
