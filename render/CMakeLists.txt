@@ -32,11 +32,6 @@ include_directories(
 
 # ######################################################################### #
 
-# Current version is unable to add object library into shared library.
-if (UNIX)
-    add_compile_options(-fPIC)
-endif ()
-
 # Enable errors
 if (DEV_RENDER_GL_ERRORS)
     add_definitions(-DDEV_RENDER_GL_ERRORS=1)
@@ -108,5 +103,9 @@ endif ()
 
 # Create library
 add_library(${PROJECT_NAME} OBJECT ${SRCS})
+
+# ######################################################################### #
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
 
 # ######################################################################### #

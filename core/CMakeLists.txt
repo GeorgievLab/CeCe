@@ -15,17 +15,9 @@ project(core CXX)
 
 # ######################################################################### #
 
-# Current version is unable to add object library into shared library.
-if (UNIX)
-    add_compile_options(-fPIC)
-endif ()
-
-# ######################################################################### #
-
 # Create library
 add_library(${PROJECT_NAME} OBJECT
     Macro.hpp
-    compatibility.hpp
     constants.hpp
     DynamicArray.hpp
     StaticArray.hpp
@@ -75,6 +67,10 @@ add_library(${PROJECT_NAME} OBJECT
     SharedPtr.hpp
     TriBool.hpp
 )
+
+# ######################################################################### #
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
 
 # ######################################################################### #
 
