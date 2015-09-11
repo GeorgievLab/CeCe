@@ -1,8 +1,12 @@
+% The Simulator
+% Georgiev Lab (c) 2015
 
 # Applications
+
 Simulator offers two application types, CLI and GUI. CLI is usefull when you need run simulation on background or visualize the final simulation without any special GUI controls. GUI is good for designing and testing.
 
 ### CLI
+
 Simple command line application that can run prepared simulations.
 It takes simulation file and perform simulation with optional visualization.
 
@@ -64,7 +68,28 @@ $ simulator-cli /usr/share/simulator/examples/showcase.xml
 
 ## GUI
 
-GUI application is not in stable state and is not distributed within package.
+GUI application is not in stable state yet and is not distributed within package.
+
+# Data Types
+
+In following text there are several data types that have different meaning. You can find their meaning in following table:
+
+| Name          | Description                                    | Example |
+| ------------- | ---------------------------------------------- | ------- |
+| `int`         | Integer value.                                 | `5`, `-3` |
+| `uint`        | Unsigned integer value.                        | `5` |
+| `float`       | Floating point value.                          | `5.3` |
+| `string`      | String value.                                  | `hello world` |
+| `expression`  | Expression. Can contains parameters that are defined by parameter element. | `10 * 5 + 3 * sin(alpha)` |
+| `plugin-name` | Name of existing plugin.                       | `cell` |
+| `name`        | Similar to `string`.                           | `print` |
+| `unit[?]`     | SI unit based on specified symbol in square braces. Accepts value without unit symbol but if symbol is specified it must match the unit type (prefix are supported). Value without symbol have unspecified size, but mostly corresponds to basic unit specified by simulator (`um`, `s`, `ng`). | `0`, `30um/s`, `1.3m/s2`, `0.01/s`, <del>`5um/us`</del> |
+| `vector[?]`   | Value of **two** values separated by space. In case the second value is not supplied it is same as the first one. | `10um/s 1um/s`, `0 0` |
+| `color`       | Color value. Value can be name of predefined color or in CSS color definition format (#RRGGBB). | `red`, `#0000FF` |
+| `it`          | Simulation iteration number. | `10`, `55` |
+| `range[?]`    | Range of values.             | `10`, `10-15` |
+| `array[?]`    | List of values of same type. | `10 10 -5`, `a b c d e f g` |
+
 
 # Data Tables
 Data tables are way how the simulator stores data within simulation. Anything can store data in named data table and when simulation ends those data tables are stored into *CSV* files in current working directory.

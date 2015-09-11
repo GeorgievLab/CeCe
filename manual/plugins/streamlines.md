@@ -23,7 +23,14 @@ There are some limitations that come from Lattice Boltzman method. Maximum veloc
 ### Additional modules
 
 #### `store-state`
+
 Module that stores velicities from grid into `streamlines` data table.
+
+##### Example:
+
+```xml
+<module name="streamlines.store-state" />
+```
 
 > This module generates a huge amount of data so use with caution.
 
@@ -36,8 +43,17 @@ Module that stores velicities from grid into `streamlines` data table.
 * `velX`      - Velocity in specified grid cell, X coordinate.
 * `velY`      - Velocity in specified grid cell, Y coordinate.
 
+### Additional programs
+
 #### `store-object-state`
+
 Module that stores object position and velicities into `object-state` data table.
+
+##### Example:
+
+```xml
+<object ... programs="streamlines.store-object-state" />
+```
 
 ##### Stored data:
 

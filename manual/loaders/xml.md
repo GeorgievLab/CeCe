@@ -27,20 +27,3 @@ Those elements can have sub-elements but that mostly depends on element type and
 | `object` | `class:plugin-name.name`, `position:vector[unit[m]]`, `density:unit[g/m3]`, `programs:names`, `static:bool`, ... | Create an object in simulation. | Depending on object class. |
 | `obstacle` | `type:string`, `position:vector[unit[m]]`, ... | Setup an obstacle. | |
 
-Attributes in this table is in form where the part before colon is attribute name and the part after is value type description.
-
-##### Value types:
-
-| Name          | Description           | Example |
-| ------------- | --------------------- | ------- |
-| `int`         | Integer value.        | `5`, `-3` |
-| `uint`        | Unsigned integer value. | `5` |
-| `float`       | Floating point value. | `5.3` |
-| `string`      | String value.         | `hello world` |
-| `expression`  | Expression. Can contains parameters that are defined by parameter element. | `10 * 5 + 3 * sin(alpha)` |
-| `plugin-name` | Name of existing plugin. | `cell` |
-| `name`        | Similar to `string`.  | `print` |
-| `unit`        | SI unit based on specified symbol in square braces. Accepts value without unit symbol but if symbol is specified it must match the unit type (prefix are supported). Value without symbol have unspecified size, but mostly corresponds to basic unit specified by simulator (`um`, `s`, `ng`). | `0`, `30um/s`, `1.3m/s2`, `0.01/s`, <del>`5um/us`</del> |
-| `vector`      | Value of **two** values separated by space. In case the second value is not supplied it is same as the first one. | `10um/s 1um/s`, `0 0` |
-| `color`       | Color value. Value can be name of predefined color or in CSS color definition format (#RRGGBB). | `red`, `#0000FF` |
-

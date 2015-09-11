@@ -10,15 +10,16 @@ Enables diffusion with two signals named *GFP* and *RFP* with diffusion and degr
 ```xml
 <module name="diffusion" grid="100">
   <signal name="GFP" diffusion-rate="30um2/s" degradation-rate="0.1/s" color="green" />
-  <signal name="RFP" diffusion-rate="5um2/s" color="red" />
+  <signal name="RFP" diffusion-rate="5um2/s" color="red" saturation="1uM" />
 </module>
 ```
 
 ##### Parameters:
 
-| Name   | Type           | Default        | Description |
-| ------ | -------------- | -------------- | ----------- |
-| `grid` | `vector[uint]` | -              | Diffusion grid size. |
+| Name         | Type           | Default        | Description |
+| ------------ | -------------- | -------------- | ----------- |
+| `grid`       | `vector[uint]` | -              | Diffusion grid size. |
+| `background` | `color`        | `transparent`  | Background color. |
 
 ### Signals
 
@@ -32,12 +33,21 @@ You can specify any number of different signals, there is no limitation. Each si
 | `diffusion-rate`   | `unit[m2/s]`   | -              | Diffusion rate. |
 | `degradation-rate` | `unit[/s]`     | `0/s`          | Degradation rate. |
 | `color`            | `color`        | Predefined     | Signal color when the module is rendered. |
+| `saturation`       | `unit[mol/m3]` | `1umol/um3`    | Defines concentration when signal color is 100%. |
 
 ### Additional modules
 
 #### `store-state`
 
 Module that stores values from signal grid of all signals into `diffusion` data table.
+
+##### Example:
+
+Store diffusion data for all iterations.
+
+```xml
+<module name="diffusion.store-state" />
+```
 
 ##### Stored data:
 

@@ -45,10 +45,12 @@ if (CONFIG_MANUAL_CREATE)
         -o ${MANUAL_DIR}/manual.html
     )
 
+    file(COPY ${CMAKE_SOURCE_DIR}/manual/github.css DESTINATION ${MANUAL_DIR})
+
     # Install examples
     install(FILES
         ${MANUAL_DIR}/manual.html
-        ${CMAKE_SOURCE_DIR}/manual/github.css
+        ${MANUAL_DIR}/github.css
         COMPONENT Manual
         DESTINATION "${INSTALL_DIR_MANUAL}"
     )
