@@ -4,9 +4,10 @@
     <!-- Initialize simulation -->
     <init language="python">
 <![CDATA[
+import simulator
 def call(simulation):
     for i in range(0, 16):
-        object = simulation.buildObject("cell.Yeast", False);
+        object = simulation.buildObject("cell.Yeast", simulator.OBJECT_TYPE_STATIC);
         object.useProgram("make-gfp")
         object.useProgram("cell.store-molecules")
         object.growthRate = 0.0
@@ -15,12 +16,12 @@ def call(simulation):
 
     <!-- Generate GFP -->
     <program name="make-gfp" language="stochastic-reactions-intracellular">
-        <!--
-            alpha = -log(0.5) / 20.0;
-            k1 = 100 * alpha; // 1.505149978
-        -->
 <![CDATA[
-        null < 1.505149978, 0.001 > GFP;
+        null < -log(0.5) * 5 , 3 > A;
+        A > cos(0) > B;
+        A > 1 > C;
+        C + B > 3 * sgn(10) > D;
+        if D > 10: null > 5 > GFP;
 ]]>
     </program>
 </simulation>
