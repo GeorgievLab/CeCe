@@ -1,29 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <simulation world-size="160um 90um" dt="0.5ms" iterations="10000" background="black">
-    <program name="make-pheromone" language="stochastic-reactions-intercellular">
+
+    <parameter name="T1" value="0.1uM" />
+
+    <program name="produce-gfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        null > 0.3 > P;
-        P > 0.3 > env;
+        null > 0.3 > env_GFP;
 ]]>
    </program>
-   <program name="make-yfp" language="stochastic-reactions-intercellular">
+   <program name="produce-rfp" language="stochastic-reactions-intercellular">
 <![CDATA[
-        env > 10 > P;
-        P > 100 > YFP;
+        null > 0.3 > RFP;
+        RFP > 10 > env;
+]]>
+    </program>
+    <program name="detect-rfp" language="stochastic-reactions-intercellular">
+<![CDATA[
+        env > 10 > RFP;
+        RFP > 10 > GFP;
+]]>
+    </program>
+    <program name="detect-gfp" language="stochastic-reactions-intercellular">
+<![CDATA[
+        if env_GFP > T1: null < 0.1, 10 > GFP;
 ]]>
    </program>
 
     <!-- Define diffusion module -->
     <module name="diffusion" grid="320 180">
-        <signal name="P" diffusion-rate="50um2/s" degradation-rate="0.1/s" color="green" />
+        <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="green" saturation="10nM" />
+        <signal name="RFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="red" saturation="10nM" />
     </module>
 
     <!-- Object generator -->
     <module name="object-generator">
-        <object class="cell.Yeast" probability="0.002" programs="make-pheromone">
-            <molecule name="RFP" amount="1000" />
-        </object>
-        <object class="cell.Yeast" probability="0.02" />
+        <object class="cell.Yeast" probability="0.02" programs="produce-gfp"/>
+        <object class="cell.Yeast" probability="0.02" programs="produce-rfp"/>
     </module>
 
     <!-- Enable streamlines with diffusion -->

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="200um 100um" dt="1ms" background="black">
+
+<!-- Generate yeast cells -->
+    <module name="object-generator">
+        <object class="cell.Yeast" probability="0.1" velocity="50um/s 0" />
+    </module>
+
+    <!-- Circles -->
+    <obstacle type="circle" position="0 -50um" radius="10um" show="true" />
+
+    <!-- Rectangles -->
+    <obstacle type="rectangle" position="0 50um" size="100um 10um" show="true" />
+
+    <!-- Polygons -->
+    <obstacle type="polygon" position="-50um 0" vertices="5um 10um -5um 0 5um -10um" show="true" />
+    <obstacle type="polygon" position="50um 0" vertices="-20um 5um 0 5um 0 15um 20um 0 0 -15um 0 -5um -20um -5um" show="true" />
+
+</simulation>
+
