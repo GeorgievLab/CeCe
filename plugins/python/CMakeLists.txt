@@ -6,11 +6,19 @@
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
 
+if (WIN32)
+    set(PYTHON_LIB_PATH "C:/Windows/SysWOW64/python27.dll" CACHE STRING "Path to python2 library")
+endif ()
+
+# ######################################################################### #
+
 # Include Python API
 find_package(PythonLibs REQUIRED)
 
 # Include directories
 include_directories(${PYTHON_INCLUDE_DIRS})
+
+# ######################################################################### #
 
 # Sources
 set(SRCS
@@ -50,5 +58,14 @@ build_plugin(python
     SOURCES ${SRCS}
     LIBRARIES ${PYTHON_LIBRARIES}
 )
+
+# ######################################################################### #
+
+if (WIN32 AND PYTHON_LIB_PATH)
+    # Install examples
+    install(FILES ${PYTHON_LIB_PATH}
+        DESTINATION "${INSTALL_DIR_LIBRARY}"
+    )
+endif ()
 
 # ######################################################################### #
