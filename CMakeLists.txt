@@ -157,7 +157,7 @@ elseif (APPLE)
 elseif (WIN32)
     set(INSTALL_DIR_RUNTIME ".")
     set(INSTALL_DIR_LIBRARY ".")
-    set(INSTALL_DIR_PLUGINS "plugins")
+    set(INSTALL_DIR_PLUGINS ".")
     set(INSTALL_DIR_MANUAL  "manual")
 endif ()
 
@@ -169,7 +169,7 @@ if (DEV_PLUGINS)
     set(PLUGINS_DIRECTORY "${PROJECT_BINARY_DIR}/${DIR_PLUGINS}")
 elseif (WIN32)
     # Path to current directory
-    set(PLUGINS_DIRECTORY "./${DIR_PLUGINS}")
+    set(PLUGINS_DIRECTORY ".")
 endif ()
 
 message(STATUS "Runtime directory: ${INSTALL_DIR_RUNTIME}")
