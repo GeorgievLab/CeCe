@@ -21,7 +21,6 @@
   <Project Name="loader-reactions" Path="loaders/reactions/loader-reactions.project" Active="No"/>
   <Project Name="stochastic-reactions-intercellular" Path="plugins/stochastic-reactions-intercellular/stochastic-reactions-intercellular.project" Active="No"/>
   <Project Name="stochastic-reactions-intracellular" Path="plugins/stochastic-reactions-intracellular/stochastic-reactions-intracellular.project" Active="No"/>
-  <Project Name="streamlines-image" Path="plugins/streamlines-image/streamlines-image.project" Active="No"/>
   <Project Name="background" Path="plugins/background/background.project" Active="No"/>
   <Project Name="obstacles-image" Path="plugins/obstacles-image/obstacles-image.project" Active="No"/>
   <Project Name="chemostat" Path="plugins/chemostat/chemostat.project" Active="No"/>
