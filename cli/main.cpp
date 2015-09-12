@@ -335,7 +335,11 @@ public:
      */
     ~Simulator()
     {
+        // Delete simulation
+        m_simulator.setSimulation(nullptr);
 #if ENABLE_RENDER
+        // Delete all released object before visualization cleanup
+        m_simulator.getRenderContext().deleteReleasedObjects();
         cleanupVisualization();
 #endif
     }
@@ -895,6 +899,11 @@ int main(int argc, char** argv)
     catch (const Exception& e)
     {
         Log::error(e.what());
+        return 1;
+    }
+    catch (...)
+    {
+        Log::error("Unknown exception");
         return 1;
     }
 
