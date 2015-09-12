@@ -199,7 +199,7 @@ void Yeast::draw(render::Context& context)
         radius = calcSphereRadius(getVolume());
         angle = getRotation() - (m_bud ? m_bud->rotation : units::Angle(0));
         budRadius = m_bud ? calcSphereRadius(m_bud->volume) : Zero;
-        color = calcFluorescentColor(getVolume() + m_bud->volume);
+        color = calcFluorescentColor(getVolume() + (m_bud ? m_bud->volume : Zero));
     }
 
     // Transform
