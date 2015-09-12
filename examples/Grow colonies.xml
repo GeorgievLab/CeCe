@@ -15,7 +15,7 @@
 <![CDATA[
 def update(dt, simulation):
     print "Iteration:", simulation.iteration, "/", simulation.iterations
-    print "Object count:", simulation.objectsCount
+    print "Object count:", simulation.objectCount
     print "Size: [", simulation.worldSize.width, ",", simulation.worldSize.height, "]"
 ]]>
     </module>
