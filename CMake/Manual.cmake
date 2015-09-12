@@ -8,6 +8,10 @@
 
 option(CONFIG_MANUAL_CREATE "Create user manual" On)
 
+if (NOT CONFIG_MANUAL_CREATE)
+    set(CONFIG_MANUAL_EXTERN "CONFIG_MANUAL_EXTERN-NOTFOUND" CACHE STRING "Path to extern manual (this allow to create manual on PC where pandoc is installed without installing it on current PC)")
+endif ()
+
 # ######################################################################### #
 
 if (CONFIG_MANUAL_CREATE)
@@ -45,15 +49,26 @@ if (CONFIG_MANUAL_CREATE)
         -o ${MANUAL_DIR}/manual.html
     )
 
+    # Copy manual CSS to build dir
     file(COPY ${CMAKE_SOURCE_DIR}/manual/github.css DESTINATION ${MANUAL_DIR})
 
-    # Install examples
+    # Install manual
     install(FILES
         ${MANUAL_DIR}/manual.html
         ${MANUAL_DIR}/github.css
         COMPONENT Manual
         DESTINATION "${INSTALL_DIR_MANUAL}"
     )
+elseif (CONFIG_MANUAL_EXTERN)
+    # Install extern manual
+    install(FILES
+        ${CONFIG_MANUAL_EXTERN}
+        ${MANUAL_DIR}/github.css
+        COMPONENT Manual
+        DESTINATION "${INSTALL_DIR_MANUAL}"
+    )
+else ()
+    message(WARNING "Build without manual")
 endif ()
 
 # ######################################################################### #
