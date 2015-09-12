@@ -10,7 +10,7 @@
 
     <!-- Define streamlines -->
     <module name="streamlines" grid="200 100" inlet-velocity="500um/s" layout="outlet inlet outlet inlet"/>
-    <plugin name="obstacles-image" image="obstacle2.png" />
+    <plugin name="obstacles-image" image="obstacles.png" />
 
 </simulation>
 
