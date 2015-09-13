@@ -765,7 +765,7 @@ public:
      *
      * @return Created object.
      */
-    ViewPtr<Object> buildObject(const String& name, Object::Type type = Object::Type::Dynamic);
+    Object* buildObject(const String& name, Object::Type type = Object::Type::Dynamic);
 
 
     /**

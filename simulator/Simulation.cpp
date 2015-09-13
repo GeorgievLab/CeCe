@@ -209,7 +209,7 @@ Module* Simulation::useModule(const String& path, String storePath)
 
 /* ************************************************************************ */
 
-ViewPtr<Object> Simulation::buildObject(const String& path, Object::Type type)
+Object* Simulation::buildObject(const String& path, Object::Type type)
 {
     // Split path into parts
     String library, name;
