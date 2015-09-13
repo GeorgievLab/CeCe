@@ -65,6 +65,11 @@ static PyObject* set_signal(ObjectWrapper<plugin::diffusion::Module*>* self, PyO
 
 /* ************************************************************************ */
 
+namespace plugin {
+namespace diffusion {
+
+/* ************************************************************************ */
+
 void python_wrapper_module()
 {
     PyObject* module = Py_InitModule3("diffusion", nullptr, nullptr);
@@ -98,6 +103,11 @@ void python_wrapper_module()
 
     // Register dynamic type
     registerDynamic(typeid(type), &type_def::definition);
+}
+
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */

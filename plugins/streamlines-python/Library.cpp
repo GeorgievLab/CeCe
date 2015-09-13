@@ -27,7 +27,7 @@ class StreamlinesPythonApi : public PluginApi
         // TODO: change to 'requirePlugin("python")'
         simulation.useModule("python");
 
-        python_wrapper_module();
+        plugin::streamlines::python_wrapper_module();
     }
 };
 

@@ -99,6 +99,11 @@ static PyObject* initBarriers(ObjectWrapper<plugin::streamlines::Module*>* self,
 
 /* ************************************************************************ */
 
+namespace plugin {
+namespace streamlines {
+
+/* ************************************************************************ */
+
 void python_wrapper_module()
 {
     PyObject* module = Py_InitModule3("streamlines", nullptr, nullptr);
@@ -133,6 +138,11 @@ void python_wrapper_module()
     PyModule_AddIntConstant(module, "RIGHT", static_cast<int>(type::LayoutPosRight));
     PyModule_AddIntConstant(module, "TOP", static_cast<int>(type::LayoutPosTop));
     PyModule_AddIntConstant(module, "BOTTOM", static_cast<int>(type::LayoutPosBottom));
+}
+
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */
