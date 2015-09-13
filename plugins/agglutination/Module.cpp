@@ -33,6 +33,14 @@ namespace {
 
 /* ************************************************************************ */
 
+std::random_device g_rd;
+
+/* ************************************************************************ */
+
+std::default_random_engine g_gen(g_rd());
+
+/* ************************************************************************ */
+
 RealType getRelativeReceptorProportion(
     RealType radius,
     unsigned int numberOfRec)
@@ -96,8 +104,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
     // Joints to remove
     DynamicArray<b2Joint*> toRemove;
-    std::random_device rd;
-    std::default_random_engine e1(rd());
 
     // Foreach active joints
     for (auto joint = world.GetJointList(); joint != nullptr; joint = joint->GetNext())
@@ -116,7 +122,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             )
         );
 
-        if (dist(e1))
+        if (dist(g_gen))
         {
             Log::debug("Released: ", joint->GetBodyA(), ", ", joint->GetBodyB());
             toRemove.push_back(joint);
@@ -161,16 +167,13 @@ void Module::BeginContact(b2Contact* contact)
     auto radius1 = ca.getShapes()[0].getCircle().radius;
     auto radius2 = cb.getShapes()[0].getCircle().radius;
 
-    std::random_device rd;
-    std::default_random_engine e1(rd());
-
     for (unsigned int i = 0; i < m_bonds.size(); i++)
     {
         std::bernoulli_distribution dist1(
             getAssociationPropensity(m_step, radius1.value(), radius2.value(),
                 ca.getMoleculeCount(m_bonds[i].receptor), cb.getMoleculeCount(m_bonds[i].ligand),
                 m_bonds[i].aConst));
-        if (dist1(e1))
+        if (dist1(g_gen))
         {
             Log::debug("Joined: ", ba, ", ", bb);
             m_toJoin.push_back(JointDef{ba, bb, m_bonds[i].dConst});
@@ -180,7 +183,7 @@ void Module::BeginContact(b2Contact* contact)
             getAssociationPropensity(m_step, radius1.value(), radius2.value(),
                 cb.getMoleculeCount(m_bonds[i].receptor), ca.getMoleculeCount(m_bonds[i].ligand),
                 m_bonds[i].aConst));
-        if (dist2(e1))
+        if (dist2(g_gen))
         {
             Log::debug("Joined: ", ba, ", ", bb);
             m_toJoin.push_back(JointDef{ba, bb, m_bonds[i].dConst});

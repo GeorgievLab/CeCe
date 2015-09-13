@@ -34,6 +34,15 @@ namespace {
 
 /* ************************************************************************ */
 
+// Random engine
+std::random_device g_rd;
+
+/* ************************************************************************ */
+
+std::default_random_engine g_gen(g_rd());
+
+/* ************************************************************************ */
+
 /**
  * @brief Parse list of active iterations.
  *
@@ -110,10 +119,6 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
     // Get current iteration number
     const auto iteration = simulation.getIteration();
 
-    // Random engine
-    std::random_device rd;
-    std::default_random_engine gen(rd());
-
     // Foreach generated objects
     for (const auto& desc : m_objects)
     {
@@ -124,7 +129,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         std::bernoulli_distribution distSpawn(desc.probability);
 
         // Spawn?
-        if (!distSpawn(gen))
+        if (!distSpawn(g_gen))
             continue;
 
         // Create object
@@ -134,7 +139,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         // Generate position
         std::uniform_real_distribution<float> distX(desc.positionMin.getX().value(), desc.positionMax.getX().value());
         std::uniform_real_distribution<float> distY(desc.positionMin.getY().value(), desc.positionMax.getY().value());
-        object->setPosition({units::Length(distX(gen)), units::Length(distY(gen))});
+        object->setPosition({units::Length(distX(g_gen)), units::Length(distY(g_gen))});
         object->configure(desc.config, simulation);
     }
 
