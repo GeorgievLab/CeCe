@@ -80,7 +80,12 @@ foreach(PLUGIN_DIR ${PLUGINS_DIRECTORIES})
     if (IS_DIRECTORY "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}/${PLUGIN_DIR}")
         list(APPEND PLUGINS_AVAILABLE ${PLUGIN_DIR})
         option(PLUGINS_BUILD_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}'" On)
-        option(PLUGINS_BUILTIN_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}' as builtin" Off)
+
+        if (APPLE)
+            option(PLUGINS_BUILTIN_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}' as builtin" On)
+        else ()
+            option(PLUGINS_BUILTIN_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}' as builtin" Off)
+        endif ()
 
         if (PLUGINS_BUILTIN_${PLUGIN_DIR})
             list(APPEND PLUGINS_BUILTIN ${PLUGIN_DIR})

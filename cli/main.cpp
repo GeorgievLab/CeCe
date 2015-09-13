@@ -876,11 +876,13 @@ int main(int argc, char** argv)
     signal(SIGTERM, terminate_simulation);
     signal(SIGINT, terminate_simulation);
 
+#if !(__APPLE__ && __MACH__)
     // Register plugins directory
     simulator::PluginManager::addDirectory(getPluginsDirectory(argv[0]));
 
     // Manage plugins by local variable
     auto pm = simulator::PluginManager::local();
+#endif
 
     // Register loaders
     simulator::LoaderManager::add<loader::xml::SimulationLoader>("xml");
