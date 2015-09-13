@@ -149,7 +149,8 @@ public:
         case '-':
             next();
             if (!is('>'))
-                fatalError("Invalid token");
+                return TokenType{};
+                //fatalError("Invalid token");
 
             next();
             return TokenType{TokenCode::ArrowFwrd, "->"};

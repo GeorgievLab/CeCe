@@ -375,25 +375,35 @@ private:
             skipWhitespace();
             return value;
         }
+
+        float coeff = 1;
+
+        // Unary minus
+        if (iterator.front() == '-')
+        {
+            coeff = -1;
+            iterator.advanceBegin();
+        }
+
         String local = readConstant();
         if (local == "pi" || local == "PI")
         {
             skipWhitespace();
-            return constants::PI;
+            return coeff * constants::PI;
         }
         if (local == "e" || local == "E")
         {
             skipWhitespace();
-            return constants::E;
+            return coeff * constants::E;
         }
         auto search = parameters.find(local);
         if (search == parameters.end())
         {
             skipWhitespace();
-            return function(local);
+            return coeff * function(local);
         }
         skipWhitespace();
-        return search->second;
+        return coeff * search->second;
     }
 
     float function(String local)
