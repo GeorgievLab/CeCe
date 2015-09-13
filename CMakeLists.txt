@@ -318,7 +318,7 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples"
 )
 
 install(FILES "${CMAKE_SOURCE_DIR}/Copyright.txt"
-    DESTINATION .
+    DESTINATION ${INSTALL_DIR_DATA}
 )
 
 # ######################################################################### #
