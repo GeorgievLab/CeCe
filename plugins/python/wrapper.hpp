@@ -846,6 +846,12 @@ struct TypeDefinition
         if (!type)
             type = &definition;
 
+        if (!type->tp_name)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Trying to convert object to undefined type");
+            return nullptr;
+        }
+
         // Create new object
         ObjectWrapper<T>* obj = PyObject_New(ObjectWrapper<T>, type);
 
