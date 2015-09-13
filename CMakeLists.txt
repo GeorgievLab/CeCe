@@ -317,6 +317,12 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples"
     FILES_MATCHING PATTERN "*"
 )
 
+install(FILES "${CMAKE_SOURCE_DIR}/Copyright.txt"
+    DESTINATION .
+)
+
+# ######################################################################### #
+
 # PostInstall
 add_subdirectory(PostInstall)
 

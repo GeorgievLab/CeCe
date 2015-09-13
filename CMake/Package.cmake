@@ -13,7 +13,7 @@ include(InstallRequiredSystemLibraries)
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cell simulator")
 set(CPACK_PACKAGE_VENDOR "Georgiev Lab")
-#set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 #set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
 set(CPACK_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
@@ -46,6 +46,8 @@ else (UNIX AND NOT APPLE)
     # autogenerate dependency information
     set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 endif ()
+
+# ######################################################################### #
 
 include(CPack)
 
