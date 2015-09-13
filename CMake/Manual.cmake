@@ -9,7 +9,8 @@
 option(CONFIG_MANUAL_CREATE "Create user manual" On)
 
 if (NOT CONFIG_MANUAL_CREATE)
-    set(CONFIG_MANUAL_EXTERN "CONFIG_MANUAL_EXTERN-NOTFOUND" CACHE STRING "Path to extern manual (this allow to create manual on PC where pandoc is installed without installing it on current PC)")
+    set(CONFIG_MANUAL_EXTERN "" CACHE STRING "Path to extern manual (this allow to create manual on PC where pandoc is installed without installing it on current PC)")
+    set(CONFIG_MANUAL_TUTORIAL_EXTERN "" CACHE STRING "Path to extern tutorial")
 endif ()
 
 # ######################################################################### #
@@ -38,6 +39,8 @@ if (CONFIG_MANUAL_CREATE)
     # Create directory for manual
     file(MAKE_DIRECTORY ${MANUAL_DIR})
 
+    # TODO: Rewrite to add_custom_command
+
     # Create manual
     execute_process(COMMAND ${PANDOC}
         -s
@@ -49,20 +52,31 @@ if (CONFIG_MANUAL_CREATE)
         -o ${MANUAL_DIR}/manual.html
     )
 
+    # Create tutorial
+    execute_process(COMMAND ${PANDOC}
+        -s
+        --highlight-style pygments
+        -c github.css
+        ${CMAKE_SOURCE_DIR}/manual/tutorial.md
+        -o ${MANUAL_DIR}/tutorial.html
+    )
+
     # Copy manual CSS to build dir
     file(COPY ${CMAKE_SOURCE_DIR}/manual/github.css DESTINATION ${MANUAL_DIR})
 
     # Install manual
     install(FILES
         ${MANUAL_DIR}/manual.html
+        ${MANUAL_DIR}/tutorial.html
         ${MANUAL_DIR}/github.css
         COMPONENT Manual
         DESTINATION "${INSTALL_DIR_MANUAL}"
     )
-elseif (CONFIG_MANUAL_EXTERN)
+elseif (CONFIG_MANUAL_EXTERN OR CONFIG_MANUAL_TUTORIAL_EXTERN)
     # Install extern manual
     install(FILES
         ${CONFIG_MANUAL_EXTERN}
+        ${CONFIG_MANUAL_TUTORIAL_EXTERN}
         ${MANUAL_DIR}/github.css
         COMPONENT Manual
         DESTINATION "${INSTALL_DIR_MANUAL}"
