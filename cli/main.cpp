@@ -645,7 +645,13 @@ private:
             // Open video writer
             m_videoWriter.open(
                 filename,
+#if _WIN32
+                CV_FOURCC('M', 'J', 'P', 'G'),
+#elif __APPLE__ && __MACH__
+                CV_FOURCC('M', 'P', '4', 'V'),
+#else
                 CV_FOURCC('M', 'P', 'E', 'G'),
+#endif
                 60,
                 cv::Size(m_windowWidth, m_windowHeight)
             );
