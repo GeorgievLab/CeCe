@@ -1,19 +1,62 @@
 
 ## Stochastic reactions - Intercellular
 
-Allows to specify reactions program that happens inside cell and surrounding environment. Plugin is just an extension of intracellular reactions.
+Allows to specify reactions program that happens in surrounding environment. Plugin is an extension of intracellular reactions.
 
-The extension lies in prefix `env` - environment, which handles absorbing the molucules inside the cell or prodicing them outside.
+The extension lies in keyword `env` - environment, which handles absorbing the molucules inside the cell or prodicing them outside.
 Please note that env must be alone on its side of reaction rule.
 
 > Plugin requires properly set `diffusion` module with signals that have same name as molecules released into environment.
 
-##### Example:
+This plugin extends basic Intracellular reactions functionality with two types of reactions, expression and absorbtion.
 
-This example is production of A molecules and releasing them with some rate into diffusion.
+Expression of molecule `A` is either represented using:
 
 ```
-<program name="make-gfp" language="stochastic-reactions-intercellular"><![CDATA[
+A > 1 > env;
+```
+
+or using:
+
+```
+null > 1 > env_A;
+```
+
+Please note that those two representations are not exactly the same although they lead to the same result.
+In first example there must be molecule `A` present in the cell, after executing the reaction the molecule gets substracted and added to the environment. Therefore this reaction represents transportation of molecule outside the cell.
+In second reaction, the molecule is added and released directly to the environment in single step.
+
+Representation of absorbtion:
+
+```
+env > 1 > A;
+```
+
+This reaction follows the same concept. Subtracts molecule from environment and adds inside the cell.
+However, you may not want the molecules to get absorbed, you may only want to detect if those molecules are outside.
+
+```
+if env_A: B > 1 > C;
+```
+
+Extended conditional reactions are the key.
+Usage is completely the same as you know from standard intracellular reactions, just add the env_ prefix before molecule name.
+The thereshold funcionality is ofcourse kept too.
+
+```xml
+<parameter name="T1" value="20uM" />
+```
+
+```
+if env_A > T1: B > 1 > C;
+```
+
+##### Example:
+
+This example is production of `A` molecules and releasing them with some rate into diffusion.
+
+```xml
+<program name="expression-of-A" language="stochastic-reactions-intercellular"><![CDATA[
   null > 50 > env_A;
 ]]></program>
 ```
