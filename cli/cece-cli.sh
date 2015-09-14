@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # App name
-NAME=simulator-cli
+NAME=cece-cli
 
 # Current directory
 BASEDIR=`dirname $0`

@@ -52,7 +52,7 @@ elseif (MSVC)
     # using Visual Studio C++
     #add_compile_options(/W3)
     message(FATAL_ERROR
-        "Visual Studio Compiler doesn't support C++11 standard that is "
+        "Visual Studio Compiler doesn't support C++11 standard which is "
         "required, so we don't support Visual Studio Compiler."
     )
 endif()
