@@ -1,4 +1,4 @@
-## Streamlines Python (WIP)
+## Streamlines Python
 
 Python language binding for `streamlines` plugin.
 

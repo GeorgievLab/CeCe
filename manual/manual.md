@@ -1,15 +1,12 @@
 % The CeCe simulator
 % Georgiev Lab (c) 2015
 
-CeCe is a simulation environment capturing in one setting the key processes that influence
-cell-cell signal transmission.The underlying scene is a simple 2D world. Cells enter and
-exit this world through predefined channels of arbitrary shape. Each cell executes its
-own stochastic biochemical reactions and based on its state interacts with the rest of
-the population. As such, CeCe is easy to setup, intuitive to interpret, and fast to run.
+The CeCe simulator is modular simulator primary designed for modeling signal
+transmission networks in microfluidics. The simulator architecture is mainly modular
+where functionality is provided by plugins. Each plugin is responsible for specific
+part of simulation (may not be used).
 
 # Applications
-
-Simulator offers two application types, CLI and GUI. CLI is usefull when you need run simulation on background or visualize the final simulation without any special GUI controls. GUI is good for designing and testing.
 
 ### CLI
 
@@ -48,7 +45,8 @@ CLI application is supported on all three platforms.
 
 #### Windows x64
 
-On Windows the ZIP package contains executable in the main directory and some subdirectories with examples and plugins. Application must be executed from command line (`cmd` or `PowerShell`).
+On Windows the ZIP package contains executable in the main directory and some
+subdirectories with examples and plugins. Application must be executed from command line (`cmd` or `PowerShell`).
 
 ```
 PS > .\cece-cli.exe examples\showcase.xml
@@ -56,7 +54,11 @@ PS > .\cece-cli.exe examples\showcase.xml
 
 #### Mac OS X
 
-Application on Mac is shipped as bundle packed in TZG package. Package contains a few directories where the most important is `bin` where the application is stored. The directory `bin/simulator-cli.app` contains everything that CLI application needs to be executed. Run it from `Finder` is not viable (mostly for GUI apps that doesn't require arguments) so it must be executed from terminal. The bundle have some predefined structure where the executable is stored but it's not important because there is `bin/run.sh` that allows you to run CLI app without knowledge of bundle structure.
+Application on Mac is shipped as bundle packed in TZG package. Package contains a few directories where the most important
+is `bin` where the application is stored. The directory `bin/simulator-cli.app` contains everything that
+CLI application needs to be executed. Run it from `Finder` is not viable (mostly for GUI apps that doesn't require arguments)
+so it must be executed from terminal. The bundle have some predefined structure where the executable is stored but it's not
+important because there is `bin/cece-cli.sh` that allows you to run CLI app without knowledge of bundle structure.
 
 Just run the simulator by typing this in terminal in directory of unpacked TZG package.
 
@@ -72,10 +74,6 @@ Just double click on DEB package and everything should be installed. Then just t
 ```bash
 $ cece-cli /usr/share/cece/examples/showcase.xml
 ```
-
-## GUI
-
-GUI application is not in stable state yet and is not distributed within package.
 
 # Data Types
 
@@ -94,14 +92,17 @@ In following text there are several data types that have different meaning. You 
 | `vector[?]`   | Value of **two** values separated by space. In case the second value is not supplied it is same as the first one. | `10um/s 1um/s`, `0 0` |
 | `color`       | Color value. Value can be name of predefined color or in CSS color definition format (#RRGGBB). | `red`, `#0000FF` |
 | `it`          | Simulation iteration number. | `10`, `55` |
-| `range[?]`    | Range of values.             | `10`, `10-15` |
+| `range[?]`    | Range of values. Values can be separated by dash '-'. If dash is not present the meaning is: `X-X`. | `10`, `10-15` |
 | `array[?]`    | List of values of same type. | `10 10 -5`, `a b c d e f g` |
 
 
 # Data Tables
-Data tables are way how the simulator stores data within simulation. Anything can store data in named data table and when simulation ends those data tables are stored into *CSV* files in current working directory.
+Data tables are way how the simulator stores data within simulation. Anything can
+store data in named data table and when simulation ends those data tables are stored
+into *CSV* files in current working directory.
 
-> All data is stored in memory during simulation and are stored into file when simulation ends. This cause a large memory requirements depending on stored data.
+> All data is stored in memory during simulation and are stored into file when
+simulation ends. This cause a large memory requirements depending on stored data.
 
 <!-- include loaders/* -->
 
