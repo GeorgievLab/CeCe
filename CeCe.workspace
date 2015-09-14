@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="cell-sim" Database="" SWTLW="No">
+<CodeLite_Workspace Name="CeCe" Database="" SWTLW="No">
   <Project Name="gui" Path="gui/gui.project" Active="No"/>
   <Project Name="core" Path="core/core.project" Active="No"/>
   <Project Name="simulator" Path="simulator/simulator.project"/>
