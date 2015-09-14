@@ -1,5 +1,11 @@
-% The Simulator
+% The CeCe simulator
 % Georgiev Lab (c) 2015
+
+CeCe is a simulation environment capturing in one setting the key processes that influence
+cell-cell signal transmission.The underlying scene is a simple 2D world. Cells enter and
+exit this world through predefined channels of arbitrary shape. Each cell executes its
+own stochastic biochemical reactions and based on its state interacts with the rest of
+the population. As such, CeCe is easy to setup, intuitive to interpret, and fast to run.
 
 # Applications
 
@@ -45,7 +51,7 @@ CLI application is supported on all three platforms.
 On Windows the ZIP package contains executable in the main directory and some subdirectories with examples and plugins. Application must be executed from command line (`cmd` or `PowerShell`).
 
 ```
-PS > .\simulator.exe examples\showcase.xml
+PS > .\cece-cli.exe examples\showcase.xml
 ```
 
 #### Mac OS X
@@ -55,15 +61,16 @@ Application on Mac is shipped as bundle packed in TZG package. Package contains 
 Just run the simulator by typing this in terminal in directory of unpacked TZG package.
 
 ```bash
-$ ./bin/simulator-cli.sh examples/showcase.xml
+$ ./bin/cece-cli.sh examples/showcase.xml
 ```
 
 #### Linux x64
 
-Only Ubuntu 14.04 LST and Linux Mint 17.x is supported. Just double click on DEB package and everything should be installed. Then just type following into terminal.
+We offer only DEB package for Ubuntu-like distributions (Ubuntu 14.10 LTS, Mint 17.2).
+Just double click on DEB package and everything should be installed. Then just type following into terminal.
 
 ```bash
-$ simulator-cli /usr/share/simulator/examples/showcase.xml
+$ cece-cli /usr/share/cece/examples/showcase.xml
 ```
 
 ## GUI

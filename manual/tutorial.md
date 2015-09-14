@@ -1,4 +1,4 @@
-% Tutorial
+% The CeCe simulator tutorial
 % Georgiev Lab (c) 2015
 
 # Basics
