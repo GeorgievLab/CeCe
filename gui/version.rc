@@ -5,8 +5,6 @@
 /* Faculty of Applied Sciences                                              */
 /* University of West Bohemia in Pilsen                                     */
 /* ************************************************************************ */
-/* Author: Jiří Fatka <fatkaj@ntis.zcu.cz>                                  */
-/* ************************************************************************ */
 
 // Windows
 #include <windows.h>
@@ -29,11 +27,11 @@ FILESUBTYPE         VFT2_UNKNOWN
         BLOCK "040904b0"
         {
             VALUE "Build",            __DATE__ "\0"
-            VALUE "Comments",         "Simulator\0"
+            VALUE "Comments",         "Cell-Cell interaction simulator\0"
             VALUE "CompanyName",      "Georgiev Lab\0"
-            VALUE "FileDescription",  "simulator\0"
+            VALUE "FileDescription",  "CeCe simulator\0"
             VALUE "FileVersion",      "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@\0"
-            VALUE "InternalName",     "simulator\0"
+            VALUE "InternalName",     "cece\0"
             VALUE "LegalCopyright",   "none\0"
             VALUE "OriginalFilename", "@CMAKE_PROJECT_NAME@-@PROJECT_NAME@.exe\0"
             VALUE "ProductName",      "@CMAKE_PROJECT_NAME@-@PROJECT_NAME@\0"

@@ -140,7 +140,7 @@ void terminate_simulation(int param)
     std::cout <<
         APP_NAME "\n"
         "\n"
-        "  TODO: description.\n"
+        "  Cell-Cell interaction simulator.\n"
         "\n"
         "Version:\n"
         "    " VERSION "\n"

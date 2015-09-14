@@ -16,12 +16,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
 # ######################################################################### #
 
 # Workspace name
-project(simulator)
+project(cece)
 
 # ######################################################################### #
 
 # Application name
-set(APP_NAME "Simulator")
+set(APP_NAME "CeCe")
 
 # Application version
 set(VERSION_MAJOR 0)

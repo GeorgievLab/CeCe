@@ -78,7 +78,7 @@
 				}, {
 					"type":	"string",
 					"m_label":	"Title:",
-					"m_value":	"Cell simulator"
+					"m_value":	"CeCe simulator"
 				}, {
 					"type":	"virtualFolderPicker",
 					"m_label":	"Virtual Folder:",

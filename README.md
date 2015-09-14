@@ -1,7 +1,7 @@
 
-= The STU simulator =
+= The CeCe simulator =
 
-The STU simulator is modular simulator primary designed for modeling signal
+The CeCe simulator is modular simulator primary designed for modeling signal
 transmission networks in microfluidics.
 
 == Building from source ==

@@ -11,10 +11,10 @@ include(InstallRequiredSystemLibraries)
 
 # ######################################################################### #
 
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cell simulator")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cell-Cell interaction simulator")
 set(CPACK_PACKAGE_VENDOR "Georgiev Lab")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
-#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
 set(CPACK_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
@@ -32,14 +32,7 @@ set(CPACK_PACKAGE_EXECUTABLES
 )
 
 if (WIN32 AND NOT UNIX)
-    # There is a bug in NSI that does not handle full unix paths properly. Make
-    # sure there is at least one set of four (4) backlasshes.
-    #set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
-    #set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
     set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ${APP_NAME}")
-    #set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.my-project-home-page.org")
-    #set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.my-personal-home-page.com")
-    #set(CPACK_NSIS_CONTACT "me@my-personal-home-page.com")
     set(CPACK_NSIS_MODIFY_PATH ON)
 else (UNIX AND NOT APPLE)
     set(CPACK_SOURCE_STRIP_FILES "")
