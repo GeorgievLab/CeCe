@@ -77,7 +77,7 @@ elseif (CONFIG_MANUAL_EXTERN OR CONFIG_MANUAL_TUTORIAL_EXTERN)
     install(FILES
         ${CONFIG_MANUAL_EXTERN}
         ${CONFIG_MANUAL_TUTORIAL_EXTERN}
-        ${MANUAL_DIR}/github.css
+        ${CMAKE_SOURCE_DIR}/manual/github.css
         COMPONENT Manual
         DESTINATION "${INSTALL_DIR_MANUAL}"
     )
