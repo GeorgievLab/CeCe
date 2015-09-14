@@ -45,7 +45,10 @@
   <Dependencies Name="Release"/>
   <VirtualDirectory Name="resources">
     <File Name="version.rc"/>
-    <File Name="simulator-cli.sh"/>
+    <File Name="cece-cli.sh"/>
+    <VirtualDirectory Name="icons">
+      <File Name="icons/CeCe.icns"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="version.hpp.in"/>
