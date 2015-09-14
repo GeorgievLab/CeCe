@@ -668,7 +668,7 @@ private:
         m_window = glfwCreateWindow(
             m_windowWidth,
             m_windowHeight,
-            APP_NAME,
+            APP_NAME " simulator",
             params.fullscreen ? monitor : nullptr,
             nullptr
         );
