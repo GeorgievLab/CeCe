@@ -26,8 +26,8 @@ set(APP_NAME "CeCe")
 # Application version
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 4)
-set(VERSION_PATCH 0)
-set(VERSION_SPECIAL " alpha")
+set(VERSION_PATCH 1)
+set(VERSION_SPECIAL "")
 
 # Full version string
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
