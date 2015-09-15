@@ -53,6 +53,7 @@
     <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
     <File Name="version.rc"/>
+    <File Name="app.desktop"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="simulator"/>

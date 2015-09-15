@@ -5,6 +5,23 @@
 # Faculty of Applied Sciences                                               #
 # University of West Bohemia in Pilsen                                      #
 # ######################################################################### #
+#                                                                           #
+# This file is part of CeCe.                                                #
+#                                                                           #
+# CeCe is free software: you can redistribute it and/or modify              #
+# it under the terms of the GNU General Public License as published by      #
+# the Free Software Foundation, either version 3 of the License, or         #
+# (at your option) any later version.                                       #
+#                                                                           #
+# CeCe is distributed in the hope that it will be useful,                   #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU General Public License for more details.                              #
+#                                                                           #
+# You should have received a copy of the GNU General Public License         #
+# along with CeCe.  If not, see <http://www.gnu.org/licenses/>.             #
+#                                                                           #
+# ######################################################################### #
 
 # CPACK
 include(InstallRequiredSystemLibraries)
@@ -14,7 +31,7 @@ include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cell-Cell interaction simulator")
 set(CPACK_PACKAGE_VENDOR "Georgiev Lab")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
