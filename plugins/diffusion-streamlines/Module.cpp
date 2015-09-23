@@ -147,7 +147,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
             }
 
             // Apply matrix
-            for (auto&& ab : range(Vector<unsigned>(2)))
+            for (auto&& ab : range(Vector<unsigned>::createSingle(2)))
             {
                 const auto ab2 = c + ab + Vector<unsigned>(iij) - offset;
 

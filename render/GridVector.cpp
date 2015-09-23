@@ -91,7 +91,7 @@ void GridVector::update(const Vector<float>* data) noexcept
 {
     const auto size = getSize();
 
-    constexpr Vector<float> start{-0.5f};
+    const auto start = Vector<float>::createSingle(-0.5f);
     const Vector<float> step = getSize().inversed<float>();
 
     const auto width = size.getWidth();

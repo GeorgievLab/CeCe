@@ -295,7 +295,7 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
         unsigned int obstacleCells = 0u;
 
         // Diffuse signal to grid cells around
-        for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
+        for (auto&& ab : range(Coordinate::createSingle(MATRIX_SIZE)))
         {
             const auto coord = c + ab - OFFSET;
 
@@ -319,7 +319,7 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
             const SignalConcentration signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE - obstacleCells);
             assert(signalAdd >= Zero);
 
-            for (auto&& ab : range(Coordinate{MATRIX_SIZE}))
+            for (auto&& ab : range(Coordinate::createSingle(MATRIX_SIZE)))
             {
                 const auto coord = c + ab - OFFSET;
 

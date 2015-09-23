@@ -295,7 +295,7 @@ public:
      */
     void matrixScale(float scale) noexcept
     {
-        return matrixScale(ScaleVector{scale});
+        return matrixScale(ScaleVector::createSingle(scale));
     }
 
 

@@ -265,8 +265,7 @@ LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept
     if (uLenSq > MAX_SPEED_SQ)
     {
         // Limit velocity
-        // FIXME: Remove Vector construction.
-        uCopy *= Vector<ValueType>(MAX_SPEED_SQ / uLenSq);
+        uCopy *= MAX_SPEED_SQ / uLenSq;
         uLenSq = MAX_SPEED_SQ;
     }
 

@@ -535,7 +535,7 @@ public:
      */
     bool inRange(const Coordinate& coord) const noexcept
     {
-        return coord.inRange(Coordinate{0}, m_gridSize);
+        return coord.inRange(Coordinate{Zero}, m_gridSize);
     }
 
 

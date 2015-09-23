@@ -76,7 +76,7 @@ void Grid::resize(Size size) noexcept
     const auto width = getSize().getWidth();
     const auto height = getSize().getHeight();
 
-    constexpr Vector<float> start{-0.5f};
+    const auto start = Vector<float>::createSingle(-0.5f);
     const Vector<float> step = getSize().inversed<float>();
 
     struct Vertex { float x, y; };

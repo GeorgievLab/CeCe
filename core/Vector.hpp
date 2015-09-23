@@ -36,6 +36,7 @@
 // Simulator
 #include "core/Zero.hpp"
 #include "core/Units.hpp"
+#include "core/StaticArray.hpp"
 #include "core/InStream.hpp"
 #include "core/OutStream.hpp"
 
@@ -46,9 +47,12 @@ inline namespace core {
 /* ************************************************************************ */
 
 /**
- * @brief Two dimensional vector.
+ * @brief N dimensional vector.
+ *
+ * @tparam T Element type.
+ * @tparam N Number of elements.
  */
-template<typename T>
+template<typename T, unsigned N = 2>
 class Vector
 {
 
@@ -60,6 +64,14 @@ public:
     using value_type = T;
 
 
+// Public Contants
+public:
+
+
+    /// Number of elements
+    static constexpr unsigned SIZE = N;
+
+
 // Public Ctors
 public:
 
@@ -67,25 +79,8 @@ public:
     /**
      * @brief Default constructor.
      */
-    constexpr Vector()
-        : m_x(), m_y()
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param val Value for all vector coordinates.
-     */
-#if __APPLE__ && __MACH__
-    /// NOTE: On Mac OS X explicit keyword causes problem with free operators deduction.
-    constexpr Vector(T val) noexcept
-#else
-    explicit constexpr Vector(T val) noexcept
-#endif
-        : m_x(val), m_y(val)
+    Vector() noexcept
+        : m_data{}
     {
         // Nothing to do
     }
@@ -98,7 +93,7 @@ public:
      * @param y
      */
     constexpr Vector(T x, T y) noexcept
-        : m_x(x), m_y(y)
+        : m_data{x, y}
     {
         // Nothing to do
     }
@@ -107,10 +102,10 @@ public:
     /**
      * @brief Zero value constructor.
      */
-    constexpr Vector(Zero_t) noexcept
-        : m_x(), m_y()
+    Vector(Zero_t) noexcept
     {
-        // Nothing to do
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] = T{};
     }
 
 
@@ -120,10 +115,10 @@ public:
      * @param v Source vector.
      */
     template<typename T2>
-    explicit constexpr Vector(const Vector<T2>& v) noexcept
-        : m_x(static_cast<T>(v.getX())), m_y(static_cast<T>(v.getY()))
+    explicit Vector(const Vector<T2, N>& v) noexcept
     {
-        // Nothing to do
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] = static_cast<T>(v[i]);
     }
 
 
@@ -136,7 +131,7 @@ public:
      *
      * @return
      */
-    constexpr Vector operator+() const noexcept
+    Vector operator+() const noexcept
     {
         return *this;
     }
@@ -148,9 +143,14 @@ public:
      * @return
      */
     template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = nullptr>
-    constexpr Vector operator-() const noexcept
+    Vector operator-() const noexcept
     {
-        return Vector{-getX(), -getY()};
+        Vector res;
+
+        for (unsigned i = 0; i < N; ++i)
+            res[i] = -m_data[i];
+
+        return res;
     }
 
 
@@ -164,10 +164,11 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} + T1{}), T>::value>::type* = nullptr>
-    Vector& operator+=(const Vector<T1>& rhs) noexcept
+    Vector& operator+=(const Vector<T1, N>& rhs) noexcept
     {
-        m_x += rhs.getX();
-        m_y += rhs.getY();
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] += rhs[i];
+
         return *this;
     }
 
@@ -182,10 +183,11 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} - T1{}), T>::value>::type* = nullptr>
-    Vector& operator-=(const Vector<T1>& rhs) noexcept
+    Vector& operator-=(const Vector<T1, N>& rhs) noexcept
     {
-        m_x -= rhs.getX();
-        m_y -= rhs.getY();
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] -= rhs[i];
+
         return *this;
     }
 
@@ -202,8 +204,9 @@ public:
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
     Vector& operator*=(T1 rhs) noexcept
     {
-        m_x *= rhs;
-        m_y *= rhs;
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] *= rhs;
+
         return *this;
     }
 
@@ -218,10 +221,11 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
-    Vector& operator*=(const Vector<T1>& rhs) noexcept
+    Vector& operator*=(const Vector<T1, N>& rhs) noexcept
     {
-        m_x *= rhs.getX();
-        m_y *= rhs.getY();
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] *= rhs[i];
+
         return *this;
     }
 
@@ -238,8 +242,9 @@ public:
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
     Vector& operator/=(T1 rhs) noexcept
     {
-        m_x /= rhs;
-        m_y /= rhs;
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] /= rhs;
+
         return *this;
     }
 
@@ -254,16 +259,54 @@ public:
      * @return *this.
      */
     template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
-    Vector& operator/=(const Vector<T1>& rhs) noexcept
+    Vector& operator/=(const Vector<T1, N>& rhs) noexcept
     {
-        m_x /= rhs.getX();
-        m_y /= rhs.getY();
+        for (unsigned i = 0; i < N; ++i)
+            m_data[i] /= rhs[i];
+
         return *this;
+    }
+
+
+    /**
+     * @brief Access operator.
+     *
+     * @param pos
+     *
+     * @return
+     */
+    T& operator[](unsigned pos) noexcept
+    {
+        return m_data[pos];
+    }
+
+
+    /**
+     * @brief Access operator.
+     *
+     * @param pos
+     *
+     * @return
+     */
+    const T& operator[](unsigned pos) const noexcept
+    {
+        return m_data[pos];
     }
 
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns vector size.
+     *
+     * @return
+     */
+    unsigned getSize() const noexcept
+    {
+        return SIZE;
+    }
 
 
     /**
@@ -273,7 +316,7 @@ public:
      */
     T& x() noexcept
     {
-        return m_x;
+        return m_data[0];
     }
 
 
@@ -284,7 +327,7 @@ public:
      */
     T getX() const noexcept
     {
-        return m_x;
+        return m_data[0];
     }
 
 
@@ -295,7 +338,7 @@ public:
      */
     T& y() noexcept
     {
-        return m_y;
+        return m_data[1];
     }
 
 
@@ -306,7 +349,7 @@ public:
      */
     T getY() const noexcept
     {
-        return m_y;
+        return m_data[1];
     }
 
 
@@ -317,7 +360,7 @@ public:
      */
     T& width() noexcept
     {
-        return m_x;
+        return m_data[0];
     }
 
 
@@ -328,7 +371,7 @@ public:
      */
     T getWidth() const noexcept
     {
-        return m_x;
+        return m_data[0];
     }
 
 
@@ -339,7 +382,7 @@ public:
      */
     T& height() noexcept
     {
-        return m_y;
+        return m_data[1];
     }
 
 
@@ -350,7 +393,7 @@ public:
      */
     T getHeight() const noexcept
     {
-        return m_y;
+        return m_data[1];
     }
 
 
@@ -397,7 +440,7 @@ public:
      */
     void setX(T x) noexcept
     {
-        m_x = x;
+        m_data[0] = x;
     }
 
 
@@ -408,7 +451,7 @@ public:
      */
     void setY(T y) noexcept
     {
-        m_y = y;
+        m_data[1] = y;
     }
 
 
@@ -447,9 +490,14 @@ public:
      *
      * @return Dot product.
      */
-    constexpr decltype(T{} * T{}) dot(const Vector& rhs) const noexcept
+    decltype(T{} * T{}) dot(const Vector& rhs) const noexcept
     {
-        return getX() * rhs.getX() + getY() * rhs.getY();
+        decltype(T{} * T{}) res{};
+
+        for (unsigned i = 0; i < N; ++i)
+            res += m_data[i] * rhs[i];
+
+        return res;
     }
 
 
@@ -461,7 +509,12 @@ public:
     template<typename T2>
     Vector<T2> inversed() const noexcept
     {
-        return Vector<T2>(T2(1) / getX(), T2(1) / getY());
+        Vector<T2> res;
+
+        for (unsigned i = 0; i < N; ++i)
+            res[i] = T2(1) / m_data[i];
+
+        return res;
     }
 
 
@@ -481,16 +534,34 @@ public:
     }
 
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create from single value.
+     *
+     * @param val
+     *
+     * @return
+     */
+    static Vector createSingle(T val) noexcept
+    {
+        Vector res;
+
+        for (unsigned i = 0; i < N; ++i)
+            res[i] = val;
+
+        return res;
+    }
+
+
 // Private Data Members
 private:
 
 
-    /// X coordinate.
-    T m_x;
-
-    /// Y coordinate.
-    T m_y;
-
+    /// Vector data.
+    StaticArray<T, N> m_data;
 };
 
 /* ************************************************************************ */
@@ -523,16 +594,22 @@ extern template class Vector<int>;
  *
  * @tparam T1 Type of value in first Vector.
  * @tparam T2 Type of value in second Vector.
+ * @tparam N  Vector size.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} + T2{}), N> operator+(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs.getX() + rhs.getX(), lhs.getY() + rhs.getY()};
+    Vector<decltype(T1{} + T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] + rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -542,16 +619,22 @@ inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, const Vect
  *
  * @tparam T1 Type of value in first Vector.
  * @tparam T2 Type of second operand.
+ * @tparam N  Vector size.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} + T2{}), N> operator+(const Vector<T1, N>& lhs, T2 rhs) noexcept
 {
-    return {lhs.getX() + rhs, lhs.getY() + rhs};
+    Vector<decltype(T1{} + T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] + rhs;
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -561,16 +644,22 @@ inline Vector<decltype(T1{} + T2{})> operator+(const Vector<T1>& lhs, T2 rhs) no
  *
  * @tparam T1 Type of first operand.
  * @tparam T2 Type of value in second Vector.
+ * @tparam N  Vector size.
  *
  * @param lhs Left operand.
  * @param rhs Right operand.
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} + T2{})> operator+(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} + T2{}), N> operator+(T1 lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs + rhs.getX(), lhs + rhs.getY()};
+    Vector<decltype(T1{} + T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs + rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -586,10 +675,15 @@ inline Vector<decltype(T1{} + T2{})> operator+(T1 lhs, const Vector<T2>& rhs) no
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} - T2{}), N> operator-(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs.getX() - rhs.getX(), lhs.getY() - rhs.getY()};
+    Vector<decltype(T1{} - T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] - rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -605,10 +699,15 @@ inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, const Vect
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} - T2{}), N> operator-(const Vector<T1, N>& lhs, T2 rhs) noexcept
 {
-    return {lhs.getX() - rhs, lhs.getY() - rhs};
+    Vector<decltype(T1{} - T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] - rhs;
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -624,10 +723,15 @@ inline Vector<decltype(T1{} - T2{})> operator-(const Vector<T1>& lhs, T2 rhs) no
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} - T2{})> operator-(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} - T2{}), N> operator-(T1 lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs - rhs.getX(), lhs - rhs.getY()};
+    Vector<decltype(T1{} - T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs - rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -643,10 +747,15 @@ inline Vector<decltype(T1{} - T2{})> operator-(T1 lhs, const Vector<T2>& rhs) no
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} * T2{}), N> operator*(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs.getX() * rhs.getX(), lhs.getY() * rhs.getY()};
+    Vector<decltype(T1{} * T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] * rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -662,10 +771,15 @@ inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, const Vect
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} * T2{}), N> operator*(const Vector<T1, N>& lhs, T2 rhs) noexcept
 {
-    return {lhs.getX() * rhs, lhs.getY() * rhs};
+    Vector<decltype(T1{} * T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] * rhs;
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -681,10 +795,15 @@ inline Vector<decltype(T1{} * T2{})> operator*(const Vector<T1>& lhs, T2 rhs) no
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} * T2{})> operator*(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} * T2{}), N> operator*(T1 lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs * rhs.getX(), lhs * rhs.getY()};
+    Vector<decltype(T1{} * T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs * rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -700,10 +819,15 @@ inline Vector<decltype(T1{} * T2{})> operator*(T1 lhs, const Vector<T2>& rhs) no
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} / T2{}), N> operator/(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs.getX() / rhs.getX(), lhs.getY() / rhs.getY()};
+    Vector<decltype(T1{} / T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] / rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -719,10 +843,15 @@ inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, const Vect
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, T2 rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} / T2{}), N> operator/(const Vector<T1, N>& lhs, T2 rhs) noexcept
 {
-    return {lhs.getX() / rhs, lhs.getY() / rhs};
+    Vector<decltype(T1{} / T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs[i] / rhs;
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -738,10 +867,15 @@ inline Vector<decltype(T1{} / T2{})> operator/(const Vector<T1>& lhs, T2 rhs) no
  *
  * @return Result vector.
  */
-template<typename T1, typename T2>
-inline Vector<decltype(T1{} / T2{})> operator/(T1 lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline Vector<decltype(T1{} / T2{}), N> operator/(T1 lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return {lhs / rhs.getX(), lhs / rhs.getY()};
+    Vector<decltype(T1{} / T2{}), N> res;
+
+    for (unsigned i = 0; i < N; ++i)
+        res[i] = lhs / rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -754,15 +888,15 @@ inline Vector<decltype(T1{} / T2{})> operator/(T1 lhs, const Vector<T2>& rhs) no
  *
  * @return
  */
-template<typename T1, typename T2>
-inline bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline bool operator==(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
-    auto x1 = lhs.getX();
-    auto y1 = lhs.getY();
-    auto x2 = rhs.getX();
-    auto y2 = rhs.getY();
+    bool res = true;
 
-    return std::tie(x1, y1) == std::tie(x2, y2);
+    for (unsigned i = 0; i < N; ++i)
+        res = res && lhs[i] == rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -775,10 +909,10 @@ inline bool operator==(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator==(const Vector<T1>& lhs, Zero_t rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator==(const Vector<T1, N>& lhs, Zero_t rhs) noexcept
 {
-    return lhs == Vector<T1>(Zero);
+    return lhs == Vector<T1, N>(Zero);
 }
 
 /* ************************************************************************ */
@@ -791,10 +925,10 @@ inline bool operator==(const Vector<T1>& lhs, Zero_t rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator==(Zero_t lhs, const Vector<T1>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator==(Zero_t lhs, const Vector<T1, N>& rhs) noexcept
 {
-    return Vector<T1>(Zero) == rhs;
+    return Vector<T1, N>(Zero) == rhs;
 }
 
 /* ************************************************************************ */
@@ -807,24 +941,8 @@ inline bool operator==(Zero_t lhs, const Vector<T1>& rhs) noexcept
  *
  * @return
  */
-template<typename T1, typename T2>
-inline bool operator!=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
-{
-    return !operator==(lhs, rhs);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Compare vectors.
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return
- */
-template<typename T1>
-inline bool operator!=(const Vector<T1>& lhs, Zero_t rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline bool operator!=(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
     return !operator==(lhs, rhs);
 }
@@ -839,8 +957,8 @@ inline bool operator!=(const Vector<T1>& lhs, Zero_t rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator!=(Zero_t lhs, const Vector<T1>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator!=(const Vector<T1, N>& lhs, Zero_t rhs) noexcept
 {
     return !operator==(lhs, rhs);
 }
@@ -855,8 +973,24 @@ inline bool operator!=(Zero_t lhs, const Vector<T1>& rhs) noexcept
  *
  * @return
  */
-template<typename T1, typename T2>
-inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator!=(Zero_t lhs, const Vector<T1, N>& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1, typename T2, unsigned N>
+inline bool operator<(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
     using T = decltype(T1{} + T2{});
 
@@ -878,10 +1012,10 @@ inline bool operator<(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator<(const Vector<T1>& lhs, Zero_t rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator<(const Vector<T1, N>& lhs, Zero_t rhs) noexcept
 {
-    return lhs < Vector<T1>{Zero};
+    return lhs < Vector<T1, N>{Zero};
 }
 
 /* ************************************************************************ */
@@ -894,10 +1028,10 @@ inline bool operator<(const Vector<T1>& lhs, Zero_t rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator<(Zero_t lhs, const Vector<T1>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator<(Zero_t lhs, const Vector<T1, N>& rhs) noexcept
 {
-    return Vector<T1>{Zero} < rhs;
+    return Vector<T1, N>{Zero} < rhs;
 }
 
 /* ************************************************************************ */
@@ -910,24 +1044,8 @@ inline bool operator<(Zero_t lhs, const Vector<T1>& rhs) noexcept
  *
  * @return
  */
-template<typename T1, typename T2>
-inline bool operator<=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
-{
-    return !operator>(lhs, rhs);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Compare vectors.
- *
- * @param lhs Left operand.
- * @param rhs Right operand.
- *
- * @return
- */
-template<typename T1>
-inline bool operator<=(const Vector<T1>& lhs, Zero_t rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline bool operator<=(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
     return !operator>(lhs, rhs);
 }
@@ -942,8 +1060,8 @@ inline bool operator<=(const Vector<T1>& lhs, Zero_t rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator<=(Zero_t lhs, const Vector<T1>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator<=(const Vector<T1, N>& lhs, Zero_t rhs) noexcept
 {
     return !operator>(lhs, rhs);
 }
@@ -958,8 +1076,24 @@ inline bool operator<=(Zero_t lhs, const Vector<T1>& rhs) noexcept
  *
  * @return
  */
-template<typename T1, typename T2>
-inline bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator<=(Zero_t lhs, const Vector<T1, N>& rhs) noexcept
+{
+    return !operator>(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1, typename T2, unsigned N>
+inline bool operator>(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
     // Reversed operands
     return operator<(rhs, lhs);
@@ -975,8 +1109,8 @@ inline bool operator>(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator>(const Vector<T1>& lhs, Zero_t rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator>(const Vector<T1, N>& lhs, Zero_t rhs) noexcept
 {
     // Reversed operands
     return operator<(rhs, lhs);
@@ -992,8 +1126,8 @@ inline bool operator>(const Vector<T1>& lhs, Zero_t rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator>(Zero_t lhs, const Vector<T1>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator>(Zero_t lhs, const Vector<T1, N>& rhs) noexcept
 {
     // Reversed operands
     return operator<(rhs, lhs);
@@ -1009,8 +1143,8 @@ inline bool operator>(Zero_t lhs, const Vector<T1>& rhs) noexcept
  *
  * @return
  */
-template<typename T1, typename T2>
-inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline bool operator>=(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
     return !operator<(lhs, rhs);
 }
@@ -1025,8 +1159,8 @@ inline bool operator>=(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator>=(const Vector<T1>& lhs, Zero_t rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator>=(const Vector<T1, N>& lhs, Zero_t rhs) noexcept
 {
     return !operator<(lhs, rhs);
 }
@@ -1041,8 +1175,8 @@ inline bool operator>=(const Vector<T1>& lhs, Zero_t rhs) noexcept
  *
  * @return
  */
-template<typename T1>
-inline bool operator>=(Zero_t lhs, const Vector<T1>& rhs) noexcept
+template<typename T1, unsigned N>
+inline bool operator>=(Zero_t lhs, const Vector<T1, N>& rhs) noexcept
 {
     return !operator<(lhs, rhs);
 }
@@ -1057,10 +1191,15 @@ inline bool operator>=(Zero_t lhs, const Vector<T1>& rhs) noexcept
  *
  * @return Dot product.
  */
-template<typename T1, typename T2>
-inline constexpr decltype(T1{} * T2{}) dot(const Vector<T1>& lhs, const Vector<T2>& rhs) noexcept
+template<typename T1, typename T2, unsigned N>
+inline decltype(T1{} * T2{}) dot(const Vector<T1, N>& lhs, const Vector<T2, N>& rhs) noexcept
 {
-    return lhs.getX() * rhs.getX() + lhs.getY() * rhs.getY();
+    decltype(T1{} * T2{}) res{};
+
+    for (unsigned i = 0; i < N; ++i)
+        res += lhs[i] * rhs[i];
+
+    return res;
 }
 
 /* ************************************************************************ */
@@ -1073,21 +1212,21 @@ inline constexpr decltype(T1{} * T2{}) dot(const Vector<T1>& lhs, const Vector<T
  *
  * @return is.
  */
-template<typename T>
-InStream& operator>>(InStream& is, Vector<T>& vector)
+template<typename T, unsigned N>
+InStream& operator>>(InStream& is, Vector<T, N>& vector)
 {
-    T v1;
-    T v2;
-    is >> v1;
+    unsigned i = 0;
 
-    if (is.get() == ' ' && is >> v2)
+    for (; i < N; ++i)
     {
-        vector = Vector<T>{v1, v2};
+        if (!(is >> vector[i]))
+            break;
     }
-    else
-    {
-        vector = Vector<T>{v1};
-    }
+
+    // Copy missing values
+    // TODO: have this feature?
+    for (unsigned j = i; j < N; ++j)
+        vector[j] = vector[i - 1];
 
     return is;
 }
@@ -1102,10 +1241,17 @@ InStream& operator>>(InStream& is, Vector<T>& vector)
  *
  * @return os.
  */
-template<typename T>
-OutStream& operator<<(OutStream& os, const Vector<T>& vector) noexcept
+template<typename T, unsigned N>
+OutStream& operator<<(OutStream& os, const Vector<T, N>& vector) noexcept
 {
-    os << vector.getX() << " " << vector.getY();
+    for (unsigned i = 0; i < N; ++i)
+    {
+        if (i != 0)
+            os << " ";
+
+        os << vector[i];
+    }
+
     return os;
 }
 
