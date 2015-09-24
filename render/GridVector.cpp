@@ -101,9 +101,9 @@ void GridVector::update(const Vector<float>* data) noexcept
     vertices.reserve(2 * width * height);
 
     // Draw grid vectors
-    for (Size::value_type j = 0; j < height; ++j)
+    for (Size::ValueType j = 0; j < height; ++j)
     {
-        for (Size::value_type i = 0; i < width; ++i)
+        for (Size::ValueType i = 0; i < width; ++i)
         {
             // Get vector normalized by max length
             const auto vec = data[i + j * width] / m_max;

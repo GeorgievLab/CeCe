@@ -101,7 +101,7 @@ public:
      * It also extend inner grid size by 2 * OFFSET so then the boundary
      * checking is not need.
      */
-    static constexpr typename Coordinate::value_type OFFSET = 1;
+    static constexpr typename Coordinate::ValueType OFFSET = 1;
 
     /// Invalid signal ID.
     static constexpr SignalId INVALID_SIGNAL_ID = -1;

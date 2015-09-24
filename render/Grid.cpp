@@ -85,14 +85,14 @@ void Grid::resize(Size size) noexcept
     vertices.reserve((width + 1) * (height + 1));
 
     // X lines
-    for (Size::value_type i = 0; i <= width; ++i)
+    for (Size::ValueType i = 0; i <= width; ++i)
     {
         vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY()});
         vertices.push_back(Vertex{start.getX() + i * step.getX(), start.getY() + 1.f});
     }
 
     // Y lines
-    for (Size::value_type i = 0; i <= height; ++i)
+    for (Size::ValueType i = 0; i <= height; ++i)
     {
         vertices.push_back(Vertex{start.getX(), start.getY() + i * step.getY()});
         vertices.push_back(Vertex{start.getX() + 1.f, start.getY() + i * step.getY()});
