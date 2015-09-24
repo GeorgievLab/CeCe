@@ -80,6 +80,7 @@
     <File Name="TriBool.hpp"/>
     <File Name="Macro.hpp"/>
     <File Name="UnitsCtors.hpp"/>
+    <File Name="Assert.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
