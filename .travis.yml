@@ -5,11 +5,15 @@ compiler:
     - clang
 
 before_install:
-    - sudo add-apt-repository -y ppa:keithw/glfw3
+    - if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
     - sudo apt-get -qq update
-    - sudo apt-get -qq install -y libboost-all-dev libbox2d-dev libgl1-mesa-dev libglfw3-dev libopencv-dev libpython-dev
+    - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
+    - sudo apt-get -qq install -y libboost-all-dev libbox2d-dev libgl1-mesa-dev libopencv-dev libpython-dev
     - sudo apt-get -qq install -y libgtest-dev
     - "cd /usr/src/gtest && sudo cmake . && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
+    - "git clone https://github.com/glfw/glfw && cd glfw && git checkout 3.1
+      cmake -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off . &&
+      cmake --build . && sudo cmake install && cd -"
 
 before_script:
     - mkdir build && cd build
