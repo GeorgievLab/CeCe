@@ -31,11 +31,13 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     option(CLANG_USE_LIBCPP         "If libc++ should be used" Off)
 
     # C++11 required
-    add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
+    #add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic-errors -pedantic -std=c++11")
 
     # Use libc++
     if (CLANG_USE_LIBCPP)
-        add_compile_options(-stdlib=libc++)
+        #add_compile_options(-stdlib=libc++)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
     endif()
 
@@ -63,11 +65,11 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     endif()
 
     # C++11 required
-    add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
+    #add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic-errors -pedantic -std=c++11")
 
 elseif (MSVC)
     # using Visual Studio C++
-    #add_compile_options(/W3)
     message(FATAL_ERROR
         "Visual Studio Compiler doesn't support C++11 standard which is "
         "required, so we don't support Visual Studio Compiler."

@@ -56,7 +56,7 @@ function(build_plugin NAME)
     if (PLUGINS_BUILTIN_${NAME})
         # Required for Linux
         if (UNIX AND NOT APPLE)
-            add_compile_options(-fPIC)
+            set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
         endif ()
 
         # Pass macro to inform about build-in version
