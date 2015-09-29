@@ -116,7 +116,7 @@ public:
      * @param size
      */
     explicit Grid(SizeType size)
-        : Grid(Vector<SizeType>{size})
+        : Grid(Vector<SizeType>::createSingle(size))
     {
         // Nothing to do
     }
@@ -303,7 +303,7 @@ public:
      */
     void resize(SizeType size)
     {
-        resize(Vector<SizeType>{size});
+        resize(Vector<SizeType>::createSingle(size));
     }
 
 
@@ -315,7 +315,7 @@ public:
      */
     void resize(SizeType size, const ValueType& value)
     {
-        resize(Vector<SizeType>{size}, value);
+        resize(Vector<SizeType>::createSingle(size), value);
     }
 
 
