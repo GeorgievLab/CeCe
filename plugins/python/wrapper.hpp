@@ -27,6 +27,9 @@
 
 /* ************************************************************************ */
 
+// This must be first
+#include "Python.hpp"
+
 // C++
 #include <typeindex>
 
@@ -38,7 +41,6 @@
 #include "core/IntegerSequence.hpp"
 
 // Plugin
-#include "Python.hpp"
 #include "Handle.hpp"
 #include "View.hpp"
 #include "ValueCast.hpp"

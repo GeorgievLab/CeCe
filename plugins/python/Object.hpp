@@ -27,6 +27,9 @@
 
 /* ************************************************************************ */
 
+// This must be first
+#include "Python.hpp"
+
 // C++
 #include <string>
 
@@ -35,7 +38,6 @@
 #include "render/Context.hpp"
 
 // Module
-#include "Python.hpp"
 #include "Handle.hpp"
 #include "Source.hpp"
 

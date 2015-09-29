@@ -23,10 +23,8 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Python requires to be included first because it sets some parameters to stdlib
+// This must be first
 #include "Python.hpp"
-
-/* ************************************************************************ */
 
 // Declaration
 #include "wrapper_parser.hpp"

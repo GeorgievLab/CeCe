@@ -27,13 +27,15 @@
 
 /* ************************************************************************ */
 
+// This must be first
+#include "Python.hpp"
+
 // Simulator
 #include "core/Units.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Simulation.hpp"
 
 // Module
-#include "Python.hpp"
 #include "Source.hpp"
 
 /* ************************************************************************ */
