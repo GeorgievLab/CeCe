@@ -21,6 +21,7 @@ addons:
             - xorg-dev
             - libgl1-mesa-dev
             - libopencv-dev
+            - libfreetype6-dev
             - libpython2.7-dev
 
 before_install:
