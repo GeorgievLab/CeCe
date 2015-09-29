@@ -1,23 +1,33 @@
+sudo: false
+
 language: cpp
 
 compiler:
     - gcc
     - clang
 
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - cmake
+            - g++-4.9
+            - libboost-all-dev
+            - libbox2d-dev
+            - libgl1-mesa-dev
+            - libopencv-dev
+            - libpython2.7-dev
+
 before_install:
-    - if [ "$CXX" = "g++" ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
-    - sudo apt-get -qq update
-    - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
-    - sudo apt-get -qq install -y libboost-all-dev libbox2d-dev libgl1-mesa-dev libopencv-dev libpython-dev
-    - sudo apt-get -qq install -y libgtest-dev
-    - "cd /usr/src/gtest && sudo cmake . && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
-    - "git clone https://github.com/glfw/glfw && cd glfw && git checkout 3.1
-      cmake -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off . &&
-      cmake --build . && sudo cmake install && cd -"
+    - "wget https://github.com/glfw/glfw/archive/3.1.zip && unzip 3.1.zip -d . && cd glfw-3.1 &&
+      cmake -DCMAKE_INSTALL_PREFIX=$HOME/glfw3 -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off
+            -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off . &&
+      cmake --build . && cmake install && cd -"
 
 before_script:
     - mkdir build && cd build
-    - cmake -DCMAKE_BUILD_TYPE=debug ..
+    - GLFW_LOCATION=$HOME/glfw3 cmake -DCMAKE_BUILD_TYPE=debug ..
 
 script:
     - make
