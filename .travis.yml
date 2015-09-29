@@ -15,7 +15,6 @@ addons:
             - cmake
             - g++-4.9
             - libboost-all-dev
-            - libbox2d-dev
             - xorg-dev
             - libgl1-mesa-dev
             - libopencv-dev
@@ -27,10 +26,16 @@ before_install:
       cmake -DCMAKE_INSTALL_PREFIX=$HOME/glfw3 -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off
             -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off . &&
       cmake --build . && make install && cd -"
+    - "wget https://github.com/erincatto/Box2D/archive/v2.3.1.zip && unzip v2.3.1.zip && cd Box2D-2.3.1/Box2D &&
+      cmake -DCMAKE_INSTALL_PREFIX=$HOME/box2d -DCMAKE_BUILD_TYPE=release -DBOX2D_BUILD_EXAMPLES=Off
+            -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off . &&
+      cmake --build . && make install && cd -"
 
 before_script:
     - mkdir build && cd build
-    - GLFW_LOCATION=$HOME/glfw3 cmake -DCMAKE_BUILD_TYPE=debug ..
+    - export GLFW_LOCATION=$HOME/glfw3
+    - export BOX2DDIR=$HOME/box2d
+    - cmake -DCMAKE_BUILD_TYPE=debug ..
 
 script:
     - make
