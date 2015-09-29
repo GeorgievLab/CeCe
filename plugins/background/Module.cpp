@@ -52,7 +52,8 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     const auto imagePath = config.buildFilePath(config.get("image"));
 
     // Load image
-    m_img = imread(imagePath.string(), cv::IMREAD_UNCHANGED);
+    //m_img = imread(imagePath.string(), cv::IMREAD_UNCHANGED);
+    m_img = imread(imagePath.string(), -1);
 
     if (m_img.empty())
         throw InvalidArgumentException("Cannot open source image: " + imagePath.string());
