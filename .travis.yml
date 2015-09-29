@@ -16,6 +16,7 @@ addons:
             - g++-4.9
             - libboost-all-dev
             - libbox2d-dev
+            - xorg-dev
             - libgl1-mesa-dev
             - libopencv-dev
             - libpython2.7-dev
