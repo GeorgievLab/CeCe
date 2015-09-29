@@ -17,7 +17,7 @@ addons:
             - cmake
             - g++-4.9
             - clang-3.6
-            - libboost-all-dev
+            - libboost1.54-all-dev
             - xorg-dev
             - libgl1-mesa-dev
             - libopencv-dev
