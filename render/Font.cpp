@@ -250,7 +250,10 @@ void Font::draw(Context& context, const String& text, const Color& color, const 
             continue;
 
         // Recreate texture
-        m_texture.createGray({glyph->bitmap.width, glyph->bitmap.rows}, glyph->bitmap.buffer);
+        m_texture.createGray({
+            static_cast<unsigned>(glyph->bitmap.width),
+            static_cast<unsigned>(glyph->bitmap.rows)
+        }, glyph->bitmap.buffer);
 
         // Transformation for glyph
         context.matrixPush();
