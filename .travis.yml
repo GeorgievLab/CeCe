@@ -42,7 +42,7 @@ before_script:
     - mkdir build && cd build
     - export GLFW_LOCATION=$HOME/glfw3
     - export BOX2DDIR=$HOME/box2d
-    - cmake -DCMAKE_BUILD_TYPE=debug -DOpenCV_DIR=$HOME/opencv ..
+    - cmake -DCMAKE_BUILD_TYPE=debug -DOpenCV_DIR=$HOME/opencv/share/OpenCV ..
 
 script:
     - make VERBOSE=1
