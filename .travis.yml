@@ -4,7 +4,7 @@ language: cpp
 
 compiler:
     - gcc
-    - clang
+#    - clang
 
 addons:
     apt:
@@ -12,11 +12,11 @@ addons:
             - ubuntu-toolchain-r-test
             - kalakris-cmake
             - boost-latest
-            - llvm-toolchain-precise-3.6
+#            - llvm-toolchain-precise-3.6
         packages:
             - cmake
             - g++-4.9
-            - clang-3.6
+#            - clang-3.6
             - libboost-filesystem1.55-dev
             - xorg-dev
             - libgl1-mesa-dev
