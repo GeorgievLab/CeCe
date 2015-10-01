@@ -34,7 +34,7 @@ before_install:
       cmake -DCMAKE_INSTALL_PREFIX=$HOME/box2d -DCMAKE_BUILD_TYPE=release -DBOX2D_BUILD_EXAMPLES=Off
             -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off . &&
       cmake --build . && make install && cd -"
-    - "wget https://github.com/Itseez/opencv/archive/2.4.12.2.zip -O opencv.zip && unzip opencv.zip -d . cd opencv-2.4.12.2 &&
+    - "wget https://github.com/Itseez/opencv/archive/2.4.12.2.zip -O opencv.zip && unzip opencv.zip -d . && cd opencv-2.4.12.2 &&
       cmake -DCMAKE_INSTALL_PREFIX=$HOME/opencv -DCMAKE_BUILD_TYPE=release . &&
       cmake --build . && make install && cd -"
 
