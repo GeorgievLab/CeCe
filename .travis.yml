@@ -2,6 +2,11 @@
 # Container-based
 sudo: false
 
+# Operating systems
+os:
+  - linux
+  - osx
+
 # Environment variables
 env:
     - VENDOR_DIR=$HOME/vendor/$TRAVIS_OS_NAME
