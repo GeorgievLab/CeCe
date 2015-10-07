@@ -162,51 +162,6 @@ endfunction ()
 
 # ######################################################################### #
 
-##
-## Build plugin helper function
-##
-## param: NAME      Plugin name.
-## param: SOURCES   List of sources.
-## param: LIBRARIES A list of required libraries.
-##
-function(build_loader NAME)
-
-    # Get project name
-    loader_project_name(${NAME} FULLNAME)
-
-    include(CMakeParseArguments)
-    cmake_parse_arguments(ARG "" "" "SOURCES;LIBRARIES;DEPENDENCIES" ${ARGN})
-
-    project(${FULLNAME} CXX)
-
-    # TODO: implement
-
-endfunction()
-
-# ######################################################################### #
-
-# Get loader project name.
-function(loader_project_name LOADER_NAME PROJECT_NAME)
-    set(${PROJECT_NAME} "loader-${LOADER_NAME}" PARENT_SCOPE)
-endfunction ()
-
-# ######################################################################### #
-
-# Get loaders project names.
-function(loader_project_names LOADER_NAMES PROJECT_NAMES)
-
-    set(NAMES "")
-
-    foreach (LOADER_NAME ${LOADER_NAMES})
-        loader_project_name(${LOADER_NAME} PROJECT_NAME)
-        list(APPEND NAMES ${PROJECT_NAME})
-    endforeach ()
-
-    set(${PROJECT_NAMES} ${NAMES} PARENT_SCOPE)
-endfunction ()
-
-# ######################################################################### #
-
 # Build tests
 function(build_test PROJECT_NAME)
 
