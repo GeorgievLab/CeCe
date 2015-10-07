@@ -47,10 +47,6 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-DynamicArray<String> PluginManager::s_directories;
-
-/* ************************************************************************ */
-
 #define ITEM(name, validname) extern "C" simulator::PluginApi* PLUGIN_PROTOTYPE_NAME_BUILTIN(create, validname)();
 BUILTIN_PLUGINS
 #undef ITEM
@@ -65,19 +61,11 @@ const Map<String, Plugin::CreateFn> PluginManager::s_builtin{
 
 /* ************************************************************************ */
 
-Map<String, FilePath> PluginManager::s_extern;
-
-/* ************************************************************************ */
-
-Map<String, Plugin> PluginManager::s_loaded;
-
-/* ************************************************************************ */
-
 void PluginManager::addDirectory(String path)
 {
     Log::debug("New plugins directory: `", path, "`");
 
-    s_directories.push_back(std::move(path));
+    m_directories.push_back(std::move(path));
 }
 
 /* ************************************************************************ */
@@ -98,9 +86,9 @@ DynamicArray<String> PluginManager::getNamesBuiltin() noexcept
 DynamicArray<String> PluginManager::getNamesExtern() noexcept
 {
     DynamicArray<String> names;
-    names.reserve(s_extern.size());
+    names.reserve(m_extern.size());
 
-    for (const auto& p : s_extern)
+    for (const auto& p : m_extern)
         names.push_back(p.first);
 
     return names;
@@ -123,7 +111,7 @@ DynamicArray<String> PluginManager::getNames() noexcept
 
 bool PluginManager::isLoaded(const String& name) noexcept
 {
-    return s_loaded.find(name) != s_loaded.end();
+    return m_loaded.find(name) != m_loaded.end();
 }
 
 /* ************************************************************************ */
@@ -131,9 +119,9 @@ bool PluginManager::isLoaded(const String& name) noexcept
 ViewPtr<PluginApi> PluginManager::getApi(const String& name) noexcept
 {
     // Try to find library
-    auto it = s_loaded.find(name);
+    auto it = m_loaded.find(name);
 
-    if (it == s_loaded.end())
+    if (it == m_loaded.end())
         return nullptr;
 
     return std::get<1>(*it).getApi();
@@ -143,47 +131,32 @@ ViewPtr<PluginApi> PluginManager::getApi(const String& name) noexcept
 
 ViewPtr<PluginApi> PluginManager::load(const String& name)
 {
-    // Try to find library in cache
-    auto it = s_loaded.find(name);
+    return loadInternal(name).getApi();
+}
 
-    // Found
-    if (it != s_loaded.end())
-        return std::get<1>(*it).getApi();
+/* ************************************************************************ */
 
-    // Try to find in builtin libraries
-    auto itBuiltin = s_builtin.find(name);
+void PluginManager::init()
+{
+    rescanDirectories();
+    initLoaders();
+}
 
-    // Required library is builtin
-    if (itBuiltin != s_builtin.end())
-    {
-        Log::debug("Loading builtin plugin `", name, "`...");
+/* ************************************************************************ */
 
-        // Insert into cache
-        auto ptr = s_loaded.emplace(std::piecewise_construct,
-            std::forward_as_tuple(name),
-            std::forward_as_tuple(name, UniquePtr<PluginApi>(itBuiltin->second()))
-        );
+UniquePtr<Simulation> PluginManager::createSimulation(const FilePath& filepath)
+{
+    // File extension
+    auto ext = filepath.extension().string().substr(1);
 
-        return std::get<1>(*std::get<0>(ptr)).getApi();
-    }
-    else
-    {
-        Log::debug("Loading external plugin `", name, "`...");
+    // Find loader by extension
+    auto it = m_loaders.find(ext);
 
-        // Load extern
-        auto it = s_extern.find(name);
+    if (it == m_loaders.end())
+        throw RuntimeException("Unable to load file with extension: " + ext);
 
-        if (it == s_extern.end())
-            throw InvalidArgumentException("Unable to find plugin '" + name + "'");
-
-        // Insert into cache
-        auto ptr = s_loaded.emplace(std::piecewise_construct,
-            std::forward_as_tuple(name),
-            std::forward_as_tuple(name, it->second)
-        );
-
-        return std::get<1>(*std::get<0>(ptr)).getApi();
-    }
+    // Create simulation
+    return load(it->second)->fromFile(filepath);
 }
 
 /* ************************************************************************ */
@@ -245,6 +218,76 @@ Map<String, FilePath> PluginManager::scanDirectories() noexcept
     }
 
     return result;
+}
+
+/* ************************************************************************ */
+
+void PluginManager::initLoaders()
+{
+    // TODO: caching?
+
+    // Foreach all plugins
+    for (const auto& name : getNames())
+    {
+        auto api = load(name);
+        auto ext = api->getLoaderExtension();
+
+        if (!ext.empty())
+        {
+            Log::info("New loader '", name, "' for extension '", ext, "'");
+            m_loaders.emplace(ext, name);
+        }
+    }
+
+    // Release all plugins
+    //releasePlugins();
+}
+
+/* ************************************************************************ */
+
+Plugin& PluginManager::loadInternal(const String& name)
+{
+    // Try to find library in cache
+    auto it = m_loaded.find(name);
+
+    // Found
+    if (it != m_loaded.end())
+        return std::get<1>(*it);
+
+    // Try to find in builtin libraries
+    auto itBuiltin = s_builtin.find(name);
+
+    // Required library is builtin
+    if (itBuiltin != s_builtin.end())
+    {
+        Log::debug("Loading builtin plugin `", name, "`...");
+
+        // Insert into cache
+        auto ptr = m_loaded.emplace(std::piecewise_construct,
+            std::forward_as_tuple(name),
+            std::forward_as_tuple(name, UniquePtr<PluginApi>(itBuiltin->second()))
+        );
+
+        return std::get<1>(*std::get<0>(ptr));
+    }
+    else
+    {
+        Log::debug("Loading external plugin `", name, "`...");
+
+        // Load extern
+        auto it = m_extern.find(name);
+
+        if (it == m_extern.end())
+            throw InvalidArgumentException("Unable to find plugin '" + name + "'");
+
+        // Insert into cache
+        auto ptr = m_loaded.emplace(std::piecewise_construct,
+            std::forward_as_tuple(name),
+            std::forward_as_tuple(name, it->second)
+        );
+
+        return std::get<1>(*std::get<0>(ptr));
+    }
 }
 
 /* ************************************************************************ */

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="loader_xml" InternalType="Library">
+<CodeLite_Project Name="plugin_xml" InternalType="Library">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -26,13 +26,12 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="SimulationLoader.cpp"/>
     <VirtualDirectory Name="pugixml">
       <File Name="pugixml/pugixml.cpp"/>
     </VirtualDirectory>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="SimulationLoader.hpp"/>
     <File Name="Configuration.hpp"/>
     <VirtualDirectory Name="pugixml">
       <File Name="pugixml/pugiconfig.hpp"/>

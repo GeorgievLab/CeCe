@@ -591,7 +591,7 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) noexcept
             return it->second;
 
         // Load plugin
-        ViewPtr<PluginApi> api = PluginManager::load(name);
+        ViewPtr<PluginApi> api = PluginManager::s().load(name);
 
         if (!api)
             return nullptr;

@@ -51,7 +51,6 @@ set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Directory with plugins
 set(DIR_PLUGINS "plugins")
-set(DIR_LOADERS "loaders")
 
 # ######################################################################### #
 
@@ -111,32 +110,6 @@ foreach(PLUGIN_DIR ${PLUGINS_DIRECTORIES})
 
         if (PLUGINS_BUILD_${PLUGIN_DIR})
             list(APPEND PLUGINS_BUILD ${PLUGIN_DIR})
-        endif ()
-    endif()
-endforeach()
-
-# ######################################################################### #
-
-# List of loaders variables
-set(LOADERS_AVAILABLE "")
-set(LOADERS_BUILD "")
-set(LOADERS_BUILTIN "")
-
-# Get list of available plugins
-file(GLOB LOADERS_DIRECTORIES RELATIVE "${CMAKE_SOURCE_DIR}/${DIR_LOADERS}" "${CMAKE_SOURCE_DIR}/${DIR_LOADERS}/*")
-foreach(LOADER_DIR ${LOADERS_DIRECTORIES})
-    if (IS_DIRECTORY "${CMAKE_SOURCE_DIR}/${DIR_LOADERS}/${LOADER_DIR}")
-        list(APPEND LOADERS_AVAILABLE ${LOADER_DIR})
-        option(LOADERS_BUILD_${LOADER_DIR} "Build loader '${LOADER_DIR}'" On)
-        #option(LOADERS_BUILTIN_${LOADER_DIR} "Build loader '${LOADER_DIR}' as builtin" Off)
-
-        if (LOADERS_BUILTIN_${LOADER_DIR})
-            list(APPEND LOADERS_BUILTIN ${LOADER_DIR})
-            set(LOADERS_BUILD_${LOADER_DIR} On)
-        endif ()
-
-        if (LOADERS_BUILD_${LOADER_DIR})
-            list(APPEND LOADERS_BUILD ${LOADER_DIR})
         endif ()
     endif()
 endforeach()
@@ -299,11 +272,6 @@ endif ()
 
 # Main simulator library
 add_subdirectory(simulator)
-
-# Add loaders that should be built
-foreach (LOADER_NAME ${LOADERS_BUILD})
-    add_subdirectory(${DIR_LOADERS}/${LOADER_NAME})
-endforeach ()
 
 # Add plugins that should be built
 foreach (PLUGIN_NAME ${PLUGINS_BUILD})

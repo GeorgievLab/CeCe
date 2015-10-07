@@ -24,8 +24,7 @@
     <File Name="Obstacle.cpp"/>
     <File Name="Plugin.cpp"/>
     <File Name="PluginManager.cpp"/>
-    <File Name="SimulationLoader.cpp"/>
-    <File Name="LoaderManager.cpp"/>
+    <File Name="PluginApi.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
@@ -41,8 +40,6 @@
     <File Name="Plugin.hpp"/>
     <File Name="SimulationListener.hpp"/>
     <File Name="PluginManager.hpp"/>
-    <File Name="SimulationLoader.hpp"/>
-    <File Name="LoaderManager.hpp"/>
     <File Name="font.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">

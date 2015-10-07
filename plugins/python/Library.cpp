@@ -218,7 +218,7 @@ public:
         Log::debug("[python] Trying to load plugin: ", pluginName);
 
         // Test if plugin with suffix -python exists.
-        if (PluginManager::isAvailable(pluginName))
+        if (PluginManager::s().isAvailable(pluginName))
             simulation.loadPlugin(pluginName);
     }
 

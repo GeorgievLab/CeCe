@@ -51,73 +51,8 @@ class Simulation;
 class PluginManager final
 {
 
-// Public Structures
-public:
-
-
-    /**
-     * @brief Helper class for managing plugins at local scope.
-     */
-    struct Local
-    {
-
-        /**
-         * @brief Constructor.
-         */
-        Local() noexcept
-        {
-            PluginManager::rescanDirectories();
-        }
-
-
-        /**
-         * @brief Copy constructor.
-         */
-        Local(const Local&) = delete;
-
-
-        /**
-         * @brief Move constructor.
-         */
-        Local(Local&&) = default;
-
-
-        /**
-         * @brief Destructor.
-         */
-        ~Local()
-        {
-            PluginManager::releasePlugins();
-        }
-
-
-        /**
-         * @brief Copy assignment operator.
-         */
-        Local& operator=(const Local&) = delete;
-
-
-        /**
-         * @brief Move assignment operator.
-         */
-        Local& operator=(Local&&) = default;
-
-    };
-
-
 // Public Accessors
 public:
-
-
-    /**
-     * @brief Create local scope helper.
-     *
-     * @return
-     */
-    static Local local() noexcept
-    {
-        return {};
-    }
 
 
     /**
@@ -125,9 +60,9 @@ public:
      *
      * @return
      */
-    static const DynamicArray<String>& getDirectories() noexcept
+    const DynamicArray<String>& getDirectories() noexcept
     {
-        return s_directories;
+        return m_directories;
     }
 
 
@@ -138,7 +73,7 @@ public:
      *
      * @return If builtin plugin exists.
      */
-    static bool isAvailableBuiltin(const String& name) noexcept
+    bool isAvailableBuiltin(const String& name) noexcept
     {
         return s_builtin.find(name) != s_builtin.end();
     }
@@ -151,9 +86,9 @@ public:
      *
      * @return If extern plugin exists.
      */
-    static bool isAvailableExtern(const String& name) noexcept
+    bool isAvailableExtern(const String& name) noexcept
     {
-        return s_extern.find(name) != s_extern.end();
+        return m_extern.find(name) != m_extern.end();
     }
 
 
@@ -164,7 +99,7 @@ public:
      *
      * @return If plugin exists.
      */
-    static bool isAvailable(const String& name) noexcept
+    bool isAvailable(const String& name) noexcept
     {
         return isAvailableBuiltin(name) || isAvailableExtern(name);
     }
@@ -175,7 +110,7 @@ public:
      *
      * @return An array of builtin plugins names.
      */
-    static DynamicArray<String> getNamesBuiltin() noexcept;
+    DynamicArray<String> getNamesBuiltin() noexcept;
 
 
     /**
@@ -183,7 +118,7 @@ public:
      *
      * @return An array of extern plugin names.
      */
-    static DynamicArray<String> getNamesExtern() noexcept;
+    DynamicArray<String> getNamesExtern() noexcept;
 
 
     /**
@@ -191,7 +126,7 @@ public:
      *
      * @return An array of plugin names.
      */
-    static DynamicArray<String> getNames() noexcept;
+    DynamicArray<String> getNames() noexcept;
 
 
     /**
@@ -201,7 +136,7 @@ public:
      *
      * @return
      */
-    static bool isLoaded(const String& name) noexcept;
+    bool isLoaded(const String& name) noexcept;
 
 
     /**
@@ -211,7 +146,7 @@ public:
      *
      * @return Pointer to API or nullptr, if plugin is not loaded.
      */
-    static ViewPtr<PluginApi> getApi(const String& name) noexcept;
+    ViewPtr<PluginApi> getApi(const String& name) noexcept;
 
 
     /**
@@ -221,7 +156,7 @@ public:
      *
      * @return Pointer to API or nullptr, if plugin is not loaded.
      */
-    static ViewPtr<PluginApi> load(const String& name);
+    ViewPtr<PluginApi> load(const String& name);
 
 
 // Public Mutators
@@ -233,11 +168,27 @@ public:
      *
      * @param path
      */
-    static void addDirectory(String path);
+    void addDirectory(String path);
 
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Initialize manager.
+     */
+    void init();
+
+
+    /**
+     * @brief Create simulation from file.
+     *
+     * @param filepath Path to file.
+     *
+     * @return
+     */
+    UniquePtr<Simulation> createSimulation(const FilePath& filepath);
 
 
     /**
@@ -247,7 +198,7 @@ public:
      *
      * @return
      */
-    static Map<String, FilePath> scanDirectory(const FilePath& directory) noexcept;
+    Map<String, FilePath> scanDirectory(const FilePath& directory) noexcept;
 
 
     /**
@@ -255,42 +206,77 @@ public:
      *
      * @return
      */
-    static Map<String, FilePath> scanDirectories() noexcept;
+    Map<String, FilePath> scanDirectories() noexcept;
 
 
     /**
      * @brief Rescan directories for extern plugins.
      */
-    static void rescanDirectories() noexcept
+    void rescanDirectories() noexcept
     {
-        s_extern = scanDirectories();
+        m_extern = scanDirectories();
     }
 
 
     /**
      * @brief Release all loaded plugins.
      */
-    static void releasePlugins() noexcept
+    void releasePlugins() noexcept
     {
         // Release plugins
-        s_loaded.clear();
+        m_loaded.clear();
     }
+
+
+    /**
+     * @brief Init loaders from available plugins.
+     */
+    void initLoaders();
+
+
+    /**
+     * @brief Returns global instance of plugin manager.
+     *
+     * @return
+     */
+    static PluginManager& s()
+    {
+        static PluginManager instance;
+        return instance;
+    }
+
+
+// Private Operations
+private:
+
+
+    /**
+     * @brief Load plugin (internal).
+     *
+     * @param name Plugin name.
+     *
+     * @return Reference to loaded plugin.
+     */
+    Plugin& loadInternal(const String& name);
 
 
 // Private Data Members
 private:
 
     /// Plugins directory paths.
-    static DynamicArray<String> s_directories;
+    DynamicArray<String> m_directories;
+
+    /// Extern plugins paths.
+    Map<String, FilePath> m_extern;
+
+    /// Loaded plugins.
+    Map<String, Plugin> m_loaded;
+
+    /// Map (extension, plugin) of available loaders.
+    Map<String, String> m_loaders;
 
     /// Builtin plugins create API functions.
     static const Map<String, Plugin::CreateFn> s_builtin;
-
-    /// Extern plugins paths.
-    static Map<String, FilePath> s_extern;
-
-    /// Loaded plugins.
-    static Map<String, Plugin> s_loaded;
 
 };
 

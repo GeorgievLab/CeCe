@@ -56,9 +56,6 @@
 #include "simulator/Simulator.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
-#include "simulator/LoaderManager.hpp"
-#include "loaders/xml/SimulationLoader.hpp"
-#include "loaders/reactions/SimulationLoader.hpp"
 
 #if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
 #include "core/StringStream.hpp"
@@ -205,7 +202,7 @@ void terminate_simulation(int param)
     std::cout <<
         "Plugins:\n";
 
-    for (auto name : simulator::PluginManager::getNames())
+    for (auto name : simulator::PluginManager::s().getNames())
     {
         std::cout << "    " << name << "\n";
     }
@@ -327,7 +324,7 @@ public:
         m_simulationFile = params.simulationFile;
 
         // Create simulation
-        m_simulator.setSimulation(simulator::LoaderManager::create(m_simulationFile));
+        m_simulator.setSimulation(simulator::PluginManager::s().createSimulation(m_simulationFile));
 
 #if ENABLE_RENDER
         const auto simViz = m_simulator.getSimulation()->getVisualize();
@@ -899,15 +896,9 @@ int main(int argc, char** argv)
 
 #if !(__APPLE__ && __MACH__)
     // Register plugins directory
-    simulator::PluginManager::addDirectory(getPluginsDirectory(argv[0]));
-
-    // Manage plugins by local variable
-    auto pm = simulator::PluginManager::local();
+    simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0]));
+    simulator::PluginManager::s().init();
 #endif
-
-    // Register loaders
-    simulator::LoaderManager::add<loader::xml::SimulationLoader>("xml");
-    simulator::LoaderManager::add<loader::reactions::SimulationLoader>("reactions");
 
 #if ENABLE_MEASUREMENT
     std::ofstream time_file("time.csv");

@@ -23,9 +23,6 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "SimulationLoader.hpp"
-
 // Linux
 #if __linux__
 #include <libgen.h>
@@ -35,65 +32,73 @@
 #include "pugixml/pugixml.hpp"
 
 // Simulator
-#include "core/Log.hpp"
-#include "core/Units.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/String.hpp"
 #include "core/FilePath.hpp"
+#include "simulator/Plugin.hpp"
+#include "simulator/PluginApi.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/PluginManager.hpp"
 
-// Loader
+// Plugin
 #include "Configuration.hpp"
 
 /* ************************************************************************ */
 
-namespace loader {
-namespace xml {
+using namespace simulator;
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> SimulationLoader::fromStream(
-    InStream& source, const FilePath& filename) const
+class XmlApi : public PluginApi
 {
-    auto simulation = makeUnique<simulator::Simulation>();
 
-    pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load(source);
-
-    if (!result)
-        throw simulator::LoaderException("XML parse error: " + String(result.description()));
-
+    String getLoaderExtension() const noexcept override
     {
-        // Register file path as module library
-#if __linux__
-        char buffer[1024];
-        strncpy(buffer, filename.c_str(), sizeof(buffer));
-
-        simulator::PluginManager::addDirectory(dirname(buffer));
-#endif
+        return "xml";
     }
 
-    // Create configuration
-    const simulator::Configuration config(
-        makeUnique<loader::xml::ConfigImplementation>(doc.document_element()),
-        filename
-    );
+    UniquePtr<Simulation> fromStream(InStream& source, const FilePath& filename) const override
+    {
+        auto simulation = makeUnique<Simulation>();
 
-    // Configure simulation
-    simulation->configure(config);
+        pugi::xml_document doc;
+        pugi::xml_parse_result result = doc.load(source);
 
-    return simulation;
-}
+        if (!result)
+            throw RuntimeException("XML parse error: " + String(result.description()));
+
+        {
+            // Register file path as module library
+#if __linux__
+            char buffer[1024];
+            strncpy(buffer, filename.c_str(), sizeof(buffer));
+
+            PluginManager::s().addDirectory(dirname(buffer));
+#endif
+        }
+
+        // Create configuration
+        const Configuration config(
+            makeUnique<plugin::xml::ConfigImplementation>(doc.document_element()),
+            filename
+        );
+
+        // Configure simulation
+        simulation->configure(config);
+
+        return simulation;
+    }
+
+
+    void toStream(OutStream& os, const Simulation& simulation, const FilePath& filename) const override
+    {
+        // TODO: implement
+    }
+
+};
 
 /* ************************************************************************ */
 
-void SimulationLoader::toStream(OutStream& os, const simulator::Simulation& simulation, const FilePath& filename) const
-{
-    // TODO: implement
-}
-
-/* ************************************************************************ */
-
-}
-}
+DEFINE_PLUGIN(xml, XmlApi)
 
 /* ************************************************************************ */

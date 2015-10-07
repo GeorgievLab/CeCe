@@ -23,16 +23,10 @@
 #                                                                           #
 # ######################################################################### #
 
-# Create project
-project(loader-xml CXX)
-
-# ######################################################################### #
-
-# Create library
-add_library(${PROJECT_NAME}
-    SimulationLoader.hpp
-    SimulationLoader.cpp
+# Sources
+set(SRCS
     Configuration.hpp
+    Plugin.cpp
 
     # PugiXML library
     pugixml/pugixml.hpp
@@ -41,9 +35,9 @@ add_library(${PROJECT_NAME}
 
 # ######################################################################### #
 
-# Setup dependencies
-add_dependencies(${PROJECT_NAME}
-    simulator
+# Build plugin
+build_plugin(xml
+    SOURCES ${SRCS}
 )
 
 # ######################################################################### #

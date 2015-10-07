@@ -43,7 +43,7 @@
 /**
  * @brief Plugin API version.
  */
-#define PLUGIN_API_VERSION 1
+#define PLUGIN_API_VERSION 2
 
 /* ************************************************************************ */
 

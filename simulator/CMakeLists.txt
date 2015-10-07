@@ -47,14 +47,13 @@ set(SRCS
     Object.cpp
     Simulation.hpp
     Simulation.cpp
-    SimulationLoader.hpp
-    SimulationLoader.cpp
     Simulator.hpp
     Simulator.cpp
     Module.hpp
     Plugin.hpp
     Plugin.cpp
     PluginApi.hpp
+    PluginApi.cpp
     PluginManager.hpp
     PluginManager.cpp
     Configuration.hpp
@@ -65,8 +64,6 @@ set(SRCS
     Obstacle.hpp
     Obstacle.cpp
     SimulationListener.hpp
-    LoaderManager.hpp
-    LoaderManager.cpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>

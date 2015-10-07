@@ -61,8 +61,92 @@ public:
     }
 
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns loader extension.
+     *
+     * @return Supported extension or empty string if loader is not provided.
+     */
+    virtual String getLoaderExtension() const noexcept
+    {
+        return {};
+    }
+
+
 // Public Operations
 public:
+
+
+    /**
+     * @brief Create a new simulation from source file.
+     *
+     * @param filename Path to source file.
+     *
+     * @return Pointer to created simulation.
+     */
+    virtual UniquePtr<Simulation> fromFile(const FilePath& filename) const;
+
+
+    /**
+     * @brief Create a new simulation from source code.
+     *
+     * @param source   String with source.
+     * @param filename Path to source file.
+     *
+     * @return Pointer to created simulation.
+     */
+    virtual UniquePtr<Simulation> fromSource(const String& source, const FilePath& filename = "<source>") const;
+
+
+    /**
+     * @brief Store simulation into file.
+     *
+     * @param simulation Source simulation.
+     * @param filename   Path to source file.
+     */
+    virtual void toFile(const Simulation& simulation, const FilePath& filename) const;
+
+
+    /**
+     * @brief Convert simulation into source code.
+     *
+     * @param simulation Source simulation.
+     *
+     * @return Source code.
+     */
+    virtual String toSource(const Simulation& simulation, const FilePath& filename = "<source>") const;
+
+
+    /**
+     * @brief Read simulation from input stream.
+     *
+     * @param is       Source stream.
+     * @param filename Source file name.
+     *
+     * @return Created simulation.
+     */
+    virtual UniquePtr<simulator::Simulation> fromStream(InStream& is,
+        const FilePath& filename = "<stream>") const
+    {
+        throw RuntimeException("Plugin doesn't offer loader");
+    }
+
+
+    /**
+     * @brief Write simulation into output stream.
+     *
+     * @param os         Output stream.
+     * @param simulation Source simulation.
+     *
+     * @return Source code.
+     */
+    virtual void toStream(OutStream& os, const Simulation& simulation, const FilePath& filename = "<stream>") const
+    {
+        throw RuntimeException("Plugin doesn't offer loader");
+    }
 
 
     /**
