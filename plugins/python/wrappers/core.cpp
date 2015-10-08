@@ -23,13 +23,40 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Plugin
+#include "plugins/python/wrappers/core.hpp"
 
 /* ************************************************************************ */
 
-/**
- * @brief Create wrappers for parser library.
- */
-extern "C" void python_wrapper_parser();
+DEFINE_PYTHON_CLASS(VectorInt);
+DEFINE_PYTHON_CLASS(VectorUint);
+DEFINE_PYTHON_CLASS(VectorFloat);
+
+/* ************************************************************************ */
+
+namespace plugin {
+namespace python {
+
+/* ************************************************************************ */
+
+void init_core_VectorInt(PyObject* module);
+void init_core_VectorUint(PyObject* module);
+void init_core_VectorFloat(PyObject* module);
+
+/* ************************************************************************ */
+
+PyMODINIT_FUNC init_core(void)
+{
+    PyObject* module = Py_InitModule("core", nullptr);
+
+    init_core_VectorInt(module);
+    init_core_VectorUint(module);
+    init_core_VectorFloat(module);
+}
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */

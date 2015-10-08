@@ -27,13 +27,31 @@
 
 /* ************************************************************************ */
 
-// Simulator
-#include "core/String.hpp"
+// This must be first
+#include "Python.hpp"
 
-// Plugin
-#include "wrapper.hpp" // FIXME: not required, but it solve some inclusion issue
-#include "Handle.hpp"
-#include "ValueCast.hpp"
+// Simulator
+#include "core/ViewPtr.hpp"
+
+/* ************************************************************************ */
+
+/**
+ * @brief This macro tell other modules the class type is stored elsewhere.
+ *
+ * @param name Class name.
+ */
+#define DECLARE_PYTHON_CLASS(name) \
+    extern template class plugin::python::TypePtr<name>
+
+/* ************************************************************************ */
+
+/**
+ * @brief This macro tell to module there is type definition.
+ *
+ * @param name Class name.
+ */
+#define DEFINE_PYTHON_CLASS(name) \
+    template class plugin::python::TypePtr<name>
 
 /* ************************************************************************ */
 
@@ -43,130 +61,114 @@ namespace python {
 /* ************************************************************************ */
 
 /**
- * @brief Create object from basic types types.
+ * @brief Helper class for static access to python object types.
  *
- * @param value Source value.
- *
- * @return Python object handle.
+ * @tparam T Object type.
  */
 template<typename T>
-ObjectHandle makeObject(T value) noexcept
+struct TypePtr
 {
-    // Use ValueCast to create python object from value.
-    return cast<T>(value);
-}
+    /// Pointer to type.
+    static PyTypeObject* ptr;
+};
 
 /* ************************************************************************ */
 
 /**
- * @brief Create object from object handle.
+ * @brief Helper class for static access to python object types. Specialization
+ * for `const T` that points to same type as `T`.
  *
- * @param value Python object handle.
- *
- * @return Python object handle.
+ * @tparam T Object type.
  */
-inline ObjectHandle& makeObject(ObjectHandle& value) noexcept
+template<typename T>
+struct TypePtr<const T> : public TypePtr<T>
 {
-    return value;
-}
+    // Nothing
+};
 
 /* ************************************************************************ */
 
 /**
- * @brief Create object from const object handle.
+ * @brief Helper class for static access to python object types. Specialization
+ * for `T&` that points to same type as `T`.
  *
- * @param value Python object handle.
- *
- * @return Python object handle.
+ * @tparam T Object type.
  */
-inline const Handle<PyObject>& makeObject(const ObjectHandle& value) noexcept
+template<typename T>
+struct TypePtr<T&> : public TypePtr<T>
 {
-    return value;
-}
+    // Nothing
+};
 
 /* ************************************************************************ */
 
 /**
- * @brief Create object from handle.
+ * @brief Helper class for static access to python object types. Specialization
+ * for `const T&` that points to same type as `T`.
  *
- * @param value Python object handle.
- *
- * @return Python object handle.
+ * @tparam T Object type.
  */
-inline ObjectHandle makeObject(ObjectHandle&& value) noexcept
+template<typename T>
+struct TypePtr<const T&> : public TypePtr<T>
 {
-    return value;
-}
+    // Nothing
+};
 
 /* ************************************************************************ */
 
 /**
- * @brief Call Python function.
+ * @brief Helper class for static access to python object types. Specialization
+ * for `T*` that points to same type as `T`.
  *
- * @tparam Args A list of arguments.
- *
- * @param fn   Function object.
- * @param args Function arguments.
- *
- * @return Result object.
- *
- * @throw In case the function call failed.
+ * @tparam T Object type.
  */
-template<typename... Args>
-ObjectHandle call(const ObjectHandle& fn, Args&&... args)
+template<typename T>
+struct TypePtr<T*> : public TypePtr<T>
 {
-    // Variadic templates expand each argument into makeObject that creates
-    // PyObject managed handle and pass plain PyObject pointer to function as argument
-    // and after call it release the "temporary" PyObject.
-
-    auto res = makeHandle(PyObject_CallFunctionObjArgs(fn, makeObject(args).get()..., nullptr));
-
-    // Function call failed.
-    if (!res)
-        throw Exception{};
-
-    return res;
-}
+    // Nothing
+};
 
 /* ************************************************************************ */
 
 /**
- * @brief Create string handle from string.
+ * @brief Helper class for static access to python object types. Specialization
+ * for `T&` that points to same type as `T`.
  *
- * @param str Source string.
- *
- * @return Python string object.
+ * @tparam T Object type.
  */
-inline ObjectHandle str(const char* s) noexcept
+template<typename T>
+struct TypePtr<const T*> : public TypePtr<T>
 {
-    return makeHandle(PyString_FromString(s));
-}
+    // Nothing
+};
 
 /* ************************************************************************ */
 
 /**
- * @brief Create string handle from string.
+ * @brief Helper class for static access to python object types. Specialization
+ * for `ViewPtr<T>` that points to same type as `T`.
  *
- * @param str Source string.
- *
- * @return Python string object.
+ * @tparam T Object type.
  */
-inline ObjectHandle str(const String& s) noexcept
+template<typename T>
+struct TypePtr<ViewPtr<T>> : public TypePtr<T>
 {
-    return makeHandle(PyString_FromString(s.c_str()));
-}
+    // Nothing
+};
 
 /* ************************************************************************ */
 
 /**
- * @brief Returns none object.
+ * @brief Helper class for static access to python object types. Specialization
+ * for `ViewPtr<const T>` that points to same type as `T`.
  *
- * @return.
+ * @tparam T Object type.
  */
-inline ObjectHandle none() noexcept
+template<typename T>
+struct TypePtr<ViewPtr<const T>> : public TypePtr<T>
 {
-    Py_RETURN_NONE;
-}
+    // Nothing
+};
 
 /* ************************************************************************ */
 

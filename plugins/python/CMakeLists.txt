@@ -56,18 +56,21 @@ set(SRCS
     Object.hpp
     Object.cpp
     Library.cpp
-    wrapper.hpp
-    wrapper.cpp
     wrapper_stdout.hpp
     wrapper_stdout.cpp
-    wrapper_core.hpp
-    wrapper_core.cpp
-    wrapper_render.hpp
-    wrapper_render.cpp
-    wrapper_parser.hpp
-    wrapper_parser.cpp
-    wrapper_simulator.hpp
-    wrapper_simulator.cpp
+
+    wrappers/core.hpp
+    wrappers/core.cpp
+    wrappers/core_VectorInt.cpp
+    wrappers/core_VectorUint.cpp
+    wrappers/core_VectorFloat.cpp
+
+    wrappers/simulator.hpp
+    wrappers/simulator.cpp
+    wrappers/simulator_Object.cpp
+    wrappers/simulator_Module.cpp
+    wrappers/simulator_Simulation.cpp
+    wrappers/simulator_Configuration.cpp
 )
 
 # Build plugin

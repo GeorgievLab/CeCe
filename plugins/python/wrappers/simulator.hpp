@@ -27,9 +27,37 @@
 
 /* ************************************************************************ */
 
+// Simulator
+#include "simulator/Object.hpp"
+#include "simulator/Module.hpp"
+#include "simulator/Simulation.hpp"
+#include "simulator/Configuration.hpp"
+
+// Plugin
+#include "plugins/python/TypePtr.hpp"
+
+/* ************************************************************************ */
+
+DECLARE_PYTHON_CLASS(simulator::Object);
+DECLARE_PYTHON_CLASS(simulator::Module);
+DECLARE_PYTHON_CLASS(simulator::Simulation);
+DECLARE_PYTHON_CLASS(simulator::Configuration);
+
+/* ************************************************************************ */
+
+namespace plugin {
+namespace python {
+
+/* ************************************************************************ */
+
 /**
- * @brief Create wrappers for core library.
+ * @brief Initialize simulator namespace types.
  */
-extern "C" void python_wrapper_core();
+PyMODINIT_FUNC init_simulator();
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */

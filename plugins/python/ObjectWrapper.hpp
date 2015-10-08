@@ -23,17 +23,35 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "Python.hpp"
-
-// Declaration
-#include "wrapper_parser.hpp"
+#pragma once
 
 /* ************************************************************************ */
 
-void python_wrapper_parser()
-{
+// This must be first
+#include "Python.hpp"
 
+/* ************************************************************************ */
+
+namespace plugin {
+namespace python {
+
+/* ************************************************************************ */
+
+/**
+ * @brief C++ type wrapper object.
+ */
+template<typename T>
+struct ObjectWrapper
+{
+    PyObject_HEAD
+
+    // Stored value.
+    T value;
+};
+
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */

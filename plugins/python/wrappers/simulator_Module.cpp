@@ -23,75 +23,74 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "Python.hpp"
+// Simulator
+#include "simulator/Module.hpp"
 
-// Declaration
-#include "wrapper_render.hpp"
-
-#if ENABLE_RENDER
-// Render
-#include "render/Color.hpp"
-#include "render/Context.hpp"
-#include "render/GridColor.hpp"
-#endif
-
-// Module
-#include "wrapper.hpp"
+// Plugin
+#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/TypePtr.hpp"
+#include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
 
-using namespace plugin::python;
+namespace plugin {
+namespace python {
 
 /* ************************************************************************ */
 
-static void python_wrapper_render_Color(PyObject* module)
-{
-#if ENABLE_RENDER
+namespace {
 
-#endif
+/* ************************************************************************ */
+
+static PyTypeObject g_type = {
+    PyObject_HEAD_INIT(NULL)
+    0,                              // ob_size
+    "simulator.Module",             // tp_name
+    sizeof(ObjectWrapper<simulator::Module>), // tp_basicsize
+    0,                              // tp_itemsize
+    0,                              // tp_dealloc
+    0,                              // tp_print
+    0,                              // tp_getattr
+    0,                              // tp_setattr
+    0,                              // tp_compare
+    0,                              // tp_repr
+    0,                              // tp_as_number
+    0,                              // tp_as_sequence
+    0,                              // tp_as_mapping
+    0,                              // tp_hash
+    0,                              // tp_call
+    0,                              // tp_str
+    0,                              // tp_getattro
+    0,                              // tp_setattro
+    0,                              // tp_as_buffer
+    Py_TPFLAGS_DEFAULT,             // tp_flags
+    nullptr,                        // tp_doc
+};
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
 
-static void python_wrapper_render_Context(PyObject* module)
+void init_simulator_Module(PyObject* module)
 {
-#if ENABLE_RENDER
-    using type = render::Context*;
-    using type_def = TypeDefinition<type>;
+    // Type is not ready
+    if (PyType_Ready(&g_type) < 0)
+        return;
 
-    static PyMethodDef fns[] = {
-        defineMemberFunction<1, type>("matrixPush", &render::Context::matrixPush),
-        defineMemberFunction<2, type>("matrixPop", &render::Context::matrixPop),
-        defineMemberFunction<3, type>("matrixIdentity", &render::Context::matrixIdentity),
-        {NULL}  /* Sentinel */
-    };
+    auto type = reinterpret_cast<PyObject*>(&g_type);
 
-    type_def::init("render.Context");
-    type_def::definition.tp_methods = fns;
-    type_def::ready();
-    type_def::finish(module, "Context");
-#endif
+    Py_INCREF(type);
+    PyModule_AddObject(module, "Module", type);
+
+    // Register type.
+    TypePtr<simulator::Module>::ptr = &g_type;
 }
 
 /* ************************************************************************ */
 
-static void python_wrapper_render_GridColor(PyObject* module)
-{
-#if ENABLE_RENDER
-
-#endif
 }
-
-/* ************************************************************************ */
-
-void python_wrapper_render()
-{
-    PyObject* module = Py_InitModule3("render", nullptr, nullptr);
-
-    python_wrapper_render_Color(module);
-    python_wrapper_render_Context(module);
-    python_wrapper_render_GridColor(module);
 }
 
 /* ************************************************************************ */

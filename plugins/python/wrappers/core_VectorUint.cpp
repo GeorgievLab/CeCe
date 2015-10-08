@@ -23,17 +23,12 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
-
 // Simulator
-#include "core/String.hpp"
+#include "core/Vector.hpp"
 
 // Plugin
-#include "wrapper.hpp" // FIXME: not required, but it solve some inclusion issue
-#include "Handle.hpp"
-#include "ValueCast.hpp"
+#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
 
@@ -42,130 +37,105 @@ namespace python {
 
 /* ************************************************************************ */
 
-/**
- * @brief Create object from basic types types.
- *
- * @param value Source value.
- *
- * @return Python object handle.
- */
-template<typename T>
-ObjectHandle makeObject(T value) noexcept
+namespace {
+
+/* ************************************************************************ */
+
+static PyObject* getX(ObjectWrapper<core::VectorUint>* self) noexcept
 {
-    // Use ValueCast to create python object from value.
-    return cast<T>(value);
+    return makeObject(self->value.getX());
 }
 
 /* ************************************************************************ */
 
-/**
- * @brief Create object from object handle.
- *
- * @param value Python object handle.
- *
- * @return Python object handle.
- */
-inline ObjectHandle& makeObject(ObjectHandle& value) noexcept
+static PyObject* setX(ObjectWrapper<core::VectorUint>* self, PyObject* args) noexcept
 {
-    return value;
+    unsigned int x;
+
+    if(!PyArg_ParseTuple(args, "I", &x))
+        return NULL;
+
+    self->value.setX(x);
+
+    return none();
 }
 
 /* ************************************************************************ */
 
-/**
- * @brief Create object from const object handle.
- *
- * @param value Python object handle.
- *
- * @return Python object handle.
- */
-inline const Handle<PyObject>& makeObject(const ObjectHandle& value) noexcept
+static PyObject* getY(ObjectWrapper<core::VectorUint>* self) noexcept
 {
-    return value;
+    return makeObject(self->value.getY());
 }
 
 /* ************************************************************************ */
 
-/**
- * @brief Create object from handle.
- *
- * @param value Python object handle.
- *
- * @return Python object handle.
- */
-inline ObjectHandle makeObject(ObjectHandle&& value) noexcept
+static PyObject* setY(ObjectWrapper<core::VectorUint>* self, PyObject* args) noexcept
 {
-    return value;
+    unsigned int y;
+
+    if(!PyArg_ParseTuple(args, "I", &y))
+        return NULL;
+
+    self->value.setY(y);
+
+    return none();
 }
 
 /* ************************************************************************ */
 
-/**
- * @brief Call Python function.
- *
- * @tparam Args A list of arguments.
- *
- * @param fn   Function object.
- * @param args Function arguments.
- *
- * @return Result object.
- *
- * @throw In case the function call failed.
- */
-template<typename... Args>
-ObjectHandle call(const ObjectHandle& fn, Args&&... args)
-{
-    // Variadic templates expand each argument into makeObject that creates
-    // PyObject managed handle and pass plain PyObject pointer to function as argument
-    // and after call it release the "temporary" PyObject.
+static PyGetSetDef g_properties[] = {
+    {const_cast<char*>("x"),      (getter) getX, (setter) setX, NULL},
+    {const_cast<char*>("y"),      (getter) getY, (setter) setY, NULL},
+    {const_cast<char*>("width"),  (getter) getX, (setter) setX, NULL},
+    {const_cast<char*>("height"), (getter) getY, (setter) setY, NULL},
+    {NULL}  /* Sentinel */
+};
 
-    auto res = makeHandle(PyObject_CallFunctionObjArgs(fn, makeObject(args).get()..., nullptr));
+/* ************************************************************************ */
 
-    // Function call failed.
-    if (!res)
-        throw Exception{};
+static PyTypeObject g_type = {
+    PyObject_HEAD_INIT(NULL)
+    0,                              // ob_size
+    "core.VectorUint",              // tp_name
+    sizeof(ObjectWrapper<VectorUint>), // tp_basicsize
+    0,                              // tp_itemsize
+    0,                              // tp_dealloc
+    0,                              // tp_print
+    0,                              // tp_getattr
+    0,                              // tp_setattr
+    0,                              // tp_compare
+    0,                              // tp_repr
+    0,                              // tp_as_number
+    0,                              // tp_as_sequence
+    0,                              // tp_as_mapping
+    0,                              // tp_hash
+    0,                              // tp_call
+    0,                              // tp_str
+    0,                              // tp_getattro
+    0,                              // tp_setattro
+    0,                              // tp_as_buffer
+    Py_TPFLAGS_DEFAULT,             // tp_flags
+    nullptr,                        // tp_doc
+};
 
-    return res;
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
 
-/**
- * @brief Create string handle from string.
- *
- * @param str Source string.
- *
- * @return Python string object.
- */
-inline ObjectHandle str(const char* s) noexcept
+void init_core_VectorUint(PyObject* module)
 {
-    return makeHandle(PyString_FromString(s));
-}
+    g_type.tp_getset = g_properties;
 
-/* ************************************************************************ */
+    // Type is not ready
+    if (PyType_Ready(&g_type) < 0)
+        return;
 
-/**
- * @brief Create string handle from string.
- *
- * @param str Source string.
- *
- * @return Python string object.
- */
-inline ObjectHandle str(const String& s) noexcept
-{
-    return makeHandle(PyString_FromString(s.c_str()));
-}
+    auto type = reinterpret_cast<PyObject*>(&g_type);
 
-/* ************************************************************************ */
-
-/**
- * @brief Returns none object.
- *
- * @return.
- */
-inline ObjectHandle none() noexcept
-{
-    Py_RETURN_NONE;
+    Py_INCREF(type);
+    PyModule_AddObject(module, "VectorUint", type);
 }
 
 /* ************************************************************************ */

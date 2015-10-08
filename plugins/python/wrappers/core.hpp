@@ -23,60 +23,37 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "Python.hpp"
+#pragma once
 
-// Declaration
-#include "wrapper_core.hpp"
+/* ************************************************************************ */
 
-// Core
+// Simulator
 #include "core/Vector.hpp"
-#include "core/Units.hpp"
 
-// Module
-#include "wrapper.hpp"
-#include "Exception.hpp"
+// Plugin
+#include "plugins/python/TypePtr.hpp"
 
 /* ************************************************************************ */
 
-using namespace plugin::python;
+DECLARE_PYTHON_CLASS(VectorInt);
+DECLARE_PYTHON_CLASS(VectorUint);
+DECLARE_PYTHON_CLASS(VectorFloat);
 
 /* ************************************************************************ */
 
-template<typename T>
-static void python_wrapper_core_Vector(const char* fullname, PyObject* module)
-{
-    const char* name = fullname + 5;
+namespace plugin {
+namespace python {
 
-    using type = Vector<T>;
-    using type_def = TypeDefinition<type>;
+/* ************************************************************************ */
 
-    static PyGetSetDef properties[] = {
-        defineProperty<1, type>("x", &type::getX, &type::setX),
-        defineProperty<2, type>("y", &type::getY, &type::setY),
-        defineProperty<3, type>("width", &type::getWidth),
-        defineProperty<4, type>("height", &type::getHeight),
-        {NULL}  /* Sentinel */
-    };
+/**
+ * @brief Initialize core namespace types.
+ */
+PyMODINIT_FUNC init_core();
 
-    type_def::init(fullname);
-    type_def::definition.tp_init = Constructor<type, T, T>::to();
-    type_def::definition.tp_getset = properties;
-    type_def::ready();
-    type_def::finish(module, name);
+/* ************************************************************************ */
+
 }
-
-/* ************************************************************************ */
-
-void python_wrapper_core()
-{
-    PyObject* module = Py_InitModule3("core", nullptr, nullptr);
-
-    python_wrapper_core_Vector<float>("core.VectorFloat", module);
-    python_wrapper_core_Vector<int>("core.VectorInt", module);
-    python_wrapper_core_Vector<unsigned int>("core.VectorUint", module);
-    python_wrapper_core_Vector<units::Length>("core.PositionVector", module);
-    python_wrapper_core_Vector<units::Velocity>("core.VelocityVector", module);
 }
 
 /* ************************************************************************ */

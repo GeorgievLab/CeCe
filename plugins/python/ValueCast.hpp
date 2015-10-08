@@ -35,19 +35,16 @@
 #include "core/String.hpp"
 #include "core/StringView.hpp"
 
-// Module
+// Plugin
 #include "Handle.hpp"
 #include "View.hpp"
+#include "TypePtr.hpp"
+#include "ObjectWrapper.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
 namespace python {
-
-/* ************************************************************************ */
-
-template<typename T>
-struct TypeDefinition;
 
 /* ************************************************************************ */
 
@@ -213,7 +210,33 @@ struct ValueCast
     /**
      * @brief Type definiton.
      */
-    using definition = TypeDefinition<plain_type>;
+    using definition = TypePtr<plain_type>;
+
+
+    /**
+     * @brief Returns reference to object.
+     *
+     * @param obj Reference to object.
+     *
+     * @return
+     */
+    static T& ref(T& obj) noexcept
+    {
+        return obj;
+    }
+
+
+    /**
+     * @brief Returns reference to object.
+     *
+     * @param obj Pointer to object.
+     *
+     * @return
+     */
+    static T& ref(T* obj) noexcept
+    {
+        return *obj;
+    }
 
 
     /**
@@ -225,7 +248,7 @@ struct ValueCast
      */
     static bool check(View<PyObject> value)
     {
-        return (value != nullptr) && PyObject_TypeCheck(value, &definition::definition);
+        return (value != nullptr) && PyObject_TypeCheck(value, definition::ptr);
     }
 
 
@@ -238,8 +261,26 @@ struct ValueCast
      */
     static Handle<PyObject> convert(T value) noexcept
     {
-        assert(definition::valid);
-        return definition::wrap(value);
+        assert(definition::ptr);
+
+        auto type = findDynamic(typeid(ref(value)));
+
+        if (!type)
+            type = definition::ptr;
+
+        if (!type->tp_name)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Trying to convert object to undefined type");
+            return nullptr;
+        }
+
+        // Create new object
+        ObjectWrapper<T>* obj = PyObject_New(ObjectWrapper<T>, type);
+
+        // Store value
+        obj->value = std::move(value);
+
+        return Handle<PyObject>(reinterpret_cast<PyObject*>(obj));
     }
 
 
@@ -255,9 +296,15 @@ struct ValueCast
         if (!value)
             throw InvalidArgumentException("NULL PyObject");
 
-        assert(definition::valid);
-        return definition::template unwrap<T>(value);
+        assert(definition::ptr);
+        assert(PyObject_TypeCheck(value, definition::ptr));
+
+        // Cast to wrapper type
+        ObjectWrapper<T>* obj = reinterpret_cast<ObjectWrapper<T>*>(value.get());
+
+        return obj->value;
     }
+
 };
 
 /* ************************************************************************ */
