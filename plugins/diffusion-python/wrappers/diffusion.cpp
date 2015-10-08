@@ -23,19 +23,30 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Plugin
+#include "plugins/diffusion-python/wrappers/diffusion.hpp"
+
+/* ************************************************************************ */
+
+DEFINE_PYTHON_CLASS(plugin::diffusion::Module);
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace diffusion {
+namespace python {
 
 /* ************************************************************************ */
 
-/**
- * @brief Create wrappers for Module.
- */
-void python_wrapper_module();
+void init_diffusion_Module(PyObject* module);
+
+/* ************************************************************************ */
+
+PyMODINIT_FUNC init_diffusion()
+{
+    PyObject* module = Py_InitModule("diffusion", nullptr);
+
+    init_diffusion_Module(module);
+}
 
 /* ************************************************************************ */
 

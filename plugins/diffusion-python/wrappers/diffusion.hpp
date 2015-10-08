@@ -23,31 +23,35 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Simulator
-#include "simulator/Simulation.hpp"
-#include "simulator/Plugin.hpp"
-#include "simulator/PluginApi.hpp"
+#pragma once
+
+/* ************************************************************************ */
+
+// Diffusion
+#include "plugins/diffusion/Module.hpp"
 
 // Plugin
-#include "wrapper_module.hpp"
+#include "plugins/python/TypePtr.hpp"
 
 /* ************************************************************************ */
 
-using namespace simulator;
+DECLARE_PYTHON_CLASS(plugin::diffusion::Module);
 
 /* ************************************************************************ */
 
-class DiffusionPythonApi : public PluginApi
-{
-    void initSimulation(Simulation& simulation) override
-    {
-        simulation.requirePlugin("python");
-        plugin::diffusion::python_wrapper_module();
-    }
-};
+namespace plugin {
+namespace diffusion_python {
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(diffusion_python, DiffusionPythonApi)
+/**
+ * @brief Initialize diffusion namespace types.
+ */
+PyMODINIT_FUNC init_diffusion();
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */

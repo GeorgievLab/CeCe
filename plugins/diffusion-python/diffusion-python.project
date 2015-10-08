@@ -17,11 +17,16 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Library.cpp"/>
-    <File Name="wrapper_module.cpp"/>
+    <VirtualDirectory Name="wrappers">
+      <File Name="wrappers/diffusion.cpp"/>
+      <File Name="wrappers/Module.cpp"/>
+    </VirtualDirectory>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="wrapper_module.hpp"/>
+    <VirtualDirectory Name="wrappers">
+      <File Name="wrappers/diffusion.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

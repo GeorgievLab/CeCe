@@ -29,12 +29,17 @@ find_package(PythonLibs REQUIRED)
 # Include directories
 include_directories(${PYTHON_INCLUDE_DIRS})
 
+# ######################################################################### #
+
 # Sources
 set(SRCS
-    Library.cpp
-    wrapper_module.hpp
-    wrapper_module.cpp
+    Plugin.cpp
+    wrappers/diffusion.hpp
+    wrappers/diffusion.cpp
+    wrappers/Module.cpp
 )
+
+# ######################################################################### #
 
 # Build plugin
 build_plugin(diffusion-python
