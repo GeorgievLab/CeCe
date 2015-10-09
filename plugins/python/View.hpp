@@ -161,6 +161,18 @@ private:
 
 /* ************************************************************************ */
 
+/// Implicit instantiation of this template (mostly used).
+extern template class View<PyObject>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type alias for handle to PyObject.
+ */
+using ObjectView = View<PyObject>;
+
+/* ************************************************************************ */
+
 /**
  * @brief Create view from pointer.
  *
