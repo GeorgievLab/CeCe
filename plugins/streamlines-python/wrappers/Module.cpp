@@ -188,7 +188,9 @@ void init_Module(PyObject* module)
 {
     g_type.tp_methods = g_methods;
 
-    auto baseClass = findType(typeid(simulator::Module*));
+    auto baseModule = makeHandle(PyImport_ImportModule("simulator"));
+    auto baseDict = PyModule_GetDict(baseModule);
+    auto baseClass = PyMapping_GetItemString(baseDict, const_cast<char*>("Module"));
     if (!baseClass)
         throw RuntimeException("Unable to find 'simulator.Module' class");
 
