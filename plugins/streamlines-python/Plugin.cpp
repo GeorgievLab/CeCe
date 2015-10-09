@@ -23,23 +23,54 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Must be first
+#include "plugins/python/Python.hpp"
+
+// Simulator
+#include "simulator/Simulation.hpp"
+#include "simulator/Plugin.hpp"
+#include "simulator/PluginApi.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace streamlines {
+namespace streamlines_python {
 
 /* ************************************************************************ */
 
-/**
- * @brief Create wrappers for Module.
- */
-void python_wrapper_module();
+void init_Module(PyObject* module);
+
+/* ************************************************************************ */
+
+PyMODINIT_FUNC init()
+{
+    PyObject* module = Py_InitModule("streamlines", nullptr);
+
+    init_Module(module);
+}
 
 /* ************************************************************************ */
 
 }
 }
+
+/* ************************************************************************ */
+
+using namespace simulator;
+
+/* ************************************************************************ */
+
+class StreamlinesPythonApi : public PluginApi
+{
+    void initSimulation(Simulation& simulation) override
+    {
+        simulation.requirePlugin("python");
+        plugin::streamlines_python::init();
+    }
+};
+
+/* ************************************************************************ */
+
+DEFINE_PLUGIN(streamlines_python, StreamlinesPythonApi)
 
 /* ************************************************************************ */
