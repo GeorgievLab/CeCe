@@ -23,14 +23,8 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Plugin
-#include "plugins/python/wrappers/core.hpp"
-
-/* ************************************************************************ */
-
-DEFINE_PYTHON_CLASS(VectorInt);
-DEFINE_PYTHON_CLASS(VectorUint);
-DEFINE_PYTHON_CLASS(VectorFloat);
+// Must be first
+#include "plugins/python/Python.hpp"
 
 /* ************************************************************************ */
 

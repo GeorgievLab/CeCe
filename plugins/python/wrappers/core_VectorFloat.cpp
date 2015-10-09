@@ -41,14 +41,18 @@ namespace {
 
 /* ************************************************************************ */
 
-static PyObject* getX(ObjectWrapper<core::VectorFloat>* self) noexcept
+using SelfType = ObjectWrapper<VectorFloat>;
+
+/* ************************************************************************ */
+
+static PyObject* getX(SelfType* self) noexcept
 {
     return makeObject(self->value.getX());
 }
 
 /* ************************************************************************ */
 
-static PyObject* setX(ObjectWrapper<core::VectorFloat>* self, PyObject* args) noexcept
+static PyObject* setX(SelfType* self, PyObject* args) noexcept
 {
     float x;
 
@@ -62,14 +66,14 @@ static PyObject* setX(ObjectWrapper<core::VectorFloat>* self, PyObject* args) no
 
 /* ************************************************************************ */
 
-static PyObject* getY(ObjectWrapper<core::VectorFloat>* self) noexcept
+static PyObject* getY(SelfType* self) noexcept
 {
     return makeObject(self->value.getY());
 }
 
 /* ************************************************************************ */
 
-static PyObject* setY(ObjectWrapper<core::VectorFloat>* self, PyObject* args) noexcept
+static PyObject* setY(SelfType* self, PyObject* args) noexcept
 {
     float y;
 
@@ -96,8 +100,8 @@ static PyGetSetDef g_properties[] = {
 static PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
-    "core.VectorFloat",               // tp_name
-    sizeof(ObjectWrapper<VectorFloat>), // tp_basicsize
+    "core.VectorFloat",             // tp_name
+    sizeof(SelfType),               // tp_basicsize
     0,                              // tp_itemsize
     0,                              // tp_dealloc
     0,                              // tp_print
@@ -136,6 +140,9 @@ void init_core_VectorFloat(PyObject* module)
 
     Py_INCREF(type);
     PyModule_AddObject(module, "VectorFloat", type);
+
+    // Register dynamic type
+    registerDynamic(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */

@@ -28,7 +28,6 @@
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
-#include "plugins/python/TypePtr.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -46,21 +45,25 @@ using namespace plugin::python;
 
 /* ************************************************************************ */
 
-static PyObject* getSignalCount(ObjectWrapper<plugin::diffusion::Module*>* self) noexcept
+using SelfType = ObjectWrapper<plugin::diffusion::Module*>;
+
+/* ************************************************************************ */
+
+static PyObject* getSignalCount(SelfType* self) noexcept
 {
     return makeObject(self->value->getSignalCount());
 }
 
 /* ************************************************************************ */
 
-static PyObject* getGridSize(ObjectWrapper<plugin::diffusion::Module*>* self) noexcept
+static PyObject* getGridSize(SelfType* self) noexcept
 {
     return makeObject(self->value->getGridSize());
 }
 
 /* ************************************************************************ */
 
-static PyObject* getSignalId(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args) noexcept
+static PyObject* getSignalId(SelfType* self, PyObject* args) noexcept
 {
     char* name;
 
@@ -72,7 +75,7 @@ static PyObject* getSignalId(ObjectWrapper<plugin::diffusion::Module*>* self, Py
 
 /* ************************************************************************ */
 
-static PyObject* getSignal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args) noexcept
+static PyObject* getSignal(SelfType* self, PyObject* args) noexcept
 {
     int id;
     int x;
@@ -88,7 +91,7 @@ static PyObject* getSignal(ObjectWrapper<plugin::diffusion::Module*>* self, PyOb
 
 /* ************************************************************************ */
 
-static PyObject* setSignal(ObjectWrapper<plugin::diffusion::Module*>* self, PyObject* args) noexcept
+static PyObject* setSignal(SelfType* self, PyObject* args) noexcept
 {
     int id;
     int x;
@@ -131,7 +134,7 @@ static PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
     "diffusion.Module",             // tp_name
-    sizeof(ObjectWrapper<plugin::diffusion::Module>), // tp_basicsize
+    sizeof(SelfType),               // tp_basicsize
     0,                              // tp_itemsize
     0,                              // tp_dealloc
     0,                              // tp_print
@@ -163,8 +166,10 @@ void init_Module(PyObject* module)
     g_type.tp_getset = g_properties;
     g_type.tp_methods = g_methods;
 
-    auto dict = PyModule_GetDict(module);
-    auto baseClass = PyMapping_GetItemString(dict, const_cast<char*>("simulator.Module"));
+    auto baseClass = findDynamic(typeid(simulator::Module*));
+    if (!baseClass)
+        throw RuntimeException("Unable to find 'simulator.Module' class");
+
     assert(PyType_Check(baseClass));
 
     // Base class
@@ -180,7 +185,7 @@ void init_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register dynamic type
-    registerDynamic(typeid(plugin::diffusion::Module), &g_type);
+    registerDynamic(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */

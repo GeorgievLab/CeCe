@@ -28,7 +28,6 @@
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
-#include "plugins/python/TypePtr.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -42,11 +41,15 @@ namespace {
 
 /* ************************************************************************ */
 
+using SelfType = ObjectWrapper<simulator::Module>;
+
+/* ************************************************************************ */
+
 static PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
     "simulator.Module",             // tp_name
-    sizeof(ObjectWrapper<simulator::Module>), // tp_basicsize
+    sizeof(SelfType),               // tp_basicsize
     0,                              // tp_itemsize
     0,                              // tp_dealloc
     0,                              // tp_print
@@ -85,7 +88,7 @@ void init_simulator_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register type.
-    TypePtr<simulator::Module>::ptr = &g_type;
+    registerDynamic(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */

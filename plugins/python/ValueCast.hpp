@@ -38,7 +38,7 @@
 // Plugin
 #include "Handle.hpp"
 #include "View.hpp"
-#include "TypePtr.hpp"
+#include "wrapper.hpp"
 #include "ObjectWrapper.hpp"
 
 /* ************************************************************************ */
@@ -202,53 +202,17 @@ struct ValueCast
 
 
     /**
-     * @brief Type without const and reference.
-     */
-    using plain_type = typename std::remove_const<typename std::remove_reference<T>::type>::type;
-
-
-    /**
-     * @brief Type definiton.
-     */
-    using definition = TypePtr<plain_type>;
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Reference to object.
-     *
-     * @return
-     */
-    static T& ref(T& obj) noexcept
-    {
-        return obj;
-    }
-
-
-    /**
-     * @brief Returns reference to object.
-     *
-     * @param obj Pointer to object.
-     *
-     * @return
-     */
-    static T& ref(T* obj) noexcept
-    {
-        return *obj;
-    }
-
-
-    /**
      * @brief Check if python object can be converted.
      *
      * @param value Python object.
      *
      * @return If object can be converted.
      */
-    static bool check(View<PyObject> value)
+    static bool check(ObjectView value)
     {
-        return (value != nullptr) && PyObject_TypeCheck(value, definition::ptr);
+        auto type = findDynamic(typeid(T));
+
+        return (value != nullptr) && PyObject_TypeCheck(value, type);
     }
 
 
@@ -259,16 +223,11 @@ struct ValueCast
      *
      * @return New python object.
      */
-    static Handle<PyObject> convert(T value) noexcept
+    static ObjectHandle convert(T value) noexcept
     {
-        assert(definition::ptr);
+        auto type = findDynamic(typeid(T));
 
-        auto type = findDynamic(typeid(ref(value)));
-
-        if (!type)
-            type = definition::ptr;
-
-        if (!type->tp_name)
+        if (!type || !type->tp_name)
         {
             PyErr_SetString(PyExc_RuntimeError, "Trying to convert object to undefined type");
             return nullptr;
@@ -280,7 +239,7 @@ struct ValueCast
         // Store value
         obj->value = std::move(value);
 
-        return Handle<PyObject>(reinterpret_cast<PyObject*>(obj));
+        return ObjectHandle(reinterpret_cast<PyObject*>(obj));
     }
 
 
@@ -291,13 +250,13 @@ struct ValueCast
      *
      * @return Value.
      */
-    static T convert(View<PyObject> value) noexcept
+    static T convert(ObjectView value) noexcept
     {
         if (!value)
             throw InvalidArgumentException("NULL PyObject");
 
-        assert(definition::ptr);
-        assert(PyObject_TypeCheck(value, definition::ptr));
+        auto type = findDynamic(typeid(T));
+        assert(PyObject_TypeCheck(value, type));
 
         // Cast to wrapper type
         ObjectWrapper<T>* obj = reinterpret_cast<ObjectWrapper<T>*>(value.get());

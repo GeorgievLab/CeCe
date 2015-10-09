@@ -29,7 +29,6 @@
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
-#include "plugins/python/TypePtr.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -43,84 +42,88 @@ namespace {
 
 /* ************************************************************************ */
 
-static PyObject* getId(ObjectWrapper<simulator::Object&>* self) noexcept
+using SelfType = ObjectWrapper<simulator::Object*>;
+
+/* ************************************************************************ */
+
+static PyObject* getId(SelfType* self) noexcept
 {
-    return makeObject(self->value.getId());
+    return makeObject(self->value->getId());
 }
 
 /* ************************************************************************ */
 
-static PyObject* getPosition(ObjectWrapper<simulator::Object&>* self) noexcept
+static PyObject* getPosition(SelfType* self) noexcept
 {
-    return makeObject(self->value.getPosition());
+    return makeObject(self->value->getPosition());
 }
 
 /* ************************************************************************ */
 
-static PyObject* setPosition(ObjectWrapper<simulator::Object&>* self, PyObject* args) noexcept
+static PyObject* setPosition(SelfType* self, PyObject* args) noexcept
 {
     PyObject* position;
 
     if(!PyArg_ParseTuple(args, "o", &position))
         return NULL;
 
-    self->value.setPosition(cast<PositionVector>(position));
+    self->value->setPosition(cast<PositionVector>(position));
 
     return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* getRotation(ObjectWrapper<simulator::Object&>* self) noexcept
+static PyObject* getRotation(SelfType* self) noexcept
 {
-    return makeObject(self->value.getRotation());
+    return makeObject(self->value->getRotation());
 }
 
 /* ************************************************************************ */
 
-static PyObject* setRotation(ObjectWrapper<simulator::Object&>* self, PyObject* args) noexcept
+static PyObject* setRotation(SelfType* self, PyObject* args) noexcept
 {
     float rotation;
 
     if(!PyArg_ParseTuple(args, "f", &rotation))
         return NULL;
 
-    self->value.setRotation(units::Angle(rotation));
+    self->value->setRotation(units::Angle(rotation));
 
     return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* getVelocity(ObjectWrapper<simulator::Object&>* self) noexcept
+static PyObject* getVelocity(SelfType* self) noexcept
 {
-    return makeObject(self->value.getVelocity());
+    return makeObject(self->value->getVelocity());
 }
 
 /* ************************************************************************ */
 
-static PyObject* setVelocity(ObjectWrapper<simulator::Object&>* self, PyObject* args) noexcept
+static PyObject* setVelocity(SelfType* self, PyObject* args) noexcept
 {
     PyObject* velocity;
 
     if(!PyArg_ParseTuple(args, "o", &velocity))
         return NULL;
 
-    self->value.setVelocity(cast<VelocityVector>(velocity));
+    self->value->setVelocity(cast<VelocityVector>(velocity));
 
     return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* getClassName(ObjectWrapper<simulator::Object&>* self) noexcept
+static PyObject* getClassName(SelfType* self) noexcept
 {
-    return makeObject(self->value.getClassName());
+    return makeObject(self->value->getClassName());
 }
 
 /* ************************************************************************ */
 
-static PyObject* useProgram(ObjectWrapper<simulator::Object&>* self, PyObject* args, void*) noexcept
+static PyObject* useProgram(SelfType* self, PyObject* args, void*) noexcept
 {
     char* name;
 
@@ -128,16 +131,16 @@ static PyObject* useProgram(ObjectWrapper<simulator::Object&>* self, PyObject* a
         return NULL;
 
     // Add program
-    self->value.addProgram(self->value.getSimulation().getProgram(name));
+    self->value->useProgram(name);
 
     return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* destroy(ObjectWrapper<simulator::Object&>* self) noexcept
+static PyObject* destroy(SelfType* self) noexcept
 {
-    self->value.destroy();
+    self->value->destroy();
 
     return none();
 }
@@ -167,7 +170,7 @@ static PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
     "simulator.Object",             // tp_name
-    sizeof(ObjectWrapper<simulator::Object>), // tp_basicsize
+    sizeof(SelfType),               // tp_basicsize
     0,                              // tp_itemsize
     0,                              // tp_dealloc
     0,                              // tp_print
@@ -209,7 +212,7 @@ void init_simulator_Object(PyObject* module)
     PyModule_AddObject(module, "Object", type);
 
     // Register type.
-    TypePtr<simulator::Object>::ptr = &g_type;
+    registerDynamic(typeid(SelfType::ValueType), &g_type);
 
     // Define constants
     PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));

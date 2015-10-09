@@ -38,6 +38,7 @@
       <File Name="wrappers/simulator_Object.cpp"/>
       <File Name="wrappers/simulator_Simulation.cpp"/>
     </VirtualDirectory>
+    <File Name="View.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
@@ -53,11 +54,6 @@
     <File Name="View.hpp"/>
     <File Name="ValueCast.hpp"/>
     <File Name="Initializer.hpp"/>
-    <File Name="TypePtr.hpp"/>
-    <VirtualDirectory Name="wrappers">
-      <File Name="wrappers/simulator.hpp"/>
-      <File Name="wrappers/core.hpp"/>
-    </VirtualDirectory>
     <File Name="ObjectWrapper.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">

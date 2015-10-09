@@ -28,7 +28,6 @@
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
-#include "plugins/python/TypePtr.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -42,7 +41,11 @@ namespace {
 
 /* ************************************************************************ */
 
-static PyObject* get(ObjectWrapper<simulator::Configuration&>* self, PyObject* args, void*) noexcept
+using SelfType = ObjectWrapper<simulator::Configuration*>;
+
+/* ************************************************************************ */
+
+PyObject* get(SelfType* self, PyObject* args, void*) noexcept
 {
     char* name;
     char* def = nullptr;
@@ -52,28 +55,28 @@ static PyObject* get(ObjectWrapper<simulator::Configuration&>* self, PyObject* a
 
     if (def)
     {
-        return makeObject(self->value.get(name, def));
+        return makeObject(self->value->get(name, def));
     }
     else
     {
-        return makeObject(self->value.get(name));
+        return makeObject(self->value->get(name));
     }
 }
 
 /* ************************************************************************ */
 
-static PyMethodDef g_methods[] = {
+PyMethodDef g_methods[] = {
     {"get", (PyCFunction) get, METH_VARARGS, NULL},
     {NULL}  /* Sentinel */
 };
 
 /* ************************************************************************ */
 
-static PyTypeObject g_type = {
+PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
     "simulator.Configuration",      // tp_name
-    sizeof(ObjectWrapper<simulator::Configuration>), // tp_basicsize
+    sizeof(SelfType),               // tp_basicsize
     0,                              // tp_itemsize
     0,                              // tp_dealloc
     0,                              // tp_print
@@ -114,7 +117,7 @@ void init_simulator_Configuration(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register type.
-    TypePtr<simulator::Configuration>::ptr = &g_type;
+    registerDynamic(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */

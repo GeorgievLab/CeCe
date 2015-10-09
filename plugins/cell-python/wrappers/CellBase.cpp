@@ -23,17 +23,18 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Simulator
-#include "simulator/Simulation.hpp"
+// Cell
+#include "plugins/cell/Yeast.hpp"
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/wrapper.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace python {
+namespace cell_python {
 
 /* ************************************************************************ */
 
@@ -41,170 +42,97 @@ namespace {
 
 /* ************************************************************************ */
 
-using SelfType = ObjectWrapper<simulator::Simulation*>;
+using namespace plugin::python;
 
 /* ************************************************************************ */
 
-static PyObject* getWorldSize(SelfType* self) noexcept
+using SelfType = ObjectWrapper<plugin::cell::CellBase*>;
+
+/* ************************************************************************ */
+
+PyObject* getVolume(SelfType* self) noexcept
 {
-    return makeObject(self->value->getWorldSize());
+    return makeObject(self->value->getVolume());
 }
 
 /* ************************************************************************ */
 
-static PyObject* getIteration(SelfType* self) noexcept
+PyObject* setVolume(SelfType* self, PyObject* args) noexcept
 {
-    return makeObject(self->value->getIteration());
-}
+    float volume;
 
-/* ************************************************************************ */
-
-static PyObject* getIterations(SelfType* self) noexcept
-{
-    return makeObject(self->value->getIterations());
-}
-
-/* ************************************************************************ */
-
-static PyObject* setIterations(SelfType* self, PyObject* args) noexcept
-{
-    int iterations;
-
-    if(!PyArg_ParseTuple(args, "i", &iterations))
+    if(!PyArg_ParseTuple(args, "f", &volume))
         return NULL;
 
-    self->value->setIterations(iterations);
+    self->value->setVolume(units::Volume(volume));
 
     return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* getTimeStep(SelfType* self) noexcept
+PyObject* getGrowthRate(SelfType* self) noexcept
 {
-    return makeObject(self->value->getTimeStep());
+    return makeObject(self->value->getGrowthRate());
 }
 
 /* ************************************************************************ */
 
-static PyObject* setTimeStep(SelfType* self, PyObject* args) noexcept
+PyObject* setGrowthRate(SelfType* self, PyObject* args) noexcept
 {
-    float timeStep;
+    float growthRate;
 
-    if(!PyArg_ParseTuple(args, "f", &timeStep))
+    if(!PyArg_ParseTuple(args, "f", &growthRate))
         return NULL;
 
-    self->value->setTimeStep(units::Time(timeStep));
+    self->value->setGrowthRate(plugin::cell::CellBase::GrowthRate(growthRate));
 
     return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* getTotalTime(SelfType* self) noexcept
-{
-    return makeObject(self->value->getTotalTime());
-}
-
-/* ************************************************************************ */
-
-static PyObject* getObjectCount(SelfType* self) noexcept
-{
-    return makeObject(self->value->getObjectCount());
-}
-
-/* ************************************************************************ */
-
-static PyObject* useModule(SelfType* self, PyObject* args, void*) noexcept
+PyObject* getMoleculeCount(SelfType* self, PyObject* args) noexcept
 {
     char* name;
 
     if(!PyArg_ParseTuple(args, "s", &name))
         return NULL;
 
-    return makeObject(self->value->useModule(name));
+    return makeObject(self->value->getMoleculeCount(name));
 }
 
 /* ************************************************************************ */
 
-static PyObject* buildObject(SelfType* self, PyObject* args, void*) noexcept
+PyObject* kill(SelfType* self) noexcept
 {
-    char* name;
-    int type = static_cast<int>(simulator::Object::Type::Dynamic);
+    self->value->kill();
 
-    if(!PyArg_ParseTuple(args, "s|i", &name, &type))
-        return NULL;
-
-    return makeObject(self->value->buildObject(name, static_cast<simulator::Object::Type>(type)));
+    return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* objectCountType(SelfType* self, PyObject* args, void*) noexcept
-{
-    char* name;
-
-    if(!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
-
-    return makeObject(self->value->getObjectCountType(name));
-}
-
-/* ************************************************************************ */
-
-static PyObject* getParameter(SelfType* self, PyObject* args, void*) noexcept
-{
-    char* name;
-    float def = 0;
-
-    if(!PyArg_ParseTuple(args, "s|f", &name, &def))
-        return NULL;
-
-    // Return parameter
-    return makeObject(self->value->getParameter(name, def));
-}
-
-/* ************************************************************************ */
-
-static PyObject* getObject(SelfType* self, PyObject* args, void*) noexcept
-{
-    int pos;
-
-    if(!PyArg_ParseTuple(args, "i", &pos))
-        return NULL;
-
-    return makeObject(self->value->getObjects()[pos].get());
-}
-
-/* ************************************************************************ */
-
-static PyGetSetDef g_properties[] = {
-    {const_cast<char*>("worldSize"),   (getter) getWorldSize,   NULL,                   NULL},
-    {const_cast<char*>("iteration"),   (getter) getIteration,   NULL,                   NULL},
-    {const_cast<char*>("iterations"),  (getter) getIterations,  (setter) setIterations, NULL},
-    {const_cast<char*>("timeStep"),    (getter) getTimeStep,    (setter) setTimeStep,   NULL},
-    {const_cast<char*>("totalTime"),   (getter) getTotalTime,   NULL,                   NULL},
-    {const_cast<char*>("objectCount"), (getter) getObjectCount, NULL,                   NULL},
+PyGetSetDef g_properties[] = {
+    {const_cast<char*>("volume"),     (getter) getVolume,     (setter) setVolume,       NULL},
+    {const_cast<char*>("growthRate"), (getter) getGrowthRate, (setter) setGrowthRate,   NULL},
     {NULL}  /* Sentinel */
 };
 
 /* ************************************************************************ */
 
-static PyMethodDef g_methods[] = {
-    {"useModule",       (PyCFunction) useModule,        METH_VARARGS, NULL},
-    {"buildObject",     (PyCFunction) buildObject,      METH_VARARGS, NULL},
-    {"objectCountType", (PyCFunction) objectCountType,  METH_VARARGS, NULL},
-    {"getParameter",    (PyCFunction) getParameter,     METH_VARARGS, NULL},
-    {"getObject",       (PyCFunction) getObject,        METH_VARARGS, NULL},
+PyMethodDef g_methods[] = {
+    {"moleculeCount", (PyCFunction) getMoleculeCount, METH_VARARGS, NULL},
+    {"kill",          (PyCFunction) kill,             METH_NOARGS,  NULL},
     {NULL}  /* Sentinel */
 };
 
 /* ************************************************************************ */
 
-static PyTypeObject g_type = {
+PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
-    "simulator.Simulation",         // tp_name
+    "cell.CellBase",                // tp_name
     sizeof(SelfType),               // tp_basicsize
     0,                              // tp_itemsize
     0,                              // tp_dealloc
@@ -232,10 +160,17 @@ static PyTypeObject g_type = {
 
 /* ************************************************************************ */
 
-void init_simulator_Simulation(PyObject* module)
+void init_CellBase(PyObject* module)
 {
     g_type.tp_getset = g_properties;
     g_type.tp_methods = g_methods;
+
+    auto dict = PyModule_GetDict(module);
+    auto baseClass = PyMapping_GetItemString(dict, const_cast<char*>("simulator.Object"));
+    assert(PyType_Check(baseClass));
+
+    // Base class
+    g_type.tp_base = (PyTypeObject*) baseClass;
 
     // Type is not ready
     if (PyType_Ready(&g_type) < 0)
@@ -244,9 +179,9 @@ void init_simulator_Simulation(PyObject* module)
     auto type = reinterpret_cast<PyObject*>(&g_type);
 
     Py_INCREF(type);
-    PyModule_AddObject(module, "Simulation", type);
+    PyModule_AddObject(module, "Yeast", type);
 
-    // Register type.
+    // Register dynamic type
     registerDynamic(typeid(SelfType::ValueType), &g_type);
 }
 

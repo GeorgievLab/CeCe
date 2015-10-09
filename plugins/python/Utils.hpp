@@ -31,7 +31,6 @@
 #include "core/String.hpp"
 
 // Plugin
-#include "wrapper.hpp" // FIXME: not required, but it solve some inclusion issue
 #include "Handle.hpp"
 #include "ValueCast.hpp"
 

@@ -42,8 +42,21 @@
 
 // Wrappers
 #include "wrapper_stdout.hpp"
-#include "wrappers/core.hpp"
-#include "wrappers/simulator.hpp"
+
+/* ************************************************************************ */
+
+namespace plugin {
+namespace python {
+
+/* ************************************************************************ */
+
+PyMODINIT_FUNC init_core(void);
+PyMODINIT_FUNC init_simulator(void);
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */
 
@@ -51,8 +64,8 @@
  * @brief Python modules initialization table.
  */
 static const struct _inittab INIT_TABLE[] = {
-    {const_cast<char*>("cppout"), python_wrapper_stdout},
-    {const_cast<char*>("core"), plugin::python::init_core},
+    {const_cast<char*>("cppout"),    python_wrapper_stdout},
+    {const_cast<char*>("core"),      plugin::python::init_core},
     {const_cast<char*>("simulator"), plugin::python::init_simulator},
     {NULL, NULL}
 };

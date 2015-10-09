@@ -28,7 +28,6 @@
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
-#include "plugins/python/TypePtr.hpp"
 #include "plugins/python/Utils.hpp"
 #include "plugins/python/wrapper.hpp"
 
@@ -47,7 +46,11 @@ using namespace plugin::python;
 
 /* ************************************************************************ */
 
-static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, PyObject* args) noexcept
+using SelfType = ObjectWrapper<plugin::streamlines::Module*>;
+
+/* ************************************************************************ */
+
+static PyObject* setLayout(SelfType* self, PyObject* args) noexcept
 {
     using namespace plugin::streamlines;
 
@@ -96,7 +99,7 @@ static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, Py
 
 /* ************************************************************************ */
 
-static PyObject* initBarriers(ObjectWrapper<plugin::streamlines::Module*>* self, PyObject* args) noexcept
+static PyObject* initBarriers(SelfType* self, PyObject* args) noexcept
 {
     PyObject* simulation;
 
@@ -123,7 +126,7 @@ static PyObject* initBarriers(ObjectWrapper<plugin::streamlines::Module*>* self,
 
 /* ************************************************************************ */
 
-static PyObject* setInletVelocity(ObjectWrapper<plugin::streamlines::Module*>* self, PyObject* args) noexcept
+static PyObject* setInletVelocity(SelfType* self, PyObject* args) noexcept
 {
     int position;
     float velocity;
@@ -153,8 +156,8 @@ static PyMethodDef g_methods[] = {
 static PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
-    "streamlines.Module",             // tp_name
-    sizeof(ObjectWrapper<plugin::streamlines::Module>), // tp_basicsize
+    "streamlines.Module",           // tp_name
+    sizeof(SelfType),               // tp_basicsize
     0,                              // tp_itemsize
     0,                              // tp_dealloc
     0,                              // tp_print
@@ -185,8 +188,10 @@ void init_Module(PyObject* module)
 {
     g_type.tp_methods = g_methods;
 
-    auto dict = PyModule_GetDict(module);
-    auto baseClass = PyMapping_GetItemString(dict, const_cast<char*>("simulator.Module"));
+    auto baseClass = findDynamic(typeid(simulator::Module*));
+    if (!baseClass)
+        throw RuntimeException("Unable to find 'simulator.Module' class");
+
     assert(PyType_Check(baseClass));
 
     // Base class
@@ -202,7 +207,7 @@ void init_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register dynamic type
-    registerDynamic(typeid(plugin::streamlines::Module), &g_type);
+    registerDynamic(typeid(SelfType::ValueType), &g_type);
 
     // Define constants
     PyModule_AddIntConstant(module, "LEFT", static_cast<int>(plugin::streamlines::Module::LayoutPosLeft));

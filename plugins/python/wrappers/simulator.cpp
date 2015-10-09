@@ -23,15 +23,8 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Plugin
-#include "plugins/python/wrappers/simulator.hpp"
-
-/* ************************************************************************ */
-
-DEFINE_PYTHON_CLASS(simulator::Object);
-DEFINE_PYTHON_CLASS(simulator::Module);
-DEFINE_PYTHON_CLASS(simulator::Simulation);
-DEFINE_PYTHON_CLASS(simulator::Configuration);
+// Must be first
+#include "plugins/python/Python.hpp"
 
 /* ************************************************************************ */
 
