@@ -38,7 +38,7 @@
 // Plugin
 #include "Handle.hpp"
 #include "View.hpp"
-#include "wrapper.hpp"
+#include "Type.hpp"
 #include "ObjectWrapper.hpp"
 
 /* ************************************************************************ */
@@ -210,7 +210,7 @@ struct ValueCast
      */
     static bool check(ObjectView value)
     {
-        auto type = findDynamic(typeid(T));
+        auto type = findType(typeid(T));
 
         return (value != nullptr) && PyObject_TypeCheck(value, type);
     }
@@ -225,7 +225,7 @@ struct ValueCast
      */
     static ObjectHandle convert(T value) noexcept
     {
-        auto type = findDynamic(typeid(T));
+        auto type = findType(typeid(T));
 
         if (!type || !type->tp_name)
         {
@@ -255,7 +255,7 @@ struct ValueCast
         if (!value)
             throw InvalidArgumentException("NULL PyObject");
 
-        auto type = findDynamic(typeid(T));
+        auto type = findType(typeid(T));
         assert(PyObject_TypeCheck(value, type));
 
         // Cast to wrapper type

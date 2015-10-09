@@ -23,15 +23,15 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "wrapper.hpp"
+#pragma once
+
+/* ************************************************************************ */
+
+// This must be first
+#include "Python.hpp"
 
 // C++
-#include <cassert>
-
-// Simulator
-#include "core/Map.hpp"
-#include "core/Log.hpp"
+#include <typeindex>
 
 /* ************************************************************************ */
 
@@ -40,34 +40,24 @@ namespace python {
 
 /* ************************************************************************ */
 
-namespace {
+/**
+ * @brief Register dynamic type.
+ *
+ * @param info Type info.
+ * @param type Python type.
+ */
+void registerType(const std::type_info& info, PyTypeObject* type);
 
 /* ************************************************************************ */
 
-Map<std::type_index, PyTypeObject*> g_dynamicTypes;
-
-/* ************************************************************************ */
-
-}
-
-/* ************************************************************************ */
-
-void registerDynamic(const std::type_info& info, PyTypeObject* type)
-{
-    // Type is registered
-    if (g_dynamicTypes.find(std::type_index(info)) != g_dynamicTypes.end())
-        Log::warning("Replacing python type object: ", type->tp_name);
-
-    g_dynamicTypes.emplace(info, type);
-}
-
-/* ************************************************************************ */
-
-PyTypeObject* findDynamic(const std::type_info& info)
-{
-    auto it = g_dynamicTypes.find(std::type_index(info));
-    return it != g_dynamicTypes.end() ? it->second : nullptr;
-}
+/**
+ * @brief Find dynamic type.
+ *
+ * @param info Type info.
+ *
+ * @return Dynamic type or nullptr.
+ */
+PyTypeObject* findType(const std::type_info& info);
 
 /* ************************************************************************ */
 

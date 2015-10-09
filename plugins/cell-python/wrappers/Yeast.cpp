@@ -28,7 +28,7 @@
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
-#include "plugins/python/wrapper.hpp"
+#include "plugins/python/Type.hpp"
 
 /* ************************************************************************ */
 
@@ -99,7 +99,7 @@ void init_Yeast(PyObject* module)
     PyModule_AddObject(module, "Yeast", type);
 
     // Register dynamic type
-    registerDynamic(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */

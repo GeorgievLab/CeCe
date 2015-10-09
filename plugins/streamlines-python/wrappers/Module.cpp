@@ -29,7 +29,7 @@
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
 #include "plugins/python/Utils.hpp"
-#include "plugins/python/wrapper.hpp"
+#include "plugins/python/Type.hpp"
 
 /* ************************************************************************ */
 
@@ -107,7 +107,7 @@ static PyObject* initBarriers(SelfType* self, PyObject* args) noexcept
         return nullptr;
 
     // Find simulation type.
-    auto type = findDynamic(typeid(simulator::Simulation*));
+    auto type = findType(typeid(simulator::Simulation*));
 
     if (PyObject_TypeCheck(simulation, type) <= 0)
     {
@@ -188,7 +188,7 @@ void init_Module(PyObject* module)
 {
     g_type.tp_methods = g_methods;
 
-    auto baseClass = findDynamic(typeid(simulator::Module*));
+    auto baseClass = findType(typeid(simulator::Module*));
     if (!baseClass)
         throw RuntimeException("Unable to find 'simulator.Module' class");
 
@@ -207,7 +207,7 @@ void init_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register dynamic type
-    registerDynamic(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(SelfType::ValueType), &g_type);
 
     // Define constants
     PyModule_AddIntConstant(module, "LEFT", static_cast<int>(plugin::streamlines::Module::LayoutPosLeft));

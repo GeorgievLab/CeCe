@@ -142,7 +142,7 @@ void init_core_VectorFloat(PyObject* module)
     PyModule_AddObject(module, "VectorFloat", type);
 
     // Register dynamic type
-    registerDynamic(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */

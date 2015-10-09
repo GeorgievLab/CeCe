@@ -212,7 +212,7 @@ void init_simulator_Object(PyObject* module)
     PyModule_AddObject(module, "Object", type);
 
     // Register type.
-    registerDynamic(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(SelfType::ValueType), &g_type);
 
     // Define constants
     PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));

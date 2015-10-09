@@ -247,7 +247,7 @@ void init_simulator_Simulation(PyObject* module)
     PyModule_AddObject(module, "Simulation", type);
 
     // Register type.
-    registerDynamic(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */

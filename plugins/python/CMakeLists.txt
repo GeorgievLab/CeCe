@@ -58,14 +58,14 @@ set(SRCS
     Library.cpp
     wrapper_stdout.hpp
     wrapper_stdout.cpp
+    Type.hpp
+    Type.cpp
 
-    wrappers/core.hpp
     wrappers/core.cpp
     wrappers/core_VectorInt.cpp
     wrappers/core_VectorUint.cpp
     wrappers/core_VectorFloat.cpp
 
-    wrappers/simulator.hpp
     wrappers/simulator.cpp
     wrappers/simulator_Object.cpp
     wrappers/simulator_Module.cpp

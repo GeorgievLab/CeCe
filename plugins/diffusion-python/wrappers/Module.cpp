@@ -166,7 +166,7 @@ void init_Module(PyObject* module)
     g_type.tp_getset = g_properties;
     g_type.tp_methods = g_methods;
 
-    auto baseClass = findDynamic(typeid(simulator::Module*));
+    auto baseClass = findType(typeid(simulator::Module*));
     if (!baseClass)
         throw RuntimeException("Unable to find 'simulator.Module' class");
 
@@ -185,7 +185,7 @@ void init_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register dynamic type
-    registerDynamic(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(SelfType::ValueType), &g_type);
 }
 
 /* ************************************************************************ */
