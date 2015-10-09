@@ -43,6 +43,10 @@ namespace python {
 template<typename T>
 struct ObjectWrapper
 {
+    /// Type of stored value.
+    using ValueType = T;
+
+    // Python object head.
     PyObject_HEAD
 
     // Stored value.
