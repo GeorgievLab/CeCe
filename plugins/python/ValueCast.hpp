@@ -225,7 +225,7 @@ struct ValueCast
      */
     static ObjectHandle convert(T value) noexcept
     {
-        auto type = findType(typeid(T));
+        auto type = findType(typeid(value));
 
         if (!type || !type->tp_name)
         {
