@@ -41,7 +41,7 @@ namespace {
 
 /* ************************************************************************ */
 
-using SelfType = ObjectWrapper<simulator::Module>;
+using SelfType = ObjectWrapper<simulator::Module*>;
 
 /* ************************************************************************ */
 

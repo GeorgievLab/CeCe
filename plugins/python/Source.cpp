@@ -72,7 +72,6 @@ void Source::initSource(const String& source)
 {
     makeHandle(PyImport_ImportModule("cppout"));
     makeHandle(PyImport_ImportModule("core"));
-    makeHandle(PyImport_ImportModule("render"));
     makeHandle(PyImport_ImportModule("simulator"));
 
     // Execute given module file
