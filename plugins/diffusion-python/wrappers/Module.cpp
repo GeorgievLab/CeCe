@@ -179,9 +179,6 @@ void init_Module(PyObject* module)
     Py_INCREF(type);
     PyModule_AddObject(module, "Module", type);
 
-    // Register type.
-    TypePtr<plugin::diffusion::Module>::ptr = &g_type;
-
     // Register dynamic type
     registerDynamic(typeid(plugin::diffusion::Module), &g_type);
 }
