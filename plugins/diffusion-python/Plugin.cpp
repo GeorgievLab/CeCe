@@ -23,13 +23,36 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// Must be first
+#include "plugins/python/Python.hpp"
+
 // Simulator
 #include "simulator/Simulation.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/PluginApi.hpp"
 
-// Plugin
-#include "plugins/diffusion-python/wrappers/diffusion.hpp"
+/* ************************************************************************ */
+
+namespace plugin {
+namespace diffusion_python {
+
+/* ************************************************************************ */
+
+void init_Module(PyObject* module);
+
+/* ************************************************************************ */
+
+PyMODINIT_FUNC init()
+{
+    PyObject* module = Py_InitModule("diffusion", nullptr);
+
+    init_Module(module);
+}
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */
 
@@ -42,7 +65,7 @@ class DiffusionPythonApi : public PluginApi
     void initSimulation(Simulation& simulation) override
     {
         simulation.requirePlugin("python");
-        plugin::diffusion_python::init_diffusion();
+        plugin::diffusion_python::init();
     }
 };
 

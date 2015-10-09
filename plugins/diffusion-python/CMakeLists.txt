@@ -34,8 +34,6 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 # Sources
 set(SRCS
     Plugin.cpp
-    wrappers/diffusion.hpp
-    wrappers/diffusion.cpp
     wrappers/Module.cpp
 )
 
