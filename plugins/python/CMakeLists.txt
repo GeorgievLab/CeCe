@@ -42,6 +42,7 @@ set(SRCS
     Handle.hpp
     Handle.cpp
     View.hpp
+    View.cpp
     Exception.hpp
     Exception.cpp
     ValueCast.hpp

@@ -34,6 +34,9 @@
 
 /* ************************************************************************ */
 
+// This must be first
+#include "Python.hpp"
+
 // C++
 #include <utility>
 
