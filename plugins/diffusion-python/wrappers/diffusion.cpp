@@ -33,19 +33,19 @@ DEFINE_PYTHON_CLASS(plugin::diffusion::Module);
 /* ************************************************************************ */
 
 namespace plugin {
-namespace python {
+namespace diffusion_python {
 
 /* ************************************************************************ */
 
-void init_diffusion_Module(PyObject* module);
+void init_Module(PyObject* module);
 
 /* ************************************************************************ */
 
-PyMODINIT_FUNC init_diffusion()
+PyMODINIT_FUNC init()
 {
     PyObject* module = Py_InitModule("diffusion", nullptr);
 
-    init_diffusion_Module(module);
+    init_Module(module);
 }
 
 /* ************************************************************************ */

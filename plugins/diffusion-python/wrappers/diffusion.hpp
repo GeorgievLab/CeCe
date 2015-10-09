@@ -47,7 +47,7 @@ namespace diffusion_python {
 /**
  * @brief Initialize diffusion namespace types.
  */
-PyMODINIT_FUNC init_diffusion();
+PyMODINIT_FUNC init();
 
 /* ************************************************************************ */
 

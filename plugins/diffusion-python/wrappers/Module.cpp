@@ -34,11 +34,15 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace python {
+namespace diffusion_python {
 
 /* ************************************************************************ */
 
 namespace {
+
+/* ************************************************************************ */
+
+using namespace plugin::python;
 
 /* ************************************************************************ */
 
@@ -154,7 +158,7 @@ static PyTypeObject g_type = {
 
 /* ************************************************************************ */
 
-void init_diffusion_Module(PyObject* module)
+void init_Module(PyObject* module)
 {
     g_type.tp_getset = g_properties;
     g_type.tp_methods = g_methods;
