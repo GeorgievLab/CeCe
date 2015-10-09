@@ -18,7 +18,6 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
-    <File Name="Library.cpp"/>
     <File Name="Program.cpp"/>
     <File Name="Source.cpp"/>
     <File Name="Exception.cpp"/>
@@ -39,6 +38,7 @@
     </VirtualDirectory>
     <File Name="View.cpp"/>
     <File Name="Type.cpp"/>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>

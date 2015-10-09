@@ -56,7 +56,7 @@ set(SRCS
     Initializer.cpp
     Object.hpp
     Object.cpp
-    Library.cpp
+    Plugin.cpp
     wrapper_stdout.hpp
     wrapper_stdout.cpp
     Type.hpp
