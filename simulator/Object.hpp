@@ -498,6 +498,14 @@ public:
     }
 
 
+    /**
+     * @brief Use program.
+     *
+     * @param name Program name.
+     */
+    void useProgram(const String& name) noexcept;
+
+
 // Public Operations
 public:
 
