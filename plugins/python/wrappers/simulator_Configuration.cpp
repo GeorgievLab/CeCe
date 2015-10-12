@@ -55,11 +55,11 @@ PyObject* get(SelfType* self, PyObject* args, void*) noexcept
 
     if (def)
     {
-        return makeObject(self->value->get(name, String(def)));
+        return makeObject(self->value->get(name, String(def))).release();
     }
     else
     {
-        return makeObject(self->value->get(name));
+        return makeObject(self->value->get(name)).release();
     }
 }
 
@@ -117,7 +117,7 @@ void init_simulator_Configuration(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register type.
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 }
 
 /* ************************************************************************ */

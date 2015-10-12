@@ -47,21 +47,21 @@ using SelfType = ObjectWrapper<simulator::Simulation*>;
 
 static PyObject* getWorldSize(SelfType* self) noexcept
 {
-    return makeObject(self->value->getWorldSize());
+    return makeObject(self->value->getWorldSize()).release();
 }
 
 /* ************************************************************************ */
 
 static PyObject* getIteration(SelfType* self) noexcept
 {
-    return makeObject(self->value->getIteration());
+    return makeObject(self->value->getIteration()).release();
 }
 
 /* ************************************************************************ */
 
 static PyObject* getIterations(SelfType* self) noexcept
 {
-    return makeObject(self->value->getIterations());
+    return makeObject(self->value->getIterations()).release();
 }
 
 /* ************************************************************************ */
@@ -82,7 +82,7 @@ static PyObject* setIterations(SelfType* self, PyObject* args) noexcept
 
 static PyObject* getTimeStep(SelfType* self) noexcept
 {
-    return makeObject(self->value->getTimeStep());
+    return makeObject(self->value->getTimeStep()).release();
 }
 
 /* ************************************************************************ */
@@ -103,14 +103,14 @@ static PyObject* setTimeStep(SelfType* self, PyObject* args) noexcept
 
 static PyObject* getTotalTime(SelfType* self) noexcept
 {
-    return makeObject(self->value->getTotalTime());
+    return makeObject(self->value->getTotalTime()).release();
 }
 
 /* ************************************************************************ */
 
 static PyObject* getObjectCount(SelfType* self) noexcept
 {
-    return makeObject(self->value->getObjectCount());
+    return makeObject(self->value->getObjectCount()).release();
 }
 
 /* ************************************************************************ */
@@ -122,7 +122,7 @@ static PyObject* useModule(SelfType* self, PyObject* args, void*) noexcept
     if(!PyArg_ParseTuple(args, "s", &name))
         return NULL;
 
-    return makeObject(self->value->useModule(name));
+    return makeObject(self->value->useModule(name)).release();
 }
 
 /* ************************************************************************ */
@@ -135,7 +135,7 @@ static PyObject* buildObject(SelfType* self, PyObject* args, void*) noexcept
     if(!PyArg_ParseTuple(args, "s|i", &name, &type))
         return NULL;
 
-    return makeObject(self->value->buildObject(name, static_cast<simulator::Object::Type>(type)));
+    return makeObject(self->value->buildObject(name, static_cast<simulator::Object::Type>(type))).release();
 }
 
 /* ************************************************************************ */
@@ -147,7 +147,7 @@ static PyObject* objectCountType(SelfType* self, PyObject* args, void*) noexcept
     if(!PyArg_ParseTuple(args, "s", &name))
         return NULL;
 
-    return makeObject(self->value->getObjectCountType(name));
+    return makeObject(self->value->getObjectCountType(name)).release();
 }
 
 /* ************************************************************************ */
@@ -161,7 +161,7 @@ static PyObject* getParameter(SelfType* self, PyObject* args, void*) noexcept
         return NULL;
 
     // Return parameter
-    return makeObject(self->value->getParameter(name, def));
+    return makeObject(self->value->getParameter(name, def)).release();
 }
 
 /* ************************************************************************ */
@@ -173,7 +173,7 @@ static PyObject* getObject(SelfType* self, PyObject* args, void*) noexcept
     if(!PyArg_ParseTuple(args, "i", &pos))
         return NULL;
 
-    return makeObject(self->value->getObjects()[pos].get());
+    return makeObject(self->value->getObjects()[pos].get()).release();
 }
 
 /* ************************************************************************ */
@@ -247,7 +247,7 @@ void init_simulator_Simulation(PyObject* module)
     PyModule_AddObject(module, "Simulation", type);
 
     // Register type.
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 }
 
 /* ************************************************************************ */

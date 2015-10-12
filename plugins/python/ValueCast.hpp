@@ -49,6 +49,36 @@ namespace python {
 /* ************************************************************************ */
 
 /**
+ * @brief Return reference to value.
+ *
+ * @param val
+ *
+ * @return
+ */
+template<typename T>
+inline T& ref(T& val) noexcept
+{
+    return val;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Return reference to value.
+ *
+ * @param val
+ *
+ * @return
+ */
+template<typename T>
+inline T& ref(T* val) noexcept
+{
+    return *val;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Type cast for scalar types.
  *
  * @tparam Base Base type (one of the base primitive type in Python).
@@ -225,7 +255,7 @@ struct ValueCast
      */
     static ObjectHandle convert(T value) noexcept
     {
-        auto type = findType(typeid(value));
+        auto type = findType(typeid(ref(value)));
 
         if (!type || !type->tp_name)
         {

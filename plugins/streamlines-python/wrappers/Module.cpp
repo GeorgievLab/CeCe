@@ -50,7 +50,7 @@ using SelfType = ObjectWrapper<plugin::streamlines::Module*>;
 
 /* ************************************************************************ */
 
-static PyObject* setLayout(SelfType* self, PyObject* args) noexcept
+PyObject* setLayout(SelfType* self, PyObject* args) noexcept
 {
     using namespace plugin::streamlines;
 
@@ -99,7 +99,7 @@ static PyObject* setLayout(SelfType* self, PyObject* args) noexcept
 
 /* ************************************************************************ */
 
-static PyObject* initBarriers(SelfType* self, PyObject* args) noexcept
+PyObject* initBarriers(SelfType* self, PyObject* args) noexcept
 {
     PyObject* simulation;
 
@@ -126,7 +126,7 @@ static PyObject* initBarriers(SelfType* self, PyObject* args) noexcept
 
 /* ************************************************************************ */
 
-static PyObject* setInletVelocity(SelfType* self, PyObject* args) noexcept
+PyObject* setInletVelocity(SelfType* self, PyObject* args) noexcept
 {
     int position;
     float velocity;
@@ -144,7 +144,7 @@ static PyObject* setInletVelocity(SelfType* self, PyObject* args) noexcept
 
 /* ************************************************************************ */
 
-static PyMethodDef g_methods[] = {
+PyMethodDef g_methods[] = {
     {"setLayout",        (PyCFunction) setLayout,        METH_VARARGS, NULL},
     {"initBarriers",     (PyCFunction) initBarriers,     METH_VARARGS, NULL},
     {"setInletVelocity", (PyCFunction) setInletVelocity, METH_VARARGS, NULL},
@@ -153,7 +153,7 @@ static PyMethodDef g_methods[] = {
 
 /* ************************************************************************ */
 
-static PyTypeObject g_type = {
+PyTypeObject g_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              // ob_size
     "streamlines.Module",           // tp_name
@@ -209,7 +209,7 @@ void init_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register dynamic type
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 
     // Define constants
     PyModule_AddIntConstant(module, "LEFT", static_cast<int>(plugin::streamlines::Module::LayoutPosLeft));

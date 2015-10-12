@@ -51,14 +51,14 @@ using SelfType = ObjectWrapper<plugin::diffusion::Module*>;
 
 static PyObject* getSignalCount(SelfType* self) noexcept
 {
-    return makeObject(self->value->getSignalCount());
+    return makeObject(self->value->getSignalCount()).release();
 }
 
 /* ************************************************************************ */
 
 static PyObject* getGridSize(SelfType* self) noexcept
 {
-    return makeObject(self->value->getGridSize());
+    return makeObject(self->value->getGridSize()).release();
 }
 
 /* ************************************************************************ */
@@ -70,7 +70,7 @@ static PyObject* getSignalId(SelfType* self, PyObject* args) noexcept
     if(!PyArg_ParseTuple(args, "s", &name))
         return NULL;
 
-    return makeObject(self->value->getSignalId(name));
+    return makeObject(self->value->getSignalId(name)).release();
 }
 
 /* ************************************************************************ */
@@ -187,7 +187,7 @@ void init_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register dynamic type
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 }
 
 /* ************************************************************************ */

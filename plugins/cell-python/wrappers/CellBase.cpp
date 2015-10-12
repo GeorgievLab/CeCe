@@ -52,7 +52,7 @@ using SelfType = ObjectWrapper<plugin::cell::CellBase*>;
 
 PyObject* getVolume(SelfType* self) noexcept
 {
-    return makeObject(self->value->getVolume());
+    return makeObject(self->value->getVolume()).release();
 }
 
 /* ************************************************************************ */
@@ -73,7 +73,7 @@ PyObject* setVolume(SelfType* self, PyObject* args) noexcept
 
 PyObject* getGrowthRate(SelfType* self) noexcept
 {
-    return makeObject(self->value->getGrowthRate());
+    return makeObject(self->value->getGrowthRate()).release();
 }
 
 /* ************************************************************************ */
@@ -99,7 +99,7 @@ PyObject* getMoleculeCount(SelfType* self, PyObject* args) noexcept
     if(!PyArg_ParseTuple(args, "s", &name))
         return NULL;
 
-    return makeObject(self->value->getMoleculeCount(name));
+    return makeObject(self->value->getMoleculeCount(name)).release();
 }
 
 /* ************************************************************************ */
@@ -165,8 +165,10 @@ void init_CellBase(PyObject* module)
     g_type.tp_getset = g_properties;
     g_type.tp_methods = g_methods;
 
-    auto dict = PyModule_GetDict(module);
-    auto baseClass = PyMapping_GetItemString(dict, const_cast<char*>("simulator.Object"));
+    auto baseModule = makeHandle(PyImport_ImportModule("simulator"));
+    auto baseDict = PyModule_GetDict(baseModule);
+    auto baseClass = PyMapping_GetItemString(baseDict, const_cast<char*>("Object"));
+    assert(baseClass);
     assert(PyType_Check(baseClass));
 
     // Base class
@@ -179,10 +181,10 @@ void init_CellBase(PyObject* module)
     auto type = reinterpret_cast<PyObject*>(&g_type);
 
     Py_INCREF(type);
-    PyModule_AddObject(module, "Yeast", type);
+    PyModule_AddObject(module, "CellBase", type);
 
     // Register dynamic type
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 }
 
 /* ************************************************************************ */

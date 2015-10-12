@@ -48,14 +48,14 @@ using SelfType = ObjectWrapper<simulator::Object*>;
 
 static PyObject* getId(SelfType* self) noexcept
 {
-    return makeObject(self->value->getId());
+    return makeObject(self->value->getId()).release();
 }
 
 /* ************************************************************************ */
 
 static PyObject* getPosition(SelfType* self) noexcept
 {
-    return makeObject(self->value->getPosition());
+    return makeObject(self->value->getPosition()).release();
 }
 
 /* ************************************************************************ */
@@ -76,7 +76,7 @@ static PyObject* setPosition(SelfType* self, PyObject* args) noexcept
 
 static PyObject* getRotation(SelfType* self) noexcept
 {
-    return makeObject(self->value->getRotation());
+    return makeObject(self->value->getRotation()).release();
 }
 
 /* ************************************************************************ */
@@ -97,7 +97,7 @@ static PyObject* setRotation(SelfType* self, PyObject* args) noexcept
 
 static PyObject* getVelocity(SelfType* self) noexcept
 {
-    return makeObject(self->value->getVelocity());
+    return makeObject(self->value->getVelocity()).release();
 }
 
 /* ************************************************************************ */
@@ -118,7 +118,7 @@ static PyObject* setVelocity(SelfType* self, PyObject* args) noexcept
 
 static PyObject* getClassName(SelfType* self) noexcept
 {
-    return makeObject(self->value->getClassName());
+    return makeObject(self->value->getClassName()).release();
 }
 
 /* ************************************************************************ */
@@ -212,7 +212,7 @@ void init_simulator_Object(PyObject* module)
     PyModule_AddObject(module, "Object", type);
 
     // Register type.
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 
     // Define constants
     PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));

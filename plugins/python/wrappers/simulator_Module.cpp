@@ -88,7 +88,7 @@ void init_simulator_Module(PyObject* module)
     PyModule_AddObject(module, "Module", type);
 
     // Register type.
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 }
 
 /* ************************************************************************ */

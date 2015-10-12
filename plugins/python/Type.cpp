@@ -59,14 +59,22 @@ void registerType(const std::type_info& info, PyTypeObject* type)
         Log::warning("Replacing python type object: ", type->tp_name);
 
     g_dynamicTypes.emplace(info, type);
+    Log::debug("Register type: ", info.name());
 }
 
 /* ************************************************************************ */
 
 PyTypeObject* findType(const std::type_info& info)
 {
+    Log::debug("Searching for type: ", info.name());
+
     auto it = g_dynamicTypes.find(std::type_index(info));
-    return it != g_dynamicTypes.end() ? it->second : nullptr;
+
+    if (it != g_dynamicTypes.end())
+        return it->second;
+
+    Log::debug("Type not found");
+    return nullptr;
 }
 
 /* ************************************************************************ */

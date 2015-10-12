@@ -83,7 +83,8 @@ PyTypeObject g_type = {
 void init_Yeast(PyObject* module)
 {
     auto dict = PyModule_GetDict(module);
-    auto baseClass = PyMapping_GetItemString(dict, const_cast<char*>("cell.CellBase"));
+    auto baseClass = PyMapping_GetItemString(dict, const_cast<char*>("CellBase"));
+    assert(baseClass);
     assert(PyType_Check(baseClass));
 
     // Base class
@@ -99,7 +100,7 @@ void init_Yeast(PyObject* module)
     PyModule_AddObject(module, "Yeast", type);
 
     // Register dynamic type
-    registerType(typeid(SelfType::ValueType), &g_type);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 }
 
 /* ************************************************************************ */
