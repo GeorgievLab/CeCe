@@ -107,7 +107,7 @@ PyObject* initBarriers(SelfType* self, PyObject* args) noexcept
         return nullptr;
 
     // Find simulation type.
-    auto type = findType(typeid(simulator::Simulation*));
+    auto type = findType(typeid(simulator::Simulation));
 
     if (PyObject_TypeCheck(simulation, type) <= 0)
     {
