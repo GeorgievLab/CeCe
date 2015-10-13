@@ -55,6 +55,10 @@ class Module
 public:
 
 
+    /// Module update priority type.
+    using PriorityType = int;
+
+
 #if ENABLE_RENDER
     /// Z order type.
     using ZOrderType = int;
@@ -98,6 +102,17 @@ public:
 public:
 
 
+    /**
+     * @brief Returns module priority.
+     *
+     * @return
+     */
+    PriorityType getPriority() const noexcept
+    {
+        return m_priority;
+    }
+
+
 #if ENABLE_RENDER
     /**
      * @brief Returns module draw Z order.
@@ -126,6 +141,17 @@ public:
 
 // Public Mutators
 public:
+
+
+    /**
+     * @brief Set module priority.
+     *
+     * @param priority
+     */
+    void setPriority(PriorityType priority) noexcept
+    {
+        m_priority = priority;
+    }
 
 
 #if ENABLE_RENDER
@@ -178,6 +204,9 @@ public:
      */
     virtual void configure(const Configuration& config, Simulation& simulation)
     {
+        // Get module priority
+        setPriority(config.get("priority", getPriority()));
+
 #if ENABLE_RENDER
         setZOrder(config.get("z-order", getZOrder()));
 #endif
@@ -200,6 +229,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Module update priority.
+    PriorityType m_priority = 0;
 
 #if ENABLE_RENDER
     /// Module Z order.

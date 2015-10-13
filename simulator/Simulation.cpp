@@ -333,7 +333,13 @@ bool Simulation::update(units::Duration dt)
     {
         auto _ = measure_time("sim.modules", TimeMeasurementIterationOutput(this));
 
-        for (auto& module : getModules())
+        // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
+        std::sort(m_modules.begin(), m_modules.end(),
+            [](const Pair<String, UniquePtr<Module>>& lhs, const Pair<String, UniquePtr<Module>>& rhs) {
+                return lhs.second->getPriority() > rhs.second->getPriority();
+        });
+
+        for (auto& module : m_modules)
             module.second->update(dt, *this);
     }
 
@@ -413,7 +419,7 @@ void Simulation::configure(const Configuration& config)
         auto size = config.get<SizeVector>("world-size");
 
         if (size.getWidth() == Zero || size.getHeight() == Zero)
-            throw simulator::ConfigException("Width or height is zero!");
+            throw ConfigException("Width or height is zero!");
 
         setWorldSize(size);
     }
