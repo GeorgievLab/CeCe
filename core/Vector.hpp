@@ -1535,6 +1535,28 @@ inline BasicVector<decltype(T1{} + T2{}), N> operator+(const BasicVector<T1, N>&
  * @brief Addition operator.
  *
  * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} + T2{}), 2> operator+(const BasicVector<T1, 2>& lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} + T2{}), 2>{
+        lhs.getX() + rhs.getX(),
+        lhs.getY() + rhs.getY()
+    };
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Addition operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
  * @tparam T2 Type of second operand.
  * @tparam N  BasicVector size.
  *
@@ -1552,6 +1574,28 @@ inline BasicVector<decltype(T1{} + T2{}), N> operator+(const BasicVector<T1, N>&
         res[i] = lhs[i] + rhs;
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Addition operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of second operand.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} + T2{}), 2> operator+(const BasicVector<T1, 2>& lhs, T2 rhs) noexcept
+{
+    return BasicVector<decltype(T1{} + T2{}), 2>{
+        lhs.getX() + rhs,
+        lhs.getY() + rhs
+    };
 }
 
 /* ************************************************************************ */
@@ -1577,6 +1621,28 @@ inline BasicVector<decltype(T1{} + T2{}), N> operator+(T1 lhs, const BasicVector
         res[i] = lhs + rhs[i];
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Addition operator.
+ *
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} + T2{}), 2> operator+(T1 lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} + T2{}), 2>{
+        lhs + rhs.getX(),
+        lhs + rhs.getY()
+    };
 }
 
 /* ************************************************************************ */
@@ -1609,6 +1675,28 @@ inline BasicVector<decltype(T1{} - T2{}), N> operator-(const BasicVector<T1, N>&
  * @brief Substract operator.
  *
  * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} - T2{}), 2> operator-(const BasicVector<T1, 2>& lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} - T2{}), 2>{
+        lhs.getX() - rhs.getX(),
+        lhs.getY() - rhs.getY()
+    };
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
  * @tparam T2 Type of second operand.
  *
  * @param lhs Left operand.
@@ -1625,6 +1713,28 @@ inline BasicVector<decltype(T1{} - T2{}), N> operator-(const BasicVector<T1, N>&
         res[i] = lhs[i] - rhs;
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of second operand.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} - T2{}), 2> operator-(const BasicVector<T1, 2>& lhs, T2 rhs) noexcept
+{
+    return BasicVector<decltype(T1{} - T2{}), 2>{
+        lhs.getX() - rhs,
+        lhs.getY() - rhs
+    };
 }
 
 /* ************************************************************************ */
@@ -1649,6 +1759,28 @@ inline BasicVector<decltype(T1{} - T2{}), N> operator-(T1 lhs, const BasicVector
         res[i] = lhs - rhs[i];
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Substract operator.
+ *
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} - T2{}), 2> operator-(T1 lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} - T2{}), 2>{
+        lhs - rhs.getX(),
+        lhs - rhs.getY()
+    };
 }
 
 /* ************************************************************************ */
@@ -1681,6 +1813,28 @@ inline BasicVector<decltype(T1{} * T2{}), N> operator*(const BasicVector<T1, N>&
  * @brief Multiplication operator.
  *
  * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} * T2{}), 2> operator*(const BasicVector<T1, 2>& lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} * T2{}), 2>{
+        lhs.getX() * rhs.getX(),
+        lhs.getY() * rhs.getY()
+    };
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiplication operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
  * @tparam T2 Type of second operand.
  *
  * @param lhs Left operand.
@@ -1697,6 +1851,28 @@ inline BasicVector<decltype(T1{} * T2{}), N> operator*(const BasicVector<T1, N>&
         res[i] = lhs[i] * rhs;
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiplication operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of second operand.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} * T2{}), 2> operator*(const BasicVector<T1, 2>& lhs, T2 rhs) noexcept
+{
+    return BasicVector<decltype(T1{} * T2{}), 2>{
+        lhs.getX() * rhs,
+        lhs.getY() * rhs
+    };
 }
 
 /* ************************************************************************ */
@@ -1721,6 +1897,28 @@ inline BasicVector<decltype(T1{} * T2{}), N> operator*(T1 lhs, const BasicVector
         res[i] = lhs * rhs[i];
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Multiplication operator.
+ *
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} * T2{}), 2> operator*(T1 lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} * T2{}), 2>{
+        lhs * rhs.getX(),
+        lhs * rhs.getY()
+    };
 }
 
 /* ************************************************************************ */
@@ -1753,6 +1951,28 @@ inline BasicVector<decltype(T1{} / T2{}), N> operator/(const BasicVector<T1, N>&
  * @brief Division operator.
  *
  * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} / T2{}), 2> operator/(const BasicVector<T1, 2>& lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} / T2{}), 2>{
+        lhs.getX() / rhs.getX(),
+        lhs.getY() / rhs.getY()
+    };
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Division operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
  * @tparam T2 Type of second operand.
  *
  * @param lhs Left operand.
@@ -1769,6 +1989,28 @@ inline BasicVector<decltype(T1{} / T2{}), N> operator/(const BasicVector<T1, N>&
         res[i] = lhs[i] / rhs;
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Division operator.
+ *
+ * @tparam T1 Type of value in first BasicVector.
+ * @tparam T2 Type of second operand.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} / T2{}), 2> operator/(const BasicVector<T1, 2>& lhs, T2 rhs) noexcept
+{
+    return BasicVector<decltype(T1{} / T2{}), 2>{
+        lhs.getX() / rhs,
+        lhs.getY() / rhs
+    };
 }
 
 /* ************************************************************************ */
@@ -1798,6 +2040,28 @@ inline BasicVector<decltype(T1{} / T2{}), N> operator/(T1 lhs, const BasicVector
 /* ************************************************************************ */
 
 /**
+ * @brief Division operator.
+ *
+ * @tparam T1 Type of first operand.
+ * @tparam T2 Type of value in second BasicVector.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Result vector.
+ */
+template<typename T1, typename T2>
+inline BasicVector<decltype(T1{} / T2{}), 2> operator/(T1 lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return BasicVector<decltype(T1{} / T2{}), 2>{
+        lhs / rhs.getX(),
+        lhs / rhs.getY()
+    };
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Compare vectors.
  *
  * @param lhs Left operand.
@@ -1814,6 +2078,25 @@ inline bool operator==(const BasicVector<T1, N>& lhs, const BasicVector<T2, N>& 
         res = res && lhs[i] == rhs[i];
 
     return res;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return
+ */
+template<typename T1, typename T2>
+inline bool operator==(const BasicVector<T1, 2>& lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return
+        lhs.getX() == rhs.getX() &&
+        lhs.getY() == rhs.getY()
+    ;
 }
 
 /* ************************************************************************ */
