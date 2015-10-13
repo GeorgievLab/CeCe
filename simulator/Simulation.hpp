@@ -39,6 +39,7 @@
 #include "core/Log.hpp"
 #include "core/String.hpp"
 #include "core/Map.hpp"
+#include "core/Pair.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/ViewPtr.hpp"
 #include "core/DynamicArray.hpp"
@@ -107,7 +108,7 @@ public:
     using ParameterValueType = float;
 
     /// Module container type.
-    using ModuleContainer = Map<String, UniquePtr<Module>>;
+    using ModuleContainer = DynamicArray<Pair<String, UniquePtr<Module>>>;
 
     /// Object container type.
     using ObjectContainer = DynamicArray<UniquePtr<Object>>;
@@ -259,10 +260,7 @@ public:
      *
      * @return
      */
-    bool hasModule(const String& name) const noexcept
-    {
-        return m_modules.find(name) != m_modules.end();
-    }
+    bool hasModule(const String& name) const noexcept;
 
 
     /**
@@ -272,15 +270,7 @@ public:
      *
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
-    Module* getModule(const String& name) noexcept
-    {
-        auto it = m_modules.find(name);
-
-        if (it == m_modules.end())
-            return nullptr;
-
-        return it->second.get();
-    }
+    Module* getModule(const String& name) noexcept;
 
 
     /**
@@ -674,6 +664,17 @@ public:
     /**
      * @brief Add new module.
      *
+     * @param name   Module name.
+     * @param module Pointer to module.
+     *
+     * @return A pointer to inserted module.
+     */
+    Module* addModule(String name, UniquePtr<Module> module);
+
+
+    /**
+     * @brief Add new module.
+     *
      * @param name Module name.
      * @param mod  Pointer to module.
      *
@@ -682,9 +683,7 @@ public:
     template<typename T>
     T* addModule(String name, UniquePtr<T> mod)
     {
-        assert(mod);
-        auto it = m_modules.emplace(std::make_pair(std::move(name), std::move(mod)));
-        return static_cast<T*>(std::get<0>(it)->second.get());
+        return static_cast<T*>(addModule(std::move(name), UniquePtr<Module>(mod)));
     }
 
 

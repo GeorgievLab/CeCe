@@ -161,6 +161,31 @@ Simulation::~Simulation()
 
 /* ************************************************************************ */
 
+bool Simulation::hasModule(const String& name) const noexcept
+{
+    auto it = std::find_if(m_modules.begin(), m_modules.end(), [&name](const Pair<String, UniquePtr<Module>>& p) {
+        return p.first == name;
+    });
+
+    return it != m_modules.end();
+}
+
+/* ************************************************************************ */
+
+Module* Simulation::getModule(const String& name) noexcept
+{
+    auto it = std::find_if(m_modules.begin(), m_modules.end(), [&name](const Pair<String, UniquePtr<Module>>& p) {
+        return p.first == name;
+    });
+
+    if (it == m_modules.end())
+        return nullptr;
+
+    return it->second.get();
+}
+
+/* ************************************************************************ */
+
 unsigned long Simulation::getObjectCountType(const String& className) const noexcept
 {
     unsigned long res = 0ul;
@@ -172,6 +197,15 @@ unsigned long Simulation::getObjectCountType(const String& className) const noex
     }
 
     return res;
+}
+
+/* ************************************************************************ */
+
+Module* Simulation::addModule(String name, UniquePtr<Module> module)
+{
+    assert(module);
+    m_modules.emplace_back(std::move(name), std::move(module));
+    return m_modules.back().second.get();
 }
 
 /* ************************************************************************ */
