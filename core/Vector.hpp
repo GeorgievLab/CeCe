@@ -914,10 +914,10 @@ public:
 private:
 
     /// X coordinate.
-    T m_x;
+    T m_x{};
 
     /// Y coordinate.
-    T m_y;
+    T m_y{};
 
 };
 
@@ -1463,13 +1463,13 @@ public:
 private:
 
     /// X coordinate.
-    T m_x;
+    T m_x{};
 
     /// Y coordinate.
-    T m_y;
+    T m_y{};
 
     /// Z coordinate.
-    T m_z;
+    T m_z{};
 
 };
 
