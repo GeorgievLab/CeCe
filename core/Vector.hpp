@@ -149,7 +149,6 @@ public:
      *
      * @return
      */
-    template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = nullptr>
     BasicVector operator-() const noexcept
     {
         BasicVector res;
@@ -554,7 +553,6 @@ public:
      *
      * @return
      */
-    template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = nullptr>
     constexpr BasicVector operator-() const noexcept
     {
         return BasicVector{-getX(), -getY()};
@@ -1049,7 +1047,6 @@ public:
      *
      * @return
      */
-    template<typename TI = T, typename std::enable_if<std::is_unsigned<TI>::value>::type* = nullptr>
     constexpr BasicVector operator-() const noexcept
     {
         return BasicVector{-getX(), -getY(), -getZ()};
