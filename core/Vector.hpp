@@ -2417,7 +2417,7 @@ InStream& operator>>(InStream& is, BasicVector<T, N>& vector)
 
     for (; i < N; ++i)
     {
-        if (!(is >> vector[i]))
+        if (!(is >> std::skipws >> vector[i]))
             break;
     }
 
