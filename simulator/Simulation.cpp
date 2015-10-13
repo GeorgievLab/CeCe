@@ -330,62 +330,16 @@ bool Simulation::update(units::Duration dt)
         obj->setForce(Zero);
 
     // Update modules
-    {
-        auto _ = measure_time("sim.modules", TimeMeasurementIterationOutput(this));
+    updateModules(dt);
 
-        // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
-        std::sort(m_modules.begin(), m_modules.end(),
-            [](const Pair<String, UniquePtr<Module>>& lhs, const Pair<String, UniquePtr<Module>>& rhs) {
-                return lhs.second->getPriority() > rhs.second->getPriority();
-        });
+    // Update objects
+    updateObjects(dt);
 
-        for (auto& module : m_modules)
-            module.second->update(dt, *this);
-    }
+    // Detect object that leaved the scene
+    detectDeserters();
 
-    {
-        auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
-
-        // Update simulations objects
-        //for (auto& obj : getObjects())
-        for (size_t i = 0; i < m_objects.size(); ++i)
-        {
-            auto& obj = m_objects[i];
-            assert(obj);
-            obj->update(dt);
-        }
-    }
-
-    // Remove objects that are outside world.
-    {
-        auto _ = measure_time("sim.delete", TimeMeasurementIterationOutput(this));
-
-        // Delete queued objects
-        for (auto obj : m_objectsToDelete)
-        {
-            m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [obj](const ObjectContainer::value_type& rhs) {
-                return obj.get() == rhs.get();
-            }), m_objects.end());
-        }
-
-        const auto hh = getWorldSize() * 0.5f;
-
-        // Kill objects that are outside world
-        m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [&hh](const ObjectContainer::value_type& obj) {
-            // Ignore static objects
-            if (obj->getType() == Object::Type::Static)
-                return false;
-
-            // Get object position
-            const auto& pos = obj->getPosition();
-
-            // TODO: optimize
-            return !(
-                ((pos.getX() >= -hh.getX()) && (pos.getX() <= hh.getX())) &&
-                ((pos.getY() >= -hh.getY()) && (pos.getY() <= hh.getY()))
-            );
-        }), m_objects.end());
-    }
+    // Delete unused objects
+    deleteObjects();
 
 #ifdef ENABLE_PHYSICS
     {
@@ -674,6 +628,75 @@ void Simulation::storeDataTables()
             writeCsvLine(file, row);
 
         Log::info("Data table '", item.first, "' saved.");
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulation::updateModules(units::Time dt)
+{
+    auto _ = measure_time("sim.modules", TimeMeasurementIterationOutput(this));
+
+    // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
+    std::sort(m_modules.begin(), m_modules.end(),
+        [](const ModuleContainer::value_type& lhs, const ModuleContainer::value_type& rhs) {
+            return lhs.second->getPriority() > rhs.second->getPriority();
+    });
+
+    for (auto& module : m_modules)
+        module.second->update(dt, *this);
+}
+
+/* ************************************************************************ */
+
+void Simulation::updateObjects(units::Time dt)
+{
+    auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
+
+    // Update simulations objects
+    //for (auto& obj : getObjects())
+    for (size_t i = 0; i < m_objects.size(); ++i)
+    {
+        auto& obj = m_objects[i];
+        assert(obj);
+        obj->update(dt);
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulation::detectDeserters()
+{
+    const auto hh = getWorldSize() * 0.5f;
+
+    // Kill objects that are outside world
+    for (auto& obj : m_objects)
+    {
+        // Ignore static objects
+        if (obj->getType() == Object::Type::Static)
+            continue;
+
+        // Get object position
+        const auto& pos = obj->getPosition();
+
+        // Object is not in scene
+        if (!pos.inRange(-hh, hh))
+            m_objectsToDelete.push_back(obj.get());
+    };
+}
+
+/* ************************************************************************ */
+
+void Simulation::deleteObjects()
+{
+    auto _ = measure_time("sim.delete", TimeMeasurementIterationOutput(this));
+
+    // Delete queued objects
+    for (auto obj : m_objectsToDelete)
+    {
+        m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [obj](const ObjectContainer::value_type& rhs) {
+            return obj.get() == rhs.get();
+        }), m_objects.end());
     }
 }
 

@@ -1020,6 +1020,39 @@ public:
     }
 
 
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Update modules.
+     *
+     * @param dt Time step.
+     */
+    void updateModules(units::Time dt);
+
+
+    /**
+     * @brief Update objects.
+     *
+     * @param dt Time step.
+     */
+    void updateObjects(units::Time dt);
+
+
+    /**
+     * @brief Detect objects that cannot be visible in the scene and can be
+     * safely deleted.
+     */
+    void detectDeserters();
+
+
+    /**
+     * @brief Delete objects marked for deletion.
+     */
+    void deleteObjects();
+
+
 // Private Data Members
 private:
 
