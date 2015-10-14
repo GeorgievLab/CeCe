@@ -41,12 +41,12 @@ build_plugin(stochastic-reactions-intracellular
 # ######################################################################### #
 
 # Add tests
-build_test(stochastic-reactions-intracellular
-    SOURCES
-        test/test.cpp
-        test/ReactionsParserTest.cpp
-    PLUGINS_REQUIRED
-        stochastic-reactions-intracellular
-)
+#build_test(stochastic-reactions-intracellular
+#    SOURCES
+#        test/test.cpp
+#        test/ReactionsParserTest.cpp
+#    PLUGINS_REQUIRED
+#        stochastic-reactions-intracellular
+#)
 
 # ######################################################################### #

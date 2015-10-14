@@ -29,6 +29,9 @@
 // C++
 #include <cstdio>
 
+// OpenCV
+#include <opencv2/highgui/highgui.hpp>
+
 // Simulation
 #include "core/Log.hpp"
 #include "core/UniquePtr.hpp"

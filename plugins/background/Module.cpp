@@ -26,6 +26,9 @@
 // Declaration
 #include "Module.hpp"
 
+// OpenCV
+#include <opencv2/highgui/highgui.hpp>
+
 // Simulation
 #include "core/VectorRange.hpp"
 #include "simulator/Simulation.hpp"

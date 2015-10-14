@@ -63,24 +63,15 @@ if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
 
     if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
         set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} imgproc highgui)
-        if (WIN32 OR APPLE)
-            # OpenCV 3
-            set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} imgcodecs)
-        endif ()
     endif ()
 
     if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
-        if (UNIX AND NOT APPLE)
-            # OpenCV 2
-            set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} highgui)
-        else ()
-            # OpenCV 3
-            set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} videoio)
-        endif ()
+        # OpenCV 2
+        set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} highgui)
     endif ()
 
     # Find OpenCV
-    find_package(OpenCV COMPONENTS ${OPENCV_COMPONENTS})
+    find_package(OpenCV 2.4 COMPONENTS ${OPENCV_COMPONENTS})
 
     # OpenCV not found
     if (OpenCV_FOUND)
