@@ -24,10 +24,7 @@
 /* ************************************************************************ */
 
 // This must be first
-#include "Python.hpp"
-
-// Declaration
-#include "wrapper_stdout.hpp"
+#include "plugins/python/Python.hpp"
 
 // C++
 #include <iostream>
@@ -67,14 +64,14 @@ static const PyMethodDef log_methods[] = {
 
 /* ************************************************************************ */
 
-void python_wrapper_stdout()
+PyMODINIT_FUNC init_stdout(void)
 {
-    PyObject* m = Py_InitModule("cppout", const_cast<PyMethodDef*>(log_methods));
+    PyObject* module = Py_InitModule("cppout", const_cast<PyMethodDef*>(log_methods));
 
-    if (m == nullptr)
+    if (module == nullptr)
         return;
 
-    PySys_SetObject(const_cast<char*>("stdout"), m);
+    PySys_SetObject(const_cast<char*>("stdout"), module);
 }
 
 /* ************************************************************************ */

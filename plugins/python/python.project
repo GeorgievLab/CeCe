@@ -22,7 +22,6 @@
     <File Name="Source.cpp"/>
     <File Name="Exception.cpp"/>
     <File Name="Object.cpp"/>
-    <File Name="wrapper_stdout.cpp"/>
     <File Name="Initializer.cpp"/>
     <File Name="Handle.cpp"/>
     <VirtualDirectory Name="wrappers">
@@ -35,6 +34,7 @@
       <File Name="wrappers/simulator_Module.cpp"/>
       <File Name="wrappers/simulator_Object.cpp"/>
       <File Name="wrappers/simulator_Simulation.cpp"/>
+      <File Name="wrappers/stdout.cpp"/>
     </VirtualDirectory>
     <File Name="View.cpp"/>
     <File Name="Type.cpp"/>
@@ -48,7 +48,6 @@
     <File Name="Exception.hpp"/>
     <File Name="Object.hpp"/>
     <File Name="Utils.hpp"/>
-    <File Name="wrapper_stdout.hpp"/>
     <File Name="Python.hpp"/>
     <File Name="View.hpp"/>
     <File Name="ValueCast.hpp"/>

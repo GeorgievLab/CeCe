@@ -57,10 +57,10 @@ set(SRCS
     Object.hpp
     Object.cpp
     Plugin.cpp
-    wrapper_stdout.hpp
-    wrapper_stdout.cpp
     Type.hpp
     Type.cpp
+
+    wrappers/stdout.cpp
 
     wrappers/core.cpp
     wrappers/core_VectorInt.cpp
