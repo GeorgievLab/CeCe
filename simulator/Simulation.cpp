@@ -698,6 +698,8 @@ void Simulation::deleteObjects()
             return obj.get() == rhs.get();
         }), m_objects.end());
     }
+
+    m_objectsToDelete.clear();
 }
 
 /* ************************************************************************ */
