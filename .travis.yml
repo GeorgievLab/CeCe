@@ -58,6 +58,7 @@ before_install:
 before_script:
     - mkdir build && cd build
     - "cmake
+        -DDEV_TESTS_BUILD=On
         -DCMAKE_BUILD_TYPE=debug
         -DGLFW_LOCATION=$VENDOR_DIR/glfw3
         -DBOX2DDIR=$VENDOR_DIR/box2d
