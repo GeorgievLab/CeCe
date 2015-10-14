@@ -47,9 +47,9 @@ namespace python {
 
 /* ************************************************************************ */
 
-PyMODINIT_FUNC init_stdout(void);
-PyMODINIT_FUNC init_core(void);
-PyMODINIT_FUNC init_simulator(void);
+void init_stdout(void);
+void init_core(void);
+void init_simulator(void);
 
 /* ************************************************************************ */
 

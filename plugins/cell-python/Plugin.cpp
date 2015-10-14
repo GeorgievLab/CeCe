@@ -43,7 +43,7 @@ void init_Yeast(PyObject* module);
 
 /* ************************************************************************ */
 
-PyMODINIT_FUNC init()
+void init()
 {
     PyObject* module = Py_InitModule("cell", nullptr);
 

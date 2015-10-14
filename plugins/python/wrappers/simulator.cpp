@@ -40,7 +40,7 @@ void init_simulator_Object(PyObject* module);
 
 /* ************************************************************************ */
 
-PyMODINIT_FUNC init_simulator(void)
+void init_simulator(void)
 {
     PyObject* module = Py_InitModule("simulator", nullptr);
 

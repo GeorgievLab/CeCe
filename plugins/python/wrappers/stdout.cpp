@@ -64,7 +64,7 @@ static const PyMethodDef log_methods[] = {
 
 /* ************************************************************************ */
 
-PyMODINIT_FUNC init_stdout(void)
+void init_stdout(void)
 {
     PyObject* module = Py_InitModule("cppout", const_cast<PyMethodDef*>(log_methods));
 

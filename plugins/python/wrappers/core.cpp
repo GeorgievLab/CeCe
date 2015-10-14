@@ -39,7 +39,7 @@ void init_core_VectorFloat(PyObject* module);
 
 /* ************************************************************************ */
 
-PyMODINIT_FUNC init_core(void)
+void init_core(void)
 {
     PyObject* module = Py_InitModule("core", nullptr);
 

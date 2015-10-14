@@ -42,7 +42,7 @@ void init_Module(PyObject* module);
 
 /* ************************************************************************ */
 
-PyMODINIT_FUNC init()
+void init()
 {
     PyObject* module = Py_InitModule("diffusion", nullptr);
 
