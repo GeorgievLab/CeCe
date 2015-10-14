@@ -42,7 +42,8 @@
 #endif
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE || CONFIG_CLI_ENABLE_IMAGE_CAPTURE
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #endif
 
 // Simulator
