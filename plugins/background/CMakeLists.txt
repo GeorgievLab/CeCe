@@ -23,14 +23,8 @@
 #                                                                           #
 # ######################################################################### #
 
-# Find OpenCV
-if (UNIX AND NOT APPLE)
-    # OpenCV 2 (Ubuntu LTS)
-    find_package(OpenCV REQUIRED core imgproc highgui)
-else ()
-    # OpenCV 3
-    find_package(OpenCV REQUIRED core imgproc highgui imgcodecs)
-endif ()
+# Find OpenCV 2
+find_package(OpenCV 2.4 REQUIRED core imgproc highgui)
 
 # Include OpenCV
 include_directories(${OpenCV_INCLUDE_DIRS})
