@@ -66,6 +66,7 @@ before_script:
 
 script:
     - make VERBOSE=1
+    - ctest --verbose
 
 # Dependencies cache
 cache:
