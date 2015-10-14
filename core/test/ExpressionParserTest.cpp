@@ -90,7 +90,7 @@ TEST(ExpressionParser, inner)
 TEST(ExpressionParser, invalid)
 {
     EXPECT_THROW(parseExpression("45-    10 + lol"), UnknownConstantException);
-    EXPECT_THROW(parseExpression("sin()", {}), UnknownConstantException);
+    EXPECT_THROW(parseExpression("sin()"), UnknownConstantException);
     EXPECT_THROW(parseExpression(" 9 * cos ( 5"), MissingParenthesisException);
     EXPECT_THROW(parseExpression(" 9 * cos ( "), UnknownConstantException);
     EXPECT_THROW(parseExpression("5 + (10 * (6)"), MissingParenthesisException);
