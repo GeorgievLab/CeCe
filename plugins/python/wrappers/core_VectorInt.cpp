@@ -23,6 +23,9 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// Must be first
+#include "plugins/python/Python.hpp"
+
 // Simulator
 #include "core/Vector.hpp"
 

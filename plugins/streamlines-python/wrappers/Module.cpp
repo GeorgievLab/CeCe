@@ -23,6 +23,9 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// Must be first
+#include "plugins/python/Python.hpp"
+
 // Diffusion
 #include "plugins/streamlines/Module.hpp"
 
