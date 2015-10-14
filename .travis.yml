@@ -5,7 +5,7 @@ sudo: false
 # Operating systems
 os:
   - linux
-#  - osx
+  - osx
 
 # Environment variables
 env:
@@ -47,7 +47,7 @@ before_install:
     # Build Box2D
     - "if [ ! -d $VENDOR_DIR/box2d ]; then wget https://github.com/erincatto/Box2D/archive/v2.3.1.zip -O box2d.zip && unzip box2d.zip && cd Box2D-2.3.1/Box2D &&
       cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/box2d -DCMAKE_BUILD_TYPE=release -DBOX2D_BUILD_EXAMPLES=Off
-            -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off . &&
+            -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=On . &&
       cmake --build . && make install && cd -; fi"
 
     # Build OpenCV
