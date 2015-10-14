@@ -23,15 +23,8 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "wrapper.hpp"
-
-// C++
-#include <cassert>
-
-// Simulator
-#include "core/Map.hpp"
-#include "core/Log.hpp"
+// Must be first
+#include "plugins/python/Python.hpp"
 
 /* ************************************************************************ */
 
@@ -40,33 +33,19 @@ namespace python {
 
 /* ************************************************************************ */
 
-namespace {
+void init_core_VectorInt(PyObject* module);
+void init_core_VectorUint(PyObject* module);
+void init_core_VectorFloat(PyObject* module);
 
 /* ************************************************************************ */
 
-Map<std::type_index, PyTypeObject*> g_dynamicTypes;
-
-/* ************************************************************************ */
-
-}
-
-/* ************************************************************************ */
-
-void registerDynamic(const std::type_info& info, PyTypeObject* type)
+PyMODINIT_FUNC init_core(void)
 {
-    // Type is registered
-    if (g_dynamicTypes.find(std::type_index(info)) != g_dynamicTypes.end())
-        Log::warning("Replacing python type object: ", type->tp_name);
+    PyObject* module = Py_InitModule("core", nullptr);
 
-    g_dynamicTypes.emplace(info, type);
-}
-
-/* ************************************************************************ */
-
-PyTypeObject* findDynamic(const std::type_info& info)
-{
-    auto it = g_dynamicTypes.find(std::type_index(info));
-    return it != g_dynamicTypes.end() ? it->second : nullptr;
+    init_core_VectorInt(module);
+    init_core_VectorUint(module);
+    init_core_VectorFloat(module);
 }
 
 /* ************************************************************************ */

@@ -23,77 +23,84 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "Python.hpp"
+// Cell
+#include "plugins/cell/Yeast.hpp"
 
-// Declaration
-#include "Source.hpp"
-
-// Module
-#include "Exception.hpp"
+// Plugin
+#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Type.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace python {
+namespace cell_python {
 
 /* ************************************************************************ */
 
-Source::Source()
-    : m_dictionary(PyDict_New())
-{
-    auto main = makeView(PyImport_AddModule("__main__"));
-    assert(main);
+namespace {
 
-    auto main_dict = makeHandle(PyObject_GetAttrString(main, "__dict__"));
-    assert(main_dict);
+/* ************************************************************************ */
 
-    auto main_builtins = makeView(PyDict_GetItemString(main_dict, "__builtins__"));
-    assert(main_builtins);
+using namespace plugin::python;
 
-    // Set buildins
-    PyDict_SetItemString(m_dictionary, "__builtins__", main_builtins);
+/* ************************************************************************ */
+
+using SelfType = ObjectWrapper<plugin::cell::Yeast*>;
+
+/* ************************************************************************ */
+
+PyTypeObject g_type = {
+    PyObject_HEAD_INIT(NULL)
+    0,                              // ob_size
+    "cell.Yeast",                   // tp_name
+    sizeof(SelfType),               // tp_basicsize
+    0,                              // tp_itemsize
+    0,                              // tp_dealloc
+    0,                              // tp_print
+    0,                              // tp_getattr
+    0,                              // tp_setattr
+    0,                              // tp_compare
+    0,                              // tp_repr
+    0,                              // tp_as_number
+    0,                              // tp_as_sequence
+    0,                              // tp_as_mapping
+    0,                              // tp_hash
+    0,                              // tp_call
+    0,                              // tp_str
+    0,                              // tp_getattro
+    0,                              // tp_setattro
+    0,                              // tp_as_buffer
+    Py_TPFLAGS_DEFAULT,             // tp_flags
+    nullptr,                        // tp_doc
+};
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
 
-Handle<PyObject> Source::getFunction(const char* name) const noexcept
+void init_Yeast(PyObject* module)
 {
-    // Attribute not found
-    if (!PyMapping_HasKeyString(m_dictionary, const_cast<char*>(name)))
-        return nullptr;
+    auto dict = PyModule_GetDict(module);
+    auto baseClass = PyMapping_GetItemString(dict, const_cast<char*>("CellBase"));
+    assert(baseClass);
+    assert(PyType_Check(baseClass));
 
-    return PyMapping_GetItemString(m_dictionary, const_cast<char*>(name));
-}
+    // Base class
+    g_type.tp_base = (PyTypeObject*) baseClass;
 
-/* ************************************************************************ */
+    // Type is not ready
+    if (PyType_Ready(&g_type) < 0)
+        return;
 
-void Source::initSource(const String& source)
-{
-    makeHandle(PyImport_ImportModule("cppout"));
-    makeHandle(PyImport_ImportModule("core"));
-    makeHandle(PyImport_ImportModule("simulator"));
+    auto type = reinterpret_cast<PyObject*>(&g_type);
 
-    // Execute given module file
-    if (!makeHandle(PyRun_String(source.c_str(), Py_file_input, m_dictionary, nullptr)))
-        throw Exception();
+    Py_INCREF(type);
+    PyModule_AddObject(module, "Yeast", type);
 
-    m_initialized = true;
-}
-
-/* ************************************************************************ */
-
-void Source::initFile(const FilePath& filename)
-{
-    makeHandle(PyImport_ImportModule("cppout"));
-
-    const auto path = filename.string();
-
-    // Execute given module file
-    if (!makeHandle(PyRun_FileEx(fopen(path.c_str(), "r"), path.c_str(), Py_file_input, m_dictionary, nullptr, 1)))
-        throw Exception();
-
-    m_initialized = true;
+    // Register dynamic type
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 }
 
 /* ************************************************************************ */

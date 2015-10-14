@@ -29,14 +29,16 @@ find_package(PythonLibs REQUIRED)
 # Include directories
 include_directories(${PYTHON_INCLUDE_DIRS})
 
+# ######################################################################### #
+
 # Sources
 set(SRCS
-    Library.cpp
-    wrapper_CellBase.hpp
-    wrapper_CellBase.cpp
-    wrapper_Yeast.hpp
-    wrapper_Yeast.cpp
+    Plugin.cpp
+    wrappers/CellBase.cpp
+    wrappers/Yeast.cpp
 )
+
+# ######################################################################### #
 
 # Build plugin
 build_plugin(cell-python

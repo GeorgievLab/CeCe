@@ -23,13 +23,57 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Must be first
+#include "plugins/python/Python.hpp"
+
+// Simulator
+#include "simulator/Simulation.hpp"
+#include "simulator/Plugin.hpp"
+#include "simulator/PluginApi.hpp"
 
 /* ************************************************************************ */
 
-/**
- * @brief Create wrappers for parser library.
- */
-extern "C" void python_wrapper_parser();
+namespace plugin {
+namespace cell_python {
+
+/* ************************************************************************ */
+
+void init_CellBase(PyObject* module);
+void init_Yeast(PyObject* module);
+
+/* ************************************************************************ */
+
+PyMODINIT_FUNC init()
+{
+    PyObject* module = Py_InitModule("cell", nullptr);
+
+    init_CellBase(module);
+    init_Yeast(module);
+}
+
+/* ************************************************************************ */
+
+}
+}
+
+/* ************************************************************************ */
+
+using namespace simulator;
+
+/* ************************************************************************ */
+
+class CellPythonApi : public PluginApi
+{
+    void initSimulation(Simulation& simulation) override
+    {
+        // Require python plugin
+        simulation.requirePlugin("python");
+        plugin::cell_python::init();
+    }
+};
+
+/* ************************************************************************ */
+
+DEFINE_PLUGIN(cell_python, CellPythonApi)
 
 /* ************************************************************************ */

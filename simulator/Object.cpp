@@ -317,6 +317,13 @@ void Object::applyForce(const ForceVector& force, const PositionVector& offset) 
 
 /* ************************************************************************ */
 
+void Object::useProgram(const String& name) noexcept
+{
+    addProgram(getSimulation().getProgram(name));
+}
+
+/* ************************************************************************ */
+
 void Object::destroy()
 {
     m_simulation.deleteObject(this);

@@ -23,19 +23,17 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "View.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
-namespace streamlines {
+namespace python {
 
 /* ************************************************************************ */
 
-/**
- * @brief Create wrappers for Module.
- */
-void python_wrapper_module();
+template class View<PyObject>;
 
 /* ************************************************************************ */
 

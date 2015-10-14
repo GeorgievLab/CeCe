@@ -34,6 +34,9 @@
 
 /* ************************************************************************ */
 
+// This must be first
+#include "Python.hpp"
+
 // C++
 #include <utility>
 
@@ -158,6 +161,18 @@ private:
     T* m_ptr = nullptr;
 
 };
+
+/* ************************************************************************ */
+
+/// Implicit instantiation of this template (mostly used).
+extern template class View<PyObject>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type alias for handle to PyObject.
+ */
+using ObjectView = View<PyObject>;
 
 /* ************************************************************************ */
 

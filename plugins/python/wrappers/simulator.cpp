@@ -23,13 +23,36 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Must be first
+#include "plugins/python/Python.hpp"
 
 /* ************************************************************************ */
 
-/**
- * @brief Create wrappers for cell::CellBase.
- */
-extern "C" void python_wrapper_cell_CellBase();
+namespace plugin {
+namespace python {
+
+/* ************************************************************************ */
+
+void init_simulator_Configuration(PyObject* module);
+void init_simulator_Module(PyObject* module);
+void init_simulator_Simulation(PyObject* module);
+void init_simulator_Object(PyObject* module);
+
+/* ************************************************************************ */
+
+PyMODINIT_FUNC init_simulator(void)
+{
+    PyObject* module = Py_InitModule("simulator", nullptr);
+
+    init_simulator_Configuration(module);
+    init_simulator_Module(module);
+    init_simulator_Simulation(module);
+    init_simulator_Object(module);
+}
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */

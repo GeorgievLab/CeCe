@@ -23,19 +23,22 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Python requires to be included first because it sets some parameters to stdlib
-#include "../python/Python.hpp"
+// Diffusion
+#include "plugins/streamlines/Module.hpp"
+
+// Plugin
+#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Utils.hpp"
+#include "plugins/python/Type.hpp"
 
 /* ************************************************************************ */
 
-// Declaration
-#include "wrapper_module.hpp"
+namespace plugin {
+namespace streamlines_python {
 
-// Python
-#include "../python/wrapper.hpp"
+/* ************************************************************************ */
 
-// Streamlines
-#include "../streamlines/Module.hpp"
+namespace {
 
 /* ************************************************************************ */
 
@@ -43,7 +46,11 @@ using namespace plugin::python;
 
 /* ************************************************************************ */
 
-static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, PyObject* args, void*) noexcept
+using SelfType = ObjectWrapper<plugin::streamlines::Module*>;
+
+/* ************************************************************************ */
+
+PyObject* setLayout(SelfType* self, PyObject* args) noexcept
 {
     using namespace plugin::streamlines;
 
@@ -87,19 +94,22 @@ static PyObject* setLayout(ObjectWrapper<plugin::streamlines::Module*>* self, Py
     self->value->setLayout(layout);
 
     // Return None
-    Py_RETURN_NONE;
+    return none();
 }
 
 /* ************************************************************************ */
 
-static PyObject* initBarriers(ObjectWrapper<plugin::streamlines::Module*>* self, PyObject* args, void*) noexcept
+PyObject* initBarriers(SelfType* self, PyObject* args) noexcept
 {
     PyObject* simulation;
 
     if (!PyArg_ParseTuple(args, "O", &simulation))
         return nullptr;
 
-    if (PyObject_TypeCheck(simulation, &TypeDefinition<simulator::Simulation*>::definition) <= 0)
+    // Find simulation type.
+    auto type = findType(typeid(simulator::Simulation));
+
+    if (PyObject_TypeCheck(simulation, type) <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "Argument is not simulator.Simulation");
         return nullptr;
@@ -111,50 +121,101 @@ static PyObject* initBarriers(ObjectWrapper<plugin::streamlines::Module*>* self,
     self->value->initBarriers(*sim->value);
 
     // Return None
-    Py_RETURN_NONE;
+    return none();
 }
 
 /* ************************************************************************ */
 
-namespace plugin {
-namespace streamlines {
+PyObject* setInletVelocity(SelfType* self, PyObject* args) noexcept
+{
+    int position;
+    float velocity;
+
+    if(!PyArg_ParseTuple(args, "if", &position, &velocity))
+        return NULL;
+
+    self->value->setInletVelocity(
+        static_cast<plugin::streamlines::Module::LayoutPosition>(position),
+        units::Velocity(velocity)
+    );
+
+    return none();
+}
 
 /* ************************************************************************ */
 
-void python_wrapper_module()
+PyMethodDef g_methods[] = {
+    {"setLayout",        (PyCFunction) setLayout,        METH_VARARGS, NULL},
+    {"initBarriers",     (PyCFunction) initBarriers,     METH_VARARGS, NULL},
+    {"setInletVelocity", (PyCFunction) setInletVelocity, METH_VARARGS, NULL},
+    {NULL}  /* Sentinel */
+};
+
+/* ************************************************************************ */
+
+PyTypeObject g_type = {
+    PyObject_HEAD_INIT(NULL)
+    0,                              // ob_size
+    "streamlines.Module",           // tp_name
+    sizeof(SelfType),               // tp_basicsize
+    0,                              // tp_itemsize
+    0,                              // tp_dealloc
+    0,                              // tp_print
+    0,                              // tp_getattr
+    0,                              // tp_setattr
+    0,                              // tp_compare
+    0,                              // tp_repr
+    0,                              // tp_as_number
+    0,                              // tp_as_sequence
+    0,                              // tp_as_mapping
+    0,                              // tp_hash
+    0,                              // tp_call
+    0,                              // tp_str
+    0,                              // tp_getattro
+    0,                              // tp_setattro
+    0,                              // tp_as_buffer
+    Py_TPFLAGS_DEFAULT,             // tp_flags
+    nullptr,                        // tp_doc
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+void init_Module(PyObject* module)
 {
-    PyObject* module = Py_InitModule3("streamlines", nullptr, nullptr);
+    g_type.tp_methods = g_methods;
 
-    using type = plugin::streamlines::Module;
-    using type_ptr = type*;
-    using type_def = TypeDefinition<type_ptr>;
-/*
-    static PyGetSetDef properties[] = {
-        defineProperty<1, type_ptr>("inletVelocity", &type::getInletVelocity, &type::setInletVelocity),
-        {NULL}
-    };
-*/
-    static PyMethodDef fns[] = {
-        {"setLayout", (PyCFunction) setLayout, METH_VARARGS, "Set streamlines module layout."},
-        {"initBarriers", (PyCFunction) initBarriers, METH_VARARGS, "Reinit barriers."},
-        defineMemberFunction<1, type_ptr>("setInletVelocity", &type::setInletVelocity),
-        {NULL}  /* Sentinel */
-    };
+    auto baseModule = makeHandle(PyImport_ImportModule("simulator"));
+    auto baseDict = PyModule_GetDict(baseModule);
+    auto baseClass = PyMapping_GetItemString(baseDict, const_cast<char*>("Module"));
+    if (!baseClass)
+        throw RuntimeException("Unable to find 'simulator.Module' class");
 
-    type_def::init("streamlines.Module", "simulator.Module");
-    //type_def::definition.tp_getset = properties;
-    type_def::definition.tp_methods = fns;
-    type_def::ready();
-    type_def::finish(module, "Module");
+    assert(PyType_Check(baseClass));
+
+    // Base class
+    g_type.tp_base = (PyTypeObject*) baseClass;
+
+    // Type is not ready
+    if (PyType_Ready(&g_type) < 0)
+        return;
+
+    auto type = reinterpret_cast<PyObject*>(&g_type);
+
+    Py_INCREF(type);
+    PyModule_AddObject(module, "Module", type);
 
     // Register dynamic type
-    registerDynamic(typeid(plugin::streamlines::Module), &type_def::definition);
+    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
 
     // Define constants
-    PyModule_AddIntConstant(module, "LEFT", static_cast<int>(type::LayoutPosLeft));
-    PyModule_AddIntConstant(module, "RIGHT", static_cast<int>(type::LayoutPosRight));
-    PyModule_AddIntConstant(module, "TOP", static_cast<int>(type::LayoutPosTop));
-    PyModule_AddIntConstant(module, "BOTTOM", static_cast<int>(type::LayoutPosBottom));
+    PyModule_AddIntConstant(module, "LEFT", static_cast<int>(plugin::streamlines::Module::LayoutPosLeft));
+    PyModule_AddIntConstant(module, "RIGHT", static_cast<int>(plugin::streamlines::Module::LayoutPosRight));
+    PyModule_AddIntConstant(module, "TOP", static_cast<int>(plugin::streamlines::Module::LayoutPosTop));
+    PyModule_AddIntConstant(module, "BOTTOM", static_cast<int>(plugin::streamlines::Module::LayoutPosBottom));
 }
 
 /* ************************************************************************ */

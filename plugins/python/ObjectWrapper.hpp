@@ -23,40 +23,39 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Python requires to be included first because it sets some parameters to stdlib
-#include "plugins/python/Python.hpp"
+#pragma once
 
 /* ************************************************************************ */
 
-// Declaration
-#include "wrapper_Yeast.hpp"
-
-// Python
-#include "plugins/python/wrapper.hpp"
-
-// Cell plugin
-#include "plugins/cell/Yeast.hpp"
+// This must be first
+#include "Python.hpp"
 
 /* ************************************************************************ */
 
-using namespace plugin::python;
-using namespace plugin::cell;
+namespace plugin {
+namespace python {
 
 /* ************************************************************************ */
 
-void python_wrapper_cell_Yeast()
+/**
+ * @brief C++ type wrapper object.
+ */
+template<typename T>
+struct ObjectWrapper
 {
-    PyObject* module = Py_InitModule3("cell", nullptr, nullptr);
+    /// Type of stored value.
+    using ValueType = T;
 
-    using type = Yeast*;
-    using type_def = TypeDefinition<type>;
+    // Python object head.
+    PyObject_HEAD
 
-    type_def::init("cell.Yeast", "cell.CellBase");
-    type_def::ready();
-    type_def::finish(module, "Yeast");
+    // Stored value.
+    T value;
+};
 
-    // Register dynamic type
-    registerDynamic(typeid(Yeast), &type_def::definition);
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */

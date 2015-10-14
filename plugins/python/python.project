@@ -18,38 +18,42 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
-    <File Name="Library.cpp"/>
-    <File Name="wrapper_core.cpp"/>
-    <File Name="wrapper_simulator.cpp"/>
-    <File Name="wrapper_render.cpp"/>
-    <File Name="wrapper_parser.cpp"/>
     <File Name="Program.cpp"/>
     <File Name="Source.cpp"/>
     <File Name="Exception.cpp"/>
     <File Name="Object.cpp"/>
-    <File Name="wrapper_stdout.cpp"/>
-    <File Name="wrapper.cpp"/>
     <File Name="Initializer.cpp"/>
     <File Name="Handle.cpp"/>
+    <VirtualDirectory Name="wrappers">
+      <File Name="wrappers/core.cpp"/>
+      <File Name="wrappers/core_VectorFloat.cpp"/>
+      <File Name="wrappers/core_VectorInt.cpp"/>
+      <File Name="wrappers/core_VectorUint.cpp"/>
+      <File Name="wrappers/simulator.cpp"/>
+      <File Name="wrappers/simulator_Configuration.cpp"/>
+      <File Name="wrappers/simulator_Module.cpp"/>
+      <File Name="wrappers/simulator_Object.cpp"/>
+      <File Name="wrappers/simulator_Simulation.cpp"/>
+      <File Name="wrappers/stdout.cpp"/>
+    </VirtualDirectory>
+    <File Name="View.cpp"/>
+    <File Name="Type.cpp"/>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
-    <File Name="wrapper_core.hpp"/>
-    <File Name="wrapper_simulator.hpp"/>
-    <File Name="wrapper_render.hpp"/>
-    <File Name="wrapper_parser.hpp"/>
     <File Name="Program.hpp"/>
     <File Name="Source.hpp"/>
     <File Name="Handle.hpp"/>
     <File Name="Exception.hpp"/>
     <File Name="Object.hpp"/>
     <File Name="Utils.hpp"/>
-    <File Name="wrapper_stdout.hpp"/>
-    <File Name="wrapper.hpp"/>
     <File Name="Python.hpp"/>
     <File Name="View.hpp"/>
     <File Name="ValueCast.hpp"/>
     <File Name="Initializer.hpp"/>
+    <File Name="ObjectWrapper.hpp"/>
+    <File Name="Type.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

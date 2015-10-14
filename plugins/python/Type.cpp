@@ -23,17 +23,63 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "Python.hpp"
-
 // Declaration
-#include "wrapper_parser.hpp"
+#include "Type.hpp"
+
+// C++
+#include <cassert>
+
+// Simulator
+#include "core/Map.hpp"
+#include "core/Log.hpp"
 
 /* ************************************************************************ */
 
-void python_wrapper_parser()
-{
+namespace plugin {
+namespace python {
 
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
+Map<std::type_index, PyTypeObject*> g_dynamicTypes;
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+void registerType(const std::type_info& info, PyTypeObject* type)
+{
+    // Type is registered
+    if (g_dynamicTypes.find(std::type_index(info)) != g_dynamicTypes.end())
+        Log::warning("Replacing python type object: ", type->tp_name);
+
+    g_dynamicTypes.emplace(info, type);
+    Log::debug("Register type: ", info.name());
+}
+
+/* ************************************************************************ */
+
+PyTypeObject* findType(const std::type_info& info)
+{
+    Log::debug("Searching for type: ", info.name());
+
+    auto it = g_dynamicTypes.find(std::type_index(info));
+
+    if (it != g_dynamicTypes.end())
+        return it->second;
+
+    Log::debug("Type not found");
+    return nullptr;
+}
+
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */

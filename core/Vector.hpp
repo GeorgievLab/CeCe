@@ -1497,6 +1497,27 @@ using Coordinate = Vector<unsigned int>;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Vector of int.
+ */
+using VectorInt = Vector<int>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Vector of unsigned int.
+ */
+using VectorUint = Vector<unsigned int>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Vector of float.
+ */
+using VectorFloat = Vector<float>;
+
+/* ************************************************************************ */
+
 // NOTE: GCC have problem with =default constructor in linking stage.
 #if !defined(__GNUC__)
 extern template class BasicVector<float>;

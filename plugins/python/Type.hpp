@@ -27,9 +27,41 @@
 
 /* ************************************************************************ */
 
+// This must be first
+#include "Python.hpp"
+
+// C++
+#include <typeindex>
+
+/* ************************************************************************ */
+
+namespace plugin {
+namespace python {
+
+/* ************************************************************************ */
+
 /**
- * @brief Create wrappers for cell::Yeast.
+ * @brief Register dynamic type.
+ *
+ * @param info Type info.
+ * @param type Python type.
  */
-extern "C" void python_wrapper_cell_Yeast();
+void registerType(const std::type_info& info, PyTypeObject* type);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Find dynamic type.
+ *
+ * @param info Type info.
+ *
+ * @return Dynamic type or nullptr.
+ */
+PyTypeObject* findType(const std::type_info& info);
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */
