@@ -31,6 +31,15 @@
 
 /* ************************************************************************ */
 
+namespace plugin {
+namespace python {
+
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
 /**
  * @brief Write Python string object to std::cout.
  *
@@ -39,7 +48,7 @@
  *
  * @return
  */
-static PyObject* log_write(PyObject* self, PyObject* args)
+PyObject* log_write(PyObject* self, PyObject* args)
 {
     const char* what;
 
@@ -64,6 +73,10 @@ static const PyMethodDef log_methods[] = {
 
 /* ************************************************************************ */
 
+}
+
+/* ************************************************************************ */
+
 void init_stdout(void)
 {
     PyObject* module = Py_InitModule("cppout", const_cast<PyMethodDef*>(log_methods));
@@ -72,6 +85,11 @@ void init_stdout(void)
         return;
 
     PySys_SetObject(const_cast<char*>("stdout"), module);
+}
+
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */
