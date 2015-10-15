@@ -54,11 +54,6 @@ function(build_plugin NAME)
 
     # If plugin will be build-in
     if (PLUGINS_BUILTIN_${NAME})
-        # Required for Linux
-        if (UNIX AND NOT APPLE)
-            set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-        endif ()
-
         # Pass macro to inform about build-in version
         # TODO: change to plugin
         add_definitions(-DPLUGIN_BUILTIN=1)
@@ -77,6 +72,11 @@ function(build_plugin NAME)
         target_link_libraries(${PROJECT_NAME}
             ${ARG_LIBRARIES}
         )
+
+        # Required for Linux
+        if (UNIX AND NOT APPLE)
+            set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+        endif ()
     else ()
         # Shared module
         add_library(${PROJECT_NAME} SHARED ${ARG_SOURCES})
