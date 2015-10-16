@@ -55,52 +55,55 @@ namespace stochastic_reactions {
  *
  * @tparam T Inner data structure type.
  */
-template<typename T>
 class Reactions
 {
 
 // Public Types
 public:
 
-
     /// Type used for reaction rates.
     using RateType = RealType;
-
-    /// Type for store reaction.
-    using ReactionType = DynamicArray<T>;
-
-    /// Reaction identifier type.
-    using ReactionId = unsigned int;
-
-    /// Molecule identifier type.
-    using MoleculeId = unsigned int;
-
 
 // Public Structures
 public:
 
-
     /**
      * @brief Reaction condition description structure.
      */
-    struct Condition
+    struct Conditions
     {
-        /// Molecule name.
-        String name;
 
-        /// If less operator is used.
-        bool less;
+    };
 
-        bool evaulateCondition()
+    /**
+     * @brief Member of reactions stochiometric matrix.
+     */
+    struct ReqProd
+    {
+        unsigned int requirement;
+        unsigned int product;
+        unsigned int env_requirement;
+        unsigned int env_product;
+
+        ReqProd(unsigned int req = 0, unsigned int prod = 0, unsigned int ereq = 0, unsigned int eprod = 0) noexcept
+        : requirement(req), product(prod), env_requirement(ereq), env_product(eprod)
         {
-
+            // Nothing to do
         }
     };
 
+    /**
+     * @brief Reaction data, rules and condition.
+     */
+    struct Reaction
+    {
+        RateType rate;
+        DynamicArray<ReqProd> rules;
+        Conditions conditions;
+    };
 
 // Public Accessors:
 public:
-
 
     /**
      * @brief Returns number of different molecules in reactions.
@@ -111,7 +114,6 @@ public:
     {
         return m_moleculeNames.size();
     }
-
 
     /**
      * @brief Check if given molecule is used in reactions.
@@ -125,7 +127,6 @@ public:
         return std::find(m_moleculeNames.begin(), m_moleculeNames.end(), name) != m_moleculeNames.end();
     }
 
-
     /**
      * @brief Returns molecule name.
      *
@@ -133,9 +134,9 @@ public:
      *
      * @return
      */
-    const String& getMoleculeName(MoleculeId id) const noexcept
+    const String& getMoleculeName(unsigned int index) const noexcept
     {
-        return m_moleculeNames[id];
+        return m_moleculeNames[index];
     }
 
 
@@ -146,7 +147,7 @@ public:
      */
     unsigned int getReactionCount() const noexcept
     {
-        return m_rules.size();
+        return m_reactions.size();
     }
 
 
@@ -157,9 +158,9 @@ public:
      *
      * @return
      */
-    RateType getRate(ReactionId reaction) const noexcept
+    RateType getRate(unsigned int index) const noexcept
     {
-        return m_rates[reaction];
+        return m_reactions[index].rate;
     }
 
 
@@ -170,9 +171,9 @@ public:
      *
      * @return
      */
-    ReactionType& getReaction(ReactionId reaction) noexcept
+    Reaction& getReaction(unsigned int index) noexcept
     {
-        return m_rules[reaction];
+        return m_reactions[index];
     }
 
 
@@ -183,9 +184,9 @@ public:
      *
      * @return
      */
-    const ReactionType& getReaction(ReactionId reaction) const noexcept
+    const Reaction& getReaction(unsigned int index) const noexcept
     {
-        return m_rules[reaction];
+        return m_reactions[index];
     }
 
 
@@ -194,10 +195,10 @@ public:
      *
      * @return
      */
-    ReactionType& getLastReaction() noexcept
+    Reaction& getLastReaction() noexcept
     {
-        assert(!m_rules.empty());
-        return m_rules.back();
+        assert(!m_reactions.empty());
+        return m_reactions.back();
     }
 
 
@@ -206,16 +207,15 @@ public:
      *
      * @return
      */
-    const ReactionType& getLastReaction() const noexcept
+    const Reaction& getLastReaction() const noexcept
     {
-        assert(!m_rules.empty());
-        return m_rules.back();
+        assert(!m_reactions.empty());
+        return m_reactions.back();
     }
 
 
 // Public Mutators
 public:
-
 
     /**
      * @brief Add execute condition to last reaction.
@@ -223,36 +223,14 @@ public:
      * @param condition Reaction condition.
      * @param noCond    Reaction without condition modifications.
      */
-    void addCondition(const Condition& condition, ReactionType& noCond)
+    void addCondition()
     {
-        // add unmodified reaction rule after OR is reached
-        if (condition.clone)
-        {
-            // backup of unmodified reaction can be outdated (shorter)
-            noCond.resize(m_moleculeNames.size());
 
-            m_rules.push_back(noCond);
-            m_rates.push_back(m_rates[m_rates.size() - 1]);
-        }
-
-        // get index of required molecule
-        const auto moleculeId = getMoleculeId(condition.name);
-
-        // Alias to last reaction
-        auto& reaction = m_rules[m_rules.size() - 1];
-
-        const auto diff = std::max<RealType>(condition.requirement - reaction[moleculeId].requirement, 0);
-
-        // add requirement
-        reaction[moleculeId].less = condition.less;
-        reaction[moleculeId].requirement += diff;
-        reaction[moleculeId].product += diff;
     }
 
 
 // Protected Types
 protected:
-
 
     /// Propensity type.
     using PropensityType = RateType;
@@ -269,14 +247,12 @@ protected:
      * @tparam Refresher Function called when reaction propensities are recomputed.
      *
      * @param step
-     * @param execute
-     * @param refresh
      */
-    template<typename Executor, typename Refresher>
-    void executeReactions(units::Time step, Executor execute, Refresher refresh)
+    void executeReactions(units::Time step)
     {
         if (m_propensities.empty())
-            refresh();
+            // refresh
+            ;
 
         // initialize time
         units::Time time = Zero;
@@ -293,7 +269,7 @@ protected:
 
             if (sum == 0)
             {
-                refresh();
+                //refresh
                 return;
             }
 
@@ -304,7 +280,6 @@ protected:
             time -= delta_time;
 
             // execute reaction
-            execute(distr(gen));
         }
     }
 
@@ -317,7 +292,7 @@ protected:
      *
      * @return Molecule identifier.
      */
-    MoleculeId getMoleculeId(const String& name)
+    unsigned int getMoleculeIndex(const String& name)
     {
         auto pointer = std::find(m_moleculeNames.begin(), m_moleculeNames.end(), name);
 
@@ -329,8 +304,8 @@ protected:
         m_moleculeNames.push_back(name);
 
         // Resize all reactions
-        for (auto& reaction : m_rules)
-            reaction.resize(m_moleculeNames.size());
+        for (auto& reaction : m_reactions)
+            reaction.rules.resize(m_moleculeNames.size());
 
         return m_moleculeNames.size() - 1;
     }
@@ -342,12 +317,12 @@ protected:
      * @param ids_plus
      * @param ids_minus
      * @param rate
-     */
-    void extendIntracellular(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
+     *
+    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
     {
         // initialize array
-        DynamicArray<T> array;
-        if (m_rules.size() > 0)
+        DynamicArray<Reaction> array;
+        if (m_reactions.size() > 0)
             array.resize(m_rules[0].size());
 
         // extend with requirements
@@ -355,10 +330,10 @@ protected:
         {
             if (ids_minus[i] == "null")
                 continue;
-            unsigned int index = getMoleculeId(ids_minus[i]);
+            unsigned int index = getMoleculeIndex(ids_minus[i]);
             if (index == array.size())
             {
-                array.push_back(T{1,0});
+                array.push_back(ReqProd(1,0));
                 continue;
             }
             array[index].requirement += 1;
@@ -380,20 +355,16 @@ protected:
         m_rates.push_back(rate);
         m_rules.push_back(array);
     }
-
+*/
 
 // Protected Data Members
 protected:
 
-
     /// List of molecule names.
     DynamicArray<String> m_moleculeNames;
 
-    /// List of reactions rates.
-    DynamicArray<RateType> m_rates;
-
     /// List of reactions.
-    DynamicArray<ReactionType> m_rules;
+    DynamicArray<Reaction> m_reactions;
 
     /// Computed reactions propensities.
     DynamicArray<PropensityType> m_propensities;
