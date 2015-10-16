@@ -27,7 +27,7 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
-#include "core/Vector.hpp"
+#include "core/VectorUnits.hpp"
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
@@ -54,14 +54,8 @@ class Type : public PyTypeObject
 public:
 
 
-    /// Vector type.
-    using VectorType = VectorFloat;
-
-    /// Vector element type.
-    using ValueType = typename VectorType::ValueType;
-
     /// Wrapper type.
-    using SelfType = ObjectWrapper<VectorType>;
+    using SelfType = ObjectWrapper<VelocityVector>;
 
 
 // Ctors & Dtors
@@ -70,20 +64,14 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param name Type name.
      */
-    Type(String name)
+    Type()
         : PyTypeObject {PyObject_HEAD_INIT(NULL)}
-        , m_name(std::move(name))
     {
-        tp_name = m_name.c_str();
+        tp_name = "core.VectorVelocity";
         tp_basicsize = sizeof(SelfType);
-        tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
+        tp_flags = Py_TPFLAGS_DEFAULT;
         tp_getset = m_properties;
-        tp_new = (newfunc) &allocate;
-        tp_dealloc = (destructor) &deallocate;
-        tp_init = (initproc) &constructor;
 
         // Type is not ready
         if (PyType_Ready(this) < 0)
@@ -104,86 +92,13 @@ public:
     {
         auto type = reinterpret_cast<PyObject*>(this);
 
-        // Find dot
-        auto dot = m_name.find('.');
-        Assert(dot != String::npos);
-
         Py_INCREF(type);
-        PyModule_AddObject(module, &m_name[dot + 1], type);
+        PyModule_AddObject(module, "VectorVelocity", type);
 
         // Register dynamic type
-        registerType(typeid(VectorType), this);
+        registerType(typeid(SelfType::ValueType), this);
     }
 
-
-    /**
-     * @brief Allocate object.
-     *
-     * @param type
-     * @param args
-     * @param kwds
-     *
-     * @return
-     */
-    static PyObject* allocate(PyTypeObject* type, PyObject* args, PyObject* kwds)
-    {
-        SelfType* self = reinterpret_cast<SelfType*>(type->tp_alloc(type, 0));
-
-        if (self != nullptr) {
-            // Inplace allocation
-            new (&self->value) VectorType{};
-        }
-
-        return reinterpret_cast<PyObject*>(self);
-    }
-
-
-    /**
-     * @brief Deallocate object.
-     *
-     * @param self
-     */
-    static void deallocate(SelfType* self) noexcept
-    {
-        // Call destructor
-        self->value.~VectorType();
-
-        self->ob_type->tp_free(reinterpret_cast<PyObject*>(self));
-    }
-
-
-    /**
-     * @brief Construct object.
-     *
-     * @param self
-     * @param args
-     * @param kwds
-     *
-     * @return
-     */
-    static int constructor(SelfType* self, PyObject* args, PyObject* kwds)
-    {
-        PyObject* x;
-        PyObject* y;
-
-        const char* kwlist[] = {"x", "y", nullptr};
-
-        if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OO", const_cast<char**>(kwlist), &x, &y))
-            return -1;
-
-        if (x && y)
-        {
-            // Construct value
-            self->value = VectorType(cast<ValueType>(x), cast<ValueType>(y));
-        }
-        else if (x || y)
-        {
-            PyErr_SetString(PyExc_ValueError, "Both 'x' and 'y' must be set");
-            return -1;
-        }
-
-        return 0;
-    }
 
 
     /**
@@ -209,7 +124,7 @@ public:
      */
     static int setX(SelfType* self, PyObject* value) noexcept
     {
-        self->value.setX(cast<ValueType>(value));
+        self->value.setX(cast<units::Velocity>(value));
 
         return 0;
     }
@@ -238,7 +153,7 @@ public:
      */
     static int setY(SelfType* self, PyObject* value) noexcept
     {
-        self->value.setY(cast<ValueType>(value));
+        self->value.setY(cast<units::Velocity>(value));
 
         return 0;
     }
@@ -246,9 +161,6 @@ public:
 
 // Private Data Members
 private:
-
-    /// Type name.
-    String m_name;
 
     /// Type properties.
     PyGetSetDef m_properties[5] = {
@@ -263,7 +175,7 @@ private:
 
 /* ************************************************************************ */
 
-static Type g_type("core.VectorFloat");
+static Type g_type;
 
 /* ************************************************************************ */
 
@@ -271,7 +183,7 @@ static Type g_type("core.VectorFloat");
 
 /* ************************************************************************ */
 
-void init_core_VectorFloat(PyObject* module)
+void init_core_VectorVelocity(PyObject* module)
 {
     g_type.define(module);
 }

@@ -36,6 +36,9 @@ namespace python {
 void init_core_VectorInt(PyObject* module);
 void init_core_VectorUint(PyObject* module);
 void init_core_VectorFloat(PyObject* module);
+void init_core_VectorPosition(PyObject* module);
+void init_core_VectorVelocity(PyObject* module);
+void init_core_VectorForce(PyObject* module);
 
 /* ************************************************************************ */
 
@@ -46,6 +49,9 @@ void init_core(void)
     init_core_VectorInt(module);
     init_core_VectorUint(module);
     init_core_VectorFloat(module);
+    init_core_VectorPosition(module);
+    init_core_VectorVelocity(module);
+    init_core_VectorForce(module);
 }
 
 /* ************************************************************************ */

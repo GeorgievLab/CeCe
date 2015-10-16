@@ -253,15 +253,17 @@ struct ValueCast
      *
      * @return New python object.
      */
-    static ObjectHandle convert(T value) noexcept
+    static ObjectHandle convert(T value)
     {
+        using BaseType = typename std::remove_pointer<T>::type;
+
         auto type = findType(typeid(ref(value)));
 
-        if (!type || !type->tp_name)
-        {
-            PyErr_SetString(PyExc_RuntimeError, "Trying to convert object to undefined type");
-            return nullptr;
-        }
+        if (!std::is_same<BaseType, T>::value && !type)
+            type = findType(typeid(BaseType));
+
+        if (!type)
+            throw RuntimeException("Trying to convert object to undefined type");
 
         // Create new object
         ObjectWrapper<T>* obj = PyObject_New(ObjectWrapper<T>, type);
@@ -280,7 +282,7 @@ struct ValueCast
      *
      * @return Value.
      */
-    static T convert(ObjectView value) noexcept
+    static T convert(ObjectView value)
     {
         if (!value)
             throw InvalidArgumentException("NULL PyObject");
@@ -553,7 +555,7 @@ struct ValueCast<units::Unit<Nom, Denom>> : public ValueCast<units::Value>
  * @return Result value.
  */
 template<typename T>
-inline bool check(View<PyObject> object) noexcept
+inline bool check(View<PyObject> object)
 {
     return ValueCast<T>::check(object);
 }
@@ -568,7 +570,7 @@ inline bool check(View<PyObject> object) noexcept
  * @return Result value.
  */
 template<typename T>
-inline auto cast(PyObject* object) noexcept -> decltype(ValueCast<T>::convert(View<PyObject>(object)))
+inline auto cast(PyObject* object) -> decltype(ValueCast<T>::convert(View<PyObject>(object)))
 {
     return ValueCast<T>::convert(View<PyObject>(object));
 }
@@ -583,7 +585,7 @@ inline auto cast(PyObject* object) noexcept -> decltype(ValueCast<T>::convert(Vi
  * @return Result value.
  */
 template<typename T>
-inline auto cast(View<PyObject> object) noexcept -> decltype(ValueCast<T>::convert(object))
+inline auto cast(View<PyObject> object) -> decltype(ValueCast<T>::convert(object))
 {
     return ValueCast<T>::convert(object);
 }
@@ -598,7 +600,7 @@ inline auto cast(View<PyObject> object) noexcept -> decltype(ValueCast<T>::conve
  * @return New python object.
  */
 template<typename T>
-inline Handle<PyObject> cast(T value) noexcept
+inline Handle<PyObject> cast(T value)
 {
     return ValueCast<T>::convert(value);
 }

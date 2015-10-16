@@ -27,7 +27,7 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
-#include "core/Vector.hpp"
+#include "core/VectorUnits.hpp"
 
 // Plugin
 #include "plugins/python/ObjectWrapper.hpp"
@@ -55,7 +55,7 @@ public:
 
 
     /// Vector type.
-    using VectorType = VectorFloat;
+    using VectorType = ForceVector;
 
     /// Vector element type.
     using ValueType = typename VectorType::ValueType;
@@ -263,7 +263,7 @@ private:
 
 /* ************************************************************************ */
 
-static Type g_type("core.VectorFloat");
+static Type g_type("core.VectorForce");
 
 /* ************************************************************************ */
 
@@ -271,7 +271,7 @@ static Type g_type("core.VectorFloat");
 
 /* ************************************************************************ */
 
-void init_core_VectorFloat(PyObject* module)
+void init_core_VectorForce(PyObject* module)
 {
     g_type.define(module);
 }

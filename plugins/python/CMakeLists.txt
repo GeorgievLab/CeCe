@@ -66,6 +66,9 @@ set(SRCS
     wrappers/core_VectorInt.cpp
     wrappers/core_VectorUint.cpp
     wrappers/core_VectorFloat.cpp
+    wrappers/core_VectorPosition.cpp
+    wrappers/core_VectorVelocity.cpp
+    wrappers/core_VectorForce.cpp
 
     wrappers/simulator.cpp
     wrappers/simulator_Object.cpp

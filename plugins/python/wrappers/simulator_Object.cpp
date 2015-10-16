@@ -75,7 +75,6 @@ public:
         tp_getset = m_properties;
         tp_methods = m_methods;
 
-
         // Type is not ready
         if (PyType_Ready(this) < 0)
             throw RuntimeException("Cannot finalize type object");
@@ -116,20 +115,15 @@ public:
      * @brief Sets object position.
      *
      * @param self
-     * @param args
+     * @param value
      *
      * @return
      */
-    static PyObject* setPosition(SelfType* self, PyObject* args) noexcept
+    static int setPosition(SelfType* self, PyObject* value) noexcept
     {
-        PyObject* position;
+        self->value->setPosition(cast<PositionVector>(value));
 
-        if(!PyArg_ParseTuple(args, "o", &position))
-            return NULL;
-
-        self->value->setPosition(cast<PositionVector>(position));
-
-        return none();
+        return 0;
     }
 
 
@@ -150,20 +144,15 @@ public:
      * @brief Change object rotation.
      *
      * @param self
-     * @param args
+     * @param value
      *
      * @return
      */
-    static PyObject* setRotation(SelfType* self, PyObject* args) noexcept
+    static int setRotation(SelfType* self, PyObject* value) noexcept
     {
-        float rotation;
+        self->value->setRotation(cast<units::Angle>(value));
 
-        if(!PyArg_ParseTuple(args, "f", &rotation))
-            return NULL;
-
-        self->value->setRotation(units::Angle(rotation));
-
-        return none();
+        return 0;
     }
 
 
@@ -184,20 +173,15 @@ public:
      * @brief Change object velocity.
      *
      * @param self
-     * @param args
+     * @param value
      *
      * @return
      */
-    static PyObject* setVelocity(SelfType* self, PyObject* args) noexcept
+    static int setVelocity(SelfType* self, PyObject* value) noexcept
     {
-        PyObject* velocity;
+        self->value->setVelocity(cast<VelocityVector>(value));
 
-        if(!PyArg_ParseTuple(args, "o", &velocity))
-            return NULL;
-
-        self->value->setVelocity(cast<VelocityVector>(velocity));
-
-        return none();
+        return 0;
     }
 
 
@@ -215,6 +199,27 @@ public:
 
 
     /**
+     * @brief Apply force to object.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* applyForce(SelfType* self, PyObject* args) noexcept
+    {
+        PyObject* force;
+
+        if(!PyArg_ParseTuple(args, "O", &force))
+            return NULL;
+
+        self->value->applyForce(cast<ForceVector>(force));
+
+        Py_RETURN_NONE;
+    }
+
+
+    /**
      * @brief Use program.
      *
      * @param self
@@ -222,7 +227,7 @@ public:
      *
      * @return
      */
-    static PyObject* useProgram(SelfType* self, PyObject* args, void*) noexcept
+    static PyObject* useProgram(SelfType* self, PyObject* args) noexcept
     {
         char* name;
 
@@ -232,7 +237,7 @@ public:
         // Add program
         self->value->useProgram(name);
 
-        return none();
+        Py_RETURN_NONE;
     }
 
 
@@ -247,7 +252,7 @@ public:
     {
         self->value->destroy();
 
-        return none();
+        Py_RETURN_NONE;
     }
 
 
@@ -266,7 +271,8 @@ private:
     };
 
     /// Type methods.
-    PyMethodDef m_methods[3] = {
+    PyMethodDef m_methods[4] = {
+        {"applyForce", (PyCFunction) applyForce, METH_VARARGS, NULL},
         {"useProgram", (PyCFunction) useProgram, METH_VARARGS, NULL},
         {"destroy",    (PyCFunction) destroy, METH_NOARGS, NULL},
         {NULL}  /* Sentinel */
