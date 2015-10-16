@@ -59,8 +59,13 @@ enum class TokenCode
     Or,
     If,
     Not,
+    Equal,
     Less,
+    LessEqual,
     Greater
+    GreaterEqual,
+    Null,
+    Env
 };
 
 /* ************************************************************************ */
@@ -130,6 +135,10 @@ public:
             token.code = TokenCode::If;
         else if (token.value == "not")
             token.code = TokenCode::Not;
+        else if (token.value == "null")
+            token.code = TokenCode::Null;
+        else if (token.value == "env")
+            token.code = TokenCode::Env;
 
         return token;
     }
@@ -257,10 +266,9 @@ DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException
 
 /* ************************************************************************ */
 
-template<typename T>
 class ReactionsParser
     : public BasicParser<
-        ReactionsParser<T>,
+        ReactionsParser,
         Tokenizer
     >
 {
@@ -270,13 +278,13 @@ public:
 
     // Parent type.
     using ParentType = BasicParser<
-        ReactionsParser<T>,
+        ReactionsParser,
         Tokenizer
     >;
 
 
     /// Rate type.
-    using RateType = typename T::RateType;
+    using RateType = typename Reactions::RateType;
 
 
 // Public Ctors & Dtors
@@ -302,18 +310,18 @@ public:
      *
      * @return
      */
-    T parse()
+    Reactions parse()
     {
-        T reactions;
+        Reactions reactions;
         while (!is(TokenCode::Invalid))
         {
-            parseReaction(reactions);
+            parseReactions(reactions);
         }
         return reactions;
     }
 
 /* ************************************************************************ */
-    void parseReaction(T& reactions)
+    void parseReactions(Reactions& reactions)
     {
         // parse conditions
         auto conditions = parseConditions();
