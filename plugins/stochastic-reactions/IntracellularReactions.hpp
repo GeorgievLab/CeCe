@@ -36,18 +36,6 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-struct ReqProd
-{
-    ReqProd() = default;
-    unsigned int requirement = 0;
-    unsigned int product = 0;
-    bool less = false;
-    ReqProd(int req, int prod, bool flag = false) noexcept
-    : requirement(req), product(prod), less(flag)
-    {
-        // Nothing to do
-    }
-};
 
 /* ************************************************************************ */
 
