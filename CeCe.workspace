@@ -26,6 +26,7 @@
     <![CDATA[]]>
   </Environment>
   <Project Name="plugin-xml" Path="plugins/xml/plugin-xml.project" Active="No"/>
+  <Project Name="obstacles-svg" Path="plugins/obstacles-svg/obstacles-svg.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>
@@ -53,6 +54,7 @@
       <Project Name="plugin_obstacles-image" ConfigName="Debug"/>
       <Project Name="plugin_chemostat" ConfigName="Debug"/>
       <Project Name="plugin_xml" ConfigName="Debug"/>
+      <Project Name="plugin_obstacles-svg" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -80,6 +82,7 @@
       <Project Name="plugin_obstacles-image" ConfigName="Release"/>
       <Project Name="plugin_chemostat" ConfigName="Release"/>
       <Project Name="plugin_xml" ConfigName="Release"/>
+      <Project Name="plugin_obstacles-svg" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
