@@ -57,6 +57,9 @@
     <File Name="Initializer.hpp"/>
     <File Name="ObjectWrapper.hpp"/>
     <File Name="Type.hpp"/>
+    <VirtualDirectory Name="wrappers">
+      <File Name="wrappers/core_Vector.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
