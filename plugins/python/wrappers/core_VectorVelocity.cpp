@@ -53,7 +53,7 @@ static VectorType<VelocityVector> g_type("core.VectorVelocity");
 
 void init_core_VectorVelocity(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

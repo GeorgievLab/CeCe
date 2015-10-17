@@ -53,7 +53,7 @@ static VectorType<ForceVector> g_type("core.VectorForce");
 
 void init_core_VectorForce(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

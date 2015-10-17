@@ -31,7 +31,7 @@
 #include "simulator/Simulation.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Type.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -48,16 +48,8 @@ namespace {
 /**
  * @brief Type definition.
  */
-class Type : public PyTypeObject
+class SimulationType : public Type<simulator::Simulation*>
 {
-
-// Public Types
-public:
-
-
-    /// Wrapper type.
-    using SelfType = ObjectWrapper<simulator::Simulation*>;
-
 
 // Ctors & Dtors
 public:
@@ -66,44 +58,11 @@ public:
     /**
      * @brief Constructor.
      */
-    explicit Type(String name)
-        : PyTypeObject {PyObject_HEAD_INIT(NULL)}
-        , m_name(std::move(name))
+    SimulationType()
+        : Type("simulator.Simulation")
     {
-        tp_name = m_name.c_str();
-        tp_basicsize = sizeof(SelfType);
-        tp_flags = Py_TPFLAGS_DEFAULT;
         tp_getset = m_properties;
         tp_methods = m_methods;
-
-        // Type is not ready
-        if (PyType_Ready(this) < 0)
-            throw RuntimeException("Cannot finalize type object");
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Finalize type definition.
-     *
-     * @param module
-     */
-    void define(View<PyObject> module) noexcept
-    {
-        auto type = reinterpret_cast<PyObject*>(this);
-
-        // Find dot
-        auto dot = m_name.find('.');
-        Assert(dot != String::npos);
-
-        Py_INCREF(type);
-        PyModule_AddObject(module, &m_name[dot + 1], type);
-
-        // Register dynamic type
-        registerType(typeid(Type), this);
     }
 
 
@@ -379,9 +338,6 @@ public:
 // Private Data Members
 private:
 
-    /// Type name.
-    String m_name;
-
     // Type properties.
     PyGetSetDef m_properties[7] = {
         {const_cast<char*>("worldSize"),   (getter) getWorldSize,   nullptr,                nullptr},
@@ -408,7 +364,7 @@ private:
 
 /* ************************************************************************ */
 
-Type g_type("simulator.Simulation");
+SimulationType g_type;
 
 /* ************************************************************************ */
 
@@ -418,7 +374,7 @@ Type g_type("simulator.Simulation");
 
 void init_simulator_Simulation(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

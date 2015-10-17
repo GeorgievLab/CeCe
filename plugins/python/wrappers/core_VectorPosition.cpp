@@ -53,7 +53,7 @@ static VectorType<PositionVector> g_type("core.VectorPosition");
 
 void init_core_VectorPosition(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

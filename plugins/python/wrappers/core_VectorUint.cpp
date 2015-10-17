@@ -53,7 +53,7 @@ static VectorType<VectorUint> g_type("core.VectorUint");
 
 void init_core_VectorUint(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

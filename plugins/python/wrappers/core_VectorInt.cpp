@@ -53,7 +53,7 @@ static VectorType<VectorInt> g_type("core.VectorInt");
 
 void init_core_VectorInt(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

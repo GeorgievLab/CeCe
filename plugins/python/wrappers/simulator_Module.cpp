@@ -27,12 +27,10 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
-#include "core/Assert.hpp"
 #include "simulator/Module.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
-#include "plugins/python/Utils.hpp"
+#include "plugins/python/Type.hpp"
 
 /* ************************************************************************ */
 
@@ -48,16 +46,8 @@ namespace {
 /**
  * @brief Type definition.
  */
-class Type : public PyTypeObject
+class ModuleType : public Type<simulator::Module*>
 {
-
-// Public Types
-public:
-
-
-    /// Wrapper type.
-    using SelfType = ObjectWrapper<simulator::Module*>;
-
 
 // Ctors & Dtors
 public:
@@ -66,56 +56,16 @@ public:
     /**
      * @brief Constructor.
      */
-    explicit Type(String name)
-        : PyTypeObject {PyObject_HEAD_INIT(NULL)}
-        , m_name(std::move(name))
+    ModuleType() : Type("simulator.Module")
     {
-        tp_name = m_name.c_str();
-        tp_basicsize = sizeof(SelfType);
-        tp_flags = Py_TPFLAGS_DEFAULT;
-
-        // Type is not ready
-        if (PyType_Ready(this) < 0)
-            throw RuntimeException("Cannot finalize type object");
+        // Nothing to do
     }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Finalize type definition.
-     *
-     * @param module
-     */
-    void define(View<PyObject> module) noexcept
-    {
-        auto type = reinterpret_cast<PyObject*>(this);
-
-        // Find dot
-        auto dot = m_name.find('.');
-        Assert(dot != String::npos);
-
-        Py_INCREF(type);
-        PyModule_AddObject(module, &m_name[dot + 1], type);
-
-        // Register dynamic type
-        registerType(typeid(Type), this);
-    }
-
-
-// Private Data Members
-private:
-
-    /// Type name.
-    String m_name;
 
 };
 
 /* ************************************************************************ */
 
-Type g_type("simulator.Module");
+ModuleType g_type;
 
 /* ************************************************************************ */
 
@@ -125,7 +75,7 @@ Type g_type("simulator.Module");
 
 void init_simulator_Module(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

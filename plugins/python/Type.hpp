@@ -28,15 +28,97 @@
 /* ************************************************************************ */
 
 // This must be first
-#include "Python.hpp"
+#include "plugins/python/Python.hpp"
 
 // C++
 #include <typeindex>
+
+// Simulator
+#include "core/Assert.hpp"
+#include "core/String.hpp"
+#include "core/Exception.hpp"
+
+// Plugin
+#include "plugins/python/View.hpp"
+#include "plugins/python/ObjectWrapper.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
 namespace python {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type definition.
+ *
+ * @tparam T
+ */
+template<typename T>
+class Type : public PyTypeObject
+{
+
+// Public Types
+public:
+
+
+    /// Wrapper type.
+    using SelfType = ObjectWrapper<T>;
+
+
+// Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    explicit Type(String name)
+        : PyTypeObject{PyObject_HEAD_INIT(NULL)}
+        , m_name(std::move(name))
+    {
+        tp_name = m_name.c_str();
+        tp_basicsize = sizeof(SelfType);
+        tp_flags = Py_TPFLAGS_DEFAULT;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Add type to module.
+     *
+     * @param module
+     */
+    void add(View<PyObject> module)
+    {
+        // Type is not ready
+        if (PyType_Ready(this) < 0)
+            throw RuntimeException("Cannot finalize type object");
+
+        auto type = reinterpret_cast<PyObject*>(this);
+
+        // Find dot
+        auto dot = m_name.find('.');
+        Assert(dot != String::npos);
+
+        Py_INCREF(type);
+        PyModule_AddObject(module, &m_name[dot + 1], type);
+
+        // Register dynamic type
+        registerType(typeid(Type), this);
+    }
+
+
+// Private Data Members
+private:
+
+    /// Type name.
+    String m_name;
+
+};
 
 /* ************************************************************************ */
 

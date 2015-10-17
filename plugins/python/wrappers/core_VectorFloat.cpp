@@ -53,7 +53,7 @@ static VectorType<VectorFloat> g_type("core.VectorFloat");
 
 void init_core_VectorFloat(PyObject* module)
 {
-    g_type.define(module);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

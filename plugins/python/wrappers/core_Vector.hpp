@@ -32,7 +32,7 @@
 #include "core/Exception.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Type.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -48,21 +48,21 @@ namespace python {
  * @tparam Vector type.
  */
 template<typename T>
-class VectorType : public PyTypeObject
+class VectorType : public Type<T>
 {
 
 // Public Types
 public:
 
 
-    /// Vector type.
-    using Type = T;
+    // Parent type.
+    using ParentType = Type<T>;
 
     /// Vector element type.
-    using ValueType = typename Type::ValueType;
+    using ValueType = typename T::ValueType;
 
     /// Wrapper type.
-    using SelfType = ObjectWrapper<Type>;
+    using SelfType = typename ParentType::SelfType;
 
 
 // Ctors & Dtors
@@ -75,49 +75,20 @@ public:
      * @param name Type name.
      */
     explicit VectorType(String name)
-        : PyTypeObject {PyObject_HEAD_INIT(NULL)}
-        , m_name(std::move(name))
+        : ParentType(std::move(name))
     {
-        tp_name = m_name.c_str();
-        tp_basicsize = sizeof(SelfType);
-        tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
-        tp_getset = m_properties;
-        tp_methods = m_methods;
-        tp_new = (newfunc) &__new__;
-        tp_dealloc = (destructor) &__del__;
-        tp_init = (initproc) &__init__;
-        tp_richcompare = (richcmpfunc) __cmp__;
-        tp_as_number = &m_numberMethods;
-
-        // Type is not ready
-        if (PyType_Ready(this) < 0)
-            throw RuntimeException("Cannot finalize type object");
+        ParentType::tp_getset = m_properties;
+        ParentType::tp_methods = m_methods;
+        ParentType::tp_new = (newfunc) &__new__;
+        ParentType::tp_dealloc = (destructor) &__del__;
+        ParentType::tp_init = (initproc) &__init__;
+        ParentType::tp_richcompare = (richcmpfunc) __cmp__;
+        ParentType::tp_as_number = &m_numberMethods;
     }
 
 
 // Public Operations
 public:
-
-
-    /**
-     * @brief Finalize type definition.
-     *
-     * @param module
-     */
-    void define(View<PyObject> module) noexcept
-    {
-        auto type = reinterpret_cast<PyObject*>(this);
-
-        // Find dot
-        auto dot = m_name.find('.');
-        Assert(dot != String::npos);
-
-        Py_INCREF(type);
-        PyModule_AddObject(module, &m_name[dot + 1], type);
-
-        // Register dynamic type
-        registerType(typeid(Type), this);
-    }
 
 
     /**
@@ -129,13 +100,13 @@ public:
      *
      * @return
      */
-    static PyObject* __new__(PyTypeObject* type, PyObject* args, PyObject* kwds)
+    static PyObject* __new__(PyTypeObject* type, PyObject* args, PyObject* kwds) noexcept
     {
         SelfType* self = reinterpret_cast<SelfType*>(type->tp_alloc(type, 0));
 
         if (self != nullptr) {
             // Inplace allocation
-            new (&self->value) Type{};
+            new (&self->value) T{};
         }
 
         return reinterpret_cast<PyObject*>(self);
@@ -150,7 +121,7 @@ public:
     static void __del__(SelfType* self) noexcept
     {
         // Call destructor
-        self->value.~Type();
+        self->value.~T();
 
         self->ob_type->tp_free(reinterpret_cast<PyObject*>(self));
     }
@@ -178,7 +149,7 @@ public:
         if (x && y)
         {
             // Construct value
-            self->value = Type(cast<ValueType>(x), cast<ValueType>(y));
+            self->value = T(cast<ValueType>(x), cast<ValueType>(y));
         }
         else if (x || y)
         {
@@ -586,15 +557,12 @@ public:
         if (!PyArg_ParseTuple(args, "O", &vec))
             return nullptr;
 
-        return makeObject(self->value.dot(cast<Type>(vec))).release();
+        return makeObject(self->value.dot(cast<T>(vec))).release();
     }
 
 
 // Private Data Members
 private:
-
-    /// Type name.
-    String m_name;
 
     /// Type properties.
     PyGetSetDef m_properties[7] = {
