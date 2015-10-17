@@ -40,6 +40,7 @@
 
 // Plugin
 #include "plugins/python/View.hpp"
+#include "plugins/python/Handle.hpp"
 #include "plugins/python/ObjectWrapper.hpp"
 
 /* ************************************************************************ */
@@ -109,6 +110,34 @@ public:
 
         // Register dynamic type
         registerType(typeid(Type), this);
+    }
+
+
+    /**
+     * @brief Returns required base type.
+     *
+     * @return
+     */
+    static View<PyTypeObject> getBaseType(const String& name) noexcept
+    {
+        String cname = name;
+
+        // Find dot
+        auto dot = cname.find('.');
+        Assert(dot != String::npos);
+
+        // Change dot to '\0'
+        cname[dot] = '\0';
+
+        auto baseModule = makeHandle(PyImport_ImportModule(cname.c_str()));
+        auto baseDict = PyModule_GetDict(baseModule);
+        auto baseClass = PyMapping_GetItemString(baseDict, const_cast<char*>(&cname[dot + 1]));
+
+        if (!(baseClass && PyType_Check(baseClass)))
+            throw RuntimeException("Unable to find '" + name + "' class");
+
+        // Base class
+        return reinterpret_cast<PyTypeObject*>(baseClass);
     }
 
 

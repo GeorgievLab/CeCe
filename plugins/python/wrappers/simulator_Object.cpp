@@ -173,6 +173,35 @@ public:
 
 
     /**
+     * @brief Returns object density.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getDensity(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getDensity()).release();
+    }
+
+
+    /**
+     * @brief Sets object position.
+     *
+     * @param self
+     * @param value
+     *
+     * @return
+     */
+    static int setDensity(SelfType* self, PyObject* value) noexcept
+    {
+        self->value->setDensity(cast<units::Density>(value));
+
+        return 0;
+    }
+
+
+    /**
      * @brief Returns object class name.
      *
      * @param self
@@ -197,12 +226,12 @@ public:
     {
         PyObject* force;
 
-        if(!PyArg_ParseTuple(args, "O", &force))
-            return NULL;
+        if (!PyArg_ParseTuple(args, "O", &force))
+            return nullptr;
 
         self->value->applyForce(cast<ForceVector>(force));
 
-        Py_RETURN_NONE;
+        return none().release();
     }
 
 
@@ -218,13 +247,13 @@ public:
     {
         char* name;
 
-        if(!PyArg_ParseTuple(args, "s", &name))
+        if (!PyArg_ParseTuple(args, "s", &name))
             return NULL;
 
         // Add program
         self->value->useProgram(name);
 
-        Py_RETURN_NONE;
+        return none().release();
     }
 
 
@@ -239,7 +268,7 @@ public:
     {
         self->value->destroy();
 
-        Py_RETURN_NONE;
+        return none().release();
     }
 
 
@@ -247,21 +276,22 @@ public:
 private:
 
     /// Type properties.
-    PyGetSetDef m_properties[6] = {
-        {const_cast<char*>("id"),        (getter) getId,        NULL,                  NULL},
-        {const_cast<char*>("position"),  (getter) getPosition,  (setter) setPosition,  NULL},
-        {const_cast<char*>("rotation"),  (getter) getRotation,  (setter) setRotation,  NULL},
-        {const_cast<char*>("velocity"),  (getter) getVelocity,  (setter) setVelocity,  NULL},
-        {const_cast<char*>("className"), (getter) getClassName, NULL,                  NULL},
-        {NULL}  /* Sentinel */
+    PyGetSetDef m_properties[7] = {
+        {const_cast<char*>("id"),        (getter) getId,        nullptr,               nullptr},
+        {const_cast<char*>("position"),  (getter) getPosition,  (setter) setPosition,  nullptr},
+        {const_cast<char*>("rotation"),  (getter) getRotation,  (setter) setRotation,  nullptr},
+        {const_cast<char*>("velocity"),  (getter) getVelocity,  (setter) setVelocity,  nullptr},
+        {const_cast<char*>("density"),   (getter) getDensity,   (setter) setDensity,   nullptr},
+        {const_cast<char*>("className"), (getter) getClassName, nullptr,               nullptr},
+        {nullptr}  /* Sentinel */
     };
 
     /// Type methods.
     PyMethodDef m_methods[4] = {
-        {"applyForce", (PyCFunction) applyForce, METH_VARARGS, NULL},
-        {"useProgram", (PyCFunction) useProgram, METH_VARARGS, NULL},
-        {"destroy",    (PyCFunction) destroy, METH_NOARGS, NULL},
-        {NULL}  /* Sentinel */
+        {"applyForce", (PyCFunction) applyForce, METH_VARARGS, nullptr},
+        {"useProgram", (PyCFunction) useProgram, METH_VARARGS, nullptr},
+        {"destroy",    (PyCFunction) destroy,    METH_NOARGS,  nullptr},
+        {nullptr}  /* Sentinel */
     };
 
 };

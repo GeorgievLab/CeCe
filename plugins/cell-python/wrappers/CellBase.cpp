@@ -27,10 +27,9 @@
 #include "plugins/python/Python.hpp"
 
 // Cell
-#include "plugins/cell/Yeast.hpp"
+#include "plugins/cell/CellBase.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
 #include "plugins/python/Type.hpp"
 #include "plugins/python/Utils.hpp"
 
@@ -49,113 +48,147 @@ using namespace plugin::python;
 
 /* ************************************************************************ */
 
-using SelfType = ObjectWrapper<plugin::cell::CellBase*>;
-
-/* ************************************************************************ */
-
-PyObject* getVolume(SelfType* self) noexcept
+/**
+ * @brief Basic cell type.
+ */
+class CellBaseType : public Type<plugin::cell::CellBase*>
 {
-    return makeObject(self->value->getVolume()).release();
-}
 
-/* ************************************************************************ */
 
-PyObject* setVolume(SelfType* self, PyObject* args) noexcept
-{
-    float volume;
+// Ctors & Dtors
+public:
 
-    if(!PyArg_ParseTuple(args, "f", &volume))
-        return NULL;
 
-    self->value->setVolume(units::Volume(volume));
+    /**
+     * @brief Constructor.
+     */
+    CellBaseType()
+        : Type("cell.CellBase")
+    {
+        tp_base = getBaseType("simulator.Object");
+        tp_getset = m_properties;
+        tp_methods = m_methods;
+    }
 
-    return none();
-}
 
-/* ************************************************************************ */
+// Public Operations
+public:
 
-PyObject* getGrowthRate(SelfType* self) noexcept
-{
-    return makeObject(self->value->getGrowthRate()).release();
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Returns cell volume.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getVolume(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getVolume()).release();
+    }
 
-PyObject* setGrowthRate(SelfType* self, PyObject* args) noexcept
-{
-    float growthRate;
 
-    if(!PyArg_ParseTuple(args, "f", &growthRate))
-        return NULL;
+    /**
+     * @brief Set cell volume.
+     *
+     * @param self
+     * @param value
+     *
+     * @return
+     */
+    static int setVolume(SelfType* self, PyObject* value) noexcept
+    {
+        self->value->setVolume(cast<units::Volume>(value));
 
-    self->value->setGrowthRate(plugin::cell::CellBase::GrowthRate(growthRate));
+        return 0;
+    }
 
-    return none();
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Returns cell growth rate.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getGrowthRate(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getGrowthRate()).release();
+    }
 
-PyObject* getMoleculeCount(SelfType* self, PyObject* args) noexcept
-{
-    char* name;
 
-    if(!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
+    /**
+     * @brief Set cell growth rate.
+     *
+     * @param self
+     * @param value
+     *
+     * @return
+     */
+    static int setGrowthRate(SelfType* self, PyObject* value) noexcept
+    {
+        self->value->setGrowthRate(cast<plugin::cell::CellBase::GrowthRate>(value));
 
-    return makeObject(self->value->getMoleculeCount(name)).release();
-}
+        return 0;
+    }
 
-/* ************************************************************************ */
 
-PyObject* kill(SelfType* self) noexcept
-{
-    self->value->kill();
+    /**
+     * @brief Returns required molecule count.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* getMoleculeCount(SelfType* self, PyObject* args) noexcept
+    {
+        char* name;
 
-    return none();
-}
+        if (!PyArg_ParseTuple(args, "s", &name))
+            return nullptr;
 
-/* ************************************************************************ */
+        return makeObject(self->value->getMoleculeCount(name)).release();
+    }
 
-PyGetSetDef g_properties[] = {
-    {const_cast<char*>("volume"),     (getter) getVolume,     (setter) setVolume,       NULL},
-    {const_cast<char*>("growthRate"), (getter) getGrowthRate, (setter) setGrowthRate,   NULL},
-    {NULL}  /* Sentinel */
+
+    /**
+     * @brief Kill the cell.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* kill(SelfType* self) noexcept
+    {
+        self->value->kill();
+
+        return none().release();
+    }
+
+
+// Private Data Members
+private:
+
+    /// Type properties.
+    PyGetSetDef m_properties[3] = {
+        {const_cast<char*>("volume"),     (getter) getVolume,     (setter) setVolume,       nullptr},
+        {const_cast<char*>("growthRate"), (getter) getGrowthRate, (setter) setGrowthRate,   nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
+    /// Type methods.
+    PyMethodDef m_methods[3] = {
+        {"moleculeCount", (PyCFunction) getMoleculeCount, METH_VARARGS, nullptr},
+        {"kill",          (PyCFunction) kill,             METH_NOARGS,  nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
 };
 
 /* ************************************************************************ */
 
-PyMethodDef g_methods[] = {
-    {"moleculeCount", (PyCFunction) getMoleculeCount, METH_VARARGS, NULL},
-    {"kill",          (PyCFunction) kill,             METH_NOARGS,  NULL},
-    {NULL}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
-PyTypeObject g_type = {
-    PyObject_HEAD_INIT(NULL)
-    0,                              // ob_size
-    "cell.CellBase",                // tp_name
-    sizeof(SelfType),               // tp_basicsize
-    0,                              // tp_itemsize
-    0,                              // tp_dealloc
-    0,                              // tp_print
-    0,                              // tp_getattr
-    0,                              // tp_setattr
-    0,                              // tp_compare
-    0,                              // tp_repr
-    0,                              // tp_as_number
-    0,                              // tp_as_sequence
-    0,                              // tp_as_mapping
-    0,                              // tp_hash
-    0,                              // tp_call
-    0,                              // tp_str
-    0,                              // tp_getattro
-    0,                              // tp_setattro
-    0,                              // tp_as_buffer
-    Py_TPFLAGS_DEFAULT,             // tp_flags
-    nullptr,                        // tp_doc
-};
+CellBaseType g_type;
 
 /* ************************************************************************ */
 
@@ -165,29 +198,7 @@ PyTypeObject g_type = {
 
 void init_CellBase(PyObject* module)
 {
-    g_type.tp_getset = g_properties;
-    g_type.tp_methods = g_methods;
-
-    auto baseModule = makeHandle(PyImport_ImportModule("simulator"));
-    auto baseDict = PyModule_GetDict(baseModule);
-    auto baseClass = PyMapping_GetItemString(baseDict, const_cast<char*>("Object"));
-    assert(baseClass);
-    assert(PyType_Check(baseClass));
-
-    // Base class
-    g_type.tp_base = (PyTypeObject*) baseClass;
-
-    // Type is not ready
-    if (PyType_Ready(&g_type) < 0)
-        return;
-
-    auto type = reinterpret_cast<PyObject*>(&g_type);
-
-    Py_INCREF(type);
-    PyModule_AddObject(module, "CellBase", type);
-
-    // Register dynamic type
-    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */
