@@ -81,9 +81,12 @@ public:
         tp_basicsize = sizeof(SelfType);
         tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
         tp_getset = m_properties;
-        tp_new = (newfunc) &allocate;
-        tp_dealloc = (destructor) &deallocate;
-        tp_init = (initproc) &constructor;
+        tp_methods = m_methods;
+        tp_new = (newfunc) &__new__;
+        tp_dealloc = (destructor) &__del__;
+        tp_init = (initproc) &__init__;
+        tp_richcompare = (richcmpfunc) __cmp__;
+        tp_as_number = &m_numberMethods;
 
         // Type is not ready
         if (PyType_Ready(this) < 0)
@@ -125,7 +128,7 @@ public:
      *
      * @return
      */
-    static PyObject* allocate(PyTypeObject* type, PyObject* args, PyObject* kwds)
+    static PyObject* __new__(PyTypeObject* type, PyObject* args, PyObject* kwds)
     {
         SelfType* self = reinterpret_cast<SelfType*>(type->tp_alloc(type, 0));
 
@@ -143,7 +146,7 @@ public:
      *
      * @param self
      */
-    static void deallocate(SelfType* self) noexcept
+    static void __del__(SelfType* self) noexcept
     {
         // Call destructor
         self->value.~Type();
@@ -161,7 +164,7 @@ public:
      *
      * @return
      */
-    static int constructor(SelfType* self, PyObject* args, PyObject* kwds)
+    static int __init__(SelfType* self, PyObject* args, PyObject* kwds)
     {
         PyObject* x;
         PyObject* y;
@@ -183,6 +186,304 @@ public:
         }
 
         return 0;
+    }
+
+
+    /**
+     * @brief Compare vectors.
+     *
+     * @param lhs
+     * @param rhs
+     * @param op
+     *
+     * @return
+     */
+    static PyObject* __cmp__(SelfType* lhs, PyObject* rhs, int op) noexcept
+    {
+        if (lhs->ob_type != rhs->ob_type)
+        {
+            PyErr_SetString(PyExc_ValueError, "Operands must have same type");
+            return nullptr;
+        }
+
+        SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
+
+        bool res = false;
+
+        switch (op)
+        {
+        case Py_LT: res = lhs->value <  rhsCast->value; break;
+        case Py_LE: res = lhs->value <= rhsCast->value; break;
+        case Py_EQ: res = lhs->value == rhsCast->value; break;
+        case Py_NE: res = lhs->value != rhsCast->value; break;
+        case Py_GT: res = lhs->value >  rhsCast->value; break;
+        case Py_GE: res = lhs->value >= rhsCast->value; break;
+        }
+
+        return res ? Py_True : Py_False;
+    }
+
+
+    /**
+     * @brief Addition.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __add__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (lhs->ob_type != rhs->ob_type)
+        {
+            PyErr_SetString(PyExc_ValueError, "Operands must have same type");
+            return nullptr;
+        }
+
+        SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
+
+        return makeObject(lhs->value + rhsCast->value);
+    }
+
+
+    /**
+     * @brief Substraction.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __sub__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (lhs->ob_type != rhs->ob_type)
+        {
+            PyErr_SetString(PyExc_ValueError, "Operands must have same type");
+            return nullptr;
+        }
+
+        SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
+
+        return makeObject(lhs->value - rhsCast->value);
+    }
+
+
+    /**
+     * @brief Multiplication.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __mul__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (PyInt_Check(rhs))
+        {
+            return makeObject(lhs->value * PyInt_AS_LONG(rhs));
+        }
+        else if (PyFloat_Check(rhs))
+        {
+            return makeObject(lhs->value * PyFloat_AS_DOUBLE(rhs));
+        }
+        else if (PyLong_Check(rhs))
+        {
+            return makeObject(lhs->value * PyLong_AsLong(rhs));
+        }
+        else if (lhs->ob_type != rhs->ob_type)
+        {
+            PyErr_SetString(PyExc_ValueError, "Operands must have same type");
+            return nullptr;
+        }
+
+        SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
+
+        return makeObject(lhs->value * rhsCast->value);
+    }
+
+
+    /**
+     * @brief Division.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __div__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (PyInt_Check(rhs))
+        {
+            return makeObject(lhs->value / PyInt_AS_LONG(rhs));
+        }
+        else if (PyFloat_Check(rhs))
+        {
+            return makeObject(lhs->value / PyFloat_AS_DOUBLE(rhs));
+        }
+        else if (PyLong_Check(rhs))
+        {
+            return makeObject(lhs->value / PyLong_AsLong(rhs));
+        }
+        else if (lhs->ob_type != rhs->ob_type)
+        {
+            PyErr_SetString(PyExc_ValueError, "Operands must have same type");
+            return nullptr;
+        }
+
+        SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
+
+        return makeObject(lhs->value / rhsCast->value);
+    }
+
+
+    /**
+     * @brief Negative.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __neg__(SelfType* rhs) noexcept
+    {
+        return makeObject(-rhs->value);
+    }
+
+
+    /**
+     * @brief Positive.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __pos__(SelfType* rhs) noexcept
+    {
+        return makeObject(rhs->value);
+    }
+
+
+    /**
+     * @brief Nonzero test.
+     *
+     * @return
+     */
+    static int __nonzero__(SelfType* rhs) noexcept
+    {
+        return rhs->value == Zero ? 1 : 0;
+    }
+
+
+    /**
+     * @brief Addition.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __iadd__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (lhs->ob_type != rhs->ob_type)
+        {
+            PyErr_SetString(PyExc_ValueError, "Operands must have same type");
+            return nullptr;
+        }
+
+        SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
+
+        lhs->value += rhsCast->value;
+
+        return reinterpret_cast<PyObject*>(lhs);
+    }
+
+
+    /**
+     * @brief Substraction.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __isub__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (lhs->ob_type != rhs->ob_type)
+        {
+            PyErr_SetString(PyExc_ValueError, "Operands must have same type");
+            return nullptr;
+        }
+
+        SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
+
+        lhs->value -= rhsCast->value;
+
+        return reinterpret_cast<PyObject*>(lhs);
+    }
+
+
+    /**
+     * @brief Multiplication.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __imul__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (PyInt_Check(rhs))
+        {
+            lhs->value *= PyInt_AS_LONG(rhs);
+        }
+        else if (PyFloat_Check(rhs))
+        {
+            lhs->value *= PyFloat_AS_DOUBLE(rhs);
+        }
+        else if (PyLong_Check(rhs))
+        {
+            lhs->value *= PyLong_AsLong(rhs);
+        }
+        else
+        {
+            PyErr_SetString(PyExc_ValueError, "Right operand must be scalar");
+            return nullptr;
+        }
+
+        return reinterpret_cast<PyObject*>(lhs);
+    }
+
+
+    /**
+     * @brief Division.
+     *
+     * @param lhs
+     * @param rhs
+     *
+     * @return
+     */
+    static PyObject* __idiv__(SelfType* lhs, PyObject* rhs) noexcept
+    {
+        if (PyInt_Check(rhs))
+        {
+            lhs->value /= PyInt_AS_LONG(rhs);
+        }
+        else if (PyFloat_Check(rhs))
+        {
+            lhs->value /= PyFloat_AS_DOUBLE(rhs);
+        }
+        else if (PyLong_Check(rhs))
+        {
+            lhs->value /= PyLong_AsLong(rhs);
+        }
+        else
+        {
+            PyErr_SetString(PyExc_ValueError, "Right operand must be scalar");
+            return nullptr;
+        }
+
+        return reinterpret_cast<PyObject*>(lhs);
     }
 
 
@@ -244,6 +545,50 @@ public:
     }
 
 
+    /**
+     * @brief Returns vector length.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getLength(SelfType* self) noexcept
+    {
+        return makeObject(self->value.getLength()).release();
+    }
+
+
+    /**
+     * @brief Returns vector squared length.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getLengthSquared(SelfType* self) noexcept
+    {
+        return makeObject(self->value.getLengthSquared()).release();
+    }
+
+
+    /**
+     * @brief Returns dot value.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* dot(SelfType* self, PyObject* args) noexcept
+    {
+        PyObject* vec;
+
+        if (!PyArg_ParseTuple(args, "O", &vec))
+            return nullptr;
+
+        return makeObject(self->value.dot(cast<Type>(vec))).release();
+    }
+
+
 // Private Data Members
 private:
 
@@ -251,12 +596,63 @@ private:
     String m_name;
 
     /// Type properties.
-    PyGetSetDef m_properties[5] = {
+    PyGetSetDef m_properties[7] = {
         {const_cast<char*>("x"),      (getter) getX, (setter) setX, nullptr},
         {const_cast<char*>("y"),      (getter) getY, (setter) setY, nullptr},
         {const_cast<char*>("width"),  (getter) getX, (setter) setX, nullptr},
         {const_cast<char*>("height"), (getter) getY, (setter) setY, nullptr},
+        {const_cast<char*>("length"), (getter) getLength, nullptr, nullptr},
+        {const_cast<char*>("lengthSquared"), (getter) getLengthSquared, nullptr, nullptr},
         {nullptr}  /* Sentinel */
+    };
+
+    /// Type methods.
+    PyMethodDef m_methods[2] = {
+        {"dot", (PyCFunction) dot, METH_VARARGS, nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
+    /// Number methods.
+    PyNumberMethods m_numberMethods = {
+        (binaryfunc) __add__,
+        (binaryfunc) __sub__,
+        (binaryfunc) __mul__,
+        (binaryfunc) __div__,
+        nullptr,
+        nullptr,
+        nullptr,
+        (unaryfunc) __neg__,
+        (unaryfunc) __pos__,
+        nullptr,
+        (inquiry) __nonzero__,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        (binaryfunc) __iadd__,
+        (binaryfunc) __isub__,
+        (binaryfunc) __imul__,
+        (binaryfunc) __idiv__,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr
     };
 
 };
