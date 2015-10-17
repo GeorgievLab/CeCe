@@ -27,6 +27,7 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
+#include "core/Assert.hpp"
 #include "simulator/Module.hpp"
 
 // Plugin
@@ -44,34 +45,77 @@ namespace {
 
 /* ************************************************************************ */
 
-using SelfType = ObjectWrapper<simulator::Module*>;
+/**
+ * @brief Type definition.
+ */
+class Type : public PyTypeObject
+{
+
+// Public Types
+public:
+
+
+    /// Wrapper type.
+    using SelfType = ObjectWrapper<simulator::Module*>;
+
+
+// Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    explicit Type(String name)
+        : PyTypeObject {PyObject_HEAD_INIT(NULL)}
+        , m_name(std::move(name))
+    {
+        tp_name = m_name.c_str();
+        tp_basicsize = sizeof(SelfType);
+        tp_flags = Py_TPFLAGS_DEFAULT;
+
+        // Type is not ready
+        if (PyType_Ready(this) < 0)
+            throw RuntimeException("Cannot finalize type object");
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Finalize type definition.
+     *
+     * @param module
+     */
+    void define(View<PyObject> module) noexcept
+    {
+        auto type = reinterpret_cast<PyObject*>(this);
+
+        // Find dot
+        auto dot = m_name.find('.');
+        Assert(dot != String::npos);
+
+        Py_INCREF(type);
+        PyModule_AddObject(module, &m_name[dot + 1], type);
+
+        // Register dynamic type
+        registerType(typeid(Type), this);
+    }
+
+
+// Private Data Members
+private:
+
+    /// Type name.
+    String m_name;
+
+};
 
 /* ************************************************************************ */
 
-static PyTypeObject g_type = {
-    PyObject_HEAD_INIT(NULL)
-    0,                              // ob_size
-    "simulator.Module",             // tp_name
-    sizeof(SelfType),               // tp_basicsize
-    0,                              // tp_itemsize
-    0,                              // tp_dealloc
-    0,                              // tp_print
-    0,                              // tp_getattr
-    0,                              // tp_setattr
-    0,                              // tp_compare
-    0,                              // tp_repr
-    0,                              // tp_as_number
-    0,                              // tp_as_sequence
-    0,                              // tp_as_mapping
-    0,                              // tp_hash
-    0,                              // tp_call
-    0,                              // tp_str
-    0,                              // tp_getattro
-    0,                              // tp_setattro
-    0,                              // tp_as_buffer
-    Py_TPFLAGS_DEFAULT,             // tp_flags
-    nullptr,                        // tp_doc
-};
+Type g_type("simulator.Module");
 
 /* ************************************************************************ */
 
@@ -81,17 +125,7 @@ static PyTypeObject g_type = {
 
 void init_simulator_Module(PyObject* module)
 {
-    // Type is not ready
-    if (PyType_Ready(&g_type) < 0)
-        return;
-
-    auto type = reinterpret_cast<PyObject*>(&g_type);
-
-    Py_INCREF(type);
-    PyModule_AddObject(module, "Module", type);
-
-    // Register type.
-    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
+    g_type.define(module);
 }
 
 /* ************************************************************************ */

@@ -27,6 +27,7 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
+#include "core/Assert.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Simulation.hpp"
 
@@ -66,10 +67,11 @@ public:
     /**
      * @brief Constructor.
      */
-    Type()
+    explicit Type(String name)
         : PyTypeObject {PyObject_HEAD_INIT(NULL)}
+        , m_name(std::move(name))
     {
-        tp_name = "simulator.Object";
+        tp_name = m_name.c_str();
         tp_basicsize = sizeof(SelfType);
         tp_flags = Py_TPFLAGS_DEFAULT;
         tp_getset = m_properties;
@@ -83,6 +85,27 @@ public:
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Finalize type definition.
+     *
+     * @param module
+     */
+    void define(View<PyObject> module) noexcept
+    {
+        auto type = reinterpret_cast<PyObject*>(this);
+
+        // Find dot
+        auto dot = m_name.find('.');
+        Assert(dot != String::npos);
+
+        Py_INCREF(type);
+        PyModule_AddObject(module, &m_name[dot + 1], type);
+
+        // Register dynamic type
+        registerType(typeid(Type), this);
+    }
 
 
     /**
@@ -259,6 +282,8 @@ public:
 // Private Data Members
 private:
 
+    /// Type name.
+    String m_name;
 
     /// Type properties.
     PyGetSetDef m_properties[6] = {
@@ -282,7 +307,7 @@ private:
 
 /* ************************************************************************ */
 
-static Type g_type;
+Type g_type("simulator.Object");
 
 /* ************************************************************************ */
 
@@ -292,13 +317,7 @@ static Type g_type;
 
 void init_simulator_Object(PyObject* module)
 {
-    auto type = reinterpret_cast<PyObject*>(&g_type);
-
-    Py_INCREF(type);
-    PyModule_AddObject(module, "Object", type);
-
-    // Register type.
-    registerType(typeid(std::remove_pointer<Type::SelfType::ValueType>::type), &g_type);
+    g_type.define(module);
 
     // Define constants
     PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));

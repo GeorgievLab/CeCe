@@ -27,6 +27,7 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
+#include "core/Assert.hpp"
 #include "core/Vector.hpp"
 #include "core/Exception.hpp"
 
@@ -242,7 +243,7 @@ public:
 
         SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
 
-        return makeObject(lhs->value + rhsCast->value);
+        return makeObject(lhs->value + rhsCast->value).release();
     }
 
 
@@ -264,7 +265,7 @@ public:
 
         SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
 
-        return makeObject(lhs->value - rhsCast->value);
+        return makeObject(lhs->value - rhsCast->value).release();
     }
 
 
@@ -280,15 +281,15 @@ public:
     {
         if (PyInt_Check(rhs))
         {
-            return makeObject(lhs->value * PyInt_AS_LONG(rhs));
+            return makeObject(lhs->value * PyInt_AS_LONG(rhs)).release();
         }
         else if (PyFloat_Check(rhs))
         {
-            return makeObject(lhs->value * PyFloat_AS_DOUBLE(rhs));
+            return makeObject(lhs->value * PyFloat_AS_DOUBLE(rhs)).release();
         }
         else if (PyLong_Check(rhs))
         {
-            return makeObject(lhs->value * PyLong_AsLong(rhs));
+            return makeObject(lhs->value * PyLong_AsLong(rhs)).release();
         }
         else if (lhs->ob_type != rhs->ob_type)
         {
@@ -298,7 +299,7 @@ public:
 
         SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
 
-        return makeObject(lhs->value * rhsCast->value);
+        return makeObject(lhs->value * rhsCast->value).release();
     }
 
 
@@ -314,15 +315,15 @@ public:
     {
         if (PyInt_Check(rhs))
         {
-            return makeObject(lhs->value / PyInt_AS_LONG(rhs));
+            return makeObject(lhs->value / PyInt_AS_LONG(rhs)).release();
         }
         else if (PyFloat_Check(rhs))
         {
-            return makeObject(lhs->value / PyFloat_AS_DOUBLE(rhs));
+            return makeObject(lhs->value / PyFloat_AS_DOUBLE(rhs)).release();
         }
         else if (PyLong_Check(rhs))
         {
-            return makeObject(lhs->value / PyLong_AsLong(rhs));
+            return makeObject(lhs->value / PyLong_AsLong(rhs)).release();
         }
         else if (lhs->ob_type != rhs->ob_type)
         {
@@ -332,7 +333,7 @@ public:
 
         SelfType* rhsCast = reinterpret_cast<SelfType*>(rhs);
 
-        return makeObject(lhs->value / rhsCast->value);
+        return makeObject(lhs->value / rhsCast->value).release();
     }
 
 
@@ -346,7 +347,7 @@ public:
      */
     static PyObject* __neg__(SelfType* rhs) noexcept
     {
-        return makeObject(-rhs->value);
+        return makeObject(-rhs->value).release();
     }
 
 
@@ -360,7 +361,7 @@ public:
      */
     static PyObject* __pos__(SelfType* rhs) noexcept
     {
-        return makeObject(rhs->value);
+        return makeObject(rhs->value).release();
     }
 
 
