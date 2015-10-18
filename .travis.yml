@@ -82,7 +82,6 @@ before_script:
 script:
     - make VERBOSE=1
     - ctest --verbose
-    - if [ -z "$TRAVIS_TAG" ]; then export VERSION=$TRAVIS_BRANCH; else export VERSION=$TRAVIS_TAG; fi
     - cpack -G TGZ
 
 # Dependencies cache
@@ -91,6 +90,7 @@ cache:
         - $VENDOR_DIR
 
 deploy:
+    skip_cleanup: true
     provider: script
     script: resources/scripts/deploy.sh
     on:
