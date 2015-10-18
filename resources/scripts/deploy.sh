@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! "$TRAVIS_BRANCH" = "master" -a ! "$TRAVIS_BRANCH" = "travis-ci" ]; then
+    echo "Nothing to deploy"
+    exit 0
+fi 
+
 PLATFORM=""
 
 case $TRAVIS_OS_NAME in

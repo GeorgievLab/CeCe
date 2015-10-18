@@ -84,15 +84,11 @@ script:
     - ctest --verbose
     - cpack -G TGZ
 
+after_success:
+    - ./resources/scripts/deploy.sh
+
 # Dependencies cache
 cache:
     directories:
         - $VENDOR_DIR
-
-deploy:
-    skip_cleanup: true
-    provider: script
-    script: resources/scripts/deploy.sh
-    on:
-        branch: travis-ci
 
