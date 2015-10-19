@@ -70,7 +70,7 @@ before_script:
     - mkdir build && cd build
     - "cmake
         -DCMAKE_BUILD_TYPE=release
-        -DOSX_LIB_DIRS=$VENDOR_DIR
+        -DOSX_LIB_DIRS=$VENDOR_DIR/opencv/lib
         -DGLFW_LOCATION=$VENDOR_DIR/glfw3
         -DBOX2DDIR=$VENDOR_DIR/box2d
         -DOpenCV_DIR=$VENDOR_DIR/opencv/share/OpenCV
