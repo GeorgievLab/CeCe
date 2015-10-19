@@ -3,7 +3,7 @@
 if [ ! "$TRAVIS_BRANCH" = "master" -a ! "$TRAVIS_BRANCH" = "travis-ci" ]; then
     echo "Nothing to deploy"
     exit 0
-fi 
+fi
 
 PLATFORM=""
 
@@ -27,5 +27,5 @@ esac
 PACKAGE=build/CeCe-$VERSION-$PLATFORM.tar.gz
 
 echo "Package: $PACKAGE"
-sshpass -p "$FTP_PASSWORD" scp $PACKAGE $FTP_USER@$FTP_SERVER:bin
+sshpass -p "$FTP_PASSWORD" scp -v $PACKAGE $FTP_USER@$FTP_SERVER:bin
 
