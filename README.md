@@ -1,6 +1,8 @@
 
 # The CeCe simulator
 
+[![Build Status](https://travis-ci.org/GeorgievLab/CeCe.svg?branch=master)](https://travis-ci.org/GeorgievLab/CeCe)
+
 The CeCe simulator is modular simulator primary designed for modeling signal
 transmission networks in microfluidics.
 

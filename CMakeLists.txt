@@ -74,6 +74,7 @@ option(DEV_BUILD_TOOLS              "Build additional tools used for developing"
 
 if (APPLE)
     set(MACOSX_VERSION_MIN "10.9" CACHE STRING "Minimum version of MacOS X to support")
+    set(OSX_LIB_DIRS "" CACHE STRING "Additional directories for libraries packaged in Bundle")
 endif ()
 
 if (CONFIG_RENDER_ENABLE)

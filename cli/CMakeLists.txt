@@ -180,7 +180,9 @@ if (APPLE)
     )
 
     set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
-    set(DIRS "/usr/local/lib;\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_LIBRARY}")
+    set(DIRS "/usr/local/lib;\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_LIBRARY};${OSX_LIB_DIRS}")
+
+    message(STATUS "Bundle lib dirs: ${DIRS}")
 
     install(CODE
         "

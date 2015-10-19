@@ -9,7 +9,12 @@ os:
 
 # Environment variables
 env:
-    - VENDOR_DIR=$HOME/vendor/$TRAVIS_OS_NAME
+    global:
+        - VENDOR_DIR=$HOME/vendor/$TRAVIS_OS_NAME
+        - VERSION=0.4.2
+        - secure: "qZNc/lVI2Hv7f1pLHdnLXrHOXgXkvoDzZGW5czcJQPC1tJ57S3w2IfvvmWxHKRcKvZ/aJXzH9INgvBtopsbmXHxU1QZVXzbO3w+aO9D9TGJYtagx5HIIqqLdHLnOezZJw51KLRj+dUYhwzuWqB4SzjLQI6jV88Ye4T9HuqThMzpg6PBqrdlPLW4bNrYf5SiiB67+tVJLAcR5uB1gej3hLH9LNHDnN07wTO/nRAGz9ZQI1jLNWILRZFM1H6Q3iJjAxpCyjRftaxZ3dBDJSQnji4AkGc9AZ8MfX2IEyA8bzMY44xvMHvImUBZDkET4iz2gNSL1WpQL1YA4bBUD0uNWFVQ/+ewdLMpigFHazd6EqOm3f37Pd3imnjw419Gld1m1P/jiOx+OLwDnmBfI8cQvfy7ph+wEKwc/13sOIAmTG8Toy5wcWGIx9B54O0WTysqIE4vetzmSFRykniuGyR+6IXmClQfArsGWcNQw8RhlGKJNrYUPNtMkhEJe/OzBvIr9hhccqT6YN7UfU4zqQ6ydx3WV6YCLZgNRz8LTflz4MzdqZ1RgvTe/TNXOKptsphoe7Pfh+hDlcJ9rAWx/+09T5tuw4E1pZ5fQO75eSHgyb2FKnsNZFpEI4SxI234sABhZwH/pmo6UB7xXk4mExxFoWUice3ESt28Kx6jNl9FVzrs="
+        - secure: "CJ2akGyBPWYDBD4/q0L93gGV0tjcUkeObyWPyMwEJbh3Qk+ObEo0GQqTucjadw2ywnI1DXaRx9kRUrpBSN6ycvzNEdOzT6UYz6Fxfm4X+IowSUxv3zr+T8/70ChBQKDoWG55EsE2pzhjobdXq41E15kNLqfgMLj7LagF6p295t3QG8uu9DFxmnQmPvJvqL6n7H/8mI9/MaUGgAlMYAzpA8DtwWfe3ona/2KWf5lIudrqPVEY4+uFV+qQpt+PuwV8Yja+YVqH+BTW40JZUkB2wsgx91yZwz4VWfi+vNZBOuz17DIf1UuzUn0TLx2l2HV83Jw+GEqGekPUBPC38z9ou8xtF20e+eEvKMjJGXvcATSP1bkLFjUPdG56P9ZIfuS0qtOwrdqH3GbJLV+OCR/jONrBCo0O5UQFmYjEHBQvjqC9gSt3BHjVFlHtfjSqzHposiABFkg+O/9I/ofNSCo7f60No7b5ziO6c7rD+o11tFQVJXha7ByBIcsWCCaI4YeAGLnX5V+UMAYIBUAEvrDWeZqaM77Sure3UvvslL0cj+XjhonAlnc/Hei3rkAC8Rq4SHdoIpbxWsqcT47sfFdWMFWUYKfP1IRnfjFgAzhJ6fkpr70lal2VadaazxYbiPWgB3IJ5mh4WPbCqZ6PWSasAMtCxccS7h47UPAWcIO/+hs="
+        - secure: "BjnmUXSBFkWKOzVyKgSmk8DqWorfefyDrbWg6kJ2srSNX3a/Q7hNWNROg8YyvBSybmx1RfdFQX+aKK6/+NveIv63Ks1ZY7oV4eFC/leOB1Q2tUfst4qMtMRoLCaPPv93LoHY8yWGvyUypPQImEGJwIwDYoa2mVXabKPaCP/cApputMQlT0/dc1/jpnR9nG057AkKZUyDzMOO9kyvA+x4pP+ISDNgTUlEuNW69hzOgTNQ8q5zIshEhH+COFVOoNRynCgYHzhG/ocm4wpIji/LPR0A041yk90q0ZAtE6oIC2rsXEQ6naG3W0sSN8JyhUFawKwc3CNE9ZLmZOzqxFaxgFYxRazh3EN+rnpY99cQqfWLoXKc2ijMfjGXG/3Rj1cAHQ2FUQmDBeHZ14k51Zo5xIuB3TVwLJ3fPSzpBABf12QZAuNJMR5ixW4cE5VlbJg/Qq5/bsYDSPByRcNWP3g4svZ2/SfW0LpHNQjudRRhGdaPtqqOX+iibTlyPKno2ul7WWScI6ZDRS9ttRCX1VD5hvCXaRcZd83CoogWjSFnVFRcultYjfpd8RoVEJnVb0ngl1jlu8DMqEJLwBiaGLQ+dN8JRuPthGe0Go0F5PcanjNeoYnqzUv3kNfNLZwM2/6UnCsqGAB8InLOjOtrvxgCQJ6XHohaTpXztaFnQESV6BY="
 
 language: cpp
 
@@ -64,19 +69,27 @@ before_install:
 before_script:
     - mkdir build && cd build
     - "cmake
-        -DDEV_TESTS_BUILD=On
-        -DCMAKE_BUILD_TYPE=debug
+        -DCMAKE_BUILD_TYPE=release
+        -DOSX_LIB_DIRS=$VENDOR_DIR/opencv
         -DGLFW_LOCATION=$VENDOR_DIR/glfw3
         -DBOX2DDIR=$VENDOR_DIR/box2d
         -DOpenCV_DIR=$VENDOR_DIR/opencv/share/OpenCV
         -DGTEST_ROOT=$VENDOR_DIR/gtest
-      .."
+        -DDEV_TESTS_BUILD=On
+        -DDEV_PHYSICS_BUILTIN_DEBUG=On
+        -DDEV_PLUGIN_streamlines_RENDER=On .."
 
 script:
     - make VERBOSE=1
     - ctest --verbose
+    - cpack -G TGZ
+
+after_success:
+    - cd $TRAVIS_BUILD_DIR
+    - resources/scripts/deploy.sh
 
 # Dependencies cache
 cache:
     directories:
         - $VENDOR_DIR
+
