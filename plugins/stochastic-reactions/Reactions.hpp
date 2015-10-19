@@ -213,22 +213,6 @@ public:
         return m_reactions.back();
     }
 
-
-// Public Mutators
-public:
-
-    /**
-     * @brief Add execute condition to last reaction.
-     *
-     * @param condition Reaction condition.
-     * @param noCond    Reaction without condition modifications.
-     */
-    void addCondition()
-    {
-
-    }
-
-
 // Protected Types
 protected:
 
@@ -239,7 +223,6 @@ protected:
 // Protected Operations
 protected:
 
-
     /**
      * @brief Execute reactions each step.
      *
@@ -248,41 +231,39 @@ protected:
      *
      * @param step
      */
-    void executeReactions(units::Time step)
-    {
-        if (m_propensities.empty())
-            // refresh
-            ;
+    void executeReactions(units::Time step);
 
-        // initialize time
-        units::Time time = Zero;
+     /**
+     * @brief Computes propensity of given reaction.
+     *
+     * @param index of row, cell, diffusion
+     * @return propensity
+     */
+    PropensityType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
-        // initialize random
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> rand(0, 1);
+    /**
+     * @brief Computes propensities of all reactions.
+     *
+     * @param cell, diffusion
+     * @return
+     */
+    void initializePropensities(const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
-        // Gillespie algorithm + tau-leaping + dependency graph(hidden inside execute reaction)
-        while (time < step)
-        {
-            PropensityType sum = std::accumulate(m_propensities.begin(), m_propensities.end(), 0.0f);
+    /**
+     * @brief Refreshes propensities of ractions which have requirements of specific molecule.
+     *
+     * @param index of column, cell, diffusion
+     */
+    void refreshPropensities(const unsigned int index, const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
-            if (sum == 0)
-            {
-                //refresh
-                return;
-            }
+    /**
+     * @brief Function that releases or absorbs the molecules outside the cell.
+     *
+     * @param id of molecule, number of molecules, diffusion
+     */
+    void changeMoleculesInEnvironment(const simulator::Simulation& simulation, const String& id, const int change, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
-            std::discrete_distribution<> distr(m_propensities.begin(), m_propensities.end());
-
-            // time of reaction
-            const auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
-            time -= delta_time;
-
-            // execute reaction
-        }
-    }
-
+public:
 
     /**
      * @brief Returns molecule inner identifier. In case the molecule doesn't exists
@@ -290,26 +271,9 @@ protected:
      *
      * @param Name of molucule.
      *
-     * @return Molecule identifier.
+     * @return Molecule index.
      */
-    unsigned int getMoleculeIndex(const String& name)
-    {
-        auto pointer = std::find(m_moleculeNames.begin(), m_moleculeNames.end(), name);
-
-        // Molecule exists in reactions
-        if (pointer != m_moleculeNames.end())
-            return std::distance(m_moleculeNames.begin(), pointer);
-
-        // Store molecule
-        m_moleculeNames.push_back(name);
-
-        // Resize all reactions
-        for (auto& reaction : m_reactions)
-            reaction.rules.resize(m_moleculeNames.size());
-
-        return m_moleculeNames.size() - 1;
-    }
-
+    unsigned int getMoleculeIndex(const String& name);
 
     /**
      * @brief Extend matrix using rules for intracellular reactions.
@@ -317,45 +281,11 @@ protected:
      * @param ids_plus
      * @param ids_minus
      * @param rate
-     *
-    void extend(const DynamicArray<String>& ids_plus, const DynamicArray<String>& ids_minus, const RateType rate)
+     */
+    void extend(const Reaction& reaction)
     {
-        // initialize array
-        DynamicArray<Reaction> array;
-        if (m_reactions.size() > 0)
-            array.resize(m_rules[0].size());
-
-        // extend with requirements
-        for (unsigned int i = 0; i < ids_minus.size(); i++)
-        {
-            if (ids_minus[i] == "null")
-                continue;
-            unsigned int index = getMoleculeIndex(ids_minus[i]);
-            if (index == array.size())
-            {
-                array.push_back(ReqProd(1,0));
-                continue;
-            }
-            array[index].requirement += 1;
-        }
-
-        //extend with products
-        for (unsigned int i = 0; i < ids_plus.size(); i++)
-        {
-            if (ids_plus[i] == "null")
-                continue;
-            unsigned int index = getMoleculeId(ids_plus[i]);
-            if (index == array.size())
-            {
-                array.push_back(T{0,1});
-                continue;
-            }
-            array[index].product += 1;
-        }
-        m_rates.push_back(rate);
-        m_rules.push_back(array);
+        m_reactions.push_back(reaction);
     }
-*/
 
 // Protected Data Members
 protected:

@@ -62,7 +62,7 @@ enum class TokenCode
     Equal,
     Less,
     LessEqual,
-    Greater
+    Greater,
     GreaterEqual,
     Null,
     Env
@@ -171,24 +171,41 @@ public:
         {
         case '-':
             next();
+
             if (!is('>'))
                 return TokenType{};
                 //fatalError("Invalid token");
 
             next();
-            return TokenType{TokenCode::ArrowFwrd, "->"};
+            return TokenType{TokenCode::ArrowFwrd};
 
         case '>':
             next();
-            return TokenType{TokenCode::Greater, ">"};
+
+            if (match('='))
+                return TokenType{TokenCode::GreaterEqual};
+
+            return TokenType{TokenCode::Greater};
 
         case '<':
             next();
 
             if (match('-'))
-                return TokenType{TokenCode::ArrowFwrd, "<-"};
+                return TokenType{TokenCode::ArrowFwrd};
+            if (match('='))
+                return TokenType{TokenCode::LessEqual};
 
-            return TokenType{TokenCode::Less, "<"};
+            return TokenType{TokenCode::Less};
+
+        case '=':
+            next();
+
+            if (match('<'))
+                return TokenType{TokenCode::LessEqual};
+            if (match('>'))
+                return TokenType{TokenCode::GreaterEqual};
+
+            return TokenType{TokenCode::Equal};
 
         case ':':
             next();
@@ -377,9 +394,9 @@ protected:
      *
      * @return tuple - conditions
      */
-    DynamicArray<typename T::Condition> parseConditions()
+    void parseConditions()
     {
-        DynamicArray<typename T::Condition> array;
+        DynamicArray<int> array;
         if (!is(TokenCode::If))
             return array;
 

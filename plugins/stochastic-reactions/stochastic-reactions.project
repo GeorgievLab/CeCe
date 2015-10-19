@@ -19,10 +19,10 @@
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
     <File Name="IntracellularReactions.cpp"/>
+    <File Name="Reactions.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Reactions.hpp"/>
-    <File Name="IntracellularReactions.hpp"/>
     <File Name="ReactionsParser.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
