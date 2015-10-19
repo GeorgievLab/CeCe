@@ -241,6 +241,14 @@ public:
 
 
     /**
+     * @brief Returns gravity vector.
+     *
+     * @return
+     */
+    AccelerationVector getGravity() const noexcept;
+
+
+    /**
      * @brief Returns if plugin with given name is loaded.
      *
      * @param name Plugin name.
@@ -659,6 +667,14 @@ public:
     {
         m_parameters[name] = value;
     }
+
+
+    /**
+     * @brief Change simulation world gravity.
+     *
+     * @param gravity
+     */
+    void setGravity(const AccelerationVector& gravity) noexcept;
 
 
     /**

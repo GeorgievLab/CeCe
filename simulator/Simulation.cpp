@@ -161,6 +161,23 @@ Simulation::~Simulation()
 
 /* ************************************************************************ */
 
+AccelerationVector Simulation::getGravity() const noexcept
+{
+#if ENABLE_PHYSICS
+    const auto coeff = calcPhysicalEngineCoefficient();
+
+    const auto grav = m_world.GetGravity();
+    return {
+        units::Acceleration(coeff * coeff * grav.x),
+        units::Acceleration(coeff * coeff * grav.y)
+    };
+#else
+    return AccelerationVector{Zero};
+#endif
+}
+
+/* ************************************************************************ */
+
 bool Simulation::hasModule(const String& name) const noexcept
 {
     auto it = std::find_if(m_modules.begin(), m_modules.end(), [&name](const Pair<String, UniquePtr<Module>>& p) {
@@ -197,6 +214,24 @@ unsigned long Simulation::getObjectCountType(const String& className) const noex
     }
 
     return res;
+}
+
+/* ************************************************************************ */
+
+void Simulation::setGravity(const AccelerationVector& gravity) noexcept
+{
+#if ENABLE_PHYSICS
+    const auto coeff = calcPhysicalEngineCoefficient();
+
+    const b2Vec2 gravityPhys{
+        gravity.getX().value() / (coeff * coeff),
+        gravity.getY().value() / (coeff * coeff)
+    };
+
+    m_world.SetGravity(gravityPhys);
+#else
+    // TODO: store
+#endif
 }
 
 /* ************************************************************************ */
@@ -380,6 +415,9 @@ void Simulation::configure(const Configuration& config)
 
     // Time step
     setTimeStep(config.get<units::Time>("dt"));
+
+    // Set gravity
+    setGravity(config.get("gravity", getGravity()));
 
     // Number of iterations
     setIterations(config.get("iterations", getIterations()));
