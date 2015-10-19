@@ -9,7 +9,7 @@ SUFFIX=""
 
 # Add suffix for non-tag releases
 if [ -z "$TRAVIS_TAG" ]; then
-    SUFFIX="-$TRAVIS_BRANCH"
+    SUFFIX="$TRAVIS_BRANCH"
 fi
 
 PLATFORM=""
@@ -35,7 +35,7 @@ PACKAGE=build/CeCe-$VERSION-$PLATFORM.tar.gz
 
 if [ -n "$SUFFIX" ]; then
     PACKAGE_NEW=build/CeCe-$VERSION-$PLATFORM-$SUFFIX.tar.gz
-    mv $PACKAGE_SRC $PACKAGE_NEW
+    mv $PACKAGE $PACKAGE_NEW
     PACKAGE=$PACKAGE_NEW
 fi
 
