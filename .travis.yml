@@ -34,7 +34,6 @@ addons:
             - libgl1-mesa-dev
             - libfreetype6-dev
             - libpython2.7-dev
-            - sshpass
 
 before_install:
     # Update compiler variables

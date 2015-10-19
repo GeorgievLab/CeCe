@@ -27,5 +27,4 @@ esac
 PACKAGE=build/CeCe-$VERSION-$PLATFORM.tar.gz
 
 echo "Package: $PACKAGE"
-sshpass -p "$FTP_PASSWORD" scp -v $PACKAGE $FTP_USER@$FTP_SERVER:bin
-
+curl --ftp-create-dirs --ftp-ssl -u $FTP_USER:$FTP_PASSWORD ftp://$FTP_SERVER/bin/ -T $PACKAGE || echo "Deploy failed"
