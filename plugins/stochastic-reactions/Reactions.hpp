@@ -231,7 +231,7 @@ protected:
      *
      * @param step
      */
-    void executeReactions(units::Time step);
+    void executeReactions(units::Time step, plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
      /**
      * @brief Computes propensity of given reaction.
@@ -247,21 +247,30 @@ protected:
      * @param cell, diffusion
      * @return
      */
-    void initializePropensities(const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void initializePropensities(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
     /**
      * @brief Refreshes propensities of ractions which have requirements of specific molecule.
      *
      * @param index of column, cell, diffusion
      */
-    void refreshPropensities(const unsigned int index, const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void refreshPropensities(const unsigned int index, plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+
+    /**
+     * @brief Computes propensities of all reactions that depends on environment.
+     *
+     * @param cell, diffusion
+     * @return
+     */
+    void refreshEnvPropensities(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+
 
     /**
      * @brief Function that releases or absorbs the molecules outside the cell.
      *
      * @param id of molecule, number of molecules, diffusion
      */
-    void changeMoleculesInEnvironment(const simulator::Simulation& simulation, const String& id, const int change, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void changeMoleculesInEnvironment(const String& id, const int change, plugin::diffusion::Module* diffusion, const simulator::Simulation& simulation, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
 public:
 
@@ -278,9 +287,7 @@ public:
     /**
      * @brief Extend matrix using rules for intracellular reactions.
      *
-     * @param ids_plus
-     * @param ids_minus
-     * @param rate
+     * @param reaction
      */
     void extend(const Reaction& reaction)
     {
