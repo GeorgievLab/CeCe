@@ -23,8 +23,6 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#include "IntercellularReactions.hpp"
-
 // C++
 #include <cassert>
 
@@ -80,38 +78,6 @@ IntercellularReactions::PropensityType IntercellularReactions::computePropensity
             local *= number;
     }
     return local;
-}
-
-/* ************************************************************************ */
-
-void IntercellularReactions::initializePropensities(
-    const plugin::cell::CellBase& cell,
-    plugin::diffusion::Module* diffusion,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
-{
-    m_propensities.clear();
-    for (unsigned int i = 0; i < m_rules.size(); i++)
-    {
-        m_propensities.push_back(computePropensity(i, cell, diffusion, coords));
-    }
-}
-
-/* ************************************************************************ */
-
-void IntercellularReactions::refreshPropensities(
-    const unsigned int index,
-    const plugin::cell::CellBase& cell,
-    plugin::diffusion::Module* diffusion,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
-{
-    for (unsigned int i = 0; i < m_rules.size(); i++)
-    {
-        if (m_rules[i][index].requirement ||
-            m_rules[i][index].env_requirement)
-        {
-            m_propensities[i] = computePropensity(i, cell, diffusion, coords);
-        }
-    }
 }
 
 /* ************************************************************************ */
