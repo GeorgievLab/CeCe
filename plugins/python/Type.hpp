@@ -109,7 +109,7 @@ public:
         PyModule_AddObject(module, &m_name[dot + 1], type);
 
         // Register dynamic type
-        registerType(typeid(Type), this);
+        registerType(typeid(typename std::remove_pointer<T>::type), this);
     }
 
 
