@@ -30,7 +30,7 @@
 #include "plugins/diffusion/Module.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Type.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -48,115 +48,153 @@ using namespace plugin::python;
 
 /* ************************************************************************ */
 
-using SelfType = ObjectWrapper<plugin::diffusion::Module*>;
-
-/* ************************************************************************ */
-
-static PyObject* getSignalCount(SelfType* self) noexcept
+/**
+ * @brief Module type.
+ */
+class ModuleType : public Type<plugin::diffusion::Module*>
 {
-    return makeObject(self->value->getSignalCount()).release();
-}
 
-/* ************************************************************************ */
 
-static PyObject* getGridSize(SelfType* self) noexcept
-{
-    return makeObject(self->value->getGridSize()).release();
-}
+// Ctors & Dtors
+public:
 
-/* ************************************************************************ */
 
-static PyObject* getSignalId(SelfType* self, PyObject* args) noexcept
-{
-    char* name;
+    /**
+     * @brief Constructor.
+     */
+    ModuleType()
+        : Type("diffusion.Module")
+    {
+        tp_base = getBaseType("simulator.Module");
+        tp_getset = m_properties;
+        tp_methods = m_methods;
+    }
 
-    if(!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
 
-    return makeObject(self->value->getSignalId(name)).release();
-}
+// Public Operations
+public:
 
-/* ************************************************************************ */
 
-static PyObject* getSignal(SelfType* self, PyObject* args) noexcept
-{
-    int id;
-    int x;
-    int y;
+    /**
+     * @brief Returns a number of signals.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getSignalCount(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getSignalCount()).release();
+    }
 
-    if(!PyArg_ParseTuple(args, "iii", &id, &x, &y))
-        return NULL;
 
-    const auto value = self->value->getSignal(id, plugin::diffusion::Module::Coordinate(x, y));
+    /**
+     * @brief Returns grid size.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getGridSize(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getGridSize()).release();
+    }
 
-    return Py_BuildValue("f", value.value());
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Returns signal identifier.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* getSignalId(SelfType* self, PyObject* args) noexcept
+    {
+        char* name;
 
-static PyObject* setSignal(SelfType* self, PyObject* args) noexcept
-{
-    int id;
-    int x;
-    int y;
-    RealType value;
+        if (!PyArg_ParseTuple(args, "s", &name))
+            return nullptr;
 
-    if(!PyArg_ParseTuple(args, "iiif", &id, &x, &y, &value))
-        return NULL;
+        return makeObject(self->value->getSignalId(name)).release();
+    }
 
-    // Set signal value
-    self->value->setSignal(
-        id,
-        plugin::diffusion::Module::Coordinate(x, y),
-        plugin::diffusion::Module::SignalConcentration(value)
-    );
 
-    Py_RETURN_NONE;
-}
+    /**
+     * @brief Returns signal value.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* getSignal(SelfType* self, PyObject* args) noexcept
+    {
+        int id;
+        int x;
+        int y;
 
-/* ************************************************************************ */
+        if (!PyArg_ParseTuple(args, "iii", &id, &x, &y))
+            return nullptr;
 
-static PyGetSetDef g_properties[] = {
-    {const_cast<char*>("signalCount"),  (getter) getSignalCount,    NULL,  NULL},
-    {const_cast<char*>("gridSize"),     (getter) getGridSize,       NULL,  NULL},
-    {NULL}  /* Sentinel */
+        const auto value = self->value->getSignal(id, plugin::diffusion::Module::Coordinate(x, y));
+
+        return makeObject(value).release();
+    }
+
+
+    /**
+     * @brief Set signal value.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* setSignal(SelfType* self, PyObject* args) noexcept
+    {
+        int id;
+        int x;
+        int y;
+        RealType value;
+
+        if (!PyArg_ParseTuple(args, "iiif", &id, &x, &y, &value))
+            return nullptr;
+
+        // Set signal value
+        self->value->setSignal(
+            id,
+            plugin::diffusion::Module::Coordinate(x, y),
+            plugin::diffusion::Module::SignalConcentration(value)
+        );
+
+        return none().release();
+    }
+
+
+// Private Data Members
+private:
+
+    /// Type Properties
+    PyGetSetDef m_properties[3] = {
+        {const_cast<char*>("signalCount"),  (getter) getSignalCount,    nullptr,  nullptr},
+        {const_cast<char*>("gridSize"),     (getter) getGridSize,       nullptr,  nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
+    /// Type methods
+    PyMethodDef m_methods[4] = {
+        {"getSignalId", (PyCFunction) getSignalId,  METH_VARARGS, nullptr},
+        {"getSignal",   (PyCFunction) getSignal,    METH_VARARGS, nullptr},
+        {"setSignal",   (PyCFunction) setSignal,    METH_VARARGS, nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
 };
 
 /* ************************************************************************ */
 
-static PyMethodDef g_methods[] = {
-    {"getSignalId", (PyCFunction) getSignalId,  METH_VARARGS, NULL},
-    {"getSignal",   (PyCFunction) getSignal,    METH_VARARGS, NULL},
-    {"setSignal",   (PyCFunction) setSignal,    METH_VARARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
-static PyTypeObject g_type = {
-    PyObject_HEAD_INIT(NULL)
-    0,                              // ob_size
-    "diffusion.Module",             // tp_name
-    sizeof(SelfType),               // tp_basicsize
-    0,                              // tp_itemsize
-    0,                              // tp_dealloc
-    0,                              // tp_print
-    0,                              // tp_getattr
-    0,                              // tp_setattr
-    0,                              // tp_compare
-    0,                              // tp_repr
-    0,                              // tp_as_number
-    0,                              // tp_as_sequence
-    0,                              // tp_as_mapping
-    0,                              // tp_hash
-    0,                              // tp_call
-    0,                              // tp_str
-    0,                              // tp_getattro
-    0,                              // tp_setattro
-    0,                              // tp_as_buffer
-    Py_TPFLAGS_DEFAULT,             // tp_flags
-    nullptr,                        // tp_doc
-};
+ModuleType g_type;
 
 /* ************************************************************************ */
 
@@ -166,31 +204,7 @@ static PyTypeObject g_type = {
 
 void init_Module(PyObject* module)
 {
-    g_type.tp_getset = g_properties;
-    g_type.tp_methods = g_methods;
-
-    auto baseModule = makeHandle(PyImport_ImportModule("simulator"));
-    auto baseDict = PyModule_GetDict(baseModule);
-    auto baseClass = PyMapping_GetItemString(baseDict, const_cast<char*>("Module"));
-    if (!baseClass)
-        throw RuntimeException("Unable to find 'simulator.Module' class");
-
-    assert(PyType_Check(baseClass));
-
-    // Base class
-    g_type.tp_base = (PyTypeObject*) baseClass;
-
-    // Type is not ready
-    if (PyType_Ready(&g_type) < 0)
-        return;
-
-    auto type = reinterpret_cast<PyObject*>(&g_type);
-
-    Py_INCREF(type);
-    PyModule_AddObject(module, "Module", type);
-
-    // Register dynamic type
-    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

@@ -35,6 +35,9 @@
       <File Name="wrappers/simulator_Object.cpp"/>
       <File Name="wrappers/simulator_Simulation.cpp"/>
       <File Name="wrappers/stdout.cpp"/>
+      <File Name="wrappers/core_VectorPosition.cpp"/>
+      <File Name="wrappers/core_VectorForce.cpp"/>
+      <File Name="wrappers/core_VectorVelocity.cpp"/>
     </VirtualDirectory>
     <File Name="View.cpp"/>
     <File Name="Type.cpp"/>
@@ -54,6 +57,9 @@
     <File Name="Initializer.hpp"/>
     <File Name="ObjectWrapper.hpp"/>
     <File Name="Type.hpp"/>
+    <VirtualDirectory Name="wrappers">
+      <File Name="wrappers/core_Vector.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

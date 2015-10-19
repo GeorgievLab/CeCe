@@ -347,7 +347,6 @@ public:
      *
      * @return
      */
-    template<typename T1 = decltype(T{} * T{}), typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
     T getLength() const noexcept
     {
         using std::sqrt;
@@ -568,7 +567,7 @@ public:
      *
      * @return *this.
      */
-    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} + T1{}), T>::value>::type* = nullptr>
+    template<typename T1>
     BasicVector& operator+=(const BasicVector<T1, SIZE>& rhs) noexcept
     {
         m_x += rhs.getX();
@@ -586,7 +585,7 @@ public:
      *
      * @return *this.
      */
-    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} - T1{}), T>::value>::type* = nullptr>
+    template<typename T1>
     BasicVector& operator-=(const BasicVector<T1, SIZE>& rhs) noexcept
     {
         m_x -= rhs.getX();
@@ -604,7 +603,7 @@ public:
      *
      * @return *this.
      */
-    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
+    template<typename T1>
     BasicVector& operator*=(T1 rhs) noexcept
     {
         m_x *= rhs;
@@ -622,7 +621,7 @@ public:
      *
      * @return *this.
      */
-    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} * T1{}), T>::value>::type* = nullptr>
+    template<typename T1>
     BasicVector& operator*=(const BasicVector<T1, SIZE>& rhs) noexcept
     {
         m_x *= rhs.getX();
@@ -640,7 +639,7 @@ public:
      *
      * @return *this.
      */
-    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
+    template<typename T1>
     BasicVector& operator/=(T1 rhs) noexcept
     {
         m_x /= rhs;
@@ -658,7 +657,7 @@ public:
      *
      * @return *this.
      */
-    template<typename T1, typename std::enable_if<std::is_same<decltype(T{} / T1{}), T>::value>::type* = nullptr>
+    template<typename T1>
     BasicVector& operator/=(const BasicVector<T1, SIZE>& rhs) noexcept
     {
         m_x /= rhs.getX();
@@ -837,7 +836,6 @@ public:
      *
      * @return
      */
-    template<typename T1 = decltype(T{} * T{}), typename std::enable_if<std::is_scalar<T1>::value>::type* = nullptr>
     T getLength() const noexcept
     {
         using std::sqrt;

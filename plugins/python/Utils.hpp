@@ -33,6 +33,7 @@
 // Plugin
 #include "Handle.hpp"
 #include "ValueCast.hpp"
+#include "Exception.hpp"
 
 /* ************************************************************************ */
 

@@ -27,10 +27,11 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
+#include "core/Assert.hpp"
 #include "simulator/Configuration.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Type.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -44,61 +45,90 @@ namespace {
 
 /* ************************************************************************ */
 
-using SelfType = ObjectWrapper<simulator::Configuration*>;
-
-/* ************************************************************************ */
-
-PyObject* get(SelfType* self, PyObject* args, void*) noexcept
+/**
+ * @brief Type definition.
+ */
+class ConfigurationType : public Type<simulator::Configuration*>
 {
-    char* name;
-    char* def = nullptr;
 
-    if(!PyArg_ParseTuple(args, "s|s", &name, &def))
-        return NULL;
+// Ctors & Dtors
+public:
 
-    if (def)
+
+    /**
+     * @brief Constructor.
+     */
+    ConfigurationType()
+        : Type("simulator.Configuration")
     {
-        return makeObject(self->value->get(name, String(def))).release();
+        tp_methods = m_methods;
     }
-    else
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Returns value from configuration.
+     *
+     * @param self
+     * @param args
+     * @param kwds
+     *
+     * @return
+     */
+    static PyObject* get(SelfType* self, PyObject* args, PyObject* kwds) noexcept
     {
-        return makeObject(self->value->get(name)).release();
+        char* name;
+        PyObject* def = nullptr;
+
+        const char* kwlist[] = {"default", nullptr};
+
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|O", const_cast<char**>(kwlist), &name, &def))
+            return nullptr;
+
+        if (def)
+        {
+            if (PyInt_Check(def))
+            {
+                return makeObject(self->value->get(name, PyInt_AS_LONG(def))).release();
+            }
+            else if (PyFloat_Check(def))
+            {
+                return makeObject(self->value->get(name, PyFloat_AS_DOUBLE(def))).release();
+            }
+            else if (PyLong_Check(def))
+            {
+                return makeObject(self->value->get(name, PyLong_AsLong(def))).release();
+            }
+            else
+            {
+                PyErr_SetString(PyExc_ValueError, "Cannot handle default value type");
+                return nullptr;
+            }
+        }
+        else
+        {
+            return makeObject(self->value->get(name)).release();
+        }
     }
-}
 
-/* ************************************************************************ */
 
-PyMethodDef g_methods[] = {
-    {"get", (PyCFunction) get, METH_VARARGS, NULL},
-    {NULL}  /* Sentinel */
+// Private Data Members
+private:
+
+    /// Type methods.
+    PyMethodDef m_methods[2] = {
+        {"get", (PyCFunction) get, METH_VARARGS, nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
 };
 
 /* ************************************************************************ */
 
-PyTypeObject g_type = {
-    PyObject_HEAD_INIT(NULL)
-    0,                              // ob_size
-    "simulator.Configuration",      // tp_name
-    sizeof(SelfType),               // tp_basicsize
-    0,                              // tp_itemsize
-    0,                              // tp_dealloc
-    0,                              // tp_print
-    0,                              // tp_getattr
-    0,                              // tp_setattr
-    0,                              // tp_compare
-    0,                              // tp_repr
-    0,                              // tp_as_number
-    0,                              // tp_as_sequence
-    0,                              // tp_as_mapping
-    0,                              // tp_hash
-    0,                              // tp_call
-    0,                              // tp_str
-    0,                              // tp_getattro
-    0,                              // tp_setattro
-    0,                              // tp_as_buffer
-    Py_TPFLAGS_DEFAULT,             // tp_flags
-    nullptr,                        // tp_doc
-};
+ConfigurationType g_type;
 
 /* ************************************************************************ */
 
@@ -108,19 +138,7 @@ PyTypeObject g_type = {
 
 void init_simulator_Configuration(PyObject* module)
 {
-    g_type.tp_methods = g_methods;
-
-    // Type is not ready
-    if (PyType_Ready(&g_type) < 0)
-        return;
-
-    auto type = reinterpret_cast<PyObject*>(&g_type);
-
-    Py_INCREF(type);
-    PyModule_AddObject(module, "Module", type);
-
-    // Register type.
-    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

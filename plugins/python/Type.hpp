@@ -28,15 +28,126 @@
 /* ************************************************************************ */
 
 // This must be first
-#include "Python.hpp"
+#include "plugins/python/Python.hpp"
 
 // C++
 #include <typeindex>
+
+// Simulator
+#include "core/Assert.hpp"
+#include "core/String.hpp"
+#include "core/Exception.hpp"
+
+// Plugin
+#include "plugins/python/View.hpp"
+#include "plugins/python/Handle.hpp"
+#include "plugins/python/ObjectWrapper.hpp"
 
 /* ************************************************************************ */
 
 namespace plugin {
 namespace python {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Type definition.
+ *
+ * @tparam T
+ */
+template<typename T>
+class Type : public PyTypeObject
+{
+
+// Public Types
+public:
+
+
+    /// Wrapper type.
+    using SelfType = ObjectWrapper<T>;
+
+
+// Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    explicit Type(String name)
+        : PyTypeObject{PyObject_HEAD_INIT(NULL)}
+        , m_name(std::move(name))
+    {
+        tp_name = m_name.c_str();
+        tp_basicsize = sizeof(SelfType);
+        tp_flags = Py_TPFLAGS_DEFAULT;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Add type to module.
+     *
+     * @param module
+     */
+    void add(View<PyObject> module)
+    {
+        // Type is not ready
+        if (PyType_Ready(this) < 0)
+            throw RuntimeException("Cannot finalize type object");
+
+        auto type = reinterpret_cast<PyObject*>(this);
+
+        // Find dot
+        auto dot = m_name.find('.');
+        Assert(dot != String::npos);
+
+        Py_INCREF(type);
+        PyModule_AddObject(module, &m_name[dot + 1], type);
+
+        // Register dynamic type
+        registerType(typeid(Type), this);
+    }
+
+
+    /**
+     * @brief Returns required base type.
+     *
+     * @return
+     */
+    static View<PyTypeObject> getBaseType(const String& name) noexcept
+    {
+        String cname = name;
+
+        // Find dot
+        auto dot = cname.find('.');
+        Assert(dot != String::npos);
+
+        // Change dot to '\0'
+        cname[dot] = '\0';
+
+        auto baseModule = makeHandle(PyImport_ImportModule(cname.c_str()));
+        auto baseDict = PyModule_GetDict(baseModule);
+        auto baseClass = PyMapping_GetItemString(baseDict, const_cast<char*>(&cname[dot + 1]));
+
+        if (!(baseClass && PyType_Check(baseClass)))
+            throw RuntimeException("Unable to find '" + name + "' class");
+
+        // Base class
+        return reinterpret_cast<PyTypeObject*>(baseClass);
+    }
+
+
+// Private Data Members
+private:
+
+    /// Type name.
+    String m_name;
+
+};
 
 /* ************************************************************************ */
 

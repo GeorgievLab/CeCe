@@ -26,6 +26,12 @@
 // Must be first
 #include "plugins/python/Python.hpp"
 
+// Simulator
+#include "core/VectorUnits.hpp"
+
+// Plugin
+#include "plugins/python/wrappers/core_Vector.hpp"
+
 /* ************************************************************************ */
 
 namespace plugin {
@@ -33,25 +39,21 @@ namespace python {
 
 /* ************************************************************************ */
 
-void init_core_VectorInt(PyObject* module);
-void init_core_VectorUint(PyObject* module);
-void init_core_VectorFloat(PyObject* module);
-void init_core_VectorPosition(PyObject* module);
-void init_core_VectorVelocity(PyObject* module);
-void init_core_VectorForce(PyObject* module);
+namespace {
 
 /* ************************************************************************ */
 
-void init_core(void)
-{
-    PyObject* module = Py_InitModule("core", nullptr);
+static VectorType<PositionVector> g_type("core.VectorPosition");
 
-    init_core_VectorInt(module);
-    init_core_VectorUint(module);
-    init_core_VectorFloat(module);
-    init_core_VectorPosition(module);
-    init_core_VectorVelocity(module);
-    init_core_VectorForce(module);
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+void init_core_VectorPosition(PyObject* module)
+{
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

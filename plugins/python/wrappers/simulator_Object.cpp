@@ -27,11 +27,12 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
+#include "core/Assert.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Simulation.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Type.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -48,15 +49,8 @@ namespace {
 /**
  * @brief Type definition.
  */
-class Type : public PyTypeObject
+class ObjectType : public Type<simulator::Object*>
 {
-
-// Public Types
-public:
-
-
-    /// Wrapper type.
-    using SelfType = ObjectWrapper<simulator::Object*>;
 
 
 // Ctors & Dtors
@@ -66,19 +60,11 @@ public:
     /**
      * @brief Constructor.
      */
-    Type()
-        : PyTypeObject {PyObject_HEAD_INIT(NULL)}
+    explicit ObjectType()
+        : Type("simulator.Object")
     {
-        tp_name = "simulator.Object";
-        tp_basicsize = sizeof(SelfType);
-        tp_flags = Py_TPFLAGS_DEFAULT;
         tp_getset = m_properties;
         tp_methods = m_methods;
-
-
-        // Type is not ready
-        if (PyType_Ready(this) < 0)
-            throw RuntimeException("Cannot finalize type object");
     }
 
 
@@ -116,20 +102,15 @@ public:
      * @brief Sets object position.
      *
      * @param self
-     * @param args
+     * @param value
      *
      * @return
      */
-    static PyObject* setPosition(SelfType* self, PyObject* args) noexcept
+    static int setPosition(SelfType* self, PyObject* value) noexcept
     {
-        PyObject* position;
+        self->value->setPosition(cast<PositionVector>(value));
 
-        if(!PyArg_ParseTuple(args, "o", &position))
-            return NULL;
-
-        self->value->setPosition(cast<PositionVector>(position));
-
-        return none();
+        return 0;
     }
 
 
@@ -150,20 +131,15 @@ public:
      * @brief Change object rotation.
      *
      * @param self
-     * @param args
+     * @param value
      *
      * @return
      */
-    static PyObject* setRotation(SelfType* self, PyObject* args) noexcept
+    static int setRotation(SelfType* self, PyObject* value) noexcept
     {
-        float rotation;
+        self->value->setRotation(cast<units::Angle>(value));
 
-        if(!PyArg_ParseTuple(args, "f", &rotation))
-            return NULL;
-
-        self->value->setRotation(units::Angle(rotation));
-
-        return none();
+        return 0;
     }
 
 
@@ -184,20 +160,44 @@ public:
      * @brief Change object velocity.
      *
      * @param self
-     * @param args
+     * @param value
      *
      * @return
      */
-    static PyObject* setVelocity(SelfType* self, PyObject* args) noexcept
+    static int setVelocity(SelfType* self, PyObject* value) noexcept
     {
-        PyObject* velocity;
+        self->value->setVelocity(cast<VelocityVector>(value));
 
-        if(!PyArg_ParseTuple(args, "o", &velocity))
-            return NULL;
+        return 0;
+    }
 
-        self->value->setVelocity(cast<VelocityVector>(velocity));
 
-        return none();
+    /**
+     * @brief Returns object density.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getDensity(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getDensity()).release();
+    }
+
+
+    /**
+     * @brief Sets object position.
+     *
+     * @param self
+     * @param value
+     *
+     * @return
+     */
+    static int setDensity(SelfType* self, PyObject* value) noexcept
+    {
+        self->value->setDensity(cast<units::Density>(value));
+
+        return 0;
     }
 
 
@@ -215,6 +215,27 @@ public:
 
 
     /**
+     * @brief Apply force to object.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* applyForce(SelfType* self, PyObject* args) noexcept
+    {
+        PyObject* force;
+
+        if (!PyArg_ParseTuple(args, "O", &force))
+            return nullptr;
+
+        self->value->applyForce(cast<ForceVector>(force));
+
+        return none().release();
+    }
+
+
+    /**
      * @brief Use program.
      *
      * @param self
@@ -222,17 +243,17 @@ public:
      *
      * @return
      */
-    static PyObject* useProgram(SelfType* self, PyObject* args, void*) noexcept
+    static PyObject* useProgram(SelfType* self, PyObject* args) noexcept
     {
         char* name;
 
-        if(!PyArg_ParseTuple(args, "s", &name))
+        if (!PyArg_ParseTuple(args, "s", &name))
             return NULL;
 
         // Add program
         self->value->useProgram(name);
 
-        return none();
+        return none().release();
     }
 
 
@@ -247,36 +268,37 @@ public:
     {
         self->value->destroy();
 
-        return none();
+        return none().release();
     }
 
 
 // Private Data Members
 private:
 
-
     /// Type properties.
-    PyGetSetDef m_properties[6] = {
-        {const_cast<char*>("id"),        (getter) getId,        NULL,                  NULL},
-        {const_cast<char*>("position"),  (getter) getPosition,  (setter) setPosition,  NULL},
-        {const_cast<char*>("rotation"),  (getter) getRotation,  (setter) setRotation,  NULL},
-        {const_cast<char*>("velocity"),  (getter) getVelocity,  (setter) setVelocity,  NULL},
-        {const_cast<char*>("className"), (getter) getClassName, NULL,                  NULL},
-        {NULL}  /* Sentinel */
+    PyGetSetDef m_properties[7] = {
+        {const_cast<char*>("id"),        (getter) getId,        nullptr,               nullptr},
+        {const_cast<char*>("position"),  (getter) getPosition,  (setter) setPosition,  nullptr},
+        {const_cast<char*>("rotation"),  (getter) getRotation,  (setter) setRotation,  nullptr},
+        {const_cast<char*>("velocity"),  (getter) getVelocity,  (setter) setVelocity,  nullptr},
+        {const_cast<char*>("density"),   (getter) getDensity,   (setter) setDensity,   nullptr},
+        {const_cast<char*>("className"), (getter) getClassName, nullptr,               nullptr},
+        {nullptr}  /* Sentinel */
     };
 
     /// Type methods.
-    PyMethodDef m_methods[3] = {
-        {"useProgram", (PyCFunction) useProgram, METH_VARARGS, NULL},
-        {"destroy",    (PyCFunction) destroy, METH_NOARGS, NULL},
-        {NULL}  /* Sentinel */
+    PyMethodDef m_methods[4] = {
+        {"applyForce", (PyCFunction) applyForce, METH_VARARGS, nullptr},
+        {"useProgram", (PyCFunction) useProgram, METH_VARARGS, nullptr},
+        {"destroy",    (PyCFunction) destroy,    METH_NOARGS,  nullptr},
+        {nullptr}  /* Sentinel */
     };
 
 };
 
 /* ************************************************************************ */
 
-static Type g_type;
+ObjectType g_type;
 
 /* ************************************************************************ */
 
@@ -286,13 +308,7 @@ static Type g_type;
 
 void init_simulator_Object(PyObject* module)
 {
-    auto type = reinterpret_cast<PyObject*>(&g_type);
-
-    Py_INCREF(type);
-    PyModule_AddObject(module, "Object", type);
-
-    // Register type.
-    registerType(typeid(std::remove_pointer<Type::SelfType::ValueType>::type), &g_type);
+    g_type.add(module);
 
     // Define constants
     PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));

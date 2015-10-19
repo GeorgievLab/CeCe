@@ -27,10 +27,11 @@
 #include "plugins/python/Python.hpp"
 
 // Simulator
+#include "core/Assert.hpp"
 #include "simulator/Simulation.hpp"
 
 // Plugin
-#include "plugins/python/ObjectWrapper.hpp"
+#include "plugins/python/Type.hpp"
 #include "plugins/python/Utils.hpp"
 
 /* ************************************************************************ */
@@ -44,190 +45,326 @@ namespace {
 
 /* ************************************************************************ */
 
-using SelfType = ObjectWrapper<simulator::Simulation*>;
-
-/* ************************************************************************ */
-
-static PyObject* getWorldSize(SelfType* self) noexcept
+/**
+ * @brief Type definition.
+ */
+class SimulationType : public Type<simulator::Simulation*>
 {
-    return makeObject(self->value->getWorldSize()).release();
-}
 
-/* ************************************************************************ */
+// Ctors & Dtors
+public:
 
-static PyObject* getIteration(SelfType* self) noexcept
-{
-    return makeObject(self->value->getIteration()).release();
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Constructor.
+     */
+    SimulationType()
+        : Type("simulator.Simulation")
+    {
+        tp_getset = m_properties;
+        tp_methods = m_methods;
+    }
 
-static PyObject* getIterations(SelfType* self) noexcept
-{
-    return makeObject(self->value->getIterations()).release();
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Returns world size.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getWorldSize(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getWorldSize()).release();
+    }
 
-static PyObject* setIterations(SelfType* self, PyObject* args) noexcept
-{
-    int iterations;
 
-    if(!PyArg_ParseTuple(args, "i", &iterations))
-        return NULL;
+    /**
+     * @brief Returns a number of current iteration.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getIteration(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getIteration()).release();
+    }
 
-    self->value->setIterations(iterations);
 
-    return none();
-}
+    /**
+     * @brief Returns a number of iterations.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getIterations(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getIterations()).release();
+    }
 
-/* ************************************************************************ */
 
-static PyObject* getTimeStep(SelfType* self) noexcept
-{
-    return makeObject(self->value->getTimeStep()).release();
-}
+    /**
+     * @brief Change iterations number.
+     *
+     * @param self
+     * @param value
+     *
+     * @return
+     */
+    static int setIterations(SelfType* self, PyObject* value) noexcept
+    {
+        try
+        {
+            self->value->setIterations(cast<simulator::IterationCount>(value));
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+            return -1;
+        }
 
-/* ************************************************************************ */
+        return 0;
+    }
 
-static PyObject* setTimeStep(SelfType* self, PyObject* args) noexcept
-{
-    float timeStep;
 
-    if(!PyArg_ParseTuple(args, "f", &timeStep))
-        return NULL;
+    /**
+     * @brief Returns time step.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getTimeStep(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getTimeStep()).release();
+    }
 
-    self->value->setTimeStep(units::Time(timeStep));
 
-    return none();
-}
+    /**
+     * @brief Change time step.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static int setTimeStep(SelfType* self, PyObject* value) noexcept
+    {
+        try
+        {
+            self->value->setTimeStep(cast<units::Time>(value));
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+            return -1;
+        }
 
-/* ************************************************************************ */
+        return 0;
+    }
 
-static PyObject* getTotalTime(SelfType* self) noexcept
-{
-    return makeObject(self->value->getTotalTime()).release();
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Returns total simulation time.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getTotalTime(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getTotalTime()).release();
+    }
 
-static PyObject* getObjectCount(SelfType* self) noexcept
-{
-    return makeObject(self->value->getObjectCount()).release();
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Returns a number of objects.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getObjectCount(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getObjectCount()).release();
+    }
 
-static PyObject* useModule(SelfType* self, PyObject* args, void*) noexcept
-{
-    char* name;
 
-    if(!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
+    /**
+     * @brief Gets a module.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* useModule(SelfType* self, PyObject* args) noexcept
+    {
+        char* name;
 
-    return makeObject(self->value->useModule(name)).release();
-}
+        if (!PyArg_ParseTuple(args, "s", &name))
+            return nullptr;
 
-/* ************************************************************************ */
+        try
+        {
+            return makeObject(self->value->useModule(name)).release();
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
 
-static PyObject* buildObject(SelfType* self, PyObject* args, void*) noexcept
-{
-    char* name;
-    int type = static_cast<int>(simulator::Object::Type::Dynamic);
+        return nullptr;
+    }
 
-    if(!PyArg_ParseTuple(args, "s|i", &name, &type))
-        return NULL;
 
-    return makeObject(self->value->buildObject(name, static_cast<simulator::Object::Type>(type))).release();
-}
+    /**
+     * @brief Create a new object.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* buildObject(SelfType* self, PyObject* args) noexcept
+    {
+        char* name;
+        int type = static_cast<int>(simulator::Object::Type::Dynamic);
 
-/* ************************************************************************ */
+        if (!PyArg_ParseTuple(args, "s|i", &name, &type))
+            return nullptr;
 
-static PyObject* objectCountType(SelfType* self, PyObject* args, void*) noexcept
-{
-    char* name;
+        try
+        {
+            return makeObject(self->value->buildObject(name, static_cast<simulator::Object::Type>(type))).release();
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
 
-    if(!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
+        return nullptr;
+    }
 
-    return makeObject(self->value->getObjectCountType(name)).release();
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Returns a number of object of given type.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* objectCountType(SelfType* self, PyObject* args) noexcept
+    {
+        char* name;
 
-static PyObject* getParameter(SelfType* self, PyObject* args, void*) noexcept
-{
-    char* name;
-    float def = 0;
+        if (!PyArg_ParseTuple(args, "s", &name))
+            return nullptr;
 
-    if(!PyArg_ParseTuple(args, "s|f", &name, &def))
-        return NULL;
+        try
+        {
+            return makeObject(self->value->getObjectCountType(name)).release();
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
 
-    // Return parameter
-    return makeObject(self->value->getParameter(name, def)).release();
-}
+        return nullptr;
+    }
 
-/* ************************************************************************ */
 
-static PyObject* getObject(SelfType* self, PyObject* args, void*) noexcept
-{
-    int pos;
+    /**
+     * @brief Returns parameter.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* getParameter(SelfType* self, PyObject* args) noexcept
+    {
+        char* name;
+        float def = 0;
 
-    if(!PyArg_ParseTuple(args, "i", &pos))
-        return NULL;
+        if (!PyArg_ParseTuple(args, "s|f", &name, &def))
+            return nullptr;
 
-    return makeObject(self->value->getObjects()[pos].get()).release();
-}
+        try
+        {
+            // Return parameter
+            return makeObject(self->value->getParameter(name, def)).release();
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
 
-/* ************************************************************************ */
+        return nullptr;
+    }
 
-static PyGetSetDef g_properties[] = {
-    {const_cast<char*>("worldSize"),   (getter) getWorldSize,   NULL,                   NULL},
-    {const_cast<char*>("iteration"),   (getter) getIteration,   NULL,                   NULL},
-    {const_cast<char*>("iterations"),  (getter) getIterations,  (setter) setIterations, NULL},
-    {const_cast<char*>("timeStep"),    (getter) getTimeStep,    (setter) setTimeStep,   NULL},
-    {const_cast<char*>("totalTime"),   (getter) getTotalTime,   NULL,                   NULL},
-    {const_cast<char*>("objectCount"), (getter) getObjectCount, NULL,                   NULL},
-    {NULL}  /* Sentinel */
+
+    /**
+     * @brief Returns object by position.
+     *
+     * @param self
+     * @param args
+     *
+     * @return
+     */
+    static PyObject* getObject(SelfType* self, PyObject* args) noexcept
+    {
+        int pos;
+
+        if (!PyArg_ParseTuple(args, "i", &pos))
+            return nullptr;
+
+        try
+        {
+            return makeObject(self->value->getObjects()[pos].get()).release();
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+        }
+
+        return nullptr;
+    }
+
+
+// Private Data Members
+private:
+
+    // Type properties.
+    PyGetSetDef m_properties[7] = {
+        {const_cast<char*>("worldSize"),   (getter) getWorldSize,   nullptr,                nullptr},
+        {const_cast<char*>("iteration"),   (getter) getIteration,   nullptr,                nullptr},
+        {const_cast<char*>("iterations"),  (getter) getIterations,  (setter) setIterations, nullptr},
+        {const_cast<char*>("timeStep"),    (getter) getTimeStep,    (setter) setTimeStep,   nullptr},
+        {const_cast<char*>("totalTime"),   (getter) getTotalTime,   nullptr,                nullptr},
+        {const_cast<char*>("objectCount"), (getter) getObjectCount, nullptr,                nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
+
+    // Type methods.
+    PyMethodDef m_methods[6] = {
+        {"useModule",       (PyCFunction) useModule,        METH_VARARGS, nullptr},
+        {"buildObject",     (PyCFunction) buildObject,      METH_VARARGS, nullptr},
+        {"objectCountType", (PyCFunction) objectCountType,  METH_VARARGS, nullptr},
+        {"getParameter",    (PyCFunction) getParameter,     METH_VARARGS, nullptr},
+        {"getObject",       (PyCFunction) getObject,        METH_VARARGS, nullptr},
+        {nullptr}  /* Sentinel */
+    };
+
 };
 
 /* ************************************************************************ */
 
-static PyMethodDef g_methods[] = {
-    {"useModule",       (PyCFunction) useModule,        METH_VARARGS, NULL},
-    {"buildObject",     (PyCFunction) buildObject,      METH_VARARGS, NULL},
-    {"objectCountType", (PyCFunction) objectCountType,  METH_VARARGS, NULL},
-    {"getParameter",    (PyCFunction) getParameter,     METH_VARARGS, NULL},
-    {"getObject",       (PyCFunction) getObject,        METH_VARARGS, NULL},
-    {NULL}  /* Sentinel */
-};
-
-/* ************************************************************************ */
-
-static PyTypeObject g_type = {
-    PyObject_HEAD_INIT(NULL)
-    0,                              // ob_size
-    "simulator.Simulation",         // tp_name
-    sizeof(SelfType),               // tp_basicsize
-    0,                              // tp_itemsize
-    0,                              // tp_dealloc
-    0,                              // tp_print
-    0,                              // tp_getattr
-    0,                              // tp_setattr
-    0,                              // tp_compare
-    0,                              // tp_repr
-    0,                              // tp_as_number
-    0,                              // tp_as_sequence
-    0,                              // tp_as_mapping
-    0,                              // tp_hash
-    0,                              // tp_call
-    0,                              // tp_str
-    0,                              // tp_getattro
-    0,                              // tp_setattro
-    0,                              // tp_as_buffer
-    Py_TPFLAGS_DEFAULT,             // tp_flags
-    nullptr,                        // tp_doc
-};
+SimulationType g_type;
 
 /* ************************************************************************ */
 
@@ -237,20 +374,7 @@ static PyTypeObject g_type = {
 
 void init_simulator_Simulation(PyObject* module)
 {
-    g_type.tp_getset = g_properties;
-    g_type.tp_methods = g_methods;
-
-    // Type is not ready
-    if (PyType_Ready(&g_type) < 0)
-        return;
-
-    auto type = reinterpret_cast<PyObject*>(&g_type);
-
-    Py_INCREF(type);
-    PyModule_AddObject(module, "Simulation", type);
-
-    // Register type.
-    registerType(typeid(std::remove_pointer<SelfType::ValueType>::type), &g_type);
+    g_type.add(module);
 }
 
 /* ************************************************************************ */

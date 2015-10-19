@@ -1872,6 +1872,69 @@ typename Reduce<List<Nominators1..., Denominators2...>, List<Denominators1..., N
 /* ************************************************************************ */
 
 /**
+ * @brief Remove type for Sqrt.
+ */
+template<typename Types>
+struct SqrtRemove;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Remove type for Sqrt.
+ */
+template<>
+struct SqrtRemove<List<>>
+{
+    using type = List<>;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Remove type for Sqrt.
+ */
+template<typename Type, typename... Types>
+struct SqrtRemove<List<Type, Types...>>
+{
+    using Rem = Remove<Type, List<Types...>>;
+    static_assert(Rem::value, "List is not sqrt");
+
+    using Inner = SqrtRemove<typename Rem::type>;
+
+    using type = typename Concat<List<Type>, typename Inner::type>::type;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Square root type.
+ *
+ * @tparam Nom
+ * @tparam Denom
+ */
+template<typename Nom, typename Denom>
+struct Sqrt
+{
+    using Nominators = typename SqrtRemove<Nom>::type;
+    using Denominators = typename SqrtRemove<Denom>::type;
+
+    using type = Unit<Nominators, Denominators>;
+};
+
+/* ************************************************************************ */
+
+template<typename... Nominators, typename... Denominators>
+typename Sqrt<List<Nominators...>, List<Denominators...>>::type
+sqrt(const Unit<List<Nominators...>, List<Denominators...>>& value) noexcept
+{
+    return typename Sqrt<List<Nominators...>, List<Denominators...>>::type(
+        std::sqrt(value.value())
+    );
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Division type - used for change nominator per denominator.
  *
  * @tparam Nom
