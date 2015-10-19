@@ -99,16 +99,16 @@ void Reactions::executeRules(
         const auto change = reaction.rules[moleculeIndex].product - reaction.rules[moleculeIndex].requirement;
         const auto env_change = reaction.rules[moleculeIndex].env_product - reaction.rules[moleculeIndex].env_requirement;
 
+        if (!change && !env_change)
+            return;
+
         if (change)
-        {
             cell.changeMoleculeCount(moleculeName, change);
-            refreshPropensities(moleculeIndex, cell, diffusion, coords);
-        }
+
         if (env_change)
-        {
             changeMoleculesInEnvironment(moleculeName, reaction[moleculeId].env_product, cell.getSimulation(), diffusion, coords);
-            refreshPropensities(moleculeIndex, cell, diffusion, coords);
-        }
+
+        refreshPropensities(moleculeIndex, cell, diffusion, coords);
     }
 }
 
