@@ -85,8 +85,8 @@ script:
     - cpack -G TGZ
 
 after_success:
-    - pwd
-    - $TRAVIS_BUILD_DIR/resources/scripts/deploy.sh
+    - cd $TRAVIS_BUILD_DIR
+    - resources/scripts/deploy.sh
 
 # Dependencies cache
 cache:
