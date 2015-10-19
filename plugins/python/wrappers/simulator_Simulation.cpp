@@ -180,6 +180,43 @@ public:
 
 
     /**
+     * @brief Returns simulation gravity vector.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getGravity(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getGravity()).release();
+    }
+
+
+    /**
+     * @brief Change gravity vector.
+     *
+     * @param self
+     * @param value
+     *
+     * @return
+     */
+    static int setGravity(SelfType* self, PyObject* value) noexcept
+    {
+        try
+        {
+            self->value->setGravity(cast<AccelerationVector>(value));
+        }
+        catch (const ::Exception& e)
+        {
+            PyErr_SetString(PyExc_RuntimeError, e.what());
+            return -1;
+        }
+
+        return 0;
+    }
+
+
+    /**
      * @brief Returns a number of objects.
      *
      * @param self
@@ -339,11 +376,12 @@ public:
 private:
 
     // Type properties.
-    PyGetSetDef m_properties[7] = {
+    PyGetSetDef m_properties[8] = {
         {const_cast<char*>("worldSize"),   (getter) getWorldSize,   nullptr,                nullptr},
         {const_cast<char*>("iteration"),   (getter) getIteration,   nullptr,                nullptr},
         {const_cast<char*>("iterations"),  (getter) getIterations,  (setter) setIterations, nullptr},
         {const_cast<char*>("timeStep"),    (getter) getTimeStep,    (setter) setTimeStep,   nullptr},
+        {const_cast<char*>("gravity"),     (getter) getGravity,     (setter) setGravity,    nullptr},
         {const_cast<char*>("totalTime"),   (getter) getTotalTime,   nullptr,                nullptr},
         {const_cast<char*>("objectCount"), (getter) getObjectCount, nullptr,                nullptr},
         {nullptr}  /* Sentinel */
