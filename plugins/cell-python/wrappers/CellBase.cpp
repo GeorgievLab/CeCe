@@ -65,7 +65,6 @@ public:
     CellBaseType()
         : Type("cell.CellBase")
     {
-        tp_base = getBaseType("simulator.Object");
         tp_getset = m_properties;
         tp_methods = m_methods;
     }
@@ -198,6 +197,8 @@ CellBaseType g_type;
 
 void init_CellBase(PyObject* module)
 {
+    // Set parent type.
+    g_type.tp_base = g_type.getBaseType("simulator.Object");
     g_type.add(module);
 }
 

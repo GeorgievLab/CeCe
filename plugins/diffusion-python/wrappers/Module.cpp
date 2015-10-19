@@ -65,7 +65,6 @@ public:
     ModuleType()
         : Type("diffusion.Module")
     {
-        tp_base = getBaseType("simulator.Module");
         tp_getset = m_properties;
         tp_methods = m_methods;
     }
@@ -204,6 +203,7 @@ ModuleType g_type;
 
 void init_Module(PyObject* module)
 {
+    g_type.tp_base = g_type.getBaseType("simulator.Module");
     g_type.add(module);
 }
 

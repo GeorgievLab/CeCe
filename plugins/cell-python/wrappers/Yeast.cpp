@@ -64,7 +64,7 @@ public:
     YeastType()
         : Type("cell.Yeast")
     {
-        tp_base = getBaseType("cell.CellBase");
+        // Nothing to do
     }
 
 };
@@ -81,6 +81,7 @@ YeastType g_type;
 
 void init_Yeast(PyObject* module)
 {
+    g_type.tp_base = g_type.getBaseType("cell.CellBase");
     g_type.add(module);
 }
 
