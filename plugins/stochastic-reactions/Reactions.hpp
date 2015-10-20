@@ -72,7 +72,10 @@ public:
      */
     struct Conditions
     {
-
+        bool evaulateCondition()
+        {
+            return true;
+        }
     };
 
     /**

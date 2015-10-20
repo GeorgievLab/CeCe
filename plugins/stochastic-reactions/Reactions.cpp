@@ -106,10 +106,28 @@ void Reactions::executeRules(
             cell.changeMoleculeCount(moleculeName, change);
 
         if (env_change)
-            changeMoleculesInEnvironment(moleculeName, reaction[moleculeId].env_product, cell.getSimulation(), diffusion, coords);
+            changeMoleculesInEnvironment(moleculeName, env_change, diffusion, cell.getSimulation(), coords);
 
         refreshPropensities(moleculeIndex, cell, diffusion, coords);
     }
+}
+
+/* ************************************************************************ */
+
+void IntercellularReactions::changeMoleculesInEnvironment(
+    const int change,
+    const String& name,
+    plugin::diffusion::Module* diffusion,
+    const simulator::Simulation& simulation,
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+{
+    assert(change != 0);
+
+    // Get signal ID
+    const auto id = diffusion->requireSignalId(name);
+
+    // Change amount of molecules
+    changeMolecules(simulation, *diffusion, coords, id, change);
 }
 
 /* ************************************************************************ */
@@ -140,7 +158,34 @@ PropensityType computePropensity(
     const plugin::cell::CellBase& cell,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 {
-    return 0;
+    PropensityType local = m_rates[index];
+    for (unsigned int i = 0; i < m_rules[index].size(); i++)
+    {
+        const auto number = cell.getMoleculeCount(m_moleculeNames[i]);
+
+        bool condEnv = true;
+
+        // Get signal ID
+        const auto id = diffusion->getSignalId(m_moleculeNames[i]);
+        if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
+        {
+            const auto numberEnv = getMolarConcentration(*diffusion, coords, id).value();
+
+            condEnv =
+                // >
+                (m_rules[index][i].env_less && (numberEnv <= m_rules[index][i].env_requirement)) ||
+                // <=
+                (!m_rules[index][i].env_less && (numberEnv >= m_rules[index][i].env_requirement))
+            ;
+        }
+
+        if (!cond || !condEnv)
+            return 0;
+
+        if (m_rules[index][i].requirement != 0u)
+            local *= number;
+    }
+    return local;
 }
 
 /* ************************************************************************ */
@@ -167,8 +212,7 @@ void Reactions::refreshPropensities(
 {
     for (unsigned int i = 0; i < m_rules.size(); i++)
     {
-        if (m_rules[i][index].requirement ||
-            m_rules[i][index].env_requirement)
+        if (m_reactions[i].rules[index].requirement)
         {
             m_propensities[i] = computePropensity(i, cell, diffusion, coords);
         }
@@ -182,7 +226,13 @@ void Reactions::refreshEnvPropensities(
     const plugin::cell::CellBase& cell,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 {
-
+    for (unsigned int i = 0; i < m_rules.size(); i++)
+    {
+        if (m_reactions[i].rules[index].env_requirement)
+        {
+            m_propensities[i] = computePropensity(i, cell, diffusion, coords);
+        }
+    }
 }
 
 /* ************************************************************************ */
