@@ -202,6 +202,19 @@ public:
 
 
     /**
+     * @brief Returns object mass.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getMass(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getMass()).release();
+    }
+
+
+    /**
      * @brief Returns object class name.
      *
      * @param self
@@ -276,12 +289,13 @@ public:
 private:
 
     /// Type properties.
-    PyGetSetDef m_properties[7] = {
+    PyGetSetDef m_properties[8] = {
         {const_cast<char*>("id"),        (getter) getId,        nullptr,               nullptr},
         {const_cast<char*>("position"),  (getter) getPosition,  (setter) setPosition,  nullptr},
         {const_cast<char*>("rotation"),  (getter) getRotation,  (setter) setRotation,  nullptr},
         {const_cast<char*>("velocity"),  (getter) getVelocity,  (setter) setVelocity,  nullptr},
         {const_cast<char*>("density"),   (getter) getDensity,   (setter) setDensity,   nullptr},
+        {const_cast<char*>("mass"),      (getter) getMass,      nullptr,               nullptr},
         {const_cast<char*>("className"), (getter) getClassName, nullptr,               nullptr},
         {nullptr}  /* Sentinel */
     };
