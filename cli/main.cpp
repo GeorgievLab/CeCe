@@ -93,6 +93,9 @@ struct Parameters
     /// Path to simulation file.
     FilePath simulationFile;
 
+    /// Simulation parameters.
+    Map<String, float> parameters;
+
 #if ENABLE_RENDER
     // If simulation should be rendered.
     TriBool visualize = Indeterminate;
@@ -161,6 +164,7 @@ void terminate_simulation(int param)
         "Usage:\n"
         "  " << bname << " "
             "[ --plugins "
+            "| --param | -p "
 #if ENABLE_RENDER
             "| --visualize "
             "| --novisualize "
@@ -175,6 +179,8 @@ void terminate_simulation(int param)
         "<simulation-file>\n"
         "\n"
         "    --plugins            Prints a list of available plugins.\n"
+        "    --param <name> <value> Set simulation parameter.\n"
+        "    -p <name> <value>    Set simulation parameter.\n"
 #if ENABLE_RENDER
         "    --visualize          Enable visualization (default).\n"
         "    --fullscreen         Visualization window in fullscreen mode.\n"
@@ -234,8 +240,18 @@ Parameters parseArguments(int argc, char** argv)
         // Switch
         if (arg[0] == '-')
         {
+            if (arg == "-p" || arg == "--param")
+            {
+                // Parameter
+                if (i + 2 >= argc)
+                    throw InvalidArgumentException("Missing parameter value");
+
+                // Store parameter
+                params.parameters[argv[i + 1]] = units::parse(argv[i + 2]);
+                i += 2;
+            }
 #if ENABLE_RENDER
-            if (arg == "--visualize")
+            else if (arg == "--visualize")
             {
                 params.visualize = true;
             }
@@ -326,6 +342,10 @@ public:
 
         // Create simulation
         m_simulator.setSimulation(simulator::PluginManager::s().createSimulation(m_simulationFile));
+
+        // Set parameters
+        for (const auto& p : params.parameters)
+            m_simulator.getSimulation()->setParameter(p.first, p.second);
 
 #if ENABLE_RENDER
         const auto simViz = m_simulator.getSimulation()->getVisualize();
