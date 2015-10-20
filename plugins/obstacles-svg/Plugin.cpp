@@ -116,7 +116,6 @@ void cubicBezier(Fn store, StaticArray<Vector<float>, 4> vs, float tol, int leve
     else
     {
         store(vs[3]);
-        Log::debug(vs[3].getX(), "; ", vs[3].getY());
     }
 }
 
@@ -189,7 +188,13 @@ class ObstaclesSvgApi : public PluginApi
             for (NSVGpath* path = shape->paths; path != nullptr; path = path->next)
             {
                 storePath([&oShape, &offset, &scale] (Vector<float> vec) {
-                    oShape.edges.push_back((vec - offset) * scale);
+                    const auto v = (vec - offset) * scale * Vector<float>(1, -1);
+                    if (oShape.edges.empty() ||
+                        oShape.edges.back().distanceSquared(v).value() > 0.05)
+                    {
+                        oShape.edges.push_back(v);
+                        Log::debug(v.getX(), "; ", v.getY());
+                    }
                 }, path, px * 1.5);
             }
 
