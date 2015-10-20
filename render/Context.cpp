@@ -252,12 +252,12 @@ void Context::setView(int width, int height) noexcept
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // Move camera
-    glTranslatef(m_camera.getPosition().getX().value(), m_camera.getPosition().getY().value(), 0);
-
     // Apply zoom matrix
     float scale = 1 / m_camera.getZoom();
     glScalef(scale, scale, scale);
+
+    // Move camera
+    glTranslatef(m_camera.getPosition().getX().value(), m_camera.getPosition().getY().value(), 0);
 
     // Rotate camera
     //glRotatef(m_camera.getRotation(), 0, 1, 0);
