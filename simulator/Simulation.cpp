@@ -218,6 +218,17 @@ unsigned long Simulation::getObjectCountType(const String& className) const noex
 
 /* ************************************************************************ */
 
+ViewPtr<const ObjectType> Simulation::findObjectType(const StringView& name) const noexcept
+{
+    auto it = std::find_if(m_objectClasses.begin(), m_objectClasses.end(), [&name] (const ObjectType& type) {
+        return type.name == name;
+    });
+
+    return it != m_objectClasses.end() ? &*it : nullptr;
+}
+
+/* ************************************************************************ */
+
 void Simulation::setGravity(const AccelerationVector& gravity) noexcept
 {
 #if ENABLE_PHYSICS
@@ -295,6 +306,20 @@ Module* Simulation::useModule(const String& path, String storePath)
 
 Object* Simulation::buildObject(const String& path, Object::Type type)
 {
+    // Try to find object internal object type
+    auto desc = findObjectType(path);
+
+    if (desc)
+    {
+        // Create parent object
+        auto obj = buildObject(desc->baseName);
+
+        // Configure
+        obj->configure(desc->config, *this);
+
+        return obj;
+    }
+
     // Split path into parts
     String library, name;
     std::tie(library, name) = splitModulePath(path);
@@ -441,6 +466,16 @@ void Simulation::configure(const Configuration& config)
     for (auto&& parameterConfig : config.getConfigurations("parameter"))
     {
         setParameter(parameterConfig.get("name"), units::parse(parameterConfig.get("value")));
+    }
+
+    // Register user types
+    for (auto&& typeConfig : config.getConfigurations("type"))
+    {
+        addObjectType({
+            typeConfig.get("name"),
+            typeConfig.get("base"),
+            typeConfig.toMemory()
+        });
     }
 
     // Parse init

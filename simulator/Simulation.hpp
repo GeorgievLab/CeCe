@@ -48,6 +48,7 @@
 #include "core/DataTable.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
+#include "simulator/ObjectType.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/SimulationListener.hpp"
@@ -130,6 +131,9 @@ public:
 
     /// Data table container type.
     using DataTableContainer = Map<String, DataTable>;
+
+    /// Container for object classes.
+    using ObjectTypeContainer = DynamicArray<ObjectType>;
 
 
 // Public Ctors
@@ -399,6 +403,16 @@ public:
         auto it = m_parameters.find(name);
         return it != m_parameters.end() ? it->second : def;
     }
+
+
+    /**
+     * @brief Find object class by name.
+     *
+     * @param name
+     *
+     * @return
+     */
+    ViewPtr<const ObjectType> findObjectType(const StringView& name) const noexcept;
 
 
 #if ENABLE_PHYSICS
@@ -675,6 +689,17 @@ public:
      * @param gravity
      */
     void setGravity(const AccelerationVector& gravity) noexcept;
+
+
+    /**
+     * @brief Register object class.
+     *
+     * @param rec.
+     */
+    void addObjectType(ObjectType rec)
+    {
+        m_objectClasses.push_back(std::move(rec));
+    }
 
 
     /**
@@ -1122,6 +1147,9 @@ private:
 
     /// Managed data tables.
     DataTableContainer m_dataTables;
+
+    /// Registered object classes.
+    ObjectTypeContainer m_objectClasses;
 
 #if ENABLE_RENDER
     /// Option if visualization should be enabled.
