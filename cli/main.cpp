@@ -491,7 +491,7 @@ public:
         ptr->m_windowHeight = h;
 
         // Update zoom
-        ptr->setOptimalZoom();
+        //ptr->setOptimalZoom();
 
         if (ptr->m_paused)
         {
@@ -516,15 +516,73 @@ public:
      */
     static void keyboardCallback(GLFWwindow* win, int key, int code, int action, int mods) noexcept
     {
+        constexpr float MOVE_COEFF = 5;
+        constexpr float ZOOM_COEFF = 1.1;
+
         auto* ptr = reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win));
 
-        if (action != GLFW_PRESS)
+        if (action != GLFW_PRESS && action != GLFW_REPEAT)
             return;
 
         switch (key)
         {
         default:
             // Nothing
+            break;
+
+        case GLFW_KEY_I:
+        {
+            auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+            camera.setZoom(camera.getZoom() * 1.0 / ZOOM_COEFF);
+            break;
+        }
+
+        case GLFW_KEY_O:
+        {
+            auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+            camera.setZoom(camera.getZoom() * ZOOM_COEFF);
+            break;
+        }
+
+        case GLFW_KEY_RIGHT:
+        {
+            auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+            camera.setPosition(camera.getPosition() +
+                MOVE_COEFF * PositionVector{units::Length(-1), Zero}
+            );
+            break;
+        }
+
+        case GLFW_KEY_LEFT:
+        {
+            auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+            camera.setPosition(camera.getPosition() +
+                MOVE_COEFF * PositionVector{units::Length(1), Zero}
+            );
+            break;
+        }
+
+        case GLFW_KEY_UP:
+        {
+            auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+            camera.setPosition(camera.getPosition() +
+                MOVE_COEFF * PositionVector{Zero, units::Length(-1)}
+            );
+            break;
+        }
+
+        case GLFW_KEY_DOWN:
+        {
+            auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+            camera.setPosition(camera.getPosition() +
+                MOVE_COEFF * PositionVector{Zero, units::Length(1)}
+            );
+            break;
+        }
+
+        case GLFW_KEY_R:
+            // Reset camera
+            ptr->setOptimalZoom();
             break;
 
         case GLFW_KEY_Q:
@@ -599,6 +657,110 @@ public:
 
             break;
 #endif
+        }
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Mouse scroll callback.
+     *
+     * @param win
+     * @param xoffset
+     * @param yoffset
+     */
+    static void mouseScrollCallback(GLFWwindow* win, double xoffset, double yoffset) noexcept
+    {
+        constexpr float ZOOM_COEFF = 1.1;
+
+        auto* ptr = reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win));
+        auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+
+        if (yoffset < 0)
+        {
+            camera.setZoom(camera.getZoom() * ZOOM_COEFF);
+        }
+        else if (yoffset > 0)
+        {
+            camera.setZoom(camera.getZoom() * 1.0 / ZOOM_COEFF);
+        }
+
+        if (ptr->m_paused)
+        {
+            ptr->draw();
+
+            // Swap buffers
+            glfwSwapBuffers(win);
+        }
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Mouse button callback.
+     *
+     * @param win
+     * @param button
+     * @param action
+     * @param mods
+     */
+    static void mouseButtonCallback(GLFWwindow* win, int button, int action, int mods) noexcept
+    {
+        auto* ptr = reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win));
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+        {
+            if (action == GLFW_PRESS)
+            {
+                glfwGetCursorPos(win, &ptr->m_movePos.x(), &ptr->m_movePos.y());
+            }
+            else if (action == GLFW_RELEASE)
+            {
+                ptr->m_movePos = Zero;
+            }
+        }
+    }
+#endif
+
+
+#if ENABLE_RENDER
+    /**
+     * @brief Mouse position callback.
+     *
+     * @param win
+     * @param xpos
+     * @param ypos
+     */
+    static void mousePosCallback(GLFWwindow* win, double xpos, double ypos) noexcept
+    {
+        if (glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT) != GLFW_PRESS)
+            return;
+
+        auto* ptr = reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win));
+        auto& camera = ptr->m_simulator.getRenderContext().getCamera();
+
+        auto pos = camera.getPosition();
+
+        // Change vector
+        auto change = BasicVector<double, 2>(xpos, ypos) - ptr->m_movePos;
+
+        pos += camera.getZoom() * PositionVector{
+            units::Length(change.getX()),
+            units::Length(-change.getY())
+        };
+
+        camera.setPosition(pos);
+
+        ptr->m_movePos = BasicVector<double, 2>(xpos, ypos);
+
+        if (ptr->m_paused)
+        {
+            ptr->draw();
+
+            // Swap buffers
+            glfwSwapBuffers(win);
         }
     }
 #endif
@@ -733,6 +895,9 @@ private:
         // Set callbacks
         glfwSetWindowSizeCallback(m_window, &Simulator::windowResizeCallback);
         glfwSetKeyCallback(m_window, &Simulator::keyboardCallback);
+        glfwSetScrollCallback(m_window, &Simulator::mouseScrollCallback);
+        glfwSetMouseButtonCallback(m_window, &Simulator::mouseButtonCallback);
+        glfwSetCursorPosCallback(m_window, &Simulator::mousePosCallback);
     }
 #endif
 
@@ -803,7 +968,9 @@ private:
     void setOptimalZoom()
     {
         auto size = m_simulator.getSimulation()->getWorldSize();
-        m_simulator.getRenderContext().getCamera().setZoom(
+        auto& camera = m_simulator.getRenderContext().getCamera();
+        camera.setPosition(Zero);
+        camera.setZoom(
             std::max(size.getWidth() / m_windowWidth, size.getHeight() / m_windowHeight).value()
         );
     }
@@ -871,6 +1038,9 @@ private:
 
     /// If simulation is paused.
     bool m_paused = false;
+
+    /// Last position for move cursor.
+    BasicVector<double, 2> m_movePos;
 #endif
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
