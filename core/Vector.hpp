@@ -384,6 +384,32 @@ public:
 
 
     /**
+     * @brief Calculate vectors squared distance.
+     *
+     * @param rhs Second vector.
+     *
+     * @return Distance.
+     */
+    decltype(std::declval<T>() * std::declval<T>()) distanceSquared(const BasicVector& rhs) const noexcept
+    {
+        return (*this - rhs).getLengthSquared();
+    }
+
+
+    /**
+     * @brief Calculate vectors distance.
+     *
+     * @param rhs Second vector.
+     *
+     * @return Distance.
+     */
+    T distance(const BasicVector& rhs) const noexcept
+    {
+        return (*this - rhs).getLength();
+    }
+
+
+    /**
      * @brief Inverse current vector (1 / *this).
      *
      * @return
@@ -864,6 +890,32 @@ public:
     constexpr decltype(T{} * T{}) dot(const BasicVector& rhs) const noexcept
     {
         return {getX() * rhs.getX() + getY() * rhs.getY()};
+    }
+
+
+    /**
+     * @brief Calculate vectors squared distance.
+     *
+     * @param rhs Second vector.
+     *
+     * @return Distance.
+     */
+    decltype(std::declval<T>() * std::declval<T>()) distanceSquared(const BasicVector& rhs) const noexcept
+    {
+        return (*this - rhs).getLengthSquared();
+    }
+
+
+    /**
+     * @brief Calculate vectors distance.
+     *
+     * @param rhs Second vector.
+     *
+     * @return Distance.
+     */
+    T distance(const BasicVector& rhs) const noexcept
+    {
+        return (*this - rhs).getLength();
     }
 
 
@@ -1425,6 +1477,32 @@ public:
             getY() * rhs.getY() +
             getZ() * rhs.getZ()
         };
+    }
+
+
+    /**
+     * @brief Calculate vectors squared distance.
+     *
+     * @param rhs Second vector.
+     *
+     * @return Distance.
+     */
+    decltype(std::declval<T>() * std::declval<T>()) distanceSquared(const BasicVector& rhs) const noexcept
+    {
+        return (*this - rhs).getLengthSquared();
+    }
+
+
+    /**
+     * @brief Calculate vectors distance.
+     *
+     * @param rhs Second vector.
+     *
+     * @return Distance.
+     */
+    T distance(const BasicVector& rhs) const noexcept
+    {
+        return (*this - rhs).getLength();
     }
 
 
