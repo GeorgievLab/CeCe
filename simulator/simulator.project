@@ -41,6 +41,7 @@
     <File Name="SimulationListener.hpp"/>
     <File Name="PluginManager.hpp"/>
     <File Name="font.hpp"/>
+    <File Name="ObjectType.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
