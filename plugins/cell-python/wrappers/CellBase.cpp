@@ -104,6 +104,35 @@ public:
 
 
     /**
+     * @brief Returns cell max volume.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static PyObject* getVolumeMax(SelfType* self) noexcept
+    {
+        return makeObject(self->value->getVolumeMax()).release();
+    }
+
+
+    /**
+     * @brief Set cell max volume.
+     *
+     * @param self
+     * @param value
+     *
+     * @return
+     */
+    static int setVolumeMax(SelfType* self, PyObject* value) noexcept
+    {
+        self->value->setVolumeMax(cast<units::Volume>(value));
+
+        return 0;
+    }
+
+
+    /**
      * @brief Returns cell growth rate.
      *
      * @param self
@@ -170,8 +199,9 @@ public:
 private:
 
     /// Type properties.
-    PyGetSetDef m_properties[3] = {
+    PyGetSetDef m_properties[4] = {
         {const_cast<char*>("volume"),     (getter) getVolume,     (setter) setVolume,       nullptr},
+        {const_cast<char*>("volumeMax"),  (getter) getVolumeMax,  (setter) setVolumeMax,    nullptr},
         {const_cast<char*>("growthRate"), (getter) getGrowthRate, (setter) setGrowthRate,   nullptr},
         {nullptr}  /* Sentinel */
     };
