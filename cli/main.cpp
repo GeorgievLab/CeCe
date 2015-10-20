@@ -898,8 +898,8 @@ int main(int argc, char** argv)
 #if !(__APPLE__ && __MACH__)
     // Register plugins directory
     simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0]));
-    simulator::PluginManager::s().init();
 #endif
+    simulator::PluginManager::s().init();
 
 #if ENABLE_MEASUREMENT
     std::ofstream time_file("time.csv");
