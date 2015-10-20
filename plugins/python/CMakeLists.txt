@@ -63,6 +63,7 @@ set(SRCS
     wrappers/stdout.cpp
 
     wrappers/core.cpp
+    wrappers/core_functions.cpp
     wrappers/core_VectorInt.cpp
     wrappers/core_VectorUint.cpp
     wrappers/core_VectorFloat.cpp

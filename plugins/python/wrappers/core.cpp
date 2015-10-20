@@ -33,6 +33,10 @@ namespace python {
 
 /* ************************************************************************ */
 
+extern PyMethodDef core_functions[];
+
+/* ************************************************************************ */
+
 void init_core_VectorInt(PyObject* module);
 void init_core_VectorUint(PyObject* module);
 void init_core_VectorFloat(PyObject* module);
@@ -45,7 +49,7 @@ void init_core_VectorAcceleration(PyObject* module);
 
 void init_core(void)
 {
-    PyObject* module = Py_InitModule("core", nullptr);
+    PyObject* module = Py_InitModule("core", core_functions);
 
     init_core_VectorInt(module);
     init_core_VectorUint(module);

@@ -39,6 +39,7 @@
       <File Name="wrappers/core_VectorForce.cpp"/>
       <File Name="wrappers/core_VectorVelocity.cpp"/>
       <File Name="wrappers/core_VectorAcceleration.cpp"/>
+      <File Name="wrappers/core_functions.cpp"/>
     </VirtualDirectory>
     <File Name="View.cpp"/>
     <File Name="Type.cpp"/>
