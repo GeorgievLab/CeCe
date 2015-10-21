@@ -67,6 +67,7 @@ public:
     {
         tp_getset = m_properties;
         tp_methods = m_methods;
+        tp_as_mapping = &m_map;
     }
 
 
@@ -195,6 +196,66 @@ public:
     }
 
 
+    /**
+     * @brief Returns a number of distinct molecules.
+     *
+     * @param self
+     *
+     * @return
+     */
+    static Py_ssize_t getMappingSize(SelfType* self) noexcept
+    {
+        return self->value->getMolecules().size();
+    }
+
+
+    /**
+     * @brief Returns number of molecules.
+     *
+     * @param self
+     * @param key
+     *
+     * @return
+     */
+    static PyObject* getMappingSubscript(SelfType* self, PyObject* key) noexcept
+    {
+        const char* name = PyString_AsString(key);
+
+        if (!name)
+            return nullptr;
+
+        return makeObject(self->value->getMoleculeCount(name)).release();
+    }
+
+
+    /**
+     * @brief Set number of molecules.
+     *
+     * @param self
+     * @param name
+     * @param value
+     *
+     * @return
+     */
+    static int setMappingSubscript(SelfType* self, PyObject* key, PyObject* value) noexcept
+    {
+        const char* name = PyString_AsString(key);
+
+        if (!name)
+            return 1;
+
+        auto amount = PyLong_AsLong(value);
+
+        if (amount == -1)
+            return 1;
+
+        // Change molecule count
+        self->value->setMoleculeCount(name, amount);
+
+        return 0;
+    }
+
+
 // Private Data Members
 private:
 
@@ -213,6 +274,12 @@ private:
         {nullptr}  /* Sentinel */
     };
 
+    /// Mapping methods.
+    PyMappingMethods m_map = {
+        (lenfunc) getMappingSize,
+        (binaryfunc) getMappingSubscript,
+        (objobjargproc) setMappingSubscript
+    };
 };
 
 /* ************************************************************************ */
