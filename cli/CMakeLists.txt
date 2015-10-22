@@ -148,6 +148,13 @@ if (CONFIG_RENDER_ENABLE)
     target_link_libraries(${PROJECT_NAME}
         ${GLFW_LIBRARIES}
     )
+
+    if (UNIX AND NOT APPLE)
+        # In some cases the GLFW_LIBRARIES variable doesn't contains link to X11
+        target_link_libraries(${PROJECT_NAME}
+            -lX11
+        )
+    endif ()
 endif ()
 
 if (UNIX AND NOT APPLE)
