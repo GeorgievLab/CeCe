@@ -30,12 +30,14 @@
 #include <algorithm>
 
 // Simulator
+#include "core/Assert.hpp"
 #include "core/constants.hpp"
 #include "core/StaticArray.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Exception.hpp"
 #include "core/VectorRange.hpp"
 #include "core/constants.hpp"
+#include "core/FileStream.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Object.hpp"
@@ -114,9 +116,9 @@ constexpr StaticArray<StaticArray<Vector<int>, 2>, Module::LayoutPosCount> EDGES
 template<typename T>
 units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
 {
-    assert(pos >= 0);
-    assert(pos < size);
-    assert(size > 1);
+    Assert(pos >= 0);
+    Assert(pos < size);
+    Assert(size > 1);
 
     const RealType posF = static_cast<RealType>(pos) - 1.0;
     const RealType sizeF = static_cast<RealType>(size) - 1.0;
@@ -209,7 +211,7 @@ void Module::initBarriers(simulator::Simulation& simulation)
 
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
-    assert(m_lattice.getSize() != Zero);
+    Assert(m_lattice.getSize() != Zero);
 
     auto _ = measure_time("streamlines", simulator::TimeMeasurementIterationOutput(simulation));
 
@@ -244,6 +246,53 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
     // Apply streamlines to world objects
     applyToObjects(simulation, vMax);
+
+    // Store streamlines data
+    if (m_dataOut)
+    {
+        for (auto&& c : range(m_lattice.getSize()))
+        {
+            const auto& data = m_lattice[c];
+            const auto vel = vMax * data.calcVelocity();
+
+            *m_dataOut <<
+                // iteration
+                simulation.getIteration() << ";" <<
+                // totalTime
+                simulation.getTotalTime().value() << ";" <<
+                // x
+                c.getX() << ";" <<
+                // y
+                c.getY() << ";" <<
+                // d0
+                data[0] << ";" <<
+                // d1
+                data[1] << ";" <<
+                // d2
+                data[2] << ";" <<
+                // d3
+                data[3] << ";" <<
+                // d4
+                data[4] << ";" <<
+                // d5
+                data[5] << ";" <<
+                // d6
+                data[6] << ";" <<
+                // d7
+                data[7] << ";" <<
+                // d8
+                data[8] << ";" <<
+                // rho
+                data.calcRho() << ";" <<
+                // velX
+                vel.getX().value() << ";" <<
+                // velY
+                vel.getY().value() << "\n"
+            ;
+        }
+
+        m_dataOut->flush();
+    }
 }
 
 /* ************************************************************************ */
@@ -296,6 +345,12 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
     // Enable dynamic object obstacles
     setDynamicObjectsObstacles(config.get("dynamic-object-obstacles", isDynamicObjectsObstacles()));
+
+    if (config.has("data-out"))
+    {
+        m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
+        *m_dataOut << "iteration;totalTime;x;y;d0;d1;d2;d3;d4;d5;d6;d7;d8;rho;velX;velY\n";
+    }
 
     // Initialize lattice
     init(simulation);
@@ -444,7 +499,7 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
         {
             mapShapeToGrid(
                 [this, &velocity, isDynamic] (Coordinate&& coord) {
-                    assert(m_lattice.inRange(coord));
+                    Assert(m_lattice.inRange(coord));
                     if (isDynamic)
                         m_lattice[coord].setDynamicObstacle(true, velocity);
                     else
@@ -599,7 +654,7 @@ VelocityVector Module::inletVelocityProfile(
         break;
 
     default:
-        assert(false);
+        Assert(false);
         break;
     }
 
@@ -653,7 +708,7 @@ VelocityVector Module::inletVelocityProfile(
         break;
 
     default:
-        assert(false);
+        Assert(false);
         break;
     }
 

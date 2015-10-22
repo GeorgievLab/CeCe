@@ -33,6 +33,9 @@
 #include "core/Grid.hpp"
 #include "core/Real.hpp"
 #include "core/StaticArray.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/OutStream.hpp"
+#include "core/InStream.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
@@ -589,6 +592,8 @@ private:
     mutable Mutex m_mutex;
 #endif
 
+    /// Outstream for streamlines data
+    UniquePtr<OutStream> m_dataOut;
 };
 
 /* ************************************************************************ */
