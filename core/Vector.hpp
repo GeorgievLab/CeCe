@@ -2518,6 +2518,9 @@ InStream& operator>>(InStream& is, BasicVector<T, N>& vector)
             break;
     }
 
+    if (i == 0)
+        return is;
+
     // Copy missing values
     // TODO: have this feature?
     for (unsigned j = i; j < N; ++j)
