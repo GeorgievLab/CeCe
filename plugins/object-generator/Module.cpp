@@ -141,7 +141,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         if (!inRange(desc.active, iteration))
             continue;
 
-        std::bernoulli_distribution distSpawn(desc.probability);
+        std::bernoulli_distribution distSpawn(desc.probability * dt);
 
         // Spawn?
         if (!distSpawn(g_gen))
@@ -172,7 +172,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     {
         ObjectDesc desc;
         desc.className = cfg.get("class");
-        desc.probability = cfg.get<units::Probability>("probability");
+        desc.probability = cfg.get<ObjectDesc::Probability>("probability");
         desc.positionMin = cfg.get("position-min", minPos);
         desc.positionMax = cfg.get("position-max", maxPos);
         desc.active = parseActive(cfg.get("active", String{}));

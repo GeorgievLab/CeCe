@@ -48,11 +48,15 @@ namespace object_generator {
  */
 struct ObjectDesc
 {
+    // Generation probability per second.
+    using Probability = typename units::Divide<units::Probability, units::Time>::type;
+
+
     /// Object class name.
     String className;
 
     /// Probability of object creation.
-    units::Probability probability;
+    Probability probability;
 
     /// Minimum spawn position.
     PositionVector positionMin;
