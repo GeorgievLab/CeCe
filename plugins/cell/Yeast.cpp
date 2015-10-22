@@ -53,7 +53,7 @@ static std::random_device g_rd;
 Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
     : CellBase(simulation, type)
 {
-	setVolume(units::um3(37));
+    setVolume(units::um3(37));
     setDensity(units::kg(1200) / units::m3(1));
 
     // Max 2 shapes
@@ -116,6 +116,12 @@ void Yeast::configure(const simulator::Configuration& config,
 
     setVolumeBudCreate(config.get("volume-bud-create", getVolumeBudCreate()));
     setVolumeBudRelease(config.get("volume-bud-release", getVolumeBudRelease()));
+
+#if ENABLE_PHYSICS
+    // Update cell shape
+    updateShape();
+#endif
+
 }
 
 /* ************************************************************************ */

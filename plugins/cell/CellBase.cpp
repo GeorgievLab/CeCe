@@ -50,7 +50,7 @@ void CellBase::configure(const simulator::Configuration& config,
     // Growth rate
     setGrowthRate(config.get("growth-rate", getGrowthRate()));
 
-	// Molecule initializations
+    // Molecule initializations
     for (auto&& cfg : config.getConfigurations("molecule"))
         setMoleculeCount(cfg.get("name"), cfg.get<MoleculeCount>("amount"));
 
