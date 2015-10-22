@@ -23,6 +23,8 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+#pragma once
+
 // Simulator
 #include "core/String.hpp"
 #include "core/Vector.hpp"
@@ -34,7 +36,7 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions{
 
 /* ************************************************************************ */
 
@@ -85,8 +87,7 @@ inline void addMolecules(
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
     plugin::diffusion::Module::SignalId id,
-    unsigned int amount = 1
-)
+    unsigned int amount = 1)
 {
     changeMolecules(simulation, diffusion, coords, id, amount);
 }
@@ -107,8 +108,7 @@ inline void removeMolecules(
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
     plugin::diffusion::Module::SignalId id,
-    unsigned int amount = 1
-)
+    unsigned int amount = 1)
 {
     changeMolecules(simulation, diffusion, coords, id, -amount);
 }

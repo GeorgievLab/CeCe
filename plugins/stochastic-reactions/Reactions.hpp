@@ -38,9 +38,11 @@
 #include "core/DynamicArray.hpp"
 #include "core/Log.hpp"
 #include "core/Exception.hpp"
+
 #include "simulator/Object.hpp"
 #include "simulator/Simulation.hpp"
-#include "../cell/CellBase.hpp"
+#include "plugins/cell/CellBase.hpp"
+#include "Diffusion.hpp"
 #include "BooleanFunction.hpp"
 
 /* ************************************************************************ */
@@ -66,19 +68,6 @@ public:
 public:
 
     /**
-     * @brief Reaction's condition.
-     */
-    struct Condition
-    {
-        BooleanFunction function;
-
-        bool evaulateCondition()
-        {
-            return function.evaulate();
-        }
-    };
-
-    /**
      * @brief Member of reaction's stochiometric matrix.
      */
     struct ReqProd
@@ -102,7 +91,7 @@ public:
     {
         RateType rate;
         DynamicArray<ReqProd> rules;
-        Conditions conditions;
+        BooleanFunction condition;
     };
 
 // Public Accessors:
@@ -216,15 +205,15 @@ public:
         return m_reactions.back();
     }
 
-// Protected Types
-protected:
+// Public Types
+public:
 
     /// Propensity type.
     using PropensityType = RateType;
 
 
-// Protected Operations
-protected:
+// Private Operations
+private:
 
     /**
      * @brief Execute reactions each step.
@@ -234,7 +223,15 @@ protected:
      *
      * @param step
      */
-    void executeReactions(units::Time step, plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void executeReactions(units::Time step, plugin::diffusion::Module* diffusion, plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+
+    /**
+     * @brief Computes propensity of given reaction.
+     *
+     * @param index of row, cell, diffusion
+     * @return propensity
+     */
+    void executeRules(unsigned int index, plugin::diffusion::Module* diffusion, plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
      /**
      * @brief Computes propensity of given reaction.
@@ -242,7 +239,7 @@ protected:
      * @param index of row, cell, diffusion
      * @return propensity
      */
-    PropensityType computePropensity(const unsigned int index, const plugin::cell::CellBase& cell, plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    PropensityType computePropensity(const unsigned int index, plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
     /**
      * @brief Computes propensities of all reactions.
@@ -273,9 +270,14 @@ protected:
      *
      * @param id of molecule, number of molecules, diffusion
      */
-    void changeMoleculesInEnvironment(const String& id, const int change, plugin::diffusion::Module* diffusion, const simulator::Simulation& simulation, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void changeMoleculesInEnvironment(const int change, const String& id, plugin::diffusion::Module* diffusion, const simulator::Simulation& simulation, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
 
 public:
+
+    /**
+     * @brief Plugin functor.
+     */
+    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step);
 
     /**
      * @brief Returns molecule inner identifier. In case the molecule doesn't exists
@@ -292,13 +294,13 @@ public:
      *
      * @param reaction
      */
-    void extend(const Reaction& reaction)
+    inline void extend(Reaction reaction)
     {
-        m_reactions.push_back(reaction);
+        m_reactions.push_back(std::move(reaction));
     }
 
-// Protected Data Members
-protected:
+// Private Data Members
+private:
 
     /// List of molecule names.
     DynamicArray<String> m_moleculeNames;

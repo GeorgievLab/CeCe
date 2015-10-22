@@ -27,7 +27,9 @@
 
 /* ************************************************************************ */
 
-#include "../cell/CellBase.hpp"
+#include "plugins/cell/CellBase.hpp"
+#include "core/UniquePtr.hpp"
+#include "Diffusion.hpp"
 
 /* ************************************************************************ */
 
@@ -38,126 +40,145 @@ namespace stochastic_reactions {
 
 class BooleanFunction
 {
-    struct Node
-    {
-        virtual bool eval();
-    };
+public:
 
     struct Value
     {
-        unsigned int value;
+        union data
+        {
+            String name;
+            unsigned int constant;
+        } value;
+
+        virtual unsigned int get(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
     };
 
-    struct Root
+    struct Operator
     {
-        UniquePtr<Node> left;
-        UniquePtr<Node> right;
+        virtual bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    };
+
+    struct OperatorBool : public Operator
+    {
+        UniquePtr<Operator> left;
+        UniquePtr<Operator> right;
+    };
+
+    struct OperatorInt : public Operator
+    {
+        UniquePtr<Value> left;
+        UniquePtr<Value> right;
     };
 
     struct MoleculeCount : public Value
     {
-        unsigned int eval(const plugin::cell::CellBase& cell)
+        unsigned int get(const plugin::cell::CellBase& cell) const
         {
-            return cell.getMoleculeCount(getMoleculeName[value]);
+            return cell.getMoleculeCount(value.name);
         }
     };
 
     struct Concetration : public Value
     {
-        unsigned int get()
+        unsigned int get(plugin::diffusion::Module* diffusion, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return 5;
+            const auto id = diffusion->getSignalId(value.name);
+            if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
+            {
+                return getMolarConcentration(*diffusion, coords, id).value();
+            }
+            return 0;
         }
     };
 
     struct Constant : public Value
     {
-        unsigned int get()
+        unsigned int get() const
         {
-            return value;
+            return value.constant;
         }
     };
 
-    struct Less : public Root
+    struct Less : public OperatorInt
     {
-        bool eval() const override
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left->eval() < right->eval();
+            return left->get(diffusion, cell, coords) < right->get(diffusion, cell, coords);
         }
     };
 
-    struct Greater : public Root
+    struct Greater : public OperatorInt
     {
-        bool eval() const override
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left->eval() > R->eval();
+            return left->get(diffusion, cell, coords) > right->get(diffusion, cell, coords);
         }
     };
 
-    struct LessEqual : public Root
+    struct LessEqual : public OperatorInt
     {
-        bool eval() const override
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left->eval() <= R->eval();
+            return left->get(diffusion, cell, coords) <= right->get(diffusion, cell, coords);
         }
     };
 
-    struct GreaterEqual : public Root
+    struct GreaterEqual : public OperatorInt
     {
-        bool eval() const override
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left->eval() <= R->eval();
+            return left->get(diffusion, cell, coords) <= right->get(diffusion, cell, coords);
         }
     };
 
-    struct Equal : public Node
+    struct Equal : public OperatorInt
     {
-        Value left;
-        Value R;
-
-        bool evaulate()
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left.get() == R.get();
+            return left->get(diffusion, cell, coords) == right->get(diffusion, cell, coords);
         }
     };
 
-    struct Is : public Node
+    struct Is : public OperatorInt
     {
-        bool eval()
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left.get() > 0;
+            return left->get(diffusion, cell, coords) > 0;
         }
     };
 
-    struct And : public Node
+    struct And : public OperatorBool
     {
-        Node left;
-        Node R;
-
-        bool evaulate()
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left.evaulate() && R.evaulate();
+            return left->eval(diffusion, cell, coords) && right->eval(diffusion, cell, coords);
         }
     };
 
-    struct Or : public Node
+    struct Or : public OperatorBool
     {
-        Node left;
-        Node R;
-
-        bool evaulate()
+        bool eval(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
         {
-            return left.evaulate() || R.evaulate();
+            return left->eval(diffusion, cell, coords) || right->eval(diffusion, cell, coords);
         }
     };
 
-    Node root;
+    UniquePtr<Operator> root;
 
 public:
 
-    bool evaulateFunction(const plugin::cell::CellBase& cell)
+    bool evaluate(
+        plugin::diffusion::Module* diffusion,
+        const plugin::cell::CellBase& cell,
+        const DynamicArray<plugin::diffusion::Module::Coordinate>& coords) const
     {
-        return root.evaulate(const plugin::cell::CellBase& cell);
+        return root->eval(diffusion, cell, coords);
+    }
+
+    BooleanFunction(Operator* node):
+    root(node)
+    {
+        // Nothing to do.
     }
 };
 

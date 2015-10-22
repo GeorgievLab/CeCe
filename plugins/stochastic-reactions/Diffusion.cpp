@@ -36,7 +36,7 @@
 /* ************************************************************************ */
 
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 

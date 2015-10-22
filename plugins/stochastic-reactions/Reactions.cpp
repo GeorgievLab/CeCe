@@ -39,13 +39,13 @@ void Reactions::operator()(simulator::Object& object, simulator::Simulation& sim
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
 
-    executeReactions(step, cell, diffusion, worldSize, coords);
+    executeReactions(step, diffusion, cell, coords);
 }
 
 void Reactions::executeReactions(
     units::Time step,
     plugin::diffusion::Module* diffusion,
-    const plugin::cell::CellBase& cell,
+    plugin::cell::CellBase& cell,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
 {
     if (m_propensities.empty())
@@ -85,9 +85,9 @@ void Reactions::executeReactions(
 /* ************************************************************************ */
 
 void Reactions::executeRules(
-    unsigned int index
+    unsigned int index,
     plugin::diffusion::Module* diffusion,
-    const plugin::cell::CellBase& cell,
+    plugin::cell::CellBase& cell,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
 {
     const auto& reaction = m_reactions[index];
@@ -106,15 +106,15 @@ void Reactions::executeRules(
             cell.changeMoleculeCount(moleculeName, change);
 
         if (env_change)
-            changeMoleculesInEnvironment(moleculeName, env_change, diffusion, cell.getSimulation(), coords);
+            changeMoleculesInEnvironment(env_change, moleculeName, diffusion, cell.getSimulation(), coords);
 
-        refreshPropensities(moleculeIndex, cell, diffusion, coords);
+        refreshPropensities(moleculeIndex, diffusion, cell, coords);
     }
 }
 
 /* ************************************************************************ */
 
-void IntercellularReactions::changeMoleculesInEnvironment(
+void Reactions::changeMoleculesInEnvironment(
     const int change,
     const String& name,
     plugin::diffusion::Module* diffusion,
@@ -152,11 +152,11 @@ unsigned int Reactions::getMoleculeIndex(const String& name)
 
 /* ************************************************************************ */
 
-PropensityType computePropensity(
+Reactions::PropensityType Reactions::computePropensity(
     const unsigned int index,
     plugin::diffusion::Module* diffusion,
     const plugin::cell::CellBase& cell,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
 {
     PropensityType local = m_rates[index];
     for (unsigned int i = 0; i < m_rules[index].size(); i++)
