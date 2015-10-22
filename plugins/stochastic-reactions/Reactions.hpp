@@ -40,8 +40,8 @@
 #include "core/Exception.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/Simulation.hpp"
-
 #include "../cell/CellBase.hpp"
+#include "BooleanFunction.hpp"
 
 /* ************************************************************************ */
 
@@ -52,8 +52,6 @@ namespace stochastic_reactions {
 
 /**
  * @brief Base class for reactions implementations.
- *
- * @tparam T Inner data structure type.
  */
 class Reactions
 {
@@ -68,18 +66,20 @@ public:
 public:
 
     /**
-     * @brief Reaction condition description structure.
+     * @brief Reaction's condition.
      */
-    struct Conditions
+    struct Condition
     {
+        BooleanFunction function;
+
         bool evaulateCondition()
         {
-            return true;
+            return function.evaulate();
         }
     };
 
     /**
-     * @brief Member of reactions stochiometric matrix.
+     * @brief Member of reaction's stochiometric matrix.
      */
     struct ReqProd
     {

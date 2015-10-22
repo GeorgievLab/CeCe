@@ -27,9 +27,11 @@
 set(SRCS
     Library.cpp
     Reactions.hpp
-    IntracellularReactions.hpp
-    IntracellularReactions.cpp
+    Reactions.cpp
     ReactionsParser.hpp
+    BooleanFunction.hpp
+    Diffusion.hpp
+    Diffusion.cpp
 )
 
 # Build plugin
