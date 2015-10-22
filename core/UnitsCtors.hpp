@@ -86,20 +86,6 @@ inline constexpr Length um(Value value) noexcept
 /* ************************************************************************ */
 
 /**
- * @brief Kilograms value.
- *
- * @param value Value.
- *
- * @return Mass value.
- */
-inline constexpr Mass kg(Value value) noexcept
-{
-    return Mass(value * exponentToCoefficient(MASS_EXPONENT));
-}
-
-/* ************************************************************************ */
-
-/**
  * @brief Grams value.
  *
  * @param value Value.
@@ -108,8 +94,22 @@ inline constexpr Mass kg(Value value) noexcept
  */
 inline constexpr Mass g(Value value) noexcept
 {
+    return Mass(value * exponentToCoefficient(MASS_EXPONENT));
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Kilograms value.
+ *
+ * @param value Value.
+ *
+ * @return Mass value.
+ */
+inline constexpr Mass kg(Value value) noexcept
+{
     // 1g = 1/1'000 kg
-    return kg(value * 1e-3f);
+    return g(value * 1e3f);
 }
 
 /* ************************************************************************ */

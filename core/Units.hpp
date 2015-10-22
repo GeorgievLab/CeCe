@@ -63,7 +63,7 @@ using Value = RealType;
 /// Base units exponents
 static constexpr int LENGTH_EXPONENT = 6;
 static constexpr int TIME_EXPONENT = 0;
-static constexpr int MASS_EXPONENT = 9;
+static constexpr int MASS_EXPONENT = 6;
 static constexpr int ELECTRIC_CURRENT_EXPONENT = 0;
 static constexpr int THERMODYNAMIC_TEMPERATURE_EXPONENT = 0;
 static constexpr int AMOUNT_OF_SUBSTANCE_EXPONENT = 6;
