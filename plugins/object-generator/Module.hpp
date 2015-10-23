@@ -120,20 +120,21 @@ public:
 
 
     /**
-     * @brief Update module state.
+     * @brief Load module configuration.
      *
-     * @param dt     Simulation time step.
-     * @param world  World object.
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
 
 
     /**
-     * @brief Configure module.
+     * @brief Update module state.
      *
-     * @param config
+     * @param simulation Simulation object.
+     * @param dt         Simulation time step.
      */
-    void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
+    void update(simulator::Simulation& simulation, units::Time dt) override;
 
 
 // Private Data Members

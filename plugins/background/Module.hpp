@@ -58,22 +58,22 @@ public:
 
 
     /**
-     * @brief Configure module.
+     * @brief Load module configuration.
      *
-     * @param config
-     * @param simulation
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
      */
-    void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
 
 
 #if ENABLE_RENDER
     /**
      * @brief Render module.
      *
-     * @param context
-     * @param simulation
+     * @param simulation Current simulation.
+     * @param context    Rendering context.
      */
-    void draw(render::Context& context, const simulator::Simulation& simulation) override;
+    void draw(const simulator::Simulation& simulation, render::Context& context) override;
 #endif
 
 

@@ -39,7 +39,7 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-void StoreState::update(units::Duration dt, simulator::Simulation& simulation)
+void StoreState::update(simulator::Simulation& simulation, units::Time dt)
 {
     auto _ = measure_time("streamlines.store-state", simulator::TimeMeasurementIterationOutput(simulation));
 

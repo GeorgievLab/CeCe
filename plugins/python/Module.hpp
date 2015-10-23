@@ -60,7 +60,7 @@ public:
      *
      * @param name Module name. Can be path to python source.
      */
-    explicit Module(const std::string& name);
+    explicit Module(const String& name);
 
 
 // Public Operations
@@ -68,30 +68,31 @@ public:
 
 
     /**
-     * @brief Configure module.
+     * @brief Load module configuration.
      *
-     * @param config
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
      */
-    void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
 
 
     /**
      * @brief Update module state.
      *
-     * @param dt    Simulation time step.
-     * @param simulation
+     * @param simulation Simulation object.
+     * @param dt         Simulation time step.
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void update(simulator::Simulation& simulation, units::Time dt) override;
 
 
 #if ENABLE_RENDER
     /**
      * @brief Render module.
      *
-     * @param context
-     * @param world
+     * @param simulation Current simulation.
+     * @param context    Rendering context.
      */
-    void draw(render::Context& context, const simulator::Simulation& simulation) override;
+    void draw(const simulator::Simulation& simulation, render::Context& context) override;
 #endif
 
 
@@ -103,14 +104,14 @@ private:
     Source m_source;
 
     /// Configure function.
-    Handle<PyObject> m_configureFn;
+    ObjectHandle m_configureFn;
 
     /// Update function.
-    Handle<PyObject> m_updateFn;
+    ObjectHandle m_updateFn;
 
 #if ENABLE_RENDER
     /// Draw function.
-    Handle<PyObject> m_drawFn;
+    ObjectHandle m_drawFn;
 #endif
 };
 

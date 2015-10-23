@@ -506,7 +506,7 @@ void Simulation::configure(const Configuration& config)
 
         // Configure module
         if (module)
-            module->configure(moduleConfig, *this);
+            module->loadConfig(*this, moduleConfig);
     }
 
     // Parse programs
@@ -565,7 +565,7 @@ void Simulation::draw(render::Context& context)
 
     // Render modules
     for (auto& module : modules)
-        module->draw(context, *this);
+        module->draw(*this, context);
 
     // Draw objects
     for (const auto& obj : getObjects())
@@ -717,7 +717,7 @@ void Simulation::updateModules(units::Time dt)
     });
 
     for (auto& module : m_modules)
-        module.second->update(dt, *this);
+        module.second->update(*this, dt);
 }
 
 /* ************************************************************************ */

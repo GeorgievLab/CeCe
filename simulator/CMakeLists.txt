@@ -50,6 +50,7 @@ set(SRCS
     Simulator.hpp
     Simulator.cpp
     Module.hpp
+    Module.cpp
     Plugin.hpp
     Plugin.cpp
     PluginApi.hpp

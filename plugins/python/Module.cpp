@@ -89,8 +89,11 @@ Module::Module(const std::string& name)
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    // Configure parent
+    simulator::Module::loadConfig(simulation, config);
+
     // Check if configuration contains code
     if (config.hasContent())
     {
@@ -119,7 +122,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     if (!m_updateFn)
         return;
@@ -132,7 +135,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::Simulation& simulation)
+void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     if (!m_drawFn)
         return;

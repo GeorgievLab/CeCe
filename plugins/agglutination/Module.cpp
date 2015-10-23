@@ -92,7 +92,7 @@ RealType getDisassociationPropensity(
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     // Store time step
     m_step = dt;
@@ -151,8 +151,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    // Configure parent
+    simulator::Module::loadConfig(simulation, config);
+
     simulation.getWorld().SetContactListener(this);
 
     for (auto&& c_bond : config.getConfigurations("bond"))

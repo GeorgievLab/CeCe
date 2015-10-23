@@ -114,7 +114,7 @@ bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::Iter
 
 /* ************************************************************************ */
 
-void Generator::update(units::Time dt, simulator::Simulation& simulation)
+void Generator::update(simulator::Simulation& simulation, units::Time dt)
 {
     auto _ = measure_time("diffusion.generator", simulator::TimeMeasurementIterationOutput(simulation));
 
@@ -168,7 +168,7 @@ void Generator::update(units::Time dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Generator::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Generator::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
     // Foreach signal configurations
     for (auto&& cfg : config.getConfigurations("source"))

@@ -209,7 +209,7 @@ void Module::initBarriers(simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     Assert(m_lattice.getSize() != Zero);
 
@@ -297,8 +297,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    // Configure parent
+    simulator::Module::loadConfig(simulation, config);
+
     // Number of init iterations
     setInitIterations(config.get("init-iterations", getInitIterations()));
 
@@ -359,7 +362,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::Simulation& simulation)
+void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
 #if DEV_PLUGIN_streamlines_RENDER
     if (!isDebugDraw())

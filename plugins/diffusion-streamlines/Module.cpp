@@ -44,7 +44,7 @@ namespace diffusion_streamlines {
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     auto _ = measure_time("diffusion-streamlines", simulator::TimeMeasurementIterationOutput(simulation));
 

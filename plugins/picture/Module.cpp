@@ -46,8 +46,11 @@ namespace picture {
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    // Configure parent
+    simulator::Module::loadConfig(simulation, config);
+
     // File name pattern
     setFilePattern(config.get("pattern", getFilePattern()));
 
@@ -57,7 +60,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     const auto stepNumber = simulation.getIteration();
 
@@ -98,7 +101,7 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::draw(render::Context& context, const simulator::Simulation& simulation)
+void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     // Skip first image, because it's not rendered yet
     if (simulation.getIteration() == 0)

@@ -44,10 +44,10 @@ namespace background {
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
     // Configure parent
-    simulator::Module::configure(config, simulation);
+    simulator::Module::loadConfig(simulation, config);
 
     using namespace cv;
 
@@ -68,7 +68,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 /* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::Simulation& simulation)
+void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     // Returns grid size
     const auto size = m_img.size();

@@ -104,7 +104,7 @@ Module::SignalId Module::registerSignal(String name, DiffusionRate rate, Degrada
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     if (getGridSize() == Zero)
         throw RuntimeException("Diffusion grid size is not set!");
@@ -165,8 +165,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    // Configure parent
+    simulator::Module::loadConfig(simulation, config);
+
     // Grid size
     setGridSize(config.get<Vector<GridType::SizeType>>("grid"));
 
@@ -208,7 +211,7 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
 /* ************************************************************************ */
 
 #if ENABLE_RENDER
-void Module::draw(render::Context& context, const simulator::Simulation& simulation)
+void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     if (getGridSize() == Zero)
         throw RuntimeException("Diffusion grid size is not set!");

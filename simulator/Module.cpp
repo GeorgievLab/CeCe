@@ -23,77 +23,79 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
-
-// Simulator
-#include "core/ViewPtr.hpp"
+// Declaration
 #include "simulator/Module.hpp"
 
-// Plugins
-#include "plugins/diffusion/Module.hpp"
-#include "plugins/streamlines/Module.hpp"
+// Simulator
+#include "simulator/Configuration.hpp"
 
 /* ************************************************************************ */
 
-namespace plugin {
-namespace diffusion_streamlines {
+namespace simulator {
 
 /* ************************************************************************ */
 
-/**
- * @brief Module for diffusion & streamlines.
- */
-class Module : public simulator::Module
+Module::~Module()
 {
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param diffusion   Diffusion module.
-     * @param streamlines Streamlines module.
-     */
-    Module(ViewPtr<diffusion::Module> diffusion, ViewPtr<streamlines::Module> streamlines)
-        : m_diffusion(diffusion)
-        , m_streamlines(streamlines)
-    {
-        // Nothing to do
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Update module state.
-     *
-     * @param simulation Current simulation.
-     * @param dt         Simulation time step.
-     */
-    void update(simulator::Simulation& simulation, units::Time dt) override;
-
-
-// Private Data Members
-private:
-
-    /// Diffusion module.
-    ViewPtr<diffusion::Module> m_diffusion;
-
-    /// Streamlines module.
-    ViewPtr<streamlines::Module> m_streamlines;
-
-};
+    // Nothing to do
+}
 
 /* ************************************************************************ */
 
+void Module::init(Simulation& simulation)
+{
+    // Nothing to do
 }
+
+/* ************************************************************************ */
+
+void Module::terminate(Simulation& simulation)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+void Module::update(Simulation& simulation, units::Time dt)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+void Module::loadConfig(Simulation& simulation, const Configuration& config)
+{
+    // Get module priority
+    setPriority(config.get("priority", getPriority()));
+
+#if ENABLE_RENDER
+    setZOrder(config.get("z-order", getZOrder()));
+#endif
+}
+
+/* ************************************************************************ */
+
+void Module::storeConfig(Simulation& simulation, Configuration& config)
+{
+    // Store module priority
+    config.set("priority", getPriority());
+
+#if ENABLE_RENDER
+    config.set("z-order", getZOrder());
+#endif
+}
+
+/* ************************************************************************ */
+
+#if ENABLE_RENDER
+void Module::draw(const Simulation& simulation, render::Context& context)
+{
+    // Nothing to do
+}
+#endif
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */

@@ -29,10 +29,11 @@
 
 // Simulator
 #include "core/Units.hpp"
-#include "simulator/Configuration.hpp"
+
+/* ************************************************************************ */
 
 #ifdef ENABLE_RENDER
-#include "render/Context.hpp"
+namespace render { class Context; }
 #endif
 
 /* ************************************************************************ */
@@ -42,11 +43,38 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Simulation;
+class Configuration;
 
 /* ************************************************************************ */
 
 /**
  * @brief Abstract class for simulation modules.
+ *
+ * Module is a part of simulation that is called once per simulation iteration.
+ * Their main purpose is act as global object.
+ *
+ * Module live looks like:
+ * 1) construct
+ * 3) [optional] `loadConfig` (multiple times)
+ * 2) `init`
+ * 4) `update`
+ * 5) [optional] `draw`
+ * 6) goto 4 unless simulation ends
+ * 7) `terminate`
+ * 8) destructor
+ *
+ * `loadConfig` can be called multiple times when something needs to override some
+ * module configuration. `storeConfig` can be called anytime it's main purpose is
+ * store current module configuration - module configuration is modified during
+ * runtime and something wants to store for further use.
+ *
+ * Module priority main purpose is for ordering module update execution. Some
+ * modules can be dependent on other modules and they may need their result in
+ * own update (result of other module can be deleted at the end of iteration).
+ * Bigger value means the module has bigger priority and it's update is called
+ * foremost.
+ *
+ * Z-order is similar to priority but for rendering.
  */
 class Module
 {
@@ -75,27 +103,10 @@ public:
 public:
 
 
-#if ENABLE_RENDER
-    /**
-     * @brief Constructor.
-     *
-     * @param zOrder Module draw Z order.
-     */
-    explicit Module(ZOrderType zOrder = 0) noexcept
-        : m_zOrder(zOrder)
-    {
-        // Nothing to do
-    }
-#endif
-
-
     /**
      * @brief Destructor.
      */
-    virtual ~Module()
-    {
-        // Nothing to do
-    }
+    virtual ~Module();
 
 
 // Public Accessors
@@ -185,45 +196,64 @@ public:
 
 
     /**
-     * @brief Update module state.
+     * @brief Initialize module.
      *
-     * @param dt         Simulation time step.
-     * @param simulation Simulation object.
+     * This function is called before the simulation is started. Allows to module
+     * prepare internal data that is dependent on current simulation. For data
+     * independent on current simulation, use constructor instead.
+     *
+     * @param simulation Current simulation.
      */
-    virtual void update(units::Duration dt, Simulation& simulation)
-    {
-        // Nothing to do
-    }
+    virtual void init(Simulation& simulation);
 
 
     /**
-     * @brief Configure module.
+     * @brief Terminate module.
      *
-     * @param config
-     * @param simulation
+     * This function is called after the simulation is finished. Allows to module
+     * cleanup internal data that is dependent on current simulation. For data
+     * independent on current simulation, use destructor instead.
+     *
+     * @param simulation Current simulation.
      */
-    virtual void configure(const Configuration& config, Simulation& simulation)
-    {
-        // Get module priority
-        setPriority(config.get("priority", getPriority()));
+    virtual void terminate(Simulation& simulation);
 
-#if ENABLE_RENDER
-        setZOrder(config.get("z-order", getZOrder()));
-#endif
-    }
+
+    /**
+     * @brief Update module state.
+     *
+     * @param simulation Simulation object.
+     * @param dt         Simulation time step.
+     */
+    virtual void update(Simulation& simulation, units::Time dt);
+
+
+    /**
+     * @brief Load module configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
+     */
+    virtual void loadConfig(Simulation& simulation, const Configuration& config);
+
+
+    /**
+     * @brief Store module configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Output configuration.
+     */
+    virtual void storeConfig(Simulation& simulation, Configuration& config);
 
 
 #if ENABLE_RENDER
     /**
      * @brief Render module.
      *
-     * @param context
-     * @param simulation
+     * @param simulation Current simulation.
+     * @param context    Rendering context.
      */
-    virtual void draw(render::Context& context, const Simulation& simulation)
-    {
-        // Nothing to do
-    }
+    virtual void draw(const Simulation& simulation, render::Context& context);
 #endif
 
 
@@ -235,7 +265,7 @@ private:
 
 #if ENABLE_RENDER
     /// Module Z order.
-    ZOrderType m_zOrder;
+    ZOrderType m_zOrder = 0;
 #endif
 
 #if ENABLE_RENDER

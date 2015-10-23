@@ -25,6 +25,7 @@
     <File Name="Plugin.cpp"/>
     <File Name="PluginManager.cpp"/>
     <File Name="PluginApi.cpp"/>
+    <File Name="Module.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>

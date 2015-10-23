@@ -70,10 +70,10 @@ public:
     /**
      * @brief Update module state.
      *
-     * @param dt    Simulation time step.
-     * @param world World object.
+     * @param simulation Simulation object.
+     * @param dt         Simulation time step.
      */
-    void update(units::Duration dt, simulator::Simulation& simulation) override;
+    void update(simulator::Simulation& simulation, units::Time dt) override;
 
 
 // Private Data Members

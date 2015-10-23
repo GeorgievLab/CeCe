@@ -158,7 +158,7 @@ InStream& operator>>(InStream& is, ObjectDesc::Distributions& distr)
 
 /* ************************************************************************ */
 
-void Module::update(units::Duration dt, simulator::Simulation& simulation)
+void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     auto _ = measure_time("object-generator", simulator::TimeMeasurementIterationOutput(simulation));
 
@@ -221,8 +221,11 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    // Configure parent
+    simulator::Module::loadConfig(simulation, config);
+
     for (auto&& cfg : config.getConfigurations("object"))
     {
         ObjectDesc desc;
