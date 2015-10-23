@@ -26,10 +26,8 @@
 // Declaration
 #include "Module.hpp"
 
-// C++
-#include <cassert>
-
 // Simulator
+#include "core/Assert.hpp"
 #include "core/Real.hpp"
 #include "core/StaticMatrix.hpp"
 #include "core/TimeMeasurement.hpp"
@@ -50,8 +48,8 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("diffusion-streamlines", simulator::TimeMeasurementIterationOutput(simulation));
 
-    assert(m_streamlines);
-    assert(m_diffusion);
+    Assert(m_streamlines);
+    Assert(m_diffusion);
 
     const auto signalGridSize = m_diffusion->getGridSize();
     auto& velocityGrid = m_streamlines->getLattice();

@@ -81,6 +81,7 @@
     <File Name="Macro.hpp"/>
     <File Name="UnitsCtors.hpp"/>
     <File Name="Assert.hpp"/>
+    <File Name="FileStream.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
