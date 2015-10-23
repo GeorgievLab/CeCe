@@ -57,7 +57,32 @@ before_install:
 
     # Build OpenCV
     - "if [ ! -d $VENDOR_DIR/opencv ]; then wget https://github.com/Itseez/opencv/archive/2.4.12.2.zip -O opencv.zip && unzip opencv.zip -d . && cd opencv-2.4.12.2 &&
-      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/opencv -DCMAKE_BUILD_TYPE=release . &&
+      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/opencv -DCMAKE_BUILD_TYPE=release
+            -DBUILD_DOCS=Off
+            -DBUILD_TESTS=Off
+            -DBUILD_WITH_DEBUG_INFO=Off
+            -DBUILD_opencv_apps=Off
+            -DBUILD_opencv_calib3d=Off
+            -DBUILD_opencv_contrib=Off
+            -DBUILD_opencv_core=ON
+            -DBUILD_opencv_features2d=Off
+            -DBUILD_opencv_flann=Off
+            -DBUILD_opencv_gpu=Off
+            -DBUILD_opencv_highgui=ON
+            -DBUILD_opencv_imgproc=ON
+            -DBUILD_opencv_legacy=Off
+            -DBUILD_opencv_ml=Off
+            -DBUILD_opencv_nonfree=Off
+            -DBUILD_opencv_objdetect=Off
+            -DBUILD_opencv_ocl=Off
+            -DBUILD_opencv_photo=Off
+            -DBUILD_opencv_python=Off
+            -DBUILD_opencv_stitching=Off
+            -DBUILD_opencv_superres=Off
+            -DBUILD_opencv_ts=Off
+            -DBUILD_opencv_video=Off
+            -DBUILD_opencv_videostab=Off
+            -DBUILD_opencv_world=Off . &&
       cmake --build . && make install && cd -; fi"
 
     # Build GTest
