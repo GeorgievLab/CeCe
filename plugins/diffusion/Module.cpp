@@ -36,6 +36,7 @@
 #include "core/StaticMatrix.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "core/VectorRange.hpp"
+#include "core/FileStream.hpp"
 #include "simulator/Simulation.hpp"
 #include "simulator/ShapeToGrid.hpp"
 
@@ -134,6 +135,32 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         // Swap grids
         swapAll();
     }
+
+    // Store streamlines data
+    if (m_dataOut)
+    {
+        for (auto&& c : range(getGridSize()))
+        {
+            *m_dataOut <<
+                // iteration
+                simulation.getIteration() << ";" <<
+                // totalTime
+                simulation.getTotalTime().value() << ";" <<
+                // x
+                c.getX() << ";" <<
+                // y
+                c.getY();
+            ;
+
+            // Store signal concentrations
+            for (auto id : getSignalIds())
+                *m_dataOut << ";" << getSignal(id, c);
+
+            *m_dataOut << "\n";
+        }
+
+        m_dataOut->flush();
+    }
 }
 
 /* ************************************************************************ */
@@ -164,6 +191,18 @@ void Module::configure(const simulator::Configuration& config, simulator::Simula
     // Set background color
     m_background = config.get("background", m_background);
 #endif
+
+    if (config.has("data-out"))
+    {
+        m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
+        *m_dataOut << "iteration;totalTime;x;y";
+
+        // Store signal names
+        for (auto id : getSignalIds())
+            *m_dataOut << ";" << getSignalName(id);
+
+        *m_dataOut << "\n";
+    }
 }
 
 /* ************************************************************************ */

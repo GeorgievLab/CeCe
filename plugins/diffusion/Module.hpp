@@ -36,6 +36,7 @@
 #include "core/Units.hpp"
 #include "core/Grid.hpp"
 #include "core/Range.hpp"
+#include "core/InStream.hpp"
 #include "simulator/Module.hpp"
 
 #if ENABLE_RENDER
@@ -966,6 +967,8 @@ private:
     mutable Mutex m_mutex;
 #endif
 
+    /// Outstream for diffusion data.
+    UniquePtr<OutStream> m_dataOut;
 };
 
 /* ************************************************************************ */
