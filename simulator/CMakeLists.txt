@@ -66,6 +66,8 @@ set(SRCS
     Obstacle.cpp
     SimulationListener.hpp
     ObjectType.hpp
+    Parameters.hpp
+    Parameters.cpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>
