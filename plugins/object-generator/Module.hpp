@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // Simulator
+#include "core/Real.hpp"
 #include "core/String.hpp"
 #include "core/Units.hpp"
 #include "core/VectorUnits.hpp"
@@ -44,12 +45,35 @@ namespace object_generator {
 /* ************************************************************************ */
 
 /**
+ * @brief Structure for storing object distribution.
+ */
+struct Distribution
+{
+    enum class Type
+    {
+        Uniform,
+        Normal
+    };
+
+    /// Distribution type.
+    Type type = Type::Uniform;
+
+    /// Distribution parameters.
+    StaticArray<units::Length, 2> parameters;
+};
+
+/* ************************************************************************ */
+
+/**
  * @brief Structure for storing created object parameters.
  */
 struct ObjectDesc
 {
     // Generation probability per second.
     using Probability = typename units::Divide<units::Probability, units::Time>::type;
+
+    /// Position distributions.
+    using Distributions = StaticArray<Distribution, DIMENSION>;
 
 
     /// Object class name.
@@ -58,11 +82,8 @@ struct ObjectDesc
     /// Probability of object creation.
     Probability probability;
 
-    /// Minimum spawn position.
-    PositionVector positionMin;
-
-    /// Maximum spawn position.
-    PositionVector positionMax;
+    /// Axis distributions.
+    Distributions distributions;
 
     /// List of iteration ranges when the generator is active.
     DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> active;

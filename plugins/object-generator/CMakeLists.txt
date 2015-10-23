@@ -25,7 +25,7 @@
 
 # Sources
 set(SRCS
-    Library.cpp
+    Plugin.cpp
     Module.hpp
     Module.cpp
 )

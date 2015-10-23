@@ -18,7 +18,7 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
-    <File Name="Library.cpp"/>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>

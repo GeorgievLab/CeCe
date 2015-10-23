@@ -127,6 +127,37 @@ bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::Iter
 
 /* ************************************************************************ */
 
+/**
+ * @brief Read distribution description.
+ *
+ * @param is
+ * @param distr
+ *
+ * @return
+ */
+InStream& operator>>(InStream& is, ObjectDesc::Distributions& distr)
+{
+    for (unsigned int i = 0; i < distr.size(); ++i)
+    {
+        String name;
+        is >> std::skipws >> name;
+
+        if (name == "uniform")
+            distr[i].type = Distribution::Type::Uniform;
+        else if (name == "normal")
+            distr[i].type = Distribution::Type::Normal;
+        else
+            throw InvalidArgumentException("Unknown distribution: " + name);
+
+        is >> distr[i].parameters[0];
+        is >> distr[i].parameters[1];
+    }
+
+    return is;
+}
+
+/* ************************************************************************ */
+
 void Module::update(units::Duration dt, simulator::Simulation& simulation)
 {
     auto _ = measure_time("object-generator", simulator::TimeMeasurementIterationOutput(simulation));
@@ -151,10 +182,38 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
         auto object = simulation.buildObject(desc.className);
         assert(object);
 
+        PositionVector pos = Zero;
+
         // Generate position
-        std::uniform_real_distribution<float> distX(desc.positionMin.getX().value(), desc.positionMax.getX().value());
-        std::uniform_real_distribution<float> distY(desc.positionMin.getY().value(), desc.positionMax.getY().value());
-        object->setPosition({units::Length(distX(g_gen)), units::Length(distY(g_gen))});
+        for (unsigned int i = 0; i < pos.getSize(); ++i)
+        {
+            const auto& distr = desc.distributions[i];
+
+            if (distr.type == Distribution::Type::Uniform)
+            {
+                std::uniform_real_distribution<RealType> dist(
+                    distr.parameters[0].value(),
+                    distr.parameters[1].value()
+                );
+
+                pos[i] = units::Length(dist(g_gen));
+            }
+            else if (distr.type == Distribution::Type::Normal)
+            {
+                std::normal_distribution<RealType> dist(
+                    distr.parameters[0].value(),
+                    distr.parameters[1].value()
+                );
+
+                pos[i] = units::Length(dist(g_gen));
+            }
+            else
+            {
+                Assert(false);
+            }
+        }
+
+        object->setPosition(pos);
         object->configure(desc.config, simulation);
     }
 
@@ -164,17 +223,42 @@ void Module::update(units::Duration dt, simulator::Simulation& simulation)
 
 void Module::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
 {
-    const auto half = simulation.getWorldSize() * 0.5f;
-    const auto minPos = PositionVector{       -half.getX(), 0.8 * -half.getY()};
-    const auto maxPos = PositionVector{0.95 * -half.getX(), 0.8 *  half.getY()};
-
     for (auto&& cfg : config.getConfigurations("object"))
     {
         ObjectDesc desc;
         desc.className = cfg.get("class");
         desc.probability = cfg.get<ObjectDesc::Probability>("probability");
-        desc.positionMin = cfg.get("position-min", minPos);
-        desc.positionMax = cfg.get("position-max", maxPos);
+
+        if (cfg.has("distribution"))
+        {
+            desc.distributions  = cfg.get<ObjectDesc::Distributions>("distribution");
+        }
+        else if (cfg.has("size"))
+        {
+            const auto pos = cfg.get<PositionVector>("position");
+            const auto size = cfg.get<PositionVector>("size");
+            const auto half = size * 0.5;
+
+            for (unsigned int i = 0; i < desc.distributions.size(); ++i)
+            {
+                desc.distributions[i].type = Distribution::Type::Uniform;
+                desc.distributions[i].parameters[0] = pos[i] - half[i];
+                desc.distributions[i].parameters[1] = pos[i] + half[i];
+            }
+        }
+        else
+        {
+            const auto posMin = cfg.get<PositionVector>("position-min");
+            const auto posMax = cfg.get<PositionVector>("position-max");
+
+            for (unsigned int i = 0; i < desc.distributions.size(); ++i)
+            {
+                desc.distributions[i].type = Distribution::Type::Uniform;
+                desc.distributions[i].parameters[0] = posMin[i];
+                desc.distributions[i].parameters[1] = posMax[i];
+            }
+        }
+
         desc.active = parseActive(cfg.get("active", String{}));
         desc.config = cfg.toMemory();
 
