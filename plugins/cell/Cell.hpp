@@ -89,7 +89,7 @@ public:
      */
     units::Length getRadius() const noexcept
     {
-        return calcSphereRadius(getVolume());
+        return calcRadius(getVolume());
     }
 
 

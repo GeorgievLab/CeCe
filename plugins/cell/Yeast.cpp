@@ -59,7 +59,7 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) no
     // Max 2 shapes
     auto& shapes = getMutableShapes();
     shapes.reserve(2);
-    shapes.push_back(simulator::Shape::makeCircle(calcSphereRadius(getVolume())));
+    shapes.push_back(simulator::Shape::makeCircle(calcRadius(getVolume())));
 }
 
 /* ************************************************************************ */
@@ -219,12 +219,12 @@ void Yeast::draw(render::Context& context)
 #endif
 
         pos = getPosition();
-        radius = calcSphereRadius(getVolume());
+        radius = calcRadius(getVolume());
 
         if (m_bud)
         {
             angle = getRotation() - m_bud->rotation;
-            budRadius = calcSphereRadius(m_bud->volume);
+            budRadius = calcRadius(m_bud->volume);
             color = calcFluorescentColor(getVolume() + m_bud->volume);
         }
         else
@@ -260,9 +260,9 @@ void Yeast::updateShape()
     auto& shapes = getMutableShapes();
 
     // Calculate new radius
-    const auto newRadius = calcSphereRadius(getVolume());
+    const auto newRadius = calcRadius(getVolume());
     const auto oldRadius = units::Length(m_shape.m_radius);
-    const auto newBudRadius = m_bud ? calcSphereRadius(m_bud->volume) : Zero;
+    const auto newBudRadius = m_bud ? calcRadius(m_bud->volume) : Zero;
     const auto oldBudRadius = m_bud ? units::Length(m_bud->shape.m_radius) : Zero;
 
     const bool needs_update = m_shapeForceUpdate ||

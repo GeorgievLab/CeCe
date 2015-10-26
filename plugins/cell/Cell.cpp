@@ -113,7 +113,7 @@ void Cell::draw(render::Context& context)
 #endif
 
         pos = getPosition();
-        radius = calcSphereRadius(getVolume());
+        radius = calcRadius(getVolume());
         color = calcFluorescentColor();
     }
 

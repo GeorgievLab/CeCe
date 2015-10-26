@@ -31,6 +31,7 @@
 #include <cmath>
 
 // Simulator
+#include "core/constants.hpp"
 #include "core/Units.hpp"
 #include "core/UnitsCtors.hpp"
 #include "core/Map.hpp"
@@ -465,10 +466,12 @@ public:
      *
      * @return Radius.
      */
-    static units::Length calcSphereRadius(units::Volume volume) noexcept
+    static units::Length calcRadius(units::Volume volume) noexcept
     {
         // 3th root of ((3 / 4 * pi) * volume)
-        return units::Length(0.62035f * std::pow(volume.value(), 0.3333333f));
+        //return units::Length(0.62035f * std::pow(volume.value(), 0.3333333f));
+        // Simulation is in 2D
+        return units::Length(std::sqrt(volume.value() / constants::PI));
     }
 
 
