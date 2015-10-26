@@ -2079,6 +2079,13 @@ using Angle = Value;
 /* ************************************************************************ */
 
 /**
+ * @brief Class for representing angular velocity (radian per second).
+ */
+using AngularVelocity = Unit<List<>, List<BaseTime>>;
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing probability.
  */
 using Probability = Value;
