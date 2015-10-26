@@ -38,6 +38,7 @@
 #include "core/DynamicArray.hpp"
 #include "core/Map.hpp"
 #include "core/StringView.hpp"
+#include "core/OutStream.hpp"
 #include "simulator/Shape.hpp"
 #include "simulator/Configuration.hpp"
 #include "simulator/Program.hpp"
@@ -278,6 +279,14 @@ public:
 
 
     /**
+     * @brief Returns mass center position.
+     *
+     * @return
+     */
+    PositionVector getMassCenterPosition() const noexcept;
+
+
+    /**
      * @brief Returns current rotation.
      *
      * @return
@@ -291,6 +300,14 @@ public:
      * @return
      */
     VelocityVector getVelocity() const noexcept;
+
+
+    /**
+     * @brief Returns angular velocity.
+     *
+     * @return
+     */
+    units::AngularVelocity getAngularVelocity() const noexcept;
 
 
     /**
@@ -681,6 +698,9 @@ private:
 
     /// Box2D doesn't have accessor to force.
     ForceVector m_force;
+
+    /// Outstream for streamlines data
+    UniquePtr<OutStream> m_dataOut;
 };
 
 /* ************************************************************************ */

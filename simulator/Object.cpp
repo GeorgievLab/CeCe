@@ -34,6 +34,7 @@
 // Simulator
 #include "core/Units.hpp"
 #include "core/Log.hpp"
+#include "core/FileStream.hpp"
 #include "simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -168,6 +169,22 @@ PositionVector Object::getPosition() const noexcept
 
 /* ************************************************************************ */
 
+PositionVector Object::getMassCenterPosition() const noexcept
+{
+#if ENABLE_PHYSICS
+    assert(m_body);
+    const auto posPhys = m_body->GetWorldCenter();
+    return {
+        units::Length(posPhys.x),
+        units::Length(posPhys.y)
+    };
+#else
+    return m_position;
+#endif
+}
+
+/* ************************************************************************ */
+
 units::Angle Object::getRotation() const noexcept
 {
 #if ENABLE_PHYSICS
@@ -193,6 +210,21 @@ VelocityVector Object::getVelocity() const noexcept
     };
 #else
     return m_velocity;
+#endif
+}
+
+/* ************************************************************************ */
+
+units::AngularVelocity Object::getAngularVelocity() const noexcept
+{
+#if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+
+    assert(m_body);
+    const auto velPhys = m_body->GetAngularVelocity();
+    return units::AngularVelocity{coeff * velPhys};
+#else
+    return Zero;
 #endif
 }
 
@@ -341,6 +373,38 @@ void Object::update(units::Duration dt)
     // Call object programs
     for (auto& program : getPrograms())
         program(*this, getSimulation(), dt);
+
+    // Store streamlines data
+    if (m_dataOut)
+    {
+        const auto pos = getPosition();
+        const auto vel = getVelocity();
+        const auto force = getForce();
+
+        *m_dataOut <<
+            // iteration
+            m_simulation.getIteration() << ";" <<
+            // totalTime
+            m_simulation.getTotalTime().value() << ";" <<
+            // id
+            getId() << ";" <<
+            // x
+            pos.getX().value() << ";" <<
+            // y
+            pos.getY().value() << ";" <<
+            // velX
+            vel.getX().value() << ";" <<
+            // velY
+            vel.getY().value() << ";" <<
+            // forceX
+            force.getX().value() << ";" <<
+            // forceY
+            force.getY().value() <<
+            "\n"
+        ;
+
+        m_dataOut->flush();
+    }
 }
 
 /* ************************************************************************ */
@@ -373,6 +437,12 @@ void Object::configure(const Configuration& config, Simulation& simulation)
             else
                 Log::warning("Unable to create program: ", name);
         }
+    }
+
+    if (config.has("data-out"))
+    {
+        m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
+        *m_dataOut << "iteration;totalTime;id;x;y;velX;velY;forceX;forceY\n";
     }
 }
 
