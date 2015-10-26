@@ -221,9 +221,9 @@ public:
      *
      * @return
      */
-    simulator::IterationCount getIterations() const noexcept
+    simulator::IterationCount getInnerIterations() const noexcept
     {
-        return m_iterations;
+        return m_innerIterations;
     }
 
 
@@ -346,9 +346,9 @@ public:
      *
      * @param iterations
      */
-    void setIterations(simulator::IterationCount iterations) noexcept
+    void setInnerIterations(simulator::IterationCount iterations) noexcept
     {
-        m_iterations = iterations;
+        m_innerIterations = iterations;
     }
 
 
@@ -561,7 +561,7 @@ private:
     RealType m_coefficient = 1;
 
     /// Number of inner iterations.
-    simulator::IterationCount m_iterations = 5;
+    simulator::IterationCount m_innerIterations = 5;
 
     /// Number of init iterations.
     simulator::IterationCount m_initIterations = 100;

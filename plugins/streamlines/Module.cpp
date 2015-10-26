@@ -236,7 +236,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 #endif
 
     // Collide and propagate
-    for (auto it = getIterations(); it--; )
+    for (auto it = getInnerIterations(); it--; )
     {
         m_lattice.collideAndPropagate(omega);
 
@@ -306,9 +306,9 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
     setInitIterations(config.get("init-iterations", getInitIterations()));
 
     // Number of inner iterations
-    setIterations(config.get("iterations", getIterations()));
+    setInnerIterations(config.get("iterations", getInnerIterations()));
 
-    if (getIterations() == 0)
+    if (getInnerIterations() == 0)
         throw InvalidArgumentException("Number of inner iterations cannot be zero");
 
     // Convert relaxation time
@@ -722,7 +722,7 @@ VelocityVector Module::inletVelocityProfile(
 
 RealType Module::calculateCoefficient(units::Time dt, PositionVector dl) const noexcept
 {
-    return calculateViscosity() * (getIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / dt;
+    return calculateViscosity() * (getInnerIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / dt;
 }
 
 /* ************************************************************************ */
