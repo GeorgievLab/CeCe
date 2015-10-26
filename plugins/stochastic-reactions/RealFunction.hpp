@@ -40,7 +40,7 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-class BooleanFunction
+class RealFunction
 {
 // Public structures:
 public:
@@ -50,119 +50,13 @@ public:
         String m_name;
         unsigned int m_constant;
 
-        virtual unsigned int get(const Context& pointers);
+        virtual float get(const Context& pointers);
     };
 
     struct Operator
     {
-        virtual bool eval(const Context& pointers);
+        virtual float eval(const Context& pointers);
     };
-
-    struct OperatorBool : public Operator
-    {
-        UniquePtr<Operator> left;
-        UniquePtr<Operator> right;
-    };
-
-    struct OperatorInt : public Operator
-    {
-        UniquePtr<Value> left;
-        UniquePtr<Value> right;
-    };
-
-    struct MoleculeCount : public Value
-    {
-        unsigned int get(const Context& pointers) const
-        {
-            return pointers.cell.getMoleculeCount(m_name);
-        }
-    };
-
-    struct Concetration : public Value
-    {
-        unsigned int get(const Context& pointers) const
-        {
-            const auto id = pointers.diffusion->getSignalId(m_name);
-            if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
-            {
-                return getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
-            }
-            return 0;
-        }
-    };
-
-    struct Constant : public Value
-    {
-        unsigned int get() const
-        {
-            return m_constant;
-        }
-    };
-
-    struct Less : public OperatorInt
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->get(pointers) < right->get(pointers);
-        }
-    };
-
-    struct Greater : public OperatorInt
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->get(pointers) > right->get(pointers);
-        }
-    };
-
-    struct LessEqual : public OperatorInt
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->get(pointers) <= right->get(pointers);
-        }
-    };
-
-    struct GreaterEqual : public OperatorInt
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->get(pointers) <= right->get(pointers);
-        }
-    };
-
-    struct Equal : public OperatorInt
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->get(pointers) == right->get(pointers);
-        }
-    };
-
-    struct Is : public OperatorInt
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->get(pointers) > 0;
-        }
-    };
-
-    struct And : public OperatorBool
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->eval(pointers) && right->eval(pointers);
-        }
-    };
-
-    struct Or : public OperatorBool
-    {
-        bool eval(const Context& pointers) const
-        {
-            return left->eval(pointers) || right->eval(pointers);
-        }
-    };
-
 
 // Private variables
 private:
@@ -172,7 +66,7 @@ private:
 // Public functions
 public:
 
-    bool evaluate(const Context& pointers) const
+    float evaluate(const Context& pointers) const
     {
         return m_root->eval(pointers);
     }
@@ -180,7 +74,7 @@ public:
 // Public constructor
 public:
 
-    BooleanFunction(Operator* node):
+    RealFunction(Operator* node):
     m_root(node)
     {
         // Nothing to do.

@@ -39,19 +39,15 @@ void Reactions::operator()(simulator::Object& object, simulator::Simulation& sim
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
 
-    executeReactions(step, diffusion, cell, coords);
+    executeReactions(step, Context(diffusion, cell, coords));
 }
 
-void Reactions::executeReactions(
-    units::Time step,
-    plugin::diffusion::Module* diffusion,
-    plugin::cell::CellBase& cell,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+void Reactions::executeReactions(units::Time step, const Context& pointers)
 {
     if (m_propensities.empty())
-        initializePropensities(diffusion, cell, coords);
+        initializePropensities(pointers);
     else
-        refreshEnvPropensities(diffusion, cell, coords);
+        refreshEnvPropensities(pointers);
 
     // initialize time
     units::Time time = Zero;
@@ -68,7 +64,7 @@ void Reactions::executeReactions(
 
         if (sum == 0)
         {
-            initializePropensities(diffusion, cell, coords);
+            initializePropensities(pointers);
             return;
         }
 
@@ -78,17 +74,13 @@ void Reactions::executeReactions(
         const auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
         time -= delta_time;
 
-        executeRules(distr(gen), diffusion, cell, coords);
+        executeRules(distr(gen), pointers);
     }
 }
 
 /* ************************************************************************ */
 
-void Reactions::executeRules(
-    unsigned int index,
-    plugin::diffusion::Module* diffusion,
-    plugin::cell::CellBase& cell,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+void Reactions::executeRules(unsigned int index, const Context& pointers)
 {
     const auto& reaction = m_reactions[index];
 
@@ -103,31 +95,26 @@ void Reactions::executeRules(
             return;
 
         if (change)
-            cell.changeMoleculeCount(moleculeName, change);
+            pointers.cell.changeMoleculeCount(moleculeName, change);
 
         if (env_change)
-            changeMoleculesInEnvironment(env_change, moleculeName, diffusion, cell.getSimulation(), coords);
+            changeMoleculesInEnvironment(env_change, moleculeName, pointers);
 
-        refreshPropensities(moleculeIndex, diffusion, cell, coords);
+        refreshPropensities(moleculeIndex, pointers);
     }
 }
 
 /* ************************************************************************ */
 
-void Reactions::changeMoleculesInEnvironment(
-    const int change,
-    const String& name,
-    plugin::diffusion::Module* diffusion,
-    const simulator::Simulation& simulation,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+void Reactions::changeMoleculesInEnvironment(const int change, const String& name, const Context& pointers)
 {
     assert(change != 0);
 
     // Get signal ID
-    const auto id = diffusion->requireSignalId(name);
+    const auto id = pointers.diffusion->requireSignalId(name);
 
     // Change amount of molecules
-    changeMolecules(simulation, *diffusion, coords, id, change);
+    changeMolecules(pointers.cell.getSimulation(), *pointers.diffusion, pointers.coords, id, change);
 }
 
 /* ************************************************************************ */
@@ -152,32 +139,28 @@ unsigned int Reactions::getMoleculeIndex(const String& name)
 
 /* ************************************************************************ */
 
-Reactions::PropensityType Reactions::computePropensity(
-    const unsigned int index,
-    plugin::diffusion::Module* diffusion,
-    const plugin::cell::CellBase& cell,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+Reactions::PropensityType Reactions::computePropensity(const unsigned int index, const Context& pointers)
 {
     // Evaulate condition
-    if (!m_reactions[index].condition.evaluate(diffusion, cell, coords))
+    if (!m_reactions[index].condition.evaluate(pointers))
     {
         return 0;
     }
 
-    PropensityType local = m_reactions[index].rate;
+    PropensityType local = m_reactions[index].rate.evaluate(pointers);
 
     for (unsigned int i = 0; i < m_moleculeNames.size(); i++)
     {
         // Intracellular
-        const auto number = cell.getMoleculeCount(m_moleculeNames[i]);
+        const auto number = pointers.cell.getMoleculeCount(m_moleculeNames[i]);
         if (m_reactions[index].rules[i].requirement != 0u)
             local *= number;
 
         // Intercellular
-        const auto id = diffusion->getSignalId(m_moleculeNames[i]);
+        const auto id = pointers.diffusion->getSignalId(m_moleculeNames[i]);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
-            const auto numberEnv = getMolarConcentration(*diffusion, coords, id).value();
+            const auto numberEnv = getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
             if (m_reactions[index].rules[i].env_requirement != 0u)
                 local *= numberEnv;
         }
@@ -188,41 +171,31 @@ Reactions::PropensityType Reactions::computePropensity(
 
 /* ************************************************************************ */
 
-void Reactions::initializePropensities(
-    plugin::diffusion::Module* diffusion,
-    const plugin::cell::CellBase& cell,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+void Reactions::initializePropensities(const Context& pointers)
 {
     m_propensities.clear();
     for (unsigned int i = 0; i < m_reactions.size(); i++)
     {
-        m_propensities.push_back(computePropensity(i, diffusion, cell, coords));
+        m_propensities.push_back(computePropensity(i, pointers));
     }
 }
 
 /* ************************************************************************ */
 
-void Reactions::refreshPropensities(
-    const unsigned int index,
-    plugin::diffusion::Module* diffusion,
-    const plugin::cell::CellBase& cell,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+void Reactions::refreshPropensities(const unsigned int index, const Context& pointers)
 {
     for (unsigned int i = 0; i < m_reactions.size(); i++)
     {
         if (m_reactions[i].rules[index].requirement || m_reactions[i].rules[index].env_requirement)
         {
-            m_propensities[i] = computePropensity(i, diffusion, cell, coords);
+            m_propensities[i] = computePropensity(i, pointers);
         }
     }
 }
 
 /* ************************************************************************ */
 
-void Reactions::refreshEnvPropensities(
-    plugin::diffusion::Module* diffusion,
-    const plugin::cell::CellBase& cell,
-    const DynamicArray<plugin::diffusion::Module::Coordinate>& coords)
+void Reactions::refreshEnvPropensities(const Context& pointers)
 {
     for (unsigned int i = 0; i < m_reactions.size(); i++)
     {
@@ -230,7 +203,7 @@ void Reactions::refreshEnvPropensities(
         {
             if (m_reactions[i].rules[j].env_requirement)
             {
-                m_propensities[i] = computePropensity(i, diffusion, cell, coords);
+                m_propensities[i] = computePropensity(i, pointers);
             }
         }
     }

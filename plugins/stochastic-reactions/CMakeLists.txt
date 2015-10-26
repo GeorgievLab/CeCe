@@ -26,9 +26,13 @@
 # Sources
 set(SRCS
     Library.cpp
+    Reaction.hpp
     Reactions.hpp
     Reactions.cpp
     ReactionsParser.hpp
+    ReactionsParser.cpp
+    Context.hpp
+    RealFunction.hpp
     BooleanFunction.hpp
     Diffusion.hpp
     Diffusion.cpp

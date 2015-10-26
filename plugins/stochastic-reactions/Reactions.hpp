@@ -43,7 +43,10 @@
 #include "simulator/Simulation.hpp"
 #include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
+#include "Reaction.hpp"
+#include "RealFunction.hpp"
 #include "BooleanFunction.hpp"
+#include "Context.hpp"
 
 /* ************************************************************************ */
 
@@ -64,36 +67,6 @@ public:
     /// Type used for reaction rates.
     using RateType = RealType;
 
-// Public Structures
-public:
-
-    /**
-     * @brief Member of reaction's stochiometric matrix.
-     */
-    struct ReqProd
-    {
-        unsigned int requirement;
-        unsigned int product;
-        unsigned int env_requirement;
-        unsigned int env_product;
-
-        ReqProd(unsigned int req = 0, unsigned int prod = 0, unsigned int ereq = 0, unsigned int eprod = 0) noexcept
-        : requirement(req), product(prod), env_requirement(ereq), env_product(eprod)
-        {
-            // Nothing to do
-        }
-    };
-
-    /**
-     * @brief Reaction data, rules and condition.
-     */
-    struct Reaction
-    {
-        RateType rate;
-        DynamicArray<ReqProd> rules;
-        BooleanFunction condition;
-    };
-
 // Public Accessors:
 public:
 
@@ -102,7 +75,7 @@ public:
      *
      * @return
      */
-    unsigned int getMoleculeCount() const noexcept
+    inline unsigned int getMoleculeCount() const noexcept
     {
         return m_moleculeNames.size();
     }
@@ -114,7 +87,7 @@ public:
      *
      * @return
      */
-    bool hasMolecule(const String& name) const noexcept
+    inline bool hasMolecule(const String& name) const noexcept
     {
         return std::find(m_moleculeNames.begin(), m_moleculeNames.end(), name) != m_moleculeNames.end();
     }
@@ -126,7 +99,7 @@ public:
      *
      * @return
      */
-    const String& getMoleculeName(unsigned int index) const noexcept
+    inline const String& getMoleculeName(unsigned int index) const noexcept
     {
         return m_moleculeNames[index];
     }
@@ -137,7 +110,7 @@ public:
      *
      * @return
      */
-    unsigned int getReactionCount() const noexcept
+    inline unsigned int getReactionCount() const noexcept
     {
         return m_reactions.size();
     }
@@ -150,9 +123,9 @@ public:
      *
      * @return
      */
-    RateType getRate(unsigned int index) const noexcept
+    inline RateType getRate(unsigned int index, const Context& pointers) const noexcept
     {
-        return m_reactions[index].rate;
+        return m_reactions[index].rate.evaluate(pointers);
     }
 
 
@@ -162,11 +135,11 @@ public:
      * @param reaction Reaction identifier.
      *
      * @return
-     */
-    Reaction& getReaction(unsigned int index) noexcept
+     *
+    inline Reaction& getReaction(unsigned int index) noexcept
     {
         return m_reactions[index];
-    }
+    }*/
 
 
     /**
@@ -176,7 +149,7 @@ public:
      *
      * @return
      */
-    const Reaction& getReaction(unsigned int index) const noexcept
+    inline const Reaction& getReaction(unsigned int index) const noexcept
     {
         return m_reactions[index];
     }
@@ -186,12 +159,12 @@ public:
      * @brief Returns the last row in reaction rule matrix.
      *
      * @return
-     */
-    Reaction& getLastReaction() noexcept
+     *
+    inline Reaction& getLastReaction() noexcept
     {
         assert(!m_reactions.empty());
         return m_reactions.back();
-    }
+    }*/
 
 
     /**
@@ -199,7 +172,7 @@ public:
      *
      * @return
      */
-    const Reaction& getLastReaction() const noexcept
+    inline const Reaction& getLastReaction() const noexcept
     {
         assert(!m_reactions.empty());
         return m_reactions.back();
@@ -223,7 +196,7 @@ private:
      *
      * @param step
      */
-    void executeReactions(units::Time step, plugin::diffusion::Module* diffusion, plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void executeReactions(units::Time step, const Context& pointers);
 
     /**
      * @brief Computes propensity of given reaction.
@@ -231,7 +204,7 @@ private:
      * @param index of row, cell, diffusion
      * @return propensity
      */
-    void executeRules(unsigned int index, plugin::diffusion::Module* diffusion, plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void executeRules(unsigned int index, const Context& pointers);
 
      /**
      * @brief Computes propensity of given reaction.
@@ -239,7 +212,7 @@ private:
      * @param index of row, cell, diffusion
      * @return propensity
      */
-    PropensityType computePropensity(const unsigned int index, plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    PropensityType computePropensity(const unsigned int index, const Context& pointers);
 
     /**
      * @brief Computes propensities of all reactions.
@@ -247,14 +220,14 @@ private:
      * @param cell, diffusion
      * @return
      */
-    void initializePropensities(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void initializePropensities(const Context& pointers);
 
     /**
      * @brief Refreshes propensities of ractions which have requirements of specific molecule.
      *
      * @param index of column, cell, diffusion
      */
-    void refreshPropensities(const unsigned int index, plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void refreshPropensities(const unsigned int index, const Context& pointers);
 
     /**
      * @brief Computes propensities of all reactions that depends on environment.
@@ -262,7 +235,7 @@ private:
      * @param cell, diffusion
      * @return
      */
-    void refreshEnvPropensities(plugin::diffusion::Module* diffusion, const plugin::cell::CellBase& cell, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void refreshEnvPropensities(const Context& pointers);
 
 
     /**
@@ -270,7 +243,7 @@ private:
      *
      * @param id of molecule, number of molecules, diffusion
      */
-    void changeMoleculesInEnvironment(const int change, const String& id, plugin::diffusion::Module* diffusion, const simulator::Simulation& simulation, const DynamicArray<plugin::diffusion::Module::Coordinate>& coords);
+    void changeMoleculesInEnvironment(const int change, const String& id, const Context& pointers);
 
 public:
 
