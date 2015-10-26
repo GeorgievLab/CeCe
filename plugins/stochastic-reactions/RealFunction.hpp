@@ -31,6 +31,8 @@
 
 #include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
+
+#include "Types.hpp"
 #include "Context.hpp"
 
 /* ************************************************************************ */
@@ -42,6 +44,7 @@ namespace stochastic_reactions {
 
 class RealFunction
 {
+
 // Public structures:
 public:
 
@@ -66,7 +69,7 @@ private:
 // Public functions
 public:
 
-    float evaluate(const Context& pointers) const
+    RateType evaluate(const Context& pointers) const
     {
         return m_root->eval(pointers);
     }

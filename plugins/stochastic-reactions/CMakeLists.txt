@@ -26,6 +26,7 @@
 # Sources
 set(SRCS
     Library.cpp
+    Types.hpp
     Reaction.hpp
     Reactions.hpp
     Reactions.cpp

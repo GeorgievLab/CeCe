@@ -31,6 +31,8 @@
 
 #include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
+
+#include "Types.hpp"
 #include "Context.hpp"
 
 /* ************************************************************************ */

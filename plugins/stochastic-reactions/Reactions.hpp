@@ -34,7 +34,6 @@
 #include "core/String.hpp"
 #include "core/StringView.hpp"
 #include "core/Units.hpp"
-#include "core/Real.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/Log.hpp"
 #include "core/Exception.hpp"
@@ -43,10 +42,12 @@
 #include "simulator/Simulation.hpp"
 #include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
+
+#include "Types.hpp"
+#include "Context.hpp"
 #include "Reaction.hpp"
 #include "RealFunction.hpp"
 #include "BooleanFunction.hpp"
-#include "Context.hpp"
 
 /* ************************************************************************ */
 
@@ -60,12 +61,6 @@ namespace stochastic_reactions {
  */
 class Reactions
 {
-
-// Public Types
-public:
-
-    /// Type used for reaction rates.
-    using RateType = RealType;
 
 // Public Accessors:
 public:
@@ -125,7 +120,7 @@ public:
      */
     inline RateType getRate(unsigned int index, const Context& pointers) const noexcept
     {
-        return m_reactions[index].rate.evaluate(pointers);
+        return m_reactions[index].evaluateRate(pointers);
     }
 
 
@@ -135,11 +130,11 @@ public:
      * @param reaction Reaction identifier.
      *
      * @return
-     *
+     */
     inline Reaction& getReaction(unsigned int index) noexcept
     {
         return m_reactions[index];
-    }*/
+    }
 
 
     /**
@@ -159,12 +154,12 @@ public:
      * @brief Returns the last row in reaction rule matrix.
      *
      * @return
-     *
+     */
     inline Reaction& getLastReaction() noexcept
     {
         assert(!m_reactions.empty());
         return m_reactions.back();
-    }*/
+    }
 
 
     /**
@@ -177,13 +172,6 @@ public:
         assert(!m_reactions.empty());
         return m_reactions.back();
     }
-
-// Public Types
-public:
-
-    /// Propensity type.
-    using PropensityType = RateType;
-
 
 // Private Operations
 private:
