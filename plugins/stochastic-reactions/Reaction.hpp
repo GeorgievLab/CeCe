@@ -27,6 +27,8 @@
 
 /* ************************************************************************ */
 
+#include "Types.hpp"
+#include "Context.hpp"
 #include "RealFunction.hpp"
 #include "BooleanFunction.hpp"
 
@@ -40,7 +42,7 @@ namespace stochastic_reactions {
 /**
  * @brief One single reaction, contains reaction rules, rate and condition.
  */
-struct Reaction
+class Reaction
 {
 
 public:
@@ -62,15 +64,46 @@ public:
         }
     };
 
-    RealFunction rate;
-    BooleanFunction condition;
-    DynamicArray<ReqProd> rules;
+// Private variables
+private:
 
-    Reaction(const RealFunction& rate_function, const BooleanFunction& condition_function, const DynamicArray<ReqProd> reaction_rules):
-    rate(rate_function), condition(condition_function), rules(reaction_rules)
+    RealFunction m_rate;
+    BooleanFunction m_condition;
+    DynamicArray<ReqProd> m_rules;
+
+// Public Accessors
+public:
+
+    inline bool evaluateCondition(const Context& pointers) const noexcept
     {
-        // Nothing to do
+        return m_condition.evaluate(pointers);
     }
+
+    inline RateType evaluateRate(const Context& pointers) const noexcept
+    {
+        return m_rate.evaluate(pointers);
+    }
+
+    inline unsigned int getRequirement(unsigned int index) const
+    {
+        return m_rules[index].requirement;
+    }
+
+    inline unsigned int getEnvRequirement(unsigned int index) const
+    {
+        return m_rules[index].env_requirement;
+    }
+
+    inline unsigned int getProduct(unsigned int index) const
+    {
+        return m_rules[index].product;
+    }
+
+    inline unsigned int getEnvProduct(unsigned int index) const
+    {
+        return m_rules[index].env_product;
+    }
+
 };
 
 /* ************************************************************************ */
