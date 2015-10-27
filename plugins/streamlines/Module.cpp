@@ -598,8 +598,8 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
 
             // Apply force
             obj->applyForce(
-                forceApply,
-                shape.getCircle().center
+                forceApply//,
+                //shape.getCircle().center
             );
         }
     }
