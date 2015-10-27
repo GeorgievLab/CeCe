@@ -399,7 +399,11 @@ void Object::update(units::Duration dt)
             // forceX
             force.getX().value() << ";" <<
             // forceY
-            force.getY().value() <<
+            force.getY().value() << ";" <<
+            // angle
+            getRotation() << ";" <<
+            // omega
+            getAngularVelocity().value() <<
             "\n"
         ;
 
@@ -442,7 +446,7 @@ void Object::configure(const Configuration& config, Simulation& simulation)
     if (config.has("data-out"))
     {
         m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
-        *m_dataOut << "iteration;totalTime;id;x;y;velX;velY;forceX;forceY\n";
+        *m_dataOut << "iteration;totalTime;id;x;y;velX;velY;forceX;forceY;angle;omega\n";
     }
 }
 
