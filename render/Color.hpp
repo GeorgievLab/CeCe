@@ -61,7 +61,11 @@ public:
     /**
      * @brief Default constructor.
      */
-    Color() = default;
+    constexpr Color() noexcept
+        : Color({}, {}, {})
+    {
+        // Nothing to do
+    }
 
 
     /**
