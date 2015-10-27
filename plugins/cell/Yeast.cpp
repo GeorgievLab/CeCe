@@ -114,6 +114,8 @@ void Yeast::configure(const simulator::Configuration& config,
 {
     CellBase::configure(config, simulation);
 
+    setVolumeBud(config.get("volume-bud", getVolumeBud()));
+    setAngleBud(config.get("angle-bud", getAngleBud()));
     setVolumeBudCreate(config.get("volume-bud-create", getVolumeBudCreate()));
     setVolumeBudRelease(config.get("volume-bud-release", getVolumeBudRelease()));
 
@@ -135,7 +137,7 @@ void Yeast::budCreate()
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
     m_bud = Bud{};
-    m_bud->rotation = 2 * constants::PI * dist(eng);
+    m_bud->angle = 2 * constants::PI * dist(eng);
 
 #if ENABLE_PHYSICS
     m_shapeForceUpdate = true;
@@ -223,7 +225,7 @@ void Yeast::draw(render::Context& context)
 
         if (m_bud)
         {
-            angle = getRotation() - m_bud->rotation;
+            angle = getRotation() - m_bud->angle;
             budRadius = calcRadius(m_bud->volume);
             color = calcFluorescentColor(getVolume() + m_bud->volume);
         }
@@ -277,7 +279,7 @@ void Yeast::updateShape()
     // If bud shape is missing, create one.
     if (hasBud())
     {
-        const auto center = PositionVector(Zero, 0.9 * (newRadius + newBudRadius)).rotated(-m_bud->rotation);
+        const auto center = PositionVector(Zero, 0.9 * (newRadius + newBudRadius)).rotated(-m_bud->angle);
 
         if (shapes.size() != 2)
         {
@@ -323,8 +325,8 @@ void Yeast::updateShape()
         const float distance = 0.9 * (m_shape.m_radius + m_bud->shape.m_radius);
 
         m_bud->shape.m_p = b2Vec2(
-            distance * std::sin(m_bud->rotation),
-            distance * std::cos(m_bud->rotation)
+            distance * std::sin(m_bud->angle),
+            distance * std::cos(m_bud->angle)
         );
         getBody()->CreateFixture(&m_bud->shape, getDensity().value());
     }

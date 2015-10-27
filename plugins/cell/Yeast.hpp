@@ -66,7 +66,7 @@ public:
     struct Bud
     {
         /// Angle.
-        units::Angle rotation = units::deg(0);
+        units::Angle angle = units::deg(0);
 
         /// Bud volume.
         units::Volume volume = units::um3(0.1);
@@ -128,6 +128,34 @@ public:
 
 
     /**
+     * @brief Return bud volume.
+     *
+     * @return
+     */
+    units::Volume getVolumeBud() const noexcept
+    {
+        if (m_bud)
+            return m_bud->volume;
+        else
+            return {};
+    }
+
+
+    /**
+     * @brief Return bud current angle.
+     *
+     * @return
+     */
+    units::Angle getAngleBud() const noexcept
+    {
+        if (m_bud)
+            return m_bud->angle;
+        else
+            return {};
+    }
+
+
+    /**
      * @brief Return volume when buds are produced.
      *
      * @return
@@ -151,6 +179,34 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Set bud volume.
+     *
+     * @param volume
+     */
+    void setVolumeBud(units::Volume volume) noexcept
+    {
+        if (!m_bud)
+            budCreate();
+
+        m_bud->volume = std::move(volume);
+    }
+
+
+    /**
+     * @brief Set bud angle.
+     *
+     * @param angle
+     */
+    void setAngleBud(units::Angle angle) noexcept
+    {
+        if (!m_bud)
+            budCreate();
+
+        m_bud->angle = std::move(angle);
+    }
 
 
     /**
