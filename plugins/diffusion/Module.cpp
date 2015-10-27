@@ -33,6 +33,7 @@
 
 // Simulator
 #include "core/constants.hpp"
+#include "core/Assert.hpp"
 #include "core/StaticMatrix.hpp"
 #include "core/TimeMeasurement.hpp"
 #include "core/VectorRange.hpp"
@@ -257,15 +258,18 @@ void Module::updateDrawable() const
                 alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
         }
 
+        Assert(alphaSum >= 0);
+
         // Alpha for background
         const auto alphaBg = std::max<RealType>(1 - alphaSum, 0);
+        Assert(alphaBg >= 0);
 
         // Initial pixel colour
         auto pixel = m_background * alphaBg;
 
-        if (alphaSum)
+        if (alphaSum > 0)
         {
-            render::Color pixelSignals{};
+            render::Color pixelSignals;
 
             // Mixup signal colors
             for (auto id : getSignalIds())
@@ -275,6 +279,7 @@ void Module::updateDrawable() const
 
                 // Calculate alpha value
                 const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+                Assert(alpha >= 0);
 
                 pixelSignals += m_colors[id] * alpha / alphaSum;
             }
