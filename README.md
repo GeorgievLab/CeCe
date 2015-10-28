@@ -3,8 +3,7 @@
 
 [![Build Status](https://travis-ci.org/GeorgievLab/CeCe.svg?branch=master)](https://travis-ci.org/GeorgievLab/CeCe)
 
-The CeCe simulator is modular simulator primary designed for modeling signal
-transmission networks in microfluidics.
+CeCe is a platform for advanced simulation of cells and cell signalling in 2D. It includes a physical engine, stochastic chemical reactions, cell-cell bonding, diffusion, hydrodynamics, and a growth model. CeCe originally started as a part of the iGEM 2015 project from team Czech Republic and was aimed for the simulation of microfluidical chips. However, Cece's wide range of tools enables it to be used for the simulation of batch cultures, blood streams, cell tissues, and many more biomedically related problems.
 
 ## Building from source
 
