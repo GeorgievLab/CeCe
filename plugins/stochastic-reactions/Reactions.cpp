@@ -88,8 +88,8 @@ void Reactions::executeRules(unsigned int index, const Context& pointers)
     {
         const auto& moleculeName = m_moleculeNames[moleculeIndex];
 
-        const auto change = reaction.rules[moleculeIndex].product - reaction.rules[moleculeIndex].requirement;
-        const auto env_change = reaction.rules[moleculeIndex].env_product - reaction.rules[moleculeIndex].env_requirement;
+        const auto change = reaction.getProduct(moleculeIndex) - reaction.getRequirement(moleculeIndex);
+        const auto env_change = reaction.getEnvProduct(moleculeIndex) - reaction.getEnvRequirement(moleculeIndex);
 
         if (!change && !env_change)
             return;
@@ -132,36 +132,34 @@ unsigned int Reactions::getMoleculeIndex(const String& name)
 
     // Resize all reactions
     for (auto& reaction : m_reactions)
-        reaction.rules.resize(m_moleculeNames.size());
+        m_reactions.resize(m_moleculeNames.size());
 
     return m_moleculeNames.size() - 1;
 }
 
 /* ************************************************************************ */
 
-Reactions::PropensityType Reactions::computePropensity(const unsigned int index, const Context& pointers)
+PropensityType Reactions::computePropensity(const unsigned int index, const Context& context)
 {
     // Evaulate condition
-    if (!m_reactions[index].condition.evaluate(pointers))
-    {
+    if (!m_reactions[index].evaluateCondition(context))
         return 0;
-    }
 
-    PropensityType local = m_reactions[index].rate.evaluate(pointers);
+    PropensityType local = m_reactions[index].evaluateRate(context);
 
     for (unsigned int i = 0; i < m_moleculeNames.size(); i++)
     {
         // Intracellular
-        const auto number = pointers.cell.getMoleculeCount(m_moleculeNames[i]);
-        if (m_reactions[index].rules[i].requirement != 0u)
+        const auto number = context.cell.getMoleculeCount(m_moleculeNames[i]);
+        if (m_reactions[index].getRequirement(i) != 0u)
             local *= number;
 
         // Intercellular
-        const auto id = pointers.diffusion->getSignalId(m_moleculeNames[i]);
+        const auto id = context.diffusion->getSignalId(m_moleculeNames[i]);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
-            const auto numberEnv = getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
-            if (m_reactions[index].rules[i].env_requirement != 0u)
+            const auto numberEnv = getMolarConcentration(*context.diffusion, context.coords, id).value();
+            if (m_reactions[index].getEnvRequirement(i) != 0u)
                 local *= numberEnv;
         }
     }
@@ -186,7 +184,7 @@ void Reactions::refreshPropensities(const unsigned int index, const Context& poi
 {
     for (unsigned int i = 0; i < m_reactions.size(); i++)
     {
-        if (m_reactions[i].rules[index].requirement || m_reactions[i].rules[index].env_requirement)
+        if (m_reactions[i].getRequirement(index) || m_reactions[i].getEnvRequirement(index))
         {
             m_propensities[i] = computePropensity(i, pointers);
         }
@@ -201,7 +199,7 @@ void Reactions::refreshEnvPropensities(const Context& pointers)
     {
         for (unsigned int j = 0; j < m_moleculeNames.size(); j++)
         {
-            if (m_reactions[i].rules[j].env_requirement)
+            if (m_reactions[i].getEnvRequirement(j))
             {
                 m_propensities[i] = computePropensity(i, pointers);
             }

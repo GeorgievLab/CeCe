@@ -27,13 +27,15 @@
 
 /* ************************************************************************ */
 
-#include "Reactions.hpp"
 #include "core/DynamicArray.hpp"
 #include "core/ExpressionParser.hpp"
 #include "core/Log.hpp"
 #include "core/Tokenizer.hpp"
 #include "core/Parser.hpp"
 #include "core/Tuple.hpp"
+
+#include "Types.hpp"
+#include "Reactions.hpp"
 
 /* ************************************************************************ */
 
@@ -191,7 +193,7 @@ public:
             next();
 
             if (match('-'))
-                return TokenType{TokenCode::ArrowFwrd};
+                return TokenType{TokenCode::ArrowBack};
             if (match('='))
                 return TokenType{TokenCode::LessEqual};
 
@@ -283,26 +285,14 @@ DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException
 
 /* ************************************************************************ */
 
-class ReactionsParser
-    : public BasicParser<
-        ReactionsParser,
-        Tokenizer
-    >
+class ReactionsParser : public BasicParser<ReactionsParser, Tokenizer>
 {
 
 // Public Types
 public:
 
     // Parent type.
-    using ParentType = BasicParser<
-        ReactionsParser,
-        Tokenizer
-    >;
-
-
-    /// Rate type.
-    using RateType = typename Reactions::RateType;
-
+    using ParentType = BasicParser<ReactionsParser, Tokenizer>;
 
 // Public Ctors & Dtors
 public:
@@ -315,8 +305,7 @@ public:
      * @param parameters Reactions parameters.
      */
     explicit ReactionsParser(const String& code, const Map<String, float>& parameters = Map<String, float>{}) noexcept
-        : ParentType(code.c_str(), code.c_str() + code.size())
-        , m_parameters(parameters)
+        : ParentType(code.c_str(), code.c_str() + code.size()), m_parameters(parameters)
     {
         // Nothing to do.
     }
@@ -340,42 +329,22 @@ public:
 /* ************************************************************************ */
     void parseReactions(Reactions& reactions)
     {
+        Reaction reaction;
         // parse conditions
-        auto conditions = parseConditions();
+        parseConditions(reaction);
         // parse LS
         auto ids_minus = parseList();
-        if (!is(TokenCode::ArrowBack, TokenCode::ArrowFwrd, TokenCode::Less, TokenCode::Greater))
-            throw MissingArrowException();
         // parse rate
-        RateType rate;
-        RateType rateR;
-        bool reversible = is(TokenCode::ArrowBack, TokenCode::Less);
-        if (reversible)
-            rateR = parseRateReversible();
-        rate = parseRate();
+        parseRate(reaction);
         //parse RS
         auto ids_plus = parseList();
         requireNext(TokenCode::Semicolon);
         // extending
-        reactions.extend(ids_plus, ids_minus, rate);
-        auto no_cond = reactions.getLastReaction();
-        for (unsigned int i = 0; i < conditions.size(); i++)
-        {
-            reactions.addCondition(conditions[i], no_cond);
-        }
-        // extending reversible
-        if (reversible)
-        {
-            reactions.extend(ids_minus, ids_plus, rateR);
-            auto no_cond = reactions.getLastReaction();
-            for (unsigned int i = 0; i < conditions.size(); i++)
-            {
-                reactions.addCondition(conditions[i], no_cond);
-            }
-        }
+        makeRules(reaction, ids_plus, ids_minus);
+        reactions.extend(reaction);
     }
 
-/* ************************************************************************ */
+/* *********************************************************************** */
 
 protected:
     // Use parent's member functions
@@ -394,8 +363,9 @@ protected:
      *
      * @return tuple - conditions
      */
-    void parseConditions()
+    void parseConditions(Reaction& reaction)
     {
+    return;
         DynamicArray<int> array;
         if (!is(TokenCode::If))
             return array;
@@ -572,10 +542,9 @@ private:
  *
  * @return Result reactions.
  */
-template<typename ReactionsType>
-inline ReactionsType parseReactions(const String& code, const Map<String, float>& parameters = Map<String, float>{})
+inline Reactions parseReactions(const String& code, const Map<String, float>& parameters = Map<String, float>{})
 {
-    return ReactionsParser<ReactionsType>(code, parameters).parse();
+    return ReactionsParser(code, parameters).parse();
 }
 
 /* ************************************************************************ */

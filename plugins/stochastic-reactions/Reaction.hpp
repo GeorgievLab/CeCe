@@ -104,6 +104,11 @@ public:
         return m_rules[index].env_product;
     }
 
+    inline void resize (unsigned int size)
+    {
+        m_rules.resize(size);
+    }
+
 };
 
 /* ************************************************************************ */
