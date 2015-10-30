@@ -279,11 +279,29 @@ public:
 
 
     /**
-     * @brief Returns mass center position.
+     * @brief Returns mass center world position.
      *
      * @return
      */
     PositionVector getMassCenterPosition() const noexcept;
+
+
+    /**
+     * @brief Returns mass center local position (offset).
+     *
+     * @return
+     */
+    PositionVector getMassCenterOffset() const noexcept;
+
+
+    /**
+     * @brief Convert local position to world position.
+     *
+     * @param local
+     *
+     * @return
+     */
+    PositionVector getWorldPosition(PositionVector local) const noexcept;
 
 
     /**
@@ -455,6 +473,14 @@ public:
 
 
     /**
+     * @brief Change object angular velocity.
+     *
+     * @param vel
+     */
+    void setAngularVelocity(units::AngularVelocity vel) noexcept;
+
+
+    /**
      * @brief Set current force.
      *
      * @param force
@@ -477,9 +503,37 @@ public:
      * @brief Push into object by given force.
      *
      * @param force
-     * @param offset Body world center offset.
+     * @param offset Local offset.
      */
     void applyForce(const ForceVector& force, const PositionVector& offset) noexcept;
+
+
+    /**
+     * @brief Push into object by given impulse.
+     *
+     * @param impulse
+     */
+    void applyLinearImpulse(const ImpulseVector& impulse) noexcept
+    {
+        applyLinearImpulse(impulse, getMassCenterOffset());
+    }
+
+
+    /**
+     * @brief Push into object by given impulse.
+     *
+     * @param impulse
+     * @param offset Local offset.
+     */
+    void applyLinearImpulse(const ImpulseVector& impulse, const PositionVector& offset) noexcept;
+
+
+    /**
+     * @brief Push into object by given impulse.
+     *
+     * @param impulse
+     */
+    void applyAngularImpulse(const units::Impulse& impulse) noexcept;
 
 
     /**

@@ -34,6 +34,7 @@
 // Simulator
 #include "core/Units.hpp"
 #include "core/Log.hpp"
+#include "core/Real.hpp"
 #include "core/FileStream.hpp"
 #include "simulator/Simulation.hpp"
 
@@ -185,6 +186,43 @@ PositionVector Object::getMassCenterPosition() const noexcept
 
 /* ************************************************************************ */
 
+PositionVector Object::getMassCenterOffset() const noexcept
+{
+#if ENABLE_PHYSICS
+    assert(m_body);
+    const auto posPhys = m_body->GetLocalCenter();
+    return {
+        units::Length(posPhys.x),
+        units::Length(posPhys.y)
+    };
+#else
+    return m_position;
+#endif
+}
+
+/* ************************************************************************ */
+
+PositionVector Object::getWorldPosition(PositionVector local) const noexcept
+{
+#if ENABLE_PHYSICS
+    assert(m_body);
+    const b2Vec2 localPhys{
+        local.getX().value(),
+        local.getY().value()
+    };
+
+    const auto posPhys = m_body->GetWorldPoint(localPhys);
+    return {
+        units::Length(posPhys.x),
+        units::Length(posPhys.y)
+    };
+#else
+    return local;
+#endif
+}
+
+/* ************************************************************************ */
+
 units::Angle Object::getRotation() const noexcept
 {
 #if ENABLE_PHYSICS
@@ -304,6 +342,20 @@ void Object::setVelocity(VelocityVector vel) noexcept
 
 /* ************************************************************************ */
 
+void Object::setAngularVelocity(units::AngularVelocity vel) noexcept
+{
+#if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+
+    const float32 velPhys{vel.value() / coeff};
+
+    assert(m_body);
+    m_body->SetAngularVelocity(velPhys);
+#endif
+}
+
+/* ************************************************************************ */
+
 void Object::applyForce(const ForceVector& force) noexcept
 {
 #if ENABLE_PHYSICS
@@ -316,9 +368,6 @@ void Object::applyForce(const ForceVector& force) noexcept
 
     assert(m_body);
     m_body->ApplyForceToCenter(forcePhys, true);
-#else
-    // NOTE: This is a little bit weird
-    m_velocity = force;
 #endif
 }
 
@@ -328,6 +377,7 @@ void Object::applyForce(const ForceVector& force, const PositionVector& offset) 
 {
 #if ENABLE_PHYSICS
     const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+    const auto bodyOffset = offset;
 
     const b2Vec2 forcePhys{
         force.getX().value() / (coeff * coeff),
@@ -335,15 +385,52 @@ void Object::applyForce(const ForceVector& force, const PositionVector& offset) 
     };
 
     const b2Vec2 offsetPhys{
-        offset.getX().value(),
-        offset.getY().value()
+        bodyOffset.getX().value(),
+        bodyOffset.getY().value()
     };
 
     assert(m_body);
     m_body->ApplyForce(forcePhys, m_body->GetWorldPoint(offsetPhys), true);
     m_force += force;
+#endif
+}
+
+/* ************************************************************************ */
+
+void Object::applyLinearImpulse(const ImpulseVector& impulse, const PositionVector& offset) noexcept
+{
+#if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+    const auto bodyOffset = offset;
+
+    const b2Vec2 impulsePhys{
+        impulse.getX().value() / coeff,
+        impulse.getY().value() / coeff
+    };
+
+    const b2Vec2 offsetPhys{
+        bodyOffset.getX().value(),
+        bodyOffset.getY().value()
+    };
+
+    assert(m_body);
+    m_body->ApplyLinearImpulse(impulsePhys, m_body->GetWorldPoint(offsetPhys), true);
 #else
-    m_velocity = force;
+    m_velocity += 1 / getMass() * impulse;
+#endif
+}
+
+/* ************************************************************************ */
+
+void Object::applyAngularImpulse(const units::Impulse& impulse) noexcept
+{
+#if ENABLE_PHYSICS
+    const auto coeff = getSimulation().calcPhysicalEngineCoefficient();
+
+    const float32 impulsePhys{impulse.value() / coeff};
+
+    assert(m_body);
+    m_body->ApplyAngularImpulse(impulsePhys, true);
 #endif
 }
 
@@ -378,6 +465,7 @@ void Object::update(units::Duration dt)
     if (m_dataOut)
     {
         const auto pos = getPosition();
+        const auto posMass = getMassCenterPosition();
         const auto vel = getVelocity();
         const auto force = getForce();
 
@@ -392,6 +480,10 @@ void Object::update(units::Duration dt)
             pos.getX().value() << ";" <<
             // y
             pos.getY().value() << ";" <<
+            // massX
+            posMass.getX().value() << ";" <<
+            // massY
+            posMass.getY().value() << ";" <<
             // velX
             vel.getX().value() << ";" <<
             // velY
@@ -446,7 +538,7 @@ void Object::configure(const Configuration& config, Simulation& simulation)
     if (config.has("data-out"))
     {
         m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
-        *m_dataOut << "iteration;totalTime;id;x;y;velX;velY;forceX;forceY;angle;omega\n";
+        *m_dataOut << "iteration;totalTime;id;x;y;massX;massY;velX;velY;forceX;forceY;angle;omega\n";
     }
 }
 
