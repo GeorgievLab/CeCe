@@ -2500,6 +2500,60 @@ inline decltype(T1{} * T2{}) dot(const BasicVector<T1, N>& lhs, const BasicVecto
 /* ************************************************************************ */
 
 /**
+ * @brief Calculate cross product of two vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Cross product.
+ */
+template<typename T1, typename T2>
+inline
+decltype(std::declval<T1>() * std::declval<T2>())
+cross(const BasicVector<T1, 2>& lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return {lhs.getX() * rhs.getY() - lhs.getY() * rhs.getX()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Calculate cross product of two vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Cross product.
+ */
+template<typename T1, typename T2>
+inline
+BasicVector<decltype(std::declval<T1>() * std::declval<T2>()), 2>
+cross(const BasicVector<T1, 2>& lhs, const T2& rhs) noexcept
+{
+    return {rhs * lhs.getY(), -rhs * lhs.getX()};
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Calculate cross product of two vectors.
+ *
+ * @param lhs Left operand.
+ * @param rhs Right operand.
+ *
+ * @return Cross product.
+ */
+template<typename T1, typename T2>
+inline
+BasicVector<decltype(std::declval<T1>() * std::declval<T2>()), 2>
+cross(const T1& lhs, const BasicVector<T2, 2>& rhs) noexcept
+{
+    return {-lhs * rhs.getY(), lhs * rhs.getX()};
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Input stream operator.
  *
  * @param is     Input stream.
