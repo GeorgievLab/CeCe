@@ -474,9 +474,21 @@ protected:
      * @brief Apply streamlines to objects.
      *
      * @param simulation
+     * @param dt
      * @param vMax
      */
-    void applyToObjects(const simulator::Simulation& simulation, const VelocityVector& vMax);
+    void applyToObjects(const simulator::Simulation& simulation, units::Time dt, const VelocityVector& vMax);
+
+    /**
+     * @brief Apply streamlines to object.
+     *
+     * @param object
+     * @param simulation
+     * @param dt
+     * @param vMax
+     */
+    void applyToObject(simulator::Object& object, const simulator::Simulation& simulation,
+        units::Time dt, const VelocityVector& vMax);
 
 
     /**

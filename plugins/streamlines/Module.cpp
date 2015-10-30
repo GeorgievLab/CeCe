@@ -245,7 +245,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     }
 
     // Apply streamlines to world objects
-    applyToObjects(simulation, vMax);
+    applyToObjects(simulation, dt, vMax);
 
     // Store streamlines data
     if (m_dataOut)
@@ -517,20 +517,48 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
 
 /* ************************************************************************ */
 
-void Module::applyToObjects(const simulator::Simulation& simulation, const VelocityVector& vMax)
+void Module::applyToObjects(const simulator::Simulation& simulation, units::Time dt, const VelocityVector& vMax)
 {
-    const PositionVector start = simulation.getWorldSize() * -0.5f;
-    const auto step = simulation.getWorldSize() / m_lattice.getSize();
-
     // Foreach objects
     for (auto& obj : simulation.getObjects())
     {
-        // Ignore static objects
-        if (obj->getType() != simulator::Object::Type::Dynamic)
+        applyToObject(*obj, simulation, dt, vMax);
+    }
+}
+
+/* ************************************************************************ */
+
+void Module::applyToObject(simulator::Object& object, const simulator::Simulation& simulation,
+    units::Time dt, const VelocityVector& vMax)
+{
+    // Ignore static objects
+    if (object.getType() != simulator::Object::Type::Dynamic)
+        return;
+
+    const PositionVector start = simulation.getWorldSize() * -0.5f;
+    const auto step = simulation.getWorldSize() / m_lattice.getSize();
+
+    // Get mass local center
+    const auto center = object.getMassCenterOffset();
+
+    // Coefficient used in force calculation
+    const auto forceCoefficient = 6 * constants::PI * getKinematicViscosity() * object.getDensity();
+
+    auto force = ForceVector{Zero};
+    auto velocityObjEnv = VelocityVector{Zero};
+
+    // Map shapes border to grid
+    for (const auto& shape : object.getShapes())
+    {
+        // Only circle shapes are supported
+        if (shape.getType() != simulator::ShapeType::Circle)
             continue;
 
+        // Shape alias
+        const auto& circle = shape.getCircle();
+
         // Transform from [-size / 2, size / 2] to [0, size] space
-        const auto pos = obj->getPosition() - start;
+        const auto pos = object.getWorldPosition(circle.center) - start;
 
         // Check if position is in range
         if (!pos.inRange(Zero, simulation.getWorldSize()))
@@ -539,69 +567,85 @@ void Module::applyToObjects(const simulator::Simulation& simulation, const Veloc
         // Get coordinate to lattice
         const auto coord = Coordinate(pos / step);
 
-        // Map shapes border to grid
-        for (const auto& shape : obj->getShapes())
-        {
-            // Only circle shapes are supported
-            if (shape.getType() != simulator::ShapeType::Circle)
-                continue;
+        Vector<float> velocityLB = Zero;
+        unsigned long count = 0;
 
-            VelocityVector velocity = Zero;
-            unsigned long count = 0;
+        // Store velocity for each coordinate
+        mapShapeBorderToGrid(
+            [this, &velocityLB, &vMax, &count] (Coordinate&& coord) {
+                if (!m_lattice[coord].isObstacle())
+                {
+                    velocityLB += m_lattice[coord].calcVelocity();
+                    ++count;
+                }
+            },
+            [] (Coordinate&& coord) { },
+            shape, step, coord, m_lattice.getSize(), {}, 1
+        );
 
-            // Store velocity for each coordinate
-            mapShapeBorderToGrid(
-                [this, &velocity, &vMax, &count] (Coordinate&& coord) {
-                    if (!m_lattice[coord].isObstacle())
-                    {
-                        velocity += m_lattice[coord].calcVelocity() * vMax;
-                        ++count;
-                    }
-                },
-                [] (Coordinate&& coord) { },
-                shape, step, coord, m_lattice.getSize(), {}, 2
-            );
+        if (count == 0)
+            continue;
 
-            if (count == 0)
-                continue;
+        // Average
+        velocityLB /= count;
+        const VelocityVector velocityEnv = velocityLB * vMax;
+        //const VelocityVector velocityEnv{m_inletVelocities[0], Zero};
 
-            // Average
-            velocity /= count;
+        velocityObjEnv += velocityEnv;
 
-            // Difference between velocities
-            const auto dv = velocity - obj->getVelocity();
+        // Shape radius
+        const auto radius = circle.radius;
+        // Distance from mass center
+        const auto offset = circle.center - center;
 
-            // Velocity difference
-            if (dv == Zero)
-                continue;
+        // Angular velocity
+        const auto omega = object.getAngularVelocity();
 
-            // Cell radius
-            const auto radius = shape.getCircle().radius;
+        // Calculate shape global velocity
+        const auto velocity = object.getVelocity() + cross(omega, offset);
 
-            // Calculate force used to increase object velocity
-            const auto force =
-                3 * constants::PI *
-                getKinematicViscosity() *
-                obj->getDensity() *
-                dv *
-                radius
-            ;
+        // Difference between environment velocity and shape velocity
+        const auto dv = velocityEnv - velocity;
 
-            // Calculate force required to increase current velocity to environment velocity
-            const auto forceLimit = dv * obj->getMass() / simulation.getTimeStep();
+        // Same velocity
+        if (dv == Zero)
+            continue;
 
-            // Limit calculated force by limit force.
-            const auto forceApply = force.getLengthSquared() > forceLimit.getLengthSquared()
-                ? forceLimit
-                : force
-            ;
+        // Add force from shape
+        force += forceCoefficient * radius * dv;
+    }
 
-            // Apply force
-            obj->applyForce(
-                forceApply//,
-                //shape.getCircle().center
-            );
-        }
+    Assert(object.getShapes().size() > 0);
+    velocityObjEnv /= object.getShapes().size();
+
+    // Difference between velocities
+    const auto dv = velocityObjEnv - object.getVelocity();
+
+    // Same velocity
+    if (dv == Zero)
+        return;
+
+    // Calculate linear impulse from shapes
+    const auto impulse = force * dt;
+
+    // Maximum impulse
+    const auto impulseMax = object.getMass() * dv;
+
+    // impulse and impulseMax have same direction but different magnitude
+    // In that case we can check only one coordinate
+    if (abs(impulse.getX()) > abs(impulseMax.getX()))
+    {
+        Assert(abs(impulse.getY()) >= abs(impulseMax.getY()));
+
+        // Apply impulse
+        object.applyLinearImpulse(impulseMax);
+    }
+    else
+    {
+        Assert(abs(impulse.getY()) <= abs(impulseMax.getY()));
+
+        // Apply impulse
+        object.applyLinearImpulse(impulse);
     }
 }
 
