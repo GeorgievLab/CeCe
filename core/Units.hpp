@@ -2037,6 +2037,13 @@ using Force = Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
 /* ************************************************************************ */
 
 /**
+ * @brief Class for representing impulse.
+ */
+using Impulse = Unit<List<BaseLength, BaseMass>, List<BaseTime>>;
+
+/* ************************************************************************ */
+
+/**
  * @brief Class for representing density.
  */
 using Density = Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
@@ -2190,6 +2197,25 @@ Value parse(InStream& is);
  * @return Result value.
  */
 Value parse(StringView value);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Calculate absolute value.
+ *
+ * @param unit
+ */
+template<typename... Nominators, typename... Denominators>
+inline constexpr
+Unit<List<Nominators...>, List<Denominators...>>
+abs(const Unit<List<Nominators...>, List<Denominators...>>& unit)
+{
+    return Unit<List<Nominators...>, List<Denominators...>>(
+        unit.value() > Value(0)
+        ? unit.value()
+        : -unit.value()
+    );
+}
 
 /* ************************************************************************ */
 

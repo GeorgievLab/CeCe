@@ -66,6 +66,13 @@ using ForceVector = Vector<units::Force>;
 /* ************************************************************************ */
 
 /**
+ * @brief Impulse vector structure.
+ */
+using ImpulseVector = Vector<units::Impulse>;
+
+/* ************************************************************************ */
+
+/**
  * @brief Scale vector.
  */
 using ScaleVector = Vector<float>;
