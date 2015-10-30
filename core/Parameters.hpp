@@ -40,7 +40,7 @@
 
 /* ************************************************************************ */
 
-namespace simulator {
+inline namespace core {
 
 /* ************************************************************************ */
 
@@ -60,6 +60,20 @@ class MissingParameterException : public InvalidArgumentException
 class Parameters
 {
 
+// Public Types
+public:
+
+
+    /// Key type.
+    using KeyType = String;
+
+    /// Value type.
+    using ValueType = RealType;
+
+    /// Key view type.
+    using KeyViewType = StringView;
+
+
 // Public Ctors & Dtors
 public:
 
@@ -75,7 +89,7 @@ public:
      *
      * @param data Initial data.
      */
-    explicit Parameters(std::initializer_list<Pair<String, RealType>> data)
+    explicit Parameters(std::initializer_list<Pair<KeyType, ValueType>> data)
         : m_data(data)
     {
         // Nothing to do
@@ -95,7 +109,7 @@ public:
      *
      * @note In case of missing value, new is created.
      */
-    RealType& operator[](const StringView& name) noexcept
+    ValueType& operator[](const KeyViewType& name) noexcept
     {
         return get(name);
     }
@@ -110,7 +124,7 @@ public:
      *
      * @throw MissingParameterException In case of missing value.
      */
-    RealType operator[](const StringView& name) const
+    ValueType operator[](const KeyViewType& name) const
     {
         return get(name);
     }
@@ -121,15 +135,13 @@ public:
 
 
     /**
-     * @brief Returns parameter with given value.
+     * @brief Returns if parameter with given name exists.
      *
      * @param name Parameter name.
      *
-     * @return Parameter value.
-     *
-     * @throw MissingParameterException In case of missing value.
+     * @return
      */
-    RealType get(const StringView& name) const;
+    bool exists(const KeyViewType& name) const noexcept;
 
 
     /**
@@ -141,7 +153,19 @@ public:
      *
      * @throw MissingParameterException In case of missing value.
      */
-    RealType& get(const StringView& name);
+    ValueType get(const KeyViewType& name) const;
+
+
+    /**
+     * @brief Returns parameter with given value.
+     *
+     * @param name Parameter name.
+     *
+     * @return Parameter value.
+     *
+     * @throw MissingParameterException In case of missing value.
+     */
+    ValueType& get(const KeyViewType& name);
 
 
     /**
@@ -152,7 +176,7 @@ public:
      *
      * @return Parameter value.
      */
-    RealType get(const StringView& name, RealType def) const noexcept;
+    ValueType get(const KeyViewType& name, ValueType def) const noexcept;
 
 
 // Public Mutators
@@ -165,14 +189,14 @@ public:
      * @param name  Parameter name.
      * @param value Value to store.
      */
-    void set(String name, RealType value);
+    void set(KeyType name, ValueType value);
 
 
 // Private Data Members
 private:
 
     /// Stored data
-    DynamicArray<Pair<String, RealType>> m_data;
+    DynamicArray<Pair<KeyType, ValueType>> m_data;
 
 };
 

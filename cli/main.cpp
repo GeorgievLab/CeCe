@@ -88,13 +88,13 @@
 /**
  * @brief Application parameters.
  */
-struct Parameters
+struct Arguments
 {
     /// Path to simulation file.
     FilePath simulationFile;
 
     /// Simulation parameters.
-    Map<String, float> parameters;
+    Parameters parameters;
 
 #if ENABLE_RENDER
     // If simulation should be rendered.
@@ -227,11 +227,11 @@ void terminate_simulation(int param)
  * @param argc
  * @param argv
  *
- * @return Parameters.
+ * @return Arguments.
  */
-Parameters parseArguments(int argc, char** argv)
+Arguments parseArguments(int argc, char** argv)
 {
-    Parameters params;
+    Arguments args;
 
     for (int i = 1; i < argc; ++i)
     {
@@ -247,31 +247,31 @@ Parameters parseArguments(int argc, char** argv)
                     throw InvalidArgumentException("Missing parameter value");
 
                 // Store parameter
-                params.parameters[argv[i + 1]] = units::parse(argv[i + 2]);
+                args.parameters[argv[i + 1]] = units::parse(argv[i + 2]);
                 i += 2;
             }
 #if ENABLE_RENDER
             else if (arg == "--visualize")
             {
-                params.visualize = true;
+                args.visualize = true;
             }
             else if (arg == "--novisualize")
             {
-                params.visualize = false;
+                args.visualize = false;
             }
             else if (arg == "--fullscreen")
             {
-                params.fullscreen = true;
+                args.fullscreen = true;
             }
             else if (arg == "--width")
             {
                 if (i + 1 >= argc)
                     throw InvalidArgumentException("missing width value");
 
-                params.windowWidth = atoi(argv[i + 1]);
+                args.windowWidth = atoi(argv[i + 1]);
                 ++i;
 
-                if (!params.windowWidth)
+                if (!args.windowWidth)
                     throw InvalidArgumentException("invalid width value");
             }
             else if (arg == "--height")
@@ -279,10 +279,10 @@ Parameters parseArguments(int argc, char** argv)
                 if (i + 1 >= argc)
                     throw InvalidArgumentException("missing height value");
 
-                params.windowHeight = atoi(argv[i + 1]);
+                args.windowHeight = atoi(argv[i + 1]);
                 ++i;
 
-                if (!params.windowHeight)
+                if (!args.windowHeight)
                     throw InvalidArgumentException("invalid height value");
             }
             else
@@ -293,7 +293,7 @@ Parameters parseArguments(int argc, char** argv)
                 if (i + 1 >= argc)
                     throw InvalidArgumentException("missing filename value");
 
-                params.videoFileName = argv[i + 1];
+                args.videoFileName = argv[i + 1];
                 ++i;
             }
             else
@@ -303,9 +303,9 @@ Parameters parseArguments(int argc, char** argv)
             else if (arg == "--help")
                 printHelp(argv[0]);
         }
-        else if (params.simulationFile.empty())
+        else if (args.simulationFile.empty())
         {
-            params.simulationFile = FilePath(arg.getData());
+            args.simulationFile = FilePath(arg.getData());
         }
         else
         {
@@ -313,10 +313,10 @@ Parameters parseArguments(int argc, char** argv)
         }
     }
 
-    if (params.simulationFile.empty())
+    if (args.simulationFile.empty())
         throw InvalidArgumentException("missing simulation file");
 
-    return params;
+    return args;
 }
 
 /* ************************************************************************ */
@@ -334,31 +334,30 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param params Simulation parameters.
+     * @param args Simulation arguments.
      */
-    explicit Simulator(const Parameters& params)
+    explicit Simulator(const Arguments& args)
     {
-        m_simulationFile = params.simulationFile;
+        m_simulationFile = args.simulationFile;
 
         // Create simulation
         m_simulator.setSimulation(simulator::PluginManager::s().createSimulation(m_simulationFile));
 
         // Set parameters
-        for (const auto& p : params.parameters)
-            m_simulator.getSimulation()->setParameter(p.first, p.second);
+        m_simulator.getSimulation()->setParameters(std::move(args.parameters));
 
 #if ENABLE_RENDER
         const auto simViz = m_simulator.getSimulation()->getVisualize();
 
         // Decide if simulation should be visualized
-        if (params.visualize)
+        if (args.visualize)
             m_visualize = true;
-        else if (!params.visualize)
+        else if (!args.visualize)
             m_visualize = false;
         else
             m_visualize = simViz || indeterminate(simViz);
 
-        initVisualization(params);
+        initVisualization(args);
 #endif
     }
 
@@ -774,9 +773,9 @@ private:
     /**
      * @brief Init visualization.
      *
-     * @param params Parameters.
+     * @param args Arguments.
      */
-    void initVisualization(const Parameters& params)
+    void initVisualization(const Arguments& args)
     {
         if (!m_visualize)
             return;
@@ -795,13 +794,13 @@ private:
         const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
 
         // Fullscreen mode
-        if (params.fullscreen)
+        if (args.fullscreen)
         {
-            m_windowWidth  = params.windowWidth  ? params.windowWidth  : vidmode->width;
-            m_windowHeight = params.windowHeight ? params.windowHeight : vidmode->height;
+            m_windowWidth  = args.windowWidth  ? args.windowWidth  : vidmode->width;
+            m_windowHeight = args.windowHeight ? args.windowHeight : vidmode->height;
 
             // Borderless fullscreen mode
-            if (!params.windowWidth && !params.windowHeight)
+            if (!args.windowWidth && !args.windowHeight)
             {
                 glfwWindowHint(GLFW_RED_BITS, vidmode->redBits);
                 glfwWindowHint(GLFW_GREEN_BITS, vidmode->greenBits);
@@ -811,16 +810,16 @@ private:
         }
         else
         {
-            m_windowWidth  = params.windowWidth
-                ? params.windowWidth
+            m_windowWidth  = args.windowWidth
+                ? args.windowWidth
                 : CONFIG_CLI_VISUALIZE_WIDTH;
-            m_windowHeight = params.windowHeight
-                ? params.windowHeight
+            m_windowHeight = args.windowHeight
+                ? args.windowHeight
                 : CONFIG_CLI_VISUALIZE_HEIGHT;
         }
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
-        if (!params.videoFileName.empty())
+        if (!args.videoFileName.empty())
         {
             String filename;
 
@@ -833,7 +832,7 @@ private:
             if (dir)
                 filename += String(dir) + "/";
 #endif
-            filename += params.videoFileName.string();
+            filename += args.videoFileName.string();
 
             Log::info("Video output '", filename, "'");
 
@@ -864,14 +863,14 @@ private:
             m_windowWidth,
             m_windowHeight,
             APP_NAME " simulator",
-            params.fullscreen ? monitor : nullptr,
+            args.fullscreen ? monitor : nullptr,
             nullptr
         );
 
         if (!m_window)
             throw RuntimeException("Unable to create rendering window");
 
-        if (!params.fullscreen)
+        if (!args.fullscreen)
         {
             // Get monitor position
             int xpos;

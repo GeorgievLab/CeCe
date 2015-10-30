@@ -24,14 +24,14 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/Parameters.hpp"
+#include "core/Parameters.hpp"
 
 // C++
 #include <algorithm>
 
 /* ************************************************************************ */
 
-namespace simulator {
+inline namespace core {
 
 /* ************************************************************************ */
 
@@ -47,11 +47,13 @@ namespace {
  * @return
  */
 template<typename Container>
-auto find(Container& data, const StringView& name) noexcept -> decltype(&(data.begin()->second))
+auto find(Container& data, const Parameters::KeyViewType& name) noexcept -> decltype(&(data.begin()->second))
 {
-    auto it = std::find_if(data.begin(), data.end(), [&name](const Pair<String, RealType>& p) {
-        return p.first == name;
-    });
+    auto it = std::find_if(data.begin(), data.end(),
+        [&name](const Pair<Parameters::KeyType, Parameters::ValueType>& p) {
+            return p.first == name;
+        }
+    );
 
     return it != data.end() ? &(it->second) : nullptr;
 }
@@ -62,7 +64,14 @@ auto find(Container& data, const StringView& name) noexcept -> decltype(&(data.b
 
 /* ************************************************************************ */
 
-RealType Parameters::get(const StringView& name) const
+bool Parameters::exists(const KeyViewType& name) const noexcept
+{
+    return find(m_data, name) != nullptr;
+}
+
+/* ************************************************************************ */
+
+Parameters::ValueType Parameters::get(const KeyViewType& name) const
 {
     auto ptr = find(m_data, name);
 
@@ -74,7 +83,7 @@ RealType Parameters::get(const StringView& name) const
 
 /* ************************************************************************ */
 
-RealType& Parameters::get(const StringView& name)
+Parameters::ValueType& Parameters::get(const KeyViewType& name)
 {
     auto ptr = find(m_data, name);
 
@@ -82,14 +91,14 @@ RealType& Parameters::get(const StringView& name)
         return *ptr;
 
     // Insert
-    m_data.push_back(makePair(String(name), RealType{}));
+    m_data.emplace_back(KeyType(name), ValueType{});
 
     return m_data.back().second;
 }
 
 /* ************************************************************************ */
 
-RealType Parameters::get(const StringView& name, RealType def) const noexcept
+Parameters::ValueType Parameters::get(const KeyViewType& name, ValueType def) const noexcept
 {
     auto ptr = find(m_data, name);
 
@@ -101,7 +110,7 @@ RealType Parameters::get(const StringView& name, RealType def) const noexcept
 
 /* ************************************************************************ */
 
-void Parameters::set(String name, RealType value)
+void Parameters::set(KeyType name, ValueType value)
 {
     auto ptr = find(m_data, name);
 

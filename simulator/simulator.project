@@ -26,7 +26,6 @@
     <File Name="PluginManager.cpp"/>
     <File Name="PluginApi.cpp"/>
     <File Name="Module.cpp"/>
-    <File Name="Parameters.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
@@ -44,7 +43,6 @@
     <File Name="PluginManager.hpp"/>
     <File Name="font.hpp"/>
     <File Name="ObjectType.hpp"/>
-    <File Name="Parameters.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

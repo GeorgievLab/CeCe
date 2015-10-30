@@ -262,7 +262,7 @@ private:
 
     const String operators = "+-*/^();<> \n\r\t\v\b:";
     const String whitespace = " \n\r\t\v\b";
-    const Map<String, float>& parameters;
+    const Parameters& parameters;
     IteratorRange<const char*>& iterator;
 
     void skipWhitespace()
@@ -410,14 +410,14 @@ private:
             skipWhitespace();
             return coeff * constants::E;
         }
-        auto search = parameters.find(local);
-        if (search == parameters.end())
+
+        if (!parameters.exists(local))
         {
             skipWhitespace();
             return coeff * function(local);
         }
         skipWhitespace();
-        return coeff * search->second;
+        return coeff * parameters.get(local);
     }
 
     float function(String local)
@@ -459,8 +459,8 @@ private:
 
 public:
 
-    ExpressionParser(IteratorRange<const char*>& range, const Map<String, float>& param) noexcept
-    : parameters(param), iterator(range)
+    ExpressionParser(IteratorRange<const char*>& range, const Parameters& param) noexcept
+        : parameters(param), iterator(range)
     {
         // Nothing to do
     }
@@ -476,7 +476,7 @@ public:
 
 /* ************************************************************************ */
 
-float parseExpressionRef(IteratorRange<const char*>& range, const Map<String,float>& parameters)
+float parseExpressionRef(IteratorRange<const char*>& range, const Parameters& parameters)
 {
     return ExpressionParser(range, parameters).parse();
 }

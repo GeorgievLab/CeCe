@@ -84,6 +84,8 @@ add_library(${PROJECT_NAME} OBJECT
     DataTable.cpp
     SharedPtr.hpp
     TriBool.hpp
+    Parameters.hpp
+    Parameters.cpp
 )
 
 # ######################################################################### #
@@ -109,6 +111,8 @@ build_test(core
         ExpressionParser.cpp
         Units.hpp
         Units.cpp
+        Parameters.hpp
+        Parameters.cpp
 )
 
 # ######################################################################### #

@@ -36,6 +36,7 @@
     <File Name="Units.cpp"/>
     <File Name="ExpressionParser.cpp"/>
     <File Name="DataTable.cpp"/>
+    <File Name="Parameters.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Units.hpp"/>
@@ -82,6 +83,7 @@
     <File Name="UnitsCtors.hpp"/>
     <File Name="Assert.hpp"/>
     <File Name="FileStream.hpp"/>
+    <File Name="Parameters.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

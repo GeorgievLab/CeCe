@@ -46,6 +46,7 @@
 #include "core/TimeMeasurement.hpp"
 #include "core/ListenerContainer.hpp"
 #include "core/DataTable.hpp"
+#include "core/Parameters.hpp"
 #include "simulator/Module.hpp"
 #include "simulator/Object.hpp"
 #include "simulator/ObjectType.hpp"
@@ -354,7 +355,7 @@ public:
      *
      * @return
      */
-    const ParameterContainer& getParameters() const noexcept
+    const Parameters& getParameters() const noexcept
     {
         return m_parameters;
     }
@@ -369,7 +370,7 @@ public:
      */
     bool hasParameters(const String& name) const noexcept
     {
-        return m_parameters.find(name) != m_parameters.end();
+        return m_parameters.exists(name);
     }
 
 
@@ -382,11 +383,7 @@ public:
      */
     ParameterValueType getParameter(const String& name) const
     {
-        auto it = m_parameters.find(name);
-        if (it == m_parameters.end())
-            throw InvalidArgumentException("Unknown parameter: " + name);
-
-        return it->second;
+        return m_parameters.get(name);
     }
 
 
@@ -400,8 +397,7 @@ public:
      */
     ParameterValueType getParameter(const String& name, ParameterValueType def) const noexcept
     {
-        auto it = m_parameters.find(name);
-        return it != m_parameters.end() ? it->second : def;
+        return m_parameters.get(name, def);
     }
 
 
@@ -665,7 +661,7 @@ public:
      *
      * @param parameters
      */
-    void setParameters(ParameterContainer parameters) noexcept
+    void setParameters(Parameters parameters) noexcept
     {
         m_parameters = std::move(parameters);
     }
@@ -679,7 +675,7 @@ public:
      */
     void setParameter(const String& name, ParameterValueType value) noexcept
     {
-        m_parameters[name] = value;
+        m_parameters.set(name, value);
     }
 
 
@@ -1118,8 +1114,8 @@ private:
     /// World size.
     SizeVector m_worldSize{ units::um(400), units::um(400) };
 
-    /// Parameters.
-    ParameterContainer m_parameters;
+    /// Simulation parameters.
+    Parameters m_parameters;
 
     /// Used plugins.
     Map<String, ViewPtr<PluginApi>> m_plugins;
