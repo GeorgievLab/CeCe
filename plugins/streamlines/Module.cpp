@@ -633,7 +633,7 @@ void Module::applyToObject(simulator::Object& object, const simulator::Simulatio
 
     // impulse and impulseMax have same direction but different magnitude
     // In that case we can check only one coordinate
-    if (abs(impulse.getX()) > abs(impulseMax.getX()))
+    if (abs(impulse.getX()) >= abs(impulseMax.getX()))
     {
         Assert(abs(impulse.getY()) >= abs(impulseMax.getY()));
 
