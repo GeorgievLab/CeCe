@@ -753,8 +753,9 @@ private:
     /// Box2D doesn't have accessor to force.
     ForceVector m_force;
 
-    /// Outstream for streamlines data
+    /// Outstream for object data
     UniquePtr<OutStream> m_dataOut;
+
 };
 
 /* ************************************************************************ */

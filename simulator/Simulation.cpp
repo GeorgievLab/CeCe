@@ -58,6 +58,53 @@ namespace {
 
 /* ************************************************************************ */
 
+#if ENABLE_PHYSICS
+/**
+ * @brief AABB query callback.
+ */
+class QueryCallback : public b2QueryCallback
+{
+public:
+
+
+    QueryCallback(const b2Vec2& point) noexcept
+        : m_point(point)
+        , m_object(nullptr)
+    {
+        // Nothing to do
+    }
+
+
+    b2Body* getObject() const noexcept
+    {
+        return m_object;
+    }
+
+
+    bool ReportFixture(b2Fixture* fixture) override
+    {
+        if (fixture->IsSensor())
+            return true; //ignore sensors
+
+        bool inside = fixture->TestPoint(m_point);
+        if (!inside)
+            return true;
+
+         // We are done, terminate the query.
+         m_object = fixture->GetBody();
+         return false;
+    }
+
+// Private Data Members
+private:
+
+    b2Vec2  m_point;
+    b2Body* m_object;
+};
+#endif
+
+/* ************************************************************************ */
+
 Tuple<String, String> splitModulePath(const String& path) noexcept
 {
     auto pos = path.find(':');
@@ -702,6 +749,33 @@ void Simulation::storeDataTables()
 
         Log::info("Data table '", item.first, "' saved.");
     }
+}
+
+/* ************************************************************************ */
+
+ViewPtr<Object> Simulation::query(const PositionVector& position) const noexcept
+{
+#ifdef ENABLE_PHYSICS
+    const auto pos = b2Vec2(position.getX().value(), position.getY().value());
+    QueryCallback query(pos);
+
+    b2AABB aabb;
+    b2Vec2 d;
+    d.Set(0.001f, 0.001f);
+    aabb.lowerBound = pos - d;
+    aabb.upperBound = pos + d;
+
+    m_world.QueryAABB(&query, aabb);
+
+    // Find object
+    for (const auto& object : m_objects)
+    {
+        if (object->getBody() == query.getObject())
+            return object;
+    }
+#endif
+
+    return nullptr;
 }
 
 /* ************************************************************************ */

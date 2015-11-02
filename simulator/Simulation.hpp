@@ -1057,6 +1057,16 @@ public:
     }
 
 
+    /**
+     * @brief Find object at qiven position.
+     *
+     * @param position
+     *
+     * @return
+     */
+    ViewPtr<Object> query(const PositionVector& position) const noexcept;
+
+
 // Protected Operations
 protected:
 

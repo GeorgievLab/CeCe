@@ -718,6 +718,14 @@ public:
             else if (action == GLFW_RELEASE)
             {
                 ptr->m_movePos = Zero;
+
+                // Get position
+                double x;
+                double y;
+                glfwGetCursorPos(win, &x, &y);
+
+                // Raycast
+                ptr->raycast(x, y);
             }
         }
     }
@@ -985,6 +993,44 @@ private:
         m_simulator.getSimulation()->setDrawPhysics(!m_simulator.getSimulation()->isDrawPhysics());
     }
 #endif
+
+
+    /**
+     * @brief Raycast scene.
+     *
+     * @param mouseX
+     * @param mouseY
+     *
+     * @see http://antongerdelan.net/opengl/raycasting.html
+     */
+    void raycast(float mouseX, float mouseY) noexcept
+    {
+        const auto& simulation = m_simulator.getSimulation();
+        const auto& camera = m_simulator.getRenderContext().getCamera();
+        const auto size = simulation->getWorldSize();
+        const auto zoom = std::max(size.getWidth() / m_windowWidth, size.getHeight() / m_windowHeight).value();
+
+        // Normalized
+        const BasicVector<float, 2> posNorm(
+            (2.0f * mouseX) / m_windowWidth - 1.0f,
+            1.0f - (2.0f * mouseY) / m_windowHeight
+        );
+
+        // To world coordinates
+        PositionVector posWorld = 0.5 * posNorm * size;
+
+        // Zoom
+        posWorld *= (camera.getZoom() / zoom);
+
+        // Translate
+        posWorld -= camera.getPosition();
+
+        // Find object
+        auto object = simulation->query(posWorld);
+
+        if (object)
+            Log::info("Object: id = ", object->getId(), ", className = ", object->getClassName());
+    }
 
 
 #if CONFIG_CLI_ENABLE_IMAGE_CAPTURE || CONFIG_CLI_ENABLE_VIDEO_CAPTURE
