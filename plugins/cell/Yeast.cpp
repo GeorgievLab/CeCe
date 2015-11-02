@@ -60,6 +60,8 @@ Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) no
     auto& shapes = getMutableShapes();
     shapes.reserve(2);
     shapes.push_back(simulator::Shape::makeCircle(calcRadius(getVolume())));
+
+    //getBody()->SetAngularDamping(10);
 }
 
 /* ************************************************************************ */
@@ -158,20 +160,29 @@ void Yeast::budRelease()
     const auto offset = m_bud->offset;
 #endif
 
+    const auto omega = getAngularVelocity();
+    const auto center = getMassCenterPosition();
+
+    // Change yeast velocity
+    if (omega != Zero)
+    {
+        setVelocity(getVelocity() + cross(omega, getPosition() - center));
+        setAngularVelocity(omega);
+    }
+
     // Get current position
-    const auto pos = getPosition() + offset.rotated(angle);
+    const auto posBud = getPosition() + offset.rotated(angle);
+    const auto velocityBud = getVelocity() + cross(omega, getWorldPosition(offset) - center);
 
     // Release bud into the world
     auto bud = getSimulation().createObject<Yeast>();
     bud->setVolume(m_bud->volume);
-    bud->setPosition(pos);
-    bud->setVelocity(getVelocity());
+    bud->setPosition(posBud);
+    bud->setVelocity(velocityBud);
+    bud->setAngularVelocity(omega);
     bud->setPrograms(getPrograms());
     bud->setDensity(getDensity());
     bud->setGrowthRate(getGrowthRate());
-
-    // TODO: When yeast is rotating and bud is released it should be throw
-    // away by some force.
 
     // Split molecules between yeast and bud
 
@@ -279,7 +290,14 @@ void Yeast::updateShape()
     // If bud shape is missing, create one.
     if (hasBud())
     {
-        const auto center = PositionVector(Zero, 0.9 * (newRadius + newBudRadius)).rotated(-m_bud->angle);
+        const auto radiusMin = MIN_CHANGE;
+        const auto radiusRelease = calcRadius(getVolumeBudRelease());
+
+        const auto c1 = (radiusRelease + radiusMin) / (radiusRelease - radiusMin);
+        const auto c2 = newRadius - 2 * radiusMin * (1 + radiusMin / (radiusRelease - radiusMin));
+        const auto c = c1 * newBudRadius + c2;
+
+        const auto center = PositionVector(Zero, c).rotated(-m_bud->angle);
 
         if (shapes.size() != 2)
         {
@@ -308,25 +326,31 @@ void Yeast::updateShape()
         getBody()->DestroyFixture(fixture);
     }
 
-    assert(getBody()->GetFixtureList() == nullptr);
+    Assert(getBody()->GetFixtureList() == nullptr);
+
+    // Recreate Box2D shapes from shapes
 
     // Update main yeast shape
     {
-        m_shape.m_radius = newRadius.value();
+        const auto& shape = shapes[0].getCircle();
+
+        m_shape.m_radius = shape.radius.value();
+        m_shape.m_p = b2Vec2(
+            shape.center.getX().value(),
+            shape.center.getY().value()
+        );
         getBody()->CreateFixture(&m_shape, getDensity().value());
     }
 
     // Update bud shape
     if (m_bud)
     {
-        m_bud->shape.m_radius = newBudRadius.value();
+        const auto& shape = shapes[1].getCircle();
 
-        // Distance between yeast and bud
-        const float distance = 0.9 * (m_shape.m_radius + m_bud->shape.m_radius);
-
+        m_bud->shape.m_radius = shape.radius.value();
         m_bud->shape.m_p = b2Vec2(
-            distance * std::sin(m_bud->angle),
-            distance * std::cos(m_bud->angle)
+            shape.center.getX().value(),
+            shape.center.getY().value()
         );
         getBody()->CreateFixture(&m_bud->shape, getDensity().value());
     }
