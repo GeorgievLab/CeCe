@@ -27,80 +27,39 @@
 
 /* ************************************************************************ */
 
-// Simulator
+// CeCe
+#include "core/String.hpp"
+#include "core/StringView.hpp"
 #include "core/UniquePtr.hpp"
+#include "core/ViewPtr.hpp"
+#include "core/Pair.hpp"
+#include "core/DynamicArray.hpp"
+#include "simulator/Object.hpp"
 
 /* ************************************************************************ */
 
-inline namespace core {
+namespace simulator {
 
 /* ************************************************************************ */
 
 /**
- * @brief Wrapper around plain pointer. It have only semantic meaning.
+ * @brief Container for objects.
  */
-template<typename T>
-class ViewPtr
+class ObjectContainer
 {
 
-// Public Ctors & Dtors
+// Public Types
 public:
 
 
-    /**
-     * @brief Default constructor.
-     */
-    ViewPtr() = default;
+    /// Data type.
+    using DataType = DynamicArray<UniquePtr<Object>>;
 
+    /// Value type.
+    using ValueType = DataType::value_type;
 
-    /**
-     * @brief Constructor.
-     *
-     * @param ptr Object pointer.
-     */
-    ViewPtr(T* ptr) noexcept
-        : m_ptr(ptr)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param ptr Object pointer.
-     */
-    template<typename U>
-    ViewPtr(const ViewPtr<U>& ptr) noexcept
-        : m_ptr(dynamic_cast<T*>(ptr.get()))
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param ptr Unique pointer.
-     */
-    ViewPtr(const UniquePtr<T>& ptr) noexcept
-        : m_ptr(ptr.get())
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param ptr Unique pointer.
-     */
-    template<typename U>
-    ViewPtr(const UniquePtr<U>& ptr) noexcept
-        : m_ptr(dynamic_cast<T*>(ptr.get()))
-    {
-        // Nothing to do
-    }
+    /// Size type.
+    using SizeType = DataType::size_type;
 
 
 // Public Operators
@@ -108,64 +67,15 @@ public:
 
 
     /**
-     * @brief Returns if pointer is set.
-     */
-    explicit operator bool() const noexcept
-    {
-        return m_ptr != nullptr;
-    }
-
-
-    /**
-     * @brief Implicit cast to operator.
-     */
-    operator T*() const noexcept
-    {
-        return m_ptr;
-    }
-
-
-    /**
-     * @brief Dereference operator.
+     * @brief Object access operator.
      *
-     * @return Reference.
-     */
-    T& operator*() noexcept
-    {
-        return *m_ptr;
-    }
-
-
-    /**
-     * @brief Dereference operator.
+     * @param pos Object index.
      *
-     * @return Reference.
+     * @return Pointer to object or nullptr.
      */
-    const T& operator*() const noexcept
+    ViewPtr<Object> operator[](SizeType pos) const noexcept
     {
-        return *m_ptr;
-    }
-
-
-    /**
-     * @brief Pointer access operator.
-     *
-     * @return Pointer.
-     */
-    T* operator->() noexcept
-    {
-        return m_ptr;
-    }
-
-
-    /**
-     * @brief Pointer access operator.
-     *
-     * @return Pointer.
-     */
-    const T* operator->() const noexcept
-    {
-        return m_ptr;
+        return get(pos);
     }
 
 
@@ -174,65 +84,133 @@ public:
 
 
     /**
-     * @brief Returns stored pointer.
+     * @brief Returns number of stored objects.
+     *
+     * @return
      */
-    T* get() const noexcept
+    SizeType getCount() const noexcept
     {
-        return m_ptr;
+        return m_data.size();
     }
 
 
-// Public Operations
+    /**
+     * @brief Returns parameter with given value.
+     *
+     * @param pos Object index.
+     *
+     * @return Pointer to module. Can be nullptr.
+     */
+    ViewPtr<Object> get(SizeType pos) const noexcept
+    {
+        if (pos >= getCount())
+            return nullptr;
+
+        return m_data[pos];
+    }
+
+
+    /**
+     * @brief Find objects that have given type.
+     *
+     * @param typeName Type name.
+     *
+     * @return
+     */
+    DynamicArray<ViewPtr<Object>> findByType(const StringView& typeName) const noexcept;
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DataType::iterator begin() noexcept
+    {
+        return m_data.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator begin() const noexcept
+    {
+        return m_data.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator cbegin() const noexcept
+    {
+        return m_data.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DataType::iterator end() noexcept
+    {
+        return m_data.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator end() const noexcept
+    {
+        return m_data.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator cend() const noexcept
+    {
+        return m_data.cend();
+    }
+
+
+// Public Mutators
 public:
 
 
     /**
-     * @brief Change viewed pointer.
+     * @brief Store object.
      *
-     * @param ptr New pointer.
-     */
-    void reset(T* ptr = nullptr) noexcept
-    {
-        m_ptr = ptr;
-    }
-
-
-    /**
-     * @brief Release stored pointer.
+     * @param object Object to store.
      *
-     * @return Previously stored pointer.
+     * @return Pointer to added object.
      */
-    T* release() noexcept
+    ViewPtr<Object> add(UniquePtr<Object> object)
     {
-        T* tmp = m_ptr;
-        m_ptr = nullptr;
-        return tmp;
+        m_data.push_back(std::move(object));
+        return m_data.back();
     }
 
 
 // Private Data Members
 private:
 
-
-    /// Object pointer.
-    T* m_ptr = nullptr;
+    /// Data.
+    DataType m_data;
 
 };
-
-/* ************************************************************************ */
-
-/**
- * @brief Create view from pointer.
- *
- * @param ptr Pointer.
- *
- * @return
- */
-template<typename T>
-ViewPtr<T> makeView(T* ptr) noexcept
-{
-    return ViewPtr<T>(ptr);
-}
 
 /* ************************************************************************ */
 

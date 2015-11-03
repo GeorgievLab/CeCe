@@ -84,6 +84,7 @@
     <File Name="Assert.hpp"/>
     <File Name="FileStream.hpp"/>
     <File Name="Parameters.hpp"/>
+    <File Name="Factory.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

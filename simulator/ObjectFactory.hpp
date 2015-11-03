@@ -28,13 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "core/String.hpp"
-#include "core/StringView.hpp"
-#include "core/ViewPtr.hpp"
-#include "core/UniquePtr.hpp"
-#include "core/Map.hpp"
-#include "core/Exception.hpp"
-#include "simulator/ModuleFactory.hpp"
+#include "core/Factory.hpp"
 
 /* ************************************************************************ */
 
@@ -42,117 +36,49 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Module;
+class Object;
 
 /* ************************************************************************ */
 
 /**
- * @brief Exception for access to unregistred module factory.
+ * @brief Object factory interface.
  */
-class ModuleFactoryNotFoundException : public InvalidArgumentException
-{
-    using InvalidArgumentException::InvalidArgumentException;
-};
+using ObjectFactory = Factory<Object>;
 
 /* ************************************************************************ */
 
 /**
- * @brief Module manager.
+ * @brief Object factory for specific module.
+ *
+ * @tparam ObjectType
  */
-class ModuleManager
+template<typename ObjectType>
+using ObjectFactoryTyped = FactoryTyped<Factory, ObjectType, Object>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Object factory with callable backend.
+ *
+ * @tparam Callable
+ */
+template<typename Callable>
+using ObjectFactoryCallable = FactoryCallable<Factory, Callable, Object>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Make callable module factory.
+ *
+ * @param callable Callable object.
+ *
+ * @return Callable module factory.
+ */
+template<typename Callable>
+ObjectFactoryCallable<Callable> makeCallableObjectFactory(Callable callable) noexcept
 {
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Find module factory by name.
-     *
-     * @param name Factory name.
-     *
-     * @return
-     */
-    ViewPtr<ModuleFactory> get(const StringView& name) const noexcept;
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Register a new factory.
-     *
-     * @param name    Factory name.
-     * @param factory Factory pointer.
-     */
-    void add(String name, UniquePtr<ModuleFactory> factory)
-    {
-        m_factories.emplace(std::move(name), std::move(factory));
-    }
-
-
-    /**
-     * @brief Register a new factory.
-     *
-     * @tparam FactoryType
-     *
-     * @param name Factory name.
-     */
-    template<typename FactoryType>
-    void create(String name)
-    {
-        add(std::move(name), makeUnique<FactoryType>());
-    }
-
-
-    /**
-     * @brief Register a new factory for specified module.
-     *
-     * @param name Factory name.
-     */
-    template<typename ModuleType>
-    void createForModule(String name)
-    {
-        create<TypedModuleFactory<ModuleType>>(std::move(name));
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Create module by name.
-     *
-     * @param name Factory name.
-     *
-     * @return Created module.
-     *
-     * @throw ModuleFactoryNotFoundException In case of factory with given name doesn't exists.
-     */
-    UniquePtr<Module> create(const StringView& name) const;
-
-
-    /**
-     * @brief Returns global instance of module manager.
-     *
-     * @return
-     */
-    static ModuleManager& s()
-    {
-        static ModuleManager instance;
-        return instance;
-    }
-
-
-// Private Data Members
-private:
-
-    /// Registered module factories.
-    Map<String, UniquePtr<ModuleFactory>> m_factories;
-
-};
+    return ObjectFactoryCallable<Callable>{std::move(callable)};
+}
 
 /* ************************************************************************ */
 

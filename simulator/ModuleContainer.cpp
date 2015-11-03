@@ -23,12 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "simulator/ModuleContainer.hpp"
 
-/* ************************************************************************ */
-
-// CeCe
-#include "core/Factory.hpp"
+// C++
+#include <algorithm>
 
 /* ************************************************************************ */
 
@@ -36,48 +35,68 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Module;
+namespace {
 
 /* ************************************************************************ */
 
 /**
- * @brief Module factory interface.
- */
-using ModuleFactory = Factory<Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory for specific module.
+ * @brief Find parameter in container.
  *
- * @tparam ModuleType
- */
-template<typename ModuleType>
-using ModuleFactoryTyped = FactoryTyped<Factory, ModuleType, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory with callable backend.
+ * @param data
  *
- * @tparam Callable
+ * @return
  */
-template<typename Callable>
-using ModuleFactoryCallable = FactoryCallable<Factory, Callable, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-ModuleFactoryCallable<Callable> makeCallableModuleFactory(Callable callable) noexcept
+template<typename Container>
+auto find(Container& data, const StringView& name) noexcept -> decltype(&(data.begin()->second))
 {
-    return ModuleFactoryCallable<Callable>{std::move(callable)};
+    auto it = std::find_if(data.begin(), data.end(),
+        [&name](const Pair<String, UniquePtr<Module>>& p) {
+            return p.first == name;
+        }
+    );
+
+    return it != data.end() ? &(it->second) : nullptr;
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+bool ModuleContainer::exists(const StringView& name) const noexcept
+{
+    return find(m_data, name) != nullptr;
+}
+
+/* ************************************************************************ */
+
+ViewPtr<Module> ModuleContainer::get(const StringView& name) const noexcept
+{
+    auto ptr = find(m_data, name);
+
+    if (ptr)
+        return *ptr;
+
+    return nullptr;
+}
+
+/* ************************************************************************ */
+
+ViewPtr<Module> ModuleContainer::add(String name, UniquePtr<Module> module)
+{
+    auto ptr = find(m_data, name);
+
+    if (ptr)
+    {
+        *ptr = std::move(module);
+        return *ptr;
+    }
+    else
+    {
+        m_data.emplace_back(std::move(name), std::move(module));
+        return m_data.back().second;
+    }
 }
 
 /* ************************************************************************ */

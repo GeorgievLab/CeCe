@@ -86,6 +86,7 @@ add_library(${PROJECT_NAME} OBJECT
     TriBool.hpp
     Parameters.hpp
     Parameters.cpp
+    Factory.hpp
 )
 
 # ######################################################################### #

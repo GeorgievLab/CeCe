@@ -53,6 +53,8 @@
 #include "simulator/Plugin.hpp"
 #include "simulator/Program.hpp"
 #include "simulator/SimulationListener.hpp"
+#include "simulator/ModuleContainer.hpp"
+//#include "simulator/ModuleFactoryManager.hpp"
 
 #if ENABLE_RENDER
 #include "core/TriBool.hpp"
@@ -109,9 +111,6 @@ public:
     /// Type of simulation parameter value.
     using ParameterValueType = float;
 
-    /// Module container type.
-    using ModuleContainer = DynamicArray<Pair<String, UniquePtr<Module>>>;
-
     /// Object container type.
     using ObjectContainer = DynamicArray<UniquePtr<Object>>;
 
@@ -120,9 +119,6 @@ public:
 
     /// Container type for programs.
     using ProgramContainer = Map<String, Program>;
-
-    /// Parameter container.
-    using ParameterContainer = Map<String, ParameterValueType>;
 
     /// Initialization function.
     using Initializer = std::function<void(Simulation&)>;
@@ -273,7 +269,10 @@ public:
      *
      * @return
      */
-    bool hasModule(const String& name) const noexcept;
+    bool hasModule(const StringView& name) const noexcept
+    {
+        return m_modules.exists(name);
+    }
 
 
     /**
@@ -283,7 +282,10 @@ public:
      *
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
-    Module* getModule(const String& name) noexcept;
+    ViewPtr<Module> getModule(const StringView& name) noexcept
+    {
+        return m_modules.get(name);
+    }
 
 
     /**
@@ -706,7 +708,10 @@ public:
      *
      * @return A pointer to inserted module.
      */
-    Module* addModule(String name, UniquePtr<Module> module);
+    ViewPtr<Module> addModule(String name, UniquePtr<Module> module)
+    {
+        return m_modules.add(std::move(name), std::move(module));
+    }
 
 
     /**
@@ -718,9 +723,9 @@ public:
      * @return A pointer to inserted module.
      */
     template<typename T>
-    T* addModule(String name, UniquePtr<T> mod)
+    ViewPtr<T> addModule(String name, UniquePtr<T> mod)
     {
-        return static_cast<T*>(addModule(std::move(name), UniquePtr<Module>(mod)));
+        return addModule(std::move(name), UniquePtr<Module>(mod));
     }
 
 
@@ -733,7 +738,7 @@ public:
      * @return A pointer to created module.
      */
     template<typename T, typename... Args>
-    T* createModule(String name, Args&&... args)
+    ViewPtr<T> createModule(String name, Args&&... args)
     {
         return addModule(std::move(name), makeUnique<T>(std::forward<Args>(args)...));
     }
@@ -750,7 +755,7 @@ public:
      *
      * @return A pointer to created module.
      */
-    Module* useModule(const String& path, String storePath = {});
+    ViewPtr<Module> useModule(const String& path, String storePath = {});
 
 
     /**
@@ -763,9 +768,9 @@ public:
      * @return A pointer to created module.
      */
     template<typename ModuleType>
-    ModuleType* useModule(const String& path)
+    ViewPtr<ModuleType> useModule(const String& path)
     {
-        return static_cast<ModuleType*>(useModule(path));
+        return useModule(path);
     }
 
 
@@ -1132,6 +1137,9 @@ private:
 
     /// Simulation modules.
     ModuleContainer m_modules;
+
+    /// Module factory manager.
+    //ModuleFactoryManager m_moduleFactoryManager;
 
 #ifdef ENABLE_PHYSICS
     b2World m_world;

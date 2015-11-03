@@ -28,57 +28,138 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "core/Factory.hpp"
+#include "core/UniquePtr.hpp"
 
 /* ************************************************************************ */
 
-namespace simulator {
-
-/* ************************************************************************ */
-
-class Module;
+inline namespace core {
 
 /* ************************************************************************ */
 
 /**
- * @brief Module factory interface.
- */
-using ModuleFactory = Factory<Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory for specific module.
+ * @brief Factory interface template.
  *
- * @tparam ModuleType
+ * @tparam T    Type of constructed object.
+ * @tparam Args Constructor arguments.
  */
-template<typename ModuleType>
-using ModuleFactoryTyped = FactoryTyped<Factory, ModuleType, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using ModuleFactoryCallable = FactoryCallable<Factory, Callable, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-ModuleFactoryCallable<Callable> makeCallableModuleFactory(Callable callable) noexcept
+template<typename T, typename... Args>
+class Factory
 {
-    return ModuleFactoryCallable<Callable>{std::move(callable)};
-}
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Destructor.
+     */
+    virtual ~Factory()
+    {
+        // Nothing to do
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create an object.
+     *
+     * @param args Constructor arguments.
+     *
+     * @return Created object pointer.
+     */
+    virtual UniquePtr<T> create(Args&&... args) const noexcept = 0;
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Factory for specific type.
+ *
+ * @tparam ParentFactory
+ * @tparam T
+ * @tparam Base
+ * @tparam Args
+ */
+template<template<typename, typename...> class ParentFactory, typename T, typename Base, typename... Args>
+class FactoryTyped : public ParentFactory<Base, Args...>
+{
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create an object.
+     *
+     * @param args Constructor arguments.
+     *
+     * @return Created object pointer.
+     */
+    UniquePtr<Base> create(Args&&... args) const noexcept override
+    {
+        return makeUnique<T>(std::forward<Args>(args)...);
+    }
+
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Factory with callable backend.
+ *
+ * @tparam ParentFactory
+ * @tparam Callable
+ * @tparam Base
+ * @tparam Args
+ */
+template<template<typename, typename...> class ParentFactory, typename Callable, typename Base, typename... Args>
+class FactoryCallable : public ParentFactory<Base, Args...>
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param callable Callable object (functor, function, lambda).
+     */
+    explicit FactoryCallable(Callable callable) noexcept
+        : m_callable(std::move(callable))
+    {
+        // Nothing to do
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create an object.
+     *
+     * @param args Constructor arguments.
+     *
+     * @return Created object pointer.
+     */
+    UniquePtr<Base> create(Args&&... args) const noexcept override
+    {
+        return m_callable(std::forward<Args>(args)...);
+    }
+
+
+// Private Data Members
+private:
+
+    /// Callable object.
+    Callable m_callable;
+
+};
 
 /* ************************************************************************ */
 

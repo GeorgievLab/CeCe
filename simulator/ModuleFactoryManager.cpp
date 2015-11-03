@@ -24,7 +24,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "simulator/ModuleManager.hpp"
+#include "simulator/ModuleFactoryManager.hpp"
 
 // CeCe
 #include "simulator/Module.hpp"
@@ -35,7 +35,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-ViewPtr<ModuleFactory> ModuleManager::get(const StringView& name) const noexcept
+ViewPtr<ModuleFactory> ModuleFactoryManager::get(const StringView& name) const noexcept
 {
     auto it = m_factories.find(String(name));
 
@@ -44,7 +44,7 @@ ViewPtr<ModuleFactory> ModuleManager::get(const StringView& name) const noexcept
 
 /* ************************************************************************ */
 
-UniquePtr<Module> ModuleManager::create(const StringView& name) const
+UniquePtr<Module> ModuleFactoryManager::create(const StringView& name) const
 {
     auto factory = get(name);
 

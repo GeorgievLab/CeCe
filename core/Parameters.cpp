@@ -116,9 +116,8 @@ void Parameters::set(KeyType name, ValueType value)
 
     if (ptr)
         *ptr = value;
-
-    // Insert
-    m_data.push_back(makePair(name, value));
+    else
+        m_data.push_back(makePair(name, value));
 }
 
 /* ************************************************************************ */

@@ -28,7 +28,13 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "core/Factory.hpp"
+#include "core/String.hpp"
+#include "core/StringView.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/ViewPtr.hpp"
+#include "core/Pair.hpp"
+#include "core/DynamicArray.hpp"
+#include "simulator/Module.hpp"
 
 /* ************************************************************************ */
 
@@ -36,49 +42,135 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Module;
-
-/* ************************************************************************ */
-
 /**
- * @brief Module factory interface.
+ * @brief Container for modules.
  */
-using ModuleFactory = Factory<Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory for specific module.
- *
- * @tparam ModuleType
- */
-template<typename ModuleType>
-using ModuleFactoryTyped = FactoryTyped<Factory, ModuleType, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using ModuleFactoryCallable = FactoryCallable<Factory, Callable, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-ModuleFactoryCallable<Callable> makeCallableModuleFactory(Callable callable) noexcept
+class ModuleContainer
 {
-    return ModuleFactoryCallable<Callable>{std::move(callable)};
-}
+
+// Public Types
+public:
+
+
+    /// Data type.
+    using DataType = DynamicArray<Pair<String, UniquePtr<Module>>>;
+
+    /// Value type.
+    using ValueType = DataType::value_type;
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns if module with given name exists.
+     *
+     * @param name Module name.
+     *
+     * @return
+     */
+    bool exists(const StringView& name) const noexcept;
+
+
+    /**
+     * @brief Returns parameter with given value.
+     *
+     * @param name Module name.
+     *
+     * @return Pointer to module. Can be nullptr.
+     */
+    ViewPtr<Module> get(const StringView& name) const noexcept;
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DataType::iterator begin() noexcept
+    {
+        return m_data.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator begin() const noexcept
+    {
+        return m_data.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator cbegin() const noexcept
+    {
+        return m_data.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DataType::iterator end() noexcept
+    {
+        return m_data.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator end() const noexcept
+    {
+        return m_data.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DataType::const_iterator cend() const noexcept
+    {
+        return m_data.cend();
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Store or replace module.
+     *
+     * @param name   Module name.
+     * @param module Module object.
+     *
+     * @return Pointer to added module.
+     */
+    ViewPtr<Module> add(String name, UniquePtr<Module> module);
+
+
+// Private Data Members
+private:
+
+    /// Data.
+    DataType m_data;
+
+};
 
 /* ************************************************************************ */
 

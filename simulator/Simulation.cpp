@@ -225,31 +225,6 @@ AccelerationVector Simulation::getGravity() const noexcept
 
 /* ************************************************************************ */
 
-bool Simulation::hasModule(const String& name) const noexcept
-{
-    auto it = std::find_if(m_modules.begin(), m_modules.end(), [&name](const Pair<String, UniquePtr<Module>>& p) {
-        return p.first == name;
-    });
-
-    return it != m_modules.end();
-}
-
-/* ************************************************************************ */
-
-Module* Simulation::getModule(const String& name) noexcept
-{
-    auto it = std::find_if(m_modules.begin(), m_modules.end(), [&name](const Pair<String, UniquePtr<Module>>& p) {
-        return p.first == name;
-    });
-
-    if (it == m_modules.end())
-        return nullptr;
-
-    return it->second.get();
-}
-
-/* ************************************************************************ */
-
 unsigned long Simulation::getObjectCountType(const String& className) const noexcept
 {
     unsigned long res = 0ul;
@@ -294,16 +269,7 @@ void Simulation::setGravity(const AccelerationVector& gravity) noexcept
 
 /* ************************************************************************ */
 
-Module* Simulation::addModule(String name, UniquePtr<Module> module)
-{
-    assert(module);
-    m_modules.emplace_back(std::move(name), std::move(module));
-    return m_modules.back().second.get();
-}
-
-/* ************************************************************************ */
-
-Module* Simulation::useModule(const String& path, String storePath)
+ViewPtr<Module> Simulation::useModule(const String& path, String storePath)
 {
     if (storePath.empty())
         storePath = path;
@@ -602,7 +568,7 @@ void Simulation::draw(render::Context& context)
 
     // Store modules
     DynamicArray<ViewPtr<Module>> modules;
-    for (auto& module : getModules())
+    for (auto& module : m_modules)
         modules.push_back(module.second);
 
     // Sort modules by rendering order
@@ -786,7 +752,7 @@ void Simulation::updateModules(units::Time dt)
 
     // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
     std::sort(m_modules.begin(), m_modules.end(),
-        [](const ModuleContainer::value_type& lhs, const ModuleContainer::value_type& rhs) {
+        [](const ModuleContainer::ValueType& lhs, const ModuleContainer::ValueType& rhs) {
             return lhs.second->getPriority() > rhs.second->getPriority();
     });
 

@@ -67,8 +67,15 @@ set(SRCS
     SimulationListener.hpp
     ObjectType.hpp
     ModuleFactory.hpp
-    ModuleManager.hpp
-    ModuleManager.cpp
+    ModuleFactoryManager.hpp
+    ModuleFactoryManager.cpp
+    ModuleContainer.hpp
+    ModuleContainer.cpp
+    ObjectFactory.hpp
+    #ObjectFactoryManager.hpp
+    #ObjectFactoryManager.cpp
+    ObjectContainer.hpp
+    ObjectContainer.cpp
 
     # Add object libraries
     $<TARGET_OBJECTS:core>

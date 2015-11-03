@@ -23,12 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "simulator/ObjectContainer.hpp"
 
-/* ************************************************************************ */
-
-// CeCe
-#include "core/Factory.hpp"
+// C++
+#include <algorithm>
 
 /* ************************************************************************ */
 
@@ -36,48 +35,11 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Module;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory interface.
- */
-using ModuleFactory = Factory<Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory for specific module.
- *
- * @tparam ModuleType
- */
-template<typename ModuleType>
-using ModuleFactoryTyped = FactoryTyped<Factory, ModuleType, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using ModuleFactoryCallable = FactoryCallable<Factory, Callable, Module>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-ModuleFactoryCallable<Callable> makeCallableModuleFactory(Callable callable) noexcept
+DynamicArray<ViewPtr<Object>> ObjectContainer::findByType(const StringView& typeName) const noexcept
 {
-    return ModuleFactoryCallable<Callable>{std::move(callable)};
+    DynamicArray<ViewPtr<Object>> objects;
+
+    return objects;
 }
 
 /* ************************************************************************ */
