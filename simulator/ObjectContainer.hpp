@@ -111,6 +111,16 @@ public:
 
 
     /**
+     * @brief Get a number of objects that have given type.
+     *
+     * @param typeName Type name.
+     *
+     * @return
+     */
+    SizeType countByType(const StringView& typeName) const noexcept;
+
+
+    /**
      * @brief Find objects that have given type.
      *
      * @param typeName Type name.

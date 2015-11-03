@@ -35,9 +35,31 @@ namespace simulator {
 
 /* ************************************************************************ */
 
+ObjectContainer::SizeType ObjectContainer::countByType(const StringView& typeName) const noexcept
+{
+    SizeType res = 0ul;
+
+    for (const auto& obj : m_data)
+    {
+        if (obj->getClassName() == typeName)
+            ++res;
+    }
+
+    return res;
+}
+
+/* ************************************************************************ */
+
 DynamicArray<ViewPtr<Object>> ObjectContainer::findByType(const StringView& typeName) const noexcept
 {
     DynamicArray<ViewPtr<Object>> objects;
+    objects.reserve(m_data.size());
+
+    for (const auto& obj : m_data)
+    {
+        if (obj->getClassName() == typeName)
+            objects.push_back(obj);
+    }
 
     return objects;
 }
