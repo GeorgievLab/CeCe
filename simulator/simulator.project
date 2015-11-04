@@ -28,6 +28,7 @@
     <File Name="Module.cpp"/>
     <File Name="ModuleFactoryManager.cpp"/>
     <File Name="ModuleContainer.cpp"/>
+    <File Name="ObjectContainer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
@@ -50,7 +51,6 @@
     <File Name="ModuleContainer.hpp"/>
     <File Name="ObjectFactory.hpp"/>
     <File Name="ObjectContainer.hpp"/>
-    <File Name="ObjectContainer.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

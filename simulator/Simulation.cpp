@@ -225,21 +225,6 @@ AccelerationVector Simulation::getGravity() const noexcept
 
 /* ************************************************************************ */
 
-unsigned long Simulation::getObjectCountType(const String& className) const noexcept
-{
-    unsigned long res = 0ul;
-
-    for (const auto& obj : getObjects())
-    {
-        if (obj->getClassName() == className)
-            ++res;
-    }
-
-    return res;
-}
-
-/* ************************************************************************ */
-
 ViewPtr<const ObjectType> Simulation::findObjectType(const StringView& name) const noexcept
 {
     auto it = std::find_if(m_objectClasses.begin(), m_objectClasses.end(), [&name] (const ObjectType& type) {
@@ -399,7 +384,7 @@ bool Simulation::update(units::Duration dt)
     m_totalTime += dt;
 
     // Clear all stored forces
-    for (auto& obj : getObjects())
+    for (auto& obj : m_objects)
         obj->setForce(Zero);
 
     // Update modules
@@ -581,9 +566,9 @@ void Simulation::draw(render::Context& context)
         module->draw(*this, context);
 
     // Draw objects
-    for (const auto& obj : getObjects())
+    for (auto& obj : m_objects)
     {
-        assert(obj);
+        Assert(obj);
         if (obj->isVisible())
             obj->draw(context);
     }
@@ -737,7 +722,7 @@ ViewPtr<Object> Simulation::query(const PositionVector& position) const noexcept
     for (const auto& object : m_objects)
     {
         if (object->getBody() == query.getObject())
-            return object;
+            return object.ptr;
     }
 #endif
 
@@ -767,11 +752,9 @@ void Simulation::updateObjects(units::Time dt)
     auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
 
     // Update simulations objects
-    //for (auto& obj : getObjects())
-    for (size_t i = 0; i < m_objects.size(); ++i)
+    for (auto& obj : m_objects)
     {
-        auto& obj = m_objects[i];
-        assert(obj);
+        Assert(obj);
         obj->update(dt);
     }
 }
@@ -794,7 +777,7 @@ void Simulation::detectDeserters()
 
         // Object is not in scene
         if (!pos.inRange(-hh, hh))
-            m_objectsToDelete.push_back(obj.get());
+            m_objects.deleteObject(obj);
     };
 }
 
@@ -804,15 +787,8 @@ void Simulation::deleteObjects()
 {
     auto _ = measure_time("sim.delete", TimeMeasurementIterationOutput(this));
 
-    // Delete queued objects
-    for (auto obj : m_objectsToDelete)
-    {
-        m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [obj](const ObjectContainer::value_type& rhs) {
-            return obj.get() == rhs.get();
-        }), m_objects.end());
-    }
-
-    m_objectsToDelete.clear();
+    // Remove deleted objects
+    m_objects.removeDeleted();
 }
 
 /* ************************************************************************ */

@@ -55,6 +55,7 @@
 #include "simulator/SimulationListener.hpp"
 #include "simulator/ModuleContainer.hpp"
 //#include "simulator/ModuleFactoryManager.hpp"
+#include "simulator/ObjectContainer.hpp"
 
 #if ENABLE_RENDER
 #include "core/TriBool.hpp"
@@ -110,12 +111,6 @@ public:
 
     /// Type of simulation parameter value.
     using ParameterValueType = float;
-
-    /// Object container type.
-    using ObjectContainer = DynamicArray<UniquePtr<Object>>;
-
-    /// Object container type for object views.
-    using ObjectViewContainer = DynamicArray<ViewPtr<Object>>;
 
     /// Container type for programs.
     using ProgramContainer = Map<String, Program>;
@@ -314,6 +309,17 @@ public:
      *
      * @return
      */
+    ObjectContainer& getObjects() noexcept
+    {
+        return m_objects;
+    }
+
+
+    /**
+     * @brief Return a list of world objects.
+     *
+     * @return
+     */
     const ObjectContainer& getObjects() const noexcept
     {
         return m_objects;
@@ -327,7 +333,7 @@ public:
      */
     unsigned long getObjectCount() const noexcept
     {
-        return m_objects.size();
+        return m_objects.getCount();
     }
 
 
@@ -338,7 +344,10 @@ public:
      *
      * @return
      */
-    unsigned long getObjectCountType(const String& className) const noexcept;
+    unsigned long getObjectCountType(const String& className) const noexcept
+    {
+        return m_objects.getCountByType(className);
+    }
 
 
     /**
@@ -791,11 +800,10 @@ public:
      * @param obj
      */
     template<typename T>
-    T* addObject(UniquePtr<T> obj)
+    ViewPtr<T> addObject(UniquePtr<T> obj)
     {
-        assert(obj);
-        m_objects.push_back(std::move(obj));
-        return static_cast<T*>(m_objects.back().get());
+        Assert(obj);
+        return m_objects.addObject(std::move(obj));
     }
 
 
@@ -807,7 +815,7 @@ public:
      * @return
      */
     template<typename T, typename... Args>
-    T* createObject(Args&&... args)
+    ViewPtr<T> createObject(Args&&... args)
     {
         return addObject(makeUnique<T>(*this, std::forward<Args>(args)...));
     }
@@ -835,7 +843,7 @@ public:
      */
     void deleteObject(ViewPtr<Object> obj)
     {
-        m_objectsToDelete.push_back(std::move(obj));
+        m_objects.deleteObject(obj);
     }
 
 
@@ -1152,9 +1160,6 @@ private:
 
     /// Simulation objects.
     ObjectContainer m_objects;
-
-    /// Objects that should be deleted.
-    ObjectViewContainer m_objectsToDelete;
 
     /// A map of preddefined programs.
     ProgramContainer m_programs;

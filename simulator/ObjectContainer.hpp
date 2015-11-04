@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "core/String.hpp"
 #include "core/StringView.hpp"
 #include "core/UniquePtr.hpp"
 #include "core/ViewPtr.hpp"
@@ -48,15 +47,80 @@ namespace simulator {
 class ObjectContainer
 {
 
+// Public Structures
+public:
+
+
+    /**
+     * @brief Object storage record.
+     */
+    struct Record
+    {
+        /// Pointer to object.
+        UniquePtr<Object> ptr;
+
+        /// If object has to be deleted.
+        bool deleted;
+
+
+        /**
+         * @brief If object is valid.
+         *
+         * @return
+         */
+        explicit operator bool() const noexcept
+        {
+            return !deleted && ptr != nullptr;
+        }
+
+
+        /**
+         * @brief Implicit cast to view pointer operator.
+         */
+        operator ViewPtr<Object>() const noexcept
+        {
+            return ptr;
+        }
+
+
+        /**
+         * @brief Implicit cast to operator.
+         */
+        operator Object*() const noexcept
+        {
+            return ptr.get();
+        }
+
+
+        /**
+         * @brief Dereference operator.
+         *
+         * @return Reference.
+         */
+        Object& operator*() const noexcept
+        {
+            return *ptr;
+        }
+
+
+        /**
+         * @brief Pointer access operator.
+         *
+         * @return Pointer.
+         */
+        Object* operator->() const noexcept
+        {
+            return ptr.get();
+        }
+    };
+
+
 // Public Types
 public:
 
 
     /// Data type.
-    using DataType = DynamicArray<UniquePtr<Object>>;
-
-    /// Value type.
-    using ValueType = DataType::value_type;
+    using DataType = DynamicArray<Record>;
 
     /// Size type.
     using SizeType = DataType::size_type;
@@ -106,7 +170,10 @@ public:
         if (pos >= getCount())
             return nullptr;
 
-        return m_data[pos];
+        if (m_data[pos].deleted)
+            return nullptr;
+
+        return m_data[pos].ptr;
     }
 
 
@@ -117,7 +184,7 @@ public:
      *
      * @return
      */
-    SizeType countByType(const StringView& typeName) const noexcept;
+    SizeType getCountByType(const StringView& typeName) const noexcept;
 
 
     /**
@@ -127,7 +194,7 @@ public:
      *
      * @return
      */
-    DynamicArray<ViewPtr<Object>> findByType(const StringView& typeName) const noexcept;
+    DynamicArray<ViewPtr<Object>> getByType(const StringView& typeName) const noexcept;
 
 
     /**
@@ -207,11 +274,29 @@ public:
      *
      * @return Pointer to added object.
      */
-    ViewPtr<Object> add(UniquePtr<Object> object)
+    ViewPtr<Object> addObject(UniquePtr<Object> object)
     {
-        m_data.push_back(std::move(object));
-        return m_data.back();
+        m_data.push_back(Record{std::move(object), false});
+        return m_data.back().ptr;
     }
+
+
+    /**
+     * @brief Mark object as deleted.
+     *
+     * @param object Object to delete.
+     */
+    void deleteObject(ViewPtr<Object> object);
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Remove all deleted objects.
+     */
+    void removeDeleted() noexcept;
 
 
 // Private Data Members

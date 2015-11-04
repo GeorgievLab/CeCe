@@ -35,13 +35,13 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-ObjectContainer::SizeType ObjectContainer::countByType(const StringView& typeName) const noexcept
+ObjectContainer::SizeType ObjectContainer::getCountByType(const StringView& typeName) const noexcept
 {
     SizeType res = 0ul;
 
     for (const auto& obj : m_data)
     {
-        if (obj->getClassName() == typeName)
+        if (obj.ptr->getClassName() == typeName)
             ++res;
     }
 
@@ -50,18 +50,42 @@ ObjectContainer::SizeType ObjectContainer::countByType(const StringView& typeNam
 
 /* ************************************************************************ */
 
-DynamicArray<ViewPtr<Object>> ObjectContainer::findByType(const StringView& typeName) const noexcept
+DynamicArray<ViewPtr<Object>> ObjectContainer::getByType(const StringView& typeName) const noexcept
 {
     DynamicArray<ViewPtr<Object>> objects;
     objects.reserve(m_data.size());
 
     for (const auto& obj : m_data)
     {
-        if (obj->getClassName() == typeName)
-            objects.push_back(obj);
+        if (obj.ptr->getClassName() == typeName)
+            objects.push_back(obj.ptr);
     }
 
     return objects;
+}
+
+/* ************************************************************************ */
+
+void ObjectContainer::deleteObject(ViewPtr<Object> object)
+{
+    for (auto& obj : m_data)
+    {
+        if (obj.ptr.get() == object)
+        {
+            obj.deleted = true;
+            break;
+        }
+    }
+}
+
+/* ************************************************************************ */
+
+void ObjectContainer::removeDeleted() noexcept
+{
+    // Delete objects
+    m_data.erase(std::remove_if(m_data.begin(), m_data.end(), [](const Record& rec) {
+        return rec.deleted;
+    }), m_data.end());
 }
 
 /* ************************************************************************ */
