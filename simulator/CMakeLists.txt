@@ -62,18 +62,22 @@ set(SRCS
     Shape.hpp
     ShapeToGrid.hpp
     Program.hpp
+    ProgramContainer.hpp
+    ProgramContainer.cpp
     Obstacle.hpp
     Obstacle.cpp
     SimulationListener.hpp
     ObjectType.hpp
+    ObjectTypeContainer.hpp
+    ObjectTypeContainer.cpp
     ModuleFactory.hpp
     ModuleFactoryManager.hpp
     ModuleFactoryManager.cpp
     ModuleContainer.hpp
     ModuleContainer.cpp
     ObjectFactory.hpp
-    #ObjectFactoryManager.hpp
-    #ObjectFactoryManager.cpp
+    ObjectFactoryManager.hpp
+    ObjectFactoryManager.cpp
     ObjectContainer.hpp
     ObjectContainer.cpp
 

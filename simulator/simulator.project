@@ -18,39 +18,65 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Simulator.cpp"/>
-    <File Name="Object.cpp"/>
     <File Name="Simulation.cpp"/>
     <File Name="Configuration.cpp"/>
     <File Name="Obstacle.cpp"/>
-    <File Name="Plugin.cpp"/>
-    <File Name="PluginManager.cpp"/>
-    <File Name="PluginApi.cpp"/>
-    <File Name="Module.cpp"/>
-    <File Name="ModuleFactoryManager.cpp"/>
-    <File Name="ModuleContainer.cpp"/>
-    <File Name="ObjectContainer.cpp"/>
+    <VirtualDirectory Name="object">
+      <File Name="Object.cpp"/>
+      <File Name="ObjectContainer.cpp"/>
+      <File Name="ObjectFactoryManager.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="module">
+      <File Name="Module.cpp"/>
+      <File Name="ModuleContainer.cpp"/>
+      <File Name="ModuleFactoryManager.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="plugin">
+      <File Name="Plugin.cpp"/>
+      <File Name="PluginApi.cpp"/>
+      <File Name="PluginManager.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="program">
+      <File Name="ProgramContainer.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="object-type">
+      <File Name="ObjectTypeContainer.cpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Simulator.hpp"/>
-    <File Name="Object.hpp"/>
-    <File Name="Module.hpp"/>
     <File Name="Simulation.hpp"/>
     <File Name="Configuration.hpp"/>
     <File Name="Shape.hpp"/>
     <File Name="ShapeToGrid.hpp"/>
-    <File Name="Program.hpp"/>
-    <File Name="PluginApi.hpp"/>
     <File Name="Obstacle.hpp"/>
-    <File Name="Plugin.hpp"/>
     <File Name="SimulationListener.hpp"/>
-    <File Name="PluginManager.hpp"/>
     <File Name="font.hpp"/>
-    <File Name="ObjectType.hpp"/>
-    <File Name="ModuleFactory.hpp"/>
-    <File Name="ModuleFactoryManager.hpp"/>
-    <File Name="ModuleContainer.hpp"/>
-    <File Name="ObjectFactory.hpp"/>
-    <File Name="ObjectContainer.hpp"/>
+    <VirtualDirectory Name="object">
+      <File Name="Object.hpp"/>
+      <File Name="ObjectContainer.hpp"/>
+      <File Name="ObjectFactory.hpp"/>
+      <File Name="ObjectFactoryManager.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="module">
+      <File Name="Module.hpp"/>
+      <File Name="ModuleContainer.hpp"/>
+      <File Name="ModuleFactory.hpp"/>
+      <File Name="ModuleFactoryManager.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="plugin">
+      <File Name="Plugin.hpp"/>
+      <File Name="PluginApi.hpp"/>
+      <File Name="PluginManager.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="program">
+      <File Name="Program.hpp"/>
+      <File Name="ProgramContainer.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="object-type">
+      <File Name="ObjectType.hpp"/>
+      <File Name="ObjectTypeContainer.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

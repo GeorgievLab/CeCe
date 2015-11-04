@@ -752,8 +752,11 @@ void Simulation::updateObjects(units::Time dt)
     auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
 
     // Update simulations objects
-    for (auto& obj : m_objects)
+    // Can't use range-for because update can add a new object.
+    for (ObjectContainer::SizeType i = 0u; i < m_objects.getCount(); ++i)
     {
+        auto obj = m_objects[i];
+
         Assert(obj);
         obj->update(dt);
     }

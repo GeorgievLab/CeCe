@@ -52,10 +52,11 @@
 #include "simulator/ObjectType.hpp"
 #include "simulator/Plugin.hpp"
 #include "simulator/Program.hpp"
+#include "simulator/ProgramContainer.hpp"
 #include "simulator/SimulationListener.hpp"
 #include "simulator/ModuleContainer.hpp"
-//#include "simulator/ModuleFactoryManager.hpp"
 #include "simulator/ObjectContainer.hpp"
+#include "simulator/ObjectTypeContainer.hpp"
 
 #if ENABLE_RENDER
 #include "core/TriBool.hpp"
@@ -112,9 +113,6 @@ public:
     /// Type of simulation parameter value.
     using ParameterValueType = float;
 
-    /// Container type for programs.
-    using ProgramContainer = Map<String, Program>;
-
     /// Initialization function.
     using Initializer = std::function<void(Simulation&)>;
 
@@ -123,9 +121,6 @@ public:
 
     /// Data table container type.
     using DataTableContainer = Map<String, DataTable>;
-
-    /// Container for object classes.
-    using ObjectTypeContainer = DynamicArray<ObjectType>;
 
 
 // Public Ctors
@@ -366,6 +361,17 @@ public:
      *
      * @return
      */
+    Parameters& getParameters() noexcept
+    {
+        return m_parameters;
+    }
+
+
+    /**
+     * @brief Returns simulation parameters.
+     *
+     * @return
+     */
     const Parameters& getParameters() const noexcept
     {
         return m_parameters;
@@ -494,7 +500,7 @@ public:
      */
     bool hasProgram(const String& name) const noexcept
     {
-        return m_programs.find(name) != m_programs.end();
+        return m_programs.exists(name);
     }
 
 
@@ -507,13 +513,13 @@ public:
      */
     Program getProgram(const String& name)
     {
-        auto it = m_programs.find(name);
+        auto ptr = m_programs.get(name);
 
         // Try to build program from module
-        if (it == m_programs.end())
+        if (ptr == nullptr)
             return buildProgram(name);
 
-        return it->second;
+        return *ptr;
     }
 
 
@@ -705,7 +711,7 @@ public:
      */
     void addObjectType(ObjectType rec)
     {
-        m_objectClasses.push_back(std::move(rec));
+        m_objectClasses.add(std::move(rec));
     }
 
 
@@ -879,7 +885,7 @@ public:
      */
     void addProgram(String name, Program program)
     {
-        m_programs.emplace(std::move(name), std::move(program));
+        m_programs.add(std::move(name), std::move(program));
     }
 
 
@@ -1145,9 +1151,6 @@ private:
 
     /// Simulation modules.
     ModuleContainer m_modules;
-
-    /// Module factory manager.
-    //ModuleFactoryManager m_moduleFactoryManager;
 
 #ifdef ENABLE_PHYSICS
     b2World m_world;
