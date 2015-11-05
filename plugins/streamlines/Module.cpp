@@ -120,8 +120,8 @@ units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
     Assert(pos < size);
     Assert(size > 1);
 
-    const RealType posF = static_cast<RealType>(pos) - 1.0;
-    const RealType sizeF = static_cast<RealType>(size) - 1.0;
+    const RealType posF = static_cast<RealType>(pos);
+    const RealType sizeF = static_cast<RealType>(size);
     return 4.f * max / (sizeF * sizeF) * (sizeF * posF - posF * posF);
 }
 
