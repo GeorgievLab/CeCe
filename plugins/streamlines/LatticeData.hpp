@@ -236,6 +236,17 @@ public:
 
 
     /**
+     * @brief Returns if current cell is dummy.
+     *
+     * @return
+     */
+    bool isDummy() const noexcept
+    {
+        return getType() == Type::None;
+    }
+
+
+    /**
      * @brief Returns if current cell is a static obstacle.
      *
      * @return
@@ -368,6 +379,9 @@ public:
      */
     ValueType calcRho() const noexcept
     {
+        if (isDummy())
+            return {};
+
         using std::begin;
         using std::end;
         return std::accumulate(begin(m_values), end(m_values), ValueType{});
@@ -416,6 +430,9 @@ public:
      */
     Vector<ValueType> calcVelocity() const noexcept
     {
+        if (isDummy())
+            return {};
+
         return Vector<ValueType>{
             sumValues({1, 5, 8}) - sumValues({3, 6, 7}),
             sumValues({2, 5, 6}) - sumValues({4, 7, 8})
@@ -430,9 +447,13 @@ public:
      */
     Vector<ValueType> calcVelocityNormalized() const noexcept
     {
+        if (isDummy())
+            return {};
+
         const auto rho = calcRho();
 
         // Return empty vector
+        // TODO: can happend?
         if (rho == 0)
             return Vector<ValueType>{};
 
