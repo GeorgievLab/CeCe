@@ -449,8 +449,8 @@ public:
             return {};
 
         return Vector<ValueType>{
-            sumValues({1, 5, 8}) - sumValues({3, 6, 7}),
-            sumValues({2, 5, 6}) - sumValues({4, 7, 8})
+            sumValues({6, 7, 5}) - sumValues({2, 1, 3}),
+            sumValues({8, 7, 1}) - sumValues({4, 3, 5})
         };
     }
 
