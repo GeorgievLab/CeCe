@@ -69,6 +69,18 @@ public:
     };
 
 
+    /**
+     * @brief Cell type.
+     */
+    enum class Type
+    {
+        None,
+        StaticObstacle,
+        DynamicObstacle,
+        BGK
+    };
+
+
 // Public Types
 public:
 
@@ -213,13 +225,24 @@ public:
 
 
     /**
+     * @brief Returns cell type.
+     *
+     * @return
+     */
+    Type getType() const noexcept
+    {
+        return m_type;
+    }
+
+
+    /**
      * @brief Returns if current cell is a static obstacle.
      *
      * @return
      */
     bool isStaticObstacle() const noexcept
     {
-        return m_staticObstacle;
+        return getType() == Type::StaticObstacle;
     }
 
 
@@ -230,7 +253,7 @@ public:
      */
     bool isDynamicObstacle() const noexcept
     {
-        return m_dynamicObstacle;
+        return getType() == Type::DynamicObstacle;
     }
 
 
@@ -274,13 +297,24 @@ public:
 
 
     /**
+     * @brief Set cell type.
+     *
+     * @param type
+     */
+    void setType(Type type) noexcept
+    {
+        m_type = type;
+    }
+
+
+    /**
      * @brief Set if current cell is a static obstacle.
      *
      * @param flag
      */
-    void setStaticObstacle(bool flag) noexcept
+    void setStaticObstacle() noexcept
     {
-        m_staticObstacle = flag;
+        setType(Type::StaticObstacle);
     }
 
 
@@ -290,9 +324,9 @@ public:
      * @param flag If cell is dynamic obstacle.
      * @param u    Obstacle velocity.
      */
-    void setDynamicObstacle(bool flag, Vector<ValueType> u = Zero) noexcept
+    void setDynamicObstacle(Vector<ValueType> u = Zero) noexcept
     {
-        m_dynamicObstacle = flag;
+        setType(Type::DynamicObstacle);
         m_dynamicObstacleVelocity = std::move(u);
     }
 
@@ -423,7 +457,31 @@ public:
      *
      * @param omega Relaxation parameter (1 / tau).
      */
-    void collide(ValueType omega);
+    void collide(ValueType omega) noexcept;
+
+
+    /**
+     * @brief Collide lattice cell - static obstacle.
+     *
+     * @param omega Relaxation parameter (1 / tau).
+     */
+    void collideStatic(ValueType omega) noexcept;
+
+
+    /**
+     * @brief Collide lattice cell - dynamic obstacle.
+     *
+     * @param omega Relaxation parameter (1 / tau).
+     */
+    void collideDynamic(ValueType omega) noexcept;
+
+
+    /**
+     * @brief Collide lattice cell - no obstacle.
+     *
+     * @param omega Relaxation parameter (1 / tau).
+     */
+    void collideBgk(ValueType omega) noexcept;
 
 
     /**
@@ -450,14 +508,11 @@ public:
 // Private Data Members
 public:
 
+    /// Cell type.
+    Type m_type = Type::None;
+
     /// Distribution functions.
     StaticArray<ValueType, SIZE> m_values;
-
-    /// If current item is a static obstacle.
-    bool m_staticObstacle = false;
-
-    /// If current item is a dynamic obstacle.
-    bool m_dynamicObstacle = false;
 
     // Velocity of dynamic obstacle.
     Vector<ValueType> m_dynamicObstacleVelocity = Zero;

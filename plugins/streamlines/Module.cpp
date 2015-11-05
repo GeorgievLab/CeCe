@@ -375,17 +375,36 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
         {
             // Cell alias
             const auto& cell = m_lattice[c];
+            render::Color color = render::colors::WHITE;
+
+            switch (cell.getType())
+            {
+            case LatticeData::Type::BGK:
+                color = render::colors::BLACK;
+                break;
+
+            case LatticeData::Type::StaticObstacle:
+                color = render::colors::BLUE;
+                break;
+
+            case LatticeData::Type::DynamicObstacle:
+                color = render::colors::RED;
+                break;
+
+            default:
+                break;
+            }
+
+            m_drawableObstacles->set(c, color);
 
             if (cell.isObstacle())
             {
                 velocities[c] = Zero;
-                m_drawableObstacles->set(c, render::colors::RED);
             }
             else
             {
                 // Cell velocity
                 velocities[c] = cell.calcVelocity();
-                m_drawableObstacles->set(c, render::colors::BLACK);
             }
         }
     }
@@ -453,8 +472,7 @@ VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
 void Module::updateObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax)
 {
     // Clear previous flag
-    m_lattice.clearDynamicObstacles();
-    m_lattice.clearStaticObstacles();
+    m_lattice.setType(LatticeData::Type::BGK);
 
     const PositionVector start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / m_lattice.getSize();
@@ -492,15 +510,20 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
                 [this, &velocity, isDynamic] (Coordinate&& coord) {
                     Assert(m_lattice.inRange(coord));
                     if (isDynamic)
-                        m_lattice[coord].setDynamicObstacle(true, velocity);
+                        m_lattice[coord].setDynamicObstacle(velocity);
                     else
-                        m_lattice[coord].setStaticObstacle(true);
+                        m_lattice[coord].setStaticObstacle();
                 },
                 [] (Coordinate&& coord) {},
                 shape, step, coord, obj->getRotation(), m_lattice.getSize()
             );
         }
     }
+
+    m_lattice.fixupObstacles(LatticeData::Type::StaticObstacle);
+
+    if (isDynamicObjectsObstacles())
+        m_lattice.fixupObstacles(LatticeData::Type::DynamicObstacle);
 }
 
 /* ************************************************************************ */
@@ -814,7 +837,7 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
     // Set obstacles
     for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
         for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-            m_lattice[{x, y}].setStaticObstacle(true);
+            m_lattice[{x, y}].setStaticObstacle();
 }
 
 /* ************************************************************************ */

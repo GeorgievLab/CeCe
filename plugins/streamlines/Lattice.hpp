@@ -261,15 +261,19 @@ public:
 
 
     /**
-     * @brief Set dynamic obstacle flag to false for all cells.
+     * @brief Set type for all cells.
+     *
+     * @param type
      */
-    void clearDynamicObstacles();
+    void setType(LatticeData::Type type);
 
 
     /**
-     * @brief Set static obstacle flag to false for all cells.
+     * @brief Fixup inner obstacle types.
+     *
+     * @param type
      */
-    void clearStaticObstacles();
+    void fixupObstacles(LatticeData::Type type) noexcept;
 
 
 // Private Data Members

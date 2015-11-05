@@ -95,8 +95,7 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 void LatticeData::inlet(const Vector<ValueType>& v, Direction dir) noexcept
 {
-    // rho(:,in,col) = 1 ./ (1-ux(:,in,col)) .* ( ...
-    // sum(fIn([1,3,5],in,col)) + 2*sum(fIn([4,7,8],in,col)) );
+    // Calculate inlet density
     const ValueType rho =
         RealType(1)
         / (RealType(1) - v.dot(VELOCITIES[dir]))
@@ -135,69 +134,76 @@ void LatticeData::outlet(Direction dir) noexcept
 
 /* ************************************************************************ */
 
-void LatticeData::collide(ValueType omega)
+void LatticeData::collide(ValueType omega) noexcept
 {
-    assert(omega <= 1);
+    Assert(omega <= 1);
 
-    if (isStaticObstacle())
+    switch (getType())
     {
-        // Static obstacle, bounce all back
-        StaticArray<ValueType, SIZE> temp;
+    case Type::None:
+        break;
 
-        // Move updated values into opposite directions
-        for (IndexType i = 0; i < SIZE; ++i)
-        {
-            temp[i] = m_values[DIRECTION_OPPOSITES[i]];
-        }
+    case Type::StaticObstacle:
+        collideStatic(omega);
+        break;
 
-        // Copy updated values
-        m_values = temp;
+    case Type::DynamicObstacle:
+        collideDynamic(omega);
+        break;
+
+    case Type::BGK:
+        collideBgk(omega);
+        break;
     }
-    else if (isDynamicObstacle())
+}
+
+/* ************************************************************************ */
+
+void LatticeData::collideStatic(ValueType omega) noexcept
+{
+    // Static obstacle, bounce all back
+    StaticArray<ValueType, SIZE> temp;
+
+    // Move updated values into opposite directions
+    for (IndexType i = 0; i < SIZE; ++i)
     {
-        // Velocity difference
-        const auto diff = calcVelocity() - m_dynamicObstacleVelocity;
+        temp[i] = m_values[DIRECTION_OPPOSITES[i]];
+    }
 
-        if (diff > Zero)
-        {
-            // Partial obstacle
-            // Static obstacle, bounce all back
-            StaticArray<ValueType, SIZE> temp;
+    // Copy updated values
+    m_values = temp;
+}
 
-            // Move updated values into opposite directions
-            for (IndexType i = 0; i < SIZE; ++i)
-            {
-                temp[i] = m_values[DIRECTION_OPPOSITES[i]];
-            }
+/* ************************************************************************ */
 
-            // Copy updated values
-            m_values = temp;
-        }
-        else
-        {
-            // No obstacle
+void LatticeData::collideDynamic(ValueType omega) noexcept
+{
+    // Velocity difference
+    const auto diff = calcVelocity() - m_dynamicObstacleVelocity;
 
-            // Calculate
-            const auto feq = calcEquilibrium(calcVelocity(), calcRho());
-
-            // Update values
-            for (IndexType alpha = 0; alpha < SIZE; ++alpha)
-            {
-                m_values[alpha] += -omega * (m_values[alpha] - feq[alpha]);
-            }
-        }
+    if (diff > Zero)
+    {
+        // Slower -> obstacle
+        collideStatic(omega);
     }
     else
     {
-        // Calculate
-        const auto feq = calcEquilibrium(calcVelocity(), calcRho());
+        // Faster -> No obstacle
+        collideBgk(omega);
+    }
+}
 
-        // Update values
-        for (IndexType alpha = 0; alpha < SIZE; ++alpha)
-        {
-            m_values[alpha] += -omega * (m_values[alpha] - feq[alpha]);
-            assert(m_values[alpha] >= 0);
-        }
+/* ************************************************************************ */
+
+void LatticeData::collideBgk(ValueType omega) noexcept
+{
+    const auto feq = calcEquilibrium(calcVelocity(), calcRho());
+
+    // Update values
+    for (IndexType alpha = 0; alpha < SIZE; ++alpha)
+    {
+        m_values[alpha] += -omega * (m_values[alpha] - feq[alpha]);
+        Assert(m_values[alpha] >= 0);
     }
 }
 
@@ -206,7 +212,7 @@ void LatticeData::collide(ValueType omega)
 void LatticeData::microscopicBc(Direction dir, const Vector<ValueType>& vel, ValueType rho) noexcept
 {
     // FIXME: broken
-#if BROKEN
+#if 0 // BROKEN
     constexpr StaticArray<StaticArray<IndexType, 2>, DirCount> INDICES1{{
         {{1, 3}}, {{3, 1}}, {{2, 4}}, {{4, 2}}
     }};

@@ -68,7 +68,7 @@ void Lattice::propagate()
             getBack(newCoord)[i] = getFront(c)[i];
         }
 
-        getBack(c).setStaticObstacle(getFront(c).isStaticObstacle());
+        getBack(c).setType(getFront(c).getType());
     }
 
     std::swap(m_dataFront, m_dataBack);
@@ -76,18 +76,51 @@ void Lattice::propagate()
 
 /* ************************************************************************ */
 
-void Lattice::clearDynamicObstacles()
+void Lattice::setType(LatticeData::Type type)
 {
     for (auto& cell : m_dataFront)
-        cell.setDynamicObstacle(false);
+        cell.setType(type);
 }
 
 /* ************************************************************************ */
 
-void Lattice::clearStaticObstacles()
+void Lattice::fixupObstacles(LatticeData::Type type) noexcept
 {
-    for (auto& cell : m_dataFront)
-        cell.setStaticObstacle(false);
+    using Offset = Vector<typename std::make_signed<LatticeData::IndexType>::type>;
+
+    // Foreach all cells
+    for (auto&& c : range(getSize()))
+    {
+        if (get(c).getType() != type)
+            continue;
+
+        const LatticeData::Type types[9] = {
+            get(c).getType(),
+            get(c + Offset{ 1,  0}).getType(),
+            get(c + Offset{-1,  0}).getType(),
+            get(c + Offset{ 0,  1}).getType(),
+            get(c + Offset{ 1,  1}).getType(),
+            get(c + Offset{-1,  1}).getType(),
+            get(c + Offset{ 0, -1}).getType(),
+            get(c + Offset{ 1, -1}).getType(),
+            get(c + Offset{-1, -1}).getType()
+        };
+
+        const bool test =
+            (types[0] == type) &&
+            (types[1] == type || types[1] == LatticeData::Type::None) &&
+            (types[2] == type || types[2] == LatticeData::Type::None) &&
+            (types[3] == type || types[3] == LatticeData::Type::None) &&
+            (types[4] == type || types[4] == LatticeData::Type::None) &&
+            (types[5] == type || types[5] == LatticeData::Type::None) &&
+            (types[6] == type || types[6] == LatticeData::Type::None) &&
+            (types[7] == type || types[7] == LatticeData::Type::None) &&
+            (types[8] == type || types[8] == LatticeData::Type::None)
+        ;
+
+        if (test)
+            get(c).setType(LatticeData::Type::None);
+    }
 }
 
 /* ************************************************************************ */
