@@ -148,18 +148,6 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::setStaticObstacleMap(const ObstacleMap& map)
-{
-    // Foreach obstacle map
-    for (auto&& c : range(map.getSize()))
-    {
-        if (map[c])
-            m_lattice[c].setStaticObstacle(true);
-    }
-}
-
-/* ************************************************************************ */
-
 void Module::init(simulator::Simulation& simulation)
 {
     initBarriers(simulation);

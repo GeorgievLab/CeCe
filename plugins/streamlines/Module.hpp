@@ -50,7 +50,6 @@
 
 // Plugin
 #include "Lattice.hpp"
-#include "ObstacleMap.hpp"
 
 #if THREAD_SAFE
 #include "core/Mutex.hpp"
@@ -309,14 +308,6 @@ public:
     {
         m_kinematicViscosity = viscosity;
     }
-
-
-    /**
-     * @brief Setup static obstacle map.
-     *
-     * @param map
-     */
-    void setStaticObstacleMap(const ObstacleMap& map);
 
 
     /**

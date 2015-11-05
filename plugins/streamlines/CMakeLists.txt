@@ -49,14 +49,13 @@ endif ()
 
 # Sources
 set(SRCS
+    Plugin.cpp
     Module.hpp
     Module.cpp
-    Library.cpp
     Lattice.hpp
     Lattice.cpp
     LatticeData.hpp
     LatticeData.cpp
-    ObstacleMap.hpp
     StoreState.hpp
     StoreState.cpp
     StoreObjectState.hpp
