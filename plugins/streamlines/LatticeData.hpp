@@ -102,25 +102,40 @@ public:
     /// Number of stored values.
     static constexpr IndexType SIZE = 9;
 
+    /// Direction weight for center.
+    static constexpr ValueType WEIGHT_CENTER = 4.0 / 9.0;
+
+    /// Direction weight for linear.
+    static constexpr ValueType WEIGHT_LINEAR = 1.0 / 9.0;
+
+    /// Direction weight for diagonal.
+    static constexpr ValueType WEIGHT_DIAGONAL = 1.0 / 36.0;
+
     /// Direction weights
     static constexpr StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
-        4.f / 9.f, // Center
-        1.f / 9.f, 1.f / 9.f, 1.f / 9.f, 1.f / 9.f, // Linear
-        1.f / 36.f, 1.f / 36.f, 1.f / 36.f, 1.f / 36.f // Diagonal
+        WEIGHT_CENTER, // Center
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR,
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR,
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR,
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR
     }};
 
     /// Direction velocities
     static constexpr StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
         { 0,  0},
-        { 1,  0}, { 0,  1}, {-1,  0}, { 0, -1},
-        { 1,  1}, {-1,  1}, {-1, -1}, { 1, -1}
+        {-1,  1}, {-1,  0}, {-1, -1}, { 0, -1},
+        { 1, -1}, { 1,  0}, { 1,  1}, { 0,  1}
     }};
 
     /// Direction opposites
     static constexpr StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {{
         0,
-        3, 4, 1, 2,
-        7, 8, 5, 6
+        5, 6, 7, 8,
+        1, 2, 3, 4
     }};
 
 

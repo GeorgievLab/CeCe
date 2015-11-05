@@ -45,28 +45,28 @@ namespace {
 /* ************************************************************************ */
 
 constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> CENTER_LINE{{
-    {{0, 2, 4}},
-    {{0, 2, 4}},
-    {{0, 1, 3}},
-    {{0, 1, 3}}
+    {{0, 8, 4}},
+    {{0, 8, 4}},
+    {{0, 6, 2}},
+    {{0, 6, 2}}
 }};
 
 /* ************************************************************************ */
 
 constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> NEXT_LINE{{
-    {{1, 5, 8}},
-    {{3, 6, 7}},
-    {{2, 5, 6}},
-    {{4, 7, 8}}
+    {{6, 7, 5}},
+    {{2, 1, 3}},
+    {{8, 7, 1}},
+    {{4, 3, 5}}
 }};
 
 /* ************************************************************************ */
 
 constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> PREV_LINE{{
-    {{3, 6, 7}},
-    {{1, 5, 8}},
-    {{4, 7, 8}},
-    {{2, 5, 6}}
+    {{2, 1, 3}},
+    {{6, 7, 5}},
+    {{4, 3, 5}},
+    {{8, 7, 1}}
 }};
 
 /* ************************************************************************ */
@@ -238,21 +238,39 @@ void LatticeData::microscopicBc(Direction dir, const Vector<ValueType>& vel, Val
     const auto& index3 = INDICES3[dir];
 
     // First fix
-    m_values[index1[0]] = m_values[index1[1]] - RealType(2) / RealType(3) * rho * velDir;
+    // fIn(2,in,col) = fIn(4,in,col) + 2/3*rho(:,in,col).*ux(:,in,col);
+    m_values[1] = m_values[3] - RealType(2) / RealType(3) * rho * vel.getX();
+//    m_values[index1[0]] = m_values[index1[1]] - RealType(2) / RealType(3) * rho * velDir;
 
     // Second fix
-    m_values[index2[0]] = m_values[index2[1]]
-        + RealType(1) / RealType(2) * (m_values[index2[2]] - m_values[index2[3]])
-        + RealType(1) / RealType(2) * rho * velOrt
-        + RealType(1) / RealType(6) * rho * velDir
+    // fIn(6,in,col) = fIn(8,in,col) + 1/2*(fIn(5,in,col)-fIn(3,in,col)) ...
+    //                               + 1/2*rho(:,in,col).*uy(:,in,col) ...
+    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
+    m_values[5] = m_values[7]
+        + RealType(1) / RealType(2) * (m_values[4] - m_values[2])
+        + RealType(1) / RealType(2) * rho * vel.getY()
+        + RealType(1) / RealType(6) * rho * vel.getX()
     ;
+//    m_values[index2[0]] = m_values[index2[1]]
+//        + RealType(1) / RealType(2) * (m_values[index2[2]] - m_values[index2[3]])
+//        + RealType(1) / RealType(2) * rho * velOrt
+//        + RealType(1) / RealType(6) * rho * velDir
+//    ;
 
     // Third fix
-    m_values[index3[0]] = m_values[index3[1]]
-        + RealType(1) / RealType(2) * (m_values[index3[2]] - m_values[index3[3]])
-        + RealType(1) / RealType(2) * rho * MULTIPLICATOR_ORT[dir] * velOrt
-        + RealType(1) / RealType(6) * rho * velDir
+    // fIn(9,in,col) = fIn(7,in,col) + 1/2*(fIn(3,in,col)-fIn(5,in,col)) ...
+    //                               - 1/2*rho(:,in,col).*uy(:,in,col) ...
+    //                               + 1/6*rho(:,in,col).*ux(:,in,col);
+    m_values[8] = m_values[6]
+        + RealType(1) / RealType(2) * (m_values[2] - m_values[4])
+        - RealType(1) / RealType(2) * rho * vel.getY()
+        + RealType(1) / RealType(6) * rho * vel.getX()
     ;
+//    m_values[index3[0]] = m_values[index3[1]]
+//        + RealType(1) / RealType(2) * (m_values[index3[2]] - m_values[index3[3]])
+//        + RealType(1) / RealType(2) * rho * MULTIPLICATOR_ORT[dir] * velOrt
+//        + RealType(1) / RealType(6) * rho * velDir
+//    ;
 #endif
 }
 

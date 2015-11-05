@@ -39,46 +39,86 @@ namespace streamlines {
 void Lattice::setSize(Size size)
 {
     // Data requires 1 cell margin
-    m_dataFront.resize(size + 2);
-    m_dataBack.resize(size + 2);
+    //m_data.resize(size + 2);
+    m_data.resize(size);
 }
 
 /* ************************************************************************ */
 
 void Lattice::collide(LatticeData::ValueType omega)
 {
+    constexpr LatticeData::IndexType half = (LatticeData::SIZE - 1) / 2;
+
     for (auto&& c : range(getSize()))
-        get(c).collide(omega);
+    {
+        auto& cell = get(c);
+        cell.collide(omega);
+
+        for (LatticeData::IndexType i = 1; i < half; ++i)
+        {
+            using std::swap;
+            swap(cell[i], cell[i + half]);
+        }
+    }
 }
 
 /* ************************************************************************ */
 
-void Lattice::propagate()
+void Lattice::stream()
 {
-    // Clear result grid
-    for (auto& cell : m_dataBack)
-        cell.clear();
+    constexpr LatticeData::IndexType half = (LatticeData::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
-        for (LatticeData::IndexType i = 0; i < LatticeData::SIZE; ++i)
+        for (LatticeData::IndexType i = 1; i < half; ++i)
         {
             // Calculate new coordinates
-            Vector<LatticeData::IndexType> newCoord = c + LatticeData::DIRECTION_VELOCITIES[i];
-            getBack(newCoord)[i] = getFront(c)[i];
+            const Vector<LatticeData::IndexType> newCoord = c + LatticeData::DIRECTION_VELOCITIES[i];
+
+            // Swap
+            if (inRange(newCoord))
+            {
+                using std::swap;
+                swap(get(c)[i + half], get(newCoord)[i]);
+            }
         }
-
-        getBack(c).setType(getFront(c).getType());
     }
+}
 
-    std::swap(m_dataFront, m_dataBack);
+/* ************************************************************************ */
+
+void Lattice::collideAndStream(LatticeData::ValueType omega)
+{
+    constexpr LatticeData::IndexType half = (LatticeData::SIZE - 1) / 2;
+
+    for (auto&& c : range(getSize()))
+    {
+        auto& cell = get(c);
+        cell.collide(omega);
+
+        for (LatticeData::IndexType i = 1; i < half; ++i)
+        {
+            // Calculate new coordinates
+            const Vector<LatticeData::IndexType> newCoord = c + LatticeData::DIRECTION_VELOCITIES[i];
+
+            if (inRange(newCoord))
+            {
+                auto& cellNext = get(newCoord);
+
+                const auto tmp = cell[i];
+                cell[i] = cell[i + half];
+                cell[i + half] = cellNext[i];
+                cellNext[i] = tmp;
+            }
+        }
+    }
 }
 
 /* ************************************************************************ */
 
 void Lattice::setType(LatticeData::Type type)
 {
-    for (auto& cell : m_dataFront)
+    for (auto& cell : m_data)
         cell.setType(type);
 }
 
@@ -89,8 +129,12 @@ void Lattice::fixupObstacles(LatticeData::Type type) noexcept
     using Offset = Vector<typename std::make_signed<LatticeData::IndexType>::type>;
 
     // Foreach all cells
-    for (auto&& c : range(getSize()))
+    //for (auto&& c : range(Size{1, 1}, getSize() - Size{1, 1}))
+    for (LatticeData::IndexType y = 1; y < getSize().getY() - 1; ++y)
+    for (LatticeData::IndexType x = 1; x < getSize().getX() - 1; ++x)
     {
+        CoordinateType c{x, y};
+
         if (get(c).getType() != type)
             continue;
 

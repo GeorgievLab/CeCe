@@ -165,7 +165,7 @@ void Module::init(simulator::Simulation& simulation)
     // Initialization iterations
     for (auto it = getInitIterations(); it--; )
     {
-        m_lattice.collideAndPropagate(omega);
+        m_lattice.collideAndStream(omega);
 
         // Apply boundary conditions
         applyBoundaryConditions(simulation, vMax);
@@ -226,7 +226,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     // Collide and propagate
     for (auto it = getInnerIterations(); it--; )
     {
-        m_lattice.collideAndPropagate(omega);
+        m_lattice.collideAndStream(omega);
 
         // Apply boundary conditions
         applyBoundaryConditions(simulation, vMax);
