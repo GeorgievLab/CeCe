@@ -397,7 +397,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
             m_drawableObstacles->set(c, color);
 
-            if (cell.isObstacle())
+            if (cell.isObstacle() || cell.getType() == LatticeData::Type::None)
             {
                 velocities[c] = Zero;
             }
