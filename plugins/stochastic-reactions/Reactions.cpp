@@ -35,6 +35,7 @@ namespace stochastic_reactions {
 void Reactions::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step)
 {
     auto& cell = object.castThrow<cell::CellBase>();
+    // TODO:
     auto diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
@@ -93,7 +94,7 @@ void Reactions::executeRules(unsigned int index, const Context& pointers)
 
         if (!change && !env_change)
             return;
-
+    // TODO:
         if (change)
             pointers.cell.changeMoleculeCount(moleculeName, change);
 
@@ -172,6 +173,7 @@ PropensityType Reactions::computePropensity(const unsigned int index, const Cont
 void Reactions::initializePropensities(const Context& pointers)
 {
     m_propensities.clear();
+    m_propensities.reserve(m_reactions.size());
     for (unsigned int i = 0; i < m_reactions.size(); i++)
     {
         m_propensities.push_back(computePropensity(i, pointers));

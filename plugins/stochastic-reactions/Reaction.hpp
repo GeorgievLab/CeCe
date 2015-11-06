@@ -27,10 +27,11 @@
 
 /* ************************************************************************ */
 
+#include "core/Units.hpp"
+
 #include "Types.hpp"
 #include "Context.hpp"
-#include "RealFunction.hpp"
-#include "BooleanFunction.hpp"
+#include "Function.hpp"
 
 /* ************************************************************************ */
 
@@ -67,48 +68,55 @@ public:
 // Private variables
 private:
 
-    RealFunction m_rate;
-    BooleanFunction m_condition;
+    Function<RealType> m_rate;
+    Function<bool> m_condition;
     DynamicArray<ReqProd> m_rules;
+
+public:
+
+    Reaction(const Function<bool>& condition, const DynamicArray<ReqProd>& rules, const Function<RealType>& rate):
+    m_rate(rate), m_condition(condition), m_rules(rules)
+    {
+        // Nothing to do.
+    }
 
 // Public Accessors
 public:
 
-    inline bool evaluateCondition(const Context& pointers) const noexcept
+    inline bool evaluateCondition(const Context& pointers) const
     {
         return m_condition.evaluate(pointers);
     }
 
-    inline RateType evaluateRate(const Context& pointers) const noexcept
+    inline RateType evaluateRate(const Context& pointers) const
     {
         return m_rate.evaluate(pointers);
     }
 
-    inline unsigned int getRequirement(unsigned int index) const
+    inline unsigned int getRequirement(unsigned int index) const noexcept
     {
         return m_rules[index].requirement;
     }
 
-    inline unsigned int getEnvRequirement(unsigned int index) const
+    inline unsigned int getEnvRequirement(unsigned int index) const noexcept
     {
         return m_rules[index].env_requirement;
     }
 
-    inline unsigned int getProduct(unsigned int index) const
+    inline unsigned int getProduct(unsigned int index) const noexcept
     {
         return m_rules[index].product;
     }
 
-    inline unsigned int getEnvProduct(unsigned int index) const
+    inline unsigned int getEnvProduct(unsigned int index) const noexcept
     {
         return m_rules[index].env_product;
     }
 
-    inline void resize (unsigned int size)
+    inline void resize (unsigned int size) noexcept
     {
         m_rules.resize(size);
     }
-
 };
 
 /* ************************************************************************ */

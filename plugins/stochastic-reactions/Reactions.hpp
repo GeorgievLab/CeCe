@@ -46,8 +46,7 @@
 #include "Types.hpp"
 #include "Context.hpp"
 #include "Reaction.hpp"
-#include "RealFunction.hpp"
-#include "BooleanFunction.hpp"
+#include "Function.hpp"
 
 /* ************************************************************************ */
 

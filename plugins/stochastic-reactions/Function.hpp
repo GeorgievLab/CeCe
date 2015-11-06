@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 #include "core/UniquePtr.hpp"
+#include "core/SharedPtr.hpp"
 
 #include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
@@ -42,45 +43,108 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-class RealFunction
+template <typename Mode>
+class Function
 {
-
 // Public structures:
 public:
 
-    struct Value
+    template <typename Return>
+    struct Node
     {
-        String m_name;
-        unsigned int m_constant;
-
-        virtual float get(const Context& pointers);
+        virtual Return eval(const Context& pointers) const = 0;
     };
 
-    struct Operator
+    template<typename OperatorType>
+    struct Operator : public Node<typename OperatorType::result_type>
     {
-        virtual float eval(const Context& pointers);
+        UniquePtr<Node<typename OperatorType::first_argument_type>> left;
+        UniquePtr<Node<typename OperatorType::second_argument_type>> right;
+
+        typename OperatorType::result_type eval(const Context& pointers) const
+        {
+            return OperatorType{}(left->eval(pointers), right->eval(pointers));
+        }
+    };
+
+    struct IdentifierCell : public Node<RealType>
+    {
+        String identifier;
+
+        RealType eval(const Context& pointers) const override
+        {
+            return pointers.cell.getMoleculeCount(identifier);
+        }
+    };
+
+    struct IdentifierEnv : public Node<RealType>
+    {
+        String identifier;
+
+        RealType eval(const Context& pointers) const override
+        {
+            const auto id = pointers.diffusion->getSignalId(identifier);
+            if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
+            {
+                return getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
+            }
+            return 0;
+        }
+    };
+
+    struct Amount : public Node<RealType>
+    {
+        RealType amount;
+
+        RealType eval(const Context& pointers) const override
+        {
+            return amount;
+        }
+    };
+
+    struct Parameter : public Node<RealType>
+    {
+        String identifier;
+
+        RealType eval(const Context& pointers) const override
+        {
+            // TODO:
+            return 0;
+        }
+    };
+
+    template <typename ReturnType>
+    struct InnerFunction : public Node<ReturnType>
+    {
+        Function<ReturnType> function;
+
+        ReturnType get(const Context& pointers) const override
+        {
+            return function.evaluate(pointers);
+        }
     };
 
 // Private variables
 private:
 
-    UniquePtr<Operator> m_root;
+    SharedPtr<Node<Mode>> m_root;
+
+// Public contructors
+public:
+
+    explicit Function<Mode>(UniquePtr<Node<Mode>> root)
+    {
+        m_root = std::move(root);
+    }
+
+    Function<Mode>() = default;
 
 // Public functions
 public:
 
-    RateType evaluate(const Context& pointers) const
+   Mode evaluate(const Context& pointers) const
     {
         return m_root->eval(pointers);
-    }
-
-// Public constructor
-public:
-
-    RealFunction(Operator* node):
-    m_root(node)
-    {
-        // Nothing to do.
     }
 };
 

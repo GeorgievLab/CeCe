@@ -33,8 +33,7 @@ set(SRCS
     ReactionsParser.hpp
     ReactionsParser.cpp
     Context.hpp
-    RealFunction.hpp
-    BooleanFunction.hpp
+    Function.hpp
     Diffusion.hpp
     Diffusion.cpp
 )

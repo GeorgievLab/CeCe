@@ -319,29 +319,48 @@ public:
     Reactions parse()
     {
         Reactions reactions;
+
+        parseGlobals(reactions);
+
         while (!is(TokenCode::Invalid))
         {
-            parseReactions(reactions);
+            parseReaction(reactions);
         }
         return reactions;
     }
 
 /* ************************************************************************ */
-    void parseReactions(Reactions& reactions)
+    void parseReaction(Reactions& reactions)
     {
-        Reaction reaction;
         // parse conditions
-        parseConditions(reaction);
+        auto condition = parseConditions();
         // parse LS
         auto ids_minus = parseList();
+        // check reversible reaction
+        bool reversible = false;
+        auto revRate = ;
+        if (match(TokenCode::ArrowBack, TokenCode::Less))
+        {
+            reversible = true;
+            auto revRate = parseRate();
+            requireNext(TokenCode::Comma);
+        }
         // parse rate
-        parseRate(reaction);
+        auto rate = parseRate();
+        requireNext(TokenCode::ArrowFwrd, TokenCode::Greater);
         //parse RS
         auto ids_plus = parseList();
+        // expected end of reaction
         requireNext(TokenCode::Semicolon);
         // extending
-        makeRules(reaction, ids_plus, ids_minus);
-        reactions.extend(reaction);
+        auto rules = makeRules(ids_plus, ids_minus);
+        reactions.extend(std::move(Reaction(condition, rate, rules)));
+        // extending reversible
+        if (reversible)
+        {
+            auto revRules = makeRules(ids_minus, ids_plus);
+            reactions.extend(std::move(Reaction(condition, revRate, revRules)));
+        }
     }
 
 /* *********************************************************************** */
@@ -358,119 +377,47 @@ protected:
     using ParentType::find;
 
 /* ************************************************************************ */
+
+    void parseGlobals(Reactions& reactions)
+    {
+
+    }
+
+    using NodeBool = Function<bool>::Node<bool>;
+
     /**
      * @brief Parse conditions for conditional reactions.
      *
      * @return tuple - conditions
      */
-    void parseConditions(Reaction& reaction)
+    Function<bool> parseConditions()
     {
-    return;
-        DynamicArray<int> array;
-        if (!is(TokenCode::If))
-            return array;
+        if (!match(TokenCode::If))
+            return {};
 
-        bool clone = false;
-        do
-        {
-            do
-            {
-                next();
-                String name;
-                RealType requirement = 1.0;
-                bool neg = false;
-                bool less = false;
-                if (is(TokenCode::Not))
-                {
-                    neg = true;
-                    next();
-                }
-                if (is(TokenCode::Identifier))
-                {
-                    name = token().value;
-                    next();
-                }
-                else
-                    throw MissingIdentifierException{};
-
-                if (is(TokenCode::Less))
-                {
-                    requirement = parseConditionValueRate();
-
-                    if (requirement == 0)
-                        throw InvalidArgumentException("Requirement cannot be zero");
-
-                    less = true;
-                }
-                else if (is(TokenCode::Greater))
-                {
-                    requirement = parseConditionValueRate();
-                }
-
-                if ((neg && !less) || (!neg && less))
-                    requirement -= 1.0;
-
-                array.push_back({name, requirement, clone, neg});
-                clone = false;
-            }
-            while (is(TokenCode::And));
-            clone = true;
-        }
-        while (is(TokenCode::Or));
-
+        auto ptr = parseOr();
         requireNext(TokenCode::Colon);
-
-        return array;
+        return Function<bool>(std::move(ptr));
     }
 
-
-    /**
-     * @brief Parse condition value.
-     *
-     * @return
-     */
-    RateType parseConditionValueRate()
+    UniquePtr<NodeBool> parseOr()
     {
-        // Alias to tokenizer range.
-        const auto& tokenizerRange = getTokenizer().getRange();
+        UniquePtr<NodeBool> first = parseAnd();
+        if (!match(TokenCode::Or))
+            return first;
 
-        // Store rate begin
-        auto begin = tokenizerRange.begin();
-
-        // Last token was the one before value
-        next();
-        // Find arrow or semicolon
-        find(TokenCode::Colon, TokenCode::And, TokenCode::Or);
-
-        // Get position before token.
-        auto end = tokenizerRange.begin() - token().value.size();
-        return parseExpression(makeRange(begin, end), m_parameters);
+        UniquePtr<NodeBool> second = parseAnd();
+        return Function<bool>::Operator<std::logical_or>(first, second);
     }
 
-/* ************************************************************************ */
-    /**
-     * @brief Parse rate expression for reversible reaction.
-     *
-     * @return
-     */
-    RateType parseRateReversible()
+    UniquePtr<NodeBool> parseAnd()
     {
-        // Alias to tokenizer range.
-        const auto& tokenizerRange = getTokenizer().getRange();
 
-        // Store rate begin
-        auto begin = tokenizerRange.begin();
+    }
 
-        next();
-        find(TokenCode::Comma, TokenCode::Semicolon);
+    DynamicArray<Reaction::ReqProd> makeRules(DynamicArray<String> ids_plus, DynamicArray<String> ids_minus)
+    {
 
-        if (!is(TokenCode::Comma))
-            throw MissingArrowException();
-
-        auto end = tokenizerRange.begin() - 1;
-        auto rate = parseExpression(makeRange(begin, end), m_parameters);
-        //next();
-        return rate;
     }
 
 /* ************************************************************************ */
@@ -479,7 +426,7 @@ protected:
      *
      * @return
      */
-    RateType parseRate()
+    UniquePtr<RealFunction::Operator> parseRate()
     {
         // Alias to tokenizer range.
         const auto& tokenizerRange = getTokenizer().getRange();
