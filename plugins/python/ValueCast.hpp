@@ -32,6 +32,7 @@
 
 // Simulator
 #include "core/Units.hpp"
+#include "core/ViewPtr.hpp"
 #include "core/String.hpp"
 #include "core/StringView.hpp"
 
@@ -287,8 +288,7 @@ struct ValueCast
         if (!value)
             throw InvalidArgumentException("NULL PyObject");
 
-        auto type = findType(typeid(T));
-        assert(PyObject_TypeCheck(value, type));
+        assert(PyObject_TypeCheck(value, findType(typeid(T))));
 
         // Cast to wrapper type
         ObjectWrapper<T>* obj = reinterpret_cast<ObjectWrapper<T>*>(value.get());
@@ -542,6 +542,56 @@ struct ValueCast<units::Unit<Nom, Denom>> : public ValueCast<units::Value>
     static units::Unit<Nom, Denom> convert(View<PyObject> value) noexcept
     {
         return units::Unit<Nom, Denom>(ValueCast<units::Value>::convert(value));
+    }
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Value cast for enums.
+ *
+ * @tparam T Enum type.
+ */
+template<typename T>
+struct ValueCast<ViewPtr<T>>
+{
+
+    /**
+     * @brief Check if python object can be converted into boolean type.
+     *
+     * @param value Python object.
+     *
+     * @return If object can be converted.
+     */
+    static bool check(View<PyObject> value) noexcept
+    {
+        return ValueCast<T*>::check(value);
+    }
+
+
+    /**
+     * @brief Convert value into python object.
+     *
+     * @param value Value to convert.
+     *
+     * @return New python object.
+     */
+    static Handle<PyObject> convert(ViewPtr<T> value) noexcept
+    {
+        return ValueCast<T*>::convert(value.get());
+    }
+
+
+    /**
+     * @brief Convert python object into string value.
+     *
+     * @param value Python object view.
+     *
+     * @return Boolean value.
+     */
+    static ViewPtr<T> convert(View<PyObject> value) noexcept
+    {
+        return ValueCast<T*>::convert(value);
     }
 };
 
