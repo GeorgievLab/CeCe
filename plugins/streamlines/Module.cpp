@@ -120,8 +120,8 @@ units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
     Assert(pos < size);
     Assert(size > 1);
 
-    const RealType posF = static_cast<RealType>(pos) - 1.0;
-    const RealType sizeF = static_cast<RealType>(size) - 1.0;
+    const RealType posF = static_cast<RealType>(pos);
+    const RealType sizeF = static_cast<RealType>(size);
     return 4.f * max / (sizeF * sizeF) * (sizeF * posF - posF * posF);
 }
 
@@ -241,7 +241,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         for (auto&& c : range(m_lattice.getSize()))
         {
             const auto& data = m_lattice[c];
-            const auto vel = vMax * data.calcVelocity();
+            const auto vel = vMax * data.calcVelocityNormalized();
 
             *m_dataOut <<
                 // iteration
@@ -676,7 +676,7 @@ VelocityVector Module::inletVelocityProfile(
     DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets
 ) const noexcept
 {
-    //return {getVelocityInflow().getX(), Zero};
+    //return {getInletVelocities()[pos], Zero};
 
     StaticArray<Lattice::CoordinateType, 2> inletRange{{Zero, Zero}};
     bool found = false;
@@ -849,7 +849,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
 
     Vector<Lattice::SizeType> rngMin;
     Vector<Lattice::SizeType> rngMax;
-    LatticeData::Direction dir;
+    LatticeData::Direction dirIn;
+    LatticeData::Direction dirOut;
 
     // Detect multiple inlets at the layout position
     DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets;
@@ -859,7 +860,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosTop:
         rngMin = {0, size.getHeight() - 1};
         rngMax = {size.getWidth(), size.getHeight()};
-        dir = LatticeData::DirDown;
+        dirIn = LatticeData::DirDown;
+        dirOut = LatticeData::DirUp;
 
         for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
         {
@@ -888,7 +890,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosBottom:
         rngMin = {0, 0};
         rngMax = {size.getWidth(), 1};
-        dir = LatticeData::DirUp;
+        dirIn = LatticeData::DirUp;
+        dirOut = LatticeData::DirDown;
 
         for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
         {
@@ -917,7 +920,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosRight:
         rngMin = {size.getWidth() - 1, 0};
         rngMax = {size.getWidth(), size.getHeight()};
-        dir = LatticeData::DirLeft;
+        dirIn = LatticeData::DirLeft;
+        dirOut = LatticeData::DirRight;
 
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
         {
@@ -946,7 +950,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosLeft:
         rngMin = {0, 0};
         rngMax = {1, size.getHeight()};
-        dir = LatticeData::DirRight;
+        dirIn = LatticeData::DirRight;
+        dirOut = LatticeData::DirLeft;
 
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
         {
@@ -981,7 +986,7 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
             for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
                 if (!m_lattice[{x, y}].isObstacle())
-                    m_lattice[{x, y}].outlet(dir);
+                    m_lattice[{x, y}].outlet(dirOut);
     }
     else if (m_layout[pos] == LayoutType::Inlet)
     {
@@ -990,7 +995,7 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
             for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
             {
                 if (!m_lattice[{x, y}].isObstacle())
-                    m_lattice[{x, y}].inlet(inletVelocityProfile({x, y}, pos, inlets) / vMax, dir);
+                    m_lattice[{x, y}].inlet(inletVelocityProfile({x, y}, pos, inlets) / vMax, dirIn);
             }
         }
     }
