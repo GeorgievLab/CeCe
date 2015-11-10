@@ -91,36 +91,59 @@ public:
     /// Direction index type.
     using IndexType = unsigned int;
 
+    /// Velocity type.
+    using VelocityType = Vector<ValueType>;
+
 
 // Public Constants
 public:
 
 
     /// Maximum speed in lattice.
-    static constexpr ValueType MAX_SPEED = 0.5f;
+    static constexpr ValueType MAX_SPEED = 0.5;
 
     /// Number of stored values.
     static constexpr IndexType SIZE = 9;
 
+    /// Direction index map.
+    static constexpr StaticArray<StaticArray<IndexType, 3>, 3> INDEX_MAP{{
+        {{1, 8, 7}},
+        {{2, 0, 6}},
+        {{3, 4, 5}}
+    }};
+
+    /// Direction weight for center.
+    static constexpr ValueType WEIGHT_CENTER = 4.0 / 9.0;
+
+    /// Direction weight for linear.
+    static constexpr ValueType WEIGHT_LINEAR = 1.0 / 9.0;
+
+    /// Direction weight for diagonal.
+    static constexpr ValueType WEIGHT_DIAGONAL = 1.0 / 36.0;
+
     /// Direction weights
     static constexpr StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
-        4.f / 9.f, // Center
-        1.f / 9.f, 1.f / 9.f, 1.f / 9.f, 1.f / 9.f, // Linear
-        1.f / 36.f, 1.f / 36.f, 1.f / 36.f, 1.f / 36.f // Diagonal
+        WEIGHT_CENTER, // Center
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR,
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR,
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR,
+        WEIGHT_DIAGONAL,
+        WEIGHT_LINEAR
     }};
 
     /// Direction velocities
     static constexpr StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
         { 0,  0},
-        { 1,  0}, { 0,  1}, {-1,  0}, { 0, -1},
-        { 1,  1}, {-1,  1}, {-1, -1}, { 1, -1}
+        {-1,  1}, {-1,  0}, {-1, -1}, { 0, -1}, { 1, -1}, { 1,  0}, { 1,  1}, { 0,  1}
     }};
 
     /// Direction opposites
     static constexpr StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {{
         0,
-        3, 4, 1, 2,
-        7, 8, 5, 6
+        5, 6, 7, 8, 1, 2, 3, 4
     }};
 
 
@@ -134,7 +157,7 @@ public:
      * @param velocity Initial velocity.
      * @param rho      Initial density.
      */
-    LatticeData(const Vector<ValueType>& velocity = Zero, ValueType rho = 1.f)
+    LatticeData(const VelocityType& velocity = Zero, ValueType rho = 1.f)
     {
         init(velocity, rho);
     }
@@ -335,7 +358,7 @@ public:
      * @param flag If cell is dynamic obstacle.
      * @param u    Obstacle velocity.
      */
-    void setDynamicObstacle(Vector<ValueType> u = Zero) noexcept
+    void setDynamicObstacle(VelocityType u = Zero) noexcept
     {
         setType(Type::DynamicObstacle);
         m_dynamicObstacleVelocity = std::move(u);
@@ -348,7 +371,7 @@ public:
      * @param v   Inlet velocity.
      * @param dir Direction.
      */
-    void inlet(const Vector<ValueType>& v, Direction dir = DirRight) noexcept;
+    void inlet(const VelocityType& v, Direction dir = DirRight) noexcept;
 
 
     /**
@@ -428,14 +451,14 @@ public:
      *
      * @return
      */
-    Vector<ValueType> calcVelocity() const noexcept
+    VelocityType calcVelocity() const noexcept
     {
         if (isDummy())
             return {};
 
-        return Vector<ValueType>{
-            sumValues({1, 5, 8}) - sumValues({3, 6, 7}),
-            sumValues({2, 5, 6}) - sumValues({4, 7, 8})
+        return VelocityType{
+            sumValues({6, 7, 5}) - sumValues({2, 1, 3}),
+            sumValues({8, 7, 1}) - sumValues({4, 3, 5})
         };
     }
 
@@ -445,7 +468,7 @@ public:
      *
      * @return
      */
-    Vector<ValueType> calcVelocityNormalized() const noexcept
+    VelocityType calcVelocityNormalized() const noexcept
     {
         if (isDummy())
             return {};
@@ -455,7 +478,7 @@ public:
         // Return empty vector
         // TODO: can happend?
         if (rho == 0)
-            return Vector<ValueType>{};
+            return VelocityType{};
 
         return calcVelocity() / rho;
     }
@@ -467,7 +490,7 @@ public:
      * @param velocity
      * @param rho
      */
-    void init(const Vector<ValueType>& velocity, ValueType rho = 1.f)
+    void init(const VelocityType& velocity, ValueType rho = 1.f)
     {
         m_values = calcEquilibrium(velocity, rho);
     }
@@ -506,24 +529,59 @@ public:
 
 
     /**
-     * @brief Microscopic boundary conditions (Zou/He).
+     * @brief Calculate equilibrum value.
      *
-     * @param dir Direction.
-     * @param vel Velocity.
-     * @param rho Density.
+     * @param i
+     * @param velocity Velocity vector.
+     * @param uSq      Squared velocity vector length.
+     * @param rho      Total density.
+     *
+     * @return
      */
-    void microscopicBc(Direction dir, const Vector<ValueType>& vel, ValueType rho) noexcept;
+    static ValueType calcEquilibrium(IndexType i, const VelocityType& velocity, ValueType uSq, ValueType rho) noexcept;
 
 
     /**
      * @brief Calculate equilibrum values.
      *
-     * @param u   Velocity vector.
-     * @param rho Total density.
+     * @param velocity Velocity vector.
+     * @param rho      Total density.
      *
      * @return
      */
-    static StaticArray<ValueType, SIZE> calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept;
+    static StaticArray<ValueType, SIZE> calcEquilibrium(const VelocityType& velocity, ValueType rho) noexcept;
+
+
+    /**
+     * @brief Calculate density for specified velocity.
+     *
+     * @param dir
+     * @param velocity
+     *
+     * @return
+     */
+    ValueType fixVelocity(Direction dir, const VelocityType& velocity) const noexcept;
+
+
+    /**
+     * @brief Calculate density for specified density.
+     *
+     * @param dir
+     * @param rho
+     *
+     * @return
+     */
+    VelocityType fixDensity(Direction dir, ValueType rho) const noexcept;
+
+
+    /**
+     * @brief Fix boundary conditions.
+     *
+     * @param dir
+     * @param velocity
+     * @param rho
+     */
+    void fixBc(Direction dir, const VelocityType& velocity, ValueType rho) noexcept;
 
 
 // Private Data Members
@@ -536,7 +594,8 @@ public:
     StaticArray<ValueType, SIZE> m_values;
 
     // Velocity of dynamic obstacle.
-    Vector<ValueType> m_dynamicObstacleVelocity = Zero;
+    VelocityType m_dynamicObstacleVelocity = Zero;
+
 };
 
 /* ************************************************************************ */

@@ -27,10 +27,10 @@
 #include "LatticeData.hpp"
 
 // C++
-#include <cassert>
 #include <cstdlib>
 
 // Simulator
+#include "core/Assert.hpp"
 #include "core/StaticArray.hpp"
 
 /* ************************************************************************ */
@@ -44,40 +44,83 @@ namespace {
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> CENTER_LINE{{
-    {{0, 2, 4}},
-    {{0, 2, 4}},
-    {{0, 1, 3}},
-    {{0, 1, 3}}
+constexpr StaticArray<LatticeData::IndexType, 3> TOP_LINE      {{1, 8, 7}};
+constexpr StaticArray<LatticeData::IndexType, 3> MIDDLE_LINE   {{2, 0, 6}};
+constexpr StaticArray<LatticeData::IndexType, 3> BOTTOM_LINE   {{3, 4, 5}};
+constexpr StaticArray<LatticeData::IndexType, 3> LEFT_COLUMN   {{1, 2, 3}};
+constexpr StaticArray<LatticeData::IndexType, 3> MIDDLE_COLUMN {{8, 0, 4}};
+constexpr StaticArray<LatticeData::IndexType, 3> RIGHT_COLUMN  {{7, 6, 5}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> CENTER_RHO{{
+    MIDDLE_COLUMN, // DirRight
+    MIDDLE_COLUMN, // DirLeft
+    MIDDLE_LINE,   // DirUp
+    MIDDLE_LINE    // DirDown
 }};
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> NEXT_LINE{{
-    {{1, 5, 8}},
-    {{3, 6, 7}},
-    {{2, 5, 6}},
-    {{4, 7, 8}}
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> KNOWN_RHO{{
+    LEFT_COLUMN,  // DirRight
+    RIGHT_COLUMN, // DirLeft
+    BOTTOM_LINE,  // DirUp
+    TOP_LINE      // DirDown
 }};
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> PREV_LINE{{
-    {{3, 6, 7}},
-    {{1, 5, 8}},
-    {{4, 7, 8}},
-    {{2, 5, 6}}
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> UNKNOWN_RHO{{
+    RIGHT_COLUMN, // DirRight
+    LEFT_COLUMN,  // DirLeft
+    TOP_LINE,     // DirUp
+    BOTTOM_LINE   // DirDown
 }};
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Vector<LatticeData::ValueType>, LatticeData::DirCount> VELOCITIES{{
-    { 1,  0}, {-1,  0}, { 0,  1}, { 0, -1}
+constexpr StaticArray<LatticeData::VelocityType, LatticeData::DirCount> VELOCITIES{{
+    { 1,  0}, // DirRight
+    {-1,  0}, // DirLeft
+    { 0,  1}, // DirUp
+    { 0, -1}  // DirDown
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<LatticeData::IndexType, LatticeData::DirCount> BC_CENTER{{
+    6, // DirRight
+    2, // DirLeft
+    8, // DirUp
+    4  // DirDown
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> BC_SIDE1{{
+    {7, 4, 8}, // DirRight
+    {1, 4, 8}, // DirLeft
+    {7, 2, 6}, // DirUp
+    {5, 2, 6}  // DirDown
+}};
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, LatticeData::DirCount> BC_SIDE2{{
+    {5, 8, 4}, // DirRight
+    {3, 8, 4}, // DirLeft
+    {1, 6, 2}, // DirUp
+    {3, 6, 2}  // DirDown
 }};
 
 /* ************************************************************************ */
 
 }
+
+/* ************************************************************************ */
+
+constexpr StaticArray<StaticArray<LatticeData::IndexType, 3>, 3> LatticeData::INDEX_MAP;
 
 /* ************************************************************************ */
 
@@ -93,21 +136,17 @@ constexpr StaticArray<LatticeData::IndexType, LatticeData::SIZE> LatticeData::DI
 
 /* ************************************************************************ */
 
-void LatticeData::inlet(const Vector<ValueType>& v, Direction dir) noexcept
+void LatticeData::inlet(const VelocityType& velocity, Direction dir) noexcept
 {
-    // Calculate inlet density
-    const ValueType rho =
-        RealType(1)
-        / (RealType(1) - v.dot(VELOCITIES[dir]))
-        * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(PREV_LINE[dir]));
-
-    assert(rho > 0);
+    // Calculate inlet density from velocity
+    const ValueType rho = fixVelocity(dir, velocity);
+    Assert(rho > 0);
 
     // Initialize
-    init(v, rho);
+    //init(v, rho);
+    //return;
 
-    // Zou/He
-    //microscopicBc(dir, calcVelocity(), rho);
+    fixBc(dir, velocity, rho);
 }
 
 /* ************************************************************************ */
@@ -116,20 +155,23 @@ void LatticeData::outlet(Direction dir) noexcept
 {
     constexpr ValueType rho = 1.0;
 
-    // Speed
-    const auto speed =
-        (-RealType(1) + RealType(1) / calcRho()
-        * (sumValues(CENTER_LINE[dir]) + 2 * sumValues(NEXT_LINE[dir]))
-    );
-
     // Velocity vector
-    const Vector<ValueType> vel = speed * VELOCITIES[dir];
+    const auto vel = fixDensity(dir, rho);
 
     // Init
     init(vel, rho);
+    return;
+    //fixBc(dir, vel, rho);
+    //return;
 
-    // Zou/He
-    //microscopicBc(dir, vel, rho);
+    switch (dir)
+    {
+    case Direction::DirRight:   fixBc(Direction::DirLeft, vel, rho); break;
+    case Direction::DirLeft:    fixBc(Direction::DirRight, vel, rho); break;
+    case Direction::DirUp:      fixBc(Direction::DirDown, vel, rho); break;
+    case Direction::DirDown:    fixBc(Direction::DirUp, vel, rho); break;
+    default: break;
+    }
 }
 
 /* ************************************************************************ */
@@ -209,63 +251,30 @@ void LatticeData::collideBgk(ValueType omega) noexcept
 
 /* ************************************************************************ */
 
-void LatticeData::microscopicBc(Direction dir, const Vector<ValueType>& vel, ValueType rho) noexcept
+LatticeData::ValueType
+LatticeData::calcEquilibrium(IndexType i, const VelocityType& velocity, ValueType uSq, ValueType rho) noexcept
 {
-    // FIXME: broken
-#if 0 // BROKEN
-    constexpr StaticArray<StaticArray<IndexType, 2>, DirCount> INDICES1{{
-        {{1, 3}}, {{3, 1}}, {{2, 4}}, {{4, 2}}
-    }};
-    constexpr StaticArray<StaticArray<IndexType, 4>, DirCount> INDICES2{{
-        {{5, 7, 4, 2}}, {{7, 5, 2, 4}}, {{5, 7, 3, 1}}, {{7, 5, 1, 3}}
-    }};
-    constexpr StaticArray<StaticArray<IndexType, 4>, DirCount> INDICES3{{
-        {{8, 6, 2, 4}}, {{6, 8, 4, 2}}, {{6, 8, 1, 3}}, {{8, 6, 3, 1}}
-    }};
-    constexpr StaticArray<Vector<ValueType>, DirCount> VELOCITIES_ORT{{
-        { 0,  1}, { 0, -1}, { 1,  0}, {-1,  0}
-    }};
-    constexpr StaticArray<LatticeData::ValueType, DirCount> MULTIPLICATOR_ORT{{
-        -1, 1, -1, 1
-    }};
+    const auto weight = DIRECTION_WEIGHTS[i];
+    const auto vu = dot(DIRECTION_VELOCITIES[i], velocity);
 
-    const auto velDir = vel.dot(VELOCITIES[dir]);
-    const auto velOrt = vel.dot(VELOCITIES_ORT[dir]);
-
-    // Alias
-    const auto& index1 = INDICES1[dir];
-    const auto& index2 = INDICES2[dir];
-    const auto& index3 = INDICES3[dir];
-
-    // First fix
-    m_values[index1[0]] = m_values[index1[1]] - RealType(2) / RealType(3) * rho * velDir;
-
-    // Second fix
-    m_values[index2[0]] = m_values[index2[1]]
-        + RealType(1) / RealType(2) * (m_values[index2[2]] - m_values[index2[3]])
-        + RealType(1) / RealType(2) * rho * velOrt
-        + RealType(1) / RealType(6) * rho * velDir
-    ;
-
-    // Third fix
-    m_values[index3[0]] = m_values[index3[1]]
-        + RealType(1) / RealType(2) * (m_values[index3[2]] - m_values[index3[3]])
-        + RealType(1) / RealType(2) * rho * MULTIPLICATOR_ORT[dir] * velOrt
-        + RealType(1) / RealType(6) * rho * velDir
-    ;
-#endif
+    return rho * weight * (
+          1.f
+        + 3.f * vu
+        + 9.f / 2.f * vu * vu
+        - 3.f / 2.f * uSq
+    );
 }
 
 /* ************************************************************************ */
 
 StaticArray<LatticeData::ValueType, LatticeData::SIZE>
-LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept
+LatticeData::calcEquilibrium(const VelocityType& velocity, ValueType rho) noexcept
 {
     static constexpr auto MAX_SPEED_SQ = MAX_SPEED * MAX_SPEED;
-    auto uCopy = u;
+    auto uCopy = velocity;
     auto uLenSq = uCopy.getLengthSquared();
 
-    assert(rho > 0);
+    Assert(rho > 0);
 
     // Check if velocity is in range
     if (uLenSq > MAX_SPEED_SQ)
@@ -279,20 +288,53 @@ LatticeData::calcEquilibrium(const Vector<ValueType>& u, ValueType rho) noexcept
 
     for (IndexType alpha = 0; alpha < SIZE; ++alpha)
     {
-        const auto weight = DIRECTION_WEIGHTS[alpha];
-        const auto velocity = DIRECTION_VELOCITIES[alpha];
-        const auto vu = dot(velocity, uCopy);
-
-        res[alpha] = rho * weight * (
-              1.f
-            + 3.f * vu
-            + 9.f / 2.f * vu * vu
-            - 3.f / 2.f * uLenSq
-        );
-        assert(res[alpha] >= 0);
+        res[alpha] = calcEquilibrium(alpha, uCopy, uLenSq, rho);
     }
 
     return res;
+}
+
+/* ************************************************************************ */
+
+LatticeData::ValueType LatticeData::fixVelocity(Direction dir, const VelocityType& velocity) const noexcept
+{
+    return
+        RealType(1) / (RealType(1) - velocity.dot(VELOCITIES[dir]))
+        * (2 * sumValues(KNOWN_RHO[dir]) + sumValues(CENTER_RHO[dir]))
+    ;
+}
+
+/* ************************************************************************ */
+
+LatticeData::VelocityType LatticeData::fixDensity(Direction dir, ValueType rho) const noexcept
+{
+    // Speed
+    const auto speed =
+        (-RealType(1) + RealType(1) / calcRho()
+        * (sumValues(CENTER_RHO[dir]) + 2 * sumValues(UNKNOWN_RHO[dir]))
+    );
+
+    // Velocity vector
+    return speed * VELOCITIES[dir];
+}
+
+/* ************************************************************************ */
+
+void LatticeData::fixBc(Direction dir, const VelocityType& velocity, ValueType rho) noexcept
+{
+    const auto center = BC_CENTER[dir];
+    const auto side1 = BC_SIDE1[dir];
+    const auto side2 = BC_SIDE2[dir];
+
+    auto eq = calcEquilibrium(velocity, rho);
+
+    m_values[center] = (eq[center] - eq[DIRECTION_OPPOSITES[center]]) + m_values[DIRECTION_OPPOSITES[center]];
+
+    m_values[side1[0]] = (eq[side1[0]] - eq[DIRECTION_OPPOSITES[side1[0]]]) + m_values[DIRECTION_OPPOSITES[side1[0]]]
+        + RealType(0.5) * (m_values[side1[1]] - m_values[side1[2]]);
+
+    m_values[side2[0]] = (eq[side2[0]] - eq[DIRECTION_OPPOSITES[side2[0]]]) + m_values[DIRECTION_OPPOSITES[side2[0]]]
+        + RealType(0.5) * (m_values[side2[1]] - m_values[side2[2]]);
 }
 
 /* ************************************************************************ */

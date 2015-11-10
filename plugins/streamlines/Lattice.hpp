@@ -123,7 +123,8 @@ public:
     Size getSize() const noexcept
     {
         // Lattice itself have 1 cell margin
-        return m_dataFront.getSize() - 2;
+        //return m_data.getSize() - 2;
+        return m_data.getSize();
     }
 
 
@@ -147,61 +148,10 @@ public:
      *
      * @return
      */
-    LatticeData& getFront(const CoordinateType& coord) noexcept
-    {
-        return m_dataFront[coord + 1];
-    }
-
-
-    /**
-     * @brief Get item from front buffer.
-     *
-     * @param coord Item coordinate.
-     *
-     * @return
-     */
-    const LatticeData& getFront(const CoordinateType& coord) const noexcept
-    {
-        return m_dataFront[coord + 1];
-    }
-
-
-    /**
-     * @brief Get item from back buffer.
-     *
-     * @param coord Item coordinate.
-     *
-     * @return
-     */
-    LatticeData& getBack(const CoordinateType& coord) noexcept
-    {
-        return m_dataBack[coord + 1];
-    }
-
-
-    /**
-     * @brief Get item from back buffer.
-     *
-     * @param coord Item coordinate.
-     *
-     * @return
-     */
-    const LatticeData& getBack(const CoordinateType& coord) const noexcept
-    {
-        return m_dataBack[coord + 1];
-    }
-
-
-    /**
-     * @brief Get item from front buffer.
-     *
-     * @param coord Item coordinate.
-     *
-     * @return
-     */
     LatticeData& get(const CoordinateType& coord) noexcept
     {
-        return getFront(coord);
+        //return m_data[coord + 1];
+        return m_data[coord];
     }
 
 
@@ -214,7 +164,8 @@ public:
      */
     const LatticeData& get(const CoordinateType& coord) const noexcept
     {
-        return getFront(coord);
+        //return m_data[coord + 1];
+        return m_data[coord];
     }
 
 
@@ -243,21 +194,17 @@ public:
 
 
     /**
-     * @brief Propagate lattice data.
+     * @brief Steam lattice data.
      */
-    void propagate();
+    void stream();
 
 
     /**
-     * @brief Call collide and propagate functions.
+     * @brief Call collide and stream functions.
      *
      * @param omega
      */
-    void collideAndPropagate(LatticeData::ValueType omega)
-    {
-        collide(omega);
-        propagate();
-    }
+    void collideAndStream(LatticeData::ValueType omega);
 
 
     /**
@@ -281,11 +228,7 @@ public:
 
 
     /// Current lattice data.
-    core::Grid<LatticeData> m_dataFront;
-
-    /// Temporaty lattice data.
-    core::Grid<LatticeData> m_dataBack;
-
+    core::Grid<LatticeData> m_data;
 };
 
 /* ************************************************************************ */
