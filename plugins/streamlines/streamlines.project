@@ -19,17 +19,17 @@
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
     <File Name="Lattice.cpp"/>
-    <File Name="LatticeData.cpp"/>
     <File Name="StoreState.cpp"/>
     <File Name="StoreObjectState.cpp"/>
     <File Name="Plugin.cpp"/>
+    <File Name="LatticeCell.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
     <File Name="Lattice.hpp"/>
-    <File Name="LatticeData.hpp"/>
     <File Name="StoreState.hpp"/>
     <File Name="StoreObjectState.hpp"/>
+    <File Name="LatticeCell.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

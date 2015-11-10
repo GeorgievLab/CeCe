@@ -35,7 +35,7 @@
 #include "simulator/Simulation.hpp"
 
 // Plugin
-#include "plugins/streamlines/LatticeData.hpp"
+#include "plugins/streamlines/Lattice.hpp"
 
 /* ************************************************************************ */
 

@@ -54,8 +54,8 @@ set(SRCS
     Module.cpp
     Lattice.hpp
     Lattice.cpp
-    LatticeData.hpp
-    LatticeData.cpp
+    LatticeCell.hpp
+    LatticeCell.cpp
     StoreState.hpp
     StoreState.cpp
     StoreObjectState.hpp

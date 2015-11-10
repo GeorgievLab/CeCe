@@ -26,6 +26,9 @@
 // Declaration
 #include "Lattice.hpp"
 
+// C++
+#include <utility>
+
 // Simulator
 #include "core/VectorRange.hpp"
 
@@ -36,25 +39,16 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-void Lattice::setSize(Size size)
+void Lattice::collide(LatticeCell::ValueType omega)
 {
-    // Data requires 1 cell margin
-    //m_data.resize(size + 2);
-    m_data.resize(size);
-}
-
-/* ************************************************************************ */
-
-void Lattice::collide(LatticeData::ValueType omega)
-{
-    constexpr LatticeData::IndexType half = (LatticeData::SIZE - 1) / 2;
+    constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
         auto& cell = get(c);
         cell.collide(omega);
 
-        for (LatticeData::IndexType i = 1; i < half; ++i)
+        for (LatticeCell::IndexType i = 1; i < half; ++i)
         {
             using std::swap;
             swap(cell[i], cell[i + half]);
@@ -66,14 +60,14 @@ void Lattice::collide(LatticeData::ValueType omega)
 
 void Lattice::stream()
 {
-    constexpr LatticeData::IndexType half = (LatticeData::SIZE - 1) / 2;
+    constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
-        for (LatticeData::IndexType i = 1; i < half; ++i)
+        for (LatticeCell::IndexType i = 1; i < half; ++i)
         {
             // Calculate new coordinates
-            const Vector<LatticeData::IndexType> newCoord = c + LatticeData::DIRECTION_VELOCITIES[i];
+            const Vector<LatticeCell::IndexType> newCoord = c + LatticeCell::DIRECTION_VELOCITIES[i];
 
             // Swap
             if (inRange(newCoord))
@@ -87,7 +81,7 @@ void Lattice::stream()
 
 /* ************************************************************************ */
 
-void Lattice::collideAndStream(LatticeData::ValueType omega)
+void Lattice::collideAndStream(LatticeCell::ValueType omega)
 {
     collide(omega);
     stream();
@@ -120,7 +114,7 @@ void Lattice::collideAndStream(LatticeData::ValueType omega)
 
 /* ************************************************************************ */
 
-void Lattice::setType(LatticeData::Type type)
+void Lattice::setType(LatticeCell::Type type)
 {
     for (auto& cell : m_data)
         cell.setType(type);
@@ -128,21 +122,21 @@ void Lattice::setType(LatticeData::Type type)
 
 /* ************************************************************************ */
 
-void Lattice::fixupObstacles(LatticeData::Type type) noexcept
+void Lattice::fixupObstacles(LatticeCell::Type type) noexcept
 {
-    using Offset = Vector<typename std::make_signed<LatticeData::IndexType>::type>;
+    using Offset = Vector<typename std::make_signed<LatticeCell::IndexType>::type>;
 
     // Foreach all cells
     //for (auto&& c : range(Size{1, 1}, getSize() - Size{1, 1}))
-    for (LatticeData::IndexType y = 1; y < getSize().getY() - 1; ++y)
-    for (LatticeData::IndexType x = 1; x < getSize().getX() - 1; ++x)
+    for (LatticeCell::IndexType y = 1; y < getSize().getY() - 1; ++y)
+    for (LatticeCell::IndexType x = 1; x < getSize().getX() - 1; ++x)
     {
         CoordinateType c{x, y};
 
         if (get(c).getType() != type)
             continue;
 
-        const LatticeData::Type types[9] = {
+        const LatticeCell::Type types[9] = {
             get(c).getType(),
             get(c + Offset{ 1,  0}).getType(),
             get(c + Offset{-1,  0}).getType(),
@@ -156,18 +150,18 @@ void Lattice::fixupObstacles(LatticeData::Type type) noexcept
 
         const bool test =
             (types[0] == type) &&
-            (types[1] == type || types[1] == LatticeData::Type::None) &&
-            (types[2] == type || types[2] == LatticeData::Type::None) &&
-            (types[3] == type || types[3] == LatticeData::Type::None) &&
-            (types[4] == type || types[4] == LatticeData::Type::None) &&
-            (types[5] == type || types[5] == LatticeData::Type::None) &&
-            (types[6] == type || types[6] == LatticeData::Type::None) &&
-            (types[7] == type || types[7] == LatticeData::Type::None) &&
-            (types[8] == type || types[8] == LatticeData::Type::None)
+            (types[1] == type || types[1] == LatticeCell::Type::None) &&
+            (types[2] == type || types[2] == LatticeCell::Type::None) &&
+            (types[3] == type || types[3] == LatticeCell::Type::None) &&
+            (types[4] == type || types[4] == LatticeCell::Type::None) &&
+            (types[5] == type || types[5] == LatticeCell::Type::None) &&
+            (types[6] == type || types[6] == LatticeCell::Type::None) &&
+            (types[7] == type || types[7] == LatticeCell::Type::None) &&
+            (types[8] == type || types[8] == LatticeCell::Type::None)
         ;
 
         if (test)
-            get(c).setType(LatticeData::Type::None);
+            get(c).setType(LatticeCell::Type::None);
     }
 }
 

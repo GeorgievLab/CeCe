@@ -27,9 +27,6 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <algorithm>
-
 // Simulator
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
@@ -37,7 +34,7 @@
 #include "core/StaticArray.hpp"
 
 // Module
-#include "LatticeData.hpp"
+#include "LatticeCell.hpp"
 
 /* ************************************************************************ */
 
@@ -60,7 +57,7 @@ public:
     /**
      * @brief Container type.
      */
-    using ContainerType = core::Grid<LatticeData>;
+    using ContainerType = core::Grid<LatticeCell>;
 
 
     /**
@@ -92,7 +89,7 @@ public:
      *
      * @return
      */
-    LatticeData& operator[](const CoordinateType& coord) noexcept
+    LatticeCell& operator[](const CoordinateType& coord) noexcept
     {
         return get(coord);
     }
@@ -105,7 +102,7 @@ public:
      *
      * @return
      */
-    const LatticeData& operator[](const CoordinateType& coord) const noexcept
+    const LatticeCell& operator[](const CoordinateType& coord) const noexcept
     {
         return get(coord);
     }
@@ -122,8 +119,6 @@ public:
      */
     Size getSize() const noexcept
     {
-        // Lattice itself have 1 cell margin
-        //return m_data.getSize() - 2;
         return m_data.getSize();
     }
 
@@ -148,9 +143,8 @@ public:
      *
      * @return
      */
-    LatticeData& get(const CoordinateType& coord) noexcept
+    LatticeCell& get(const CoordinateType& coord) noexcept
     {
-        //return m_data[coord + 1];
         return m_data[coord];
     }
 
@@ -162,9 +156,8 @@ public:
      *
      * @return
      */
-    const LatticeData& get(const CoordinateType& coord) const noexcept
+    const LatticeCell& get(const CoordinateType& coord) const noexcept
     {
-        //return m_data[coord + 1];
         return m_data[coord];
     }
 
@@ -178,7 +171,10 @@ public:
      *
      * @param size
      */
-    void setSize(Size size);
+    void setSize(Size size)
+    {
+        m_data.resize(size);
+    }
 
 
 // Public Operations
@@ -190,7 +186,7 @@ public:
      *
      * @param omega
      */
-    void collide(LatticeData::ValueType omega);
+    void collide(LatticeCell::ValueType omega);
 
 
     /**
@@ -204,7 +200,7 @@ public:
      *
      * @param omega
      */
-    void collideAndStream(LatticeData::ValueType omega);
+    void collideAndStream(LatticeCell::ValueType omega);
 
 
     /**
@@ -212,7 +208,7 @@ public:
      *
      * @param type
      */
-    void setType(LatticeData::Type type);
+    void setType(LatticeCell::Type type);
 
 
     /**
@@ -220,15 +216,15 @@ public:
      *
      * @param type
      */
-    void fixupObstacles(LatticeData::Type type) noexcept;
+    void fixupObstacles(LatticeCell::Type type) noexcept;
 
 
 // Private Data Members
 public:
 
-
     /// Current lattice data.
-    core::Grid<LatticeData> m_data;
+    core::Grid<LatticeCell> m_data;
+
 };
 
 /* ************************************************************************ */

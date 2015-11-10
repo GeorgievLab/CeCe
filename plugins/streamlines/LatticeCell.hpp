@@ -48,7 +48,7 @@ namespace streamlines {
 /**
  * @brief Class for storing lattice data.
  */
-class LatticeData
+class LatticeCell
 {
 
 
@@ -157,7 +157,7 @@ public:
      * @param velocity Initial velocity.
      * @param rho      Initial density.
      */
-    LatticeData(const VelocityType& velocity = Zero, ValueType rho = 1.f)
+    LatticeCell(const VelocityType& velocity = Zero, ValueType rho = 1.f)
     {
         init(velocity, rho);
     }
@@ -168,7 +168,7 @@ public:
      *
      * @param values
      */
-    explicit LatticeData(const StaticArray<ValueType, SIZE>& values) noexcept
+    explicit LatticeCell(const StaticArray<ValueType, SIZE>& values) noexcept
         : m_values(values)
     {
         // Nothing to do
@@ -178,13 +178,13 @@ public:
     /**
      * @brief Copy constructor.
      */
-    LatticeData(const LatticeData&) = default;
+    LatticeCell(const LatticeCell&) = default;
 
 
     /**
      * @brief Move constructor.
      */
-    LatticeData(LatticeData&&) = default;
+    LatticeCell(LatticeCell&&) = default;
 
 
 // Public Operators
@@ -224,7 +224,7 @@ public:
      *
      * @return *this.
      */
-    LatticeData& operator=(const StaticArray<ValueType, SIZE>& values) noexcept
+    LatticeCell& operator=(const StaticArray<ValueType, SIZE>& values) noexcept
     {
         m_values = values;
         return *this;
@@ -234,13 +234,13 @@ public:
     /**
      * @brief Copy assignment operator.
      */
-    LatticeData& operator=(const LatticeData&) = default;
+    LatticeCell& operator=(const LatticeCell&) = default;
 
 
     /**
      * @brief Move assignment operator.
      */
-    LatticeData& operator=(LatticeData&&) = default;
+    LatticeCell& operator=(LatticeCell&&) = default;
 
 
 // Public Accessors

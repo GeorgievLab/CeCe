@@ -362,7 +362,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
         m_drawableObstacles.create(context, size);
 
     // Temporary for velocities
-    Grid<Vector<LatticeData::ValueType>> velocities(size);
+    Grid<Vector<LatticeCell::ValueType>> velocities(size);
 
     {
 #if THREAD_SAFE
@@ -379,15 +379,15 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
             switch (cell.getType())
             {
-            case LatticeData::Type::BGK:
+            case LatticeCell::Type::BGK:
                 color = render::colors::BLACK;
                 break;
 
-            case LatticeData::Type::StaticObstacle:
+            case LatticeCell::Type::StaticObstacle:
                 color = render::colors::BLUE;
                 break;
 
-            case LatticeData::Type::DynamicObstacle:
+            case LatticeCell::Type::DynamicObstacle:
                 color = render::colors::RED;
                 break;
 
@@ -397,7 +397,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
             m_drawableObstacles->set(c, color);
 
-            if (cell.isObstacle() || cell.getType() == LatticeData::Type::None)
+            if (cell.isObstacle() || cell.getType() == LatticeCell::Type::None)
             {
                 velocities[c] = Zero;
             }
@@ -405,13 +405,14 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
             {
                 // Cell velocity
                 velocities[c] = cell.calcVelocity();
+                m_drawableObstacles->set(c, render::Color::fromGray(1e9 * cell.calcVelocity().getLengthSquared()));
             }
         }
     }
 
     // Calculate grid max velocity
     const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
-    const auto maxVel = 1e-7 * LatticeData::MAX_SPEED * maxInlet.value();
+    const auto maxVel = 1e-7 * LatticeCell::MAX_SPEED * maxInlet.value();
 
     if (!m_drawableVelocities)
     {
@@ -464,7 +465,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
 VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
 {
-    return (LatticeData::MAX_SPEED / calculateViscosity()) * getKinematicViscosity() / dl;
+    return (LatticeCell::MAX_SPEED / calculateViscosity()) * getKinematicViscosity() / dl;
 }
 
 /* ************************************************************************ */
@@ -472,7 +473,7 @@ VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
 void Module::updateObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax)
 {
     // Clear previous flag
-    m_lattice.setType(LatticeData::Type::BGK);
+    m_lattice.setType(LatticeCell::Type::BGK);
 
     const PositionVector start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / m_lattice.getSize();
@@ -520,10 +521,10 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
         }
     }
 
-    m_lattice.fixupObstacles(LatticeData::Type::StaticObstacle);
+    m_lattice.fixupObstacles(LatticeCell::Type::StaticObstacle);
 
     if (isDynamicObjectsObstacles())
-        m_lattice.fixupObstacles(LatticeData::Type::DynamicObstacle);
+        m_lattice.fixupObstacles(LatticeCell::Type::DynamicObstacle);
 }
 
 /* ************************************************************************ */
@@ -849,8 +850,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
 
     Vector<Lattice::SizeType> rngMin;
     Vector<Lattice::SizeType> rngMax;
-    LatticeData::Direction dirIn;
-    LatticeData::Direction dirOut;
+    LatticeCell::Direction dirIn;
+    LatticeCell::Direction dirOut;
 
     // Detect multiple inlets at the layout position
     DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets;
@@ -860,8 +861,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosTop:
         rngMin = {0, size.getHeight() - 1};
         rngMax = {size.getWidth(), size.getHeight()};
-        dirIn = LatticeData::DirDown;
-        dirOut = LatticeData::DirUp;
+        dirIn = LatticeCell::DirDown;
+        dirOut = LatticeCell::DirUp;
 
         for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
         {
@@ -890,8 +891,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosBottom:
         rngMin = {0, 0};
         rngMax = {size.getWidth(), 1};
-        dirIn = LatticeData::DirUp;
-        dirOut = LatticeData::DirDown;
+        dirIn = LatticeCell::DirUp;
+        dirOut = LatticeCell::DirDown;
 
         for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
         {
@@ -920,8 +921,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosRight:
         rngMin = {size.getWidth() - 1, 0};
         rngMax = {size.getWidth(), size.getHeight()};
-        dirIn = LatticeData::DirLeft;
-        dirOut = LatticeData::DirRight;
+        dirIn = LatticeCell::DirLeft;
+        dirOut = LatticeCell::DirRight;
 
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
         {
@@ -950,8 +951,8 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
     case LayoutPosLeft:
         rngMin = {0, 0};
         rngMax = {1, size.getHeight()};
-        dirIn = LatticeData::DirRight;
-        dirOut = LatticeData::DirLeft;
+        dirIn = LatticeCell::DirRight;
+        dirOut = LatticeCell::DirLeft;
 
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
         {
