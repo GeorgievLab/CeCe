@@ -67,7 +67,10 @@ enum class TokenCode
     Greater,
     GreaterEqual,
     Null,
-    Env
+    Env,
+    BracketO,
+    BracketC,
+    Function
 };
 
 /* ************************************************************************ */
@@ -224,6 +227,14 @@ public:
         case ',':
             next();
             return TokenType{TokenCode::Comma};
+
+        case '(':
+            next();
+            return TokenType{TokenCode::BracketO};
+
+        case ')':
+            next();
+            return TokenType{TokenCode::BracketC};
         }
 
         // In case of invalid character, generate invalid token, but
@@ -333,20 +344,20 @@ public:
     void parseReaction(Reactions& reactions)
     {
         // parse conditions
-        auto condition = parseConditions();
+        Function<bool> condition = parseConditions();
         // parse LS
         auto ids_minus = parseList();
         // check reversible reaction
         bool reversible = false;
-        auto revRate = ;
+        Function<RealType> revRate;
         if (match(TokenCode::ArrowBack, TokenCode::Less))
         {
             reversible = true;
-            auto revRate = parseRate();
+            revRate = parseRate();
             requireNext(TokenCode::Comma);
         }
         // parse rate
-        auto rate = parseRate();
+        Function<RealType> rate = parseRate();
         requireNext(TokenCode::ArrowFwrd, TokenCode::Greater);
         //parse RS
         auto ids_plus = parseList();
@@ -383,8 +394,6 @@ protected:
 
     }
 
-    using NodeBool = Function<bool>::Node<bool>;
-
     /**
      * @brief Parse conditions for conditional reactions.
      *
@@ -400,17 +409,49 @@ protected:
         return Function<bool>(std::move(ptr));
     }
 
-    UniquePtr<NodeBool> parseOr()
+    UniquePtr<Node<bool>> parseOr()
     {
-        UniquePtr<NodeBool> first = parseAnd();
+        UniquePtr<Node<bool>> first = parseAnd();
         if (!match(TokenCode::Or))
             return first;
 
-        UniquePtr<NodeBool> second = parseAnd();
-        return Function<bool>::Operator<std::logical_or>(first, second);
+        UniquePtr<Node<bool>> second = parseAnd();
+
+        return makeUnique<Operator<std::logical_or<bool>>>(std::move(first), std::move(second));
     }
 
-    UniquePtr<NodeBool> parseAnd()
+    UniquePtr<Node<bool>> parseAnd()
+    {
+        UniquePtr<Node<bool>> first = parseParenthesis();
+        if (!match(TokenCode::Or))
+            return first;
+
+        UniquePtr<Node<bool>> second = parseParenthesis();
+
+        return makeUnique<Operator<std::logical_and<bool>>>(std::move(first), std::move(second));
+    }
+
+    UniquePtr<Node<bool>> parseParenthesis()
+    {
+        if (!match(TokenCode::BracketO))
+            return parseFunction();
+
+        UniquePtr<Node<bool>> first = parseOr();
+
+        if (!match(TokenCode::BracketC))
+            throw MissingParenthesisException();
+
+        return first;
+    }
+
+    UniquePtr<Node<bool>> parseFunction()
+    {
+        if (!match(TokenCode::Function))
+            return parseComparism();
+
+    }
+
+    UniquePtr<Node<bool>> parseComparism()
     {
 
     }
@@ -426,7 +467,7 @@ protected:
      *
      * @return
      */
-    UniquePtr<RealFunction::Operator> parseRate()
+    Function<RealType> parseRate()
     {
         // Alias to tokenizer range.
         const auto& tokenizerRange = getTokenizer().getRange();

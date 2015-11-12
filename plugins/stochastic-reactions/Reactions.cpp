@@ -133,7 +133,7 @@ unsigned int Reactions::getMoleculeIndex(const String& name)
 
     // Resize all reactions
     for (auto& reaction : m_reactions)
-        m_reactions.resize(m_moleculeNames.size());
+        reaction.resize(m_moleculeNames.size());
 
     return m_moleculeNames.size() - 1;
 }

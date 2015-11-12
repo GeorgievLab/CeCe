@@ -43,87 +43,82 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
+template <typename Return>
+struct Node
+{
+    virtual Return eval(const Context& pointers) const = 0;
+};
+
+template<typename OperatorType>
+struct Operator : public Node<typename OperatorType::result_type>
+{
+    using OperatorNodeLeft = UniquePtr<Node<typename OperatorType::first_argument_type>>;
+    using OperatorNodeRight = UniquePtr<Node<typename OperatorType::second_argument_type>>;
+
+    OperatorNodeLeft left;
+    OperatorNodeRight right;
+
+    typename OperatorType::result_type eval(const Context& pointers) const override
+    {
+        return OperatorType{}(left->eval(pointers), right->eval(pointers));
+    }
+
+    Operator(OperatorNodeLeft l, OperatorNodeRight r):
+    left(std::move(l)), right(std::move(r))
+    {
+        // Nothing to do.
+    }
+};
+
+struct IdentifierCell : public Node<RealType>
+{
+    String identifier;
+
+    RealType eval(const Context& pointers) const override
+    {
+        return pointers.cell.getMoleculeCount(identifier);
+    }
+};
+
+struct IdentifierEnv : public Node<RealType>
+{
+    String identifier;
+
+    RealType eval(const Context& pointers) const override
+    {
+        const auto id = pointers.diffusion->getSignalId(identifier);
+        if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
+        {
+            return getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
+        }
+        return 0;
+    }
+};
+
+struct Amount : public Node<RealType>
+{
+    RealType amount;
+
+    RealType eval(const Context& pointers) const override
+    {
+        return amount;
+    }
+};
+
+struct Parameter : public Node<RealType>
+{
+    String identifier;
+
+    RealType eval(const Context& pointers) const override
+    {
+        // TODO:
+        return 0;
+    }
+};
+
 template <typename Mode>
 class Function
 {
-// Public structures:
-public:
-
-    template <typename Return>
-    struct Node
-    {
-        virtual Return eval(const Context& pointers) const = 0;
-    };
-
-    template<typename OperatorType>
-    struct Operator : public Node<typename OperatorType::result_type>
-    {
-        UniquePtr<Node<typename OperatorType::first_argument_type>> left;
-        UniquePtr<Node<typename OperatorType::second_argument_type>> right;
-
-        typename OperatorType::result_type eval(const Context& pointers) const
-        {
-            return OperatorType{}(left->eval(pointers), right->eval(pointers));
-        }
-    };
-
-    struct IdentifierCell : public Node<RealType>
-    {
-        String identifier;
-
-        RealType eval(const Context& pointers) const override
-        {
-            return pointers.cell.getMoleculeCount(identifier);
-        }
-    };
-
-    struct IdentifierEnv : public Node<RealType>
-    {
-        String identifier;
-
-        RealType eval(const Context& pointers) const override
-        {
-            const auto id = pointers.diffusion->getSignalId(identifier);
-            if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
-            {
-                return getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
-            }
-            return 0;
-        }
-    };
-
-    struct Amount : public Node<RealType>
-    {
-        RealType amount;
-
-        RealType eval(const Context& pointers) const override
-        {
-            return amount;
-        }
-    };
-
-    struct Parameter : public Node<RealType>
-    {
-        String identifier;
-
-        RealType eval(const Context& pointers) const override
-        {
-            // TODO:
-            return 0;
-        }
-    };
-
-    template <typename ReturnType>
-    struct InnerFunction : public Node<ReturnType>
-    {
-        Function<ReturnType> function;
-
-        ReturnType get(const Context& pointers) const override
-        {
-            return function.evaluate(pointers);
-        }
-    };
-
 // Private variables
 private:
 
@@ -142,9 +137,21 @@ public:
 // Public functions
 public:
 
-   Mode evaluate(const Context& pointers) const
+    Mode evaluate(const Context& pointers) const
     {
         return m_root->eval(pointers);
+    }
+};
+
+
+template <typename ReturnType>
+struct InnerFunction : public Node<ReturnType>
+{
+    Function<ReturnType> function;
+
+    ReturnType eval(const Context& pointers) const override
+    {
+        return function.evaluate(pointers);
     }
 };
 

@@ -74,7 +74,7 @@ private:
 
 public:
 
-    Reaction(const Function<bool>& condition, const DynamicArray<ReqProd>& rules, const Function<RealType>& rate):
+    Reaction(const Function<bool>& condition, const Function<RealType>& rate, const DynamicArray<ReqProd>& rules):
     m_rate(rate), m_condition(condition), m_rules(rules)
     {
         // Nothing to do.
