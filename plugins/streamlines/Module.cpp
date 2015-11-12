@@ -159,6 +159,11 @@ void Module::init(simulator::Simulation& simulation)
     const auto vMax = calculateMaxVelocity(dl);
     const auto omega = 1.0 / getTau();
 
+    Log::info("[streamlines] Omega: ", omega);
+    Log::info("[streamlines] Tau: ", getTau());
+    Log::info("[streamlines] Cell size: (", dl.getX(), " um; ", dl.getY(), " um)");
+    Log::info("[streamlines] Max velocity: (", vMax.getX(), " um/s; ", vMax.getY(), " um/s)");
+
     // Obstacles
     updateObstacleMap(simulation, vMax);
 
