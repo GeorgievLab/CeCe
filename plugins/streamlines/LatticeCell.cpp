@@ -229,17 +229,10 @@ void LatticeCell::collide(ValueType omega) noexcept
 
 void LatticeCell::collideStatic(ValueType omega) noexcept
 {
-    // Static obstacle, bounce all back
-    StaticArray<ValueType, SIZE> temp;
+    constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
 
-    // Move updated values into opposite directions
-    for (IndexType i = 0; i < SIZE; ++i)
-    {
-        temp[i] = m_values[DIRECTION_OPPOSITES[i]];
-    }
-
-    // Copy updated values
-    m_values = temp;
+    for (IndexType i = 1; i <= half; ++i)
+        std::swap(m_values[i], m_values[i + half]);
 }
 
 /* ************************************************************************ */

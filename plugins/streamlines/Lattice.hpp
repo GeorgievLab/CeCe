@@ -45,6 +45,9 @@ namespace streamlines {
 
 /**
  * @brief Lattice Boltzman lattice class.
+ *
+ * Memory and speedup improvement taken from OpenLB TR1:
+ * @link http://optilb.com/openlb/wp-content/uploads/2011/12/olb-tr1.pdf
  */
 class Lattice
 {

@@ -47,6 +47,9 @@ namespace streamlines {
 
 /**
  * @brief Class for storing lattice data.
+ *
+ * Memory and speedup improvement taken from OpenLB TR1:
+ * @link http://optilb.com/openlb/wp-content/uploads/2011/12/olb-tr1.pdf
  */
 class LatticeCell
 {

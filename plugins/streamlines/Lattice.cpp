@@ -85,7 +85,7 @@ void Lattice::collideAndStream(LatticeCell::ValueType omega)
 {
     collide(omega);
     stream();
-    /* FIXME: something wrong
+    /* FIXME: something's wrong
     constexpr LatticeData::IndexType half = (LatticeData::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
