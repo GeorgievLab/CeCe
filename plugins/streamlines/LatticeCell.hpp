@@ -377,9 +377,10 @@ public:
     /**
      * @brief Set as outlet.
      *
+     * @param rho Outlet density.
      * @param dir Direction.
      */
-    void outlet(Direction dir = DirRight) noexcept;
+    void outlet(ValueType rho = 1.0, Direction dir = DirRight) noexcept;
 
 
 // Public Operations

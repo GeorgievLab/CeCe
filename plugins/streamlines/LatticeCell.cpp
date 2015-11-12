@@ -144,34 +144,19 @@ void LatticeCell::inlet(const VelocityType& velocity, Direction dir) noexcept
 
     // Initialize
     //init(v, rho);
-    //return;
-
     fixBc(dir, velocity, rho);
 }
 
 /* ************************************************************************ */
 
-void LatticeCell::outlet(Direction dir) noexcept
+void LatticeCell::outlet(ValueType rho, Direction dir) noexcept
 {
-    constexpr ValueType rho = 1.0;
-
     // Velocity vector
-    const auto vel = fixDensity(dir, rho);
+    const auto velocity = ValueType(-1.0) * fixDensity(dir, rho);
 
     // Init
-    init(vel, rho);
-    return;
-    //fixBc(dir, vel, rho);
-    //return;
-
-    switch (dir)
-    {
-    case Direction::DirRight:   fixBc(Direction::DirLeft, vel, rho); break;
-    case Direction::DirLeft:    fixBc(Direction::DirRight, vel, rho); break;
-    case Direction::DirUp:      fixBc(Direction::DirDown, vel, rho); break;
-    case Direction::DirDown:    fixBc(Direction::DirUp, vel, rho); break;
-    default: break;
-    }
+    init(velocity, rho);
+    //fixBc(dir, velocity, rho);
 }
 
 /* ************************************************************************ */
@@ -311,7 +296,7 @@ LatticeCell::VelocityType LatticeCell::fixDensity(Direction dir, ValueType rho) 
     // Speed
     const auto speed =
         (-RealType(1) + RealType(1) / calcRho()
-        * (sumValues(CENTER_RHO[dir]) + 2 * sumValues(UNKNOWN_RHO[dir]))
+        * (sumValues(CENTER_RHO[dir]) + 2 * sumValues(KNOWN_RHO[dir]))
     );
 
     // Velocity vector
@@ -326,7 +311,7 @@ void LatticeCell::fixBc(Direction dir, const VelocityType& velocity, ValueType r
     const auto side1 = BC_SIDE1[dir];
     const auto side2 = BC_SIDE2[dir];
 
-    auto eq = calcEquilibrium(velocity, rho);
+    const auto eq = calcEquilibrium(velocity, rho);
 
     m_values[center] = (eq[center] - eq[DIRECTION_OPPOSITES[center]]) + m_values[DIRECTION_OPPOSITES[center]];
 
