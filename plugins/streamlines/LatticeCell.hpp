@@ -94,6 +94,9 @@ public:
     /// Velocity type.
     using VelocityType = Vector<ValueType>;
 
+    /// Density type.
+    using DensityType = ValueType;
+
 
 // Public Constants
 public:
@@ -157,7 +160,7 @@ public:
      * @param velocity Initial velocity.
      * @param rho      Initial density.
      */
-    LatticeCell(const VelocityType& velocity = Zero, ValueType rho = 1.f)
+    LatticeCell(const VelocityType& velocity = Zero, DensityType rho = 1.0)
     {
         init(velocity, rho);
     }
@@ -366,12 +369,30 @@ public:
 
 
     /**
-     * @brief Set as inlet.
+     * @brief Set cell velocity.
      *
-     * @param v   Inlet velocity.
+     * @param velocity Cell velocity.
+     * @param dir      Direction.
+     */
+    void setVelocity(const VelocityType& velocity, Direction dir = DirRight) noexcept;
+
+
+    /**
+     * @brief Set cell density.
+     *
+     * @param rho Cell density.
      * @param dir Direction.
      */
-    void inlet(const VelocityType& v, Direction dir = DirRight) noexcept;
+    void setDensity(DensityType rho, Direction dir = DirRight) noexcept;
+
+
+    /**
+     * @brief Set as inlet.
+     *
+     * @param velocity Inlet velocity.
+     * @param dir      Direction.
+     */
+    void inlet(const VelocityType& velocity, Direction dir = DirRight) noexcept;
 
 
     /**
@@ -401,14 +422,14 @@ public:
      *
      * @return
      */
-    ValueType calcRho() const noexcept
+    DensityType calcRho() const noexcept
     {
         if (isDummy())
             return {};
 
         using std::begin;
         using std::end;
-        return std::accumulate(begin(m_values), end(m_values), ValueType{});
+        return std::accumulate(begin(m_values), end(m_values), DensityType{});
     }
 
 
@@ -491,7 +512,7 @@ public:
      * @param velocity
      * @param rho
      */
-    void init(const VelocityType& velocity, ValueType rho = 1.f)
+    void init(const VelocityType& velocity, DensityType rho = 1.f)
     {
         m_values = calcEquilibrium(velocity, rho);
     }
@@ -539,7 +560,7 @@ public:
      *
      * @return
      */
-    static ValueType calcEquilibrium(IndexType i, const VelocityType& velocity, ValueType uSq, ValueType rho) noexcept;
+    static ValueType calcEquilibrium(IndexType i, const VelocityType& velocity, ValueType uSq, DensityType rho) noexcept;
 
 
     /**
@@ -550,7 +571,7 @@ public:
      *
      * @return
      */
-    static StaticArray<ValueType, SIZE> calcEquilibrium(const VelocityType& velocity, ValueType rho) noexcept;
+    static StaticArray<ValueType, SIZE> calcEquilibrium(const VelocityType& velocity, DensityType rho) noexcept;
 
 
     /**
@@ -572,7 +593,7 @@ public:
      *
      * @return
      */
-    VelocityType fixDensity(Direction dir, ValueType rho) const noexcept;
+    VelocityType fixDensity(Direction dir, DensityType rho) const noexcept;
 
 
     /**
@@ -582,7 +603,7 @@ public:
      * @param velocity
      * @param rho
      */
-    void fixBc(Direction dir, const VelocityType& velocity, ValueType rho) noexcept;
+    void fixBc(Direction dir, const VelocityType& velocity, DensityType rho) noexcept;
 
 
 // Private Data Members
