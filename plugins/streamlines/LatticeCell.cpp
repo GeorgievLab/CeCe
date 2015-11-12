@@ -336,7 +336,7 @@ LatticeCell::VelocityType LatticeCell::fixDensity(Direction dir, DensityType rho
 {
     // Speed
     const auto speed =
-        (-RealType(1) + RealType(1) / calcRho()
+        (-RealType(1) + RealType(1) / rho
         * (sumValues(CENTER_RHO[dir]) + 2 * sumValues(KNOWN_RHO[dir]))
     );
 
