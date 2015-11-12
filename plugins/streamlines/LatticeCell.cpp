@@ -354,13 +354,19 @@ void LatticeCell::fixBc(Direction dir, const VelocityType& velocity, DensityType
 
     const auto eq = calcEquilibrium(velocity, rho);
 
-    m_values[center] = (eq[center] - eq[DIRECTION_OPPOSITES[center]]) + m_values[DIRECTION_OPPOSITES[center]];
+    auto eqDiff = [&eq] (IndexType i) {
+        return eq[i] - eq[DIRECTION_OPPOSITES[i]];
+    };
 
-    m_values[side1[0]] = (eq[side1[0]] - eq[DIRECTION_OPPOSITES[side1[0]]]) + m_values[DIRECTION_OPPOSITES[side1[0]]]
-        + RealType(0.5) * (m_values[side1[1]] - m_values[side1[2]]);
+    m_values[center] = m_values[DIRECTION_OPPOSITES[center]] + eqDiff(center);
 
-    m_values[side2[0]] = (eq[side2[0]] - eq[DIRECTION_OPPOSITES[side2[0]]]) + m_values[DIRECTION_OPPOSITES[side2[0]]]
-        + RealType(0.5) * (m_values[side2[1]] - m_values[side2[2]]);
+    m_values[side1[0]] = m_values[DIRECTION_OPPOSITES[side1[0]]] + eqDiff(side1[0])
+        + RealType(0.5) * (m_values[side1[1]] - m_values[side1[2]])
+        - RealType(0.5) * eqDiff(side1[1]);
+
+    m_values[side2[0]] = m_values[DIRECTION_OPPOSITES[side2[0]]] + eqDiff(side2[0])
+        + RealType(0.5) * (m_values[side2[1]] - m_values[side2[2]])
+        - RealType(0.5) * eqDiff(side2[1]);
 }
 
 /* ************************************************************************ */
