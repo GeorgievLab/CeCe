@@ -52,27 +52,58 @@ struct Node
 template<typename OperatorType>
 struct Operator : public Node<typename OperatorType::result_type>
 {
-    using OperatorNodeLeft = UniquePtr<Node<typename OperatorType::first_argument_type>>;
-    using OperatorNodeRight = UniquePtr<Node<typename OperatorType::second_argument_type>>;
+    using NodeLeft = UniquePtr<Node<typename OperatorType::first_argument_type>>;
+    using NodeRight = UniquePtr<Node<typename OperatorType::second_argument_type>>;
 
-    OperatorNodeLeft left;
-    OperatorNodeRight right;
+private:
+    NodeLeft left;
+    NodeRight right;
+
+public:
 
     typename OperatorType::result_type eval(const Context& pointers) const override
     {
         return OperatorType{}(left->eval(pointers), right->eval(pointers));
     }
 
-    Operator(OperatorNodeLeft l, OperatorNodeRight r):
+public:
+
+    Operator(NodeLeft l, NodeRight r):
     left(std::move(l)), right(std::move(r))
     {
         // Nothing to do.
     }
 };
 
+template <typename Return>
+struct Function : public Node<Return>
+{
+private:
+    SharedPtr<Node<Return>> m_root;
+
+public:
+
+    explicit Function<Return>(UniquePtr<Node<Return>> root)
+    {
+        m_root = std::move(root);
+    }
+
+    Function<Return>() = default;
+
+public:
+
+    Return eval(const Context& pointers) const override
+    {
+        return m_root->eval(pointers);
+    }
+};
+
 struct IdentifierCell : public Node<RealType>
 {
+private:
     String identifier;
+
+public:
 
     RealType eval(const Context& pointers) const override
     {
@@ -82,7 +113,10 @@ struct IdentifierCell : public Node<RealType>
 
 struct IdentifierEnv : public Node<RealType>
 {
+private:
     String identifier;
+
+public:
 
     RealType eval(const Context& pointers) const override
     {
@@ -97,7 +131,10 @@ struct IdentifierEnv : public Node<RealType>
 
 struct Amount : public Node<RealType>
 {
+private:
     RealType amount;
+
+public:
 
     RealType eval(const Context& pointers) const override
     {
@@ -107,51 +144,15 @@ struct Amount : public Node<RealType>
 
 struct Parameter : public Node<RealType>
 {
+private:
     String identifier;
+
+public:
 
     RealType eval(const Context& pointers) const override
     {
         // TODO:
         return 0;
-    }
-};
-
-template <typename Mode>
-class Function
-{
-// Private variables
-private:
-
-    SharedPtr<Node<Mode>> m_root;
-
-// Public contructors
-public:
-
-    explicit Function<Mode>(UniquePtr<Node<Mode>> root)
-    {
-        m_root = std::move(root);
-    }
-
-    Function<Mode>() = default;
-
-// Public functions
-public:
-
-    Mode evaluate(const Context& pointers) const
-    {
-        return m_root->eval(pointers);
-    }
-};
-
-
-template <typename ReturnType>
-struct InnerFunction : public Node<ReturnType>
-{
-    Function<ReturnType> function;
-
-    ReturnType eval(const Context& pointers) const override
-    {
-        return function.evaluate(pointers);
     }
 };
 

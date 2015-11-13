@@ -254,9 +254,9 @@ public:
      *
      * @param reaction
      */
-    inline void extend(Reaction reaction)
+    inline void extend(const Reaction& reaction)
     {
-        m_reactions.push_back(std::move(reaction));
+        m_reactions.push_back(reaction);
     }
 
 // Private Data Members
@@ -271,6 +271,9 @@ private:
     /// Computed reactions propensities.
     DynamicArray<PropensityType> m_propensities;
 
+    /// Map of global defined functions.
+    Map<String, UniquePtr<Node<bool>>> m_boolFunctions;
+    Map<String, UniquePtr<Node<RealType>>> m_realFunctions;
 };
 
 /* ************************************************************************ */

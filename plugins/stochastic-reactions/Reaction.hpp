@@ -68,14 +68,14 @@ public:
 // Private variables
 private:
 
-    Function<RealType> m_rate;
-    Function<bool> m_condition;
+    UniquePtr<Node<RealType>> m_rate;
+    UniquePtr<Node<bool>> m_condition;
     DynamicArray<ReqProd> m_rules;
 
 public:
 
-    Reaction(const Function<bool>& condition, const Function<RealType>& rate, const DynamicArray<ReqProd>& rules):
-    m_rate(rate), m_condition(condition), m_rules(rules)
+    Reaction(const UniquePtr<Node<bool>> condition, const UniquePtr<Node<RealType>> rate, const DynamicArray<ReqProd>& rules):
+    m_rate(std::move(rate)), m_condition(std::move(condition)), m_rules(rules)
     {
         // Nothing to do.
     }
@@ -85,12 +85,12 @@ public:
 
     inline bool evaluateCondition(const Context& pointers) const
     {
-        return m_condition.evaluate(pointers);
+        return m_condition->eval(pointers);
     }
 
     inline RateType evaluateRate(const Context& pointers) const
     {
-        return m_rate.evaluate(pointers);
+        return m_rate->eval(pointers);
     }
 
     inline unsigned int getRequirement(unsigned int index) const noexcept
