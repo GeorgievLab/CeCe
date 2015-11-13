@@ -84,6 +84,8 @@ set(SRCS
     GridColor.cpp
     GridColorSmooth.hpp
     GridColorSmooth.cpp
+    GridColorColorMap.hpp
+    GridColorColorMap.cpp
     Shader.hpp
     Shader.cpp
     Program.hpp

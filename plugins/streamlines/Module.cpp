@@ -389,7 +389,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
                 break;
 
             case LatticeCell::Dynamics::StaticObstacle:
-                color = render::colors::BLUE;
+                color = render::colors::WHITE;
                 break;
 
             case LatticeCell::Dynamics::DynamicObstacle:
@@ -409,8 +409,8 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
             else
             {
                 // Cell velocity
-                velocities[c] = cell.calcVelocity();
-                m_drawableObstacles->set(c, render::Color::fromGray(1e9 * cell.calcVelocity().getLengthSquared()));
+                velocities[c] = cell.calcVelocityNormalized();
+                m_drawableObstacles->set(c, render::Color::fromGray(1e4 * velocities[c].getLength()));
             }
         }
     }
@@ -433,7 +433,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
     m_drawableObstacles->draw(context);
-    m_drawableVelocities->draw(context);
+    //m_drawableVelocities->draw(context);
     context.matrixPop();
 
 #if DEV_PLUGIN_streamlines_FORCE_RENDER || DEV_PLUGIN_streamlines_VELOCITY_RENDER

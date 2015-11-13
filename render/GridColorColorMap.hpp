@@ -28,7 +28,9 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/StaticArray.hpp"
+#include "render/GridColor.hpp"
+#include "render/Shader.hpp"
+#include "render/Program.hpp"
 
 /* ************************************************************************ */
 
@@ -36,34 +38,16 @@ namespace render {
 
 /* ************************************************************************ */
 
+class Context;
+
+/* ************************************************************************ */
+
 /**
- * @brief OpenGL shader object.
+ * @brief Texture-like grid with shader.
  */
-class Shader
+class GridColorColorMap : public GridColor
 {
 
-// Public Types
-public:
-
-
-    /**
-     * @brief Buffer ID type.
-     */
-    using Id = unsigned int;
-
-
-// Public Enums
-public:
-
-
-    /**
-     * @brief Shader types.
-     */
-    enum class Type
-    {
-        VERTEX,
-        FRAGMENT
-    };
 
 
 // Public Ctors & Dtors
@@ -71,71 +55,50 @@ public:
 
 
     /**
-     * @brief Destructor.
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
      */
-    ~Shader();
+    explicit GridColorColorMap(Context& context);
 
 
-// Public Accessors
+    /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     * @param size
+     */
+    GridColorColorMap(Context& context, Size size)
+        : GridColorColorMap(context)
+    {
+        resize(std::move(size));
+    }
+
+
+// Public Operators
 public:
 
 
     /**
-     * @brief Return shader identifier.
+     * @brief Render at current position.
      *
-     * @return
+     * @param context Rendering context.
      */
-    Id getId() const noexcept
-    {
-        return m_id;
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Init shader.
-     *
-     * @param type   Type of the shader.
-     * @param source Shader source.
-     * @param length Length of the shader source.
-     */
-    void init(Type type, const char* source, unsigned length);
-
-
-    /**
-     * @brief Init shader.
-     *
-     * @param type   Type of the shader.
-     * @param source Shader source.
-     */
-    template<std::size_t N>
-    void init(Type type, const StaticArray<char, N>& source)
-    {
-        init(type, source.data(), N);
-    }
-
-
-    /**
-     * @brief Init shader.
-     *
-     * @param type   Type of the shader.
-     * @param source Shader source.
-     */
-    template<std::size_t N>
-    void init(Type type, const StaticArray<unsigned char, N>& source)
-    {
-        init(type, reinterpret_cast<const char*>(source.data()), N);
-    }
+    void draw(Context& context) noexcept;
 
 
 // Private Data Members
 private:
 
-    /// Shader identifier.
-    Id m_id = 0;
+
+    /// Vertex shader.
+    Shader m_vertexShader;
+
+    /// Fragment shader.
+    Shader m_fragmentShader;
+
+    /// Shader program.
+    Program m_program;
 
 };
 
