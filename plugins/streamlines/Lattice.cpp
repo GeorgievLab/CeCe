@@ -85,18 +85,24 @@ void Lattice::collideAndStream(LatticeCell::ValueType omega)
 {
     collide(omega);
     stream();
-    /* FIXME: something's wrong
-    constexpr LatticeData::IndexType half = (LatticeData::SIZE - 1) / 2;
+    /*
+    // FIXME: something's wrong
+    constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
+    const auto size = getSize();
 
-    for (auto&& c : range(getSize()))
+    //for (auto&& c : range(getSize()))
+    for (CoordinateType::ValueType x = 0; x < size.getWidth(); ++x)
+    for (CoordinateType::ValueType y = 0; y < size.getHeight(); ++y)
     {
+        const CoordinateType c{x, y};
+
         auto& cell = get(c);
         cell.collide(omega);
 
-        for (LatticeData::IndexType i = 1; i < half; ++i)
+        for (LatticeCell::IndexType i = 1; i < half; ++i)
         {
             // Calculate new coordinates
-            const Vector<LatticeData::IndexType> newCoord = c + LatticeData::DIRECTION_VELOCITIES[i];
+            const Vector<LatticeCell::IndexType> newCoord = c + LatticeCell::DIRECTION_VELOCITIES[i];
 
             if (inRange(newCoord))
             {
@@ -114,15 +120,15 @@ void Lattice::collideAndStream(LatticeCell::ValueType omega)
 
 /* ************************************************************************ */
 
-void Lattice::setType(LatticeCell::Type type)
+void Lattice::setDynamics(LatticeCell::Dynamics dynamics)
 {
     for (auto& cell : m_data)
-        cell.setType(type);
+        cell.setDynamics(dynamics);
 }
 
 /* ************************************************************************ */
 
-void Lattice::fixupObstacles(LatticeCell::Type type) noexcept
+void Lattice::fixupObstacles(LatticeCell::Dynamics dynamics) noexcept
 {
     using Offset = Vector<typename std::make_signed<LatticeCell::IndexType>::type>;
 
@@ -133,35 +139,35 @@ void Lattice::fixupObstacles(LatticeCell::Type type) noexcept
     {
         CoordinateType c{x, y};
 
-        if (get(c).getType() != type)
+        if (get(c).getDynamics() != dynamics)
             continue;
 
-        const LatticeCell::Type types[9] = {
-            get(c).getType(),
-            get(c + Offset{ 1,  0}).getType(),
-            get(c + Offset{-1,  0}).getType(),
-            get(c + Offset{ 0,  1}).getType(),
-            get(c + Offset{ 1,  1}).getType(),
-            get(c + Offset{-1,  1}).getType(),
-            get(c + Offset{ 0, -1}).getType(),
-            get(c + Offset{ 1, -1}).getType(),
-            get(c + Offset{-1, -1}).getType()
+        const LatticeCell::Dynamics types[9] = {
+            get(c).getDynamics(),
+            get(c + Offset{ 1,  0}).getDynamics(),
+            get(c + Offset{-1,  0}).getDynamics(),
+            get(c + Offset{ 0,  1}).getDynamics(),
+            get(c + Offset{ 1,  1}).getDynamics(),
+            get(c + Offset{-1,  1}).getDynamics(),
+            get(c + Offset{ 0, -1}).getDynamics(),
+            get(c + Offset{ 1, -1}).getDynamics(),
+            get(c + Offset{-1, -1}).getDynamics()
         };
 
         const bool test =
-            (types[0] == type) &&
-            (types[1] == type || types[1] == LatticeCell::Type::None) &&
-            (types[2] == type || types[2] == LatticeCell::Type::None) &&
-            (types[3] == type || types[3] == LatticeCell::Type::None) &&
-            (types[4] == type || types[4] == LatticeCell::Type::None) &&
-            (types[5] == type || types[5] == LatticeCell::Type::None) &&
-            (types[6] == type || types[6] == LatticeCell::Type::None) &&
-            (types[7] == type || types[7] == LatticeCell::Type::None) &&
-            (types[8] == type || types[8] == LatticeCell::Type::None)
+            (types[0] == dynamics) &&
+            (types[1] == dynamics || types[1] == LatticeCell::Dynamics::None) &&
+            (types[2] == dynamics || types[2] == LatticeCell::Dynamics::None) &&
+            (types[3] == dynamics || types[3] == LatticeCell::Dynamics::None) &&
+            (types[4] == dynamics || types[4] == LatticeCell::Dynamics::None) &&
+            (types[5] == dynamics || types[5] == LatticeCell::Dynamics::None) &&
+            (types[6] == dynamics || types[6] == LatticeCell::Dynamics::None) &&
+            (types[7] == dynamics || types[7] == LatticeCell::Dynamics::None) &&
+            (types[8] == dynamics || types[8] == LatticeCell::Dynamics::None)
         ;
 
         if (test)
-            get(c).setType(LatticeCell::Type::None);
+            get(c).setDynamics(LatticeCell::Dynamics::None);
     }
 }
 

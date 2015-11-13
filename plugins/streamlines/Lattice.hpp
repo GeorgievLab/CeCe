@@ -44,7 +44,7 @@ namespace streamlines {
 /* ************************************************************************ */
 
 /**
- * @brief Lattice Boltzman lattice class.
+ * @brief Implementation of Lattice Boltzman.
  *
  * Memory and speedup improvement taken from OpenLB TR1:
  * @link http://optilb.com/openlb/wp-content/uploads/2011/12/olb-tr1.pdf
@@ -207,19 +207,19 @@ public:
 
 
     /**
-     * @brief Set type for all cells.
+     * @brief Set dynamics for all cells.
      *
-     * @param type
+     * @param dynamics
      */
-    void setType(LatticeCell::Type type);
+    void setDynamics(LatticeCell::Dynamics dynamics);
 
 
     /**
      * @brief Fixup inner obstacle types.
      *
-     * @param type
+     * @param dynamics
      */
-    void fixupObstacles(LatticeCell::Type type) noexcept;
+    void fixupObstacles(LatticeCell::Dynamics dynamics) noexcept;
 
 
 // Private Data Members
