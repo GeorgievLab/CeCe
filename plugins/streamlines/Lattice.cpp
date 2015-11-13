@@ -41,6 +41,7 @@ namespace streamlines {
 
 void Lattice::collide(LatticeCell::ValueType omega)
 {
+#if DEV_PLUGIN_streamlines_SWAP_TRICK
     constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
@@ -54,12 +55,17 @@ void Lattice::collide(LatticeCell::ValueType omega)
             swap(cell[i], cell[i + half]);
         }
     }
+#else
+    for (auto&& c : range(getSize()))
+        get(c).collide(omega);
+#endif
 }
 
 /* ************************************************************************ */
 
 void Lattice::stream()
 {
+#if DEV_PLUGIN_streamlines_SWAP_TRICK
     constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
@@ -77,6 +83,25 @@ void Lattice::stream()
             }
         }
     }
+#else
+    for (auto&& c : range(getSize()))
+    {
+        for (LatticeCell::IndexType i = 0; i < LatticeCell::SIZE; ++i)
+        {
+            // Calculate new coordinates
+            Vector<LatticeCell::IndexType> newCoord = c + LatticeCell::DIRECTION_VELOCITIES[i];
+
+            if (inRange(newCoord))
+            {
+                getBack(newCoord)[i] = get(c)[i];
+            }
+        }
+
+        getBack(c).setDynamics(get(c).getDynamics());
+    }
+
+    std::swap(m_data, m_dataBack);
+#endif
 }
 
 /* ************************************************************************ */

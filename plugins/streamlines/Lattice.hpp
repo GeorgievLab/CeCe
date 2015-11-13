@@ -165,6 +165,36 @@ public:
     }
 
 
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
+    /**
+     * @brief Get item from back buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    LatticeCell& getBack(const CoordinateType& coord) noexcept
+    {
+        return m_dataBack[coord];
+    }
+#endif
+
+
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
+    /**
+     * @brief Get item from back buffer.
+     *
+     * @param coord Item coordinate.
+     *
+     * @return
+     */
+    const LatticeCell& getBack(const CoordinateType& coord) const noexcept
+    {
+        return m_dataBack[coord];
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -176,7 +206,10 @@ public:
      */
     void setSize(Size size)
     {
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
         m_data.resize(size);
+        m_dataBack.resize(size);
+#endif
     }
 
 
@@ -228,6 +261,10 @@ public:
     /// Current lattice data.
     core::Grid<LatticeCell> m_data;
 
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
+    /// Temporaty lattice data.
+    core::Grid<LatticeCell> m_dataBack;
+#endif
 };
 
 /* ************************************************************************ */
