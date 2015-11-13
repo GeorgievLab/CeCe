@@ -23,44 +23,35 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "StoreObjectState.hpp"
-
 // Simulator
-#include "core/DataTable.hpp"
-#include "simulator/Simulation.hpp"
+#include "core/UniquePtr.hpp"
+#include "core/String.hpp"
+#include "simulator/Plugin.hpp"
+#include "simulator/PluginApi.hpp"
+
+// Plugin
+#include "Module.hpp"
+#include "StoreState.hpp"
 
 /* ************************************************************************ */
 
-namespace plugin {
-namespace streamlines {
+using namespace simulator;
 
 /* ************************************************************************ */
 
-void StoreObjectState::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration)
+class StreamlinesApi : public PluginApi
 {
-    // Get data table
-    auto& table = simulation.getDataTable("object-state");
+    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+    {
+        if (name == "store-state")
+            return makeUnique<plugin::streamlines::StoreState>(simulation.useModule<plugin::streamlines::Module>("streamlines"));
 
-    // Get states
-    const auto pos = object.getPosition();
-    const auto vel = object.getVelocity();
-
-    // Create new row
-    table.addRow(
-        makePair("iteration", simulation.getIteration()),
-        makePair("totalTime", simulation.getTotalTime().value()),
-        makePair("id", object.getId()),
-        makePair("x", pos.getX().value()),
-        makePair("y", pos.getY().value()),
-        makePair("velX", vel.getX().value()),
-        makePair("velY", vel.getY().value())
-    );
-}
+        return makeUnique<plugin::streamlines::Module>();
+    }
+};
 
 /* ************************************************************************ */
 
-}
-}
+DEFINE_PLUGIN(streamlines, StreamlinesApi)
 
 /* ************************************************************************ */

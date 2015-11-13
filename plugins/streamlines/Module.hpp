@@ -44,13 +44,12 @@
 #ifdef ENABLE_RENDER
 #include "render/Context.hpp"
 #include "render/Object.hpp"
-#include "render/GridColor.hpp"
+#include "render/GridColorColorMap.hpp"
 #include "render/GridVector.hpp"
 #endif
 
 // Plugin
 #include "Lattice.hpp"
-#include "ObstacleMap.hpp"
 
 #if THREAD_SAFE
 #include "core/Mutex.hpp"
@@ -309,14 +308,6 @@ public:
     {
         m_kinematicViscosity = viscosity;
     }
-
-
-    /**
-     * @brief Setup static obstacle map.
-     *
-     * @param map
-     */
-    void setStaticObstacleMap(const ObstacleMap& map);
 
 
     /**
@@ -597,7 +588,7 @@ private:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Rendering grid with filled cells.
-    render::ObjectPtr<render::GridColor> m_drawableObstacles;
+    render::ObjectPtr<render::GridColorColorMap> m_drawableObstacles;
 #endif
 
 #if THREAD_SAFE

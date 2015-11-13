@@ -28,23 +28,82 @@
 /* ************************************************************************ */
 
 // Simulator
-#include "core/Grid.hpp"
+#include "render/GridColor.hpp"
+#include "render/Shader.hpp"
+#include "render/Program.hpp"
 
 /* ************************************************************************ */
 
-namespace plugin {
-namespace streamlines {
+namespace render {
+
+/* ************************************************************************ */
+
+class Context;
 
 /* ************************************************************************ */
 
 /**
- * @brief Class for loading obstacle map from file.
+ * @brief Texture-like grid with shader.
  */
-using ObstacleMap = core::Grid<int>;
+class GridColorColorMap : public GridColor
+{
+
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     */
+    explicit GridColorColorMap(Context& context);
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param context Rendering context.
+     * @param size
+     */
+    GridColorColorMap(Context& context, Size size)
+        : GridColorColorMap(context)
+    {
+        resize(std::move(size));
+    }
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Render at current position.
+     *
+     * @param context Rendering context.
+     */
+    void draw(Context& context) noexcept;
+
+
+// Private Data Members
+private:
+
+
+    /// Vertex shader.
+    Shader m_vertexShader;
+
+    /// Fragment shader.
+    Shader m_fragmentShader;
+
+    /// Shader program.
+    Program m_program;
+
+};
 
 /* ************************************************************************ */
 
-}
 }
 
 /* ************************************************************************ */

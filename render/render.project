@@ -35,6 +35,7 @@
     <File Name="Lines.cpp"/>
     <File Name="Color.cpp"/>
     <File Name="Font.cpp"/>
+    <File Name="GridColorColorMap.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Camera.hpp"/>
@@ -55,6 +56,8 @@
     <VirtualDirectory Name="shaders">
       <File Name="fs.smooth.hpp"/>
       <File Name="vs.smooth.hpp"/>
+      <File Name="fs.colormap.hpp"/>
+      <File Name="vs.colormap.hpp"/>
     </VirtualDirectory>
     <File Name="VertexElement.hpp"/>
     <File Name="VertexFormat.hpp"/>
@@ -64,6 +67,7 @@
     <File Name="Lines.hpp"/>
     <File Name="Font.hpp"/>
     <File Name="datatype.hpp"/>
+    <File Name="GridColorColorMap.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

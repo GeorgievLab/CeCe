@@ -27,9 +27,6 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <algorithm>
-
 // Simulator
 #include "core/Units.hpp"
 #include "core/Vector.hpp"
@@ -37,7 +34,7 @@
 #include "core/StaticArray.hpp"
 
 // Module
-#include "LatticeData.hpp"
+#include "LatticeCell.hpp"
 
 /* ************************************************************************ */
 
@@ -47,7 +44,10 @@ namespace streamlines {
 /* ************************************************************************ */
 
 /**
- * @brief Lattice Boltzman lattice class.
+ * @brief Implementation of Lattice Boltzman.
+ *
+ * Memory and speedup improvement taken from OpenLB TR1:
+ * @link http://optilb.com/openlb/wp-content/uploads/2011/12/olb-tr1.pdf
  */
 class Lattice
 {
@@ -60,7 +60,7 @@ public:
     /**
      * @brief Container type.
      */
-    using ContainerType = core::Grid<LatticeData>;
+    using ContainerType = core::Grid<LatticeCell>;
 
 
     /**
@@ -92,7 +92,7 @@ public:
      *
      * @return
      */
-    LatticeData& operator[](const CoordinateType& coord) noexcept
+    LatticeCell& operator[](const CoordinateType& coord) noexcept
     {
         return get(coord);
     }
@@ -105,7 +105,7 @@ public:
      *
      * @return
      */
-    const LatticeData& operator[](const CoordinateType& coord) const noexcept
+    const LatticeCell& operator[](const CoordinateType& coord) const noexcept
     {
         return get(coord);
     }
@@ -122,8 +122,7 @@ public:
      */
     Size getSize() const noexcept
     {
-        // Lattice itself have 1 cell margin
-        return m_dataFront.getSize() - 2;
+        return m_data.getSize();
     }
 
 
@@ -147,9 +146,9 @@ public:
      *
      * @return
      */
-    LatticeData& getFront(const CoordinateType& coord) noexcept
+    LatticeCell& get(const CoordinateType& coord) noexcept
     {
-        return m_dataFront[coord + 1];
+        return m_data[coord];
     }
 
 
@@ -160,12 +159,13 @@ public:
      *
      * @return
      */
-    const LatticeData& getFront(const CoordinateType& coord) const noexcept
+    const LatticeCell& get(const CoordinateType& coord) const noexcept
     {
-        return m_dataFront[coord + 1];
+        return m_data[coord];
     }
 
 
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
     /**
      * @brief Get item from back buffer.
      *
@@ -173,12 +173,14 @@ public:
      *
      * @return
      */
-    LatticeData& getBack(const CoordinateType& coord) noexcept
+    LatticeCell& getBack(const CoordinateType& coord) noexcept
     {
-        return m_dataBack[coord + 1];
+        return m_dataBack[coord];
     }
+#endif
 
 
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
     /**
      * @brief Get item from back buffer.
      *
@@ -186,36 +188,11 @@ public:
      *
      * @return
      */
-    const LatticeData& getBack(const CoordinateType& coord) const noexcept
+    const LatticeCell& getBack(const CoordinateType& coord) const noexcept
     {
-        return m_dataBack[coord + 1];
+        return m_dataBack[coord];
     }
-
-
-    /**
-     * @brief Get item from front buffer.
-     *
-     * @param coord Item coordinate.
-     *
-     * @return
-     */
-    LatticeData& get(const CoordinateType& coord) noexcept
-    {
-        return getFront(coord);
-    }
-
-
-    /**
-     * @brief Get item from front buffer.
-     *
-     * @param coord Item coordinate.
-     *
-     * @return
-     */
-    const LatticeData& get(const CoordinateType& coord) const noexcept
-    {
-        return getFront(coord);
-    }
+#endif
 
 
 // Public Mutators
@@ -227,7 +204,13 @@ public:
      *
      * @param size
      */
-    void setSize(Size size);
+    void setSize(Size size)
+    {
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
+        m_data.resize(size);
+        m_dataBack.resize(size);
+#endif
+    }
 
 
 // Public Operations
@@ -239,49 +222,49 @@ public:
      *
      * @param omega
      */
-    void collide(LatticeData::ValueType omega);
+    void collide(LatticeCell::ValueType omega);
 
 
     /**
-     * @brief Propagate lattice data.
+     * @brief Steam lattice data.
      */
-    void propagate();
+    void stream();
 
 
     /**
-     * @brief Call collide and propagate functions.
+     * @brief Call collide and stream functions.
      *
      * @param omega
      */
-    void collideAndPropagate(LatticeData::ValueType omega)
-    {
-        collide(omega);
-        propagate();
-    }
+    void collideAndStream(LatticeCell::ValueType omega);
 
 
     /**
-     * @brief Set dynamic obstacle flag to false for all cells.
+     * @brief Set dynamics for all cells.
+     *
+     * @param dynamics
      */
-    void clearDynamicObstacles();
+    void setDynamics(LatticeCell::Dynamics dynamics);
 
 
     /**
-     * @brief Set static obstacle flag to false for all cells.
+     * @brief Fixup inner obstacle types.
+     *
+     * @param dynamics
      */
-    void clearStaticObstacles();
+    void fixupObstacles(LatticeCell::Dynamics dynamics) noexcept;
 
 
 // Private Data Members
 public:
 
-
     /// Current lattice data.
-    core::Grid<LatticeData> m_dataFront;
+    core::Grid<LatticeCell> m_data;
 
+#if !DEV_PLUGIN_streamlines_SWAP_TRICK
     /// Temporaty lattice data.
-    core::Grid<LatticeData> m_dataBack;
-
+    core::Grid<LatticeCell> m_dataBack;
+#endif
 };
 
 /* ************************************************************************ */

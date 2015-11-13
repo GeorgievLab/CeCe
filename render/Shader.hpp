@@ -118,6 +118,19 @@ public:
     }
 
 
+    /**
+     * @brief Init shader.
+     *
+     * @param type   Type of the shader.
+     * @param source Shader source.
+     */
+    template<std::size_t N>
+    void init(Type type, const StaticArray<unsigned char, N>& source)
+    {
+        init(type, reinterpret_cast<const char*>(source.data()), N);
+    }
+
+
 // Private Data Members
 private:
 

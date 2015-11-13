@@ -23,71 +23,41 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
+// Declaration
+#include "render/GridColorColorMap.hpp"
 
 // Simulator
-#include "core/ViewPtr.hpp"
-#include "simulator/Program.hpp"
+#include "render/Context.hpp"
 
-// Plugin
-#include "Module.hpp"
-
-/* ************************************************************************ */
-
-namespace plugin {
-namespace streamlines {
+// Shaders
+#include "vs.colormap.hpp"
+#include "fs.colormap.hpp"
 
 /* ************************************************************************ */
 
-/**
- * @brief Object store state program.
- */
-class StoreObjectState
+namespace render {
+
+/* ************************************************************************ */
+
+GridColorColorMap::GridColorColorMap(Context& context)
+    : GridColor(context)
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param module A pointer to streamlines module.
-     */
-    explicit StoreObjectState(ViewPtr<plugin::streamlines::Module> module) noexcept
-        : m_streamlinesModule(module)
-    {
-        // Nothing to do
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Update module state.
-     *
-     * @param object     Program owner.
-     * @param dt         Simulation time step.
-     * @param simulation Current simulation.
-     */
-    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration);
-
-
-// Private Data Members
-private:
-
-    /// A pointer to streamlines module.
-    ViewPtr<plugin::streamlines::Module> m_streamlinesModule;
-
-};
+    m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShader);
+    m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShader);
+    m_program.init(m_vertexShader, m_fragmentShader);
+}
 
 /* ************************************************************************ */
 
+void GridColorColorMap::draw(Context& context) noexcept
+{
+    context.setProgram(&m_program);
+    GridColor::draw(context);
+    context.setProgram(nullptr);
 }
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
