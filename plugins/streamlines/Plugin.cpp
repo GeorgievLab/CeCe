@@ -32,7 +32,6 @@
 // Plugin
 #include "Module.hpp"
 #include "StoreState.hpp"
-#include "StoreObjectState.hpp"
 
 /* ************************************************************************ */
 
@@ -49,25 +48,6 @@ class StreamlinesApi : public PluginApi
 
         return makeUnique<plugin::streamlines::Module>();
     }
-
-
-    /**
-     * @brief Create program from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Program name.
-     * @param code       Optional program code.
-     *
-     * @return Created program.
-     */
-    Program createProgram(Simulation& simulation, const String& name, String code = {}) override
-    {
-        if (name == "store-object-state")
-            return plugin::streamlines::StoreObjectState(simulation.useModule<plugin::streamlines::Module>("streamlines"));
-
-        return {};
-    }
-
 };
 
 /* ************************************************************************ */
