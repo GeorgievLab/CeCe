@@ -65,6 +65,7 @@ enum class TokenCode
 {
     Invalid,
     Identifier,
+    Number,
     ArrowFwrd,
     ArrowBack,
     Plus,
@@ -142,13 +143,13 @@ public:
             token.value.push_back(value());
             next();
         }
+
         if (value() == '(')
         {
             token.code = TokenCode::Function;
             next();
         }
-
-        if (token.value == "and")
+        else if (token.value == "and")
             token.code = TokenCode::And;
         else if (token.value == "or")
             token.code = TokenCode::Or;
@@ -182,6 +183,20 @@ public:
             find('\n', '\r');
             while (isRange('\1', ' '))
                 next();
+        }
+
+        if(isDigit())
+        {
+            TokenType token{TokenCode::Number};
+
+            do
+            {
+                token.value.push_back(value());
+                next();
+            }
+            while(isDigit());
+
+            return token;
         }
 
         if (isIdentifierBegin())
@@ -443,16 +458,16 @@ protected:
 
     UniquePtr<Node<bool>> parseAnd()
     {
-        UniquePtr<Node<bool>> first = parseParenthesis();
+        UniquePtr<Node<bool>> first = parseBParenthesis();
         while(match(TokenCode::And))
         {
-            UniquePtr<Node<bool>> second = parseParenthesis();
+            UniquePtr<Node<bool>> second = parseBParenthesis();
             first = makeUnique<Operator<std::logical_and<bool>>>(std::move(first), std::move(second));
         }
         return first;
     }
 
-    UniquePtr<Node<bool>> parseParenthesis()
+    UniquePtr<Node<bool>> parseBParenthesis()
     {
         if (!match(TokenCode::BracketO))
             return parseBoolFunction();
@@ -487,43 +502,30 @@ protected:
 
     UniquePtr<Node<bool>> parseRelation()
     {
-        UniquePtr<Node<RealType>> first = parseRealFunction();
+        UniquePtr<Node<RealType>> first = parsePlus();
         switch (token().code)
         {
             case TokenCode::Greater:
                 next();
-                return makeUnique<Operator<std::greater<bool>>>(std::move(first), std::move(parseRealFunction()));
+                return makeUnique<Operator<std::greater<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::Less:
                 next();
-                return makeUnique<Operator<std::less<bool>>>(std::move(first), std::move(parseRealFunction()));
+                return makeUnique<Operator<std::less<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::GreaterEqual:
                 next();
-                return makeUnique<Operator<std::greater_equal<bool>>>(std::move(first), std::move(parseRealFunction()));
+                return makeUnique<Operator<std::greater_equal<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::LessEqual:
                 next();
-                return makeUnique<Operator<std::less_equal<bool>>>(std::move(first), std::move(parseRealFunction()));
+                return makeUnique<Operator<std::less_equal<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::Equal:
                 next();
-                return makeUnique<Operator<std::equal_to<bool>>>(std::move(first), std::move(parseRealFunction()));
+                return makeUnique<Operator<std::equal_to<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::NotEqual:
                 next();
-                return makeUnique<Operator<std::not_equal_to<bool>>>(std::move(first), std::move(parseRealFunction()));
+                return makeUnique<Operator<std::not_equal_to<bool>>>(std::move(first), std::move(parsePlus()));
             default:
                 throw MissingOperatorException();
         }
-    }
-
-    UniquePtr<Node<RealType>> parseRealFunction()
-    {
-        if(!match(TokenCode::Function))
-            return parseConstant();
-
-        // prohledat fce v vratit
-    }
-
-    UniquePtr<Node<RealType>> parseConstant()
-    {
-
     }
 
 /* ************************************************************************ */
@@ -569,37 +571,54 @@ protected:
     UniquePtr<Node<RealType>> parseMultiply()
     {
         UniquePtr<Node<RealType>> first = parsePower();
-        while(match(TokenCode::Multiply))
+        while(is(TokenCode::Multiply, TokenCode::Divide))
         {
+            bool plus = is(TokenCode::Multiply);
+            next();
             UniquePtr<Node<RealType>> second = parsePower();
-            first = makeUnique<Operator<std::multiplies<RealType>>>(std::move(first), std::move(second));
+            if(plus)
+                first = makeUnique<Operator<std::multiplies<RealType>>>(std::move(first), std::move(second));
+            else
+                first = makeUnique<Operator<std::divides<RealType>>>(std::move(first), std::move(second));
         }
         return first;
     }
 
     UniquePtr<Node<RealType>> parsePower()
     {
-        UniquePtr<Node<bool>> first = parseAnd();
+        UniquePtr<Node<RealType>> first = parseParenthesis();
         while(match(TokenCode::Power))
         {
-            UniquePtr<Node<bool>> second = parseAnd();
-            first = makeUnique<Operator<std::exp<RealType>>>(std::move(first), std::move(second));
+            UniquePtr<Node<RealType>> second = parseParenthesis();
+            first = makeUnique<Operator<Pow<RealType>>>(std::move(first), std::move(second));
         }
+        return first;
+    }
+
+    UniquePtr<Node<RealType>> parseParenthesis()
+    {
+        if (!match(TokenCode::BracketO))
+            return parseFunction();
+
+        UniquePtr<Node<RealType>> first = parsePlus();
+
+        if (!match(TokenCode::BracketC))
+            throw MissingParenthesisException();
+
         return first;
     }
 
     UniquePtr<Node<RealType>> parseFunction()
     {
+        if(!match(TokenCode::Function))
+            return parseConstant();
+
+        // prohledat fce v vratit
     }
 
     UniquePtr<Node<RealType>> parseVariable()
     {
-
-    }
-
-    UniquePtr<Node<RealType>> parsePlus()
-    {
-
+        if(match(TokenCode::))
     }
 
 /* ************************************************************************ */

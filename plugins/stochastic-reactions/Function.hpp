@@ -43,6 +43,17 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
+template <typename T>
+struct Pow
+{
+    constexpr T operator()(const T &lhs, const T &rhs) const
+    {
+        return std::pow(lhs, rhs);
+    }
+};
+
+/* ************************************************************************ */
+
 template <typename Return>
 struct Node
 {
