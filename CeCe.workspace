@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="CeCe" Database="" SWTLW="No">
-  <Project Name="gui" Path="gui/gui.project" Active="No"/>
-  <Project Name="core" Path="core/core.project" Active="No"/>
-  <Project Name="simulator" Path="simulator/simulator.project"/>
-  <Project Name="render" Path="render/render.project"/>
-  <Project Name="cli" Path="cli/cli.project" Active="Yes"/>
-  <Project Name="diffusion" Path="plugins/diffusion/diffusion.project" Active="No"/>
-  <Project Name="cell" Path="plugins/cell/cell.project" Active="No"/>
-  <Project Name="picture" Path="plugins/picture/picture.project" Active="No"/>
+  <Project Name="gui" Path="app/gui/gui.project" Active="No"/>
+  <Project Name="core" Path="cece/core/core.project" Active="No"/>
+  <Project Name="simulator" Path="cece/simulator/simulator.project"/>
+  <Project Name="render" Path="cece/render/render.project"/>
+  <Project Name="cli" Path="app/cli/cli.project" Active="Yes"/>
+  <Project Name="diffusion" Path="cece/plugins/diffusion/diffusion.project" Active="No"/>
+  <Project Name="cell" Path="cece/plugins/cell/cell.project" Active="No"/>
+  <Project Name="picture" Path="cece/plugins/picture/picture.project" Active="No"/>
   <Project Name="tool_shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
-  <Project Name="python" Path="plugins/python/python.project" Active="No"/>
-  <Project Name="streamlines" Path="plugins/streamlines/streamlines.project" Active="No"/>
-  <Project Name="streamlines-python" Path="plugins/streamlines-python/streamlines-python.project" Active="No"/>
-  <Project Name="cell-python" Path="plugins/cell-python/cell-python.project" Active="No"/>
-  <Project Name="diffusion-python" Path="plugins/diffusion-python/diffusion-python.project" Active="No"/>
-  <Project Name="diffusion-streamlines" Path="plugins/diffusion-streamlines/diffusion-streamlines.project" Active="No"/>
-  <Project Name="agglutination" Path="plugins/agglutination/agglutination.project" Active="No"/>
-  <Project Name="object-generator" Path="plugins/object-generator/object-generator.project" Active="No"/>
-  <Project Name="stochastic-reactions-intercellular" Path="plugins/stochastic-reactions-intercellular/stochastic-reactions-intercellular.project" Active="No"/>
-  <Project Name="stochastic-reactions-intracellular" Path="plugins/stochastic-reactions-intracellular/stochastic-reactions-intracellular.project" Active="No"/>
-  <Project Name="background" Path="plugins/background/background.project" Active="No"/>
-  <Project Name="obstacles-image" Path="plugins/obstacles-image/obstacles-image.project" Active="No"/>
-  <Project Name="chemostat" Path="plugins/chemostat/chemostat.project" Active="No"/>
+  <Project Name="python" Path="cece/plugins/python/python.project" Active="No"/>
+  <Project Name="streamlines" Path="cece/plugins/streamlines/streamlines.project" Active="No"/>
+  <Project Name="streamlines-python" Path="cece/plugins/streamlines-python/streamlines-python.project" Active="No"/>
+  <Project Name="cell-python" Path="cece/plugins/cell-python/cell-python.project" Active="No"/>
+  <Project Name="diffusion-python" Path="cece/plugins/diffusion-python/diffusion-python.project" Active="No"/>
+  <Project Name="diffusion-streamlines" Path="cece/plugins/diffusion-streamlines/diffusion-streamlines.project" Active="No"/>
+  <Project Name="agglutination" Path="cece/plugins/agglutination/agglutination.project" Active="No"/>
+  <Project Name="object-generator" Path="cece/plugins/object-generator/object-generator.project" Active="No"/>
+  <Project Name="stochastic-reactions-intercellular" Path="cece/plugins/stochastic-reactions-intercellular/stochastic-reactions-intercellular.project" Active="No"/>
+  <Project Name="stochastic-reactions-intracellular" Path="cece/plugins/stochastic-reactions-intracellular/stochastic-reactions-intracellular.project" Active="No"/>
+  <Project Name="background" Path="cece/plugins/background/background.project" Active="No"/>
+  <Project Name="obstacles-image" Path="cece/plugins/obstacles-image/obstacles-image.project" Active="No"/>
+  <Project Name="chemostat" Path="cece/plugins/chemostat/chemostat.project" Active="No"/>
   <Environment>
     <![CDATA[]]>
   </Environment>
-  <Project Name="plugin-xml" Path="plugins/xml/plugin-xml.project" Active="No"/>
-  <Project Name="obstacles-svg" Path="plugins/obstacles-svg/obstacles-svg.project" Active="No"/>
+  <Project Name="plugin-xml" Path="cece/plugins/xml/plugin-xml.project" Active="No"/>
+  <Project Name="obstacles-svg" Path="cece/plugins/obstacles-svg/obstacles-svg.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="simulator" ConfigName="Debug"/>

@@ -33,12 +33,16 @@
 #include <iomanip>
 #include <locale>
 
-// Simulator
-#include "core/String.hpp"
-#include "core/InStream.hpp"
-#include "core/OutStream.hpp"
-#include "core/StaticArray.hpp"
-#include "core/Exception.hpp"
+// CeCe
+#include "cece/core/String.hpp"
+#include "cece/core/InStream.hpp"
+#include "cece/core/OutStream.hpp"
+#include "cece/core/StaticArray.hpp"
+#include "cece/core/Exception.hpp"
+
+/* ************************************************************************ */
+
+using namespace cece;
 
 /* ************************************************************************ */
 

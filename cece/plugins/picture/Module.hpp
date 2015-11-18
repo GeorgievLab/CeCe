@@ -1,0 +1,178 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015                                                    */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/*                                                                          */
+/* This file is part of CeCe.                                               */
+/*                                                                          */
+/* CeCe is free software: you can redistribute it and/or modify             */
+/* it under the terms of the GNU General Public License as published by     */
+/* the Free Software Foundation, either version 3 of the License, or        */
+/* (at your option) any later version.                                      */
+/*                                                                          */
+/* CeCe is distributed in the hope that it will be useful,                  */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of           */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            */
+/* GNU General Public License for more details.                             */
+/*                                                                          */
+/* You should have received a copy of the GNU General Public License        */
+/* along with CeCe.  If not, see <http://www.gnu.org/licenses/>.            */
+/*                                                                          */
+/* ************************************************************************ */
+
+#pragma once
+
+/* ************************************************************************ */
+
+// OpenCV
+#include <opencv2/core/core.hpp>
+
+// CeCe
+#include "cece/core/String.hpp"
+#include "cece/core/FilePath.hpp"
+#include "cece/simulator/Module.hpp"
+#include "cece/render/Context.hpp"
+#include "cece/render/ImageData.hpp"
+
+#if THREAD_SAFE
+#include "cece/core/Mutex.hpp"
+#endif
+
+/* ************************************************************************ */
+
+namespace cece {
+namespace plugin {
+namespace picture {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Module for storing pictures.
+ */
+class Module : public simulator::Module
+{
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Return pattern for generated file name.
+     *
+     * @return
+     */
+    const String& getFilePattern() const noexcept
+    {
+        return m_filePattern;
+    }
+
+
+    /**
+     * @brief Get number of iteration when image should be saved.
+     *
+     * @return
+     */
+    unsigned int getSaveIteration() const noexcept
+    {
+        return m_saveIteration;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set file name pattern. Currently is supported only with
+     * placeholder $1 that is replaced by step number.
+     *
+     * @param fileName Pattern to destination file.
+     */
+    void setFilePattern(String fileName) noexcept
+    {
+        m_filePattern = std::move(fileName);
+    }
+
+
+    /**
+     * @brief Set number of step when image should be saved.
+     *
+     * @param iteration
+     */
+    void setSaveIteration(unsigned int iteration) noexcept
+    {
+        m_saveIteration = iteration;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Load module configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
+     */
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+
+
+    /**
+     * @brief Update module state.
+     *
+     * @param simulation Simulation object.
+     * @param dt         Simulation time step.
+     */
+    void update(simulator::Simulation& simulation, units::Time dt) override;
+
+
+    /**
+     * @brief Render module.
+     *
+     * @param simulation Current simulation.
+     * @param context    Rendering context.
+     */
+    void draw(const simulator::Simulation& simulation, render::Context& context) override;
+
+
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Save image.
+     */
+    void save(const FilePath& filename);
+
+
+// Private Data Members
+private:
+
+
+    /// Pattern for file name.
+    String m_filePattern = "image_$1.png";
+
+    /// Save image each n-th step.
+    unsigned int m_saveIteration = 1;
+
+    /// Image data.
+    cv::Mat m_image;
+
+#if THREAD_SAFE
+    /// Access mutex.
+    mutable Mutex m_mutex;
+#endif
+
+};
+
+/* ************************************************************************ */
+
+}
+}
+}
+
+/* ************************************************************************ */

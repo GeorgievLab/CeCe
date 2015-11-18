@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="400um 100um" dt="1ms" iterations="10000" background="black">
+
+    <plugin name="python" />
+
+    <module name="streamlines" grid="200 100" inlet-velocities="400um/s 0um/s 400um/s 0um/s" layout="inlet outlet inlet none"/>
+
+    <!-- Rectangles -->
+    <obstacle type="rectangle" position="27um 39um" size="355um 30um" visible="true" />
+    <obstacle type="rectangle" position="27um -39um" size="355um 30um" visible="true" />
+    <obstacle type="rectangle" position="-195um 0um" size="10um 100um" visible="true" />
+    
+    <module name="object-generator">
+        <object class="cell.Yeast" probability="0.1" position-min="-190um 40um" position-max="-150um 40um">
+            <molecule name="RFP" amount="1000" />
+            <molecule name="TAG_1" amount="1000" />
+        </object>
+        <object class="cell.Yeast" probability="0.1" position-min="-190um -40um" position-max="-150um -40um">
+            <molecule name="GFP" amount="1000" />
+            <molecule name="TAG_2" amount="1000" />
+        </object>
+    </module>
+
+</simulation>

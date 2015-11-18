@@ -50,7 +50,7 @@ set(VERSION_SPECIAL "")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Directory with plugins
-set(DIR_PLUGINS "plugins")
+set(DIR_PLUGINS "cece/plugins")
 
 # ######################################################################### #
 
@@ -263,16 +263,8 @@ add_definitions(-DREAL_TYPE=${CONFIG_REAL_TYPE})
 
 # ######################################################################### #
 
-# Core libraries
-add_subdirectory(core)
-
-# Add render library
-if (CONFIG_RENDER_ENABLE)
-    add_subdirectory(render)
-endif ()
-
-# Main simulator library
-add_subdirectory(simulator)
+# CeCe simulator
+add_subdirectory(cece)
 
 # Add plugins that should be built
 foreach (PLUGIN_NAME ${PLUGINS_BUILD})
@@ -281,12 +273,12 @@ endforeach ()
 
 # Build GUI project
 if (CONFIG_GUI_ENABLE)
-    add_subdirectory(gui)
+    add_subdirectory(app/gui)
 endif ()
 
 # Build CLI application
 if (CONFIG_CLI_ENABLE)
-    add_subdirectory(cli)
+    add_subdirectory(app/cli)
 endif ()
 
 # Build additional tools
