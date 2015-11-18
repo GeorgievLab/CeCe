@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 #include "plugins/cell/CellBase.hpp"
+#include "simulator/Simulation.hpp"
 #include "Diffusion.hpp"
 
 /* ************************************************************************ */
@@ -45,9 +46,14 @@ struct Context
     plugin::diffusion::Module* diffusion;
     plugin::cell::CellBase& cell;
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords;
+    const simulator::Simulation::ParameterContainer parameters;
 
-    Context(plugin::diffusion::Module* d, plugin::cell::CellBase& c, const DynamicArray<plugin::diffusion::Module::Coordinate>& cs):
-    diffusion(d), cell(c), coords(cs)
+    Context(
+        plugin::diffusion::Module* d,
+        plugin::cell::CellBase& c,
+        const DynamicArray<plugin::diffusion::Module::Coordinate>& cs,
+        const simulator::Simulation::ParameterContainer& p):
+    diffusion(d), cell(c), coords(cs), parameters(p)
     {
         // Nothing to do
     }

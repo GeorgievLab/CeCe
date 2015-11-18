@@ -46,6 +46,10 @@ namespace stochastic_reactions {
 template <typename T>
 struct Pow
 {
+    using result_type = T;
+    using first_argument_type = T;
+    using second_argument_type = T;
+
     constexpr T operator()(const T &lhs, const T &rhs) const
     {
         return std::pow(lhs, rhs);
@@ -54,14 +58,24 @@ struct Pow
 
 /* ************************************************************************ */
 
+/**
+ * @brief Parent of all function graph nodes.
+ *
+ * @return
+ */
 template <typename Return>
 struct Node
 {
     virtual Return eval(const Context& pointers) const = 0;
 };
 
+/**
+ * @brief Operator with 2 children.
+ *
+ * @return
+ */
 template<typename OperatorType>
-struct Operator : public Node<typename OperatorType::result_type>
+struct OperatorTwo : public Node<typename OperatorType::result_type>
 {
     using NodeLeft = UniquePtr<Node<typename OperatorType::first_argument_type>>;
     using NodeRight = UniquePtr<Node<typename OperatorType::second_argument_type>>;
@@ -79,18 +93,48 @@ public:
 
 public:
 
-    Operator(NodeLeft l, NodeRight r):
+    OperatorTwo(NodeLeft l, NodeRight r):
     left(std::move(l)), right(std::move(r))
     {
         // Nothing to do.
     }
 };
 
-template <typename Return>
+/**
+ * @brief Operator with 1 children.
+ *
+ */
+template <typename OperatorType>
+struct OperatorOne : public Node<typename OperatorType::result_type>
+{
+    using NodeRoot = UniquePtr<Node<typename OperatorType::argument_type>>;
+
+private:
+    NodeRoot root;
+
+public:
+
+    typename OperatorType::result_type eval(const Context& pointers) const override
+    {
+        return OperatorType{}(root->eval(pointers));
+    }
+
+public:
+
+    OperatorOne(NodeRoot r):
+    root(std::move(r))
+    {
+        // Nothing to do.
+    }
+};
+
+
+/*template <typename Return>
 struct Function : public Node<Return>
 {
 private:
-    SharedPtr<Node<Return>> m_root;
+
+    Node<Return> m_root;
 
 public:
 
@@ -107,63 +151,111 @@ public:
     {
         return m_root->eval(pointers);
     }
-};
+};*/
 
+/**
+ * @brief Leaf which uses context from cell.
+ *
+ */
 struct IdentifierCell : public Node<RealType>
 {
 private:
-    String identifier;
+    String m_identifier;
 
 public:
 
     RealType eval(const Context& pointers) const override
     {
-        return pointers.cell.getMoleculeCount(identifier);
+        return pointers.cell.getMoleculeCount(m_identifier);
+    }
+
+public:
+
+    IdentifierCell(const String& identifier):
+    m_identifier(identifier)
+    {
+        // Nothing to do.
     }
 };
 
+/**
+ * @brief Leaf which uses context from diffusion.
+ *
+ */
 struct IdentifierEnv : public Node<RealType>
 {
 private:
-    String identifier;
+    String m_identifier;
 
 public:
 
     RealType eval(const Context& pointers) const override
     {
-        const auto id = pointers.diffusion->getSignalId(identifier);
+        const auto id = pointers.diffusion->getSignalId(m_identifier);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
             return getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
         }
         return 0;
     }
-};
-
-struct Amount : public Node<RealType>
-{
-private:
-    RealType amount;
 
 public:
 
-    RealType eval(const Context& pointers) const override
+    IdentifierEnv(const String& identifier):
+    m_identifier(identifier)
     {
-        return amount;
+        // Nothing to do.
     }
 };
 
-struct Parameter : public Node<RealType>
+/**
+ * @brief Leaf with fixed value.
+ *
+ */
+struct Amount : public Node<RealType>
 {
 private:
-    String identifier;
+    RealType m_amount;
 
 public:
 
     RealType eval(const Context& pointers) const override
     {
-        // TODO:
-        return 0;
+        return m_amount;
+    }
+
+public:
+
+    Amount(const RealType amount):
+    m_amount(amount)
+    {
+        // Nothing to do.
+    }
+};
+
+/**
+ * @brief Leaf with value from global parameters.
+ *
+ */
+struct IdentifierPar : public Node<RealType>
+{
+private:
+    String m_identifier;
+
+public:
+
+    RealType eval(const Context& pointers) const override
+    {
+        auto pointer = pointers.parameters.find(m_identifier);
+        return pointer->second;
+    }
+
+public:
+
+    IdentifierPar(const String& identifier):
+    m_identifier(identifier)
+    {
+        // Nothing to do.
     }
 };
 

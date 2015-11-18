@@ -27,15 +27,17 @@
 
 /* ************************************************************************ */
 
-#include "core/DynamicArray.hpp"
 #include "core/ExpressionParser.hpp"
-#include "core/Log.hpp"
+#include "core/DynamicArray.hpp"
 #include "core/Tokenizer.hpp"
 #include "core/Parser.hpp"
 #include "core/Tuple.hpp"
+#include "core/Pair.hpp"
+#include "core/Map.hpp"
+#include "core/Log.hpp"
 
-#include "Types.hpp"
 #include "Reactions.hpp"
+#include "Types.hpp"
 
 /* ************************************************************************ */
 
@@ -88,6 +90,7 @@ enum class TokenCode
     LessEqual,
     Null,
     Env,
+    Parameter,
     BracketO,
     BracketC,
     Function
@@ -98,21 +101,14 @@ enum class TokenCode
 /**
  * @brief Reaction parser tokenizer.
  */
-class Tokenizer
-    : public BasicTokenizer<
-        Tokenizer,
-        BasicToken<TokenCode, String>,
-        const char*>
+class Tokenizer : public BasicTokenizer<Tokenizer, BasicToken<TokenCode, String>, const char*>
 {
 
 // Public Types
 public:
 
     // Parent type
-    using ParentType = BasicTokenizer<
-        Tokenizer,
-        BasicToken<TokenCode, String>,
-        const char*>;
+    using ParentType = BasicTokenizer<Tokenizer, BasicToken<TokenCode, String>, const char*>;
 
     /// Token type
     using TokenType = typename ParentType::TokenType;
@@ -123,7 +119,7 @@ public:
 
     using ParentType::ParentType;
 
-// Public Operation
+// Public tokenizer operations
 public:
 
     /**
@@ -133,23 +129,20 @@ public:
      */
     TokenType tokenizeIdentifier() noexcept
     {
+        // initialize token
         TokenType token{TokenCode::Identifier};
-
         token.value.push_back(value());
         next();
 
+        // fill the string
         while (isIdentifierRest())
         {
             token.value.push_back(value());
             next();
         }
 
-        if (value() == '(')
-        {
-            token.code = TokenCode::Function;
-            next();
-        }
-        else if (token.value == "and")
+        // check if string is keyword...
+        if (token.value == "and")
             token.code = TokenCode::And;
         else if (token.value == "or")
             token.code = TokenCode::Or;
@@ -161,13 +154,21 @@ public:
             token.code = TokenCode::Null;
         else if (token.value == "env")
             token.code = TokenCode::Env;
+        else if (token.value == "par")
+            token.code = TokenCode::Parameter;
+        // ...or function name
+        else if (value() == '(')
+        {
+            token.code = TokenCode::Function;
+            next();
+        }
 
         return token;
     }
 
 
     /**
-     * @brief Tokenize source.
+     * @brief Main tokenize function.
      *
      * @return
      */
@@ -185,6 +186,7 @@ public:
                 next();
         }
 
+        // Number
         if(isDigit())
         {
             TokenType token{TokenCode::Number};
@@ -199,103 +201,80 @@ public:
             return token;
         }
 
+        // Identifier
         if (isIdentifierBegin())
             return tokenizeIdentifier();
 
+        // Operators
         switch (value())
         {
         case '-':
             next();
-
             if (match('>'))
                 return TokenType{TokenCode::ArrowFwrd};
-
             throw TokenType{TokenCode::Minus};
-
         case '>':
             next();
-
             if (match('='))
                 return TokenType{TokenCode::GreaterEqual};
-
             return TokenType{TokenCode::Greater};
-
         case '<':
             next();
-
             if (match('-'))
                 return TokenType{TokenCode::ArrowBack};
             if (match('='))
                 return TokenType{TokenCode::LessEqual};
-
             return TokenType{TokenCode::Less};
-
         case '=':
             next();
-
             if (match('<'))
                 return TokenType{TokenCode::LessEqual};
             if (match('>'))
                 return TokenType{TokenCode::GreaterEqual};
             if (match('='))
                 return TokenType{TokenCode::Equal};
-
             return TokenType{TokenCode::Equal};
-
         case '!':
             next();
-
             if (match('='))
                 return TokenType{TokenCode::NotEqual};
-
             throw InvalidOperatorException();
-
         case ':':
             next();
             return TokenType{TokenCode::Colon};
-
         case '+':
             next();
             return TokenType{TokenCode::Plus};
-
         case '*':
             next();
             return TokenType{TokenCode::Multiply};
-
         case '/':
             next();
             return TokenType{TokenCode::Divide};
-
         case '^':
             next();
             return TokenType{TokenCode::Power};
-
         case ';':
             next();
             return TokenType{TokenCode::Semicolon};
-
         case ',':
             next();
             return TokenType{TokenCode::Comma};
-
         case '(':
             next();
             return TokenType{TokenCode::BracketO};
-
         case ')':
             next();
             return TokenType{TokenCode::BracketC};
         }
 
-        // In case of invalid character, generate invalid token, but
-        // move to next character, so we don't keep trying to create
-        // a token from same character
+        // In case of invalid character, move to next character
         next();
 
         return TokenType{};
     }
 
-// Protected Operation
+// Protected Operations
 protected:
 
     /**
@@ -349,13 +328,16 @@ public:
      * @param code       Source code to parse.
      * @param parameters Reactions parameters.
      */
-    explicit ReactionsParser(const String& code, const Map<String, float>& parameters = Map<String, float>{}) noexcept
-        : ParentType(code.c_str(), code.c_str() + code.size()), m_parameters(parameters)
+    explicit ReactionsParser(const String& code) noexcept
+        : ParentType(code.c_str(), code.c_str() + code.size())
     {
         // Nothing to do.
     }
 
 /* ************************************************************************ */
+
+public:
+
     /**
      * @brief Parse source string into reactions.
      *
@@ -376,6 +358,14 @@ public:
     }
 
 /* ************************************************************************ */
+
+private:
+
+    /**
+     * @brief Parse one individual reaction.
+     *
+     * @return
+     */
     void parseReaction(Reactions& reactions)
     {
         // parse conditions
@@ -411,8 +401,8 @@ public:
 
 /* *********************************************************************** */
 
-protected:
-    // Use parent's member functions
+private:
+
     using ParentType::is;
     using ParentType::next;
     using ParentType::match;
@@ -424,6 +414,13 @@ protected:
 
 /* ************************************************************************ */
 
+private:
+
+    /**
+     * @brief Parse global functions or parameters.
+     *
+     * @return
+     */
     void parseGlobals(Reactions& reactions)
     {
 
@@ -451,7 +448,7 @@ protected:
         while(match(TokenCode::Or))
         {
             UniquePtr<Node<bool>> second = parseAnd();
-            first = makeUnique<Operator<std::logical_or<bool>>>(std::move(first), std::move(second));
+            first = makeUnique<OperatorTwo<std::logical_or<bool>>>(std::move(first), std::move(second));
         }
         return first;
     }
@@ -462,7 +459,7 @@ protected:
         while(match(TokenCode::And))
         {
             UniquePtr<Node<bool>> second = parseBParenthesis();
-            first = makeUnique<Operator<std::logical_and<bool>>>(std::move(first), std::move(second));
+            first = makeUnique<OperatorTwo<std::logical_and<bool>>>(std::move(first), std::move(second));
         }
         return first;
     }
@@ -495,7 +492,7 @@ protected:
         while(match(TokenCode::Greater, TokenCode::Less, TokenCode::GreaterEqual, TokenCode::LessEqual, TokenCode::Equal, TokenCode::NotEqual))
         {
             UniquePtr<Node<bool>> second = parseRelation();
-            first = makeUnique<Operator<std::logical_and<bool>>>(std::move(first), std::move(second));
+            first = makeUnique<OperatorTwo<std::logical_and<bool>>>(std::move(first), std::move(second));
         }
         return first;
     }
@@ -507,36 +504,25 @@ protected:
         {
             case TokenCode::Greater:
                 next();
-                return makeUnique<Operator<std::greater<bool>>>(std::move(first), std::move(parsePlus()));
+                return makeUnique<OperatorTwo<std::greater<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::Less:
                 next();
-                return makeUnique<Operator<std::less<bool>>>(std::move(first), std::move(parsePlus()));
+                return makeUnique<OperatorTwo<std::less<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::GreaterEqual:
                 next();
-                return makeUnique<Operator<std::greater_equal<bool>>>(std::move(first), std::move(parsePlus()));
+                return makeUnique<OperatorTwo<std::greater_equal<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::LessEqual:
                 next();
-                return makeUnique<Operator<std::less_equal<bool>>>(std::move(first), std::move(parsePlus()));
+                return makeUnique<OperatorTwo<std::less_equal<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::Equal:
                 next();
-                return makeUnique<Operator<std::equal_to<bool>>>(std::move(first), std::move(parsePlus()));
+                return makeUnique<OperatorTwo<std::equal_to<bool>>>(std::move(first), std::move(parsePlus()));
             case TokenCode::NotEqual:
                 next();
-                return makeUnique<Operator<std::not_equal_to<bool>>>(std::move(first), std::move(parsePlus()));
+                return makeUnique<OperatorTwo<std::not_equal_to<bool>>>(std::move(first), std::move(parsePlus()));
             default:
                 throw MissingOperatorException();
         }
-    }
-
-/* ************************************************************************ */
-    /**
-     * @brief Make rules from Strings
-     *
-     * @return array of ReqProd
-     */
-    DynamicArray<Reaction::ReqProd> makeRules(DynamicArray<String> ids_plus, DynamicArray<String> ids_minus)
-    {
-
     }
 
 /* ************************************************************************ */
@@ -561,9 +547,9 @@ protected:
             next();
             UniquePtr<Node<RealType>> second = parseMultiply();
             if(plus)
-                first = makeUnique<Operator<std::plus<RealType>>>(std::move(first), std::move(second));
+                first = makeUnique<OperatorTwo<std::plus<RealType>>>(std::move(first), std::move(second));
             else
-                first = makeUnique<Operator<std::minus<RealType>>>(std::move(first), std::move(second));
+                first = makeUnique<OperatorTwo<std::minus<RealType>>>(std::move(first), std::move(second));
         }
         return first;
     }
@@ -577,9 +563,9 @@ protected:
             next();
             UniquePtr<Node<RealType>> second = parsePower();
             if(plus)
-                first = makeUnique<Operator<std::multiplies<RealType>>>(std::move(first), std::move(second));
+                first = makeUnique<OperatorTwo<std::multiplies<RealType>>>(std::move(first), std::move(second));
             else
-                first = makeUnique<Operator<std::divides<RealType>>>(std::move(first), std::move(second));
+                first = makeUnique<OperatorTwo<std::divides<RealType>>>(std::move(first), std::move(second));
         }
         return first;
     }
@@ -590,7 +576,7 @@ protected:
         while(match(TokenCode::Power))
         {
             UniquePtr<Node<RealType>> second = parseParenthesis();
-            first = makeUnique<Operator<Pow<RealType>>>(std::move(first), std::move(second));
+            first = makeUnique<OperatorTwo<Pow<RealType>>>(std::move(first), std::move(second));
         }
         return first;
     }
@@ -611,14 +597,50 @@ protected:
     UniquePtr<Node<RealType>> parseFunction()
     {
         if(!match(TokenCode::Function))
-            return parseConstant();
+            return parseUnaryMinus();
 
         // prohledat fce v vratit
     }
 
-    UniquePtr<Node<RealType>> parseVariable()
+    UniquePtr<Node<RealType>> parseUnaryMinus()
     {
-        if(match(TokenCode::))
+        if(match(TokenCode::Minus))
+            return makeUnique<OperatorOne<std::negate<RealType>>>(std::move(parseParenthesis()));
+
+        return parseLeaf();
+    }
+
+    UniquePtr<Node<RealType>> parseLeaf()
+    {
+        if(match(TokenCode::Env))
+        {
+            require(TokenCode::Identifier);
+            String identifier = token.value;
+            next();
+            return makeUnique<IdentifierEnv>(identifier);
+        }
+        if(match(TokenCode::Parameter))
+        {
+            require(TokenCode::Identifier);
+            String identifier = token.value;
+            next();
+            return makeUnique<IdentifierEnv>(identifier);
+        }
+        if(is(TokenCode::Identifier))
+        {
+            String identifier = token.value;
+            next();
+            // zkusit zda je to parametr
+            return makeUnique<IdentifierCell>(identifier);
+        }
+        if(is(TokenCode::Number))
+        {
+            char* end;
+            RealType value = strtof(token.value, end);
+            next();
+            return makeUnique<Amount>(value);
+        }
+        throw MissingIdentifierException();
     }
 
 /* ************************************************************************ */
@@ -629,28 +651,32 @@ protected:
      */
     DynamicArray<String> parseList()
     {
-        DynamicArray<String> array;
+        DynamicArray<Map<String, bool>> array;
         do
         {
+            bool environment = match(TokenCode::Env);
             if (!is(TokenCode::Identifier))
                 throw MissingIdentifierException{};
-            array.push_back(token().value);
+            array.push_back(std::token().value);
             next();
         }
         while (match(TokenCode::Plus));
         return array;
     }
 
+/* ************************************************************************ */
 
-// Private Data Members
-private:
+    /**
+     * @brief Make rules from Strings
+     *
+     * @return array of ReqProd
+     */
+    DynamicArray<Reaction::ReqProd> makeRules(DynamicArray<String> ids_plus, DynamicArray<String> ids_minus)
+    {
 
-
-    /// Parser parameters.
-    const Map<String, float>& m_parameters;
+    }
 
 };
-
 /* ************************************************************************ */
 
 /**
@@ -661,9 +687,9 @@ private:
  *
  * @return Result reactions.
  */
-inline Reactions parseReactions(const String& code, const Map<String, float>& parameters = Map<String, float>{})
+inline Reactions parseReactions(const String& code)
 {
-    return ReactionsParser(code, parameters).parse();
+    return ReactionsParser(code).parse();
 }
 
 /* ************************************************************************ */

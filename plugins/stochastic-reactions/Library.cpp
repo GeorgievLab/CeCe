@@ -41,7 +41,7 @@ class StochasticReactionsApi : public PluginApi
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
         using namespace plugin::stochastic_reactions;
-        return parseReactions(code, simulation.getParameters());
+        return parseReactions(code);
     }
 };
 

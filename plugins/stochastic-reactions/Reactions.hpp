@@ -272,8 +272,8 @@ private:
     DynamicArray<PropensityType> m_propensities;
 
     /// Map of global defined functions.
-    Map<String, UniquePtr<Node<bool>>> m_boolFunctions;
-    Map<String, UniquePtr<Node<RealType>>> m_realFunctions;
+    Map<String, SharedPtr<Node<bool>>> m_boolFunctions;
+    Map<String, SharedPtr<Node<RealType>>> m_realFunctions;
 };
 
 /* ************************************************************************ */

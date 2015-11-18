@@ -39,8 +39,9 @@ void Reactions::operator()(simulator::Object& object, simulator::Simulation& sim
     auto diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
     const auto& worldSize = simulation.getWorldSize();
     const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
+    const auto& parameters = simulation.getParameters();
 
-    executeReactions(step, Context(diffusion, cell, coords));
+    executeReactions(step, Context(diffusion, cell, coords, parameters));
 }
 
 void Reactions::executeReactions(units::Time step, const Context& pointers)
