@@ -103,6 +103,10 @@ set(SRCS
 configure_file(version.hpp.in version.hpp @ONLY)
 include_directories(${PROJECT_BINARY_DIR})
 
+if (UNIX AND NOT APPLE)
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:\$ORIGIN/../lib")
+endif ()
+
 if (APPLE)
     set(SRCS ${SRCS} icons/${APP_NAME}.icns)
     set_source_files_properties(icons/${APP_NAME}.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
