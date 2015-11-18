@@ -50,7 +50,7 @@ set(VERSION_SPECIAL "")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Directory with plugins
-set(DIR_PLUGINS "cece/plugins")
+set(DIR_PLUGINS "${CMAKE_PROJECT_NAME}/plugins")
 
 # ######################################################################### #
 
@@ -141,7 +141,7 @@ if (UNIX AND NOT APPLE)
     include(GNUInstallDirs)
     set(INSTALL_DIR_RUNTIME "${CMAKE_INSTALL_BINDIR}")
     set(INSTALL_DIR_LIBRARY "${CMAKE_INSTALL_LIBDIR}")
-    set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${CMAKE_PROJECT_NAME}/${DIR_PLUGINS}")
+    set(INSTALL_DIR_PLUGINS "${INSTALL_DIR_LIBRARY}/${DIR_PLUGINS}")
     set(INSTALL_DIR_DATA    "${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_PROJECT_NAME}")
     set(INSTALL_DIR_MANUAL  "${CMAKE_INSTALL_DOCDIR}")
 elseif (APPLE)
