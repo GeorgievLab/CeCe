@@ -866,11 +866,13 @@ private:
         }
 #endif
 
+        const String title = APP_NAME " simulator [" + args.simulationFile.filename().string() + "]";
+
         // Create a windowed mode window and its OpenGL context
         m_window = glfwCreateWindow(
             m_windowWidth,
             m_windowHeight,
-            APP_NAME " simulator",
+            title.c_str(),
             args.fullscreen ? monitor : nullptr,
             nullptr
         );
