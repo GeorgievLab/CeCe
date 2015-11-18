@@ -34,7 +34,7 @@
 #include <GL/gl.h>
 #elif defined(_WIN32)
 #include <GL/gl.h>
-#include "render/glext.h"
+#include "cece/render/glext.h"
 #ifdef _MSC_VER
 #pragma comment(lib, "opengl32.lib")
 #endif

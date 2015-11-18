@@ -35,7 +35,7 @@
 #endif
 #include <thread>
 
-// Simulator
+// CeCe
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */

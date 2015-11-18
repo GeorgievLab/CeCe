@@ -27,7 +27,7 @@
 
 /* ************************************************************************ */
 
-// Simulator
+// CeCe
 #include "cece/core/String.hpp"
 #include "cece/simulator/Configuration.hpp"
 
