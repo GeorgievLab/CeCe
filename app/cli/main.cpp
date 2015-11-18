@@ -28,14 +28,6 @@
 #include <csignal>
 #include <atomic>
 #include <fstream>
-#if _WIN32
-// _splitpath
-#include <stdlib.h>
-#endif
-
-#if __APPLE__ && __MACH__
-#include <libgen.h>
-#endif
 
 #if ENABLE_RENDER
 #include <GLFW/glfw3.h>
@@ -147,15 +139,7 @@ void terminate_simulation(int param)
  */
 [[noreturn]] static void printHelp(const char* name) noexcept
 {
-#if _WIN32
-    char fname[_MAX_FNAME];
-    char fext[_MAX_EXT];
-    _splitpath(name, NULL, NULL, fname, fext);
-    auto bname = String(fname) + "." + fext;
-#else
-    DynamicArray<char> localName(name, name + strlen(name));
-    const char* bname = basename(localName.data());
-#endif
+    auto bname = FilePath(name).filename();
 
     std::cout <<
         APP_NAME "\n"
@@ -168,6 +152,7 @@ void terminate_simulation(int param)
         "Usage:\n"
         "  " << bname << " "
             "[ --plugins "
+            "| --plugins-dir "
             "| --param | -p "
 #if ENABLE_RENDER
             "| --visualize "
@@ -183,6 +168,7 @@ void terminate_simulation(int param)
         "<simulation-file>\n"
         "\n"
         "    --plugins            Prints a list of available plugins.\n"
+        "    --plugins-dir <dir>  Directory where plugins are located.\n"
         "    --param <name> <value> Set simulation parameter.\n"
         "    -p <name> <value>    Set simulation parameter.\n"
 #if ENABLE_RENDER
@@ -211,6 +197,16 @@ void terminate_simulation(int param)
 [[noreturn]] static void printPlugins() noexcept
 {
     std::cout <<
+        "Plugins directories:\n";
+
+    for (auto name : simulator::PluginManager::s().getDirectories())
+    {
+        std::cout << "    " << name << "\n";
+    }
+
+    std::cout << std::endl;
+
+    std::cout <<
         "Plugins:\n";
 
     for (auto name : simulator::PluginManager::s().getNames())
@@ -226,6 +222,21 @@ void terminate_simulation(int param)
 /* ************************************************************************ */
 
 /**
+ * @brief Returns plugins directory.
+ *
+ * @param app Executable path.
+ * @param dir Directory to plugins.
+ *
+ * @return
+ */
+String getPluginsDirectory(FilePath app, FilePath dir) noexcept
+{
+    return (app.remove_filename() / dir).string();
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Parse arguments.
  *
  * @param argc
@@ -236,6 +247,8 @@ void terminate_simulation(int param)
 Arguments parseArguments(int argc, char** argv)
 {
     Arguments args;
+    bool printPluginsFlag = false;
+    bool printHelpFlag = false;
 
     for (int i = 1; i < argc; ++i)
     {
@@ -302,10 +315,22 @@ Arguments parseArguments(int argc, char** argv)
             }
             else
 #endif
+            if (arg == "--plugins-dir")
+            {
+                if (i + 1 >= argc)
+                    throw InvalidArgumentException("missing directory path");
+
+                simulator::PluginManager::s().addDirectory(argv[i + 1]);
+                ++i;
+            }
             if (arg == "--plugins")
-                printPlugins();
+            {
+                printPluginsFlag = true;
+            }
             else if (arg == "--help")
-                printHelp(argv[0]);
+            {
+                printHelpFlag = true;
+            }
         }
         else if (args.simulationFile.empty())
         {
@@ -316,6 +341,28 @@ Arguments parseArguments(int argc, char** argv)
             Log::warning("Unknown argument: ", arg.getData());
         }
     }
+
+    if (simulator::PluginManager::s().getDirectories().empty())
+    {
+#ifdef DIR_PLUGINS
+        simulator::PluginManager::s().addDirectory(DIR_PLUGINS);
+#elif __linux__
+        simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
+#elif __APPLE__ && __MACH__
+            // Not supported yet
+#elif _WIN32
+        simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "."));
+#endif
+    }
+
+    // Initialize plugins
+    simulator::PluginManager::s().init();
+
+    if (printHelpFlag)
+        printHelp(argv[0]);
+
+    if (printPluginsFlag)
+        printPlugins();
 
     if (args.simulationFile.empty())
         throw InvalidArgumentException("missing simulation file");
@@ -1103,28 +1150,6 @@ private:
 /* ************************************************************************ */
 
 /**
- * @brief Returns plugins directory.
- *
- * @param path Executable path.
- *
- * @return
- */
-String getPluginsDirectory(const char* path) noexcept
-{
-#if _WIN32
-    char drive[_MAX_DRIVE];
-    char dir[_MAX_DIR];
-    _splitpath(path, drive, dir, NULL, NULL);
-    return String(drive) + dir + DIR_PLUGINS;
-#else
-    // Absolute path to plugins directory on Linux
-    return DIR_PLUGINS;
-#endif
-}
-
-/* ************************************************************************ */
-
-/**
  * @brief Entry function.
  *
  * @param argc
@@ -1135,12 +1160,6 @@ int main(int argc, char** argv)
     // Install signal handler
     signal(SIGTERM, terminate_simulation);
     signal(SIGINT, terminate_simulation);
-
-#if !(__APPLE__ && __MACH__)
-    // Register plugins directory
-    simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0]));
-#endif
-    simulator::PluginManager::s().init();
 
 #if ENABLE_MEASUREMENT
     std::ofstream time_file("time.csv");

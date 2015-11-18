@@ -155,16 +155,6 @@ elseif (WIN32)
     set(INSTALL_DIR_LIBRARY ".")
     set(INSTALL_DIR_PLUGINS ".")
     set(INSTALL_DIR_MANUAL  "manual")
-endif ()
-
-# Default plugins directory
-set(PLUGINS_DIRECTORY "${INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}")
-
-if (DEV_PLUGINS)
-    # Directory is in build directory
-    set(PLUGINS_DIRECTORY "${PROJECT_BINARY_DIR}/${DIR_PLUGINS}")
-elseif (WIN32)
-    # Path to current directory
     set(PLUGINS_DIRECTORY ".")
 endif ()
 
@@ -174,7 +164,6 @@ message(STATUS "Framework directory: ${INSTALL_DIR_FRAMEWORK}")
 message(STATUS "Bundle directory: ${INSTALL_DIR_BUNDLE}")
 message(STATUS "Data directory: ${INSTALL_DIR_DATA}")
 message(STATUS "Manual directory: ${INSTALL_DIR_MANUAL}")
-message(STATUS "Plugins directory: ${PLUGINS_DIRECTORY}")
 
 # ######################################################################### #
 

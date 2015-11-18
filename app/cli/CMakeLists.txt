@@ -41,8 +41,14 @@ endif ()
 # Set some definitions
 add_definitions(
     -DAPP_NAME="${APP_NAME}"
-    -DDIR_PLUGINS="${PLUGINS_DIRECTORY}"
 )
+
+if (DEV_PLUGINS)
+    # Directory is in build directory
+    add_definitions(
+        -DDIR_PLUGINS="${CMAKE_BINARY_DIR}/${DIR_PLUGINS}"
+    )
+endif ()
 
 if (CONFIG_RENDER_ENABLE)
     find_package(GLFW REQUIRED)

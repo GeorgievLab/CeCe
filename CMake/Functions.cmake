@@ -96,8 +96,9 @@ function(build_plugin NAME)
             simulator
         )
 
+        # Allow to link other plugins
         set_target_properties(${PROJECT_NAME} PROPERTIES
-            INSTALL_RPATH ${PLUGINS_DIRECTORY}
+            INSTALL_RPATH "$ORIGIN"
         )
 
         # Create symbolic link
@@ -106,7 +107,7 @@ function(build_plugin NAME)
                 add_custom_command(
                     TARGET ${PROJECT_NAME} POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E
-                        create_symlink $<TARGET_FILE:${PROJECT_NAME}> ${PLUGINS_DIRECTORY}/$<TARGET_FILE_NAME:${PROJECT_NAME}>
+                        create_symlink $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_BINARY_DIR}/${DIR_PLUGINS}/$<TARGET_FILE_NAME:${PROJECT_NAME}>
                 )
             elseif (WIN32)
                 # Permission issue
