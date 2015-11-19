@@ -98,7 +98,6 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
 # Add tests
 build_test(core
     SOURCES
-        test/test.cpp
         test/DynamicArrayTest.cpp
         test/IteratorRangeTest.cpp
         test/VectorRangeTest.cpp

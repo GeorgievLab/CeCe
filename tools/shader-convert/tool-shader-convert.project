@@ -182,10 +182,7 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="simulator"/>
-    <Project Name="render"/>
-  </Dependencies>
+  <Dependencies Name="Debug"/>
   <Dependencies Name="DebugCLI"/>
   <Dependencies Name="Release"/>
 </CodeLite_Project>

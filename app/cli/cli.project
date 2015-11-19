@@ -37,12 +37,6 @@
   <VirtualDirectory Name="src">
     <File Name="main.cpp"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="simulator"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="DebugCLI"/>
-  <Dependencies Name="Release"/>
   <VirtualDirectory Name="resources">
     <File Name="version.rc"/>
     <File Name="cece-cli.sh"/>
@@ -198,4 +192,7 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="DebugCLI"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

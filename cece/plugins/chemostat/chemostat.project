@@ -19,8 +19,7 @@
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="include">
-  </VirtualDirectory>
+  <VirtualDirectory Name="include"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -108,9 +107,6 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="render"/>
-  </Dependencies>
+  <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
 </CodeLite_Project>

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="CeCe" InternalType="Library">
+  <Plugins>
+    <Plugin Name="CMakePlugin">
+      <![CDATA[[{
+  "name": "Debug",
+  "enabled": true,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": "gui"
+ }]]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <Settings Type="Static Library">
+    <GlobalSettings>
+      <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
+        <IncludePath Value=".."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="clang++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+        <Preprocessor Value="ENABLE_RENDER=1"/>
+        <Preprocessor Value="ENABLE_PHYSICS=1"/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="clang++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+  <VirtualDirectory Name="core">
+    <File Name="core/AlignedAllocator.cpp"/>
+    <File Name="core/AlignedAllocator.hpp"/>
+    <File Name="core/Any.hpp"/>
+    <File Name="core/Assert.hpp"/>
+    <File Name="core/constants.hpp"/>
+    <File Name="core/DataTable.cpp"/>
+    <File Name="core/DataTable.hpp"/>
+    <File Name="core/DynamicArray.hpp"/>
+    <File Name="core/Exception.hpp"/>
+    <File Name="core/ExpressionParser.cpp"/>
+    <File Name="core/ExpressionParser.hpp"/>
+    <File Name="core/Factory.hpp"/>
+    <File Name="core/FilePath.cpp"/>
+    <File Name="core/FilePath.hpp"/>
+    <File Name="core/FileStream.hpp"/>
+    <File Name="core/Grid.cpp"/>
+    <File Name="core/Grid.hpp"/>
+    <File Name="core/InStream.hpp"/>
+    <File Name="core/IntegerSequence.hpp"/>
+    <File Name="core/LexicalCast.hpp"/>
+    <File Name="core/ListenerContainer.hpp"/>
+    <File Name="core/Log.cpp"/>
+    <File Name="core/Log.hpp"/>
+    <File Name="core/Macro.hpp"/>
+    <File Name="core/Map.hpp"/>
+    <File Name="core/Mutex.hpp"/>
+    <File Name="core/OutStream.hpp"/>
+    <File Name="core/Pair.hpp"/>
+    <File Name="core/Parameters.cpp"/>
+    <File Name="core/Parameters.hpp"/>
+    <File Name="core/Parser.hpp"/>
+    <File Name="core/Range.hpp"/>
+    <File Name="core/Real.hpp"/>
+    <File Name="core/SharedPtr.hpp"/>
+    <File Name="core/StaticArray.hpp"/>
+    <File Name="core/StaticMatrix.hpp"/>
+    <File Name="core/String.hpp"/>
+    <File Name="core/StringStream.hpp"/>
+    <File Name="core/StringView.hpp"/>
+    <File Name="core/TimeMeasurement.cpp"/>
+    <File Name="core/TimeMeasurement.hpp"/>
+    <File Name="core/Tokenizer.hpp"/>
+    <File Name="core/TriBool.hpp"/>
+    <File Name="core/Tuple.hpp"/>
+    <File Name="core/UniquePtr.hpp"/>
+    <File Name="core/Units.cpp"/>
+    <File Name="core/Units.hpp"/>
+    <File Name="core/UnitsCtors.hpp"/>
+    <File Name="core/ValueIterator.hpp"/>
+    <File Name="core/Variant.hpp"/>
+    <File Name="core/Vector.cpp"/>
+    <File Name="core/Vector.hpp"/>
+    <File Name="core/VectorRange.hpp"/>
+    <File Name="core/VectorUnits.cpp"/>
+    <File Name="core/VectorUnits.hpp"/>
+    <File Name="core/ViewPtr.hpp"/>
+    <File Name="core/Zero.hpp"/>
+    <VirtualDirectory Name="test">
+      <File Name="core/test/DynamicArrayTest.cpp"/>
+      <File Name="core/test/ExpressionParserTest.cpp"/>
+      <File Name="core/test/IteratorRangeTest.cpp"/>
+      <File Name="core/test/StringViewTest.cpp"/>
+      <File Name="core/test/TokenizerTest.cpp"/>
+      <File Name="core/test/UnitsTest.cpp"/>
+      <File Name="core/test/VectorRangeTest.cpp"/>
+      <File Name="core/test/VectorTest.cpp"/>
+      <File Name="core/test/VectorUnitsTest.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="CMake">
+      <File Name="core/CMakeLists.txt"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="render">
+    <File Name="render/Buffer.cpp"/>
+    <File Name="render/Buffer.hpp"/>
+    <File Name="render/Camera.cpp"/>
+    <File Name="render/Camera.hpp"/>
+    <File Name="render/Circle.cpp"/>
+    <File Name="render/Circle.hpp"/>
+    <File Name="render/Color.cpp"/>
+    <File Name="render/Color.hpp"/>
+    <File Name="render/Context.cpp"/>
+    <File Name="render/Context.hpp"/>
+    <File Name="render/datatype.hpp"/>
+    <File Name="render/errors.cpp"/>
+    <File Name="render/errors.hpp"/>
+    <File Name="render/Font.cpp"/>
+    <File Name="render/Font.hpp"/>
+    <File Name="render/glext.h"/>
+    <File Name="render/Grid.cpp"/>
+    <File Name="render/Grid.hpp"/>
+    <File Name="render/GridBase.hpp"/>
+    <File Name="render/GridColor.cpp"/>
+    <File Name="render/GridColor.hpp"/>
+    <File Name="render/GridColorColorMap.cpp"/>
+    <File Name="render/GridColorColorMap.hpp"/>
+    <File Name="render/GridColorSmooth.cpp"/>
+    <File Name="render/GridColorSmooth.hpp"/>
+    <File Name="render/GridVector.cpp"/>
+    <File Name="render/GridVector.hpp"/>
+    <File Name="render/ImageData.hpp"/>
+    <File Name="render/Lines.cpp"/>
+    <File Name="render/Lines.hpp"/>
+    <File Name="render/Object.cpp"/>
+    <File Name="render/Object.hpp"/>
+    <File Name="render/PhysicsDebugger.cpp"/>
+    <File Name="render/PhysicsDebugger.hpp"/>
+    <File Name="render/Program.cpp"/>
+    <File Name="render/Program.hpp"/>
+    <File Name="render/Rectangle.cpp"/>
+    <File Name="render/Rectangle.hpp"/>
+    <File Name="render/Shader.cpp"/>
+    <File Name="render/Shader.hpp"/>
+    <File Name="render/Texture.cpp"/>
+    <File Name="render/Texture.hpp"/>
+    <File Name="render/VertexElement.hpp"/>
+    <File Name="render/VertexFormat.hpp"/>
+    <VirtualDirectory Name="CMake">
+      <File Name="render/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="resource">
+      <File Name="render/fs.colormap.hpp"/>
+      <File Name="render/fs.smooth.hpp"/>
+      <File Name="render/vs.colormap.hpp"/>
+      <File Name="render/vs.smooth.hpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="simulator">
+    <File Name="simulator/Configuration.cpp"/>
+    <File Name="simulator/Configuration.hpp"/>
+    <File Name="simulator/Obstacle.cpp"/>
+    <File Name="simulator/Obstacle.hpp"/>
+    <File Name="simulator/Shape.hpp"/>
+    <File Name="simulator/ShapeToGrid.hpp"/>
+    <File Name="simulator/Simulation.cpp"/>
+    <File Name="simulator/Simulation.hpp"/>
+    <File Name="simulator/SimulationListener.hpp"/>
+    <File Name="simulator/Simulator.cpp"/>
+    <File Name="simulator/Simulator.hpp"/>
+    <VirtualDirectory Name="CMake">
+      <File Name="simulator/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="resource">
+      <File Name="simulator/font.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="module">
+      <File Name="simulator/Module.cpp"/>
+      <File Name="simulator/Module.hpp"/>
+      <File Name="simulator/ModuleContainer.cpp"/>
+      <File Name="simulator/ModuleContainer.hpp"/>
+      <File Name="simulator/ModuleFactory.hpp"/>
+      <File Name="simulator/ModuleFactoryManager.cpp"/>
+      <File Name="simulator/ModuleFactoryManager.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="object">
+      <File Name="simulator/Object.cpp"/>
+      <File Name="simulator/Object.hpp"/>
+      <File Name="simulator/ObjectContainer.cpp"/>
+      <File Name="simulator/ObjectContainer.hpp"/>
+      <File Name="simulator/ObjectFactory.hpp"/>
+      <File Name="simulator/ObjectFactoryManager.cpp"/>
+      <File Name="simulator/ObjectFactoryManager.hpp"/>
+      <File Name="simulator/ObjectType.hpp"/>
+      <File Name="simulator/ObjectTypeContainer.cpp"/>
+      <File Name="simulator/ObjectTypeContainer.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="plugin">
+      <File Name="simulator/Plugin.cpp"/>
+      <File Name="simulator/Plugin.hpp"/>
+      <File Name="simulator/PluginApi.cpp"/>
+      <File Name="simulator/PluginApi.hpp"/>
+      <File Name="simulator/PluginManager.cpp"/>
+      <File Name="simulator/PluginManager.hpp"/>
+      <File Name="simulator/Program.hpp"/>
+      <File Name="simulator/ProgramContainer.cpp"/>
+      <File Name="simulator/ProgramContainer.hpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+</CodeLite_Project>

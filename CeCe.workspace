@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="CeCe" Database="" SWTLW="No">
+<CodeLite_Workspace Name="CeCe" Database="">
   <Project Name="gui" Path="app/gui/gui.project" Active="No"/>
-  <Project Name="core" Path="cece/core/core.project" Active="No"/>
-  <Project Name="simulator" Path="cece/simulator/simulator.project"/>
-  <Project Name="render" Path="cece/render/render.project"/>
   <Project Name="cli" Path="app/cli/cli.project" Active="Yes"/>
   <Project Name="diffusion" Path="cece/plugins/diffusion/diffusion.project" Active="No"/>
   <Project Name="cell" Path="cece/plugins/cell/cell.project" Active="No"/>
@@ -27,12 +24,10 @@
   </Environment>
   <Project Name="plugin-xml" Path="cece/plugins/xml/plugin-xml.project" Active="No"/>
   <Project Name="obstacles-svg" Path="cece/plugins/obstacles-svg/obstacles-svg.project" Active="No"/>
+  <Project Name="CeCe" Path="cece/CeCe.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
-      <Project Name="simulator" ConfigName="Debug"/>
-      <Project Name="render" ConfigName="Debug"/>
       <Project Name="gui" ConfigName="Debug"/>
-      <Project Name="core" ConfigName="Debug"/>
       <Project Name="cli" ConfigName="DebugCLI"/>
       <Project Name="plugin_diffusion" ConfigName="Debug"/>
       <Project Name="plugin_cell" ConfigName="Debug"/>
@@ -55,12 +50,10 @@
       <Project Name="plugin_chemostat" ConfigName="Debug"/>
       <Project Name="plugin_xml" ConfigName="Debug"/>
       <Project Name="plugin_obstacles-svg" ConfigName="Debug"/>
+      <Project Name="CeCe" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
-      <Project Name="core" ConfigName="Release"/>
-      <Project Name="simulator" ConfigName="Release"/>
-      <Project Name="render" ConfigName="Release"/>
       <Project Name="cli" ConfigName="Release"/>
       <Project Name="plugin_diffusion" ConfigName="Release"/>
       <Project Name="plugin_cell" ConfigName="Release"/>
@@ -83,6 +76,7 @@
       <Project Name="plugin_chemostat" ConfigName="Release"/>
       <Project Name="plugin_xml" ConfigName="Release"/>
       <Project Name="plugin_obstacles-svg" ConfigName="Release"/>
+      <Project Name="CeCe" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

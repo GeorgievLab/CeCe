@@ -117,9 +117,6 @@
   <VirtualDirectory Name="test">
     <File Name="test/test.cpp"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="render"/>
-  </Dependencies>
+  <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
 </CodeLite_Project>
