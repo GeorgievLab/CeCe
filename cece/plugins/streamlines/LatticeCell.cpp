@@ -44,19 +44,19 @@ namespace {
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::IndexType, 3> TOP_LINE      = LatticeCell::INDEX_MAP[0];
+const StaticArray<LatticeCell::IndexType, 3> TOP_LINE      = LatticeCell::INDEX_MAP[0];
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::IndexType, 3> MIDDLE_LINE   = LatticeCell::INDEX_MAP[1];
+const StaticArray<LatticeCell::IndexType, 3> MIDDLE_LINE   = LatticeCell::INDEX_MAP[1];
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::IndexType, 3> BOTTOM_LINE   = LatticeCell::INDEX_MAP[2];
+const StaticArray<LatticeCell::IndexType, 3> BOTTOM_LINE   = LatticeCell::INDEX_MAP[2];
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::IndexType, 3> LEFT_COLUMN   = {{
+const StaticArray<LatticeCell::IndexType, 3> LEFT_COLUMN   = {{
     LatticeCell::INDEX_MAP[0][0],
     LatticeCell::INDEX_MAP[1][0],
     LatticeCell::INDEX_MAP[2][0]
@@ -64,7 +64,7 @@ constexpr StaticArray<LatticeCell::IndexType, 3> LEFT_COLUMN   = {{
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::IndexType, 3> MIDDLE_COLUMN {{
+const StaticArray<LatticeCell::IndexType, 3> MIDDLE_COLUMN {{
     LatticeCell::INDEX_MAP[0][1],
     LatticeCell::INDEX_MAP[1][1],
     LatticeCell::INDEX_MAP[2][1]
@@ -72,7 +72,7 @@ constexpr StaticArray<LatticeCell::IndexType, 3> MIDDLE_COLUMN {{
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::IndexType, 3> RIGHT_COLUMN  {{
+const StaticArray<LatticeCell::IndexType, 3> RIGHT_COLUMN  {{
     LatticeCell::INDEX_MAP[0][2],
     LatticeCell::INDEX_MAP[1][2],
     LatticeCell::INDEX_MAP[2][2]
@@ -80,7 +80,7 @@ constexpr StaticArray<LatticeCell::IndexType, 3> RIGHT_COLUMN  {{
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> CENTER_RHO{{
+const StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> CENTER_RHO{{
     MIDDLE_COLUMN, // PositionRight
     MIDDLE_COLUMN, // PositionLeft
     MIDDLE_LINE,   // PositionTop
@@ -89,7 +89,7 @@ constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::Posit
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> KNOWN_RHO{{
+const StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> KNOWN_RHO{{
     LEFT_COLUMN,  // PositionRight
     RIGHT_COLUMN, // PositionLeft
     BOTTOM_LINE,  // PositionTop
@@ -98,7 +98,7 @@ constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::Posit
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> UNKNOWN_RHO{{
+const StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> UNKNOWN_RHO{{
     RIGHT_COLUMN, // PositionRight
     LEFT_COLUMN,  // PositionLeft
     TOP_LINE,     // PositionTop
@@ -107,7 +107,7 @@ constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::Posit
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::VelocityType, LatticeCell::PositionCount> VELOCITIES{{
+const StaticArray<LatticeCell::VelocityType, LatticeCell::PositionCount> VELOCITIES{{
     { 1,  0}, // PositionRight
     {-1,  0}, // PositionLeft
     { 0,  1}, // PositionTop
@@ -116,7 +116,7 @@ constexpr StaticArray<LatticeCell::VelocityType, LatticeCell::PositionCount> VEL
 
 /* ************************************************************************ */
 
-constexpr StaticArray<LatticeCell::IndexType, LatticeCell::PositionCount> BC_CENTER{{
+const StaticArray<LatticeCell::IndexType, LatticeCell::PositionCount> BC_CENTER{{
     LatticeCell::INDEX_MAP[1][2], // PositionRight
     LatticeCell::INDEX_MAP[1][0], // PositionLeft
     LatticeCell::INDEX_MAP[0][1], // PositionTop
@@ -125,20 +125,20 @@ constexpr StaticArray<LatticeCell::IndexType, LatticeCell::PositionCount> BC_CEN
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> BC_SIDE1{{
-    {LatticeCell::INDEX_MAP[0][2], LatticeCell::INDEX_MAP[2][1], LatticeCell::INDEX_MAP[0][1]}, // PositionRight
-    {LatticeCell::INDEX_MAP[0][0], LatticeCell::INDEX_MAP[2][1], LatticeCell::INDEX_MAP[0][1]}, // PositionLeft
-    {LatticeCell::INDEX_MAP[0][2], LatticeCell::INDEX_MAP[1][0], LatticeCell::INDEX_MAP[1][2]}, // PositionTop
-    {LatticeCell::INDEX_MAP[2][2], LatticeCell::INDEX_MAP[1][0], LatticeCell::INDEX_MAP[1][2]}  // PositionBottom
+const StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> BC_SIDE1{{
+    {{LatticeCell::INDEX_MAP[0][2], LatticeCell::INDEX_MAP[2][1], LatticeCell::INDEX_MAP[0][1]}}, // PositionRight
+    {{LatticeCell::INDEX_MAP[0][0], LatticeCell::INDEX_MAP[2][1], LatticeCell::INDEX_MAP[0][1]}}, // PositionLeft
+    {{LatticeCell::INDEX_MAP[0][2], LatticeCell::INDEX_MAP[1][0], LatticeCell::INDEX_MAP[1][2]}}, // PositionTop
+    {{LatticeCell::INDEX_MAP[2][2], LatticeCell::INDEX_MAP[1][0], LatticeCell::INDEX_MAP[1][2]}}  // PositionBottom
 }};
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> BC_SIDE2{{
-    {LatticeCell::INDEX_MAP[2][2], LatticeCell::INDEX_MAP[0][1], LatticeCell::INDEX_MAP[2][1]}, // PositionRight
-    {LatticeCell::INDEX_MAP[2][0], LatticeCell::INDEX_MAP[0][1], LatticeCell::INDEX_MAP[2][1]}, // PositionLeft
-    {LatticeCell::INDEX_MAP[0][0], LatticeCell::INDEX_MAP[1][2], LatticeCell::INDEX_MAP[1][0]}, // PositionTop
-    {LatticeCell::INDEX_MAP[2][0], LatticeCell::INDEX_MAP[1][2], LatticeCell::INDEX_MAP[1][0]}  // PositionBottom
+const StaticArray<StaticArray<LatticeCell::IndexType, 3>, LatticeCell::PositionCount> BC_SIDE2{{
+    {{LatticeCell::INDEX_MAP[2][2], LatticeCell::INDEX_MAP[0][1], LatticeCell::INDEX_MAP[2][1]}}, // PositionRight
+    {{LatticeCell::INDEX_MAP[2][0], LatticeCell::INDEX_MAP[0][1], LatticeCell::INDEX_MAP[2][1]}}, // PositionLeft
+    {{LatticeCell::INDEX_MAP[0][0], LatticeCell::INDEX_MAP[1][2], LatticeCell::INDEX_MAP[1][0]}}, // PositionTop
+    {{LatticeCell::INDEX_MAP[2][0], LatticeCell::INDEX_MAP[1][2], LatticeCell::INDEX_MAP[1][0]}}  // PositionBottom
 }};
 
 /* ************************************************************************ */
