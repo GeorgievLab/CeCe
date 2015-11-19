@@ -43,25 +43,9 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
-template <typename T>
-struct Pow
-{
-    using result_type = T;
-    using first_argument_type = T;
-    using second_argument_type = T;
-
-    constexpr T operator()(const T &lhs, const T &rhs) const
-    {
-        return std::pow(lhs, rhs);
-    }
-};
-
-/* ************************************************************************ */
-
 /**
  * @brief Parent of all function graph nodes.
  *
- * @return
  */
 template <typename Return>
 struct Node
@@ -72,7 +56,6 @@ struct Node
 /**
  * @brief Operator with 2 children.
  *
- * @return
  */
 template<typename OperatorType>
 struct OperatorTwo : public Node<typename OperatorType::result_type>
@@ -127,31 +110,6 @@ public:
         // Nothing to do.
     }
 };
-
-
-/*template <typename Return>
-struct Function : public Node<Return>
-{
-private:
-
-    Node<Return> m_root;
-
-public:
-
-    explicit Function<Return>(UniquePtr<Node<Return>> root)
-    {
-        m_root = std::move(root);
-    }
-
-    Function<Return>() = default;
-
-public:
-
-    Return eval(const Context& pointers) const override
-    {
-        return m_root->eval(pointers);
-    }
-};*/
 
 /**
  * @brief Leaf which uses context from cell.

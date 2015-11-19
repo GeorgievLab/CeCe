@@ -43,7 +43,7 @@ enum class TestTokenCode
     Invalid,
     Identifier,
     Number,
-    Operator,
+    OperatorTwo,
 };
 
 /* ************************************************************************ */

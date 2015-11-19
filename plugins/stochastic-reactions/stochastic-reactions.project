@@ -30,6 +30,7 @@
     <File Name="Reaction.hpp"/>
     <File Name="Types.hpp"/>
     <File Name="Function.hpp"/>
+    <File Name="Functors.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

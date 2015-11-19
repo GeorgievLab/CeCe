@@ -37,6 +37,7 @@
 #include "core/Log.hpp"
 
 #include "Reactions.hpp"
+#include "Functors.hpp"
 #include "Types.hpp"
 
 /* ************************************************************************ */
@@ -371,7 +372,8 @@ private:
         // parse conditions
         UniquePtr<Node<bool>> condition = parseCondition();
         // parse LS
-        auto ids_minus = parseList();
+        DynamicArray<ReqProd> rules;
+        parseList(rules);
         // check reversible reaction
         bool reversible = false;
         UniquePtr<Node<RealType>> revRate;
@@ -389,7 +391,6 @@ private:
         // expected end of reaction
         requireNext(TokenCode::Semicolon);
         // extending
-        auto rules = makeRules(ids_plus, ids_minus);
         reactions.extend(std::move(Reaction(std::move(condition), std::move(rate), rules)));
         // extending reversible
         if (reversible)
@@ -432,14 +433,14 @@ private:
      *
      * @return pointer to node which is evaulated for true/false
      */
-    UniquePtr<Node<bool>> parseCondition()
+    SharedPtr<Node<bool>> parseCondition()
     {
         if (!match(TokenCode::If))
             return {};
 
         auto ptr = parseOr();
         requireNext(TokenCode::Colon);
-        return ptr;
+        return makeShared<Node<bool>(std::move(ptr));
     }
 
     UniquePtr<Node<bool>> parseOr()
@@ -615,20 +616,20 @@ private:
         if(match(TokenCode::Env))
         {
             require(TokenCode::Identifier);
-            String identifier = token.value;
+            String identifier = token().value;
             next();
             return makeUnique<IdentifierEnv>(identifier);
         }
         if(match(TokenCode::Parameter))
         {
             require(TokenCode::Identifier);
-            String identifier = token.value;
+            String identifier = token().value;
             next();
             return makeUnique<IdentifierEnv>(identifier);
         }
         if(is(TokenCode::Identifier))
         {
-            String identifier = token.value;
+            String identifier = token().value;
             next();
             // zkusit zda je to parametr
             return makeUnique<IdentifierCell>(identifier);
@@ -636,7 +637,7 @@ private:
         if(is(TokenCode::Number))
         {
             char* end;
-            RealType value = strtof(token.value, end);
+            RealType value = strtof(token().value.c_str(), &end);
             next();
             return makeUnique<Amount>(value);
         }
@@ -663,19 +664,6 @@ private:
         while (match(TokenCode::Plus));
         return array;
     }
-
-/* ************************************************************************ */
-
-    /**
-     * @brief Make rules from Strings
-     *
-     * @return array of ReqProd
-     */
-    DynamicArray<Reaction::ReqProd> makeRules(DynamicArray<String> ids_plus, DynamicArray<String> ids_minus)
-    {
-
-    }
-
 };
 /* ************************************************************************ */
 
