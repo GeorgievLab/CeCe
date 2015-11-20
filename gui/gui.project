@@ -13,7 +13,7 @@
   "generator": "",
   "buildType": "Debug",
   "arguments": [],
-  "parentProject": ""
+  "parentProject": "cli"
  }, {
   "name": "Release",
   "enabled": true,

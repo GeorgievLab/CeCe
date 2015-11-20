@@ -57,7 +57,8 @@ DEFINE_PARSER_EXCEPTION_BASE(MissingArrowException, ReactionParserException, "Yo
 DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException, "You are missing an identifier.");
 DEFINE_PARSER_EXCEPTION_BASE(MissingOperatorException, ReactionParserException, "You are missing an operator.");
 DEFINE_PARSER_EXCEPTION_BASE(MissingParenthesisException, ReactionParserException, "You are missing a closing bracket.");
-DEFINE_PARSER_EXCEPTION_BASE(InvalidOperatorException, ReactionParserException, "I dont know this operator.");
+DEFINE_PARSER_EXCEPTION_BASE(UnknownOperatorException, ReactionParserException, "I dont know this operator.");
+DEFINE_PARSER_EXCEPTION_BASE(UnknownFunctionException, ReactionParserException, "I dont know this function.");
 
 /* ************************************************************************ */
 
@@ -142,7 +143,7 @@ public:
             next();
         }
 
-        // check if string is keyword...
+        // check if string is keyword
         if (token.value == "and")
             token.code = TokenCode::And;
         else if (token.value == "or")
@@ -166,7 +167,6 @@ public:
 
         return token;
     }
-
 
     /**
      * @brief Main tokenize function.
@@ -239,7 +239,7 @@ public:
             next();
             if (match('='))
                 return TokenType{TokenCode::NotEqual};
-            throw InvalidOperatorException();
+            throw UnknownOperatorException();
         case ':':
             next();
             return TokenType{TokenCode::Colon};
@@ -269,7 +269,7 @@ public:
             return TokenType{TokenCode::BracketC};
         }
 
-        // In case of invalid character, move to next character
+        // move to next character with invalid code
         next();
 
         return TokenType{};
@@ -310,8 +310,20 @@ protected:
 
 };
 
+/* ************************************************************************ */
+/* ************************************************************************ */
+
+/**
+ * @brief ReactionParser class
+ *
+ */
 class ReactionsParser : public BasicParser<ReactionsParser, Tokenizer>
 {
+
+// Private members
+private:
+
+    Reactions m_reactions;
 
 // Public Types
 public:
@@ -319,10 +331,22 @@ public:
     // Parent type.
     using ParentType = BasicParser<ReactionsParser, Tokenizer>;
 
-// Public Ctors & Dtors
-public:
+// Private tokenizer functions
+private:
+
+    using ParentType::is;
+    using ParentType::next;
+    using ParentType::match;
+    using ParentType::require;
+    using ParentType::requireNext;
+    using ParentType::getTokenizer;
+    using ParentType::token;
+    using ParentType::find;
 
 /* ************************************************************************ */
+
+public:
+
     /**
      * @brief Constructor.
      *
@@ -344,21 +368,7 @@ public:
      *
      * @return
      */
-    Reactions parse()
-    {
-        // Initialize Reaction
-        Reactions reactions;
-        // Parse global variables and functions
-        parseGlobals(reactions);
-        // Parse each reaction
-        while (!is(TokenCode::Invalid))
-        {
-            parseReaction(reactions);
-        }
-        return reactions;
-    }
-
-/* ************************************************************************ */
+    Reactions parse();
 
 private:
 
@@ -367,304 +377,99 @@ private:
      *
      * @return
      */
-    void parseReaction(Reactions& reactions)
-    {
-        // parse conditions
-        UniquePtr<Node<bool>> condition = parseCondition();
-        // parse LS
-        DynamicArray<ReqProd> rules;
-        parseList(rules);
-        // check reversible reaction
-        bool reversible = false;
-        UniquePtr<Node<RealType>> revRate;
-        if (match(TokenCode::ArrowBack, TokenCode::Less))
-        {
-            reversible = true;
-            revRate = parseRate();
-            requireNext(TokenCode::Comma);
-        }
-        // parse rate
-        UniquePtr<Node<RealType>> rate = parseRate();
-        requireNext(TokenCode::ArrowFwrd, TokenCode::Greater);
-        //parse RS
-        auto ids_plus = parseList();
-        // expected end of reaction
-        requireNext(TokenCode::Semicolon);
-        // extending
-        reactions.extend(std::move(Reaction(std::move(condition), std::move(rate), rules)));
-        // extending reversible
-        if (reversible)
-        {
-            auto revRules = makeRules(ids_minus, ids_plus);
-            reactions.extend(std::move(Reaction(std::move(condition), std::move(revRate), revRules)));
-        }
-    }
-
-/* *********************************************************************** */
-
-private:
-
-    using ParentType::is;
-    using ParentType::next;
-    using ParentType::match;
-    using ParentType::require;
-    using ParentType::requireNext;
-    using ParentType::getTokenizer;
-    using ParentType::token;
-    using ParentType::find;
-
-/* ************************************************************************ */
-
-private:
+    void parseReaction();
 
     /**
      * @brief Parse global functions or parameters.
      *
      * @return
      */
-    void parseGlobals(Reactions& reactions)
-    {
-
-    }
+    void parseGlobals();
 
 /* ************************************************************************ */
+
+private:
+
     /**
-     * @brief Parse conditions for conditional reactions.
+     * @brief Parse condition for conditional reactions.
      *
      * @return pointer to node which is evaulated for true/false
      */
-    SharedPtr<Node<bool>> parseCondition()
-    {
-        if (!match(TokenCode::If))
-            return {};
+    SharedPtr<Node<bool>> parseCondition();
 
-        auto ptr = parseOr();
-        requireNext(TokenCode::Colon);
-        return makeShared<Node<bool>(std::move(ptr));
-    }
+    UniquePtr<Node<bool>> parseOr();
 
-    UniquePtr<Node<bool>> parseOr()
-    {
-        UniquePtr<Node<bool>> first = parseAnd();
-        while(match(TokenCode::Or))
-        {
-            UniquePtr<Node<bool>> second = parseAnd();
-            first = makeUnique<OperatorTwo<std::logical_or<bool>>>(std::move(first), std::move(second));
-        }
-        return first;
-    }
+    UniquePtr<Node<bool>> parseAnd();
 
-    UniquePtr<Node<bool>> parseAnd()
-    {
-        UniquePtr<Node<bool>> first = parseBParenthesis();
-        while(match(TokenCode::And))
-        {
-            UniquePtr<Node<bool>> second = parseBParenthesis();
-            first = makeUnique<OperatorTwo<std::logical_and<bool>>>(std::move(first), std::move(second));
-        }
-        return first;
-    }
+    UniquePtr<Node<bool>> parseBParenthesis();
 
-    UniquePtr<Node<bool>> parseBParenthesis()
-    {
-        if (!match(TokenCode::BracketO))
-            return parseBoolFunction();
+    UniquePtr<Node<bool>> parseBoolFunction();
 
-        UniquePtr<Node<bool>> first = parseOr();
+    UniquePtr<Node<bool>> parseChainRelation();
 
-        if (!match(TokenCode::BracketC))
-            throw MissingParenthesisException();
-
-        return first;
-    }
-
-    UniquePtr<Node<bool>> parseBoolFunction()
-    {
-        if(!match(TokenCode::Function))
-            return parseRelation();
-
-        //auto distance = std::find() prohledat preddefinovane fce
-        // return ptr na fci
-    }
-
-    UniquePtr<Node<bool>> parseChainRelation()
-    {
-        UniquePtr<Node<bool>> first = parseRelation();
-        while(match(TokenCode::Greater, TokenCode::Less, TokenCode::GreaterEqual, TokenCode::LessEqual, TokenCode::Equal, TokenCode::NotEqual))
-        {
-            UniquePtr<Node<bool>> second = parseRelation();
-            first = makeUnique<OperatorTwo<std::logical_and<bool>>>(std::move(first), std::move(second));
-        }
-        return first;
-    }
-
-    UniquePtr<Node<bool>> parseRelation()
-    {
-        UniquePtr<Node<RealType>> first = parsePlus();
-        switch (token().code)
-        {
-            case TokenCode::Greater:
-                next();
-                return makeUnique<OperatorTwo<std::greater<bool>>>(std::move(first), std::move(parsePlus()));
-            case TokenCode::Less:
-                next();
-                return makeUnique<OperatorTwo<std::less<bool>>>(std::move(first), std::move(parsePlus()));
-            case TokenCode::GreaterEqual:
-                next();
-                return makeUnique<OperatorTwo<std::greater_equal<bool>>>(std::move(first), std::move(parsePlus()));
-            case TokenCode::LessEqual:
-                next();
-                return makeUnique<OperatorTwo<std::less_equal<bool>>>(std::move(first), std::move(parsePlus()));
-            case TokenCode::Equal:
-                next();
-                return makeUnique<OperatorTwo<std::equal_to<bool>>>(std::move(first), std::move(parsePlus()));
-            case TokenCode::NotEqual:
-                next();
-                return makeUnique<OperatorTwo<std::not_equal_to<bool>>>(std::move(first), std::move(parsePlus()));
-            default:
-                throw MissingOperatorException();
-        }
-    }
+    UniquePtr<Node<bool>> parseRelation();
 
 /* ************************************************************************ */
+
+private:
+
     /**
      * @brief Parse rate expression.
      *
      * @return
      */
-    UniquePtr<Node<RealType>> parseRate()
-    {
-        auto ptr = parsePlus();
-        requireNext(TokenCode::ArrowFwrd);
-        return ptr;
-    }
+    UniquePtr<Node<RealType>> parseRate();
 
-    UniquePtr<Node<RealType>> parsePlus()
-    {
-        UniquePtr<Node<RealType>> first = parseMultiply();
-        while(is(TokenCode::Plus, TokenCode::Minus))
-        {
-            bool plus = is(TokenCode::Plus);
-            next();
-            UniquePtr<Node<RealType>> second = parseMultiply();
-            if(plus)
-                first = makeUnique<OperatorTwo<std::plus<RealType>>>(std::move(first), std::move(second));
-            else
-                first = makeUnique<OperatorTwo<std::minus<RealType>>>(std::move(first), std::move(second));
-        }
-        return first;
-    }
+    UniquePtr<Node<RealType>> parsePlus();
 
-    UniquePtr<Node<RealType>> parseMultiply()
-    {
-        UniquePtr<Node<RealType>> first = parsePower();
-        while(is(TokenCode::Multiply, TokenCode::Divide))
-        {
-            bool plus = is(TokenCode::Multiply);
-            next();
-            UniquePtr<Node<RealType>> second = parsePower();
-            if(plus)
-                first = makeUnique<OperatorTwo<std::multiplies<RealType>>>(std::move(first), std::move(second));
-            else
-                first = makeUnique<OperatorTwo<std::divides<RealType>>>(std::move(first), std::move(second));
-        }
-        return first;
-    }
+    UniquePtr<Node<RealType>> parseMultiply();
 
-    UniquePtr<Node<RealType>> parsePower()
-    {
-        UniquePtr<Node<RealType>> first = parseParenthesis();
-        while(match(TokenCode::Power))
-        {
-            UniquePtr<Node<RealType>> second = parseParenthesis();
-            first = makeUnique<OperatorTwo<Pow<RealType>>>(std::move(first), std::move(second));
-        }
-        return first;
-    }
+    UniquePtr<Node<RealType>> parsePower();
 
-    UniquePtr<Node<RealType>> parseParenthesis()
-    {
-        if (!match(TokenCode::BracketO))
-            return parseFunction();
+    UniquePtr<Node<RealType>> parseParenthesis();
 
-        UniquePtr<Node<RealType>> first = parsePlus();
+    UniquePtr<Node<RealType>> parseFunction();
 
-        if (!match(TokenCode::BracketC))
-            throw MissingParenthesisException();
+    UniquePtr<Node<RealType>> parseUnaryMinus();
 
-        return first;
-    }
-
-    UniquePtr<Node<RealType>> parseFunction()
-    {
-        if(!match(TokenCode::Function))
-            return parseUnaryMinus();
-
-        // prohledat fce v vratit
-    }
-
-    UniquePtr<Node<RealType>> parseUnaryMinus()
-    {
-        if(match(TokenCode::Minus))
-            return makeUnique<OperatorOne<std::negate<RealType>>>(std::move(parseParenthesis()));
-
-        return parseLeaf();
-    }
-
-    UniquePtr<Node<RealType>> parseLeaf()
-    {
-        if(match(TokenCode::Env))
-        {
-            require(TokenCode::Identifier);
-            String identifier = token().value;
-            next();
-            return makeUnique<IdentifierEnv>(identifier);
-        }
-        if(match(TokenCode::Parameter))
-        {
-            require(TokenCode::Identifier);
-            String identifier = token().value;
-            next();
-            return makeUnique<IdentifierEnv>(identifier);
-        }
-        if(is(TokenCode::Identifier))
-        {
-            String identifier = token().value;
-            next();
-            // zkusit zda je to parametr
-            return makeUnique<IdentifierCell>(identifier);
-        }
-        if(is(TokenCode::Number))
-        {
-            char* end;
-            RealType value = strtof(token().value.c_str(), &end);
-            next();
-            return makeUnique<Amount>(value);
-        }
-        throw MissingIdentifierException();
-    }
+    UniquePtr<Node<RealType>> parseLeaf();
 
 /* ************************************************************************ */
+
+private:
+
+    /**
+     * @brief Container for molecule name and its flag showing whether its environmental or not.
+     *
+     */
+    struct IdEnv
+    {
+        String id;
+        bool env;
+
+        IdEnv (const String i, const bool e):
+        id(i), env(e)
+        {
+            // Nothing to do.
+        }
+    };
+
     /**
      * @brief Parse list of identifiers (molecule names).
      *
-     * @return
+     * @return Array of identifiers.
      */
-    DynamicArray<String> parseList()
-    {
-        DynamicArray<Map<String, bool>> array;
-        do
-        {
-            bool environment = match(TokenCode::Env);
-            if (!is(TokenCode::Identifier))
-                throw MissingIdentifierException{};
-            array.push_back(std::token().value);
-            next();
-        }
-        while (match(TokenCode::Plus));
-        return array;
-    }
+    DynamicArray<IdEnv> parseList();
+
+    /**
+    * @brief Create ReqProd array from string arrays.
+    *
+    * @return Reaction rule.
+    */
+    DynamicArray<Reaction::ReqProd> makeRules(DynamicArray<IdEnv> ids_minus, DynamicArray<IdEnv> ids_plus);
+
 };
+
 /* ************************************************************************ */
 
 /**

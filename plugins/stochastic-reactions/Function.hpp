@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 #include "core/UniquePtr.hpp"
-#include "core/SharedPtr.hpp"
 
 #include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
@@ -64,20 +63,20 @@ struct OperatorTwo : public Node<typename OperatorType::result_type>
     using NodeRight = UniquePtr<Node<typename OperatorType::second_argument_type>>;
 
 private:
-    NodeLeft left;
-    NodeRight right;
+    NodeLeft m_left;
+    NodeRight m_right;
 
 public:
 
     typename OperatorType::result_type eval(const Context& pointers) const override
     {
-        return OperatorType{}(left->eval(pointers), right->eval(pointers));
+        return OperatorType{}(m_left->eval(pointers), m_right->eval(pointers));
     }
 
 public:
 
     OperatorTwo(NodeLeft l, NodeRight r):
-    left(std::move(l)), right(std::move(r))
+    m_left(std::move(l)), m_right(std::move(r))
     {
         // Nothing to do.
     }
@@ -106,6 +105,28 @@ public:
 
     OperatorOne(NodeRoot r):
     root(std::move(r))
+    {
+        // Nothing to do.
+    }
+};
+
+template <typename Return>
+struct Function : public Node<Return>
+{
+private:
+    SharedPtr<Node<Return>> root;
+
+public:
+
+    Return eval(const Context& pointers) const override
+    {
+        return root->eval(pointers);
+    }
+
+public:
+
+    Function(SharedPtr<Node<Return>> r):
+    root(r)
     {
         // Nothing to do.
     }

@@ -36,6 +36,7 @@ set(SRCS
     Function.hpp
     Diffusion.hpp
     Diffusion.cpp
+    Functors.hpp
 )
 
 # Build plugin

@@ -172,6 +172,34 @@ public:
         return m_reactions.back();
     }
 
+
+    /**
+     * @brief Searches global bool functions for the one with given ID
+     *
+     * @return
+     */
+    inline const SharedPtr<Node<bool>> getGlobalBoolFunction(const String& id) const
+    {
+        auto search = m_boolFunctions.find(id);
+        if(search != m_boolFunctions.end())
+            return search->second;
+        throw UnknownFunctionException();
+    }
+
+
+    /**
+     * @brief Searches global real functions for the one with given ID
+     *
+     * @return
+     */
+    inline const SharedPtr<Node<RealType>> getGlobalRealFunction(const String& id) const
+    {
+        auto search = m_realFunctions.find(id);
+        if(search != m_realFunctions.end())
+            return search->second;
+        throw UnknownFunctionException();
+    }
+
 // Private Operations
 private:
 

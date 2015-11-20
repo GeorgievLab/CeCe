@@ -30,6 +30,7 @@
 // Simulator
 #include "core/Log.hpp"
 #include "core/Range.hpp"
+#include "core/Assert.hpp"
 #include "core/Exception.hpp"
 #include "core/StringView.hpp"
 
@@ -318,7 +319,7 @@ protected:
     void fetchToken()
     {
         // Trying to fetch token by invalid iterator
-        assert(m_tokenizer != nullptr);
+        Assert(m_tokenizer != nullptr);
 
         // Nothing to read
         if (m_tokenizer->isEof())

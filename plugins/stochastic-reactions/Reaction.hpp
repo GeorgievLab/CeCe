@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 #include "core/Units.hpp"
+#include "core/SharedPtr.hpp"
 
 #include "Types.hpp"
 #include "Context.hpp"
@@ -68,14 +69,14 @@ public:
 // Private variables
 private:
 
-    UniquePtr<Node<RealType>> m_rate;
-    UniquePtr<Node<bool>> m_condition;
+    SharedPtr<Node<bool>> m_condition;
+    SharedPtr<Node<RealType>> m_rate;
     DynamicArray<ReqProd> m_rules;
 
 public:
 
-    Reaction(const UniquePtr<Node<bool>> condition, const UniquePtr<Node<RealType>> rate, const DynamicArray<ReqProd>& rules):
-    m_rate(std::move(rate)), m_condition(std::move(condition)), m_rules(rules)
+    Reaction(const SharedPtr<Node<bool>> condition, const SharedPtr<Node<RealType>> rate, const DynamicArray<ReqProd>& rules):
+    m_condition(condition), m_rate(rate), m_rules(rules)
     {
         // Nothing to do.
     }

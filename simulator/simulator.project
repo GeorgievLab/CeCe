@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="simulator" InternalType="Library">
   <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
@@ -10,7 +13,7 @@
   "generator": "",
   "buildType": "",
   "arguments": [],
-  "parentProject": "gui"
+  "parentProject": "cli"
  }]]]>
     </Plugin>
   </Plugins>
@@ -42,6 +45,11 @@
     <File Name="PluginManager.hpp"/>
     <File Name="font.hpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="core"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -131,9 +139,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>
