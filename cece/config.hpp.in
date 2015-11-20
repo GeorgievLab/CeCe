@@ -23,26 +23,29 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
-
-// CeCe
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
+/**
+ * This file contains CeCe simulator configuration.
+ *
+ * As a part of distribution this file ensures custom plugins are built
+ * against simulator libraries with same configuration.
+ */
 
 namespace cece {
-inline namespace core {
+namespace config {
 
 /* ************************************************************************ */
 
 /**
- * @brief Type used as real value in whole simulator.
- *
- * @todo remove
+ * @brief Simulator real type.
  */
-using RealType = cece::config::RealType;
+using RealType = ${CONFIG_REAL_TYPE};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Simulator space dimension - only 2D is supported now.
+ */
+constexpr unsigned int Dimension = 2;
 
 /* ************************************************************************ */
 

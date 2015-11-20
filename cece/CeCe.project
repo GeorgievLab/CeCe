@@ -289,4 +289,7 @@
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="config">
+    <File Name="config.hpp.in"/>
+  </VirtualDirectory>
 </CodeLite_Project>

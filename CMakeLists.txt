@@ -84,6 +84,11 @@ endif ()
 # If simulator should be thread safe
 set(THREAD_SAFE Off)
 
+# Must be defined
+if (NOT CONFIG_REAL_TYPE)
+    message(FATAL_ERROR "Missing 'CONFIG_REAL_TYPE' option")
+endif ()
+
 # ######################################################################### #
 
 # List of plugins variables
@@ -189,6 +194,11 @@ endif ()
 
 # ######################################################################### #
 
+# Directory for configuration file
+include_directories(${CMAKE_BINARY_DIR})
+
+# ######################################################################### #
+
 if (APPLE)
     add_definitions(-mmacosx-version-min=${MACOSX_VERSION_MIN})
 endif()
@@ -248,7 +258,6 @@ endif ()
 
 # Set real type
 message(STATUS "Real type: ${CONFIG_REAL_TYPE}")
-add_definitions(-DREAL_TYPE=${CONFIG_REAL_TYPE})
 
 # ######################################################################### #
 

@@ -72,6 +72,11 @@ endif ()
 
 # ######################################################################### #
 
+# Create config file
+configure_file(config.hpp.in config.hpp)
+
+# ######################################################################### #
+
 # Core files
 add_subdirectory(core)
 
