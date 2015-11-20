@@ -23,15 +23,123 @@
 #                                                                           #
 # ######################################################################### #
 
-# Core libraries
+cmake_minimum_required(VERSION 2.8.8)
+
+# ######################################################################### #
+
+# CeCe shared library
+project(cece CXX)
+
+# ######################################################################### #
+
+# Include build-in libraries
+set(PLUGINS_LIBS "")
+set(BUILTIN_PLUGINS "")
+
+# Foreach build-in plugins
+foreach (PLUGIN ${PLUGINS_BUILTIN})
+    message(STATUS "Builtin plugin: ${PLUGIN}")
+    plugin_project_name(${PLUGIN} PLUGIN_PROJECT)
+    set(PLUGINS_LIBS ${PLUGINS_LIBS} ${PLUGIN_PROJECT})
+    # Fix module name: replace '-' by '_'
+    string(REPLACE "-" "_" FIXED_PLUGIN ${PLUGIN})
+    set(BUILTIN_PLUGINS "${BUILTIN_PLUGINS}ITEM(${PLUGIN},${FIXED_PLUGIN})")
+endforeach ()
+
+# ######################################################################### #
+
+# Include Python API
+if (UNIX AND NOT APPLE)
+    # Link boost dynamically on Linux
+    set(Boost_USE_STATIC_LIBS Off)
+endif ()
+
+find_package(Boost REQUIRED filesystem system)
+
+# Include directories
+include_directories(${Boost_INCLUDE_DIRS})
+
+# ######################################################################### #
+
+# Include OpenGL if rendering is enabled
+if (CONFIG_RENDER_ENABLE)
+    # OpenGL library is required
+    find_package(OpenGL REQUIRED)
+
+    # Include OpenGL path
+    include_directories(${OPENGL_INCLUDE_DIR})
+endif ()
+
+# ######################################################################### #
+
+# Core files
 add_subdirectory(core)
 
-# Add render library
+# Renderer files
 if (CONFIG_RENDER_ENABLE)
     add_subdirectory(render)
 endif ()
 
-# Main simulator library
+# Simulation files
 add_subdirectory(simulator)
+
+# ######################################################################### #
+
+# Sources
+set(SRCS
+    $<TARGET_OBJECTS:core>
+    $<TARGET_OBJECTS:simulator>
+)
+
+if (CONFIG_RENDER_ENABLE)
+    set(SRCS ${SRCS} $<TARGET_OBJECTS:render>)
+endif ()
+
+# Create library
+add_library(${PROJECT_NAME} SHARED ${SRCS})
+
+# ######################################################################### #
+
+# Set framework flag
+#set_target_properties(${PROJECT_NAME} PROPERTIES FRAMEWORK 1)
+
+# Link libraries
+target_link_libraries(${PROJECT_NAME}
+    ${PLUGINS_LIBS}
+    ${Boost_LIBRARIES}
+)
+
+if (CONFIG_RENDER_ENABLE)
+    target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
+endif ()
+
+if (CONFIG_PHYSICS_BUILTIN)
+    # Link libraries
+    target_link_libraries(${PROJECT_NAME} ${BOX2D_LIBRARIES})
+endif ()
+
+if (CONFIG_RENDER_TEXT_ENABLE)
+    target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
+endif ()
+
+if (MINGW)
+    target_link_libraries(${PROJECT_NAME} Ws2_32)
+endif ()
+
+# ######################################################################### #
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${INSTALL_DIR_LIBRARY}
+    LIBRARY DESTINATION ${INSTALL_DIR_LIBRARY}
+)
+
+if (MINGW)
+    # Install Box2D library
+    install(FILES
+        ${BOX2D_LIBRARIES}
+        DESTINATION ${INSTALL_DIR_LIBRARY}
+    )
+endif ()
 
 # ######################################################################### #

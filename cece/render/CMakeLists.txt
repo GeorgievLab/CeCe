@@ -39,16 +39,6 @@ project(render CXX)
 
 # ######################################################################### #
 
-# OpenGL library is required
-find_package(OpenGL REQUIRED)
-
-# Include OpenGL path
-include_directories(
-    ${OPENGL_INCLUDE_DIR}
-)
-
-# ######################################################################### #
-
 # Enable errors
 if (DEV_RENDER_GL_ERRORS)
     add_definitions(-DDEV_RENDER_GL_ERRORS=1)

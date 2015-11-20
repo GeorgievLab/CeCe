@@ -63,7 +63,7 @@ function(build_plugin NAME)
 
         # Setup dependencies
         add_dependencies(${PROJECT_NAME}
-            core
+            cece
             ${ARG_DEPENDENCIES}
             ${PLUGINS_DEPENDENCIES}
         )
@@ -83,8 +83,7 @@ function(build_plugin NAME)
 
         # Setup dependencies
         add_dependencies(${PROJECT_NAME}
-            core
-            simulator
+            cece
             ${ARG_DEPENDENCIES}
             ${PLUGINS_DEPENDENCIES}
         )
@@ -93,7 +92,7 @@ function(build_plugin NAME)
         target_link_libraries(${PROJECT_NAME}
             ${PLUGINS_DEPENDENCIES}
             ${ARG_LIBRARIES}
-            simulator
+            cece
         )
 
         # Allow to link other plugins
