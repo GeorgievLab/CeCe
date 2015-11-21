@@ -147,7 +147,12 @@ UniquePtr<Node<bool>> ReactionsParser::parseBoolFunction()
     if(!match(TokenCode::Function))
         return parseRelation();
 
-    return makeUnique<Function<bool>>(m_reactions.getGlobalBoolFunction(token().value));
+    auto ptr = m_reactions.getGlobalBoolFunction(token().value);
+
+    if (ptr == nullptr)
+        throw UnknownFunctionException();
+
+    return makeUnique<Function<bool>>(ptr);
 }
 
 /* ************************************************************************ */
@@ -273,7 +278,12 @@ UniquePtr<Node<RealType>> ReactionsParser::parseFunction()
     if(!match(TokenCode::Function))
         return parseUnaryMinus();
 
-    // prohledat fce v vratit
+    auto ptr = m_reactions.getGlobalRealFunction(token().value);
+
+    if (ptr == nullptr)
+        throw UnknownFunctionException();
+
+    return makeUnique<Function<RealType>>(ptr);
 }
 
 /* ************************************************************************ */

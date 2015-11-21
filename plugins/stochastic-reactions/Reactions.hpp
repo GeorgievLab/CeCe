@@ -32,6 +32,7 @@
 #include <algorithm>
 
 #include "core/String.hpp"
+#include "core/Assert.hpp"
 #include "core/StringView.hpp"
 #include "core/Units.hpp"
 #include "core/DynamicArray.hpp"
@@ -156,7 +157,7 @@ public:
      */
     inline Reaction& getLastReaction() noexcept
     {
-        assert(!m_reactions.empty());
+        Assert(!m_reactions.empty());
         return m_reactions.back();
     }
 
@@ -168,7 +169,7 @@ public:
      */
     inline const Reaction& getLastReaction() const noexcept
     {
-        assert(!m_reactions.empty());
+        Assert(!m_reactions.empty());
         return m_reactions.back();
     }
 
@@ -178,12 +179,12 @@ public:
      *
      * @return
      */
-    inline const SharedPtr<Node<bool>> getGlobalBoolFunction(const String& id) const
+    inline SharedPtr<Node<bool>> getGlobalBoolFunction(const String& id) const
     {
         auto search = m_boolFunctions.find(id);
         if(search != m_boolFunctions.end())
             return search->second;
-        throw UnknownFunctionException();
+        return nullptr;
     }
 
 
@@ -192,12 +193,12 @@ public:
      *
      * @return
      */
-    inline const SharedPtr<Node<RealType>> getGlobalRealFunction(const String& id) const
+    inline SharedPtr<Node<RealType>> getGlobalRealFunction(const String& id) const
     {
         auto search = m_realFunctions.find(id);
         if(search != m_realFunctions.end())
             return search->second;
-        throw UnknownFunctionException();
+        return nullptr;
     }
 
 // Private Operations

@@ -53,12 +53,12 @@ class ReactionParserException: public ParserException {};
 
 /* ************************************************************************ */
 
-DEFINE_PARSER_EXCEPTION_BASE(MissingArrowException, ReactionParserException, "You are missing > or -> arrow.");
-DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException, "You are missing an identifier.");
-DEFINE_PARSER_EXCEPTION_BASE(MissingOperatorException, ReactionParserException, "You are missing an operator.");
-DEFINE_PARSER_EXCEPTION_BASE(MissingParenthesisException, ReactionParserException, "You are missing a closing bracket.");
-DEFINE_PARSER_EXCEPTION_BASE(UnknownOperatorException, ReactionParserException, "I dont know this operator.");
-DEFINE_PARSER_EXCEPTION_BASE(UnknownFunctionException, ReactionParserException, "I dont know this function.");
+DEFINE_PARSER_EXCEPTION_BASE(MissingArrowException, ReactionParserException, "Expected > or -> arrow.");
+DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException, "Expected identifier.");
+DEFINE_PARSER_EXCEPTION_BASE(MissingOperatorException, ReactionParserException, "Expected operator.");
+DEFINE_PARSER_EXCEPTION_BASE(MissingParenthesisException, ReactionParserException, "Expected closing bracket.");
+DEFINE_PARSER_EXCEPTION_BASE(UnknownOperatorException, ReactionParserException, "Unknown operator.");
+DEFINE_PARSER_EXCEPTION_BASE(UnknownFunctionException, ReactionParserException, "Unknown function name.");
 
 /* ************************************************************************ */
 
