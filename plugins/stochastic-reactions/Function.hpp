@@ -110,6 +110,10 @@ public:
     }
 };
 
+/**
+ * @brief Node for inner function.
+ *
+ */
 template <typename Return>
 struct Function : public Node<Return>
 {

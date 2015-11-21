@@ -338,7 +338,7 @@ DynamicArray<ReactionsParser::IdEnv> ReactionsParser::parseList()
     do
     {
         if (match(TokenCode::Null)) // I decided to ignore "Null must be alone" syntax error.
-            break;
+            continue;
 
         bool environment = match(TokenCode::Env);
 

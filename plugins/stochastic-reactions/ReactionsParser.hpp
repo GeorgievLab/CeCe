@@ -476,7 +476,6 @@ private:
  * @brief Parse reactions code.
  *
  * @param code       Reactions code.
- * @param parameters Map of variables.
  *
  * @return Result reactions.
  */
