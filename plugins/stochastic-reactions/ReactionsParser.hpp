@@ -59,6 +59,7 @@ DEFINE_PARSER_EXCEPTION_BASE(MissingOperatorException, ReactionParserException, 
 DEFINE_PARSER_EXCEPTION_BASE(MissingParenthesisException, ReactionParserException, "Expected closing bracket.");
 DEFINE_PARSER_EXCEPTION_BASE(UnknownOperatorException, ReactionParserException, "Unknown operator.");
 DEFINE_PARSER_EXCEPTION_BASE(UnknownFunctionException, ReactionParserException, "Unknown function name.");
+DEFINE_PARSER_EXCEPTION_BASE(IncorrectNumberFormatException, ReactionParserException, "Incorrect number format.");
 
 /* ************************************************************************ */
 
@@ -133,16 +134,13 @@ public:
     {
         // initialize token
         TokenType token{TokenCode::Identifier};
-        token.value.push_back(value());
-        next();
-
         // fill the string
-        while (isIdentifierRest())
+        do
         {
             token.value.push_back(value());
             next();
         }
-
+        while (isIdentifierRest());
         // check if string is keyword
         if (token.value == "and")
             token.code = TokenCode::And;
@@ -164,6 +162,57 @@ public:
             token.code = TokenCode::Function;
             next();
         }
+        return token;
+    }
+
+    TokenType tokenizeNumber() noexcept
+    {
+        TokenType token{TokenCode::Number};
+        // fill
+        do
+        {
+            token.value.push_back(value());
+            next();
+        }
+        while(isDigit());
+        // check for decimal point
+        if(!is('.'))
+            return token;
+        // add decimal point
+        token.value.push_back(value());
+        next();
+        // require at least one digit after decimal point
+        if(!isDigit())
+            throw IncorrectNumberFormatException();
+        // fill
+        do
+        {
+            token.value.push_back(value());
+            next();
+        }
+        while(isDigit());
+        // check for exponent sign
+        if(!is('e') && !is('E'))
+            return token;
+        // add exponent sign
+        token.value.push_back(value());
+        next();
+        // optional sign character
+        if(is('-') || is('+'))
+        {
+            token.value.push_back(value());
+            next();
+        }
+        // require at least one digit after exponent sign
+        if(!isDigit())
+            throw IncorrectNumberFormatException();
+        // fill
+        do
+        {
+            token.value.push_back(value());
+            next();
+        }
+        while(isDigit());
 
         return token;
     }
@@ -189,23 +238,10 @@ public:
 
         // Number
         if(isDigit())
-        {
-            TokenType token{TokenCode::Number};
-
-            do
-            {
-                token.value.push_back(value());
-                next();
-            }
-            while(isDigit());
-
-            return token;
-        }
-
+            return tokenizeNumber();
         // Identifier
         if (isIdentifierBegin())
             return tokenizeIdentifier();
-
         // Operators
         switch (value())
         {
@@ -268,10 +304,8 @@ public:
             next();
             return TokenType{TokenCode::BracketC};
         }
-
-        // move to next character with invalid code
+        // move to next character and return invalid
         next();
-
         return TokenType{};
     }
 
@@ -380,7 +414,7 @@ private:
     void parseReaction();
 
     /**
-     * @brief Parse global functions or parameters.
+     * @brief Parse global functions.
      *
      * @return
      */
