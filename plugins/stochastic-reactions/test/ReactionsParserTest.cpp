@@ -31,7 +31,7 @@
 
 // Plugin
 #include "../ReactionsParser.hpp"
-#include "../IntracellularReactions.hpp"
+#include "../Reactions.hpp"
 
 /* ************************************************************************ */
 
@@ -54,22 +54,22 @@ static void test_impl(int line, const String& code, std::initializer_list<String
     SCOPED_TRACE(code);
 
     // Parse code
-    auto reaction = ReactionsParser<IntracellularReactions>(code).parse();
+    auto reactions = ReactionsParser(code).parse();
 
     // Reaction IDs
-    ASSERT_EQ(names.size(), reaction.getMoleculeCount());
+    ASSERT_EQ(names.size(), reactions.getMoleculeCount());
 
     for (auto it = names.begin(); it != names.end(); ++it)
-        EXPECT_EQ(*it, reaction.getMoleculeName(it - names.begin()));
+        EXPECT_EQ(*it, reactions.getReaction(it - names.begin()).evaluateRate(Context()));
 
     // Reaction rates
-    ASSERT_EQ(rates.size(), reaction.getReactionCount());
+    ASSERT_EQ(rates.size(), reactions.getReactionCount());
 
     for (auto it = rates.begin(); it != rates.end(); ++it)
-        EXPECT_EQ(*it, reaction.getRate(it - rates.begin()));
+        EXPECT_EQ(*it, reactions.getRate(it - rates.begin()));
 
     // Reaction table
-    ASSERT_EQ(rates.size(), reaction.getReactionCount());
+    ASSERT_EQ(rates.size(), reactions.getReactionCount());
 }
 
 /* ************************************************************************ */
@@ -85,13 +85,13 @@ static void test_invalid_impl(int line, const String& code)
     SCOPED_TRACE(code);
 
     // Parse code
-    auto reaction = ReactionsParser<IntracellularReactions>(code).parse();
+    auto reactions = ReactionsParser(code).parse();
 
     // Reaction IDs
-    EXPECT_EQ(0, reaction.getMoleculeCount());
+    EXPECT_EQ(0, reactions.getMoleculeCount());
 
     // Reaction table
-    ASSERT_EQ(0, reaction.getReactionCount());
+    ASSERT_EQ(0, reactions.getReactionCount());
 }
 
 /* ************************************************************************ */
@@ -112,16 +112,26 @@ TEST(Parser, empty)
 
 /* ************************************************************************ */
 
-TEST(Parser, expression)
+TEST(Parser, simple)
 {
-    // Single expression
+    test(
+        "null > 453 > A;",
+        {"A"},
+        {453}
+    );
+}
+
+TEST(Parser, decimal_point)
+{
     test(
         "null > 0.453 > A;",
         {"A"},
         {0.453}
     );
+}
 
-    // Multiple expressions
+TEST(Parser, multiple_expressions)
+{
     test(
         "null > 0.1 > A;"
         "null > 0.2 > B;",
@@ -130,31 +140,55 @@ TEST(Parser, expression)
     );
 }
 
-/* ************************************************************************ */
-
-TEST(Parser, extract) // Can't remember the right name
+TEST(Parser, inline_expressions)
 {
     test(
-        "A > 0.1 > null;"
-        "B0 > 0.3 > null;",
-        {"A", "B0"},
-        {0.1, 0.3}
+        "null > 0.1 > A;C > 0.2 > B;T > 0.3 > G;",
+        {"A", "C", "B", "T", "G"},
+        {0.1, 0.2, 0.3}
     );
 }
 
-/* ************************************************************************ */
+TEST(Parser, complex_molecule_name)
+{
+    test(
+        "null > 0.1 > A_C56_B;",
+        {"A_C56_B"},
+        {0.1}
+    );
+}
+
+TEST(Parser, multiline_expressions)
+{
+    test(
+        "A \n> 0.5\t> C;\n"
+        "D \n > \t1 > A61;",
+        {"A", "C", "D", "A61"},
+        {0.5, 1}
+    );
+
+    test(
+        "A > 0.5 > B;\n",
+        {"A", "B"},
+        {0.5}
+    );
+
+    test(
+        "A\n+ C\n ->0.5\n -> B\n;\n",
+        {"A", "C", "B"},
+        {0.5}
+    );
+}
 
 TEST(Parser, assembly)
 {
     test(
-        "A +B\n> 0.5\t> C;\n"
+        "A +B> 0.5> C;"
         "D + A + N32 > 1 > A61;",
         {"A", "B", "C", "D", "N32", "A61"},
         {0.5, 1}
     );
 }
-
-/* ************************************************************************ */
 
 TEST(Parser, disassembly)
 {
@@ -164,8 +198,6 @@ TEST(Parser, disassembly)
         {0.5}
     );
 }
-
-/* ************************************************************************ */
 
 TEST(Parser, arrow)
 {
@@ -188,33 +220,9 @@ TEST(Parser, arrow)
     );
 }
 
-/* ************************************************************************ */
-
-TEST(Parser, newline)
-{
-    test(
-        "A > 0.5 > B;\n",
-        {"A", "B"},
-        {0.5}
-    );
-
-    test(
-        "A\n+ C\n ->0.5\n -> B\n;\n",
-        {"A", "C", "B"},
-        {0.5}
-    );
-}
-
-/* ************************************************************************ */
-
 TEST(Parser, invalid)
 {
-    // Missing semicolon
-    // TODO: reaction not stored?
-    test_invalid("A > 0.5 > B");
-
     // Molecule name as reaction rate
-    // TODO: variable name?
     test_invalid("A > A > B;");
 
     // Uncomplete definition
@@ -238,20 +246,24 @@ TEST(Parser, invalid)
     test_invalid("A + B -> 0.3 > D");
     test_invalid("A + B -> 0.3 -> D + N");
     test_invalid("A + B -> 0.3 -> D + N\nA + O -> 3 > N;");
+
+    // Missing reversible rate
+    test_invalid("A < 10 > B;");
 }
 
-/* ************************************************************************ */
-
-TEST(Parser, code1)
+TEST(Parser, reversible)
 {
-    test("C<0.3, 0.6>B;", {"C", "B"}, {0.6, 0.3});
-}
+    test(
+        "C<0.3, 0.6>B;",
+        {"C", "B"},
+        {0.6, 0.3}
+    );
 
-/* ************************************************************************ */
-
-TEST(Parser, code2)
-{
-    test("A > 10 > B;", {"A", "B"}, {10});
+    test(
+        "A  + b <- 10, 20-> B;",
+        {"A", "b", "B"},
+        {10, 20}
+    );
 }
 
 /* ************************************************************************ */

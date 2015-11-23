@@ -48,12 +48,12 @@ build_plugin(stochastic-reactions
 # ######################################################################### #
 
 # Add tests
-#build_test(stochastic-reactions
-#    SOURCES
-#        test/test.cpp
-#        test/ReactionsParserTest.cpp
-#    PLUGINS_REQUIRED
-#        stochastic-reactions
-#)
+build_test(stochastic-reactions
+    SOURCES
+        test/test.cpp
+        test/ReactionsParserTest.cpp
+    PLUGINS_REQUIRED
+        stochastic-reactions
+)
 
 # ######################################################################### #
