@@ -349,6 +349,10 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
         *m_dataOut << "iteration;totalTime;x;y;d0;d1;d2;d3;d4;d5;d6;d7;d8;rho;velX;velY\n";
     }
 
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
+#endif
+
     // Initialize lattice
     init(simulation);
 }
@@ -364,11 +368,21 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
     const auto size = m_lattice.getSize();
 
-    if (!m_drawableObstacles)
-        m_drawableObstacles.create(context, size);
+    if (!m_drawableDebug)
+        m_drawableDebug.create(context, size);
 
     // Temporary for velocities
     Grid<Vector<LatticeCell::ValueType>> velocities(size);
+
+    // Physical size of one lattice cell
+    const auto dl = simulation.getWorldSize() / m_lattice.getSize();
+    // Calculate maximum flow velocity
+    const auto vMax = calculateMaxVelocity(dl);
+
+    // Calculate grid max velocity
+    Assert(!m_inletVelocities.empty());
+    const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
+    const auto maxVel = m_debugMagnitudeScale * maxInlet / vMax.getLength();
 
     {
 #if THREAD_SAFE
@@ -390,7 +404,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
                 break;
 
             case LatticeCell::Dynamics::StaticObstacle:
-                color = render::colors::WHITE;
+                color = render::colors::GREEN;
                 break;
 
             case LatticeCell::Dynamics::DynamicObstacle:
@@ -401,24 +415,20 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
                 break;
             }
 
-            m_drawableObstacles->set(c, color);
-
             if (cell.hasObstacleDynamics() || cell.hasNoDynamics())
             {
                 velocities[c] = Zero;
+                color.setAlpha(0);
+                m_drawableDebug->set(c, color);
             }
             else
             {
                 // Cell velocity
                 velocities[c] = cell.calcVelocityNormalized();
-                m_drawableObstacles->set(c, render::Color::fromGray(1e4 * velocities[c].getLength()));
+                m_drawableDebug->set(c, render::Color::fromGray(velocities[c].getLength() / maxVel));
             }
         }
     }
-
-    // Calculate grid max velocity
-    const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
-    const auto maxVel = 1e-7 * LatticeCell::MAX_SPEED * maxInlet.value();
 
     if (!m_drawableVelocities)
     {
@@ -433,7 +443,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     // Draw color grid
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
-    m_drawableObstacles->draw(context);
+    m_drawableDebug->draw(context);
     //m_drawableVelocities->draw(context);
     context.matrixPop();
 

@@ -116,7 +116,7 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="resources">
+  <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>

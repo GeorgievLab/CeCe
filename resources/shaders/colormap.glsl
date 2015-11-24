@@ -13,7 +13,11 @@ vec4 colormap(float x);
 
 void main() {
 	vec4 pix = texture2D(data, gl_TexCoord[0].xy);
-	gl_FragColor = colormap(pix.r);
+	
+	if (pix.a > 0.5)
+		gl_FragColor = colormap(pix.r);
+	else 
+		gl_FragColor = pix;
 }
 
 // https://github.com/kbinani/glsl-colormap

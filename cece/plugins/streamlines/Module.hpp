@@ -273,6 +273,19 @@ public:
 #endif
 
 
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    /**
+     * @brief Get debug velocity magnitude scale.
+     *
+     * @return
+     */
+    RealType getDebugMagnitudeScale() const noexcept
+    {
+        return m_debugMagnitudeScale;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -386,6 +399,19 @@ public:
     void setDebugDraw(bool flag) noexcept
     {
         setDrawFlags(getDrawFlags() | DRAW_DEBUG);
+    }
+#endif
+
+
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    /**
+     * @brief Set debug velocity magnitude scale.
+     *
+     * @param value
+     */
+    void setDebugMagnitudeScale(RealType value) noexcept
+    {
+        m_debugMagnitudeScale = value;
     }
 #endif
 
@@ -589,7 +615,11 @@ private:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Rendering grid with filled cells.
-    render::ObjectPtr<render::GridColorColorMap> m_drawableObstacles;
+    render::ObjectPtr<render::GridColorColorMap> m_drawableDebug;
+#endif
+
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+    RealType m_debugMagnitudeScale = 2;
 #endif
 
 #if THREAD_SAFE
