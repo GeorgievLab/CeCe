@@ -106,63 +106,13 @@
     </Configuration>
   </Settings>
   <VirtualDirectory Name="core">
-    <File Name="core/AlignedAllocator.cpp"/>
-    <File Name="core/AlignedAllocator.hpp"/>
-    <File Name="core/Any.hpp"/>
     <File Name="core/Assert.hpp"/>
-    <File Name="core/constants.hpp"/>
-    <File Name="core/DataTable.cpp"/>
-    <File Name="core/DataTable.hpp"/>
-    <File Name="core/DynamicArray.hpp"/>
-    <File Name="core/Exception.hpp"/>
-    <File Name="core/ExpressionParser.cpp"/>
-    <File Name="core/ExpressionParser.hpp"/>
     <File Name="core/Factory.hpp"/>
-    <File Name="core/FilePath.cpp"/>
-    <File Name="core/FilePath.hpp"/>
-    <File Name="core/FileStream.hpp"/>
-    <File Name="core/Grid.cpp"/>
-    <File Name="core/Grid.hpp"/>
-    <File Name="core/InStream.hpp"/>
     <File Name="core/IntegerSequence.hpp"/>
     <File Name="core/LexicalCast.hpp"/>
-    <File Name="core/ListenerContainer.hpp"/>
-    <File Name="core/Log.cpp"/>
-    <File Name="core/Log.hpp"/>
     <File Name="core/Macro.hpp"/>
-    <File Name="core/Map.hpp"/>
-    <File Name="core/Mutex.hpp"/>
-    <File Name="core/OutStream.hpp"/>
-    <File Name="core/Pair.hpp"/>
-    <File Name="core/Parameters.cpp"/>
-    <File Name="core/Parameters.hpp"/>
-    <File Name="core/Parser.hpp"/>
-    <File Name="core/Range.hpp"/>
-    <File Name="core/Real.hpp"/>
-    <File Name="core/SharedPtr.hpp"/>
-    <File Name="core/StaticArray.hpp"/>
-    <File Name="core/StaticMatrix.hpp"/>
-    <File Name="core/String.hpp"/>
-    <File Name="core/StringStream.hpp"/>
-    <File Name="core/StringView.hpp"/>
     <File Name="core/TimeMeasurement.cpp"/>
     <File Name="core/TimeMeasurement.hpp"/>
-    <File Name="core/Tokenizer.hpp"/>
-    <File Name="core/TriBool.hpp"/>
-    <File Name="core/Tuple.hpp"/>
-    <File Name="core/UniquePtr.hpp"/>
-    <File Name="core/Units.cpp"/>
-    <File Name="core/Units.hpp"/>
-    <File Name="core/UnitsCtors.hpp"/>
-    <File Name="core/ValueIterator.hpp"/>
-    <File Name="core/Variant.hpp"/>
-    <File Name="core/Vector.cpp"/>
-    <File Name="core/Vector.hpp"/>
-    <File Name="core/VectorRange.hpp"/>
-    <File Name="core/VectorUnits.cpp"/>
-    <File Name="core/VectorUnits.hpp"/>
-    <File Name="core/ViewPtr.hpp"/>
-    <File Name="core/Zero.hpp"/>
     <VirtualDirectory Name="test">
       <File Name="core/test/DynamicArrayTest.cpp"/>
       <File Name="core/test/ExpressionParserTest.cpp"/>
@@ -176,6 +126,78 @@
     </VirtualDirectory>
     <VirtualDirectory Name="CMake">
       <File Name="core/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="container">
+      <File Name="core/DataTable.cpp"/>
+      <File Name="core/DataTable.hpp"/>
+      <File Name="core/DynamicArray.hpp"/>
+      <File Name="core/ListenerContainer.hpp"/>
+      <File Name="core/Map.hpp"/>
+      <File Name="core/Parameters.cpp"/>
+      <File Name="core/Parameters.hpp"/>
+      <File Name="core/StaticArray.hpp"/>
+      <File Name="core/ValueIterator.hpp"/>
+      <File Name="core/VectorRange.hpp"/>
+      <File Name="core/Range.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="allocator">
+      <File Name="core/AlignedAllocator.cpp"/>
+      <File Name="core/AlignedAllocator.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="math">
+      <File Name="core/StaticMatrix.hpp"/>
+      <File Name="core/Grid.cpp"/>
+      <File Name="core/Grid.hpp"/>
+      <File Name="core/Zero.hpp"/>
+      <File Name="core/Vector.cpp"/>
+      <File Name="core/Vector.hpp"/>
+      <File Name="core/constants.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="io">
+      <File Name="core/FilePath.cpp"/>
+      <File Name="core/FilePath.hpp"/>
+      <File Name="core/FileStream.hpp"/>
+      <File Name="core/InStream.hpp"/>
+      <File Name="core/OutStream.hpp"/>
+      <File Name="core/StringStream.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="unit">
+      <File Name="core/Units.cpp"/>
+      <File Name="core/Units.hpp"/>
+      <File Name="core/UnitsCtors.hpp"/>
+      <File Name="core/VectorUnits.cpp"/>
+      <File Name="core/VectorUnits.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="log">
+      <File Name="core/Log.cpp"/>
+      <File Name="core/Log.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="parser">
+      <File Name="core/ExpressionParser.cpp"/>
+      <File Name="core/ExpressionParser.hpp"/>
+      <File Name="core/Parser.hpp"/>
+      <File Name="core/Tokenizer.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="concurrency">
+      <File Name="core/Mutex.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="pointer">
+      <File Name="core/SharedPtr.hpp"/>
+      <File Name="core/UniquePtr.hpp"/>
+      <File Name="core/ViewPtr.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="value">
+      <File Name="core/Pair.hpp"/>
+      <File Name="core/String.hpp"/>
+      <File Name="core/StringView.hpp"/>
+      <File Name="core/TriBool.hpp"/>
+      <File Name="core/Tuple.hpp"/>
+      <File Name="core/Real.hpp"/>
+      <File Name="core/Variant.hpp"/>
+      <File Name="core/Any.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="exception">
+      <File Name="core/Exception.hpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="render">
