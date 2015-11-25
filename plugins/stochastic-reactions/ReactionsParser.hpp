@@ -55,6 +55,7 @@ class ReactionParserException: public ParserException {};
 
 DEFINE_PARSER_EXCEPTION_BASE(MissingArrowException, ReactionParserException, "Expected > or -> arrow.");
 DEFINE_PARSER_EXCEPTION_BASE(MissingIdentifierException, ReactionParserException, "Expected identifier.");
+DEFINE_PARSER_EXCEPTION_BASE(MissingNumberException, ReactionParserException, "Expected number.");
 DEFINE_PARSER_EXCEPTION_BASE(MissingOperatorException, ReactionParserException, "Expected operator.");
 DEFINE_PARSER_EXCEPTION_BASE(MissingParenthesisException, ReactionParserException, "Expected closing bracket.");
 DEFINE_PARSER_EXCEPTION_BASE(UnknownOperatorException, ReactionParserException, "Unknown operator.");
@@ -162,6 +163,7 @@ public:
             token.code = TokenCode::Function;
             next();
         }
+
         return token;
     }
 
@@ -191,6 +193,7 @@ public:
             next();
         }
         while(isDigit());
+
         // check for exponent sign
         if(!is('e') && !is('E'))
             return token;

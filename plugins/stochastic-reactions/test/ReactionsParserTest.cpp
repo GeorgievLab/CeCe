@@ -30,8 +30,11 @@
 #include <gtest/gtest.h>
 
 // Plugin
-#include "../ReactionsParser.hpp"
-#include "../Reactions.hpp"
+#include "plugins/stochastic-reactions/ReactionsParser.hpp"
+#include "plugins/stochastic-reactions/Reactions.hpp"
+#include "plugins/stochastic-reactions/Context.hpp"
+#include "simulator/Simulation.hpp"
+#include "plugins/cell/CellBase.hpp"
 
 /* ************************************************************************ */
 
@@ -48,28 +51,35 @@ using namespace plugin::stochastic_reactions;
  * @param rates         Expected rates in code.
  * @param reactionCount Expected number of reactions.
  */
-static void test_impl(int line, const String& code, std::initializer_list<String> names,
+static void test_impl(int line, const String& code, std::initializer_list<bool> cond, std::initializer_list<String> names,
     std::initializer_list<float> rates)
 {
     SCOPED_TRACE(code);
 
+    simulator::Simulation simulation;
+    plugin::cell::CellBase cell(simulation);
+    Context context = Context(nullptr, cell, nullptr, simulation.getParameters());
+
     // Parse code
     auto reactions = ReactionsParser(code).parse();
 
-    // Reaction IDs
+    // Conditions
+    ASSERT_EQ(cond.size(), reactions.getReactionCount());
+
+    for (auto it = cond.begin(); it != cond.end(); ++it)
+        EXPECT_EQ(*it, reactions.evalCond(it - cond.begin(), context));
+
+    // Molecule names
     ASSERT_EQ(names.size(), reactions.getMoleculeCount());
 
     for (auto it = names.begin(); it != names.end(); ++it)
-        EXPECT_EQ(*it, reactions.getReaction(it - names.begin()).evaluateRate(Context()));
+        EXPECT_EQ(*it, reactions.getMoleculeName(it - names.begin()));
 
     // Reaction rates
     ASSERT_EQ(rates.size(), reactions.getReactionCount());
 
     for (auto it = rates.begin(); it != rates.end(); ++it)
-        EXPECT_EQ(*it, reactions.getRate(it - rates.begin()));
-
-    // Reaction table
-    ASSERT_EQ(rates.size(), reactions.getReactionCount());
+        EXPECT_EQ(*it, reactions.evalRate(it - rates.begin(), context));
 }
 
 /* ************************************************************************ */
@@ -104,18 +114,11 @@ static void test_invalid_impl(int line, const String& code)
 
 /* ************************************************************************ */
 
-TEST(Parser, empty)
-{
-    test("", {}, {});
-    test(";", {}, {});
-}
-
-/* ************************************************************************ */
-
 TEST(Parser, simple)
 {
     test(
         "null > 453 > A;",
+        {true},
         {"A"},
         {453}
     );
@@ -125,6 +128,7 @@ TEST(Parser, decimal_point)
 {
     test(
         "null > 0.453 > A;",
+        {true},
         {"A"},
         {0.453}
     );
@@ -135,6 +139,7 @@ TEST(Parser, multiple_expressions)
     test(
         "null > 0.1 > A;"
         "null > 0.2 > B;",
+        {true, true},
         {"A", "B"},
         {0.1, 0.2}
     );
@@ -144,6 +149,7 @@ TEST(Parser, inline_expressions)
 {
     test(
         "null > 0.1 > A;C > 0.2 > B;T > 0.3 > G;",
+        {true, true, true},
         {"A", "C", "B", "T", "G"},
         {0.1, 0.2, 0.3}
     );
@@ -153,6 +159,7 @@ TEST(Parser, complex_molecule_name)
 {
     test(
         "null > 0.1 > A_C56_B;",
+        {true},
         {"A_C56_B"},
         {0.1}
     );
@@ -163,18 +170,21 @@ TEST(Parser, multiline_expressions)
     test(
         "A \n> 0.5\t> C;\n"
         "D \n > \t1 > A61;",
+        {true, true},
         {"A", "C", "D", "A61"},
         {0.5, 1}
     );
 
     test(
         "A > 0.5 > B;\n",
+        {true},
         {"A", "B"},
         {0.5}
     );
 
     test(
         "A\n+ C\n ->0.5\n -> B\n;\n",
+        {true},
         {"A", "C", "B"},
         {0.5}
     );
@@ -185,6 +195,7 @@ TEST(Parser, assembly)
     test(
         "A +B> 0.5> C;"
         "D + A + N32 > 1 > A61;",
+        {true, true},
         {"A", "B", "C", "D", "N32", "A61"},
         {0.5, 1}
     );
@@ -194,6 +205,7 @@ TEST(Parser, disassembly)
 {
     test(
         "A > 0.5 > B + XNa0;",
+        {true},
         {"A", "B", "XNa0"},
         {0.5}
     );
@@ -203,18 +215,21 @@ TEST(Parser, arrow)
 {
     test(
         "A -> 0.5 -> B;",
+        {true},
         {"A", "B"},
         {0.5}
     );
 
     test(
         "A > 0.5 -> B;",
+        {true},
         {"A", "B"},
         {0.5}
     );
 
     test(
         "A -> 0.5 > B;",
+        {true},
         {"A", "B"},
         {0.5}
     );
@@ -222,6 +237,10 @@ TEST(Parser, arrow)
 
 TEST(Parser, invalid)
 {
+    // Empty
+    test_invalid("");
+    test_invalid(";");
+
     // Molecule name as reaction rate
     test_invalid("A > A > B;");
 
@@ -254,30 +273,75 @@ TEST(Parser, invalid)
 TEST(Parser, reversible)
 {
     test(
-        "C<0.3, 0.6>B;",
-        {"C", "B"},
-        {0.6, 0.3}
+        "A  + b < 10, 20 > B;",
+        {true, true},
+        {"A", "b", "B"},
+        {20, 10}
     );
 
     test(
-        "A  + b <- 10, 20-> B;",
+        "A  + b <- 10, 20 -> B;",
+        {true, true},
         {"A", "b", "B"},
-        {10, 20}
+        {20, 10}
+    );
+
+    test(
+        "A  + b < 10, 20 -> B;",
+        {true, true},
+        {"A", "b", "B"},
+        {20, 10}
+    );
+
+    test(
+        "A  + b <- 10, 20 > B;",
+        {true, true},
+        {"A", "b", "B"},
+        {20, 10}
     );
 }
 
-/* ************************************************************************ */
+TEST(Parser, rate_expressions)
+{
+    test(
+        "A  + b > 10 + 20 > B;",
+        {true},
+        {"A", "b", "B"},
+        {30}
+    );
 
+    test(
+        "A  + sin > (10 + 20) * sin(0) -> B;",
+        {true},
+        {"A", "sin", "B"},
+        {0}
+    );
+}
+
+TEST(Parser, rate_expressions_inner_function)
+{
+    test(
+        "A  + b > 20 * cos(5 - 40 / 8) -> B;",
+        {true},
+        {"A", "b", "B"},
+        {20}
+    );
+}
+
+
+/*
 TEST(Parser, conditional)
 {
     test(
         "if A: A > 0.3 > B;",
+        {false},
         {"A", "B"},
         {0.3}
     );
 
     test(
         "if C and D: A > 0.3 > B;",
+        {false},
         {"A", "B", "C", "D"},
         {0.3}
     );
@@ -315,4 +379,4 @@ TEST(Parser, conditional)
     );
 }
 
-/* ************************************************************************ */
+*/

@@ -51,33 +51,39 @@ void ReactionsParser::parseReaction()
 {
     // parse conditions
     SharedPtr<Node<bool>> condition = parseCondition();
+
     // parse LS
     auto ids_minus = parseList();
+
     // check reversible reaction
-    bool reversible = false;
     UniquePtr<Node<RealType>> revRate;
     if (match(TokenCode::ArrowBack, TokenCode::Less))
     {
-        reversible = true;
         revRate = parseRate();
         requireNext(TokenCode::Comma);
     }
+    else if (!match(TokenCode::ArrowFwrd, TokenCode::Greater))
+        throw MissingArrowException();
     // parse rate
     UniquePtr<Node<RealType>> rate = parseRate();
     requireNext(TokenCode::ArrowFwrd, TokenCode::Greater);
+
     // parse RS
     auto ids_plus = parseList();
+
     // expected end of reaction
     requireNext(TokenCode::Semicolon);
+
     // extend
     auto rules = makeRules(ids_minus, ids_plus);
     m_reactions.extend(std::move(Reaction(condition, std::move(rate), rules)));
+
     // extend reversible
-    if (reversible)
-    {
-        auto revRules = makeRules(ids_minus, ids_plus);
-        m_reactions.extend(std::move(Reaction(condition, std::move(revRate), revRules)));
-    }
+    if (revRate == nullptr)
+        return;
+
+    auto revRules = makeRules(ids_minus, ids_plus);
+    m_reactions.extend(std::move(Reaction(condition, std::move(revRate), revRules)));
 }
 
 /* *********************************************************************** */
@@ -144,13 +150,15 @@ UniquePtr<Node<bool>> ReactionsParser::parseBParenthesis()
 
 UniquePtr<Node<bool>> ReactionsParser::parseBoolFunction()
 {
-    if(!match(TokenCode::Function))
-        return parseRelation();
+    if(!is(TokenCode::Function))
+        return parseChainRelation();
 
     auto ptr = m_reactions.getGlobalBoolFunction(token().value);
 
     if (ptr == nullptr)
         throw UnknownFunctionException();
+
+    next();
 
     return makeUnique<Function<bool>>(ptr);
 }
@@ -202,9 +210,7 @@ UniquePtr<Node<bool>> ReactionsParser::parseRelation()
 
 UniquePtr<Node<RealType>> ReactionsParser::parseRate()
 {
-    auto ptr = parsePlus();
-    requireNext(TokenCode::ArrowFwrd);
-    return ptr;
+    return parsePlus();
 }
 
 /* ************************************************************************ */
@@ -275,25 +281,123 @@ UniquePtr<Node<RealType>> ReactionsParser::parseParenthesis()
 
 UniquePtr<Node<RealType>> ReactionsParser::parseFunction()
 {
-    if(!match(TokenCode::Function))
+    if(!is(TokenCode::Function))
         return parseUnaryMinus();
 
-    auto ptr = m_reactions.getGlobalRealFunction(token().value);
+    String name = token().value;
+    next();
 
-    if (ptr == nullptr)
-        throw UnknownFunctionException();
+    // No parameters means predefined function
+    if (match(TokenCode::BracketC))
+    {
+        auto ptr = m_reactions.getGlobalRealFunction(name);
 
-    return makeUnique<Function<RealType>>(ptr);
+        if (ptr == nullptr)
+            throw UnknownFunctionException();
+
+        return makeUnique<Function<RealType>>(ptr);
+    }
+
+    DynamicArray<UniquePtr<Node<RealType>>> nodes;
+
+    // Read Nodes
+    do
+    {
+        nodes.push_back(parsePlus());
+    }
+    while(match(TokenCode::Comma));
+
+    // Expected closing bracket
+    if (!match(TokenCode::BracketC))
+        throw MissingParenthesisException();
+
+    if (nodes.size() == 1)
+    {
+        if (name == "exp")
+            return makeUnique<OperatorOne<Exp<RealType>>>(std::move(nodes[0]));
+        else if(name == "ln")
+            return makeUnique<OperatorOne<Ln<RealType>>>(std::move(nodes[0]));
+        else if(name == "abs")
+            return makeUnique<OperatorOne<Abs<RealType>>>(std::move(nodes[0]));
+        else if(name == "sqrt")
+            return makeUnique<OperatorOne<Sqrt<RealType>>>(std::move(nodes[0]));
+        else if(name == "cbrt")
+            return makeUnique<OperatorOne<Cbrt<RealType>>>(std::move(nodes[0]));
+        else if(name == "sin")
+            return makeUnique<OperatorOne<Sine<RealType>>>(std::move(nodes[0]));
+        else if(name == "cos")
+            return makeUnique<OperatorOne<Cosine<RealType>>>(std::move(nodes[0]));
+        else if(name == "tan")
+            return makeUnique<OperatorOne<Tangent<RealType>>>(std::move(nodes[0]));
+        else if(name == "cot")
+            return makeUnique<OperatorOne<Cotangent<RealType>>>(std::move(nodes[0]));
+        else if(name == "sec")
+            return makeUnique<OperatorOne<Secant<RealType>>>(std::move(nodes[0]));
+        else if(name == "csc")
+            return makeUnique<OperatorOne<Cosecant<RealType>>>(std::move(nodes[0]));
+        else if(name == "sinh")
+            return makeUnique<OperatorOne<Sinh<RealType>>>(std::move(nodes[0]));
+        else if(name == "cosh")
+            return makeUnique<OperatorOne<Cosh<RealType>>>(std::move(nodes[0]));
+        else if(name == "tanh")
+            return makeUnique<OperatorOne<Tanh<RealType>>>(std::move(nodes[0]));
+        else if(name == "coth")
+            return makeUnique<OperatorOne<Coth<RealType>>>(std::move(nodes[0]));
+        else if(name == "sech")
+            return makeUnique<OperatorOne<Sech<RealType>>>(std::move(nodes[0]));
+        else if(name == "csch")
+            return makeUnique<OperatorOne<Csch<RealType>>>(std::move(nodes[0]));
+        else if(name == "asin")
+            return makeUnique<OperatorOne<Arcsine<RealType>>>(std::move(nodes[0]));
+        else if(name == "acos")
+            return makeUnique<OperatorOne<Arccosine<RealType>>>(std::move(nodes[0]));
+        else if(name == "atan")
+            return makeUnique<OperatorOne<Arccotangent<RealType>>>(std::move(nodes[0]));
+        else if(name == "acot")
+            return makeUnique<OperatorOne<Arccotangent<RealType>>>(std::move(nodes[0]));
+        else if(name == "asec")
+            return makeUnique<OperatorOne<Arcsecant<RealType>>>(std::move(nodes[0]));
+        else if(name == "acsc")
+            return makeUnique<OperatorOne<Arccosecant<RealType>>>(std::move(nodes[0]));
+        else if(name == "asinh")
+            return makeUnique<OperatorOne<Arcsinh<RealType>>>(std::move(nodes[0]));
+        else if(name == "acosh")
+            return makeUnique<OperatorOne<Arccosh<RealType>>>(std::move(nodes[0]));
+        else if(name == "atanh")
+            return makeUnique<OperatorOne<Arctanh<RealType>>>(std::move(nodes[0]));
+        else if(name == "acoth")
+            return makeUnique<OperatorOne<Arccoth<RealType>>>(std::move(nodes[0]));
+        else if(name == "asech")
+            return makeUnique<OperatorOne<Arcsech<RealType>>>(std::move(nodes[0]));
+        else if(name == "acsch")
+            return makeUnique<OperatorOne<Arccsch<RealType>>>(std::move(nodes[0]));
+        else if(name == "gamma")
+            return makeUnique<OperatorOne<Gamma<RealType>>>(std::move(nodes[0]));
+    }
+    else if (nodes.size() == 2)
+    {
+        if (name == "pow")
+            return makeUnique<OperatorTwo<Pow<RealType>>>(std::move(nodes[0]), std::move(nodes[1]));
+        else if (name == "log")
+            return makeUnique<OperatorTwo<Log<RealType>>>(std::move(nodes[0]), std::move(nodes[1]));
+    }
+    else if (nodes.size() == 3)
+    {
+        if (name == "hill")
+            return makeUnique<OperatorThree<Hill<RealType>>>(std::move(nodes[0]), std::move(nodes[1]), std::move(nodes[2]));
+    }
+
+    throw UnknownFunctionException();
 }
 
 /* ************************************************************************ */
 
 UniquePtr<Node<RealType>> ReactionsParser::parseUnaryMinus()
 {
-    if(match(TokenCode::Minus))
-        return makeUnique<OperatorOne<std::negate<RealType>>>(std::move(parseParenthesis()));
+    if(!match(TokenCode::Minus))
+        return parseLeaf();
 
-    return parseLeaf();
+    return makeUnique<OperatorOne<std::negate<RealType>>>(std::move(parseParenthesis()));
 }
 
 /* ************************************************************************ */
@@ -327,7 +431,7 @@ UniquePtr<Node<RealType>> ReactionsParser::parseLeaf()
         next();
         return makeUnique<Amount>(value);
     }
-    throw MissingIdentifierException();
+    throw MissingNumberException();
 }
 
 /* ************************************************************************ */

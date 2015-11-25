@@ -33,6 +33,24 @@ namespace stochastic_reactions {
 /* ************************************************************************ */
 
 /**
+ * @brief Functor hill(x)
+ *
+ */
+template <typename T>
+struct Hill
+{
+    using result_type = T;
+    using first_argument_type = T;
+    using second_argument_type = T;
+    using third_argument_type = T;
+
+    constexpr T operator()(const T &fa, const T &sa, const T &ta) const
+    {
+        return std::pow(fa, ta) / (std::pow(fa, ta) + std::pow(sa, ta));
+    }
+};
+
+/**
  * @brief Functor abs(x)
  *
  */

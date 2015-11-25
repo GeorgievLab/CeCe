@@ -112,15 +112,28 @@ public:
 
 
     /**
-     * @brief Returns reaction rate.
+     * @brief Evaulates rate.
      *
      * @param reaction Reaction identifier.
      *
-     * @return
+     * @return rate
      */
-    inline RateType getRate(unsigned int index, const Context& pointers) const noexcept
+    inline RateType evalRate(unsigned int index, const Context& pointers) const noexcept
     {
         return m_reactions[index].evaluateRate(pointers);
+    }
+
+
+    /**
+     * @brief Evaulates condition.
+     *
+     * @param reaction Reaction identifier.
+     *
+     * @return condition was satisfied or not
+     */
+    inline bool evalCond(unsigned int index, const Context& pointers) const noexcept
+    {
+        return m_reactions[index].evaluateCondition(pointers);
     }
 
 

@@ -10,7 +10,7 @@
   "generator": "",
   "buildType": "",
   "arguments": [],
-  "parentProject": "gui"
+  "parentProject": "cli"
  }]]]>
     </Plugin>
   </Plugins>
@@ -32,6 +32,15 @@
     <File Name="Function.hpp"/>
     <File Name="Functors.hpp"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="test">
+    <File Name="test/test.cpp"/>
+    <File Name="test/ReactionsParserTest.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="core"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -121,13 +130,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="test">
-    <File Name="test/test.cpp"/>
-    <File Name="test/ReactionsParserTest.cpp"/>
-  </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="core"/>
-    <Project Name="render"/>
-  </Dependencies>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

@@ -27,6 +27,7 @@
 
 /* ************************************************************************ */
 
+#include "core/Assert.hpp"
 #include "core/Units.hpp"
 #include "core/SharedPtr.hpp"
 
@@ -86,11 +87,15 @@ public:
 
     inline bool evaluateCondition(const Context& pointers) const
     {
+        if (m_condition == nullptr)
+            return true;
         return m_condition->eval(pointers);
     }
 
     inline RateType evaluateRate(const Context& pointers) const
     {
+        Assert(m_rate != nullptr);
+
         return m_rate->eval(pointers);
     }
 

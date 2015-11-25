@@ -57,6 +57,38 @@ struct Node
  *
  */
 template<typename OperatorType>
+struct OperatorThree : public Node<typename OperatorType::result_type>
+{
+    using NodeOne = UniquePtr<Node<typename OperatorType::first_argument_type>>;
+    using NodeTwo = UniquePtr<Node<typename OperatorType::second_argument_type>>;
+    using NodeThree = UniquePtr<Node<typename OperatorType::third_argument_type>>;
+
+private:
+    NodeOne m_one;
+    NodeTwo m_two;
+    NodeThree m_three;
+
+public:
+
+    typename OperatorType::result_type eval(const Context& pointers) const override
+    {
+        return OperatorType{}(m_one->eval(pointers), m_two->eval(pointers), m_three->eval(pointers));
+    }
+
+public:
+
+    OperatorThree(NodeOne one, NodeTwo two, NodeThree three):
+    m_one(std::move(one)), m_two(std::move(two)), m_three(std::move(three))
+    {
+        // Nothing to do.
+    }
+};
+
+/**
+ * @brief Operator with 2 children.
+ *
+ */
+template<typename OperatorType>
 struct OperatorTwo : public Node<typename OperatorType::result_type>
 {
     using NodeLeft = UniquePtr<Node<typename OperatorType::first_argument_type>>;
@@ -177,7 +209,7 @@ public:
         const auto id = pointers.diffusion->getSignalId(m_identifier);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
-            return getMolarConcentration(*pointers.diffusion, pointers.coords, id).value();
+            return getMolarConcentration(*pointers.diffusion, *pointers.coords, id).value();
         }
         return 0;
     }

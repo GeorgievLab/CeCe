@@ -36,13 +36,16 @@ void Reactions::operator()(simulator::Object& object, simulator::Simulation& sim
 {
     // get context
     auto& cell = object.castThrow<cell::CellBase>();
-    auto diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
     const auto& worldSize = simulation.getWorldSize();
-    const auto& coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
     const auto& parameters = simulation.getParameters();
 
+    auto diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
+    DynamicArray<plugin::diffusion::Module::Coordinate> coords;
+    if (diffusion != nullptr)
+        coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
+
     // start
-    executeReactions(step, Context(diffusion, cell, coords, parameters));
+    executeReactions(step, Context(diffusion, cell, &coords, parameters));
 }
 
 void Reactions::executeReactions(units::Time step, const Context& pointers)
@@ -123,7 +126,7 @@ void Reactions::changeMoleculesInEnvironment(const int change, const String& nam
     const auto id = pointers.diffusion->requireSignalId(name);
 
     // change amount of molecules
-    changeMolecules(pointers.cell.getSimulation(), *pointers.diffusion, pointers.coords, id, change);
+    changeMolecules(pointers.cell.getSimulation(), *pointers.diffusion, *pointers.coords, id, change);
 }
 
 /* ************************************************************************ */
@@ -167,7 +170,7 @@ PropensityType Reactions::computePropensity(const unsigned int index, const Cont
         const auto id = context.diffusion->getSignalId(m_moleculeNames[i]);
         if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
         {
-            const auto numberEnv = getMolarConcentration(*context.diffusion, context.coords, id).value();
+            const auto numberEnv = getMolarConcentration(*context.diffusion, *context.coords, id).value();
             if (m_reactions[index].getEnvRequirement(i) != 0u)
                 local *= numberEnv;
         }
