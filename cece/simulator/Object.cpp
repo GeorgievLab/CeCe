@@ -281,6 +281,15 @@ units::Mass Object::getMass() const noexcept
 
 /* ************************************************************************ */
 
+units::Length Object::getMaxTranslation() noexcept
+{
+#if ENABLE_PHYSICS
+    return units::Length{b2_maxTranslation};
+#endif
+}
+
+/* ************************************************************************ */
+
 void Object::setType(Type type) noexcept
 {
     m_type = type;

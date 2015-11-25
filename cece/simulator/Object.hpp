@@ -398,6 +398,14 @@ public:
     }
 
 
+    /**
+     * @brief Returns maximum translation vector magnitude per iteration.
+     *
+     * @return
+     */
+    static units::Length getMaxTranslation() noexcept;
+
+
 // Public Mutators
 public:
 

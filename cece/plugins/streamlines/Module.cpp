@@ -164,6 +164,7 @@ void Module::init(simulator::Simulation& simulation)
     Log::info("[streamlines] Tau: ", getTau());
     Log::info("[streamlines] Cell size: (", dl.getX(), " um; ", dl.getY(), " um)");
     Log::info("[streamlines] Max velocity: (", vMax.getX(), " um/s; ", vMax.getY(), " um/s)");
+    Log::info("[streamlines] Max object speed: ", simulator::Object::getMaxTranslation().value(), " um/it");
 
     // Obstacles
     updateObstacleMap(simulation, vMax);
@@ -570,6 +571,10 @@ void Module::applyToObject(simulator::Object& object, const simulator::Simulatio
     if (object.getType() != simulator::Object::Type::Dynamic)
         return;
 
+    // Maximum object speed that is allowed by physical engine
+    const auto maxSpeed = simulator::Object::getMaxTranslation() / dt;
+    const auto maxSpeedSq = maxSpeed * maxSpeed;
+
     const PositionVector start = simulation.getWorldSize() * -0.5f;
     const auto step = simulation.getWorldSize() / m_lattice.getSize();
 
@@ -625,6 +630,18 @@ void Module::applyToObject(simulator::Object& object, const simulator::Simulatio
         velocityLB /= count;
         const VelocityVector velocityEnv = velocityLB * vMax;
         //const VelocityVector velocityEnv{m_inletVelocities[0], Zero};
+
+        if (velocityEnv.getLengthSquared() > maxSpeedSq)
+        {
+            OutStringStream oss;
+            oss <<
+                "[streamlines] Physical engine can't handle environment "
+                "velocity (" << velocityEnv.getLength() << " um/s < " << maxSpeed << " um/s). "
+                "Decrease inlet velocities or change topology."
+            ;
+
+            throw RuntimeException(oss.str());
+        }
 
         velocityObjEnv += velocityEnv;
 
