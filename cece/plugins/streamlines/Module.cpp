@@ -168,14 +168,21 @@ void Module::init(simulator::Simulation& simulation)
     // Obstacles
     updateObstacleMap(simulation, vMax);
 
+    Log::info("[streamlines] Initialization...");
+
     // Initialization iterations
-    for (auto it = getInitIterations(); it--; )
+    for (simulator::IterationNumber it = 1; it <= getInitIterations(); it++)
     {
+        if ((it % 100) == 0)
+            Log::info("[streamlines] Initialization ", it, "/", getInitIterations());
+
         m_lattice.collideAndStream(omega);
 
         // Apply boundary conditions
         applyBoundaryConditions(simulation, vMax);
     }
+
+    Log::info("[streamlines] Initialization done.");
 }
 
 /* ************************************************************************ */
