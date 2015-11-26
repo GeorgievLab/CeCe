@@ -371,7 +371,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
 void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
 #if DEV_PLUGIN_streamlines_RENDER
-    if (!isDebugDraw())
+    if (getDrawFlags() == 0)
         return;
 
     const auto size = m_lattice.getSize();
@@ -403,84 +403,74 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
         {
             // Cell alias
             const auto& cell = m_lattice[c];
-            render::Color color = render::colors::WHITE;
-
-            switch (cell.getDynamics())
-            {
-            case LatticeCell::Dynamics::BGK:
-                color = render::colors::BLACK;
-                break;
-
-            case LatticeCell::Dynamics::StaticObstacle:
-                color = render::colors::GREEN;
-                break;
-
-            case LatticeCell::Dynamics::DynamicObstacle:
-                color = render::colors::RED;
-                break;
-
-            default:
-                break;
-            }
+            render::Color color = render::colors::BLACK;
 
             if (cell.hasObstacleDynamics() || cell.hasNoDynamics())
             {
                 velocities[c] = Zero;
-                color.setAlpha(0);
-                m_drawableDebug->set(c, color);
+
+                if (checkDebugDraw(DRAW_DEBUG_OBSTACLES))
+                {
+                    switch (cell.getDynamics())
+                    {
+                    case LatticeCell::Dynamics::None:
+                        color = render::colors::WHITE;
+                        break;
+
+                    case LatticeCell::Dynamics::BGK:
+                        color = render::colors::BLACK;
+                        break;
+
+                    case LatticeCell::Dynamics::StaticObstacle:
+                        color = render::colors::GREEN;
+                        break;
+
+                    case LatticeCell::Dynamics::DynamicObstacle:
+                        color = render::colors::RED;
+                        break;
+
+                    default:
+                        break;
+                    }
+
+                    // Set alpha channel
+                    color.setAlpha(0);
+                }
             }
             else
             {
                 // Cell velocity
                 velocities[c] = cell.calcVelocityNormalized();
-                m_drawableDebug->set(c, render::Color::fromGray(velocities[c].getLength() / maxVel));
+
+                if (checkDebugDraw(DRAW_DEBUG_MAGNITUDE))
+                    color = render::Color::fromGray(velocities[c].getLength() / maxVel);
             }
+
+            m_drawableDebug->set(c, color);
         }
     }
 
-    if (!m_drawableVelocities)
+    if (!m_drawableDirections)
     {
-        m_drawableVelocities.create(context, size, velocities.getData(), maxVel);
+        m_drawableDirections.create(context, size, velocities.getData(), maxVel);
     }
     else
     {
-        m_drawableVelocities->setMax(maxVel);
-        m_drawableVelocities->update(velocities.getData());
+        m_drawableDirections->setMax(maxVel);
+        m_drawableDirections->update(velocities.getData());
     }
 
     // Draw color grid
     context.matrixPush();
     context.matrixScale(simulation.getWorldSize() / units::Length(1));
-    m_drawableDebug->draw(context);
-    //m_drawableVelocities->draw(context);
+
+    if (checkDebugDraw(DRAW_DEBUG_MAGNITUDE) || checkDebugDraw(DRAW_DEBUG_OBSTACLES))
+        m_drawableDebug->draw(context);
+
+    if (checkDebugDraw(DRAW_DEBUG_DIRECTION))
+        m_drawableDirections->draw(context);
+
     context.matrixPop();
-
-#if DEV_PLUGIN_streamlines_FORCE_RENDER || DEV_PLUGIN_streamlines_VELOCITY_RENDER
-    // Update simulations objects
-    for (auto& obj : simulation.getObjects())
-    {
-        // Ignore static objects
-        if (obj->getType() == simulator::Object::Type::Static)
-            continue;
-
-#if DEV_PLUGIN_streamlines_FORCE_RENDER
-        context.drawLine(
-            obj->getPosition() / units::Length(1),
-            100 * obj->getForce() / units::Force(1),
-            render::colors::YELLOW
-        );
-#endif
-
-#if DEV_PLUGIN_streamlines_VELOCITY_RENDER
-        context.drawLine(
-            obj->getPosition() / units::Length(1),
-            0.03 * obj->getVelocity() / units::Velocity(1),
-            render::colors::BLUE
-        );
-#endif
-    }
-#endif
-
 #endif
 }
 #endif

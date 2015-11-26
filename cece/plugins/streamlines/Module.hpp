@@ -104,7 +104,9 @@ public:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Flag for debug drawing.
-    static constexpr DrawFlags DRAW_DEBUG = 0x1;
+    static constexpr DrawFlags DRAW_DEBUG_MAGNITUDE = 0x01;
+    static constexpr DrawFlags DRAW_DEBUG_DIRECTION = 0x02;
+    static constexpr DrawFlags DRAW_DEBUG_OBSTACLES = 0x04;
 #endif
 
 
@@ -262,13 +264,15 @@ public:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /**
-     * @brief If debug data is drawn.
+     * @brief If debug flag is set.
+     *
+     * @param flag
      *
      * @return
      */
-    bool isDebugDraw() const noexcept
+    bool checkDebugDraw(DrawFlags flag) const noexcept
     {
-        return getDrawFlags() & DRAW_DEBUG;
+        return getDrawFlags() & flag;
     }
 #endif
 
@@ -388,19 +392,6 @@ public:
     {
         m_dynamicObjectsObstacles = flag;
     }
-
-
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
-    /**
-     * @brief Draw debug data.
-     *
-     * @param flag
-     */
-    void setDebugDraw(bool flag) noexcept
-    {
-        setDrawFlags(getDrawFlags() | DRAW_DEBUG);
-    }
-#endif
 
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
@@ -610,7 +601,7 @@ private:
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Render grid for velocities
-    render::ObjectPtr<render::GridVector> m_drawableVelocities;
+    render::ObjectPtr<render::GridVector> m_drawableDirections;
 #endif
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER

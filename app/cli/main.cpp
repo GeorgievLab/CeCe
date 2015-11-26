@@ -692,6 +692,7 @@ public:
 
 #if ENABLE_RENDER
         case GLFW_KEY_V:
+        {
             auto streamlines = ptr->getSimulation()->getModule("streamlines");
 
             if (streamlines)
@@ -706,6 +707,43 @@ public:
             }
 
             break;
+        }
+
+        case GLFW_KEY_B:
+        {
+            auto streamlines = ptr->getSimulation()->getModule("streamlines");
+
+            if (streamlines)
+            {
+                if (streamlines->getDrawFlags() & 0x2)
+                    streamlines->setDrawFlags(streamlines->getDrawFlags() & ~0x2);
+                else
+                    streamlines->setDrawFlags(streamlines->getDrawFlags() | 0x2);
+
+                // Swap buffers
+                glfwSwapBuffers(win);
+            }
+
+            break;
+        }
+
+        case GLFW_KEY_N:
+        {
+            auto streamlines = ptr->getSimulation()->getModule("streamlines");
+
+            if (streamlines)
+            {
+                if (streamlines->getDrawFlags() & 0x4)
+                    streamlines->setDrawFlags(streamlines->getDrawFlags() & ~0x4);
+                else
+                    streamlines->setDrawFlags(streamlines->getDrawFlags() | 0x4);
+
+                // Swap buffers
+                glfwSwapBuffers(win);
+            }
+
+            break;
+        }
 #endif
         }
     }
