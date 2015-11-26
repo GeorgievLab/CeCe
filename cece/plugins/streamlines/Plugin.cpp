@@ -28,6 +28,7 @@
 #include "cece/core/String.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/Module.hpp"
@@ -42,13 +43,26 @@ using namespace cece::simulator;
 
 class StreamlinesApi : public PluginApi
 {
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
-    {
-        if (name == "store-state")
-            return makeUnique<plugin::streamlines::StoreState>(simulation.useModule<plugin::streamlines::Module>("streamlines"));
 
-        return makeUnique<plugin::streamlines::Module>();
+    /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
+    {
+        ModuleFactoryManager::s().createForModule<plugin::streamlines::Module>("streamlines");
+        ModuleFactoryManager::s().createForModule<plugin::streamlines::Module>("streamlines.store-state");
     }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        ModuleFactoryManager::s().remove("streamlines");
+        ModuleFactoryManager::s().remove("streamlines.store-state");
+    }
+
 };
 
 /* ************************************************************************ */

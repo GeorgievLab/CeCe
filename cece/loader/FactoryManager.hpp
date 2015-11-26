@@ -28,36 +28,130 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
-#include "cece/simulator/Program.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/Map.hpp"
+#include "cece/core/Exception.hpp"
+#include "cece/loader/Factory.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace loader {
 
 /* ************************************************************************ */
 
-class Configuration;
+class Loader;
 
 /* ************************************************************************ */
 
 /**
- * @brief Library API type.
+ * @brief Exception for access to unregistred object factory.
  */
-class PluginApi
+class FactoryNotFoundException : public InvalidArgumentException
+{
+    using InvalidArgumentException::InvalidArgumentException;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Loader factory manager.
+ */
+class FactoryManager
 {
 
-// Public Ctors & Dtors
+// Public Accessors
 public:
 
 
     /**
-     * @brief Destructor.
+     * @brief Find loader factory by name.
+     *
+     * @param name Factory name.
+     *
+     * @return
      */
-    virtual ~PluginApi();
+    ViewPtr<Factory> get(const StringView& name) const noexcept;
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Register a new factory.
+     *
+     * @param name    Factory name.
+     * @param factory Factory pointer.
+     */
+    void add(String name, UniquePtr<Factory> factory) noexcept
+    {
+        m_factories.emplace(std::move(name), std::move(factory));
+    }
+
+
+    /**
+     * @brief Unregister factory.
+     *
+     * @param name Factory name.
+     */
+    void remove(StringView name) noexcept
+    {
+        m_factories.erase(String(name));
+    }
+
+
+    /**
+     * @brief Register a new factory.
+     *
+     * @tparam FactoryType
+     *
+     * @param name Factory name.
+     */
+    template<typename FactoryType>
+    void create(String name) noexcept
+    {
+        add(std::move(name), makeUnique<FactoryType>());
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename LoaderType>
+    void createForLoader(String name) noexcept
+    {
+        create<FactoryTyped<LoaderType>>(std::move(name));
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename Callable>
+    void createFromCallback(Callable callable) noexcept
+    {
+        create<FactoryCallable<Callable>>(std::move(callable));
+    }
+
+
+    /**
+     * @brief Returns global instance of loader factory manager.
+     *
+     * @return
+     */
+    static FactoryManager& s()
+    {
+        static FactoryManager instance;
+        return instance;
+    }
 
 
 // Public Operations
@@ -65,84 +159,22 @@ public:
 
 
     /**
-     * @brief On plugin load.
-     */
-    virtual void onLoad()
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     */
-    virtual void onUnload()
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Init simulation.
+     * @brief Create loader by name.
      *
-     * @param simulation Simulation.
+     * @param name Loader name.
+     *
+     * @return Created loader.
+     *
+     * @throw FactoryNotFoundException In case of factory with given name doesn't exists.
      */
-    virtual void initSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
+    UniquePtr<Loader> create(const StringView& name) const;
 
 
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void finalizeSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
+// Private Data Members
+private:
 
-
-    /**
-     * @brief Configure plugin.
-     *
-     * @param simulation Current simulation.
-     * @param config     Plugin configuration.
-     */
-    virtual void configure(Simulation& simulation, const Configuration& config)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Create initializer.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
-     */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
-    {
-        return {};
-    }
-
-
-    /**
-     * @brief Create program from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Program name.
-     * @param code       Optional program code.
-     *
-     * @return Created program.
-     */
-    virtual Program createProgram(Simulation& simulation, const String& name, String code = {})
-    {
-        return {};
-    }
+    /// Registered module factories.
+    Map<String, UniquePtr<Factory>> m_factories;
 
 };
 

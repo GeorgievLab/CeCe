@@ -169,6 +169,11 @@ void Generator::update(simulator::Simulation& simulation, units::Time dt)
 
 void Generator::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    m_diffusionModule = simulation.getModule("diffusion");
+
+    if (!m_diffusionModule)
+        throw RuntimeException("Diffusion module required!");
+
     // Foreach signal configurations
     for (auto&& cfg : config.getConfigurations("source"))
     {

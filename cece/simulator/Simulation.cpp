@@ -43,6 +43,8 @@
 #include "cece/simulator/PluginApi.hpp"
 #include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/Obstacle.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/simulator/ObjectFactoryManager.hpp"
 
 #if CONFIG_RENDER_TEXT_ENABLE
 #include "cece/simulator/font.hpp"
@@ -270,9 +272,6 @@ ViewPtr<Module> Simulation::useModule(const String& path, String storePath)
     String library, name;
     std::tie(library, name) = splitModulePath(path);
 
-    // Get API
-    PluginApi* api = requirePlugin(library);
-
     // Load only library
     if (name.empty())
         Log::debug("Create module '", library, "'");
@@ -280,7 +279,7 @@ ViewPtr<Module> Simulation::useModule(const String& path, String storePath)
         Log::debug("Create module '", library, ".", name, "'");
 
     // Create module with given name
-    auto module = api->createModule(*this, name);
+    auto module = ModuleFactoryManager::s().createModule(name, *this);
 
     // Register module
     if (module)
@@ -293,6 +292,7 @@ ViewPtr<Module> Simulation::useModule(const String& path, String storePath)
         {
             Log::info("Using module '", path, "'");
         }
+
         return addModule(storePath, std::move(module));
     }
 
@@ -326,13 +326,10 @@ Object* Simulation::buildObject(const String& path, Object::Type type)
     if (name.empty())
         throw InvalidArgumentException("Missing object type name");
 
-    // Get API
-    PluginApi* api = requirePlugin(library);
-
     Log::debug("Create object '", library, ".", name, "'");
 
     // Create object with given name
-    auto object = api->createObject(*this, name, type);
+    auto object = ObjectFactoryManager::s().createObject(name, *this, type);
 
     // Register module
     if (object)

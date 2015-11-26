@@ -26,51 +26,10 @@
 // Declaration
 #include "cece/simulator/PluginApi.hpp"
 
-// C++
-#include <fstream>
-#include <sstream>
-
-// CeCe
-#include "cece/simulator/Simulation.hpp"
-
 /* ************************************************************************ */
 
 namespace cece {
 namespace simulator {
-
-/* ************************************************************************ */
-
-UniquePtr<Simulation> PluginApi::fromFile(const FilePath& filename) const
-{
-    std::ifstream file(filename.string(), std::ios::in);
-    return fromStream(file, filename);
-}
-
-/* ************************************************************************ */
-
-UniquePtr<Simulation> PluginApi::fromSource(const String& source, const FilePath& filename) const
-{
-    std::istringstream is(source, std::ios::in);
-    return fromStream(is, filename);
-}
-
-/* ************************************************************************ */
-
-void PluginApi::toFile(const Simulation& simulation, const FilePath& filename) const
-{
-    // Write code into file
-    std::ofstream file(filename.string(), std::ios::out);
-    toStream(file, simulation, filename);
-}
-
-/* ************************************************************************ */
-
-String PluginApi::toSource(const Simulation& simulation, const FilePath& filename) const
-{
-    std::ostringstream os(std::ios::out);
-    toStream(os, simulation, filename);
-    return os.str();
-}
 
 /* ************************************************************************ */
 

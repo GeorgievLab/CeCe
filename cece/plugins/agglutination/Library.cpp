@@ -27,6 +27,7 @@
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/agglutination/Module.hpp"
@@ -40,10 +41,24 @@ using namespace cece::simulator;
 
 class AgglutinationApi : public PluginApi
 {
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+
+    /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
     {
-        return makeUnique<plugin::agglutination::Module>();
+        ModuleFactoryManager::s().createForModule<plugin::agglutination::Module>("agglutination");
     }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        ModuleFactoryManager::s().remove("agglutination");
+    }
+
 };
 
 /* ************************************************************************ */

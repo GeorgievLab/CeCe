@@ -61,22 +61,6 @@ public:
     using ProductionRate = units::Divide<units::MolarConcentration, units::Time>::type;
 
 
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param module A pointer to diffusion module.
-     */
-    explicit Generator(ViewPtr<plugin::diffusion::Module> module) noexcept
-        : m_diffusionModule(module)
-    {
-        // Nothing to do
-    }
-
-
 // Public Operations
 public:
 

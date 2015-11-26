@@ -45,12 +45,12 @@ ViewPtr<ObjectFactory> ObjectFactoryManager::get(const StringView& name) const n
 
 /* ************************************************************************ */
 
-UniquePtr<Object> ObjectFactoryManager::create(const StringView& name) const
+UniquePtr<Object> ObjectFactoryManager::createObject(const StringView& name, Simulation& simulation, Object::Type type) const
 {
     auto factory = get(name);
 
     if (factory)
-        return factory->create();
+        return factory->create(simulation, type);
 
     throw ObjectFactoryNotFoundException("Object factory not found: " + String(name));
 }

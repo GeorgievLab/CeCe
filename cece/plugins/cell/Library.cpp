@@ -27,6 +27,7 @@
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/ObjectFactoryManager.hpp"
 
 // Plugin
 #include "Yeast.hpp"
@@ -48,36 +49,22 @@ class CellApi : public PluginApi
 {
 
     /**
-     * @brief Create module from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Module name.
-     *
-     * @return Created module.
+     * @brief On plugin load.
      */
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+    void onLoad() override
     {
-        return nullptr;
+        ObjectFactoryManager::s().createForObject<Cell>("cell.Cell");
+        ObjectFactoryManager::s().createForObject<Yeast>("cell.Yeast");
     }
 
 
     /**
-     * @brief Create object from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Object name.
-     * @param type       Object type.
-     *
-     * @return Created object.
+     * @brief On plugin unload.
      */
-    UniquePtr<Object> createObject(Simulation& simulation, const String& name, Object::Type type = Object::Type::Dynamic) noexcept override
+    void onUnload() override
     {
-        if (name == "Yeast")
-            return makeUnique<Yeast>(simulation, type);
-        else if (name == "Cell")
-            return makeUnique<Cell>(simulation, type);
-
-        return nullptr;
+        ObjectFactoryManager::s().remove("cell.Cell");
+        ObjectFactoryManager::s().remove("cell.Yeast");
     }
 
 

@@ -24,7 +24,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/loader/LoaderFactoryManager.hpp"
+#include "cece/loader/FactoryManager.hpp"
 
 // CeCe
 #include "cece/loader/Loader.hpp"
@@ -36,7 +36,7 @@ namespace loader {
 
 /* ************************************************************************ */
 
-ViewPtr<LoaderFactory> LoaderFactoryManager::get(const StringView& name) const noexcept
+ViewPtr<Factory> FactoryManager::get(const StringView& name) const noexcept
 {
     auto it = m_factories.find(String(name));
 
@@ -45,14 +45,14 @@ ViewPtr<LoaderFactory> LoaderFactoryManager::get(const StringView& name) const n
 
 /* ************************************************************************ */
 
-UniquePtr<Loader> LoaderFactoryManager::create(const StringView& name) const
+UniquePtr<Loader> FactoryManager::create(const StringView& name) const
 {
     auto factory = get(name);
 
     if (factory)
         return factory->create();
 
-    throw LoaderFactoryNotFoundException("Loader factory not found: " + String(name));
+    throw FactoryNotFoundException("Loader factory not found: " + String(name));
 }
 
 /* ************************************************************************ */

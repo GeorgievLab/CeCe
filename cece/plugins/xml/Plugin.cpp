@@ -39,6 +39,9 @@
 #include "cece/simulator/PluginApi.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/PluginManager.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/loader/Loader.hpp"
+#include "cece/loader/FactoryManager.hpp"
 
 // Plugin
 #include "Configuration.hpp"
@@ -47,16 +50,12 @@
 
 using namespace cece;
 using namespace cece::simulator;
+using namespace cece::loader;
 
 /* ************************************************************************ */
 
-class XmlApi : public PluginApi
+class XmlLoader : public Loader
 {
-
-    String getLoaderExtension() const noexcept override
-    {
-        return "xml";
-    }
 
     UniquePtr<Simulation> fromStream(InStream& source, const FilePath& filename) const override
     {
@@ -94,6 +93,32 @@ class XmlApi : public PluginApi
     void toStream(OutStream& os, const Simulation& simulation, const FilePath& filename) const override
     {
         // TODO: implement
+    }
+
+};
+
+/* ************************************************************************ */
+
+class XmlApi : public PluginApi
+{
+
+    /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
+    {
+        loader::FactoryManager::s().createForLoader<XmlLoader>("xml");
+        loader::FactoryManager::s().createForLoader<XmlLoader>("cece");
+    }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        loader::FactoryManager::s().remove("cece");
+        loader::FactoryManager::s().remove("xml");
     }
 
 };

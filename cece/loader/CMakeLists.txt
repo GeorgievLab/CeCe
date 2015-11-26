@@ -32,9 +32,9 @@ project(loader CXX)
 set(SRCS
     Loader.hpp
     Loader.cpp
-    LoaderFactory.hpp
-    LoaderFactoryManager.hpp
-    LoaderFactoryManager.cpp
+    Factory.hpp
+    FactoryManager.hpp
+    FactoryManager.cpp
 )
 
 # ######################################################################### #

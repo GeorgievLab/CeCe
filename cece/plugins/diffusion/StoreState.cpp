@@ -30,6 +30,7 @@
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/Range.hpp"
 #include "cece/core/VectorRange.hpp"
+#include "cece/core/Exception.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -37,6 +38,16 @@
 namespace cece {
 namespace plugin {
 namespace diffusion {
+
+/* ************************************************************************ */
+
+void StoreState::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+{
+    m_diffusionModule = simulation.getModule("diffusion");
+
+    if (!m_diffusionModule)
+        throw RuntimeException("Diffusion module required!");
+}
 
 /* ************************************************************************ */
 

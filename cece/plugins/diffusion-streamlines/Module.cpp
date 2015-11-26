@@ -34,7 +34,9 @@
 #include "cece/core/VectorRange.hpp"
 #include "cece/simulator/Simulation.hpp"
 
-// Plugin
+// Plugins
+#include "cece/plugins/diffusion/Module.hpp"
+#include "cece/plugins/streamlines/Module.hpp"
 #include "cece/plugins/streamlines/Lattice.hpp"
 
 /* ************************************************************************ */
@@ -42,6 +44,14 @@
 namespace cece {
 namespace plugin {
 namespace diffusion_streamlines {
+
+/* ************************************************************************ */
+
+void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+{
+    m_streamlines = simulation.useModule<plugin::streamlines::Module>("streamlines");
+    m_diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
+}
 
 /* ************************************************************************ */
 

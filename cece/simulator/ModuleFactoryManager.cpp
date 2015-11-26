@@ -45,7 +45,7 @@ ViewPtr<ModuleFactory> ModuleFactoryManager::get(const StringView& name) const n
 
 /* ************************************************************************ */
 
-UniquePtr<Module> ModuleFactoryManager::create(const StringView& name) const
+UniquePtr<Module> ModuleFactoryManager::createModule(const StringView& name, Simulation& simulation) const
 {
     auto factory = get(name);
 

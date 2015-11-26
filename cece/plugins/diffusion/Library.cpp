@@ -27,6 +27,7 @@
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"
@@ -42,15 +43,28 @@ using namespace cece::simulator;
 
 class DiffusionApi : public PluginApi
 {
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
-    {
-        if (name == "store-state")
-            return makeUnique<plugin::diffusion::StoreState>(simulation.useModule<plugin::diffusion::Module>("diffusion"));
-        else if (name == "generator")
-            return makeUnique<plugin::diffusion::Generator>(simulation.useModule<plugin::diffusion::Module>("diffusion"));
 
-        return makeUnique<plugin::diffusion::Module>();
+    /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
+    {
+        cece::simulator::ModuleFactoryManager::s().createForModule<plugin::diffusion::Module>("diffusion");
+        cece::simulator::ModuleFactoryManager::s().createForModule<plugin::diffusion::Generator>("diffusion.generator");
+        cece::simulator::ModuleFactoryManager::s().createForModule<plugin::diffusion::StoreState>("diffusion.store-state");
     }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        cece::simulator::ModuleFactoryManager::s().remove("diffusion.store-state");
+        cece::simulator::ModuleFactoryManager::s().remove("diffusion.generator");
+        cece::simulator::ModuleFactoryManager::s().remove("diffusion");
+    }
+
 };
 
 /* ************************************************************************ */

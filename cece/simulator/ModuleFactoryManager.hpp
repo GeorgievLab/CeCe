@@ -44,6 +44,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Module;
+class Simulation;
 
 /* ************************************************************************ */
 
@@ -94,6 +95,17 @@ public:
 
 
     /**
+     * @brief Unregister factory.
+     *
+     * @param name Factory name.
+     */
+    void remove(StringView name) noexcept
+    {
+        m_factories.erase(String(name));
+    }
+
+
+    /**
      * @brief Register a new factory.
      *
      * @tparam FactoryType
@@ -131,6 +143,18 @@ public:
     }
 
 
+    /**
+     * @brief Returns global instance of module factory manager.
+     *
+     * @return
+     */
+    static ModuleFactoryManager& s()
+    {
+        static ModuleFactoryManager instance;
+        return instance;
+    }
+
+
 // Public Operations
 public:
 
@@ -138,13 +162,14 @@ public:
     /**
      * @brief Create module by name.
      *
-     * @param name Factory name.
+     * @param name       Factory name.
+     * @param simulation Owning simulation.
      *
      * @return Created module.
      *
      * @throw ModuleFactoryNotFoundException In case of factory with given name doesn't exists.
      */
-    UniquePtr<Module> create(const StringView& name) const;
+    UniquePtr<Module> createModule(const StringView& name, Simulation& simulation) const;
 
 
 // Private Data Members

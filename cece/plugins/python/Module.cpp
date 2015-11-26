@@ -50,43 +50,6 @@ namespace python {
 
 /* ************************************************************************ */
 
-Module::Module(const String& name)
-{
-    auto ends_with = [](const std::string& value, const std::string& ending) {
-        if (ending.size() > value.size()) return false;
-        return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-    };
-
-    // External file
-    if (ends_with(name, ".py"))
-    {
-        String foundPath;
-
-        // Foreach possible paths
-        for (const auto& p : simulator::PluginManager::s().getDirectories())
-        {
-            auto path = p + "/" + name;
-
-            if (fileExists(path))
-            {
-                foundPath = path;
-                break;
-            }
-        }
-
-        if (foundPath.empty())
-        {
-            Log::warning("Unable to find: " + name);
-        }
-        else
-        {
-            m_source.initFile(name);
-        }
-    }
-}
-
-/* ************************************************************************ */
-
 void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
     // Configure parent

@@ -48,24 +48,18 @@ namespace diffusion {
 class StoreState : public simulator::Module
 {
 
-// Public Ctors & Dtors
+
+// Public Operations
 public:
 
 
     /**
-     * @brief Constructor.
+     * @brief Load module configuration.
      *
-     * @param module A pointer to diffusion module.
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
      */
-    explicit StoreState(ViewPtr<plugin::diffusion::Module> module) noexcept
-        : m_diffusionModule(module)
-    {
-        // Nothing to do
-    }
-
-
-// Public Operations
-public:
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
 
 
     /**

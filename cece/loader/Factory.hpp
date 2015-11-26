@@ -28,13 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/StringView.hpp"
-#include "cece/core/ViewPtr.hpp"
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/Map.hpp"
-#include "cece/core/Exception.hpp"
-#include "cece/loader/LoaderFactory.hpp"
+#include "cece/core/Factory.hpp"
 
 /* ************************************************************************ */
 
@@ -48,112 +42,44 @@ class Loader;
 /* ************************************************************************ */
 
 /**
- * @brief Exception for access to unregistred object factory.
+ * @brief Simulation loader factory interface.
  */
-class LoaderFactoryNotFoundException : public InvalidArgumentException
-{
-    using InvalidArgumentException::InvalidArgumentException;
-};
+using Factory = core::Factory<Loader>;
 
 /* ************************************************************************ */
 
 /**
- * @brief Loader factory manager.
+ * @brief Loader factory for specific loader.
+ *
+ * @tparam LoaderType
  */
-class LoaderFactoryManager
+template<typename LoaderType>
+using FactoryTyped = core::FactoryTyped<core::Factory, LoaderType, Loader>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Loader factory with callable backend.
+ *
+ * @tparam Callable
+ */
+template<typename Callable>
+using FactoryCallable = core::FactoryCallable<core::Factory, Callable, Loader>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Make callable loader factory.
+ *
+ * @param callable Callable object.
+ *
+ * @return Callable loader factory.
+ */
+template<typename Callable>
+FactoryCallable<Callable> makeCallableFactory(Callable callable) noexcept
 {
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Find loader factory by name.
-     *
-     * @param name Factory name.
-     *
-     * @return
-     */
-    ViewPtr<LoaderFactory> get(const StringView& name) const noexcept;
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Register a new factory.
-     *
-     * @param name    Factory name.
-     * @param factory Factory pointer.
-     */
-    void add(String name, UniquePtr<LoaderFactory> factory) noexcept
-    {
-        m_factories.emplace(std::move(name), std::move(factory));
-    }
-
-
-    /**
-     * @brief Register a new factory.
-     *
-     * @tparam FactoryType
-     *
-     * @param name Factory name.
-     */
-    template<typename FactoryType>
-    void create(String name) noexcept
-    {
-        add(std::move(name), makeUnique<FactoryType>());
-    }
-
-
-    /**
-     * @brief Register a new factory for specified module.
-     *
-     * @param name Factory name.
-     */
-    template<typename LoaderType>
-    void createForLoader(String name) noexcept
-    {
-        create<LoaderFactoryTyped<LoaderType>>(std::move(name));
-    }
-
-
-    /**
-     * @brief Register a new factory for specified module.
-     *
-     * @param name Factory name.
-     */
-    template<typename Callable>
-    void createFromCallback(Callable callable) noexcept
-    {
-        create<LoaderFactoryCallable<Callable>>(std::move(callable));
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Create module by name.
-     *
-     * @param name Factory name.
-     *
-     * @return Created module.
-     *
-     * @throw LoaderFactoryNotFoundException In case of factory with given name doesn't exists.
-     */
-    UniquePtr<Loader> create(const StringView& name) const;
-
-
-// Private Data Members
-private:
-
-    /// Registered module factories.
-    Map<String, UniquePtr<LoaderFactory>> m_factories;
-
-};
+    return FactoryCallable<Callable>{std::move(callable)};
+}
 
 /* ************************************************************************ */
 

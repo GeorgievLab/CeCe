@@ -40,6 +40,8 @@
 #include "cece/core/FilePath.hpp"
 #include "cece/core/Range.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/loader/Loader.hpp"
+#include "cece/loader/FactoryManager.hpp"
 
 /* ************************************************************************ */
 
@@ -140,7 +142,6 @@ ViewPtr<PluginApi> PluginManager::load(const String& name)
 void PluginManager::init()
 {
     rescanDirectories();
-    initLoaders();
 }
 
 /* ************************************************************************ */
@@ -151,13 +152,13 @@ UniquePtr<Simulation> PluginManager::createSimulation(const FilePath& filepath)
     auto ext = filepath.extension().string().substr(1);
 
     // Find loader by extension
-    auto it = m_loaders.find(ext);
+    auto loader = loader::FactoryManager::s().create(ext);
 
-    if (it == m_loaders.end())
+    if (!loader)
         throw RuntimeException("Unable to load file with extension: " + ext);
 
     // Create simulation
-    return load(it->second)->fromFile(filepath);
+    return loader->fromFile(filepath);
 }
 
 /* ************************************************************************ */
@@ -219,29 +220,6 @@ Map<String, FilePath> PluginManager::scanDirectories() noexcept
     }
 
     return result;
-}
-
-/* ************************************************************************ */
-
-void PluginManager::initLoaders()
-{
-    // TODO: caching?
-
-    // Foreach all plugins
-    for (const auto& name : getNames())
-    {
-        auto api = load(name);
-        auto ext = api->getLoaderExtension();
-
-        if (!ext.empty())
-        {
-            Log::info("New loader '", name, "' for extension '", ext, "'");
-            m_loaders.emplace(ext, name);
-        }
-    }
-
-    // Release all plugins
-    //releasePlugins();
 }
 
 /* ************************************************************************ */

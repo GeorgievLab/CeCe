@@ -27,13 +27,10 @@
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
 #include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion-streamlines/Module.hpp"
-
-// Plugins
-#include "cece/plugins/diffusion/Module.hpp"
-#include "cece/plugins/streamlines/Module.hpp"
 
 /* ************************************************************************ */
 
@@ -44,13 +41,24 @@ using namespace cece::simulator;
 
 class DiffusionStreamlinesApi : public PluginApi
 {
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+
+    /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
     {
-        return makeUnique<plugin::diffusion_streamlines::Module>(
-            simulation.useModule<plugin::diffusion::Module>("diffusion"),
-            simulation.useModule<plugin::streamlines::Module>("streamlines")
-        );
+        ModuleFactoryManager::s().createForModule<plugin::diffusion_streamlines::Module>("diffusion-streamlines");
     }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        ModuleFactoryManager::s().remove("diffusion-streamlines");
+    }
+
 };
 
 /* ************************************************************************ */

@@ -28,6 +28,7 @@
 #include "cece/core/String.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/picture/Module.hpp"
@@ -41,10 +42,24 @@ using namespace cece::simulator;
 
 class PictureApi : public PluginApi
 {
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+
+    /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
     {
-        return makeUnique<plugin::picture::Module>();
+        ModuleFactoryManager::s().createForModule<plugin::picture::Module>("picture");
     }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        ModuleFactoryManager::s().remove("picture");
+    }
+
 };
 
 /* ************************************************************************ */

@@ -233,12 +233,18 @@ Plugin::Plugin(String name, FilePath path)
 
     // Create extension object
     m_api.reset(fn());
+
+    // Load plugin.
+    m_api->onLoad();
 }
 
 /* ************************************************************************ */
 
 Plugin::~Plugin()
 {
+    // Unload plugin.
+    m_api->onUnload();
+
     Log::debug("Plugin released `", getName(), "`");
 }
 

@@ -319,11 +319,11 @@
   <VirtualDirectory Name="loader">
     <File Name="loader/Loader.cpp"/>
     <File Name="loader/Loader.hpp"/>
-    <File Name="loader/LoaderFactory.hpp"/>
-    <File Name="loader/LoaderFactoryManager.cpp"/>
-    <File Name="loader/LoaderFactoryManager.hpp"/>
     <VirtualDirectory Name="CMake">
       <File Name="loader/CMakeLists.txt"/>
     </VirtualDirectory>
+    <File Name="loader/FactoryManager.hpp"/>
+    <File Name="loader/FactoryManager.cpp"/>
+    <File Name="loader/Factory.hpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

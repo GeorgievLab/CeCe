@@ -105,7 +105,7 @@ void parseDirective(const StringView& directive, Simulation& simulation,
 
 class StochasticReactionsIntercellularApi : public PluginApi
 {
-
+#if OFF
     String getLoaderExtension() const noexcept override
     {
         return "reactions";
@@ -165,7 +165,7 @@ class StochasticReactionsIntercellularApi : public PluginApi
     {
         // TODO: implement
     }
-
+#endif
 
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {

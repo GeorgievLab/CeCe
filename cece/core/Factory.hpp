@@ -71,7 +71,7 @@ public:
      *
      * @return Created object pointer.
      */
-    virtual UniquePtr<T> create(Args&&... args) const noexcept = 0;
+    virtual UniquePtr<T> create(Args... args) const noexcept = 0;
 
 };
 
@@ -100,7 +100,7 @@ public:
      *
      * @return Created object pointer.
      */
-    UniquePtr<Base> create(Args&&... args) const noexcept override
+    UniquePtr<Base> create(Args... args) const noexcept override
     {
         return makeUnique<T>(std::forward<Args>(args)...);
     }
@@ -148,7 +148,7 @@ public:
      *
      * @return Created object pointer.
      */
-    UniquePtr<Base> create(Args&&... args) const noexcept override
+    UniquePtr<Base> create(Args... args) const noexcept override
     {
         return m_callable(std::forward<Args>(args)...);
     }

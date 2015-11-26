@@ -28,6 +28,7 @@
 #include "cece/simulator/PluginApi.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/SimulationListener.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/background/Module.hpp"
@@ -41,10 +42,24 @@ using namespace cece::simulator;
 
 class BackgroundApi : public PluginApi
 {
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
+
+    /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
     {
-        return makeUnique<plugin::background::Module>();
+        ModuleFactoryManager::s().createForModule<plugin::background::Module>("background");
     }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        ModuleFactoryManager::s().remove("background");
+    }
+
 };
 
 /* ************************************************************************ */

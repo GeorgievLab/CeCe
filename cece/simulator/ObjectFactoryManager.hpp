@@ -34,6 +34,7 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Map.hpp"
 #include "cece/core/Exception.hpp"
+#include "cece/simulator/Object.hpp"
 #include "cece/simulator/ObjectFactory.hpp"
 
 /* ************************************************************************ */
@@ -43,7 +44,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Object;
+class Simulation;
 
 /* ************************************************************************ */
 
@@ -94,6 +95,17 @@ public:
 
 
     /**
+     * @brief Unregister factory.
+     *
+     * @param name Factory name.
+     */
+    void remove(StringView name) noexcept
+    {
+        m_factories.erase(String(name));
+    }
+
+
+    /**
      * @brief Register a new factory.
      *
      * @tparam FactoryType
@@ -131,20 +143,34 @@ public:
     }
 
 
+    /**
+     * @brief Returns global instance of object factory manager.
+     *
+     * @return
+     */
+    static ObjectFactoryManager& s()
+    {
+        static ObjectFactoryManager instance;
+        return instance;
+    }
+
+
 // Public Operations
 public:
 
 
     /**
-     * @brief Create module by name.
+     * @brief Create an object by name.
      *
-     * @param name Factory name.
+     * @param name       Factory name.
+     * @param simulation Owning simulation.
+     * @param type       Object type.
      *
-     * @return Created module.
+     * @return Created object.
      *
      * @throw ObjectFactoryNotFoundException In case of factory with given name doesn't exists.
      */
-    UniquePtr<Object> create(const StringView& name) const;
+    UniquePtr<Object> createObject(const StringView& name, Simulation& simulation, Object::Type type) const;
 
 
 // Private Data Members

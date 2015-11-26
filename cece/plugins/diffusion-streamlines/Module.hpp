@@ -50,26 +50,17 @@ class Module : public simulator::Module
 {
 
 
-// Public Ctors & Dtors
+// Public Operations
 public:
 
 
     /**
-     * @brief Constructor.
+     * @brief Load module configuration.
      *
-     * @param diffusion   Diffusion module.
-     * @param streamlines Streamlines module.
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
      */
-    Module(ViewPtr<diffusion::Module> diffusion, ViewPtr<streamlines::Module> streamlines)
-        : m_diffusion(diffusion)
-        , m_streamlines(streamlines)
-    {
-        // Nothing to do
-    }
-
-
-// Public Operations
-public:
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
 
 
     /**

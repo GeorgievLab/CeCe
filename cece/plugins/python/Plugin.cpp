@@ -33,6 +33,7 @@
 #include "cece/simulator/PluginApi.hpp"
 #include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/SimulationListener.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/python/Module.hpp"
@@ -81,6 +82,24 @@ class PythonApi : public PluginApi, public SimulationListener
 {
 
     /**
+     * @brief On plugin load.
+     */
+    void onLoad() override
+    {
+        ModuleFactoryManager::s().createForModule<plugin::python::Module>("python");
+    }
+
+
+    /**
+     * @brief On plugin unload.
+     */
+    void onUnload() override
+    {
+        ModuleFactoryManager::s().remove("python");
+    }
+
+
+    /**
      * @brief Initialize simulation for Python interpreter.
      *
      * @param simulation Simulation.
@@ -122,53 +141,6 @@ class PythonApi : public PluginApi, public SimulationListener
         plugin::python::Initializer init;
         init.initSource(code);
         return init;
-    }
-
-
-    /**
-     * @brief Create module from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Module name.
-     *
-     * @return Created module.
-     */
-    UniquePtr<Module> createModule(Simulation& simulation, const String& name) noexcept override
-    {
-        try
-        {
-            return makeUnique<plugin::python::Module>(name);
-        }
-        catch (const std::exception& e)
-        {
-            Log::warning(e.what());
-        }
-
-        return nullptr;
-    }
-
-
-    /**
-     * @brief Create object from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
-     *
-     * @return Created object.
-     */
-    UniquePtr<Object> createObject(Simulation& simulation, const String& name, Object::Type type = Object::Type::Dynamic) noexcept override
-    {
-        try
-        {
-            return makeUnique<plugin::python::Object>(simulation, name);
-        }
-        catch (const std::exception& e)
-        {
-            Log::warning(e.what());
-        }
-
-        return nullptr;
     }
 
 

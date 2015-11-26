@@ -230,12 +230,6 @@ public:
 
 
     /**
-     * @brief Init loaders from available plugins.
-     */
-    void initLoaders();
-
-
-    /**
      * @brief Returns global instance of plugin manager.
      *
      * @return
@@ -272,9 +266,6 @@ private:
 
     /// Loaded plugins.
     Map<String, Plugin> m_loaded;
-
-    /// Map (extension, plugin) of available loaders.
-    Map<String, String> m_loaders;
 
     /// Builtin plugins create API functions.
     static const Map<String, Plugin::CreateFn> s_builtin;

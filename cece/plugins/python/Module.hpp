@@ -52,18 +52,6 @@ namespace python {
 class Module : public simulator::Module
 {
 
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param name Module name. Can be path to python source.
-     */
-    explicit Module(const String& name);
-
-
 // Public Operations
 public:
 
