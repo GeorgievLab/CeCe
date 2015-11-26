@@ -262,9 +262,6 @@
     <File Name="simulator/Obstacle.hpp"/>
     <File Name="simulator/Shape.hpp"/>
     <File Name="simulator/ShapeToGrid.hpp"/>
-    <File Name="simulator/Simulation.cpp"/>
-    <File Name="simulator/Simulation.hpp"/>
-    <File Name="simulator/SimulationListener.hpp"/>
     <File Name="simulator/Simulator.cpp"/>
     <File Name="simulator/Simulator.hpp"/>
     <VirtualDirectory Name="CMake">
@@ -307,6 +304,16 @@
       <File Name="simulator/ProgramContainer.cpp"/>
       <File Name="simulator/ProgramContainer.hpp"/>
     </VirtualDirectory>
+    <VirtualDirectory Name="loader">
+      <File Name="simulator/Loader.hpp"/>
+      <File Name="simulator/Loader.cpp"/>
+      <File Name="simulator/LoaderFactory.hpp"/>
+      <File Name="simulator/LoaderFactoryManager.hpp"/>
+      <File Name="simulator/LoaderFactoryManager.cpp"/>
+    </VirtualDirectory>
+    <File Name="simulator/Simulation.cpp"/>
+    <File Name="simulator/Simulation.hpp"/>
+    <File Name="simulator/SimulationListener.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>

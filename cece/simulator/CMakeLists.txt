@@ -67,6 +67,11 @@ set(SRCS
     ObjectFactoryManager.cpp
     ObjectContainer.hpp
     ObjectContainer.cpp
+    Loader.hpp
+    Loader.cpp
+    LoaderFactory.hpp
+    LoaderFactoryManager.hpp
+    LoaderFactoryManager.cpp
 )
 
 # ######################################################################### #
