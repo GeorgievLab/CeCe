@@ -36,12 +36,12 @@
 
 /* ************************************************************************ */
 
-namespace cece {
-namespace simulator {
+namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
 
-class Simulation;
+namespace cece {
+namespace loader {
 
 /* ************************************************************************ */
 
@@ -72,7 +72,7 @@ public:
      *
      * @return Pointer to created simulation.
      */
-    virtual UniquePtr<Simulation> fromFile(const FilePath& filename) const;
+    virtual UniquePtr<simulator::Simulation> fromFile(const FilePath& filename) const;
 
 
     /**
@@ -83,7 +83,7 @@ public:
      *
      * @return Pointer to created simulation.
      */
-    virtual UniquePtr<Simulation> fromSource(const String& source,
+    virtual UniquePtr<simulator::Simulation> fromSource(const String& source,
         const FilePath& filename = "<source>") const;
 
 
@@ -93,7 +93,7 @@ public:
      * @param simulation Source simulation.
      * @param filename   Path to source file.
      */
-    virtual void toFile(const Simulation& simulation,
+    virtual void toFile(const simulator::Simulation& simulation,
         const FilePath& filename) const;
 
 
@@ -104,7 +104,7 @@ public:
      *
      * @return Source code.
      */
-    virtual String toSource(const Simulation& simulation,
+    virtual String toSource(const simulator::Simulation& simulation,
         const FilePath& filename = "<source>") const;
 
 
@@ -128,7 +128,7 @@ public:
      *
      * @return Source code.
      */
-    virtual void toStream(OutStream& os, const Simulation& simulation,
+    virtual void toStream(OutStream& os, const simulator::Simulation& simulation,
         const FilePath& filename = "<stream>") const = 0;
 
 };

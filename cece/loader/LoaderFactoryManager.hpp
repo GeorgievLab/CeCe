@@ -34,12 +34,12 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Map.hpp"
 #include "cece/core/Exception.hpp"
-#include "cece/simulator/LoaderFactory.hpp"
+#include "cece/loader/LoaderFactory.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace loader {
 
 /* ************************************************************************ */
 

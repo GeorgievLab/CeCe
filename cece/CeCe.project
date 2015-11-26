@@ -304,13 +304,6 @@
       <File Name="simulator/ProgramContainer.cpp"/>
       <File Name="simulator/ProgramContainer.hpp"/>
     </VirtualDirectory>
-    <VirtualDirectory Name="loader">
-      <File Name="simulator/Loader.hpp"/>
-      <File Name="simulator/Loader.cpp"/>
-      <File Name="simulator/LoaderFactory.hpp"/>
-      <File Name="simulator/LoaderFactoryManager.hpp"/>
-      <File Name="simulator/LoaderFactoryManager.cpp"/>
-    </VirtualDirectory>
     <File Name="simulator/Simulation.cpp"/>
     <File Name="simulator/Simulation.hpp"/>
     <File Name="simulator/SimulationListener.hpp"/>
@@ -322,5 +315,15 @@
   <Dependencies Name="Release"/>
   <VirtualDirectory Name="config">
     <File Name="config.hpp.in"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="loader">
+    <File Name="loader/Loader.cpp"/>
+    <File Name="loader/Loader.hpp"/>
+    <File Name="loader/LoaderFactory.hpp"/>
+    <File Name="loader/LoaderFactoryManager.cpp"/>
+    <File Name="loader/LoaderFactoryManager.hpp"/>
+    <VirtualDirectory Name="CMake">
+      <File Name="loader/CMakeLists.txt"/>
+    </VirtualDirectory>
   </VirtualDirectory>
 </CodeLite_Project>

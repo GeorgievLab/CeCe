@@ -24,15 +24,15 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/simulator/LoaderFactoryManager.hpp"
+#include "cece/loader/LoaderFactoryManager.hpp"
 
 // CeCe
-#include "cece/simulator/Loader.hpp"
+#include "cece/loader/Loader.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace loader {
 
 /* ************************************************************************ */
 
