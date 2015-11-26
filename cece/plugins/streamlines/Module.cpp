@@ -630,7 +630,8 @@ void Module::applyToObject(simulator::Object& object, const simulator::Simulatio
                 "Decrease inlet velocities or change topology."
             ;
 
-            throw RuntimeException(oss.str());
+            Log::warning(oss.str());
+            //throw RuntimeException(oss.str());
         }
 
         velocityObjEnv += velocityEnv;
