@@ -142,6 +142,7 @@ public:
             next();
         }
         while (isIdentifierRest());
+
         // check if string is keyword
         if (token.value == "and")
             token.code = TokenCode::And;
@@ -167,7 +168,7 @@ public:
         return token;
     }
 
-    TokenType tokenizeNumber() noexcept
+    TokenType tokenizeNumber()
     {
         TokenType token{TokenCode::Number};
         // fill
@@ -178,44 +179,46 @@ public:
         }
         while(isDigit());
         // check for decimal point
-        if(!is('.'))
-            return token;
-        // add decimal point
-        token.value.push_back(value());
-        next();
-        // require at least one digit after decimal point
-        if(!isDigit())
-            throw IncorrectNumberFormatException();
-        // fill
-        do
+        if(is('.'))
         {
+            // add decimal point
             token.value.push_back(value());
             next();
+            // require at least one digit after decimal point
+            if(!isDigit())
+                throw IncorrectNumberFormatException();
+            // fill
+            do
+            {
+                token.value.push_back(value());
+                next();
+            }
+            while(isDigit());
         }
-        while(isDigit());
 
         // check for exponent sign
-        if(!is('e') && !is('E'))
-            return token;
-        // add exponent sign
-        token.value.push_back(value());
-        next();
-        // optional sign character
-        if(is('-') || is('+'))
+        if(is('e') || is('E'))
         {
+            // add exponent sign
             token.value.push_back(value());
             next();
+            // optional sign character
+            if(is('-') || is('+'))
+            {
+                token.value.push_back(value());
+                next();
+            }
+            // require at least one digit after exponent sign
+            if(!isDigit())
+                throw IncorrectNumberFormatException();
+            // fill
+            do
+            {
+                token.value.push_back(value());
+                next();
+            }
+            while(isDigit());
         }
-        // require at least one digit after exponent sign
-        if(!isDigit())
-            throw IncorrectNumberFormatException();
-        // fill
-        do
-        {
-            token.value.push_back(value());
-            next();
-        }
-        while(isDigit());
 
         return token;
     }
@@ -252,7 +255,7 @@ public:
             next();
             if (match('>'))
                 return TokenType{TokenCode::ArrowFwrd};
-            throw TokenType{TokenCode::Minus};
+            return TokenType{TokenCode::Minus};
         case '>':
             next();
             if (match('='))

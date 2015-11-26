@@ -52,13 +52,18 @@ using namespace plugin::stochastic_reactions;
  * @param reactionCount Expected number of reactions.
  */
 static void test_impl(int line, const String& code, std::initializer_list<bool> cond, std::initializer_list<String> names,
-    std::initializer_list<float> rates)
+    std::initializer_list<float> rates, std::initializer_list<std::pair<String, int>> molecules = {})
 {
     SCOPED_TRACE(code);
 
     simulator::Simulation simulation;
     plugin::cell::CellBase cell(simulation);
-    Context context = Context(nullptr, cell, nullptr, simulation.getParameters());
+    Context context(nullptr, cell, nullptr, simulation.getParameters());
+
+    for (auto pair : molecules)
+    {
+        cell.changeMoleculeCount(pair.first, pair.second);
+    }
 
     // Parse code
     auto reactions = ReactionsParser(code).parse();
@@ -94,9 +99,17 @@ static void test_invalid_impl(int line, const String& code)
 {
     SCOPED_TRACE(code);
 
-    // Parse code
-    auto reactions = ReactionsParser(code).parse();
+    Reactions reactions;
 
+    try
+    {
+        // Parse code
+        reactions = ReactionsParser(code).parse();
+    }
+    catch (const ParserException& ex)
+    {
+        // Nothing to do.
+    }
     // Reaction IDs
     EXPECT_EQ(0, reactions.getMoleculeCount());
 
@@ -114,7 +127,39 @@ static void test_invalid_impl(int line, const String& code)
 
 /* ************************************************************************ */
 
-TEST(Parser, simple)
+TEST(Parser, invalid)
+{
+    // Empty
+    test_invalid("");
+    test_invalid(";");
+
+    // Uncomplete definition
+    test_invalid("A");
+    test_invalid("A;");
+    test_invalid("A\t>;");
+    test_invalid("A > B;");
+    test_invalid("A > 0.3");
+    test_invalid("A > 0.3 >;");
+    test_invalid("A > B;");
+
+    // Invalid identifier list
+    test_invalid("A + > 0.1 > D;");
+    test_invalid(" + > 0.1 > D;");
+    test_invalid(" + B > 0.1 > D;");
+    test_invalid("A + B + > 0.1 > D;");
+    test_invalid("A + B > 0.1 > C +;");
+    test_invalid("A + B + C> 0.1 > + D +E;");
+
+    // Missing semicolon
+    test_invalid("A + B -> 0.3 > D");
+    test_invalid("A + B -> 0.3 -> D + N");
+    test_invalid("A + B -> 0.3 -> D + N\nA + O -> 3 > N;");
+
+    // Missing reversible rate
+    test_invalid("A < 10 > B;");
+}
+
+TEST(Parser, basic)
 {
     test(
         "null > 453 > A;",
@@ -124,7 +169,7 @@ TEST(Parser, simple)
     );
 }
 
-TEST(Parser, decimal_point)
+TEST(Parser, decimal)
 {
     test(
         "null > 0.453 > A;",
@@ -134,7 +179,7 @@ TEST(Parser, decimal_point)
     );
 }
 
-TEST(Parser, multiple_expressions)
+TEST(Parser, multiple)
 {
     test(
         "null > 0.1 > A;"
@@ -145,7 +190,7 @@ TEST(Parser, multiple_expressions)
     );
 }
 
-TEST(Parser, inline_expressions)
+TEST(Parser, inlineexpr)
 {
     test(
         "null > 0.1 > A;C > 0.2 > B;T > 0.3 > G;",
@@ -155,7 +200,7 @@ TEST(Parser, inline_expressions)
     );
 }
 
-TEST(Parser, complex_molecule_name)
+TEST(Parser, complexname)
 {
     test(
         "null > 0.1 > A_C56_B;",
@@ -165,7 +210,7 @@ TEST(Parser, complex_molecule_name)
     );
 }
 
-TEST(Parser, multiline_expressions)
+TEST(Parser, multiline)
 {
     test(
         "A \n> 0.5\t> C;\n"
@@ -235,42 +280,35 @@ TEST(Parser, arrow)
     );
 }
 
-TEST(Parser, invalid)
+TEST(Parser, reversible_basic_assembly_disassembly_multiline)
 {
-    // Empty
-    test_invalid("");
-    test_invalid(";");
+    test(
+        "null < 1, 0.5 \n* 2> C;"
+        "D + A +\n N32 < 20, 15 > A61;",
+        {true, true, true, true},
+        {"C", "D", "A", "N32", "A61"},
+        {1, 1, 15, 20}
+    );
 
-    // Molecule name as reaction rate
-    test_invalid("A > A > B;");
-
-    // Uncomplete definition
-    test_invalid("A");
-    test_invalid("A;");
-    test_invalid("A\t>;");
-    test_invalid("A > B;");
-    test_invalid("A > 0.3");
-    test_invalid("A > 0.3 >;");
-    test_invalid("A > B;");
-
-    // Invalid identifier list
-    test_invalid("A + > 0.1 > D;");
-    test_invalid(" + > 0.1 > D;");
-    test_invalid(" + B > 0.1 > D;");
-    test_invalid("A + B + > 0.1 > D;");
-    test_invalid("A + B > 0.1 > C +;");
-    test_invalid("A + B + C> 0.1 > + D +E;");
-
-    // Missing semicolon
-    test_invalid("A + B -> 0.3 > D");
-    test_invalid("A + B -> 0.3 -> D + N");
-    test_invalid("A + B -> 0.3 -> D + N\nA + O -> 3 > N;");
-
-    // Missing reversible rate
-    test_invalid("A < 10 > B;");
+    test(
+        "null < 0.5, 0.6 > B;",
+        {true, true},
+        {"B"},
+        {0.6, 0.5}
+    );
 }
 
-TEST(Parser, reversible)
+TEST(Parser, reversible_inlineexpr_complexname_multiple_decimal)
+{
+    test(
+        "null < 0.3, 0.1 > A_C56_B;null < 2 , 5 > A_C56_B;",
+        {true, true, true, true},
+        {"A_C56_B"},
+        {0.1,0.3,5,2}
+    );
+}
+
+TEST(Parser, reversible_arrow)
 {
     test(
         "A  + b < 10, 20 > B;",
@@ -311,72 +349,311 @@ TEST(Parser, rate_expressions)
     );
 
     test(
-        "A  + sin > (10 + 20) * sin(0) -> B;",
+        "A  + sin > 5 - 40 / 8 -> B;",
         {true},
         {"A", "sin", "B"},
         {0}
     );
 }
 
-TEST(Parser, rate_expressions_inner_function)
+TEST(Parser, rate_expressions_2)
 {
+    test(
+        "A  + sin > (10 + 20) * sin(0) -> B;",
+        {true},
+        {"A", "sin", "B"},
+        {0}
+    );
+
+    test(
+        "A  + sin > 20 * cos(0) -> B;",
+        {true},
+        {"A", "sin", "B"},
+        {20}
+    );
+}
+
+TEST(Parser, rate_expressions_3)
+{
+    test(
+        "A  + b > cos(5 - 40 / 8) -> B;",
+        {true},
+        {"A", "b", "B"},
+        {1}
+    );
+
     test(
         "A  + b > 20 * cos(5 - 40 / 8) -> B;",
         {true},
         {"A", "b", "B"},
         {20}
     );
+
+    test(
+        "A  + b > 20 * cos( 5 - 40 / log10( 10 ^ 8 ) ) -> B;",
+        {true},
+        {"A", "b", "B"},
+        {20}
+    );
 }
 
-
-/*
-TEST(Parser, conditional)
+TEST(Parser, reversible_rate_expressions)
 {
     test(
-        "if A: A > 0.3 > B;",
-        {false},
-        {"A", "B"},
-        {0.3}
+        "A  + b < cos(5 - 40 / 8), 40 * 9 -> B;",
+        {true, true},
+        {"A", "b", "B"},
+        {360, 1}
     );
 
     test(
-        "if C and D: A > 0.3 > B;",
+        "A  + b <- sin(ln(1)), 20 * cos(5 - 40 / 8) -> B;",
+        {true, true},
+        {"A", "b", "B"},
+        {20, 0}
+    );
+
+    test(
+        "A  + b <- 20 * cos( 5 - 40 / log10( 10 ^ 8 ) ), 40+ \n 6 > B;",
+        {true, true},
+        {"A", "b", "B"},
+        {46, 20}
+    );
+}
+
+TEST(Parser, numberformat)
+{
+    test(
+        "A  + b > 10.68 > B;",
+        {true},
+        {"A", "b", "B"},
+        {10.68}
+    );
+
+    test(
+        "A  + sin > 10.68E-1 -> B;",
+        {true},
+        {"A", "sin", "B"},
+        {1.068}
+    );
+
+    test(
+        "A  + sin > 10.68e-1 -> B;",
+        {true},
+        {"A", "sin", "B"},
+        {1.068}
+    );
+
+    test(
+        "A  + sin > 10.68e+1 -> B;",
+        {true},
+        {"A", "sin", "B"},
+        {106.8}
+    );
+
+    test(
+        "A  + sin > 10.68E1 -> B;",
+        {true},
+        {"A", "sin", "B"},
+        {106.8}
+    );
+}
+
+TEST(Parser, reversible_numberformat)
+{
+    test(
+        "A  + b < 10E+2, 2000E-2 > B;",
+        {true, true},
+        {"A", "b", "B"},
+        {20, 1000}
+    );
+}
+
+TEST(Parser, functions)
+{
+    test(
+        "A  + b > hill(A, 5 ,1) > B;",
+        {true},
+        {"A", "b", "B"},
+        {0.5},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "A  + b > A + B + 8 > B;",
+        {true},
+        {"A", "b", "B"},
+        {16},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "A  + C > A * B / C > B;",
+        {true},
+        {"A", "C", "B"},
+        {7.5},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+}
+
+TEST(Parser, reversible_functions)
+{
+    test(
+        "A  + b < A , B + 1 > B;",
+        {true, true},
+        {"A", "b", "B"},
+        {4, 5},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+}
+
+TEST(Parser, conditional_basic)
+{
+    test(
+        "if D > 0: A > 0.3 > B;",
         {false},
-        {"A", "B", "C", "D"},
-        {0.3}
+        {"A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C > 0 and D > 0: A > 0.3 > B;",
+        {false},
+        {"A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C > 0 or D > 0: A > 0.3 > B;",
+        {true},
+        {"A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C > 1 and A > 1: A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C > 1 and D > 1 or A > 1: A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C > 1 and D > 1 or A > 8: A > 0.3 > B;",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+}
+
+TEST(Parser, conditional_advanced)
+{
+    test(
+        "if D > A: A > 0.3 > B;",
+        {false},
+        {"A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if A > C: A > 0.3 > B;",
+        {true},
+        {"A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if A != B: A > 0.3 > B;",
+        {true},
+        {"A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
     );
 
     test(
         "if C and A: A > 0.3 > B;",
-        { "A", "B", "C"},
-        {0.3}
-    );
-
-    // Reaction is inserted twice
-    test(
-        "if C or D: A > 0.3 > B;",
-        {"A", "B", "C", "D"},
-        {0.3, 0.3}
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
     );
 
     test(
-        "if not E or B: A < 0.5, 1 > B;",
-        {"A", "B", "E"},
-        {1, 1, 0.5, 0.5}
+        "if 5 and 6: A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
     );
 
     test(
-        "if not E and B: A < 0.3, 0.5 > B;"
-        "C > 1.5 > A + B;",
-        {"A", "B", "E", "C"},
-        {0.5, 0.3, 1.5}
+        "if C and (B and A): A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
     );
 
     test(
-        "if E and F or G and H and I or not J: A + B + C < 0.3, 0.4 > D;",
-        {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"},
-        {0.4, 0.4, 0.4, 0.3, 0.3, 0.3}
+        "if C and (B and D): A > 0.3 > B;",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if 3 < A > 4: A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if 10 > A > 3: A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if 10 = 3: A > 0.3 > B;",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if 10 / 8 * 3 > 50 * cos(D): A > 0.3 > B;",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if 1 < C < B < 4 < A < 6 < 7 < 8 < 9 < 10: A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
     );
 }
 
-*/

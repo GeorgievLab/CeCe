@@ -149,6 +149,38 @@ struct Ln
 };
 
 /**
+ * @brief Functor log10(x)
+ *
+ */
+template <typename T>
+struct Log10
+{
+    using result_type = T;
+    using argument_type = T;
+
+    constexpr T operator()(const T &root) const
+    {
+        return std::log10(root);
+    }
+};
+
+/**
+ * @brief Functor log2(x)
+ *
+ */
+template <typename T>
+struct Log2
+{
+    using result_type = T;
+    using argument_type = T;
+
+    constexpr T operator()(const T &root) const
+    {
+        return std::log2(root);
+    }
+};
+
+/**
  * @brief Functor sqrt(y)
  *
  */

@@ -49,30 +49,47 @@ Reactions ReactionsParser::parse()
 
 void ReactionsParser::parseReaction()
 {
-    // parse conditions
-    SharedPtr<Node<bool>> condition = parseCondition();
-
-    // parse LS
-    auto ids_minus = parseList();
-
-    // check reversible reaction
+    SharedPtr<Node<bool>> condition;
+    UniquePtr<Node<RealType>> rate;
     UniquePtr<Node<RealType>> revRate;
-    if (match(TokenCode::ArrowBack, TokenCode::Less))
+    DynamicArray<ReactionsParser::IdEnv> ids_minus;
+    DynamicArray<ReactionsParser::IdEnv> ids_plus;
+
+    try
     {
-        revRate = parseRate();
-        requireNext(TokenCode::Comma);
+        // parse conditions
+        condition = parseCondition();
+
+        // parse LS
+        ids_minus = parseList();
+
+        // recognize reversible reaction
+        if (match(TokenCode::ArrowBack, TokenCode::Less))
+        {
+            revRate = parseRate();
+            requireNext(TokenCode::Comma);
+        }
+        // require begin of rate area
+        else if (!match(TokenCode::ArrowFwrd, TokenCode::Greater))
+            throw MissingArrowException();
+
+        // parse rate
+        rate = parseRate();
+
+        // require end of rate area
+        requireNext(TokenCode::ArrowFwrd, TokenCode::Greater);
+
+        // parse RS
+        ids_plus = parseList();
+
+        // expected end of reaction
+        requireNext(TokenCode::Semicolon);
     }
-    else if (!match(TokenCode::ArrowFwrd, TokenCode::Greater))
-        throw MissingArrowException();
-    // parse rate
-    UniquePtr<Node<RealType>> rate = parseRate();
-    requireNext(TokenCode::ArrowFwrd, TokenCode::Greater);
-
-    // parse RS
-    auto ids_plus = parseList();
-
-    // expected end of reaction
-    requireNext(TokenCode::Semicolon);
+    catch (const ParserException& ex)
+    {
+        find(';');
+        return;
+    }
 
     // extend
     auto rules = makeRules(ids_minus, ids_plus);
@@ -202,7 +219,7 @@ UniquePtr<Node<bool>> ReactionsParser::parseRelation()
             next();
             return makeUnique<OperatorTwo<std::not_equal_to<RealType>>>(std::move(first), std::move(parsePlus()));
         default:
-            throw MissingOperatorException();
+            return makeUnique<OperatorTwo<std::greater<RealType>>>(std::move(first), std::move(makeUnique<Amount>(RealType(0))));
     }
 }
 
@@ -317,6 +334,10 @@ UniquePtr<Node<RealType>> ReactionsParser::parseFunction()
             return makeUnique<OperatorOne<Exp<RealType>>>(std::move(nodes[0]));
         else if(name == "ln")
             return makeUnique<OperatorOne<Ln<RealType>>>(std::move(nodes[0]));
+        else if(name == "log10")
+            return makeUnique<OperatorOne<Log10<RealType>>>(std::move(nodes[0]));
+        else if(name == "log2")
+            return makeUnique<OperatorOne<Log2<RealType>>>(std::move(nodes[0]));
         else if(name == "abs")
             return makeUnique<OperatorOne<Abs<RealType>>>(std::move(nodes[0]));
         else if(name == "sqrt")
@@ -447,7 +468,7 @@ DynamicArray<ReactionsParser::IdEnv> ReactionsParser::parseList()
         bool environment = match(TokenCode::Env);
 
         if (!is(TokenCode::Identifier))
-            throw MissingIdentifierException{};
+            throw MissingIdentifierException();
 
         array.push_back(IdEnv(token().value, environment));
         next();
