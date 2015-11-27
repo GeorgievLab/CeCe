@@ -72,6 +72,7 @@ enum class TokenCode
     Invalid,
     Identifier,
     Number,
+    Units,
     ArrowFwrd,
     ArrowBack,
     Plus,
@@ -97,6 +98,8 @@ enum class TokenCode
     Parameter,
     BracketO,
     BracketC,
+    CurlyO,
+    CurlyC,
     Function
 };
 
@@ -143,6 +146,8 @@ public:
         }
         while (isIdentifierRest());
 
+        skipWhitespace();
+
         // check if string is keyword
         if (token.value == "and")
             token.code = TokenCode::And;
@@ -177,15 +182,15 @@ public:
             token.value.push_back(value());
             next();
         }
-        while(isDigit());
+        while (isDigit());
         // check for decimal point
-        if(is('.'))
+        if (is('.'))
         {
             // add decimal point
             token.value.push_back(value());
             next();
             // require at least one digit after decimal point
-            if(!isDigit())
+            if (!isDigit())
                 throw IncorrectNumberFormatException();
             // fill
             do
@@ -193,23 +198,23 @@ public:
                 token.value.push_back(value());
                 next();
             }
-            while(isDigit());
+            while (isDigit());
         }
 
         // check for exponent sign
-        if(is('e') || is('E'))
+        if (is('e') || is('E'))
         {
             // add exponent sign
             token.value.push_back(value());
             next();
             // optional sign character
-            if(is('-') || is('+'))
+            if (is('-') || is('+'))
             {
                 token.value.push_back(value());
                 next();
             }
             // require at least one digit after exponent sign
-            if(!isDigit())
+            if (!isDigit())
                 throw IncorrectNumberFormatException();
             // fill
             do
@@ -217,7 +222,28 @@ public:
                 token.value.push_back(value());
                 next();
             }
-            while(isDigit());
+            while (isDigit());
+        }
+
+        // units appendix
+        if (isIdentifierBegin())
+        {
+            token.code = TokenCode::Units;
+            do
+            {
+                token.value.push_back(value());
+                next();
+            }
+            while (isIdentifierBegin());
+            if (is('/'))
+            {
+                do
+                {
+                    token.value.push_back(value());
+                    next();
+                }
+                while (isIdentifierBegin());
+            }
         }
 
         return token;
@@ -230,9 +256,7 @@ public:
      */
     TokenType tokenize()
     {
-        // Skip whitespaces
-        while (isRange('\1', ' '))
-            next();
+        skipWhitespace();
 
         // Skip comments
         while (is('#'))
@@ -245,9 +269,11 @@ public:
         // Number
         if(isDigit())
             return tokenizeNumber();
+
         // Identifier
         if (isIdentifierBegin())
             return tokenizeIdentifier();
+
         // Operators
         switch (value())
         {
@@ -309,6 +335,12 @@ public:
         case ')':
             next();
             return TokenType{TokenCode::BracketC};
+        case '{':
+            next();
+            return TokenType{TokenCode::CurlyO};
+        case '}':
+            next();
+            return TokenType{TokenCode::CurlyC};
         }
         // move to next character and return invalid
         next();
@@ -336,6 +368,30 @@ protected:
     bool isIdentifierBegin() const noexcept
     {
         return isRange('a', 'z') || isRange('A', 'Z');
+    }
+
+
+    /**
+     * @brief Check if current value is whitespace.
+     *
+     * @return
+     */
+    bool isWhitespace() const noexcept
+    {
+        return isRange('\1' , ' ');
+    }
+
+    /**
+     * @brief Moves iterator beyond whitespace.
+     *
+     * @return
+     */
+    void skipWhitespace() noexcept
+    {
+        while (isWhitespace())
+        {
+            next();
+        }
     }
 
     /**
@@ -444,6 +500,8 @@ private:
     UniquePtr<Node<bool>> parseBParenthesis();
 
     UniquePtr<Node<bool>> parseBoolFunction();
+
+    UniquePtr<Node<bool>> parseNot();
 
     UniquePtr<Node<bool>> parseChainRelation();
 

@@ -23,7 +23,10 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+#include <sstream>
+
 #include "ReactionsParser.hpp"
+#include "core/Units.hpp"
 
 /* ************************************************************************ */
 
@@ -49,21 +52,21 @@ Reactions ReactionsParser::parse()
 
 void ReactionsParser::parseReaction()
 {
-    SharedPtr<Node<bool>> condition;
-    UniquePtr<Node<RealType>> rate;
-    UniquePtr<Node<RealType>> revRate;
-    DynamicArray<ReactionsParser::IdEnv> ids_minus;
-    DynamicArray<ReactionsParser::IdEnv> ids_plus;
+    // parse condition
+    SharedPtr<Node<bool>> condition = parseCondition();
 
-    try
+    // check for block condition
+    bool block = false;
+    if(match(TokenCode::CurlyO))
+        block = true;
+
+    do
     {
-        // parse conditions
-        condition = parseCondition();
-
         // parse LS
-        ids_minus = parseList();
+        DynamicArray<ReactionsParser::IdEnv> ids_minus = parseList();
 
         // recognize reversible reaction
+        UniquePtr<Node<RealType>> revRate;
         if (match(TokenCode::ArrowBack, TokenCode::Less))
         {
             revRate = parseRate();
@@ -74,33 +77,29 @@ void ReactionsParser::parseReaction()
             throw MissingArrowException();
 
         // parse rate
-        rate = parseRate();
+        UniquePtr<Node<RealType>> rate = parseRate();
 
         // require end of rate area
         requireNext(TokenCode::ArrowFwrd, TokenCode::Greater);
 
         // parse RS
-        ids_plus = parseList();
+        DynamicArray<ReactionsParser::IdEnv> ids_plus = parseList();
 
         // expected end of reaction
         requireNext(TokenCode::Semicolon);
+
+        // extend
+        auto rules = makeRules(ids_minus, ids_plus);
+        m_reactions.extend(Reaction(condition, std::move(rate), rules));
+
+        // extend reversible
+        if (revRate == nullptr)
+            continue;
+
+        auto revRules = makeRules(ids_minus, ids_plus);
+        m_reactions.extend(Reaction(condition, std::move(revRate), revRules));
     }
-    catch (const ParserException& ex)
-    {
-        find(';');
-        return;
-    }
-
-    // extend
-    auto rules = makeRules(ids_minus, ids_plus);
-    m_reactions.extend(std::move(Reaction(condition, std::move(rate), rules)));
-
-    // extend reversible
-    if (revRate == nullptr)
-        return;
-
-    auto revRules = makeRules(ids_minus, ids_plus);
-    m_reactions.extend(std::move(Reaction(condition, std::move(revRate), revRules)));
+    while (block && !match(TokenCode::CurlyC));
 }
 
 /* *********************************************************************** */
@@ -168,7 +167,7 @@ UniquePtr<Node<bool>> ReactionsParser::parseBParenthesis()
 UniquePtr<Node<bool>> ReactionsParser::parseBoolFunction()
 {
     if(!is(TokenCode::Function))
-        return parseChainRelation();
+        return parseNot();
 
     auto ptr = m_reactions.getGlobalBoolFunction(token().value);
 
@@ -178,6 +177,16 @@ UniquePtr<Node<bool>> ReactionsParser::parseBoolFunction()
     next();
 
     return makeUnique<Function<bool>>(ptr);
+}
+
+/* ************************************************************************ */
+
+UniquePtr<Node<bool>> ReactionsParser::parseNot()
+{
+    if(!match(TokenCode::Not))
+        return parseChainRelation();
+
+    return makeUnique<OperatorOne<std::logical_not<bool>>>(std::move(parseBParenthesis()));
 }
 
 /* ************************************************************************ */
@@ -451,6 +460,12 @@ UniquePtr<Node<RealType>> ReactionsParser::parseLeaf()
         RealType value = strtof(token().value.c_str(), &end);
         next();
         return makeUnique<Amount>(value);
+    }
+    if(is(TokenCode::Units))
+    {
+        InStringStream iss(token().value);
+        next();
+        return makeUnique<Amount>(core::units::parse(iss));
     }
     throw MissingNumberException();
 }

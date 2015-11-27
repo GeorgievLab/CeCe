@@ -558,6 +558,33 @@ TEST(Parser, conditional_basic)
     );
 }
 
+TEST(Parser, negate)
+{
+    test(
+        "A  + b > -hill(A, 5 ,1) > B;",
+        {true},
+        {"A", "b", "B"},
+        {-0.5},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "A  + b > 100* (- ln ( 0.5 ) / 20.0) > B;",
+        {true},
+        {"A", "b", "B"},
+        {3.4657359027997265},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "A  + b > 100* - ln ( 0.5 ) / 20.0 > B;",
+        {true},
+        {"A", "b", "B"},
+        {3.4657359027997265},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+}
+
 TEST(Parser, conditional_advanced)
 {
     test(
@@ -657,3 +684,84 @@ TEST(Parser, conditional_advanced)
     );
 }
 
+TEST(Parser, keywordnot)
+{
+    test(
+        "if not(1 < C < B < 4 < A < 6 < 7 < 8 < 9 < 10): A > 0.3 > B;",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if not 10 = 3: A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if not 10 / 8 * 3 > 50 * cos(D): A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if not 5 and 6: A > 0.3 > B;",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C and not (B and A): A > 0.3 > B;",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C and not (D and A): A > 0.3 > B;",
+        {true},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+}
+
+TEST(Parser, concentration)
+{
+    test(
+        "if A > 50nM: null > 0.1 > A;"
+        "if A < 50nM: null > 0.2 > B;",
+        {false, true},
+        {"A", "B"},
+        {0.1, 0.2}
+    );
+
+}
+
+TEST(Parser, blockcond)
+{
+    test(
+        "if C and not (B and A):{ A > 0.3 > B;}",
+        {false},
+        { "A", "B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "if C and not (B and A):{ A > 0.3 > B;A > 0.4 > B;A > 0.5 > B;}",
+        {false, false, false},
+        { "A", "B"},
+        {0.3, 0.4, 0.5},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+}
