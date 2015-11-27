@@ -58,7 +58,10 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~Loader();
+    virtual ~Loader()
+    {
+        // Nothing to do
+    }
 
 
 // Public Operations
