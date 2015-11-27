@@ -27,6 +27,7 @@
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -46,23 +47,27 @@ class DiffusionApi : public PluginApi
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        cece::simulator::ModuleFactoryManager::s().createForModule<plugin::diffusion::Module>("diffusion");
-        cece::simulator::ModuleFactoryManager::s().createForModule<plugin::diffusion::Generator>("diffusion.generator");
-        cece::simulator::ModuleFactoryManager::s().createForModule<plugin::diffusion::StoreState>("diffusion.store-state");
+        manager.getModuleFactoryManager().createForModule<plugin::diffusion::Module>("diffusion");
+        manager.getModuleFactoryManager().createForModule<plugin::diffusion::Generator>("diffusion.generator");
+        manager.getModuleFactoryManager().createForModule<plugin::diffusion::StoreState>("diffusion.store-state");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        cece::simulator::ModuleFactoryManager::s().remove("diffusion.store-state");
-        cece::simulator::ModuleFactoryManager::s().remove("diffusion.generator");
-        cece::simulator::ModuleFactoryManager::s().remove("diffusion");
+        manager.getModuleFactoryManager().remove("diffusion.store-state");
+        manager.getModuleFactoryManager().remove("diffusion.generator");
+        manager.getModuleFactoryManager().remove("diffusion");
     }
 
 };

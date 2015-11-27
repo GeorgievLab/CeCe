@@ -28,6 +28,7 @@
 #include "cece/core/String.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -46,21 +47,25 @@ class StreamlinesApi : public PluginApi
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().createForModule<plugin::streamlines::Module>("streamlines");
-        ModuleFactoryManager::s().createForModule<plugin::streamlines::Module>("streamlines.store-state");
+        manager.getModuleFactoryManager().createForModule<plugin::streamlines::Module>("streamlines");
+        manager.getModuleFactoryManager().createForModule<plugin::streamlines::Module>("streamlines.store-state");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().remove("streamlines");
-        ModuleFactoryManager::s().remove("streamlines.store-state");
+        manager.getModuleFactoryManager().remove("streamlines");
+        manager.getModuleFactoryManager().remove("streamlines.store-state");
     }
 
 };

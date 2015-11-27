@@ -208,6 +208,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class PluginApi;
+class PluginManager;
 class Simulation;
 
 /* ************************************************************************ */
@@ -250,19 +251,21 @@ public:
     /**
      * @brief Constructor.
      *
+     * @param mgr  Plugin manager.
      * @param name Plugin name.
      * @param api  Plugin builtin api.
      */
-    Plugin(String name, UniquePtr<PluginApi> api);
+    Plugin(ViewPtr<PluginManager> mgr, String name, UniquePtr<PluginApi> api);
 
 
     /**
      * @brief Constructor.
      *
+     * @param mgr  Plugin manager.
      * @param name Plugin name.
      * @param path Path to plugin.
      */
-    Plugin(String name, FilePath path);
+    Plugin(ViewPtr<PluginManager> mgr, String name, FilePath path);
 
 
     /**
@@ -299,6 +302,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Plugin owner.
+    ViewPtr<PluginManager> m_manager;
 
     /// Plugin name.
     String m_name;

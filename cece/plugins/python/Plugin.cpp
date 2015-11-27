@@ -83,19 +83,31 @@ class PythonApi : public PluginApi, public SimulationListener
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().createForModule<plugin::python::Module>("python");
+        if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
+            throw std::runtime_error("Unable to initialize Python import table");
+
+        // Initialize Python interpreter
+        Py_Initialize();
+
+        manager.getModuleFactoryManager().createForModule<plugin::python::Module>("python");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().remove("python");
+        manager.getModuleFactoryManager().remove("python");
+
+        Py_Finalize();
     }
 
 
@@ -106,25 +118,8 @@ class PythonApi : public PluginApi, public SimulationListener
      */
     void initSimulation(Simulation& simulation) noexcept override
     {
-        if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
-            throw std::runtime_error("Unable to initialize Python import table");
-
-        // Initialize Python interpreter
-        Py_Initialize();
-
         // Register listener
         simulation.addListener(this);
-    }
-
-
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Simulation.
-     */
-    void finalizeSimulation(Simulation& simulation) noexcept override
-    {
-        Py_Finalize();
     }
 
 

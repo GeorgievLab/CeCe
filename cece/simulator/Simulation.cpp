@@ -257,56 +257,60 @@ void Simulation::setGravity(const AccelerationVector& gravity) noexcept
 
 /* ************************************************************************ */
 
-ViewPtr<Module> Simulation::useModule(const String& path, String storePath)
+ViewPtr<Module> Simulation::useModule(const String& nameSrc, String storePath)
 {
+    String name = nameSrc;
+
+    // Find ':' in name - old definition
+    auto pos = nameSrc.find(':');
+
+    if (pos != String::npos)
+    {
+        name = nameSrc.substr(0, pos);
+        storePath = nameSrc.substr(pos + 1);
+    }
+
     if (storePath.empty())
-        storePath = path;
+        storePath = name;
 
     // Module exists, return the existing one
     if (hasModule(storePath))
         return getModule(storePath);
 
-    Log::debug("Loading library: ", path);
-
-    // Split path into parts
-    String library, name;
-    std::tie(library, name) = splitModulePath(path);
+    Log::debug("Loading library: ", name);
 
     // Load only library
-    if (name.empty())
-        Log::debug("Create module '", library, "'");
-    else
-        Log::debug("Create module '", library, ".", name, "'");
+    Log::debug("Create module '", name, "'");
 
     // Create module with given name
-    auto module = ModuleFactoryManager::s().createModule(name, *this);
+    auto module = PluginManager::s().getModuleFactoryManager().createModule(name, *this);
 
     // Register module
     if (module)
     {
-        if (storePath != path)
+        if (storePath != name)
         {
-            Log::info("Using module '", path, "' as '", storePath, "'");
+            Log::info("Using module '", name, "' as '", storePath, "'");
         }
         else
         {
-            Log::info("Using module '", path, "'");
+            Log::info("Using module '", name, "'");
         }
 
         return addModule(storePath, std::move(module));
     }
 
-    Log::warning("Unable to create module '", path, "' (unsupported by library?)");
+    Log::warning("Unable to create module '", name, "' (unsupported by library?)");
 
     return nullptr;
 }
 
 /* ************************************************************************ */
 
-Object* Simulation::buildObject(const String& path, Object::Type type)
+Object* Simulation::buildObject(const String& name, Object::Type type)
 {
     // Try to find object internal object type
-    auto desc = findObjectType(path);
+    auto desc = findObjectType(name);
 
     if (desc)
     {
@@ -319,23 +323,16 @@ Object* Simulation::buildObject(const String& path, Object::Type type)
         return obj;
     }
 
-    // Split path into parts
-    String library, name;
-    std::tie(library, name) = splitModulePath(path);
-
-    if (name.empty())
-        throw InvalidArgumentException("Missing object type name");
-
-    Log::debug("Create object '", library, ".", name, "'");
+    Log::debug("Create object '", name, "'");
 
     // Create object with given name
-    auto object = ObjectFactoryManager::s().createObject(name, *this, type);
+    auto object = PluginManager::s().getObjectFactoryManager().createObject(name, *this, type);
 
     // Register module
     if (object)
         return addObject(std::move(object));
 
-    Log::warning("Unable to create object: ", path, " (unsupported by library?)");
+    Log::warning("Unable to create object: ", name, " (unsupported by library?)");
 
     return nullptr;
 }

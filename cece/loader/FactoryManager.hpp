@@ -142,18 +142,6 @@ public:
     }
 
 
-    /**
-     * @brief Returns global instance of loader factory manager.
-     *
-     * @return
-     */
-    static FactoryManager& s()
-    {
-        static FactoryManager instance;
-        return instance;
-    }
-
-
 // Public Operations
 public:
 

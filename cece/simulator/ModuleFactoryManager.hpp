@@ -143,18 +143,6 @@ public:
     }
 
 
-    /**
-     * @brief Returns global instance of module factory manager.
-     *
-     * @return
-     */
-    static ModuleFactoryManager& s()
-    {
-        static ModuleFactoryManager instance;
-        return instance;
-    }
-
-
 // Public Operations
 public:
 

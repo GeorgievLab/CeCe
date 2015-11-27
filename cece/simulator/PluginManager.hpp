@@ -33,6 +33,9 @@
 #include "cece/core/Map.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/simulator/Plugin.hpp"
+#include "cece/simulator/ObjectFactoryManager.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/loader/FactoryManager.hpp"
 
 /* ************************************************************************ */
 
@@ -160,6 +163,39 @@ public:
     ViewPtr<PluginApi> load(const String& name);
 
 
+    /**
+     * @brief Returns loader factory manager.
+     *
+     * @return
+     */
+    loader::FactoryManager& getLoaderFactoryManager() noexcept
+    {
+        return m_loaderFactoryManager;
+    }
+
+
+    /**
+     * @brief Returns module factory manager.
+     *
+     * @return
+     */
+    ModuleFactoryManager& getModuleFactoryManager() noexcept
+    {
+        return m_moduleFactoryManager;
+    }
+
+
+    /**
+     * @brief Returns object factory manager.
+     *
+     * @return
+     */
+    ObjectFactoryManager& getObjectFactoryManager() noexcept
+    {
+        return m_objectFactoryManager;
+    }
+
+
 // Public Mutators
 public:
 
@@ -257,6 +293,15 @@ private:
 
 // Private Data Members
 private:
+
+    /// Loader factory manager.
+    loader::FactoryManager m_loaderFactoryManager;
+
+    /// Module factory manager.
+    ModuleFactoryManager m_moduleFactoryManager;
+
+    /// Object factory manager.
+    ObjectFactoryManager m_objectFactoryManager;
 
     /// Plugins directory paths.
     DynamicArray<String> m_directories;

@@ -41,6 +41,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 class Configuration;
+class PluginManager;
 
 /* ************************************************************************ */
 
@@ -57,7 +58,10 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~PluginApi();
+    virtual ~PluginApi()
+    {
+        // Nothing to do
+    }
 
 
 // Public Operations
@@ -66,8 +70,10 @@ public:
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    virtual void onLoad()
+    virtual void onLoad(PluginManager& manager)
     {
         // Nothing to do
     }
@@ -75,8 +81,10 @@ public:
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    virtual void onUnload()
+    virtual void onUnload(PluginManager& manager)
     {
         // Nothing to do
     }

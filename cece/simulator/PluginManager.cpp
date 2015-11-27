@@ -142,6 +142,10 @@ ViewPtr<PluginApi> PluginManager::load(const String& name)
 void PluginManager::init()
 {
     rescanDirectories();
+
+    // Load all plugins
+    for (const auto& name : getNames())
+        loadInternal(name);
 }
 
 /* ************************************************************************ */
@@ -152,7 +156,7 @@ UniquePtr<Simulation> PluginManager::createSimulation(const FilePath& filepath)
     auto ext = filepath.extension().string().substr(1);
 
     // Find loader by extension
-    auto loader = loader::FactoryManager::s().create(ext);
+    auto loader = PluginManager::s().getLoaderFactoryManager().create(ext);
 
     if (!loader)
         throw RuntimeException("Unable to load file with extension: " + ext);
@@ -244,7 +248,7 @@ Plugin& PluginManager::loadInternal(const String& name)
         // Insert into cache
         auto ptr = m_loaded.emplace(std::piecewise_construct,
             std::forward_as_tuple(name),
-            std::forward_as_tuple(name, UniquePtr<PluginApi>(itBuiltin->second()))
+            std::forward_as_tuple(this, name, UniquePtr<PluginApi>(itBuiltin->second()))
         );
 
         return std::get<1>(*std::get<0>(ptr));
@@ -262,7 +266,7 @@ Plugin& PluginManager::loadInternal(const String& name)
         // Insert into cache
         auto ptr = m_loaded.emplace(std::piecewise_construct,
             std::forward_as_tuple(name),
-            std::forward_as_tuple(name, it->second)
+            std::forward_as_tuple(this, name, it->second)
         );
 
         return std::get<1>(*std::get<0>(ptr));

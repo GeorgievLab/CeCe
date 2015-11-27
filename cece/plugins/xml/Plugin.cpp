@@ -104,21 +104,25 @@ class XmlApi : public PluginApi
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        loader::FactoryManager::s().createForLoader<XmlLoader>("xml");
-        loader::FactoryManager::s().createForLoader<XmlLoader>("cece");
+        manager.getLoaderFactoryManager().createForLoader<XmlLoader>("xml");
+        manager.getLoaderFactoryManager().createForLoader<XmlLoader>("cece");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        loader::FactoryManager::s().remove("cece");
-        loader::FactoryManager::s().remove("xml");
+        manager.getLoaderFactoryManager().remove("cece");
+        manager.getLoaderFactoryManager().remove("xml");
     }
 
 };

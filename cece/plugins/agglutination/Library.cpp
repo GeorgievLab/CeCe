@@ -27,6 +27,7 @@
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -44,19 +45,23 @@ class AgglutinationApi : public PluginApi
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().createForModule<plugin::agglutination::Module>("agglutination");
+        manager.getModuleFactoryManager().createForModule<plugin::agglutination::Module>("agglutination");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().remove("agglutination");
+        manager.getModuleFactoryManager().remove("agglutination");
     }
 
 };

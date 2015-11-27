@@ -28,6 +28,7 @@
 #include "cece/core/String.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -45,19 +46,23 @@ class PictureApi : public PluginApi
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().createForModule<plugin::picture::Module>("picture");
+        manager.getModuleFactoryManager().createForModule<plugin::picture::Module>("picture");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().remove("picture");
+        manager.getModuleFactoryManager().remove("picture");
     }
 
 };

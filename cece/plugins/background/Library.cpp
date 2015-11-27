@@ -28,6 +28,7 @@
 #include "cece/simulator/PluginApi.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/SimulationListener.hpp"
+#include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -45,19 +46,23 @@ class BackgroundApi : public PluginApi
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().createForModule<plugin::background::Module>("background");
+        manager.getModuleFactoryManager().createForModule<plugin::background::Module>("background");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().remove("background");
+        manager.getModuleFactoryManager().remove("background");
     }
 
 };

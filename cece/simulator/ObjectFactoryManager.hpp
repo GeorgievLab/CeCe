@@ -143,18 +143,6 @@ public:
     }
 
 
-    /**
-     * @brief Returns global instance of object factory manager.
-     *
-     * @return
-     */
-    static ObjectFactoryManager& s()
-    {
-        static ObjectFactoryManager instance;
-        return instance;
-    }
-
-
 // Public Operations
 public:
 

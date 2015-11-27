@@ -24,9 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/PluginManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -44,19 +44,23 @@ class ObjectGeneratorApi : public PluginApi
 
     /**
      * @brief On plugin load.
+     *
+     * @param manager Plugin manager.
      */
-    void onLoad() override
+    void onLoad(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().createForModule<plugin::object_generator::Module>("object_generator");
+        manager.getModuleFactoryManager().createForModule<plugin::object_generator::Module>("object-generator");
     }
 
 
     /**
      * @brief On plugin unload.
+     *
+     * @param manager Plugin manager.
      */
-    void onUnload() override
+    void onUnload(PluginManager& manager) override
     {
-        ModuleFactoryManager::s().remove("object_generator");
+        manager.getModuleFactoryManager().remove("object-generator");
     }
 
 };
