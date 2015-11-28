@@ -35,11 +35,10 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
+#include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/PluginManager.hpp"
-#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/simulator/PluginContext.hpp"
 #include "cece/loader/Loader.hpp"
 #include "cece/loader/FactoryManager.hpp"
 
@@ -57,25 +56,16 @@ using namespace cece::loader;
 class XmlLoader : public Loader
 {
 
-    UniquePtr<Simulation> fromStream(InStream& source, const FilePath& filename) const override
+    UniquePtr<Simulation> fromStream(PluginContext& context, InStream& source,
+        const FilePath& filename) const override
     {
-        auto simulation = makeUnique<Simulation>();
+        auto simulation = makeUnique<Simulation>(context);
 
         pugi::xml_document doc;
         pugi::xml_parse_result result = doc.load(source);
 
         if (!result)
             throw RuntimeException("XML parse error: " + String(result.description()));
-
-        {
-            // Register file path as module library
-#if __linux__
-            char buffer[1024];
-            strncpy(buffer, filename.c_str(), sizeof(buffer));
-
-            PluginManager::s().addDirectory(dirname(buffer));
-#endif
-        }
 
         // Create configuration
         const Configuration config(
@@ -105,24 +95,24 @@ class XmlApi : public PluginApi
     /**
      * @brief On plugin load.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onLoad(PluginManager& manager) override
+    void onLoad(PluginContext& context) override
     {
-        manager.getLoaderFactoryManager().createForLoader<XmlLoader>("xml");
-        manager.getLoaderFactoryManager().createForLoader<XmlLoader>("cece");
+        context.registerLoader<XmlLoader>("xml");
+        context.registerLoader<XmlLoader>("cece");
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onUnload(PluginManager& manager) override
+    void onUnload(PluginContext& context) override
     {
-        manager.getLoaderFactoryManager().remove("cece");
-        manager.getLoaderFactoryManager().remove("xml");
+        context.unregisterLoader("cece");
+        context.unregisterLoader("xml");
     }
 
 };

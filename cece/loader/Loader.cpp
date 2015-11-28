@@ -40,18 +40,20 @@ namespace loader {
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> Loader::fromFile(const FilePath& filename) const
+UniquePtr<simulator::Simulation> Loader::fromFile(simulator::PluginContext& context,
+    const FilePath& filename) const
 {
     std::ifstream file(filename.string(), std::ios::in);
-    return fromStream(file, filename);
+    return fromStream(context, file, filename);
 }
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> Loader::fromSource(const String& source, const FilePath& filename) const
+UniquePtr<simulator::Simulation> Loader::fromSource(simulator::PluginContext& context,
+    const String& source, const FilePath& filename) const
 {
     std::istringstream is(source, std::ios::in);
-    return fromStream(is, filename);
+    return fromStream(context, is, filename);
 }
 
 /* ************************************************************************ */

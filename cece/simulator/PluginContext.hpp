@@ -28,10 +28,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/String.hpp"
-#include "cece/simulator/Program.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/ObjectFactoryManager.hpp"
+#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/loader/FactoryManager.hpp"
 
 /* ************************************************************************ */
 
@@ -40,117 +39,139 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Configuration;
-class PluginContext;
-
-/* ************************************************************************ */
-
 /**
- * @brief Library API type.
+ * @brief Context for plugins. It stores extensions supplied by plugins.
  */
-class PluginApi
+class PluginContext
 {
 
-// Public Ctors & Dtors
+// Public Accessors
 public:
 
 
     /**
-     * @brief Destructor.
+     * @brief Returns loader factory manager.
+     *
+     * @return
      */
-    virtual ~PluginApi()
+    loader::FactoryManager& getLoaderFactoryManager() noexcept
     {
-        // Nothing to do
+        return m_loaderFactoryManager;
     }
 
 
-// Public Operations
+    /**
+     * @brief Returns module factory manager.
+     *
+     * @return
+     */
+    ModuleFactoryManager& getModuleFactoryManager() noexcept
+    {
+        return m_moduleFactoryManager;
+    }
+
+
+    /**
+     * @brief Returns object factory manager.
+     *
+     * @return
+     */
+    ObjectFactoryManager& getObjectFactoryManager() noexcept
+    {
+        return m_objectFactoryManager;
+    }
+
+
+// Public Mutators
 public:
 
 
     /**
-     * @brief On plugin load.
+     * @brief Register new loader type and create factory for it.
      *
-     * @param context Plugin context.
+     * @tparam LoaderType Type of loader that is created by factory.
+     *
+     * @param name Factory name.
      */
-    virtual void onLoad(PluginContext& context)
+    template<typename LoaderType>
+    void registerLoader(String name) noexcept
     {
-        // Nothing to do
+        m_loaderFactoryManager.createForLoader<LoaderType>(std::move(name));
     }
 
 
     /**
-     * @brief On plugin unload.
+     * @brief Register new module type and create factory for it.
      *
-     * @param context Plugin context.
+     * @tparam ModuleType Type of module that is created by factory.
+     *
+     * @param name Factory name.
      */
-    virtual void onUnload(PluginContext& context)
+    template<typename ModuleType>
+    void registerModule(String name) noexcept
     {
-        // Nothing to do
+        m_moduleFactoryManager.createForModule<ModuleType>(std::move(name));
     }
 
 
     /**
-     * @brief Init simulation.
+     * @brief Register new object type and create factory for it.
      *
-     * @param simulation Simulation.
+     * @tparam ObjectType Type of object that is created by factory.
+     *
+     * @param name Factory name.
      */
-    virtual void initSimulation(Simulation& simulation)
+    template<typename ObjectType>
+    void registerObject(String name) noexcept
     {
-        // Nothing to do
+        m_objectFactoryManager.createForObject<ObjectType>(std::move(name));
     }
 
 
     /**
-     * @brief Finalize simulation.
+     * @brief Unregister loader type.
      *
-     * @param simulation Simulation.
+     * @param name Loader type name.
      */
-    virtual void finalizeSimulation(Simulation& simulation)
+    void unregisterLoader(StringView name) noexcept
     {
-        // Nothing to do
+        m_loaderFactoryManager.remove(name);
     }
 
 
     /**
-     * @brief Configure plugin.
+     * @brief Unregister module type.
      *
-     * @param simulation Current simulation.
-     * @param config     Plugin configuration.
+     * @param name Module type name.
      */
-    virtual void configure(Simulation& simulation, const Configuration& config)
+    void unregisterModule(StringView name) noexcept
     {
-        // Nothing to do
+        m_moduleFactoryManager.remove(name);
     }
 
 
     /**
-     * @brief Create initializer.
+     * @brief Unregister object type.
      *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
+     * @param name Object type name.
      */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
+    void unregisterObject(StringView name) noexcept
     {
-        return {};
+        m_objectFactoryManager.remove(name);
     }
 
 
-    /**
-     * @brief Create program from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Program name.
-     * @param code       Optional program code.
-     *
-     * @return Created program.
-     */
-    virtual Program createProgram(Simulation& simulation, const String& name, String code = {})
-    {
-        return {};
-    }
+// Private Data Members
+private:
+
+    /// Loader factory manager.
+    loader::FactoryManager m_loaderFactoryManager;
+
+    /// Module factory manager.
+    ModuleFactoryManager m_moduleFactoryManager;
+
+    /// Object factory manager.
+    ObjectFactoryManager m_objectFactoryManager;
 
 };
 

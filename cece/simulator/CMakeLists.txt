@@ -44,6 +44,7 @@ set(SRCS
     PluginApi.cpp
     PluginManager.hpp
     PluginManager.cpp
+    PluginContext.hpp
     Configuration.hpp
     Configuration.cpp
     Shape.hpp

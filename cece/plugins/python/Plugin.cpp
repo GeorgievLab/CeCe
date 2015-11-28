@@ -84,9 +84,9 @@ class PythonApi : public PluginApi, public SimulationListener
     /**
      * @brief On plugin load.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onLoad(PluginManager& manager) override
+    void onLoad(PluginContext& context) override
     {
         if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
             throw std::runtime_error("Unable to initialize Python import table");
@@ -94,18 +94,18 @@ class PythonApi : public PluginApi, public SimulationListener
         // Initialize Python interpreter
         Py_Initialize();
 
-        manager.getModuleFactoryManager().createForModule<plugin::python::Module>("python");
+        context.registerModule<plugin::python::Module>("python");
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onUnload(PluginManager& manager) override
+    void onUnload(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().remove("python");
+        context.unregisterModule("python");
 
         Py_Finalize();
     }

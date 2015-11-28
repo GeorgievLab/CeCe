@@ -24,11 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/String.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginManager.hpp"
+#include "cece/simulator/PluginContext.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -48,24 +46,24 @@ class StreamlinesApi : public PluginApi
     /**
      * @brief On plugin load.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onLoad(PluginManager& manager) override
+    void onLoad(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().createForModule<plugin::streamlines::Module>("streamlines");
-        manager.getModuleFactoryManager().createForModule<plugin::streamlines::Module>("streamlines.store-state");
+        context.registerModule<plugin::streamlines::Module>("streamlines");
+        context.registerModule<plugin::streamlines::Module>("streamlines.store-state");
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onUnload(PluginManager& manager) override
+    void onUnload(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().remove("streamlines");
-        manager.getModuleFactoryManager().remove("streamlines.store-state");
+        context.unregisterModule("streamlines");
+        context.unregisterModule("streamlines.store-state");
     }
 
 };

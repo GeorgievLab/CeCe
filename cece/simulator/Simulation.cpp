@@ -186,9 +186,10 @@ InStream& operator>>(InStream& is, Object::Type& type)
 
 /* ************************************************************************ */
 
-Simulation::Simulation() noexcept
+Simulation::Simulation(PluginContext& context) noexcept
+    : m_pluginContext(context)
 #if ENABLE_PHYSICS
-    : m_world{b2Vec2{0.0f, 0.0f}}
+    , m_world{b2Vec2{0.0f, 0.0f}}
 #endif
 {
     // Nothing to do
@@ -283,7 +284,7 @@ ViewPtr<Module> Simulation::useModule(const String& nameSrc, String storePath)
     Log::debug("Create module '", name, "'");
 
     // Create module with given name
-    auto module = PluginManager::s().getModuleFactoryManager().createModule(name, *this);
+    auto module = getPluginContext().getModuleFactoryManager().createModule(name, *this);
 
     // Register module
     if (module)
@@ -326,7 +327,7 @@ Object* Simulation::buildObject(const String& name, Object::Type type)
     Log::debug("Create object '", name, "'");
 
     // Create object with given name
-    auto object = PluginManager::s().getObjectFactoryManager().createObject(name, *this, type);
+    auto object = getPluginContext().getObjectFactoryManager().createObject(name, *this, type);
 
     // Register module
     if (object)

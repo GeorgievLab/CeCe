@@ -190,8 +190,8 @@ private:
 
 /* ************************************************************************ */
 
-Plugin::Plugin(ViewPtr<PluginManager> mgr, String name, UniquePtr<PluginApi> api)
-    : m_manager(mgr)
+Plugin::Plugin(ViewPtr<PluginContext> context, String name, UniquePtr<PluginApi> api)
+    : m_context(context)
     , m_name(std::move(name))
     , m_api(std::move(api))
 {
@@ -200,8 +200,8 @@ Plugin::Plugin(ViewPtr<PluginManager> mgr, String name, UniquePtr<PluginApi> api
 
 /* ************************************************************************ */
 
-Plugin::Plugin(ViewPtr<PluginManager> mgr, String name, FilePath path)
-    : m_manager(mgr)
+Plugin::Plugin(ViewPtr<PluginContext> context, String name, FilePath path)
+    : m_context(context)
     , m_name(std::move(name))
 {
     // Create dynamic implementation
@@ -237,7 +237,8 @@ Plugin::Plugin(ViewPtr<PluginManager> mgr, String name, FilePath path)
     m_api.reset(fn());
 
     // Load plugin.
-    m_api->onLoad(*m_manager);
+    Assert(m_api);
+    m_api->onLoad(*m_context);
 }
 
 /* ************************************************************************ */
@@ -245,7 +246,8 @@ Plugin::Plugin(ViewPtr<PluginManager> mgr, String name, FilePath path)
 Plugin::~Plugin()
 {
     // Unload plugin.
-    m_api->onUnload(*m_manager);
+    Assert(m_api);
+    m_api->onUnload(*m_context);
 
     Log::debug("Plugin released `", getName(), "`");
 }

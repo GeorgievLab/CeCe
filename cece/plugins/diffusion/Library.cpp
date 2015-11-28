@@ -48,26 +48,26 @@ class DiffusionApi : public PluginApi
     /**
      * @brief On plugin load.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onLoad(PluginManager& manager) override
+    void onLoad(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().createForModule<plugin::diffusion::Module>("diffusion");
-        manager.getModuleFactoryManager().createForModule<plugin::diffusion::Generator>("diffusion.generator");
-        manager.getModuleFactoryManager().createForModule<plugin::diffusion::StoreState>("diffusion.store-state");
+        context.registerModule<plugin::diffusion::Module>("diffusion");
+        context.registerModule<plugin::diffusion::Generator>("diffusion.generator");
+        context.registerModule<plugin::diffusion::StoreState>("diffusion.store-state");
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onUnload(PluginManager& manager) override
+    void onUnload(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().remove("diffusion.store-state");
-        manager.getModuleFactoryManager().remove("diffusion.generator");
-        manager.getModuleFactoryManager().remove("diffusion");
+        context.unregisterModule("diffusion.store-state");
+        context.unregisterModule("diffusion.generator");
+        context.unregisterModule("diffusion");
     }
 
 };

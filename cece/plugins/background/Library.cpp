@@ -47,22 +47,22 @@ class BackgroundApi : public PluginApi
     /**
      * @brief On plugin load.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onLoad(PluginManager& manager) override
+    void onLoad(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().createForModule<plugin::background::Module>("background");
+        context.registerModule<plugin::background::Module>("background");
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onUnload(PluginManager& manager) override
+    void onUnload(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().remove("background");
+        context.unregisterModule("background");
     }
 
 };

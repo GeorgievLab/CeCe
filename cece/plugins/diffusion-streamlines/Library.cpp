@@ -26,7 +26,7 @@
 // CeCe
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginManager.hpp"
+#include "cece/simulator/PluginContext.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
@@ -45,22 +45,22 @@ class DiffusionStreamlinesApi : public PluginApi
     /**
      * @brief On plugin load.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onLoad(PluginManager& manager) override
+    void onLoad(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().createForModule<plugin::diffusion_streamlines::Module>("diffusion-streamlines");
+        context.registerModule<plugin::diffusion_streamlines::Module>("diffusion-streamlines");
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onUnload(PluginManager& manager) override
+    void onUnload(PluginContext& context) override
     {
-        manager.getModuleFactoryManager().remove("diffusion-streamlines");
+        context.unregisterModule("diffusion-streamlines");
     }
 
 };

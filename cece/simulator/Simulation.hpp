@@ -80,8 +80,8 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Simulator;
 class Configuration;
+class PluginContext;
 
 /* ************************************************************************ */
 
@@ -130,8 +130,10 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param context Plugin context.
      */
-    Simulation() noexcept;
+    explicit Simulation(PluginContext& context) noexcept;
 
 
     /**
@@ -142,6 +144,28 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns plugin context.
+     *
+     * @return
+     */
+    PluginContext& getPluginContext() noexcept
+    {
+        return m_pluginContext;
+    }
+
+
+    /**
+     * @brief Returns plugin context.
+     *
+     * @return
+     */
+    const PluginContext& getPluginContext() const noexcept
+    {
+        return m_pluginContext;
+    }
 
 
     /**
@@ -1122,6 +1146,9 @@ protected:
 
 // Private Data Members
 private:
+
+    /// Simulation plugin context.
+    PluginContext& m_pluginContext;
 
     /// If simulation is initialized.
     bool m_initialized = false;

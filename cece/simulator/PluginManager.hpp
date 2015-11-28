@@ -33,9 +33,7 @@
 #include "cece/core/Map.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/ObjectFactoryManager.hpp"
-#include "cece/simulator/ModuleFactoryManager.hpp"
-#include "cece/loader/FactoryManager.hpp"
+#include "cece/simulator/PluginContext.hpp"
 
 /* ************************************************************************ */
 
@@ -164,35 +162,13 @@ public:
 
 
     /**
-     * @brief Returns loader factory manager.
+     * @brief Returns plugin context.
      *
      * @return
      */
-    loader::FactoryManager& getLoaderFactoryManager() noexcept
+    PluginContext& getContext() noexcept
     {
-        return m_loaderFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns module factory manager.
-     *
-     * @return
-     */
-    ModuleFactoryManager& getModuleFactoryManager() noexcept
-    {
-        return m_moduleFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns object factory manager.
-     *
-     * @return
-     */
-    ObjectFactoryManager& getObjectFactoryManager() noexcept
-    {
-        return m_objectFactoryManager;
+        return m_context;
     }
 
 
@@ -294,14 +270,8 @@ private:
 // Private Data Members
 private:
 
-    /// Loader factory manager.
-    loader::FactoryManager m_loaderFactoryManager;
-
-    /// Module factory manager.
-    ModuleFactoryManager m_moduleFactoryManager;
-
-    /// Object factory manager.
-    ObjectFactoryManager m_objectFactoryManager;
+    /// Plugin context.
+    PluginContext m_context;
 
     /// Plugins directory paths.
     DynamicArray<String> m_directories;

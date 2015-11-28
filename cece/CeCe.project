@@ -298,6 +298,7 @@
       <File Name="simulator/PluginApi.hpp"/>
       <File Name="simulator/PluginManager.cpp"/>
       <File Name="simulator/PluginManager.hpp"/>
+      <File Name="simulator/PluginContext.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="program">
       <File Name="simulator/Program.hpp"/>

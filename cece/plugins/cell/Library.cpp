@@ -27,7 +27,7 @@
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginManager.hpp"
+#include "cece/simulator/PluginContext.hpp"
 #include "cece/simulator/ObjectFactoryManager.hpp"
 
 // Plugin
@@ -52,24 +52,24 @@ class CellApi : public PluginApi
     /**
      * @brief On plugin load.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onLoad(PluginManager& manager) override
+    void onLoad(PluginContext& context) override
     {
-        manager.getObjectFactoryManager().createForObject<Cell>("cell.Cell");
-        manager.getObjectFactoryManager().createForObject<Yeast>("cell.Yeast");
+        context.registerObject<Cell>("cell.Cell");
+        context.registerObject<Yeast>("cell.Yeast");
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param manager Plugin manager.
+     * @param context Plugin context.
      */
-    void onUnload(PluginManager& manager) override
+    void onUnload(PluginContext& context) override
     {
-        manager.getObjectFactoryManager().remove("cell.Cell");
-        manager.getObjectFactoryManager().remove("cell.Yeast");
+        context.unregisterObject("cell.Cell");
+        context.unregisterObject("cell.Yeast");
     }
 
 
