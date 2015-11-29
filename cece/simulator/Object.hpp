@@ -47,8 +47,10 @@
 #include "cece/render/Context.hpp"
 #endif
 
+// Box2D
 #if ENABLE_PHYSICS
 #include <Box2D/Box2D.h>
+#include "ConverterBox2D.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -361,6 +363,26 @@ public:
 #endif
 
 
+#if ENABLE_PHYSICS
+    /**
+     * @brief Returns Box2D units converter.
+     *
+     * @return
+     */
+    ConverterBox2D& getConverter() noexcept;
+#endif
+
+
+#if ENABLE_PHYSICS
+    /**
+     * @brief Returns Box2D units converter.
+     *
+     * @return
+     */
+    const ConverterBox2D& getConverter() const noexcept;
+#endif
+
+
     /**
      * @brief Returns object shapes.
      *
@@ -403,7 +425,7 @@ public:
      *
      * @return
      */
-    static units::Length getMaxTranslation() noexcept;
+    units::Length getMaxTranslation() const noexcept;
 
 
 // Public Mutators

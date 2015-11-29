@@ -308,6 +308,8 @@
     <File Name="simulator/Simulation.cpp"/>
     <File Name="simulator/Simulation.hpp"/>
     <File Name="simulator/SimulationListener.hpp"/>
+    <File Name="simulator/ConverterBox2D.cpp"/>
+    <File Name="simulator/ConverterBox2D.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>

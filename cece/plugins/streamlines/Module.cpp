@@ -164,7 +164,7 @@ void Module::init(simulator::Simulation& simulation)
     Log::info("[streamlines] Tau: ", getTau());
     Log::info("[streamlines] Cell size: (", dl.getX(), " um; ", dl.getY(), " um)");
     Log::info("[streamlines] Max velocity: (", vMax.getX(), " um/s; ", vMax.getY(), " um/s)");
-    Log::info("[streamlines] Max object speed: ", simulator::Object::getMaxTranslation().value(), " um/it");
+    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation().value(), " um/it");
 
     // Obstacles
     updateObstacleMap(simulation, vMax);
@@ -562,7 +562,7 @@ void Module::applyToObject(simulator::Object& object, const simulator::Simulatio
         return;
 
     // Maximum object speed that is allowed by physical engine
-    const auto maxSpeed = simulator::Object::getMaxTranslation() / dt;
+    const auto maxSpeed = simulation.getMaxObjectTranslation() / dt;
     const auto maxSpeedSq = maxSpeed * maxSpeed;
 
     const PositionVector start = simulation.getWorldSize() * -0.5f;

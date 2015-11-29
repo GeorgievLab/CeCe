@@ -68,9 +68,10 @@
 #endif
 #endif
 
-#if ENABLE_PHYSICS
 // Box2D
+#if ENABLE_PHYSICS
 #include <Box2D/Box2D.h>
+#include "ConverterBox2D.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -487,9 +488,50 @@ public:
      */
     units::Time getPhysicsEngineTimeStep() const noexcept
     {
-        return m_physicsEngineTimeStep;
+        return m_converter.getTimeStepBox2D();
     }
 #endif
+
+
+#if ENABLE_PHYSICS
+    /**
+     * @brief Returns Box2D units converter.
+     *
+     * @return
+     */
+    ConverterBox2D& getConverter() noexcept
+    {
+        return m_converter;
+    }
+#endif
+
+
+#if ENABLE_PHYSICS
+    /**
+     * @brief Returns Box2D units converter.
+     *
+     * @return
+     */
+    const ConverterBox2D& getConverter() const noexcept
+    {
+        return m_converter;
+    }
+#endif
+
+
+    /**
+     * @brief Returns maximum translation vector magnitude per iteration.
+     *
+     * @return
+     */
+    units::Length getMaxObjectTranslation() const noexcept
+    {
+#if ENABLE_PHYSICS
+        return m_converter.getMaxObjectTranslation();
+#else
+        return units::Length{1e3};
+#endif
+    }
 
 
 #if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
@@ -695,6 +737,10 @@ public:
             throw InvalidArgumentException("Time step cannot be zero");
 
         m_timeStep = dt;
+
+#if ENABLE_PHYSICS
+        m_converter.setTimeStep(dt);
+#endif
     }
 
 
@@ -886,7 +932,7 @@ public:
      */
     void setPhysicsEngineTimeStep(units::Time dt) noexcept
     {
-        m_physicsEngineTimeStep = dt;
+        m_converter.setTimeStepBox2D(dt);
     }
 #endif
 
@@ -1181,12 +1227,13 @@ private:
     ModuleContainer m_modules;
 
 #ifdef ENABLE_PHYSICS
+    /// Box2D world
     b2World m_world;
 #endif
 
 #if ENABLE_PHYSICS
-    /// Physics engine time step
-    units::Time m_physicsEngineTimeStep = units::s(1.0 / 60.0);
+    // Box2D units converter.
+    ConverterBox2D m_converter;
 #endif
 
     /// Simulation objects.

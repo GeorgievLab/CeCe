@@ -215,13 +215,7 @@ Simulation::~Simulation()
 AccelerationVector Simulation::getGravity() const noexcept
 {
 #if ENABLE_PHYSICS
-    const auto coeff = calcPhysicalEngineCoefficient();
-
-    const auto grav = m_world.GetGravity();
-    return {
-        units::Acceleration(coeff * coeff * grav.x),
-        units::Acceleration(coeff * coeff * grav.y)
-    };
+    return m_converter.convertLinearAcceleration(m_world.GetGravity());
 #else
     return AccelerationVector{Zero};
 #endif
@@ -243,14 +237,7 @@ ViewPtr<const ObjectType> Simulation::findObjectType(const StringView& name) con
 void Simulation::setGravity(const AccelerationVector& gravity) noexcept
 {
 #if ENABLE_PHYSICS
-    const auto coeff = calcPhysicalEngineCoefficient();
-
-    const b2Vec2 gravityPhys{
-        gravity.getX().value() / (coeff * coeff),
-        gravity.getY().value() / (coeff * coeff)
-    };
-
-    m_world.SetGravity(gravityPhys);
+    m_world.SetGravity(m_converter.convertLinearAcceleration(gravity));
 #else
     // TODO: store
 #endif

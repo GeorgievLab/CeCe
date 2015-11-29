@@ -70,6 +70,14 @@ set(SRCS
     ObjectContainer.cpp
 )
 
+if (CONFIG_PHYSICS_BUILTIN)
+    # Sources
+    set(SRCS ${SRCS}
+        ConverterBox2D.hpp
+        ConverterBox2D.cpp
+    )
+endif ()
+
 # ######################################################################### #
 
 # Pass build-in libraries list
