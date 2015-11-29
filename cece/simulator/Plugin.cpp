@@ -190,9 +190,8 @@ private:
 
 /* ************************************************************************ */
 
-Plugin::Plugin(ViewPtr<PluginContext> context, String name, UniquePtr<PluginApi> api)
-    : m_context(context)
-    , m_name(std::move(name))
+Plugin::Plugin(String name, UniquePtr<PluginApi> api)
+    : m_name(std::move(name))
     , m_api(std::move(api))
 {
     // Nothing to do
@@ -200,9 +199,8 @@ Plugin::Plugin(ViewPtr<PluginContext> context, String name, UniquePtr<PluginApi>
 
 /* ************************************************************************ */
 
-Plugin::Plugin(ViewPtr<PluginContext> context, String name, FilePath path)
-    : m_context(context)
-    , m_name(std::move(name))
+Plugin::Plugin(String name, FilePath path)
+    : m_name(std::move(name))
 {
     // Create dynamic implementation
     m_impl.reset(new Impl{std::move(path)});
@@ -235,20 +233,12 @@ Plugin::Plugin(ViewPtr<PluginContext> context, String name, FilePath path)
 
     // Create extension object
     m_api.reset(fn());
-
-    // Load plugin.
-    Assert(m_api);
-    m_api->onLoad(*m_context);
 }
 
 /* ************************************************************************ */
 
 Plugin::~Plugin()
 {
-    // Unload plugin.
-    Assert(m_api);
-    m_api->onUnload(*m_context);
-
     Log::debug("Plugin released `", getName(), "`");
 }
 

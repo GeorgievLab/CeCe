@@ -53,6 +53,19 @@ class Simulation;
 class PluginManager final
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~PluginManager()
+    {
+        unloadPlugins();
+    }
+
+
 // Public Accessors
 public:
 
@@ -232,10 +245,29 @@ public:
 
 
     /**
+     * @brief Load all plugins.
+     *
+     * It calls onLoad for all available plugins.
+     */
+    void loadPlugins();
+
+
+    /**
+     * @brief Load all plugins.
+     *
+     * It calls onUnload for all available plugins.
+     */
+    void unloadPlugins();
+
+
+    /**
      * @brief Release all loaded plugins.
      */
     void releasePlugins() noexcept
     {
+        // Unload plugins
+        unloadPlugins();
+
         // Release plugins
         m_loaded.clear();
     }
@@ -281,6 +313,9 @@ private:
 
     /// Loaded plugins.
     Map<String, Plugin> m_loaded;
+
+    /// Order in which plugins should be loaded.
+    DynamicArray<String> m_loadOrder;
 
     /// Builtin plugins create API functions.
     static const Map<String, Plugin::CreateFn> s_builtin;

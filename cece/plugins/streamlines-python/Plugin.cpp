@@ -65,6 +65,13 @@ using namespace cece::simulator;
 
 class StreamlinesPythonApi : public PluginApi
 {
+
+    DynamicArray<String> requiredPlugins() const override
+    {
+        return {"python", "streamlines"};
+    }
+
+
     void initSimulation(Simulation& simulation) override
     {
         simulation.requirePlugin("python");

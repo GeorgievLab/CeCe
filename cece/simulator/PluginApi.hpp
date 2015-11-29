@@ -30,6 +30,7 @@
 // CeCe
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
+#include "cece/core/DynamicArray.hpp"
 #include "cece/simulator/Program.hpp"
 #include "cece/simulator/Simulation.hpp"
 
@@ -66,6 +67,17 @@ public:
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Returns a list of required plugins.
+     *
+     * @return
+     */
+    virtual DynamicArray<String> requiredPlugins() const
+    {
+        return {};
+    }
 
 
     /**

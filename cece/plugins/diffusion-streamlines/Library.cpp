@@ -42,6 +42,12 @@ using namespace cece::simulator;
 class DiffusionStreamlinesApi : public PluginApi
 {
 
+    DynamicArray<String> requiredPlugins() const override
+    {
+        return {"diffusion", "streamlines"};
+    }
+
+
     /**
      * @brief On plugin load.
      *

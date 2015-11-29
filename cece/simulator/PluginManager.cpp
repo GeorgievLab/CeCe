@@ -143,9 +143,28 @@ void PluginManager::init()
 {
     rescanDirectories();
 
+    auto addUnique = [this](const String& name) {
+        if (std::find(m_loadOrder.begin(), m_loadOrder.end(), name) == m_loadOrder.end()) {
+            m_loadOrder.push_back(name);
+        }
+    };
+
     // Load all plugins
     for (const auto& name : getNames())
-        loadInternal(name);
+    {
+        auto api = loadInternal(name).getApi();
+
+        // List of required plugins.
+        auto plugins = api->requiredPlugins();
+
+        for (const auto& pluginName : plugins)
+            addUnique(pluginName);
+
+        // Add this plugin
+        addUnique(name);
+    }
+
+    loadPlugins();
 }
 
 /* ************************************************************************ */
@@ -228,6 +247,34 @@ Map<String, FilePath> PluginManager::scanDirectories() noexcept
 
 /* ************************************************************************ */
 
+void PluginManager::loadPlugins()
+{
+    for (const auto& name : m_loadOrder)
+    {
+        auto it = m_loaded.find(name);
+
+        // Found
+        if (it == m_loaded.end())
+            throw RuntimeException("Plugin '" + name + "' not found");
+
+        it->second.getApi()->onLoad(m_context);
+    }
+}
+
+/* ************************************************************************ */
+
+void PluginManager::unloadPlugins()
+{
+    for (auto i = m_loadOrder.rbegin(); i != m_loadOrder.rend(); ++i)
+    {
+        auto it = m_loaded.find(*i);
+        Assert(it != m_loaded.end());
+        it->second.getApi()->onUnload(m_context);
+    }
+}
+
+/* ************************************************************************ */
+
 Plugin& PluginManager::loadInternal(const String& name)
 {
     // Try to find library in cache
@@ -248,7 +295,7 @@ Plugin& PluginManager::loadInternal(const String& name)
         // Insert into cache
         auto ptr = m_loaded.emplace(std::piecewise_construct,
             std::forward_as_tuple(name),
-            std::forward_as_tuple(&m_context, name, UniquePtr<PluginApi>(itBuiltin->second()))
+            std::forward_as_tuple(name, UniquePtr<PluginApi>(itBuiltin->second()))
         );
 
         return std::get<1>(*std::get<0>(ptr));
@@ -266,7 +313,7 @@ Plugin& PluginManager::loadInternal(const String& name)
         // Insert into cache
         auto ptr = m_loaded.emplace(std::piecewise_construct,
             std::forward_as_tuple(name),
-            std::forward_as_tuple(&m_context, name, it->second)
+            std::forward_as_tuple(name, it->second)
         );
 
         return std::get<1>(*std::get<0>(ptr));

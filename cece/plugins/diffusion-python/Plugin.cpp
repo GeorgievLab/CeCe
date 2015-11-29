@@ -65,6 +65,13 @@ using namespace cece::simulator;
 
 class DiffusionPythonApi : public PluginApi
 {
+
+    DynamicArray<String> requiredPlugins() const override
+    {
+        return {"python", "diffusion"};
+    }
+
+
     void initSimulation(Simulation& simulation) override
     {
         simulation.requirePlugin("python");

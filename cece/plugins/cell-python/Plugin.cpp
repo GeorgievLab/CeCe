@@ -67,6 +67,13 @@ using namespace cece::simulator;
 
 class CellPythonApi : public PluginApi
 {
+
+    DynamicArray<String> requiredPlugins() const override
+    {
+        return {"python", "cell"};
+    }
+
+
     void initSimulation(Simulation& simulation) override
     {
         // Require python plugin

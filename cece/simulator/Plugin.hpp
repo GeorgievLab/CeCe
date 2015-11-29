@@ -251,21 +251,19 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param context Plugin context.
      * @param name    Plugin name.
      * @param api     Plugin builtin api.
      */
-    Plugin(ViewPtr<PluginContext> context, String name, UniquePtr<PluginApi> api);
+    Plugin(String name, UniquePtr<PluginApi> api);
 
 
     /**
      * @brief Constructor.
      *
-     * @param context Plugin context.
      * @param name    Plugin name.
      * @param path    Path to plugin.
      */
-    Plugin(ViewPtr<PluginContext> context, String name, FilePath path);
+    Plugin(String name, FilePath path);
 
 
     /**
@@ -302,9 +300,6 @@ public:
 
 // Private Data Members
 private:
-
-    /// Plugin context.
-    ViewPtr<PluginContext> m_context;
 
     /// Plugin name.
     String m_name;
