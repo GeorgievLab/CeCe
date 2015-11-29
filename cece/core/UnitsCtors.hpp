@@ -819,7 +819,7 @@ inline constexpr Angle deg(Value value) noexcept
  */
 inline constexpr Probability precent(Value value) noexcept
 {
-    return value / 100.f;
+    return Probability(value / 100.0);
 }
 
 

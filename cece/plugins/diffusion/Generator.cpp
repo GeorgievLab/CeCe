@@ -151,7 +151,7 @@ void Generator::update(simulator::Simulation& simulation, units::Time dt)
 
         // Read all coordinates
         DynamicArray<plugin::diffusion::Module::Coordinate> coords;
-        mapShapeToGrid(std::inserter(coords, coords.end()), shape, step, coord, 0, gridSize);
+        mapShapeToGrid(std::inserter(coords, coords.end()), shape, step, coord, units::Angle(0), gridSize);
 
         // No coordinates
         if (coords.empty())

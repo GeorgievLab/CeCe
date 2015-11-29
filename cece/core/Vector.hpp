@@ -942,8 +942,8 @@ public:
     BasicVector rotated(units::Angle angle) const noexcept
     {
         return BasicVector(
-            static_cast<T>(getX() * cos(angle) - getY() * sin(angle)),
-            static_cast<T>(getX() * sin(angle) + getY() * cos(angle))
+            static_cast<T>(getX() * cos(angle.value()) - getY() * sin(angle.value())),
+            static_cast<T>(getX() * sin(angle.value()) + getY() * cos(angle.value()))
         );
     }
 

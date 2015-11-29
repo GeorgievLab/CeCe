@@ -419,7 +419,7 @@ void Context::matrixScale(const Vector<float>& scale) noexcept
 
 void Context::matrixRotate(units::Angle angle) noexcept
 {
-    gl(glRotatef(units::rad2deg(angle), 0.f, 0.f, 1.f));
+    gl(glRotatef(units::rad2deg(angle.value()), 0.f, 0.f, 1.f));
 }
 
 /* ************************************************************************ */

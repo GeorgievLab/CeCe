@@ -140,7 +140,7 @@ void Yeast::budCreate()
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
     m_bud = Bud{};
-    m_bud->angle = 2 * constants::PI * dist(eng);
+    m_bud->angle = units::Angle(2 * constants::PI * dist(eng));
 
 #if ENABLE_PHYSICS
     m_shapeForceUpdate = true;
