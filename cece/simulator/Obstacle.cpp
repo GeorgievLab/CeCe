@@ -193,7 +193,7 @@ void Obstacle::initShapes()
         case ShapeType::Circle:
         {
             auto s = makeUnique<b2CircleShape>();
-            s->m_radius = shape.getCircle().radius.value();
+            s->m_radius = getConverter().convertLength(shape.getCircle().radius);
             getBody()->CreateFixture(s.get(), 1);
             m_bodyShapes.emplace_back(s.release());
             break;
@@ -203,7 +203,8 @@ void Obstacle::initShapes()
         {
             const auto sh = shape.getRectangle().size / 2.f;
             auto s = makeUnique<b2PolygonShape>();
-            s->SetAsBox(sh.getWidth().value(), sh.getHeight().value());
+            b2Vec2 box = getConverter().convertPosition(sh);
+            s->SetAsBox(box.x, box.y);
             getBody()->CreateFixture(s.get(), 1);
             m_bodyShapes.emplace_back(s.release());
             break;
@@ -215,7 +216,7 @@ void Obstacle::initShapes()
 
             auto s = makeUnique<b2ChainShape>();
             for (const auto& v : shape.getEdges().edges)
-                vertices.push_back(b2Vec2(v.getX().value(), v.getY().value()));
+                vertices.push_back(getConverter().convertPosition(v));
 
             // Create edges loop
             if (vertices.size() < 3)

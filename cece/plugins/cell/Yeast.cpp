@@ -156,7 +156,7 @@ void Yeast::budRelease()
     // Calculate bud position
     const auto angle = getRotation();
 #if ENABLE_PHYSICS
-    const auto offset = PositionVector(units::Length(m_bud->shape.m_p.x), units::Length(m_bud->shape.m_p.y));
+    const auto offset = getConverter().convertPosition(m_bud->shape.m_p);
 #else
     const auto offset = m_bud->offset;
 #endif
@@ -335,12 +335,9 @@ void Yeast::updateShape()
     {
         const auto& shape = shapes[0].getCircle();
 
-        m_shape.m_radius = shape.radius.value();
-        m_shape.m_p = b2Vec2(
-            shape.center.getX().value(),
-            shape.center.getY().value()
-        );
-        getBody()->CreateFixture(&m_shape, getDensity().value());
+        m_shape.m_radius = getConverter().convertLength(shape.radius);
+        m_shape.m_p = getConverter().convertPosition(shape.center);
+        getBody()->CreateFixture(&m_shape, getConverter().convertDensity(getDensity()));
     }
 
     // Update bud shape
@@ -348,12 +345,9 @@ void Yeast::updateShape()
     {
         const auto& shape = shapes[1].getCircle();
 
-        m_bud->shape.m_radius = shape.radius.value();
-        m_bud->shape.m_p = b2Vec2(
-            shape.center.getX().value(),
-            shape.center.getY().value()
-        );
-        getBody()->CreateFixture(&m_bud->shape, getDensity().value());
+        m_bud->shape.m_radius = getConverter().convertLength(shape.radius);
+        m_bud->shape.m_p = getConverter().convertPosition(shape.center);
+        getBody()->CreateFixture(&m_bud->shape, getConverter().convertDensity(getDensity()));
     }
 
     m_shapeForceUpdate = false;

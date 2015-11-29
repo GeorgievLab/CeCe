@@ -55,6 +55,37 @@ namespace render {
 class PhysicsDebugger : public ::b2Draw
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param scale
+     */
+    PhysicsDebugger(float32 scale = 1.0) noexcept
+        : m_scale(scale)
+    {
+        // Nothing to do
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Change render scale.
+     *
+     * @param scale
+     */
+    void setScale(float32 scale) noexcept
+    {
+        m_scale = scale;
+    }
+
+
 // Public Operations
 public:
 
@@ -115,6 +146,13 @@ public:
      * @param xf
      */
     void DrawTransform(const b2Transform& xf) override;
+
+
+// Private Data Members
+private:
+
+    /// Render scale.
+    float32 m_scale;
 
 };
 

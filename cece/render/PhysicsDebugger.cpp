@@ -57,8 +57,8 @@ void PhysicsDebugger::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Co
     glColor3f(color.r, color.g, color.b);
 
     glBegin(GL_LINES);
-    glVertex2f(p1.x, p1.y);
-    glVertex2f(p2.x, p2.y);
+    glVertex2f(m_scale * p1.x, m_scale * p1.y);
+    glVertex2f(m_scale * p2.x, m_scale * p2.y);
     glEnd();
 
     glPopAttrib();
@@ -75,7 +75,7 @@ void PhysicsDebugger::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, con
     glBegin(GL_LINE_LOOP);
 
     for (int32 i = 0; i < vertexCount; ++i)
-        glVertex2f(vertices[i].x, vertices[i].y);
+        glVertex2f(m_scale * vertices[i].x, m_scale * vertices[i].y);
 
     glEnd();
 
@@ -95,7 +95,7 @@ void PhysicsDebugger::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount
     glBegin(GL_TRIANGLE_FAN);
 
     for (int32 i = 0; i < vertexCount; ++i)
-        glVertex2f(vertices[i].x, vertices[i].y);
+        glVertex2f(m_scale * vertices[i].x, m_scale * vertices[i].y);
 
     glEnd();
 
@@ -105,7 +105,7 @@ void PhysicsDebugger::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount
 
     glBegin(GL_LINE_LOOP);
     for (int32 i = 0; i < vertexCount; ++i)
-        glVertex2f(vertices[i].x, vertices[i].y);
+        glVertex2f(m_scale * vertices[i].x, m_scale * vertices[i].y);
 
     glEnd();
 
@@ -127,7 +127,7 @@ void PhysicsDebugger::DrawCircle(const b2Vec2& center, float32 radius, const b2C
     for (int32 i = 0; i < k_segments; ++i)
     {
         b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
-        glVertex2f(v.x, v.y);
+        glVertex2f(m_scale * v.x, m_scale * v.y);
         theta += k_increment;
     }
     glEnd();
@@ -151,7 +151,7 @@ void PhysicsDebugger::DrawSolidCircle(const b2Vec2& center, float32 radius, cons
     for (int32 i = 0; i < k_segments; ++i)
     {
         b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
-        glVertex2f(v.x, v.y);
+        glVertex2f(m_scale * v.x, m_scale * v.y);
         theta += k_increment;
     }
     glEnd();
@@ -163,15 +163,15 @@ void PhysicsDebugger::DrawSolidCircle(const b2Vec2& center, float32 radius, cons
     for (int32 i = 0; i < k_segments; ++i)
     {
         b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
-        glVertex2f(v.x, v.y);
+        glVertex2f(m_scale * v.x, m_scale * v.y);
         theta += k_increment;
     }
     glEnd();
 
     b2Vec2 p = center + radius * axis;
     glBegin(GL_LINES);
-    glVertex2f(center.x, center.y);
-    glVertex2f(p.x, p.y);
+    glVertex2f(m_scale * center.x, m_scale * center.y);
+    glVertex2f(m_scale * p.x, m_scale * p.y);
     glEnd();
 
     glPopAttrib();
@@ -188,14 +188,14 @@ void PhysicsDebugger::DrawTransform(const b2Transform& xf)
     glBegin(GL_LINES);
 
     glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex2f(p1.x, p1.y);
+    glVertex2f(m_scale * p1.x, m_scale * p1.y);
     p2 = p1 + k_axisScale * xf.q.GetXAxis();
-    glVertex2f(p2.x, p2.y);
+    glVertex2f(m_scale * p2.x, m_scale * p2.y);
 
     glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex2f(p1.x, p1.y);
+    glVertex2f(m_scale * p1.x, m_scale * p1.y);
     p2 = p1 + k_axisScale * xf.q.GetYAxis();
-    glVertex2f(p2.x, p2.y);
+    glVertex2f(m_scale * p2.x, m_scale * p2.y);
 
     glEnd();
 

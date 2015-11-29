@@ -131,6 +131,26 @@ public:
 
 
     /**
+     * @brief Convert length.
+     *
+     * @param length
+     *
+     * @return
+     */
+    units::Length convertLength(float32 length) const noexcept;
+
+
+    /**
+     * @brief Convert length.
+     *
+     * @param length
+     *
+     * @return
+     */
+    float32 convertLength(units::Length length) const noexcept;
+
+
+    /**
      * @brief Convert position.
      *
      * @param position
@@ -348,6 +368,26 @@ public:
      * @return
      */
     float32 convertMass(units::Mass mass) const noexcept;
+
+
+    /**
+     * @brief Convert density.
+     *
+     * @param density
+     *
+     * @return
+     */
+    units::Density convertDensity(float32 density) const noexcept;
+
+
+    /**
+     * @brief Convert density.
+     *
+     * @param density
+     *
+     * @return
+     */
+    float32 convertDensity(units::Density density) const noexcept;
 
 
     /**

@@ -690,7 +690,7 @@ void Simulation::storeDataTables()
 ViewPtr<Object> Simulation::query(const PositionVector& position) const noexcept
 {
 #ifdef ENABLE_PHYSICS
-    const auto pos = b2Vec2(position.getX().value(), position.getY().value());
+    const auto pos = getConverter().convertPosition(position);
     QueryCallback query(pos);
 
     b2AABB aabb;

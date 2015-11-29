@@ -1048,6 +1048,8 @@ private:
             render::PhysicsDebugger::e_jointBit
         );
         simulation->getWorld().SetDebugDraw(&m_physicsDebugger);
+
+        m_physicsDebugger.setScale(1.0 / simulation->getConverter().getLengthCoefficient());
 #endif
 
         // Initialize simulator

@@ -42,7 +42,25 @@ RealType ConverterBox2D::getTimeCoefficient() const noexcept
 
 RealType ConverterBox2D::getLengthCoefficient() const noexcept
 {
-    return 1;
+    return 0.1;
+}
+
+/* ************************************************************************ */
+
+units::Length ConverterBox2D::convertLength(float32 length) const noexcept
+{
+    const auto coeff = 1.0 / getLengthCoefficient();
+
+    return coeff * units::Length(length);
+}
+
+/* ************************************************************************ */
+
+float32 ConverterBox2D::convertLength(units::Length length) const noexcept
+{
+    const auto coeff = getLengthCoefficient();
+
+    return coeff * length.value();
 }
 
 /* ************************************************************************ */
@@ -263,6 +281,24 @@ units::Mass ConverterBox2D::convertMass(float32 mass) const noexcept
 float32 ConverterBox2D::convertMass(units::Mass mass) const noexcept
 {
     return mass.value();
+}
+
+/* ************************************************************************ */
+
+units::Density ConverterBox2D::convertDensity(float32 density) const noexcept
+{
+    const auto coeff = 1.0 / (getLengthCoefficient() * getLengthCoefficient() * getLengthCoefficient());
+
+    return coeff * units::Density(density);
+}
+
+/* ************************************************************************ */
+
+float32 ConverterBox2D::convertDensity(units::Density density) const noexcept
+{
+    const auto coeff = getLengthCoefficient() * getLengthCoefficient() * getLengthCoefficient();
+
+    return coeff * density.value();
 }
 
 /* ************************************************************************ */
