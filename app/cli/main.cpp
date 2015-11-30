@@ -516,7 +516,7 @@ public:
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
         // Store image
-        if (m_videoWriter.isOpened())
+        if (m_videoWriter.isOpened() && m_simulator.getSimulation()->getIteration() > 2)
         {
             // Store image
             m_videoWriter << getFrame(false);
