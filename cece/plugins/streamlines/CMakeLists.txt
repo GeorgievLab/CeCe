@@ -28,8 +28,6 @@ option(DEV_PLUGIN_streamlines_SWAP_TRICK "Enable or disable streamlines swap-tri
 
 if (CONFIG_RENDER_ENABLE)
     option(DEV_PLUGIN_streamlines_RENDER "Enable or disable streamlines rendering" Off)
-    option(DEV_PLUGIN_streamlines_VELOCITY_RENDER "Enable or disable streamlines velocity rendering" Off)
-    option(DEV_PLUGIN_streamlines_FORCE_RENDER "Enable or disable streamlines force rendering" Off)
 endif ()
 
 # ######################################################################### #
@@ -41,14 +39,6 @@ endif ()
 # Enable debug rendering
 if (DEV_PLUGIN_streamlines_RENDER)
     add_definitions(-DDEV_PLUGIN_streamlines_RENDER=1)
-endif ()
-
-if (DEV_PLUGIN_streamlines_VELOCITY_RENDER)
-    add_definitions(-DDEV_PLUGIN_streamlines_VELOCITY_RENDER=1)
-endif ()
-
-if (DEV_PLUGIN_streamlines_FORCE_RENDER)
-    add_definitions(-DDEV_PLUGIN_streamlines_FORCE_RENDER=1)
 endif ()
 
 # ######################################################################### #
