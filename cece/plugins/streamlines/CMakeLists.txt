@@ -62,8 +62,6 @@ set(SRCS
     Lattice.cpp
     LatticeCell.hpp
     LatticeCell.cpp
-    StoreState.hpp
-    StoreState.cpp
 )
 
 # Build plugin

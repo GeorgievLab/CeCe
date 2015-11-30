@@ -27,11 +27,9 @@
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
 #include "cece/simulator/PluginContext.hpp"
-#include "cece/simulator/ModuleFactoryManager.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/Module.hpp"
-#include "cece/plugins/streamlines/StoreState.hpp"
 
 /* ************************************************************************ */
 
@@ -51,7 +49,6 @@ class StreamlinesApi : public PluginApi
     void onLoad(PluginContext& context) override
     {
         context.registerModule<plugin::streamlines::Module>("streamlines");
-        context.registerModule<plugin::streamlines::Module>("streamlines.store-state");
     }
 
 
@@ -63,7 +60,6 @@ class StreamlinesApi : public PluginApi
     void onUnload(PluginContext& context) override
     {
         context.unregisterModule("streamlines");
-        context.unregisterModule("streamlines.store-state");
     }
 
 };
