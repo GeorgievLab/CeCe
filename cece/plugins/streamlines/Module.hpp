@@ -620,6 +620,9 @@ private:
 
     /// Outstream for streamlines data
     UniquePtr<OutStream> m_dataOut;
+
+    /// If cell populations should be stored.
+    bool m_dataOutPopulations = false;
 };
 
 /* ************************************************************************ */

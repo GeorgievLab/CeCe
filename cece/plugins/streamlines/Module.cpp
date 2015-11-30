@@ -266,31 +266,38 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
                 c.getX() << ";" <<
                 // y
                 c.getY() << ";" <<
-                // d0
-                data[0] << ";" <<
-                // d1
-                data[1] << ";" <<
-                // d2
-                data[2] << ";" <<
-                // d3
-                data[3] << ";" <<
-                // d4
-                data[4] << ";" <<
-                // d5
-                data[5] << ";" <<
-                // d6
-                data[6] << ";" <<
-                // d7
-                data[7] << ";" <<
-                // d8
-                data[8] << ";" <<
-                // rho
-                data.calcRho() << ";" <<
                 // velX
                 vel.getX().value() << ";" <<
                 // velY
-                vel.getY().value() << "\n"
-            ;
+                vel.getY().value();
+
+            if (m_dataOutPopulations)
+            {
+                *m_dataOut << ";" <<
+                    // d0
+                    data[0] << ";" <<
+                    // d1
+                    data[1] << ";" <<
+                    // d2
+                    data[2] << ";" <<
+                    // d3
+                    data[3] << ";" <<
+                    // d4
+                    data[4] << ";" <<
+                    // d5
+                    data[5] << ";" <<
+                    // d6
+                    data[6] << ";" <<
+                    // d7
+                    data[7] << ";" <<
+                    // d8
+                    data[8] << ";" <<
+                    // rho
+                    data.calcRho()
+                ;
+            }
+
+            *m_dataOut << "\n";
         }
 
         m_dataOut->flush();
@@ -351,10 +358,17 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
     // Enable dynamic object obstacles
     setDynamicObjectsObstacles(config.get("dynamic-object-obstacles", isDynamicObjectsObstacles()));
 
-    if (config.has("data-out"))
+    if (config.has("data-out-filename"))
     {
-        m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
-        *m_dataOut << "iteration;totalTime;x;y;d0;d1;d2;d3;d4;d5;d6;d7;d8;rho;velX;velY\n";
+        m_dataOut = makeUnique<OutFileStream>(config.get("data-out-filename"));
+        m_dataOutPopulations = config.get<bool>("data-out-populations", false);
+
+        *m_dataOut << "iteration;totalTime;x;y;velX;velY";
+
+        if (m_dataOutPopulations)
+            *m_dataOut << ";d0;d1;d2;d3;d4;d5;d6;d7;d8;rho";
+
+        *m_dataOut << "\n";
     }
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
