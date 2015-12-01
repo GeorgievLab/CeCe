@@ -38,6 +38,7 @@
 #include "cece/core/Tuple.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/OutStream.hpp"
+#include "cece/core/FileStream.hpp"
 #include "cece/simulator/Simulator.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
@@ -382,6 +383,35 @@ bool Simulation::update(units::Duration dt)
     // Delete unused objects
     deleteObjects();
 
+    // Store data
+    if (m_dataOutObjects)
+    {
+        for (const auto& object : m_objects)
+        {
+            const auto pos = object->getPosition();
+            const auto vel = object->getVelocity();
+
+            *m_dataOutObjects <<
+                // iteration
+                getIteration() << ";" <<
+                // totalTime
+                getTotalTime() << ";" <<
+                // id
+                object->getId() << ";" <<
+                // typeName
+                object->getClassName() << ";" <<
+                // posX
+                pos.getX() << ";" <<
+                // posY
+                pos.getY() << ";" <<
+                // velX
+                vel.getX() << ";" <<
+                // velY
+                vel.getY() << "\n"
+            ;
+        }
+    }
+
 #ifdef ENABLE_PHYSICS
     {
         auto _ = measure_time("sim.physics", TimeMeasurementIterationOutput(this));
@@ -524,6 +554,12 @@ void Simulation::configure(const Configuration& config)
 
         if (object)
             object->configure(obstacleConfig, *this);
+    }
+
+    if (config.has("data-out-objects-filename"))
+    {
+        m_dataOutObjects = makeUnique<OutFileStream>(config.get("data-out-objects-filename"));
+        *m_dataOutObjects << "iteration;totalTime;id;typeName;posX;posY;velX;velY\n";
     }
 }
 

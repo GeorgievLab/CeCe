@@ -47,6 +47,7 @@
 #include "cece/core/ListenerContainer.hpp"
 #include "cece/core/DataTable.hpp"
 #include "cece/core/Parameters.hpp"
+#include "cece/core/OutStream.hpp"
 #include "cece/simulator/Module.hpp"
 #include "cece/simulator/Object.hpp"
 #include "cece/simulator/ObjectType.hpp"
@@ -1281,6 +1282,10 @@ private:
     /// If time should be rendered.
     bool m_simulationTimeRender = false;
 #endif
+
+    /// Outstream for simulation objects data.
+    UniquePtr<OutStream> m_dataOutObjects;
+
 };
 
 /* ************************************************************************ */
