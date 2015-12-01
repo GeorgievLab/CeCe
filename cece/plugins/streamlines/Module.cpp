@@ -682,28 +682,21 @@ void Module::applyToObject(simulator::Object& object, const simulator::Simulatio
     if (dv == Zero)
         return;
 
-    // Calculate linear impulse from shapes
-    const auto impulse = force * dt;
-
     // Maximum impulse
     const auto impulseMax = object.getMass() * dv;
 
-    // impulse and impulseMax have same direction but different magnitude
-    // In that case we can check only one coordinate
-    if (abs(impulse.getX()) >= abs(impulseMax.getX()))
-    {
-        Assert(abs(impulse.getY()) >= abs(impulseMax.getY()));
+    // Calculate linear impulse from shapes
+    auto impulse = force * dt;
 
-        // Apply impulse
-        object.applyLinearImpulse(impulseMax);
-    }
-    else
+    // Impulse is to big
+    if (impulse.getLengthSquared() > impulseMax.getLengthSquared())
     {
-        Assert(abs(impulse.getY()) <= abs(impulseMax.getY()));
-
-        // Apply impulse
-        object.applyLinearImpulse(impulse);
+        const RealType ratio = impulseMax.getLength() / impulse.getLength();
+        impulse *= ratio;
     }
+
+    // Apply impulse
+    object.applyLinearImpulse(impulse);
 }
 
 /* ************************************************************************ */
