@@ -95,7 +95,7 @@ public:
      *
      * @return
      */
-    bool isInitialized() noexcept
+    bool isInitialized() const noexcept
     {
         return m_isInitialized;
     }
