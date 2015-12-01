@@ -171,6 +171,33 @@ void Module::init(simulator::Simulation& simulation)
 
     Log::info("[streamlines] Initialization...");
 
+    if (m_layoutType == "poiseuilleLR")
+    {
+        LatticeCell::DensityType rho = 1.0;
+        const auto speed = getInletVelocities()[LayoutPosLeft];
+        const Lattice::CoordinateType::ValueType inletRange[2] = {
+            1,
+            m_lattice.getSize().getHeight() - 2
+        };
+
+        // Init cells
+        for (auto&& c : range(m_lattice.getSize()))
+        {
+            LatticeCell& cell = m_lattice[c];
+
+            if (cell.hasObstacleDynamics())
+                continue;
+
+            LatticeCell::VelocityType velocity = VelocityVector{calcPoiseuilleFlow(
+                speed,
+                c.getY() - inletRange[0],
+                (inletRange[1] - inletRange[0]) + 1
+            ), Zero} / vMax;
+
+            cell.initEquilibrium(velocity, rho);
+        }
+    }
+
     // Initialization iterations
     for (simulator::IterationNumber it = 1; it <= getInitIterations(); it++)
     {
@@ -354,6 +381,9 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
 
     // Layout
     setLayout(config.get("layout", getLayout()));
+
+    // Get layout type
+    m_layoutType = config.get("layout-type", String{});
 
     // Enable dynamic object obstacles
     setDynamicObjectsObstacles(config.get("dynamic-object-obstacles", isDynamicObjectsObstacles()));

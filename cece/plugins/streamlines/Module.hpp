@@ -593,6 +593,9 @@ private:
     /// Streamlines layout.
     Layout m_layout;
 
+    /// Layout type - used for initialization.
+    String m_layoutType;
+
     /// Barriers created for layout.
     StaticArray<ViewPtr<simulator::Obstacle>, LayoutPosCount> m_layoutBarriers;
 
