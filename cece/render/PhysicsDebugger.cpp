@@ -184,7 +184,8 @@ void PhysicsDebugger::DrawTransform(const b2Transform& xf)
     glPushAttrib(GL_CURRENT_BIT);
 
     b2Vec2 p1 = xf.p, p2;
-    const float32 k_axisScale = 0.4f;
+    //const float32 k_axisScale = 0.4f / m_scale;
+    const float32 k_axisScale = 1.0f / m_scale;
     glBegin(GL_LINES);
 
     glColor3f(1.0f, 0.0f, 0.0f);
