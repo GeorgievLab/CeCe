@@ -51,8 +51,8 @@ static std::random_device g_rd;
 
 /* ************************************************************************ */
 
-Yeast::Yeast(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
-    : CellBase(simulation, type)
+Yeast::Yeast(simulator::Simulation& simulation, String typeName, simulator::Object::Type type) noexcept
+    : CellBase(simulation, std::move(typeName), type)
 {
     setVolume(units::um3(37));
     setDensity(units::kg(1200) / units::m3(1));

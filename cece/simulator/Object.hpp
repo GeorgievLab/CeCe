@@ -106,9 +106,10 @@ public:
      * @brief Constructor.
      *
      * @param simulation Object owner.
+     * @param typeName   Type name of the object.
      * @param type       Object type.
      */
-    explicit Object(Simulation& simulation, Type type = Type::Static) noexcept;
+    explicit Object(Simulation& simulation, String typeName = "simulator.Object", Type type = Type::Static) noexcept;
 
 
     /**
@@ -122,13 +123,13 @@ public:
 
 
     /**
-     * @brief Return object class name.
+     * @brief Return object type name.
      *
      * @return
      */
-    virtual StringView getClassName() const noexcept
+    StringView getTypeName() const noexcept
     {
-        return "simulator.Object";
+        return m_typeName;
     }
 
 
@@ -737,6 +738,9 @@ private:
 
     /// Owning simulation.
     Simulation& m_simulation;
+
+    /// Object type name.
+    String m_typeName;
 
     /// Object unique ID.
     IdType m_id;

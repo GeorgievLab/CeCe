@@ -70,24 +70,9 @@ public:
      * @param simulation Simulation object reference.
      */
     explicit Obstacle(Simulation& simulation) noexcept
-        : Object(simulation, Type::Static)
+        : Object(simulation, "simulator.Obstacle", Type::Static)
     {
         getMutableShapes().push_back(Shape::makeUndefined());
-    }
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Return object class name.
-     *
-     * @return
-     */
-    StringView getClassName() const noexcept override
-    {
-        return "simulator.Obstacle";
     }
 
 

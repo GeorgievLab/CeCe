@@ -29,6 +29,7 @@
 
 // CeCe
 #include "cece/core/Factory.hpp"
+#include "cece/core/String.hpp"
 #include "cece/simulator/Object.hpp"
 
 /* ************************************************************************ */
@@ -41,7 +42,7 @@ namespace simulator {
 /**
  * @brief Object factory interface.
  */
-using ObjectFactory = Factory<Object, Simulation&, Object::Type>;
+using ObjectFactory = Factory<Object, Simulation&, String, Object::Type>;
 
 /* ************************************************************************ */
 
@@ -51,7 +52,7 @@ using ObjectFactory = Factory<Object, Simulation&, Object::Type>;
  * @tparam ObjectType
  */
 template<typename ObjectType>
-using ObjectFactoryTyped = FactoryTyped<Factory, ObjectType, Object, Simulation&, Object::Type>;
+using ObjectFactoryTyped = FactoryTyped<Factory, ObjectType, Object, Simulation&, String, Object::Type>;
 
 /* ************************************************************************ */
 
@@ -61,7 +62,7 @@ using ObjectFactoryTyped = FactoryTyped<Factory, ObjectType, Object, Simulation&
  * @tparam Callable
  */
 template<typename Callable>
-using ObjectFactoryCallable = FactoryCallable<Factory, Callable, Object, Simulation&, Object::Type>;
+using ObjectFactoryCallable = FactoryCallable<Factory, Callable, Object, Simulation&, String, Object::Type>;
 
 /* ************************************************************************ */
 

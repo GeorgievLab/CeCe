@@ -42,7 +42,7 @@ ObjectContainer::SizeType ObjectContainer::getCountByType(const StringView& type
 
     for (const auto& obj : m_data)
     {
-        if (obj.ptr->getClassName() == typeName)
+        if (obj.ptr->getTypeName() == typeName)
             ++res;
     }
 
@@ -58,7 +58,7 @@ DynamicArray<ViewPtr<Object>> ObjectContainer::getByType(const StringView& typeN
 
     for (const auto& obj : m_data)
     {
-        if (obj.ptr->getClassName() == typeName)
+        if (obj.ptr->getTypeName() == typeName)
             objects.push_back(obj.ptr);
     }
 

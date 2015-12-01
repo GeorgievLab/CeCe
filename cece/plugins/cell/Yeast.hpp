@@ -92,7 +92,7 @@ public:
      * @param simulation
      * @param type       Cell type.
      */
-    explicit Yeast(simulator::Simulation& simulation,
+    explicit Yeast(simulator::Simulation& simulation, String typeName = "cell.Yeast",
                    simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
 
 
@@ -104,17 +104,6 @@ public:
 
 // Public Accessors
 public:
-
-
-    /**
-     * @brief Return object class name.
-     *
-     * @return
-     */
-    StringView getClassName() const noexcept override
-    {
-        return "cell.Yeast";
-    }
 
 
     /**

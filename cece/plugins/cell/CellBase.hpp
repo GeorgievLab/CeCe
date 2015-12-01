@@ -85,10 +85,12 @@ public:
      * @brief Constructor.
      *
      * @param simulation
+     * @param typeName
      * @param type
      */
-    explicit CellBase(simulator::Simulation& simulation, simulator::Object::Type type = simulator::Object::Type::Dynamic)
-        : simulator::Object(simulation, type)
+    explicit CellBase(simulator::Simulation& simulation, String typeName = "cell.CellBase",
+        simulator::Object::Type type = simulator::Object::Type::Dynamic)
+        : simulator::Object(simulation, std::move(typeName), type)
     {
         // Nothing to do
     }
@@ -96,17 +98,6 @@ public:
 
 // Public Accessors
 public:
-
-
-    /**
-     * @brief Return object class name.
-     *
-     * @return
-     */
-    StringView getClassName() const noexcept override
-    {
-        return "cell.CellBase";
-    }
 
 
     /**

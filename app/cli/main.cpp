@@ -1122,7 +1122,7 @@ private:
         auto object = simulation->query(posWorld);
 
         if (object)
-            Log::info("Object: id = ", object->getId(), ", className = ", object->getClassName());
+            Log::info("Object: id = ", object->getId(), ", className = ", object->getTypeName());
     }
 
 

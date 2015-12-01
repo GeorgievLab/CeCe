@@ -62,25 +62,15 @@ public:
      * @brief Constructor.
      *
      * @param simulation
+     * @param typeName
      * @param type       Cell type.
      */
-    explicit Cell(simulator::Simulation& simulation,
+    explicit Cell(simulator::Simulation& simulation, String typeName = "cell.Cell",
                   simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
 
 
 // Public Accessors
 public:
-
-
-    /**
-     * @brief Return object class name.
-     *
-     * @return
-     */
-    StringView getClassName() const noexcept override
-    {
-        return "cell.Cell";
-    }
 
 
     /**

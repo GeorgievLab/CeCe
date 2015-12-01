@@ -50,7 +50,7 @@ UniquePtr<Object> ObjectFactoryManager::createObject(const StringView& name, Sim
     auto factory = get(name);
 
     if (factory)
-        return factory->create(simulation, type);
+        return factory->create(simulation, String(name), type);
 
     throw ObjectFactoryNotFoundException("Object factory not found: " + String(name));
 }

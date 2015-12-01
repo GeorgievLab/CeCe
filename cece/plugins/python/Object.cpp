@@ -50,8 +50,8 @@ namespace python {
 
 /* ************************************************************************ */
 
-Object::Object(simulator::Simulation& simulation, const std::string& name, Type type)
-    : simulator::Object(simulation, type)
+Object::Object(simulator::Simulation& simulation, const String& name, Type type)
+    : simulator::Object(simulation, "python.Object", type)
 {
     auto ends_with = [](const std::string& value, const std::string& ending) {
         if (ending.size() > value.size()) return false;

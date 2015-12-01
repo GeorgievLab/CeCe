@@ -399,7 +399,7 @@ bool Simulation::update(units::Duration dt)
                 // id
                 object->getId() << ";" <<
                 // typeName
-                object->getClassName() << ";" <<
+                object->getTypeName() << ";" <<
                 // posX
                 pos.getX() << ";" <<
                 // posY

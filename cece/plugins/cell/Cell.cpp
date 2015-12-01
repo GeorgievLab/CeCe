@@ -41,8 +41,8 @@ namespace cell {
 
 /* ************************************************************************ */
 
-Cell::Cell(simulator::Simulation& simulation, simulator::Object::Type type) noexcept
-    : CellBase(simulation, type)
+Cell::Cell(simulator::Simulation& simulation, String typeName, simulator::Object::Type type) noexcept
+    : CellBase(simulation, std::move(typeName), type)
 {
     setDensity(units::kg(1200) / units::m3(1));
 
