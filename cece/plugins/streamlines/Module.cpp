@@ -162,9 +162,11 @@ void Module::init(simulator::Simulation& simulation)
 
     Log::info("[streamlines] Omega: ", omega);
     Log::info("[streamlines] Tau: ", getTau());
+    Log::info("[streamlines] Viscosity: ", calculateViscosity());
     Log::info("[streamlines] Cell size: (", dl.getX(), " um; ", dl.getY(), " um)");
     Log::info("[streamlines] Max velocity: (", vMax.getX(), " um/s; ", vMax.getY(), " um/s)");
-    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation().value(), " um/it");
+    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation(), " um/it");
+    Log::info("[streamlines] Viscosity: ", getKinematicViscosity(), " um2/s");
 
     // Obstacles
     updateObstacleMap(simulation, vMax);
@@ -259,23 +261,6 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     // Obstacles
     updateObstacleMap(simulation, vMax);
 
-#if THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
-#endif
-
-    // Collide and propagate
-    for (auto it = getInnerIterations(); it--; )
-    {
-        m_lattice.collideAndStream(omega);
-
-        // Apply boundary conditions
-        applyBoundaryConditions(simulation, vMax);
-    }
-
-    // Apply streamlines to world objects
-    applyToObjects(simulation, dt, vMax);
-
     // Store streamlines data
     if (m_dataOut)
     {
@@ -286,7 +271,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
             *m_dataOut <<
                 // iteration
-                simulation.getIteration() << ";" <<
+                simulation.getIteration() - 1 << ";" <<
                 // totalTime
                 simulation.getTotalTime().value() << ";" <<
                 // x
@@ -329,6 +314,23 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
         m_dataOut->flush();
     }
+
+#if THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
+#endif
+
+    // Collide and propagate
+    for (auto it = getInnerIterations(); it--; )
+    {
+        m_lattice.collideAndStream(omega);
+
+        // Apply boundary conditions
+        applyBoundaryConditions(simulation, vMax);
+    }
+
+    // Apply streamlines to world objects
+    applyToObjects(simulation, dt, vMax);
 }
 
 /* ************************************************************************ */
