@@ -561,6 +561,11 @@ void Simulation::configure(const Configuration& config)
         m_dataOutObjects = makeUnique<OutFileStream>(config.get("data-out-objects-filename"));
         *m_dataOutObjects << "iteration;totalTime;id;typeName;posX;posY;velX;velY\n";
     }
+
+    if (config.has("length-coefficient"))
+    {
+        m_converter.setLengthCoefficient(config.get<RealType>("length-coefficient"));
+    }
 }
 
 /* ************************************************************************ */

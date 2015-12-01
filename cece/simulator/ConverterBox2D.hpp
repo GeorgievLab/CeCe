@@ -97,7 +97,10 @@ public:
      *
      * @return
      */
-    RealType getLengthCoefficient() const noexcept;
+    RealType getLengthCoefficient() const noexcept
+    {
+        return m_lengthCoefficient;
+    }
 
 
 // Public Mutators
@@ -123,6 +126,17 @@ public:
     void setTimeStepBox2D(units::Time timeStep) noexcept
     {
         m_timeStepBox2D = timeStep;
+    }
+
+
+    /**
+     * @brief Set length coefficient.
+     *
+     * @param value
+     */
+    void setLengthCoefficient(RealType value) noexcept
+    {
+        m_lengthCoefficient = value;
     }
 
 
@@ -407,6 +421,8 @@ private:
     /// Simulation time step
     units::Time m_timeStep;
 
+    /// Length coefficient.
+    RealType m_lengthCoefficient = 1;
 };
 
 /* ************************************************************************ */

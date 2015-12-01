@@ -40,13 +40,6 @@ RealType ConverterBox2D::getTimeCoefficient() const noexcept
 
 /* ************************************************************************ */
 
-RealType ConverterBox2D::getLengthCoefficient() const noexcept
-{
-    return 0.1;
-}
-
-/* ************************************************************************ */
-
 units::Length ConverterBox2D::convertLength(float32 length) const noexcept
 {
     const auto coeff = 1.0 / getLengthCoefficient();
