@@ -1081,6 +1081,24 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
 
 /* ************************************************************************ */
 
+void Module::storeToFile(const FilePath& filename)
+{
+    OutFileStream ofs(filename.string(), OutFileStream::binary);
+
+    // TODO:
+}
+
+/* ************************************************************************ */
+
+void Module::loadFromFile(const FilePath& filename)
+{
+    InFileStream ifs(filename.string(), OutFileStream::binary);
+
+    // TODO:
+}
+
+/* ************************************************************************ */
+
 InStream& operator>>(InStream& is, Module::LayoutType& type)
 {
     String desc;
