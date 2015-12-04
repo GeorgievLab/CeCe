@@ -624,6 +624,9 @@ private:
     /// Outstream for streamlines data
     UniquePtr<OutStream> m_dataOut;
 
+    /// If cell density should be stored.
+    bool m_dataOutDensity = false;
+
     /// If cell populations should be stored.
     bool m_dataOutPopulations = false;
 };

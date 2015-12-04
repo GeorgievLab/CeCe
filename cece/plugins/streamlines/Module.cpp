@@ -283,7 +283,16 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
                 // velX
                 vel.getX().value() << ";" <<
                 // velY
-                vel.getY().value();
+                vel.getY().value()
+            ;
+
+            if (m_dataOutDensity)
+            {
+                *m_dataOut << ";" <<
+                    // rho
+                    data.calcRho()
+                ;
+            }
 
             if (m_dataOutPopulations)
             {
@@ -305,9 +314,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
                     // d7
                     data[7] << ";" <<
                     // d8
-                    data[8] << ";" <<
-                    // rho
-                    data.calcRho()
+                    data[8]
                 ;
             }
 
@@ -395,12 +402,15 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
     if (config.has("data-out-filename"))
     {
         m_dataOut = makeUnique<OutFileStream>(config.get("data-out-filename"));
-        m_dataOutPopulations = config.get<bool>("data-out-populations", false);
+        m_dataOutDensity = config.get<bool>("data-out-density", false);
 
         *m_dataOut << "iteration;totalTime;x;y;velX;velY";
 
+        if (m_dataOutDensity)
+            *m_dataOut << ";rho";
+
         if (m_dataOutPopulations)
-            *m_dataOut << ";d0;d1;d2;d3;d4;d5;d6;d7;d8;rho";
+            *m_dataOut << ";d0;d1;d2;d3;d4;d5;d6;d7;d8";
 
         *m_dataOut << "\n";
     }
