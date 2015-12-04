@@ -182,6 +182,8 @@ void Module::init(simulator::Simulation& simulation)
             m_lattice.getSize().getHeight() - 2
         };
 
+        Log::info("[streamlines] Re: ", speed * (m_lattice.getSize().getHeight() - 2) / getKinematicViscosity());
+
         // Init cells
         for (auto&& c : range(m_lattice.getSize()))
         {
