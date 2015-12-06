@@ -36,6 +36,7 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/InStream.hpp"
+#include "cece/core/FilePath.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Module.hpp"
 #include "cece/simulator/Object.hpp"
@@ -602,6 +603,9 @@ private:
 
     /// Number of init iterations.
     simulator::IterationCount m_initIterations = 100;
+
+    /// Path to initialization file.
+    FilePath m_initFile;
 
     /// Lattice.
     Lattice m_lattice;
