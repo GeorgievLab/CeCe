@@ -32,6 +32,11 @@ namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
+/// Random device
+std::random_device g_rd;
+
+/* ************************************************************************ */
+
 void Reactions::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step)
 {
     // get context
@@ -51,28 +56,23 @@ void Reactions::operator()(simulator::Object& object, simulator::Simulation& sim
 void Reactions::executeReactions(units::Time step, const Context& pointers)
 {
     // initialize for iteration
-    if (m_propensities.empty())
-        initializePropensities(pointers);
-    else
-        refreshEnvPropensities(pointers);
+    initializePropensities(pointers);
 
     // initialize time
     units::Time time = Zero;
 
     // initialize random device
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::mt19937 gen(g_rd());
     std::uniform_real_distribution<> rand(0, 1);
 
-    // Gillespie algorithm + tau-leaping + dependency graph (hidden inside execute reaction)
+    // Gillespie algorithm + tau-leaping
     while (time < step)
     {
         PropensityType sum = std::accumulate(m_propensities.begin(), m_propensities.end(), 0.0f);
 
         if (sum == 0)
         {
-            // no reaction has matched the criterum
-            initializePropensities(pointers);
+            // no reaction has happened
             return;
         }
 
@@ -83,7 +83,11 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
         const auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
         time -= delta_time;
 
-        executeRules(distr(gen), pointers);
+        // decide which reaction happened
+        const auto reactionIndex = distr(gen);
+
+        // execute
+        executeRules(reactionIndex, pointers);
     }
 }
 
@@ -91,19 +95,21 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
 
 void Reactions::executeRules(unsigned int index, const Context& pointers)
 {
+    Assert(index < m_reactions.size());
+
     const auto& reaction = m_reactions[index];
 
     for (unsigned int moleculeIndex = 0; moleculeIndex < m_moleculeNames.size(); ++moleculeIndex)
     {
-        const auto& moleculeName = m_moleculeNames[moleculeIndex];
-
         // get the actual change of current molecule when this reaction gets executed
         const auto change = reaction.getProduct(moleculeIndex) - reaction.getRequirement(moleculeIndex);
         const auto env_change = reaction.getEnvProduct(moleculeIndex) - reaction.getEnvRequirement(moleculeIndex);
 
         // exit if the reaction doesnt change anything
         if (!change && !env_change)
-            return;
+            continue;
+
+        const auto& moleculeName = m_moleculeNames[moleculeIndex];
 
         // change molecule count inside the cell
         if (change)
@@ -113,8 +119,8 @@ void Reactions::executeRules(unsigned int index, const Context& pointers)
         if (env_change)
             changeMoleculesInEnvironment(env_change, moleculeName, pointers);
 
-        // refresh propensities for this molecule
-        refreshPropensities(moleculeIndex, pointers);
+        // refresh propensities
+        refreshPropensities(pointers);
     }
 }
 
@@ -144,7 +150,7 @@ unsigned int Reactions::getMoleculeIndex(const String& name)
 
     // resize all reactions
     for (auto& reaction : m_reactions)
-        reaction.resize(m_moleculeNames.size());
+        reaction.extend();
 
     return m_moleculeNames.size() - 1;
 }
@@ -159,20 +165,24 @@ PropensityType Reactions::computePropensity(const unsigned int index, const Cont
 
     PropensityType local = m_reactions[index].evaluateRate(context);
 
-    for (unsigned int i = 0; i < m_moleculeNames.size(); i++)
+    for (unsigned int moleculeIndex = 0; moleculeIndex < m_moleculeNames.size(); moleculeIndex++)
     {
         // intracellular
-        const auto number = context.cell.getMoleculeCount(m_moleculeNames[i]);
-        if (m_reactions[index].getRequirement(i) != 0u)
+        if (m_reactions[index].getRequirement(moleculeIndex) != 0u)
+        {
+            const auto number = context.cell.getMoleculeCount(m_moleculeNames[moleculeIndex]);
             local *= number;
+        }
 
         // intercellular
-        const auto id = context.diffusion->getSignalId(m_moleculeNames[i]);
-        if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
+        if (m_reactions[index].getEnvRequirement(moleculeIndex) != 0u)
         {
-            const auto numberEnv = getMolarConcentration(*context.diffusion, *context.coords, id).value();
-            if (m_reactions[index].getEnvRequirement(i) != 0u)
+            const auto id = context.diffusion->getSignalId(m_moleculeNames[moleculeIndex]);
+            if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
+            {
+                const auto numberEnv = getMolarConcentration(*context.diffusion, *context.coords, id).value();
                 local *= numberEnv;
+            }
         }
     }
 
@@ -198,32 +208,11 @@ void Reactions::initializePropensities(const Context& pointers)
 
 /* ************************************************************************ */
 
-void Reactions::refreshPropensities(const unsigned int index, const Context& pointers)
+void Reactions::refreshPropensities(const Context& pointers)
 {
     for (unsigned int i = 0; i < m_reactions.size(); i++)
     {
-        // refresh reaction if any molecule has requiremnt
-        if (m_reactions[i].getRequirement(index) || m_reactions[i].getEnvRequirement(index))
-        {
-            m_propensities[i] = computePropensity(i, pointers);
-        }
-    }
-}
-
-/* ************************************************************************ */
-
-void Reactions::refreshEnvPropensities(const Context& pointers)
-{
-    for (unsigned int i = 0; i < m_reactions.size(); i++)
-    {
-        for (unsigned int j = 0; j < m_moleculeNames.size(); j++)
-        {
-            // refresh reaction if any molecule has env requirement
-            if (m_reactions[i].getEnvRequirement(j))
-            {
-                m_propensities[i] = computePropensity(i, pointers);
-            }
-        }
+        m_propensities[i] = computePropensity(i, pointers);
     }
 }
 

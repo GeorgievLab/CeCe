@@ -499,9 +499,9 @@ DynamicArray<Reaction::ReqProd> ReactionsParser::makeRules(DynamicArray<IdEnv> i
     using ReqProd = Reaction::ReqProd;
 
     // Initialize array
-    DynamicArray<Reaction::ReqProd> array = DynamicArray<Reaction::ReqProd>(m_reactions.getMoleculeCount());
+    DynamicArray<ReqProd> array(m_reactions.getMoleculeCount());
 
-    // Conver array of requirements
+    // array of requirements
     for (auto &local : ids_minus)
     {
         auto index = m_reactions.getMoleculeIndex(local.id);
@@ -521,7 +521,7 @@ DynamicArray<Reaction::ReqProd> ReactionsParser::makeRules(DynamicArray<IdEnv> i
         }
     }
 
-    // Convert array of products
+    // array of products
     for (auto &local : ids_plus)
     {
         auto index = m_reactions.getMoleculeIndex(local.id);

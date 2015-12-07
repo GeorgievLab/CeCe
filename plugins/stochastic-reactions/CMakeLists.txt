@@ -52,6 +52,8 @@ build_test(stochastic-reactions
     SOURCES
         test/test.cpp
         test/ReactionsParserTest.cpp
+    LIBRARIES
+        simulator
     PLUGINS_REQUIRED
         stochastic-reactions
 )

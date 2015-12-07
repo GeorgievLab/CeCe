@@ -119,9 +119,9 @@ public:
         return m_rules[index].env_product;
     }
 
-    inline void resize (unsigned int size) noexcept
+    inline void extend() noexcept
     {
-        m_rules.resize(size);
+        m_rules.push_back(ReqProd());
     }
 };
 
