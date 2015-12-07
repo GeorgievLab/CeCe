@@ -3,26 +3,26 @@
 
     <parameter name="T1" value="0.1uM" />
 
-    <program name="produce-gfp" language="stochastic-reactions-intercellular">
+    <program name="produce-gfp" language="stochastic-reactions">
 <![CDATA[
-        null > 0.3 > env_GFP;
+        null > 0.3 > env GFP;
 ]]>
    </program>
-   <program name="produce-rfp" language="stochastic-reactions-intercellular">
+   <program name="produce-rfp" language="stochastic-reactions">
 <![CDATA[
         null > 0.3 > RFP;
         RFP > 10 > env;
 ]]>
     </program>
-    <program name="detect-rfp" language="stochastic-reactions-intercellular">
+    <program name="detect-rfp" language="stochastic-reactions">
 <![CDATA[
         env > 10 > RFP;
         RFP > 10 > GFP;
 ]]>
     </program>
-    <program name="detect-gfp" language="stochastic-reactions-intercellular">
+    <program name="detect-gfp" language="stochastic-reactions">
 <![CDATA[
-        if env_GFP > T1: null < 0.1, 10 > GFP;
+        if env GFP > T1: null < 0.1, 10 > GFP;
 ]]>
    </program>
 

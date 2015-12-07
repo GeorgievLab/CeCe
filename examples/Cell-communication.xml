@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
 <simulation world-size="20um 20um" dt="1s" iterations="5000">
-    <parameter name="T1" value="0.1uM" />
-    <parameter name="T2" value="0.1uM" />
+    <parameter name="T1" value="0.2uM" />
+    <parameter name="T2" value="0.2uM" />
     <!-- Define diffusion module -->
     <module name="diffusion" grid="100" background="black">
         <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="green"  saturation="1uM" />
@@ -11,30 +11,30 @@
     </module>
 
     <!-- Produce GFP -->
-    <program name="make-gfp" language="stochastic-reactions-intercellular">
+    <program name="make-gfp" language="stochastic-reactions">
 <![CDATA[
-        null > 50 > env_GFP;
+       null > 50 > env GFP;
 ]]>
     </program>
 
     <!-- Produce RFP in proximity of YFP -->
-    <program name="make-rfp" language="stochastic-reactions-intercellular">
+    <program name="make-rfp" language="stochastic-reactions">
 <![CDATA[
-        if env_YFP > T2: null > 100 > env_RFP;
+        if env YFP > par T1: null > 50 > env RFP;
 ]]>
     </program>
 
     <!-- Produce YFP in proximity of GFP -->
-    <program name="make-yfp" language="stochastic-reactions-intercellular">
+    <program name="make-yfp" language="stochastic-reactions">
 <![CDATA[
-        if env_GFP > T1: null > 100 > env_YFP;
+        if env GFP > par T2: null > 50 > env YFP;
 ]]>
     </program>
 
     <!-- Create yeast -->
-    <object class="cell.Yeast" position="0 5um"  programs="make-rfp" />
-    <object class="cell.Yeast" position="0 0"    programs="make-yfp" />
-    <object class="cell.Yeast" position="0 -5um" programs="make-gfp" />
+    <object class="cell.Yeast" position="0 5um"  programs="make-rfp cell.store-molecules" />
+    <object class="cell.Yeast" position="0 0"    programs="make-yfp cell.store-molecules" />
+    <object class="cell.Yeast" position="0 -5um" programs="make-gfp cell.store-molecules" />
 
     <amodule name="diffusion.store-state" />
 </simulation>
