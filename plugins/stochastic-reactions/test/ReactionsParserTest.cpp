@@ -51,8 +51,14 @@ using namespace plugin::stochastic_reactions;
  * @param rates         Expected rates in code.
  * @param reactionCount Expected number of reactions.
  */
-static void test_impl(int line, const String& code, std::initializer_list<bool> cond, std::initializer_list<String> names,
-    std::initializer_list<float> rates, std::initializer_list<std::pair<String, int>> molecules = {})
+static void test_impl(
+    int line,
+    const String& code,
+    std::initializer_list<bool> cond,
+    std::initializer_list<String> names,
+    std::initializer_list<float> rates,
+    std::initializer_list<std::pair<String, int>> molecules = {},
+    std::initializer_list<float> propensities = {})
 {
     SCOPED_TRACE(code);
 
@@ -67,8 +73,9 @@ static void test_impl(int line, const String& code, std::initializer_list<bool> 
 
     // Parse code
     auto reactions = ReactionsParser(code).parse();
+    reactions.initializePropensities(context);
 
-    // Conditions
+    // Reaction conditions
     ASSERT_EQ(cond.size(), reactions.getReactionCount());
 
     for (auto it = cond.begin(); it != cond.end(); ++it)
@@ -84,7 +91,17 @@ static void test_impl(int line, const String& code, std::initializer_list<bool> 
     ASSERT_EQ(rates.size(), reactions.getReactionCount());
 
     for (auto it = rates.begin(); it != rates.end(); ++it)
-        EXPECT_EQ(*it, reactions.evalRate(it - rates.begin(), context));
+        EXPECT_FLOAT_EQ(*it, reactions.evalRate(it - rates.begin(), context));
+
+    // Optional test - Reaction propensities
+    if (propensities.size())
+    {
+        ASSERT_EQ(propensities.size(), reactions.getPropensityCount());
+        ASSERT_EQ(reactions.getPropensityCount(), reactions.getReactionCount());
+
+        for (auto it = propensities.begin(); it != propensities.end(); ++it)
+            EXPECT_FLOAT_EQ(*it, reactions.getPropensity(it - propensities.begin()));
+    }
 }
 
 /* ************************************************************************ */
@@ -280,7 +297,7 @@ TEST(Parser, arrow)
     );
 }
 
-TEST(Parser, reversible_basic_assembly_disassembly_multiline)
+TEST(Parser, reversible_advanced)
 {
     test(
         "null < 1, 0.5 \n* 2> C;"
@@ -296,10 +313,7 @@ TEST(Parser, reversible_basic_assembly_disassembly_multiline)
         {"B"},
         {0.6, 0.5}
     );
-}
 
-TEST(Parser, reversible_inlineexpr_complexname_multiple_decimal)
-{
     test(
         "null < 0.3, 0.1 > A_C56_B;null < 2 , 5 > A_C56_B;",
         {true, true, true, true},
@@ -492,6 +506,15 @@ TEST(Parser, functions)
         {true},
         {"A", "C", "B"},
         {7.5},
+        {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+
+    test(
+        "null > 10 > A;"
+        "null > A > B;",
+        {true, true},
+        {"A", "B"},
+        {10, 5},
         {{"C", 2}, {"A", 5}, {"B", 3}}
     );
 }
@@ -763,5 +786,74 @@ TEST(Parser, blockcond)
         { "A", "B"},
         {0.3, 0.4, 0.5},
         {{"C", 2}, {"A", 5}, {"B", 3}}
+    );
+}
+
+TEST(Parser, propensities_basic)
+{
+    test(
+        "null > 0.3 * A > B;",
+        {true},
+        {"B"},
+        {1.5},
+        {{"C", 2}, {"A", 5}, {"B", 3}},
+        {1.5}
+    );
+
+    test(
+        "null > 0.3 > B;",
+        {true},
+        {"B"},
+        {0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}},
+        {0.3}
+    );
+
+    test(
+        "A > 0.3 * B > B;",
+        {true},
+        {"A", "B"},
+        {0.9},
+        {{"C", 2}, {"A", 5}, {"B", 3}},
+        {4.5}
+    );
+}
+
+TEST(Parser, propensities_multiple)
+{
+    test(
+        "null > 0.3 * A > B; null > 0.4 > D;",
+        {true, true},
+        {"B", "D"},
+        {1.5, 0.4},
+        {{"C", 2}, {"A", 5}, {"B", 3}},
+        {1.5, 0.4}
+    );
+
+    test(
+        "null > 0.3 > B; B > 0.3 > C;",
+        {true, true},
+        {"B", "C"},
+        {0.3, 0.3},
+        {{"C", 2}, {"A", 5}, {"B", 3}},
+        {0.3, 0.9}
+    );
+
+    test(
+        "A > 0.3 * A > B; B > 0.6 * B > A;",
+        {true, true},
+        {"A", "B"},
+        {1.5, 1.8},
+        {{"C", 2}, {"A", 5}, {"B", 3}},
+        {7.5, 5.4}
+    );
+
+    test(
+        "null > 5 > A + B; B > 10 > C;",
+        {true, true},
+        {"A", "B", "C"},
+        {5, 10},
+        {{"C", 2}, {"A", 5}, {"B", 3}},
+        {5, 30}
     );
 }

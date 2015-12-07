@@ -62,8 +62,36 @@ namespace stochastic_reactions {
 class Reactions
 {
 
-// Public Accessors:
+/* ************************************************************************ */
+
+// Public Acessors:
 public:
+
+    /**
+     * @brief Evaluates rate.
+     *
+     * @param reaction Reaction identifier.
+     *
+     * @return rate
+     */
+    inline RateType evalRate(unsigned int index, const Context& pointers) const noexcept
+    {
+        return m_reactions[index].evaluateRate(pointers);
+    }
+
+    /**
+     * @brief Evaluates condition.
+     *
+     * @param reaction Reaction identifier.
+     *
+     * @return condition was satisfied or not
+     */
+    inline bool evalCond(unsigned int index, const Context& pointers) const noexcept
+    {
+        return m_reactions[index].evaluateCondition(pointers);
+    }
+
+/* ************************************************************************ */
 
     /**
      * @brief Returns number of different molecules in reactions.
@@ -99,6 +127,7 @@ public:
         return m_moleculeNames[index];
     }
 
+/* ************************************************************************ */
 
     /**
      * @brief Returns number of reactions.
@@ -110,33 +139,6 @@ public:
         return m_reactions.size();
     }
 
-
-    /**
-     * @brief Evaulates rate.
-     *
-     * @param reaction Reaction identifier.
-     *
-     * @return rate
-     */
-    inline RateType evalRate(unsigned int index, const Context& pointers) const noexcept
-    {
-        return m_reactions[index].evaluateRate(pointers);
-    }
-
-
-    /**
-     * @brief Evaulates condition.
-     *
-     * @param reaction Reaction identifier.
-     *
-     * @return condition was satisfied or not
-     */
-    inline bool evalCond(unsigned int index, const Context& pointers) const noexcept
-    {
-        return m_reactions[index].evaluateCondition(pointers);
-    }
-
-
     /**
      * @brief Returns the last row in reaction rule matrix.
      *
@@ -146,9 +148,9 @@ public:
      */
     inline Reaction& getReaction(unsigned int index) noexcept
     {
+        Assert(!m_reactions.empty());
         return m_reactions[index];
     }
-
 
     /**
      * @brief Returns the last row in reaction rule matrix.
@@ -159,9 +161,9 @@ public:
      */
     inline const Reaction& getReaction(unsigned int index) const noexcept
     {
+        Assert(!m_reactions.empty());
         return m_reactions[index];
     }
-
 
     /**
      * @brief Returns the last row in reaction rule matrix.
@@ -174,7 +176,6 @@ public:
         return m_reactions.back();
     }
 
-
     /**
      * @brief Returns the last row in reaction rule matrix.
      *
@@ -186,6 +187,37 @@ public:
         return m_reactions.back();
     }
 
+/* ************************************************************************ */
+
+    /**
+     * @brief Returns size of propensity array.
+     *
+     * @return
+     */
+    inline unsigned int getPropensityCount() const noexcept
+    {
+        return m_propensities.size();
+    }
+
+    /**
+     * @brief Returns the propensity of reaction at given index.
+     *
+     * @return
+     */
+    inline PropensityType getPropensity(unsigned int index) const noexcept
+    {
+        Assert(!m_propensities.empty());
+        return m_propensities[index];
+    }
+
+    /**
+     * @brief Computes propensities of all reactions.
+     *
+     * @return
+     */
+    void initializePropensities(const Context& pointers);
+
+/* ************************************************************************ */
 
     /**
      * @brief Searches global bool functions for the one with given ID
@@ -200,7 +232,6 @@ public:
         return nullptr;
     }
 
-
     /**
      * @brief Searches global real functions for the one with given ID
      *
@@ -214,14 +245,13 @@ public:
         return nullptr;
     }
 
+/* ************************************************************************ */
+
 // Private Operations
 private:
 
     /**
      * @brief Execute reactions each step.
-     *
-     * @tparam Executor  Function called when reaction is executed.
-     * @tparam Refresher Function called when reaction propensities are recomputed.
      *
      * @param step
      */
@@ -235,7 +265,7 @@ private:
      */
     void executeRules(unsigned int index, const Context& pointers);
 
-     /**
+    /**
      * @brief Computes propensity of given reaction.
      *
      * @param index of row, cell, diffusion
@@ -244,28 +274,11 @@ private:
     PropensityType computePropensity(const unsigned int index, const Context& pointers);
 
     /**
-     * @brief Computes propensities of all reactions.
-     *
-     * @param cell, diffusion
-     * @return
-     */
-    void initializePropensities(const Context& pointers);
-
-    /**
      * @brief Refreshes propensities of ractions which have requirements of specific molecule.
      *
      * @param index of column, cell, diffusion
      */
-    void refreshPropensities(const unsigned int index, const Context& pointers);
-
-    /**
-     * @brief Computes propensities of all reactions that depends on environment.
-     *
-     * @param cell, diffusion
-     * @return
-     */
-    void refreshEnvPropensities(const Context& pointers);
-
+    void refreshPropensities(const Context& pointers);
 
     /**
      * @brief Function that releases or absorbs the molecules outside the cell.
