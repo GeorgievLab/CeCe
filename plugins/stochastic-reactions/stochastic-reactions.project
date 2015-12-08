@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="plugin_stochastic-reactions-intracellular" InternalType="Library">
+<CodeLite_Project Name="plugin_stochastic-reactions" InternalType="Library">
   <Plugins>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -10,7 +10,7 @@
   "generator": "",
   "buildType": "",
   "arguments": [],
-  "parentProject": "gui"
+  "parentProject": "cli"
  }]]]>
     </Plugin>
   </Plugins>
@@ -18,13 +18,29 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Library.cpp"/>
-    <File Name="IntracellularReactions.cpp"/>
+    <File Name="Reactions.cpp"/>
+    <File Name="Diffusion.cpp"/>
+    <File Name="ReactionsParser.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Reactions.hpp"/>
-    <File Name="IntracellularReactions.hpp"/>
     <File Name="ReactionsParser.hpp"/>
+    <File Name="Diffusion.hpp"/>
+    <File Name="Context.hpp"/>
+    <File Name="Reaction.hpp"/>
+    <File Name="Types.hpp"/>
+    <File Name="Function.hpp"/>
+    <File Name="Functors.hpp"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="test">
+    <File Name="test/test.cpp"/>
+    <File Name="test/ReactionsParserTest.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="core"/>
+    <Project Name="render"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">
@@ -114,10 +130,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="test">
-    <File Name="test/test.cpp"/>
-    <File Name="test/ReactionsParserTest.cpp"/>
-  </VirtualDirectory>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

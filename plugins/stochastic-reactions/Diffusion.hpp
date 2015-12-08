@@ -23,19 +23,20 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/Vector.hpp"
+#pragma once
+
+// Simulator
+#include "core/String.hpp"
+#include "core/Vector.hpp"
 
 // Plugins
-#include "cece/plugins/cell/CellBase.hpp"
-#include "cece/plugins/diffusion/Module.hpp"
+#include "plugins/cell/CellBase.hpp"
+#include "plugins/diffusion/Module.hpp"
 
 /* ************************************************************************ */
 
-namespace cece {
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions{
 
 /* ************************************************************************ */
 
@@ -86,8 +87,7 @@ inline void addMolecules(
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
     plugin::diffusion::Module::SignalId id,
-    unsigned int amount = 1
-)
+    unsigned int amount = 1)
 {
     changeMolecules(simulation, diffusion, coords, id, amount);
 }
@@ -108,8 +108,7 @@ inline void removeMolecules(
     plugin::diffusion::Module& diffusion,
     const DynamicArray<plugin::diffusion::Module::Coordinate>& coords,
     plugin::diffusion::Module::SignalId id,
-    unsigned int amount = 1
-)
+    unsigned int amount = 1)
 {
     changeMolecules(simulation, diffusion, coords, id, -amount);
 }
@@ -148,7 +147,6 @@ units::MolarConcentration getMolarConcentration(
 
 /* ************************************************************************ */
 
-}
 }
 }
 

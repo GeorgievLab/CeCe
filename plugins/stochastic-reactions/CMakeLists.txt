@@ -26,27 +26,36 @@
 # Sources
 set(SRCS
     Library.cpp
+    Types.hpp
+    Reaction.hpp
+    Reactions.hpp
+    Reactions.cpp
+    ReactionsParser.hpp
+    ReactionsParser.cpp
+    Context.hpp
+    Function.hpp
     Diffusion.hpp
     Diffusion.cpp
-    IntercellularReactions.hpp
-    IntercellularReactions.cpp
+    Functors.hpp
 )
 
 # Build plugin
-build_plugin(stochastic-reactions-intercellular
+build_plugin(stochastic-reactions
     SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell stochastic-reactions-intracellular diffusion
+    PLUGINS_REQUIRED cell
 )
 
 # ######################################################################### #
 
 # Add tests
-#build_test(stochastic-reactions-intercellular
-#    SOURCES
-#        test/test.cpp
-#    PLUGINS_REQUIRED
-#        stochastic-reactions-intracellular
-#        diffusion
-#)
+build_test(stochastic-reactions
+    SOURCES
+        test/test.cpp
+        test/ReactionsParserTest.cpp
+    LIBRARIES
+        simulator
+    PLUGINS_REQUIRED
+        stochastic-reactions
+)
 
 # ######################################################################### #

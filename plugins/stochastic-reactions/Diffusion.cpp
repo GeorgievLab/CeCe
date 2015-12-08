@@ -29,15 +29,14 @@
 // C++
 #include <random>
 
-// CeCe
-#include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/ShapeToGrid.hpp"
+// Simulator
+#include "simulator/Simulation.hpp"
+#include "simulator/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
 
-namespace cece {
 namespace plugin {
-namespace stochastic_reactions_diffusive {
+namespace stochastic_reactions {
 
 /* ************************************************************************ */
 
@@ -183,7 +182,6 @@ units::MolarConcentration getMolarConcentration(
 
 /* ************************************************************************ */
 
-}
 }
 }
 

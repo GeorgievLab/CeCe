@@ -23,32 +23,30 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
+// Simulator
+#include "simulator/Plugin.hpp"
+#include "simulator/PluginApi.hpp"
 
 // Reactions
 #include "ReactionsParser.hpp"
-#include "IntracellularReactions.hpp"
 
 /************************************************************************** */
 
-using namespace cece;
-using namespace cece::simulator;
+using namespace simulator;
 
 /* ************************************************************************ */
 
-class StochasticReactionsIntracellularApi : public PluginApi
+class StochasticReactionsApi : public PluginApi
 {
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
         using namespace plugin::stochastic_reactions;
-        return parseReactions<IntracellularReactions>(code, simulation.getParameters());
+        return parseReactions(code);
     }
 };
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(stochastic_reactions_intracellular, StochasticReactionsIntracellularApi)
+DEFINE_PLUGIN(stochastic_reactions, StochasticReactionsApi)
 
 /* ************************************************************************ */
