@@ -25,16 +25,17 @@
 
 #pragma once
 
-// Simulator
-#include "core/String.hpp"
-#include "core/Vector.hpp"
+// CeCe
+#include "cece/core/String.hpp"
+#include "cece/core/Vector.hpp"
 
 // Plugins
-#include "plugins/cell/CellBase.hpp"
-#include "plugins/diffusion/Module.hpp"
+#include "cece/plugins/cell/CellBase.hpp"
+#include "cece/plugins/diffusion/Module.hpp"
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions{
 
@@ -147,6 +148,7 @@ units::MolarConcentration getMolarConcentration(
 
 /* ************************************************************************ */
 
+}
 }
 }
 

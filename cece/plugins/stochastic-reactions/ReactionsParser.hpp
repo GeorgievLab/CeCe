@@ -27,14 +27,15 @@
 
 /* ************************************************************************ */
 
-#include "core/ExpressionParser.hpp"
-#include "core/DynamicArray.hpp"
-#include "core/Tokenizer.hpp"
-#include "core/Parser.hpp"
-#include "core/Tuple.hpp"
-#include "core/Pair.hpp"
-#include "core/Map.hpp"
-#include "core/Log.hpp"
+// CeCe
+#include "cece/core/ExpressionParser.hpp"
+#include "cece/core/DynamicArray.hpp"
+#include "cece/core/Tokenizer.hpp"
+#include "cece/core/Parser.hpp"
+#include "cece/core/Tuple.hpp"
+#include "cece/core/Pair.hpp"
+#include "cece/core/Map.hpp"
+#include "cece/core/Log.hpp"
 
 #include "Reactions.hpp"
 #include "Functors.hpp"
@@ -42,6 +43,7 @@
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -584,6 +586,7 @@ inline Reactions parseReactions(const String& code)
 
 /* ************************************************************************ */
 
+}
 }
 }
 

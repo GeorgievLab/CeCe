@@ -27,12 +27,17 @@
 
 /* ************************************************************************ */
 
-#include "plugins/cell/CellBase.hpp"
-#include "simulator/Simulation.hpp"
+// CeCe
+#include "cece/core/Parameters.hpp"
+#include "cece/plugins/cell/CellBase.hpp"
+#include "cece/simulator/Simulation.hpp"
+
+// Plugin
 #include "Diffusion.hpp"
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -46,13 +51,13 @@ struct Context
     plugin::diffusion::Module* diffusion;
     plugin::cell::CellBase& cell;
     const DynamicArray<plugin::diffusion::Module::Coordinate>* coords;
-    const simulator::Simulation::ParameterContainer& parameters;
+    const core::Parameters& parameters;
 
     Context(
         plugin::diffusion::Module* d,
         plugin::cell::CellBase& c,
         const DynamicArray<plugin::diffusion::Module::Coordinate>* cs,
-        const simulator::Simulation::ParameterContainer& p):
+        const core::Parameters& p):
     diffusion(d), cell(c), coords(cs), parameters(p)
     {
         // Nothing to do
@@ -61,6 +66,7 @@ struct Context
 
 /* ************************************************************************ */
 
+}
 }
 }
 

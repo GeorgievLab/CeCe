@@ -27,10 +27,12 @@
 
 /* ************************************************************************ */
 
-#include "core/Real.hpp"
+// CeCe
+#include "cece/core/Real.hpp"
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -41,6 +43,7 @@ using PropensityType = RateType;
 
 /* ************************************************************************ */
 
+}
 }
 }
 

@@ -27,9 +27,10 @@
 
 /* ************************************************************************ */
 
-#include "core/UniquePtr.hpp"
+// CeCe
+#include "cece/core/UniquePtr.hpp"
+#include "cece/plugins/cell/CellBase.hpp"
 
-#include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
 
 #include "Types.hpp"
@@ -37,6 +38,7 @@
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -261,8 +263,7 @@ public:
 
     RealType eval(const Context& pointers) const override
     {
-        auto pointer = pointers.parameters.find(m_identifier);
-        return pointer->second;
+        return pointers.parameters.get(m_identifier);
     }
 
 public:
@@ -276,6 +277,7 @@ public:
 
 /* ************************************************************************ */
 
+}
 }
 }
 

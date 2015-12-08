@@ -28,11 +28,11 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "core/Log.hpp"
-#include "core/Range.hpp"
-#include "core/Assert.hpp"
-#include "core/Exception.hpp"
-#include "core/StringView.hpp"
+#include "cece/core/Log.hpp"
+#include "cece/core/Range.hpp"
+#include "cece/core/Assert.hpp"
+#include "cece/core/Exception.hpp"
+#include "cece/core/StringView.hpp"
 
 /* ************************************************************************ */
 

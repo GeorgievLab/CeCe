@@ -27,9 +27,10 @@
 
 /* ************************************************************************ */
 
-#include "core/Assert.hpp"
-#include "core/Units.hpp"
-#include "core/SharedPtr.hpp"
+// CeCe
+#include "cece/core/Assert.hpp"
+#include "cece/core/Units.hpp"
+#include "cece/core/SharedPtr.hpp"
 
 #include "Types.hpp"
 #include "Context.hpp"
@@ -37,6 +38,7 @@
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -127,6 +129,7 @@ public:
 
 /* ************************************************************************ */
 
+}
 }
 }
 

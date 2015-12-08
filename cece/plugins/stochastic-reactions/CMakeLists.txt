@@ -53,9 +53,10 @@ build_test(stochastic-reactions
         test/test.cpp
         test/ReactionsParserTest.cpp
     LIBRARIES
-        simulator
+        cece
     PLUGINS_REQUIRED
         stochastic-reactions
+        diffusion
 )
 
 # ######################################################################### #

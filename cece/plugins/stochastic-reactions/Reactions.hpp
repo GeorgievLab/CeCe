@@ -31,19 +31,19 @@
 #include <random>
 #include <algorithm>
 
-#include "core/String.hpp"
-#include "core/Assert.hpp"
-#include "core/StringView.hpp"
-#include "core/Units.hpp"
-#include "core/DynamicArray.hpp"
-#include "core/Log.hpp"
-#include "core/Exception.hpp"
+// CeCe
+#include "cece/core/String.hpp"
+#include "cece/core/Assert.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/Units.hpp"
+#include "cece/core/DynamicArray.hpp"
+#include "cece/core/Log.hpp"
+#include "cece/core/Exception.hpp"
+#include "cece/simulator/Object.hpp"
+#include "cece/simulator/Simulation.hpp"
+#include "cece/plugins/cell/CellBase.hpp"
 
-#include "simulator/Object.hpp"
-#include "simulator/Simulation.hpp"
-#include "plugins/cell/CellBase.hpp"
 #include "Diffusion.hpp"
-
 #include "Types.hpp"
 #include "Context.hpp"
 #include "Reaction.hpp"
@@ -51,6 +51,7 @@
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -61,8 +62,6 @@ namespace stochastic_reactions {
  */
 class Reactions
 {
-
-/* ************************************************************************ */
 
 // Public Acessors:
 public:
@@ -90,8 +89,6 @@ public:
     {
         return m_reactions[index].evaluateCondition(pointers);
     }
-
-/* ************************************************************************ */
 
     /**
      * @brief Returns number of different molecules in reactions.
@@ -126,8 +123,6 @@ public:
     {
         return m_moleculeNames[index];
     }
-
-/* ************************************************************************ */
 
     /**
      * @brief Returns number of reactions.
@@ -187,8 +182,6 @@ public:
         return m_reactions.back();
     }
 
-/* ************************************************************************ */
-
     /**
      * @brief Returns size of propensity array.
      *
@@ -217,8 +210,6 @@ public:
      */
     void initializePropensities(const Context& pointers);
 
-/* ************************************************************************ */
-
     /**
      * @brief Searches global bool functions for the one with given ID
      *
@@ -244,8 +235,6 @@ public:
             return search->second;
         return nullptr;
     }
-
-/* ************************************************************************ */
 
 // Private Operations
 private:
@@ -333,6 +322,7 @@ private:
 
 /* ************************************************************************ */
 
+}
 }
 }
 

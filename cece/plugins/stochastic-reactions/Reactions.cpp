@@ -27,6 +27,7 @@
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -218,6 +219,7 @@ void Reactions::refreshPropensities(const Context& pointers)
 
 /* ************************************************************************ */
 
+}
 }
 }
 

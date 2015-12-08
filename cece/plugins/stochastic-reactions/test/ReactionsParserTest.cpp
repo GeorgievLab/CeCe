@@ -29,16 +29,20 @@
 // GTest
 #include <gtest/gtest.h>
 
+// CeCe
+#include "cece/simulator/PluginContext.hpp"
+#include "cece/simulator/Simulation.hpp"
+#include "cece/plugins/cell/CellBase.hpp"
+
 // Plugin
-#include "plugins/stochastic-reactions/ReactionsParser.hpp"
-#include "plugins/stochastic-reactions/Reactions.hpp"
-#include "plugins/stochastic-reactions/Context.hpp"
-#include "simulator/Simulation.hpp"
-#include "plugins/cell/CellBase.hpp"
+#include "cece/plugins/stochastic-reactions/ReactionsParser.hpp"
+#include "cece/plugins/stochastic-reactions/Reactions.hpp"
+#include "cece/plugins/stochastic-reactions/Context.hpp"
 
 /* ************************************************************************ */
 
-using namespace plugin::stochastic_reactions;
+using namespace cece;
+using namespace cece::plugin::stochastic_reactions;
 
 /* ************************************************************************ */
 
@@ -62,7 +66,8 @@ static void test_impl(
 {
     SCOPED_TRACE(code);
 
-    simulator::Simulation simulation;
+    simulator::PluginContext pluginContext;
+    simulator::Simulation simulation(pluginContext);
     plugin::cell::CellBase cell(simulation);
     Context context(nullptr, cell, nullptr, simulation.getParameters());
 

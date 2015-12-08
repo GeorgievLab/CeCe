@@ -23,13 +23,16 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#include <sstream>
-
+// Declaration
 #include "ReactionsParser.hpp"
-#include "core/Units.hpp"
+
+// CeCe
+#include "cece/core/Units.hpp"
+#include "cece/core/StringStream.hpp"
 
 /* ************************************************************************ */
 
+namespace cece {
 namespace plugin {
 namespace stochastic_reactions {
 
@@ -547,6 +550,7 @@ DynamicArray<Reaction::ReqProd> ReactionsParser::makeRules(DynamicArray<IdEnv> i
 
 /* ************************************************************************ */
 
+}
 }
 }
 

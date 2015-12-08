@@ -23,16 +23,17 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Simulator
-#include "simulator/Plugin.hpp"
-#include "simulator/PluginApi.hpp"
+// CeCe
+#include "cece/simulator/Plugin.hpp"
+#include "cece/simulator/PluginApi.hpp"
 
 // Reactions
 #include "ReactionsParser.hpp"
 
 /************************************************************************** */
 
-using namespace simulator;
+using namespace cece;
+using namespace cece::simulator;
 
 /* ************************************************************************ */
 
