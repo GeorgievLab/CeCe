@@ -17,10 +17,10 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Library.cpp"/>
     <File Name="Reactions.cpp"/>
     <File Name="Diffusion.cpp"/>
     <File Name="ReactionsParser.cpp"/>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Reactions.hpp"/>

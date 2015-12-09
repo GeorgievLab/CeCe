@@ -25,7 +25,7 @@
 
 # Sources
 set(SRCS
-    Library.cpp
+    Plugin.cpp
     Types.hpp
     Reaction.hpp
     Reactions.hpp
@@ -42,7 +42,7 @@ set(SRCS
 # Build plugin
 build_plugin(stochastic-reactions
     SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell
+    PLUGINS_REQUIRED cell diffusion
 )
 
 # ######################################################################### #

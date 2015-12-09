@@ -39,6 +39,12 @@ using namespace cece::simulator;
 
 class StochasticReactionsApi : public PluginApi
 {
+
+    DynamicArray<String> requiredPlugins() const override
+    {
+        return {"cell", "diffusion"};
+    }
+
     Program createProgram(Simulation& simulation, const String& name, String code = {}) override
     {
         using namespace plugin::stochastic_reactions;
