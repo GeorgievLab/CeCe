@@ -60,20 +60,21 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
     initializePropensities(pointers);
 
     // initialize time
-    units::Time time = Zero;
+    step += m_bonusTime;
 
     // initialize random device
     std::mt19937 gen(g_rd());
     std::uniform_real_distribution<> rand(0, 1);
 
     // Gillespie algorithm + tau-leaping
-    while (time < step)
+    while (true)
     {
         PropensityType sum = std::accumulate(m_propensities.begin(), m_propensities.end(), 0.0f);
 
         if (sum == 0)
         {
             // no reaction has happened
+            m_bonusTime = Zero;
             return;
         }
 
@@ -81,8 +82,14 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
         std::discrete_distribution<> distr(m_propensities.begin(), m_propensities.end());
 
         // get time of reaction
-        const auto delta_time = units::Duration((1 / sum) * std::log(rand(gen)));
-        time -= delta_time;
+        const auto delta_time = - units::Duration((1 / sum) * std::log(rand(gen)));
+
+        // quit if time exceeds iteration time
+        if (step < delta_time)
+            break;
+
+        // subtract reaction time from iteration time
+        step -= delta_time;
 
         // decide which reaction happened
         const auto reactionIndex = distr(gen);
@@ -90,6 +97,9 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
         // execute
         executeRules(reactionIndex, pointers);
     }
+
+    // save remaining iteration time for next iteration
+    m_bonusTime = step;
 }
 
 /* ************************************************************************ */
