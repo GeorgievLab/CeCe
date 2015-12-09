@@ -59,9 +59,6 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
     // initialize for iteration
     initializePropensities(pointers);
 
-    // initialize time
-    step += m_bonusTime;
-
     // initialize random device
     std::mt19937 gen(g_rd());
     std::uniform_real_distribution<> rand(0, 1);
@@ -74,7 +71,6 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
         if (sum == 0)
         {
             // no reaction has happened
-            m_bonusTime = Zero;
             return;
         }
 
@@ -97,9 +93,6 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
         // execute
         executeRules(reactionIndex, pointers);
     }
-
-    // save remaining iteration time for next iteration
-    m_bonusTime = step;
 }
 
 /* ************************************************************************ */

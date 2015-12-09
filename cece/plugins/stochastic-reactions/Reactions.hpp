@@ -305,8 +305,6 @@ public:
 
 // Private Data Members
 private:
-    /// Remaining time from previous iteration
-    units::Time m_bonusTime;
 
     /// List of molecule names.
     DynamicArray<String> m_moleculeNames;
