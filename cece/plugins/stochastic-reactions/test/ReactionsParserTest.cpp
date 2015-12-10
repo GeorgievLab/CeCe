@@ -33,6 +33,7 @@
 #include "cece/simulator/PluginContext.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/plugins/cell/CellBase.hpp"
+#include "cece/core/UnitsCtors.hpp"
 
 // Plugin
 #include "cece/plugins/stochastic-reactions/ReactionsParser.hpp"
@@ -768,6 +769,23 @@ TEST(Parser, concentration)
     test(
         "if A > 50nM: null > 0.1 > A;"
         "if A < 50nM: null > 0.2 > B;",
+        {false, true},
+        {"A", "B"},
+        {0.1, 0.2}
+    );
+
+    test(
+        "if A = 50nM: null > 0.1 > A;"
+        "if B = 50uM: null > 0.2 > B;"
+        {true, true},
+        {"A", "B"},
+        {0.1, 0.2},
+        {{"A", units::nM(50).value()}, {"B", units::uM(50).value()}}
+    );
+
+    test(
+        "if env A > 50nM: null > 0.1 > A;"
+        "if env A < 50nM: null > 0.2 > B;",
         {false, true},
         {"A", "B"},
         {0.1, 0.2}
