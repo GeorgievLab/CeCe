@@ -78,7 +78,7 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
         std::discrete_distribution<> distr(m_propensities.begin(), m_propensities.end());
 
         // get time of reaction
-        const auto delta_time = - units::Duration((1 / sum) * std::log(rand(gen)));
+        const auto delta_time = - (step / sum) * std::log(rand(gen));
 
         // quit if time exceeds iteration time
         if (step < delta_time)

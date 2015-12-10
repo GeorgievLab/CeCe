@@ -185,6 +185,7 @@ public:
             next();
         }
         while (isDigit());
+
         // check for decimal point
         if (is('.'))
         {
