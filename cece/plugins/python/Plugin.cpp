@@ -173,32 +173,6 @@ class PythonApi : public PluginApi, public SimulationListener
         return {};
     }
 
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief New plugin is loaded.
-     *
-     * @param simulation Current simulation.
-     * @param name       Plugin name.
-     */
-    void onPluginLoad(Simulation& simulation, const String& name) override
-    {
-        // Plugin name contains python suffix - do not load
-        if (name.find("-python") != String::npos)
-            return;
-
-        const String pluginName = name + "-python";
-
-        Log::debug("[python] Trying to load plugin: ", pluginName);
-
-        // Test if plugin with suffix -python exists.
-        if (PluginManager::s().isAvailable(pluginName))
-            simulation.loadPlugin(pluginName);
-    }
-
 };
 
 /* ************************************************************************ */
