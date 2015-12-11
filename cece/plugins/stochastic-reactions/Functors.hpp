@@ -34,6 +34,90 @@ namespace stochastic_reactions {
 /* ************************************************************************ */
 
 /**
+ * @brief Functor Signum
+ *
+ */
+template <typename T>
+struct Signum
+{
+    using result_type = T;
+    using first_argument_type = T;
+
+    constexpr T operator()(const T &fa) const
+    {
+        return (fa > 0) - (fa < 0);
+    }
+};
+
+/**
+ * @brief Functor Equal
+ *
+ */
+template <typename T>
+struct Equal
+{
+    using result_type = bool;
+    using first_argument_type = T;
+    using second_argument_type = T;
+
+    constexpr bool operator()(const T &fa, const T &sa) const
+    {
+        return std::fabs(fa - sa) < std::numeric_limits<T>::epsilon();
+    }
+};
+
+/**
+ * @brief Functor NotEqual
+ *
+ */
+template <typename T>
+struct NotEqual
+{
+    using result_type = bool;
+    using first_argument_type = T;
+    using second_argument_type = T;
+
+    constexpr bool operator()(const T &fa, const T &sa) const
+    {
+        return !Equal<T>{}(fa, sa);
+    }
+};
+
+/**
+ * @brief Functor GreaterEqual
+ *
+ */
+template <typename T>
+struct GreaterEqual
+{
+    using result_type = bool;
+    using first_argument_type = T;
+    using second_argument_type = T;
+
+    constexpr bool operator()(const T &fa, const T &sa) const
+    {
+        return std::greater<T>{}(fa, sa) || Equal<T>{}(fa, sa);
+    }
+};
+
+/**
+ * @brief Functor LessEqual
+ *
+ */
+template <typename T>
+struct LessEqual
+{
+    using result_type = bool;
+    using first_argument_type = T;
+    using second_argument_type = T;
+
+    constexpr bool operator()(const T &fa, const T &sa) const
+    {
+        return std::less<T>{}(fa, sa) || Equal<T>{}(fa, sa);
+    }
+};
+
+/**
  * @brief Functor hill(x)
  *
  */

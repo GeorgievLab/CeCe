@@ -220,16 +220,16 @@ UniquePtr<Node<bool>> ReactionsParser::parseRelation()
             return makeUnique<OperatorTwo<std::less<RealType>>>(std::move(first), std::move(parsePlus()));
         case TokenCode::GreaterEqual:
             next();
-            return makeUnique<OperatorTwo<std::greater_equal<RealType>>>(std::move(first), std::move(parsePlus()));
+            return makeUnique<OperatorTwo<GreaterEqual<RealType>>>(std::move(first), std::move(parsePlus()));
         case TokenCode::LessEqual:
             next();
-            return makeUnique<OperatorTwo<std::less_equal<RealType>>>(std::move(first), std::move(parsePlus()));
+            return makeUnique<OperatorTwo<LessEqual<RealType>>>(std::move(first), std::move(parsePlus()));
         case TokenCode::Equal:
             next();
-            return makeUnique<OperatorTwo<std::equal_to<RealType>>>(std::move(first), std::move(parsePlus()));
+            return makeUnique<OperatorTwo<Equal<RealType>>>(std::move(first), std::move(parsePlus()));
         case TokenCode::NotEqual:
             next();
-            return makeUnique<OperatorTwo<std::not_equal_to<RealType>>>(std::move(first), std::move(parsePlus()));
+            return makeUnique<OperatorTwo<NotEqual<RealType>>>(std::move(first), std::move(parsePlus()));
         default:
             return makeUnique<OperatorTwo<std::greater<RealType>>>(std::move(first), std::move(makeUnique<Amount>(RealType(0))));
     }
@@ -352,6 +352,8 @@ UniquePtr<Node<RealType>> ReactionsParser::parseFunction()
             return makeUnique<OperatorOne<Log2<RealType>>>(std::move(nodes[0]));
         else if(name == "abs")
             return makeUnique<OperatorOne<Abs<RealType>>>(std::move(nodes[0]));
+        else if(name == "sgn")
+            return makeUnique<OperatorOne<Signum<RealType>>>(std::move(nodes[0]));
         else if(name == "sqrt")
             return makeUnique<OperatorOne<Sqrt<RealType>>>(std::move(nodes[0]));
         else if(name == "cbrt")
