@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
 <simulation world-size="100um 100um" dt="60s" iterations="10000">
+
+    <!-- Required plugins -->
+    <plugin name="python" />
+    <plugin name="cell-python" />
+
     <!-- Initialize simulation -->
     <init language="python">
 <![CDATA[
@@ -15,9 +20,9 @@ def call(simulation):
     </init>
 
     <!-- Generate GFP -->
-    <program name="make-gfp" language="stochastic-reactions-intracellular">
+    <program name="make-gfp" language="stochastic-reactions">
 <![CDATA[
-        null < -log(0.5) * 5 , 3 > A;
+        null < -ln(0.5) * 5 , 3 > A;
         A > cos(0) > B;
         A > 1 > C;
         C + B > 3 * sgn(10) > D;

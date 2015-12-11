@@ -35,7 +35,5 @@
     <object class="cell.Yeast" position="0 5um"  programs="make-rfp cell.store-molecules" />
     <object class="cell.Yeast" position="0 0"    programs="make-yfp cell.store-molecules" />
     <object class="cell.Yeast" position="0 -5um" programs="make-gfp cell.store-molecules" />
-
-    <amodule name="diffusion.store-state" />
 </simulation>
 

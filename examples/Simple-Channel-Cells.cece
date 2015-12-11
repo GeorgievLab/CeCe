@@ -13,9 +13,9 @@
             adata-out-filename="streamlines-cells.csv"
     />
 
-	
+
     <module name="object-generator">
-        <object class="cell.Yeast" probability="100/s" distribution="uniform -1500um -1500um uniform -240um 240um" />
+        <object class="cell.Yeast" rate="100/s" distribution="uniform -1500um -1500um uniform -240um 240um" />
     </module>
 
 	<aobstacle class="circle" radius="50um" />
