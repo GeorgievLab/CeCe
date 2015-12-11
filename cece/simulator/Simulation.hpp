@@ -321,8 +321,8 @@ public:
         if (!module)
             return nullptr;
 
-        assert(dynamic_cast<ModuleType*>(module));
-        return static_cast<ModuleType*>(module);
+        assert(dynamic_cast<ModuleType*>(module.get()));
+        return static_cast<ModuleType*>(module.get());
     }
 
 

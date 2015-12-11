@@ -177,7 +177,7 @@ public:
 struct FunctionParameter : public Node<RealType>
 {
 
-}
+};
 
 /* ************************************************************************ */
 

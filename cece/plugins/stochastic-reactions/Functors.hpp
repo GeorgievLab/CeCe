@@ -41,7 +41,7 @@ template <typename T>
 struct Signum
 {
     using result_type = T;
-    using first_argument_type = T;
+    using argument_type = T;
 
     constexpr T operator()(const T &fa) const
     {
