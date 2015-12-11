@@ -54,6 +54,8 @@ struct Node
     virtual Return eval(const Context& pointers) const = 0;
 };
 
+/* ************************************************************************ */
+
 /**
  * @brief Operator with 2 children.
  *
@@ -144,6 +146,8 @@ public:
     }
 };
 
+/* ************************************************************************ */
+
 /**
  * @brief Node for inner function.
  *
@@ -169,6 +173,13 @@ public:
         // Nothing to do.
     }
 };
+
+struct FunctionParameter : public Node<RealType>
+{
+
+}
+
+/* ************************************************************************ */
 
 /**
  * @brief Leaf which uses context from cell.
@@ -208,12 +219,15 @@ public:
 
     RealType eval(const Context& pointers) const override
     {
+        if (pointers.diffusion == nullptr)
+            return 0;
+
         const auto id = pointers.diffusion->getSignalId(m_identifier);
-        if (id != plugin::diffusion::Module::INVALID_SIGNAL_ID)
-        {
-            return getMolarConcentration(*pointers.diffusion, *pointers.coords, id).value();
-        }
-        return 0;
+
+        if (id == plugin::diffusion::Module::INVALID_SIGNAL_ID)
+            return 0;
+
+        return getMolarConcentration(*pointers.diffusion, *pointers.coords, id).value();
     }
 
 public:

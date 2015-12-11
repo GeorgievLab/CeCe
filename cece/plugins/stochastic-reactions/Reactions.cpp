@@ -58,6 +58,7 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
 {
     // initialize for iteration
     initializePropensities(pointers);
+    auto timeleft = step;
 
     // initialize random device
     std::mt19937 gen(g_rd());
@@ -81,11 +82,11 @@ void Reactions::executeReactions(units::Time step, const Context& pointers)
         const auto delta_time = - (step / sum) * std::log(rand(gen));
 
         // quit if time exceeds iteration time
-        if (step < delta_time)
+        if (timeleft < delta_time)
             break;
 
         // subtract reaction time from iteration time
-        step -= delta_time;
+        timeleft -= delta_time;
 
         // decide which reaction happened
         const auto reactionIndex = distr(gen);
