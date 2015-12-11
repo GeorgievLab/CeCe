@@ -10,14 +10,12 @@
    </program>
    <program name="produce-rfp" language="stochastic-reactions">
 <![CDATA[
-        null > 0.3 > RFP;
-        RFP > 10 > env;
+        null > 0.3 > env RFP;
 ]]>
     </program>
     <program name="detect-rfp" language="stochastic-reactions">
 <![CDATA[
-        env > 10 > RFP;
-        RFP > 10 > GFP;
+        env RFP > 10 > GFP;
 ]]>
     </program>
     <program name="detect-gfp" language="stochastic-reactions">
@@ -34,8 +32,8 @@
 
     <!-- Object generator -->
     <module name="object-generator">
-        <object class="cell.Yeast" probability="0.02" programs="produce-gfp"/>
-        <object class="cell.Yeast" probability="0.02" programs="produce-rfp"/>
+        <object class="cell.Yeast" rate="20/s" programs="produce-gfp" position="-80um 0" size="0 80um" />
+        <object class="cell.Yeast" rate="20/s" programs="produce-rfp" position="-80um 0" size="0 80um" />
     </module>
 
     <!-- Enable streamlines with diffusion -->

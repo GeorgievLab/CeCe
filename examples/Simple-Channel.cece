@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="3000um 500um" dt="20ms" background="black" length-coefficient="1e-1">
+
+    <!--
+        Streamlines module initialization.
+
+        Note: Attributes with '_' prefix are ignored. Removing this prefix enables that attribute.
+
+        init-iterations: Number of iterations that are calculated before whole simulation.
+        debug-magnitude-scale: Visualization parameter. It's used as coefficient for inlet velocity
+            to determine maximal visualization velocity (saturation).
+        data-out-filename (''): CSV file name where will be streamlines data stored.
+        data-out-density ('false'): If LB cell density should be stored in output file.
+        data-out-populations ('false'): If LB cell populations should be stored in output file.
+    -->
+    <module name="streamlines"
+            init-iterations="20000"
+            grid="600 100"
+            inlet-velocity="20um/s"
+            _layout="barrier outlet barrier inlet"
+            _debug-magnitude-scale="2"
+            _data-out-filename="streamlines.csv"
+            _data-out-density="true"
+            _data-out-populations="true"
+    />
+
+</simulation>
+
+

@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <cmath>
 #include <type_traits>
@@ -38,15 +43,6 @@
 #include "cece/core/StaticArray.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
-
-/* ************************************************************************ */
-
-/**
- * @brief Simulator space dimension.
- */
-#ifndef DIMENSION
-#define DIMENSION 2
-#endif
 
 /* ************************************************************************ */
 
@@ -1556,7 +1552,7 @@ private:
  * @brief Basic vector.
  */
 template<typename T>
-using Vector = BasicVector<T, DIMENSION>;
+using Vector = BasicVector<T, config::Dimension>;
 
 /* ************************************************************************ */
 

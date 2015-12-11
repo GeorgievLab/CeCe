@@ -284,10 +284,10 @@ private:
     boost::optional<Bud> m_bud;
 
     /// Volume that is needed to bud creation.
-    units::Volume m_volumeBudCreate = units::um3(42);
+    units::Volume m_volumeBudCreate = units::um3(12);
 
     /// Volume (bud) that is needed to bud release.
-    units::Volume m_volumeBudRelease = units::um3(35);
+    units::Volume m_volumeBudRelease = units::um3(10);
 
 #if ENABLE_RENDER
     /// Render object for Yeast.

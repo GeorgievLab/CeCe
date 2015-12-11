@@ -193,6 +193,18 @@ public:
     void set(KeyType name, ValueType value);
 
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Merge parameters.
+     *
+     * @param parameters
+     */
+    void merge(const Parameters& parameters);
+
+
 // Private Data Members
 private:
 

@@ -31,6 +31,7 @@
 #include <string>
 
 // CeCe
+#include "cece/core/Log.hpp"
 #include "cece/core/Assert.hpp"
 #include "cece/core/Pair.hpp"
 #include "cece/core/StringStream.hpp"
@@ -173,7 +174,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         if (!inRange(desc.active, iteration))
             continue;
 
-        std::bernoulli_distribution distSpawn(desc.probability * dt);
+        std::bernoulli_distribution distSpawn(desc.rate * dt);
 
         // Spawn?
         if (!distSpawn(g_gen))
@@ -214,8 +215,8 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
             }
         }
 
-        object->setPosition(pos);
         object->configure(desc.config, simulation);
+        object->setPosition(pos);
     }
 
 }
@@ -231,7 +232,17 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
     {
         ObjectDesc desc;
         desc.className = cfg.get("class");
-        desc.probability = cfg.get<ObjectDesc::Probability>("probability");
+
+        if (cfg.has("rate"))
+        {
+            desc.rate = cfg.get<ObjectDesc::SpawnRate>("rate");
+        }
+        else
+        {
+            // Backward compatibility
+            Log::warning("[object-generator] 'probability' is deprecated, use 'rate' instead.");
+            desc.rate = cfg.get<ObjectDesc::SpawnRate>("probability");
+        }
 
         if (cfg.has("distribution"))
         {

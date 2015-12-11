@@ -395,7 +395,7 @@ public:
         m_simulator.setSimulation(simulator::PluginManager::s().createSimulation(m_simulationFile));
 
         // Set parameters
-        m_simulator.getSimulation()->setParameters(std::move(args.parameters));
+        m_simulator.getSimulation()->getParameters().merge(args.parameters);
 
 #if ENABLE_RENDER
         const auto simViz = m_simulator.getSimulation()->getVisualize();

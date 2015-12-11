@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="200um 100um" dt="1ms" background="black">
+<simulation world-size="200um 100um" dt="1ms" background="black" length-coefficient="1e-1">
 
-<!-- Generate yeast cells -->
+    <!-- Generate yeast cells -->
     <module name="object-generator">
-        <object class="cell.Yeast" probability="0.1" velocity="50um/s 0" />
+        <object class="cell.Yeast" rate="20/s" velocity="500um/s 0" position="-95um 0" size="0um 80um" />
     </module>
 
     <!-- Circles -->

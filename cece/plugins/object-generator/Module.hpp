@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/core/Real.hpp"
 #include "cece/core/String.hpp"
@@ -70,18 +75,18 @@ struct Distribution
  */
 struct ObjectDesc
 {
-    // Generation probability per second.
-    using Probability = typename units::Divide<units::Probability, units::Time>::type;
+    // Object spawn rate type.
+    using SpawnRate = typename units::Divide<units::Probability, units::Time>::type;
 
     /// Position distributions.
-    using Distributions = StaticArray<Distribution, DIMENSION>;
+    using Distributions = StaticArray<Distribution, config::Dimension>;
 
 
     /// Object class name.
     String className;
 
-    /// Probability of object creation.
-    Probability probability;
+    /// Rate of object spawning.
+    SpawnRate rate;
 
     /// Axis distributions.
     Distributions distributions;

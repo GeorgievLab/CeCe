@@ -123,6 +123,14 @@ void Parameters::set(KeyType name, ValueType value)
 
 /* ************************************************************************ */
 
+void Parameters::merge(const Parameters& parameters)
+{
+    for (const auto& param : parameters.m_data)
+        set(param.first, param.second);
+}
+
+/* ************************************************************************ */
+
 }
 }
 
