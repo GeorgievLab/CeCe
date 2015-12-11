@@ -45,7 +45,7 @@ void Reactions::operator()(simulator::Object& object, simulator::Simulation& sim
     const auto& worldSize = simulation.getWorldSize();
     const auto& parameters = simulation.getParameters();
 
-    auto diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");
+    auto diffusion = simulation.getModule<plugin::diffusion::Module>("diffusion");
     DynamicArray<plugin::diffusion::Module::Coordinate> coords;
     if (diffusion != nullptr)
         coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
