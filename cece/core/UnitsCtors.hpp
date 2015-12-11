@@ -57,6 +57,20 @@ inline constexpr Length m(Value value) noexcept
 /* ************************************************************************ */
 
 /**
+ * @brief Decimeter value.
+ *
+ * @param value Value.
+ *
+ * @return Length value.
+ */
+inline constexpr Length dm(Value value) noexcept
+{
+    return m(value * 1e-1);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Millimeter value.
  *
  * @param value Value.
@@ -265,6 +279,20 @@ inline constexpr Area m2(Value value) noexcept
 /* ************************************************************************ */
 
 /**
+ * @brief Decimeters^2 value.
+ *
+ * @param value Value.
+ *
+ * @return Area value.
+ */
+inline constexpr Area dm2(Value value) noexcept
+{
+    return dm(value) * dm(1);
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Millimeters^2 value.
  *
  * @param value Value.
@@ -302,6 +330,20 @@ inline constexpr Area um2(Value value) noexcept
 inline constexpr Volume m3(Value value) noexcept
 {
     return m2(value) * m(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Decimeters^3 value.
+ *
+ * @param value Value.
+ *
+ * @return Volume value.
+ */
+inline constexpr Volume dm3(Value value) noexcept
+{
+    return dm2(value) * dm(1);
 }
 
 /* ************************************************************************ */
@@ -722,6 +764,62 @@ inline constexpr MolarConcentration umol_m3(Value value) noexcept
 inline constexpr MolarConcentration nmol_m3(Value value) noexcept
 {
     return nmol(value) / m3(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns concentration in Molar.
+ *
+ * @param value
+ *
+ * @return Molar concentration.
+ */
+inline constexpr MolarConcentration M(Value value) noexcept
+{
+    return mol(value) / dm3(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns concentration in miniMolar.
+ *
+ * @param value
+ *
+ * @return Molar concentration.
+ */
+inline constexpr MolarConcentration mM(Value value) noexcept
+{
+    return mmol(value) / dm3(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns concentration in microMolar.
+ *
+ * @param value
+ *
+ * @return Molar concentration.
+ */
+inline constexpr MolarConcentration uM(Value value) noexcept
+{
+    return umol(value) / dm3(1);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Returns concentration in nanoMolar.
+ *
+ * @param value
+ *
+ * @return Molar concentration.
+ */
+inline constexpr MolarConcentration nM(Value value) noexcept
+{
+    return nmol(value) / dm3(1);
 }
 
 /* ************************************************************************ */
