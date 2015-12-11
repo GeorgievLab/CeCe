@@ -54,7 +54,7 @@ static std::random_device g_rd;
 Yeast::Yeast(simulator::Simulation& simulation, String typeName, simulator::Object::Type type) noexcept
     : CellBase(simulation, std::move(typeName), type)
 {
-    setVolume(units::um3(37));
+    setVolume(units::um3(13));
     setDensity(units::kg(1200) / units::m3(1));
 
     // Max 2 shapes
