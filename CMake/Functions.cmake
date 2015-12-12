@@ -62,11 +62,18 @@ function(build_plugin NAME)
         add_library(${PROJECT_NAME} ${ARG_SOURCES})
 
         # Setup dependencies
-        add_dependencies(${PROJECT_NAME}
-            cece
-            ${ARG_DEPENDENCIES}
-            ${PLUGINS_DEPENDENCIES}
-        )
+        if (ARG_DEPENDENCIES)
+            add_dependencies(${PROJECT_NAME}
+                cece
+                ${ARG_DEPENDENCIES}
+            )
+        endif ()
+
+        if (PLUGINS_DEPENDENCIES)
+            add_dependencies(${PROJECT_NAME}
+                ${PLUGINS_DEPENDENCIES}
+            )
+        endif ()
 
         # Link libraries
         target_link_libraries(${PROJECT_NAME}
