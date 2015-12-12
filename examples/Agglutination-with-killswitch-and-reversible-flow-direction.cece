@@ -30,7 +30,7 @@ def update(dt, simulation):
     </module>
 
         <!-- Cell Program -->
-    <program name="cell" language="stochastic-reactions-intracellular">
+    <program name="cell" language="stochastic-reactions">
 <![CDATA[
         null < 5, 10 > A;
 ]]>
