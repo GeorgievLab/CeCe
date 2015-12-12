@@ -27,20 +27,25 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // Boost
 #include <boost/optional.hpp>
 
-#ifdef ENABLE_RENDER
-#include "cece/render/Context.hpp"
-#include "cece/render/Object.hpp"
-#include "cece/plugins/cell/DrawableYeast.hpp"
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Context.hpp"
+#  include "cece/render/Object.hpp"
+#  include "cece/plugins/cell/DrawableYeast.hpp"
 #endif
 
 // Plugin
 #include "cece/plugins/cell/CellBase.hpp"
 
-#if THREAD_SAFE
-#include "cece/core/Mutex.hpp"
+#ifdef CECE_THREAD_SAFE
+#  include "cece/core/Mutex.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -72,7 +77,7 @@ public:
         /// Bud volume.
         units::Volume volume = units::um3(0.1);
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
         /// Bud shape.
         b2CircleShape shape;
 #else
@@ -255,13 +260,15 @@ public:
     void budRelease();
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render yeast.
      *
      * @param context
      */
     virtual void draw(render::Context& context) override;
+
 #endif
 
 
@@ -269,7 +276,7 @@ public:
 protected:
 
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     /**
      * @brief Update yeast physics shape.
      */
@@ -289,13 +296,13 @@ private:
     /// Volume (bud) that is needed to bud release.
     units::Volume m_volumeBudRelease = units::um3(10);
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /// Render object for Yeast.
     /// Shared between all instances, it's same for all instances.
     render::ObjectSharedPtr<DrawableYeast> m_renderObject;
 #endif
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     /// Main cell shape.
     b2CircleShape m_shape;
 
@@ -303,7 +310,7 @@ private:
     bool m_shapeForceUpdate = false;
 #endif
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     /// Access mutex.
     mutable Mutex m_mutex;
 #endif

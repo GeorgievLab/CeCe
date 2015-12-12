@@ -53,7 +53,7 @@ namespace {
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 constexpr StaticArray<render::Color, 6> g_colors{{
     render::colors::CYAN,
     render::colors::MAGENTA,
@@ -96,7 +96,7 @@ Module::SignalId Module::registerSignal(String name, DiffusionRate rate, Degrada
     m_gridsFront.emplace_back(m_gridSize + 2 * OFFSET);
     m_gridsBack.emplace_back(m_gridSize + 2 * OFFSET);
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     m_colors.push_back(g_colors[id % g_colors.size()]);
     m_signalSaturation.push_back(SignalConcentration{1});
 #endif
@@ -130,7 +130,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         updateSignal(step, dt, id);
 
     {
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
         // Lock access
         MutexGuard guard(m_mutex);
 #endif
@@ -185,14 +185,14 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
             signal.get<DegradationRate>("degradation-rate", Zero)
         );
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
         // Set signal color
         setSignalColor(id, signal.get("color", getSignalColor(id)));
         setSignalSaturation(id, signal.get("saturation", getSignalSaturation(id)));
 #endif
     }
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     // Set background color
     m_background = config.get("background", m_background);
 #endif
@@ -212,7 +212,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     if (getGridSize() == Zero)
@@ -237,13 +237,13 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Module::updateDrawable() const
 {
     assert(m_drawable);
     assert(getGridSize() == m_drawable->getSize());
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);
 #endif

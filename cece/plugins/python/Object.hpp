@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // This must be first
 #include "cece/plugins/python/Python.hpp"
 
@@ -86,13 +91,15 @@ public:
     void update(units::Duration dt) override;
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render object.
      *
      * @param context
      */
     void draw(render::Context& context) override;
+
 #endif
 
 
@@ -109,10 +116,11 @@ private:
     /// Update function.
     Handle<PyObject> m_updateFn;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /// Draw function.
     Handle<PyObject> m_drawFn;
 #endif
+
 };
 
 /* ************************************************************************ */

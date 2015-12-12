@@ -69,7 +69,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
     m_configureFn = m_source.getFunction("configure");
     m_updateFn = m_source.getFunction("update");
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     m_drawFn = m_source.getFunction("draw");
 #endif
 
@@ -95,7 +95,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     if (!m_drawFn)

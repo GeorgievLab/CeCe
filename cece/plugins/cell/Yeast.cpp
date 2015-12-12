@@ -35,8 +35,8 @@
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Shape.hpp"
 
-#if ENABLE_RENDER
-#include "cece/render/Color.hpp"
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Color.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -76,7 +76,7 @@ Yeast::~Yeast()
 
 void Yeast::update(units::Duration dt)
 {
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);
 #endif
@@ -103,7 +103,7 @@ void Yeast::update(units::Duration dt)
         budCreate();
     }
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     // Update cell shape
     updateShape();
 #endif
@@ -122,7 +122,7 @@ void Yeast::configure(const simulator::Configuration& config,
     setVolumeBudCreate(config.get("volume-bud-create", getVolumeBudCreate()));
     setVolumeBudRelease(config.get("volume-bud-release", getVolumeBudRelease()));
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     // Update cell shape
     updateShape();
 #endif
@@ -142,7 +142,7 @@ void Yeast::budCreate()
     m_bud = Bud{};
     m_bud->angle = units::Angle(2 * constants::PI * dist(eng));
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     m_shapeForceUpdate = true;
 #endif
 }
@@ -155,7 +155,7 @@ void Yeast::budRelease()
 
     // Calculate bud position
     const auto angle = getRotation();
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     const auto offset = getConverter().convertPosition(m_bud->shape.m_p);
 #else
     const auto offset = m_bud->offset;
@@ -207,14 +207,14 @@ void Yeast::budRelease()
     // Release bud
     m_bud.reset();
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     m_shapeForceUpdate = true;
 #endif
 }
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Yeast::draw(render::Context& context)
 {
     if (!m_renderObject)
@@ -227,7 +227,7 @@ void Yeast::draw(render::Context& context)
     render::Color color;
 
     {
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
         // Lock access
         MutexGuard guard(m_mutex);
 #endif
@@ -265,7 +265,7 @@ void Yeast::draw(render::Context& context)
 
 /* ************************************************************************ */
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
 void Yeast::updateShape()
 {
     static constexpr auto MIN_CHANGE = units::Length(0.1f);

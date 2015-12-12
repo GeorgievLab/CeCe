@@ -37,8 +37,8 @@
 #include "cece/render/Context.hpp"
 #include "cece/render/ImageData.hpp"
 
-#if THREAD_SAFE
-#include "cece/core/Mutex.hpp"
+#ifdef CECE_THREAD_SAFE
+#  include "cece/core/Mutex.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -162,7 +162,7 @@ private:
     /// Image data.
     cv::Mat m_image;
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     /// Access mutex.
     mutable Mutex m_mutex;
 #endif

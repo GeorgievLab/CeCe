@@ -27,7 +27,12 @@
 
 /* ************************************************************************ */
 
-#if !ENABLE_PHYSICS
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
+#ifndef CECE_ENABLE_BOX2D_PHYSICS
 #error Agglutination requires physics engine
 #endif
 

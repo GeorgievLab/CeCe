@@ -108,9 +108,9 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     if (simulation.getIteration() == 0)
         return;
 
-#if THREAD_SAFE
-        // Lock access
-        MutexGuard guard(m_mutex);
+#ifdef CECE_THREAD_SAFE
+    // Lock access
+    MutexGuard guard(m_mutex);
 #endif
 
     const auto size = context.getSize();

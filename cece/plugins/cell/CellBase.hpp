@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <cmath>
 
@@ -39,7 +44,7 @@
 #include "cece/core/StringView.hpp"
 #include "cece/simulator/Object.hpp"
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 #include "cece/render/Color.hpp"
 #endif
 
@@ -71,7 +76,7 @@ public:
     /// Cell growth rate type.
     using GrowthRate = units::Inverse<units::Time>::type;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /// Type of fluorescent saturation.
     using FluorescentSaturation = units::Inverse<units::Volume>::type;
 #endif
@@ -171,7 +176,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Returns cell identification color.
      *
@@ -181,10 +187,8 @@ public:
     {
         return m_identificationColor;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Returns GFP saturation.
      *
@@ -194,10 +198,8 @@ public:
     {
         return m_gfpSaturation;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Returns RFP saturation.
      *
@@ -207,10 +209,8 @@ public:
     {
         return m_rfpSaturation;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Returns YFP saturation.
      *
@@ -220,10 +220,8 @@ public:
     {
         return m_yfpSaturation;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Returns CFP saturation.
      *
@@ -233,10 +231,9 @@ public:
     {
         return m_cfpSaturation;
     }
-#endif
 
+#  if CONFIG_PLUGIN_cell_BFP_COLOR
 
-#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
     /**
      * @brief Returns BFP saturation.
      *
@@ -246,6 +243,8 @@ public:
     {
         return m_bfpSaturation;
     }
+
+#  endif
 #endif
 
 
@@ -342,7 +341,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Set cell identification color.
      *
@@ -352,10 +352,8 @@ public:
     {
         m_identificationColor = std::move(color);
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Set GFP saturation.
      *
@@ -365,10 +363,8 @@ public:
     {
         m_gfpSaturation = saturation;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Set RFP saturation.
      *
@@ -378,10 +374,8 @@ public:
     {
         m_rfpSaturation = saturation;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Set YFP saturation.
      *
@@ -391,10 +385,8 @@ public:
     {
         m_yfpSaturation = saturation;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Set CFP saturation.
      *
@@ -404,10 +396,10 @@ public:
     {
         m_cfpSaturation = saturation;
     }
-#endif
 
 
-#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
+#  if CONFIG_PLUGIN_cell_BFP_COLOR
+
     /**
      * @brief Set BFP saturation.
      *
@@ -417,6 +409,8 @@ public:
     {
         m_bfpSaturation = saturation;
     }
+
+#  endif
 #endif
 
 
@@ -467,7 +461,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Calculate color of fluorescent proteins.
      *
@@ -476,10 +471,8 @@ public:
      * @return
      */
     render::Color calcFluorescentColor(units::Volume volume) const noexcept;
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Calculate color of fluorescent proteins.
      *
@@ -489,6 +482,7 @@ public:
     {
         return calcFluorescentColor(getVolume());
     }
+
 #endif
 
 
@@ -507,35 +501,28 @@ private:
     /// Map of molecules.
     Map<String, MoleculeCount> m_molecules;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /// GFP saturation.
     FluorescentSaturation m_gfpSaturation{20};
-#endif
 
-#if ENABLE_RENDER
     /// RFP saturation.
     FluorescentSaturation m_rfpSaturation{20};
-#endif
 
-#if ENABLE_RENDER
     /// YFP saturation.
     FluorescentSaturation m_yfpSaturation{20};
-#endif
 
-#if ENABLE_RENDER
     /// CFP saturation.
     FluorescentSaturation m_cfpSaturation{20};
-#endif
 
-#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
+#  if CONFIG_PLUGIN_cell_BFP_COLOR
     /// BFP saturation.
     FluorescentSaturation m_bfpSaturation{20};
-#endif
+#  endif
 
-#if ENABLE_RENDER
     /// Cell identification color.
     render::Color m_identificationColor = render::colors::TRANSPARENT;
 #endif
+
 };
 
 /* ************************************************************************ */

@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <cassert>
 #include <functional>
@@ -43,14 +48,14 @@
 #include "cece/simulator/Configuration.hpp"
 #include "cece/simulator/Program.hpp"
 
-#ifdef ENABLE_RENDER
-#include "cece/render/Context.hpp"
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Context.hpp"
 #endif
 
 // Box2D
-#if ENABLE_PHYSICS
-#include <Box2D/Box2D.h>
-#include "ConverterBox2D.hpp"
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+#  include <Box2D/Box2D.h>
+#  include "ConverterBox2D.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -250,7 +255,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Returns if object is visible.
      *
@@ -260,6 +266,7 @@ public:
     {
         return m_visible;
     }
+
 #endif
 
 
@@ -351,7 +358,8 @@ public:
     units::Mass getMass() const noexcept;
 
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
     /**
      * @brief Returns physical body.
      *
@@ -361,26 +369,23 @@ public:
     {
         return m_body;
     }
-#endif
 
 
-#if ENABLE_PHYSICS
     /**
      * @brief Returns Box2D units converter.
      *
      * @return
      */
     ConverterBox2D& getConverter() noexcept;
-#endif
 
 
-#if ENABLE_PHYSICS
     /**
      * @brief Returns Box2D units converter.
      *
      * @return
      */
     const ConverterBox2D& getConverter() const noexcept;
+
 #endif
 
 
@@ -456,7 +461,8 @@ public:
     void setType(Type type) noexcept;
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Set if object is visible.
      *
@@ -466,6 +472,7 @@ public:
     {
         m_visible = flag;
     }
+
 #endif
 
 
@@ -720,7 +727,8 @@ public:
     virtual void configure(const Configuration& config, Simulation& simulation);
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render object.
      *
@@ -730,6 +738,7 @@ public:
     {
         // Nothing to do
     }
+
 #endif
 
 
@@ -760,12 +769,15 @@ private:
     /// Object type.
     Type m_type;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     // If object is visible.
     bool m_visible = true;
+
 #endif
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
     /// Physics body.
     b2Body* m_body;
 
@@ -774,7 +786,9 @@ private:
 
     /// Joint for pinned body.
     b2Joint* m_pinJoint = nullptr;
+
 #else
+
     /// Object position
     PositionVector m_position;
 
@@ -783,6 +797,7 @@ private:
 
     /// Object velocity.
     VelocityVector m_velocity;
+
 #endif
 
     /// Box2D doesn't have accessor to force.

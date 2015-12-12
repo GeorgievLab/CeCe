@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // This must be first
 #include "cece/plugins/python/Python.hpp"
 
@@ -74,7 +79,8 @@ public:
     void update(simulator::Simulation& simulation, units::Time dt) override;
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render module.
      *
@@ -82,6 +88,7 @@ public:
      * @param context    Rendering context.
      */
     void draw(const simulator::Simulation& simulation, render::Context& context) override;
+
 #endif
 
 
@@ -98,7 +105,7 @@ private:
     /// Update function.
     ObjectHandle m_updateFn;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /// Draw function.
     ObjectHandle m_drawFn;
 #endif

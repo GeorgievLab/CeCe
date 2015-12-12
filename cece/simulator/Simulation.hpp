@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <cassert>
 #include <functional>
@@ -59,7 +64,7 @@
 #include "cece/simulator/ObjectContainer.hpp"
 #include "cece/simulator/ObjectTypeContainer.hpp"
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 #include "cece/core/TriBool.hpp"
 #include "cece/render/Context.hpp"
 #include "cece/render/Color.hpp"
@@ -70,9 +75,9 @@
 #endif
 
 // Box2D
-#if ENABLE_PHYSICS
-#include <Box2D/Box2D.h>
-#include "ConverterBox2D.hpp"
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+#  include <Box2D/Box2D.h>
+#  include "ConverterBox2D.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -455,7 +460,8 @@ public:
     ViewPtr<const ObjectType> findObjectType(const StringView& name) const noexcept;
 
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
     /**
      * @brief Returns physics world.
      *
@@ -465,10 +471,8 @@ public:
     {
         return m_world;
     }
-#endif
 
 
-#if ENABLE_PHYSICS
     /**
      * @brief Returns physics world.
      *
@@ -478,10 +482,8 @@ public:
     {
         return m_world;
     }
-#endif
 
 
-#if ENABLE_PHYSICS
     /**
      * @brief Returns physics engine time step.
      *
@@ -491,10 +493,8 @@ public:
     {
         return m_converter.getTimeStepBox2D();
     }
-#endif
 
 
-#if ENABLE_PHYSICS
     /**
      * @brief Returns Box2D units converter.
      *
@@ -504,10 +504,8 @@ public:
     {
         return m_converter;
     }
-#endif
 
 
-#if ENABLE_PHYSICS
     /**
      * @brief Returns Box2D units converter.
      *
@@ -517,6 +515,7 @@ public:
     {
         return m_converter;
     }
+
 #endif
 
 
@@ -527,7 +526,7 @@ public:
      */
     units::Length getMaxObjectTranslation() const noexcept
     {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
         return m_converter.getMaxObjectTranslation();
 #else
         return units::Length{1e3};
@@ -535,7 +534,8 @@ public:
     }
 
 
-#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
+
     /**
      * @brief Returns if physics debug data is shown.
      *
@@ -545,6 +545,7 @@ public:
     {
         return m_drawPhysics;
     }
+
 #endif
 
 
@@ -635,7 +636,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Get visualize flag.
      *
@@ -645,10 +647,8 @@ public:
     {
         return m_visualize;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Get background color.
      *
@@ -658,6 +658,7 @@ public:
     {
         return m_backgroundColor;
     }
+
 #endif
 
 
@@ -739,7 +740,7 @@ public:
 
         m_timeStep = dt;
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
         m_converter.setTimeStep(dt);
 #endif
     }
@@ -925,7 +926,8 @@ public:
     }
 
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
     /**
      * @brief Set physics engine simulation time step.
      *
@@ -935,10 +937,12 @@ public:
     {
         m_converter.setTimeStepBox2D(dt);
     }
+
 #endif
 
 
-#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
+
     /**
      * @brief If physics debug data should be shown.
      */
@@ -946,6 +950,7 @@ public:
     {
         m_drawPhysics = flag;
     }
+
 #endif
 
 
@@ -984,7 +989,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Set visualize flag.
      *
@@ -994,10 +1000,8 @@ public:
     {
         m_visualize = value;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Set background color.
      *
@@ -1007,6 +1011,7 @@ public:
     {
         m_backgroundColor = color;
     }
+
 #endif
 
 
@@ -1094,13 +1099,15 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render simulation.
      *
      * @param context Rendering context.
      */
     void draw(render::Context& context);
+
 #endif
 
 
@@ -1227,12 +1234,10 @@ private:
     /// Simulation modules.
     ModuleContainer m_modules;
 
-#ifdef ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     /// Box2D world
     b2World m_world;
-#endif
 
-#if ENABLE_PHYSICS
     // Box2D units converter.
     ConverterBox2D m_converter;
 #endif
@@ -1249,17 +1254,17 @@ private:
     /// Registered object classes.
     ObjectTypeContainer m_objectClasses;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /// Option if visualization should be enabled.
     TriBool m_visualize = Indeterminate;
-#endif
 
-#if ENABLE_RENDER
     /// Background (clear) color.
     render::Color m_backgroundColor = render::colors::WHITE;
+
 #endif
 
-#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
     bool m_drawPhysics = false;
 #endif
 

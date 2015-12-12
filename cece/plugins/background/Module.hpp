@@ -27,6 +27,17 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
+#ifndef CECE_ENABLE_RENDER
+#error Background plugin requires enabled rendering.
+#endif
+
+/* ************************************************************************ */
+
 // OpenCV
 #include <opencv2/core/core.hpp>
 
@@ -34,10 +45,8 @@
 #include "cece/core/String.hpp"
 #include "cece/simulator/Module.hpp"
 
-#if ENABLE_RENDER
-#  include "cece/render/Object.hpp"
-#  include "cece/render/GridColor.hpp"
-#endif
+#include "cece/render/Object.hpp"
+#include "cece/render/GridColor.hpp"
 
 /* ************************************************************************ */
 
@@ -67,7 +76,6 @@ public:
     void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
 
 
-#if ENABLE_RENDER
     /**
      * @brief Render module.
      *
@@ -75,7 +83,6 @@ public:
      * @param context    Rendering context.
      */
     void draw(const simulator::Simulation& simulation, render::Context& context) override;
-#endif
 
 
 // Private Data Members
@@ -84,10 +91,8 @@ private:
     /// Source image.
     cv::Mat m_img;
 
-#if ENABLE_RENDER
     /// Drawable object.
     render::ObjectPtr<render::GridColor> m_drawable;
-#endif
 
 };
 

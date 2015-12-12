@@ -31,11 +31,8 @@
 
 // CeCe
 #include "cece/core/VectorRange.hpp"
+#include "cece/render/Color.hpp"
 #include "cece/simulator/Simulation.hpp"
-
-#if ENABLE_RENDER
-#  include "cece/render/Color.hpp"
-#endif
 
 /* ************************************************************************ */
 
@@ -68,7 +65,6 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
 void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     // Returns grid size
@@ -111,7 +107,6 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     context.colorPop();
     context.matrixPop();
 }
-#endif
 
 /* ************************************************************************ */
 

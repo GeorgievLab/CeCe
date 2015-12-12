@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <algorithm>
 
@@ -39,7 +44,7 @@
 #include "cece/core/InStream.hpp"
 #include "cece/simulator/Module.hpp"
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Color.hpp"
 #  include "cece/render/Context.hpp"
 #  include "cece/render/Object.hpp"
@@ -50,7 +55,7 @@
 #  endif
 #endif
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
 #  include "cece/core/Mutex.hpp"
 #endif
 
@@ -113,7 +118,8 @@ public:
 public:
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Constructor.
      */
@@ -121,6 +127,7 @@ public:
     {
         setZOrder(100);
     }
+
 #endif
 
 
@@ -457,7 +464,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Get signal color.
      *
@@ -469,10 +477,8 @@ public:
     {
         return m_colors[id];
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Get signal color.
      *
@@ -489,10 +495,8 @@ public:
 
         return getSignalColor(id);
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Get signal saturation (only for rendering).
      *
@@ -504,10 +508,8 @@ public:
     {
         return m_signalSaturation[id];
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Get signal saturation (only for rendering).
      *
@@ -524,6 +526,7 @@ public:
 
         return getSignalSaturation(id);
     }
+
 #endif
 
 
@@ -540,7 +543,8 @@ public:
     }
 
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
+
     /**
      * @brief Returns module mutex.
      *
@@ -550,6 +554,7 @@ public:
     {
         return m_mutex;
     }
+
 #endif
 
 
@@ -748,7 +753,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Set signal color.
      *
@@ -759,10 +765,8 @@ public:
     {
         m_colors[id] = color;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Set signal color.
      *
@@ -778,10 +782,8 @@ public:
 
         setSignalColor(id, color);
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Change signal saturation.
      *
@@ -792,10 +794,8 @@ public:
     {
         m_signalSaturation[id] = saturation;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Change signal saturation.
      *
@@ -811,6 +811,7 @@ public:
 
         setSignalSaturation(id, saturation);
     }
+
 #endif
 
 
@@ -836,7 +837,8 @@ public:
     void update(simulator::Simulation& simulation, units::Time dt) override;
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render module.
      *
@@ -844,14 +846,13 @@ public:
      * @param context    Rendering context.
      */
     void draw(const simulator::Simulation& simulation, render::Context& context) override;
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Update drawable.
      */
     void updateDrawable() const;
+
 #endif
 
 
@@ -946,7 +947,7 @@ private:
     /// Grid with obstacle data. Cannot be bool, because of std::vector<bool>.
     Grid<int> m_obstacles;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /// Background color.
     render::Color m_background = render::Color{0, 0, 0, 0};
 
@@ -964,7 +965,7 @@ private:
 #  endif
 #endif
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     /// Access mutex.
     mutable Mutex m_mutex;
 #endif

@@ -91,14 +91,14 @@ void Obstacle::configure(const Configuration& config, Simulation& simulation)
         throw RuntimeException("Unknown shape type");
     }
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     initShapes();
 #endif
 }
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Obstacle::draw(render::Context& context)
 {
     // TODO: redesign
@@ -179,7 +179,7 @@ void Obstacle::draw(render::Context& context)
 
 /* ************************************************************************ */
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
 void Obstacle::initShapes()
 {
     assert(getBody()->GetFixtureList() == nullptr);

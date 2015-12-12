@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/core/Vector.hpp"
 #include "cece/core/Units.hpp"
@@ -41,15 +46,15 @@
 #include "cece/simulator/Object.hpp"
 #include "cece/simulator/Obstacle.hpp"
 
-#ifdef ENABLE_RENDER
-#include "cece/render/Context.hpp"
-#include "cece/render/Object.hpp"
-#include "cece/render/GridColorColorMap.hpp"
-#include "cece/render/GridVector.hpp"
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Context.hpp"
+#  include "cece/render/Object.hpp"
+#  include "cece/render/GridColorColorMap.hpp"
+#  include "cece/render/GridVector.hpp"
 #endif
 
-#if THREAD_SAFE
-#include "cece/core/Mutex.hpp"
+#ifdef CECE_THREAD_SAFE
+#  include "cece/core/Mutex.hpp"
 #endif
 
 // Plugin
@@ -102,11 +107,13 @@ public:
 public:
 
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+
     /// Flag for debug drawing.
     static constexpr DrawFlags DRAW_DEBUG_MAGNITUDE = 0x01;
     static constexpr DrawFlags DRAW_DEBUG_DIRECTION = 0x02;
     static constexpr DrawFlags DRAW_DEBUG_OBSTACLES = 0x04;
+
 #endif
 
 
@@ -262,7 +269,8 @@ public:
     }
 
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+
     /**
      * @brief If debug flag is set.
      *
@@ -274,10 +282,8 @@ public:
     {
         return getDrawFlags() & flag;
     }
-#endif
 
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /**
      * @brief Get debug velocity magnitude scale.
      *
@@ -287,6 +293,7 @@ public:
     {
         return m_debugMagnitudeScale;
     }
+
 #endif
 
 
@@ -394,7 +401,8 @@ public:
     }
 
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+
     /**
      * @brief Set debug velocity magnitude scale.
      *
@@ -404,6 +412,7 @@ public:
     {
         m_debugMagnitudeScale = value;
     }
+
 #endif
 
 
@@ -445,7 +454,8 @@ public:
     void update(simulator::Simulation& simulation, units::Time dt) override;
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render module.
      *
@@ -453,6 +463,7 @@ public:
      * @param context    Rendering context.
      */
     void draw(const simulator::Simulation& simulation, render::Context& context) override;
+
 #endif
 
 
@@ -602,21 +613,17 @@ private:
     /// Use dynamic objects as obstacles
     bool m_dynamicObjectsObstacles = false;
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
     /// Render grid for velocities
     render::ObjectPtr<render::GridVector> m_drawableDirections;
-#endif
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     /// Rendering grid with filled cells.
     render::ObjectPtr<render::GridColorColorMap> m_drawableDebug;
-#endif
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     RealType m_debugMagnitudeScale = 2;
 #endif
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     /// Access mutex.
     mutable Mutex m_mutex;
 #endif

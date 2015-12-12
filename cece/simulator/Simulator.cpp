@@ -87,7 +87,7 @@ bool Simulator::update()
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Simulator::draw(unsigned int width, unsigned int height)
 {
     // Delete old objects

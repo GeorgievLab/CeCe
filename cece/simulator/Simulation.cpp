@@ -62,7 +62,7 @@ namespace {
 
 /* ************************************************************************ */
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
 /**
  * @brief AABB query callback.
  */
@@ -189,7 +189,7 @@ InStream& operator>>(InStream& is, Object::Type& type)
 
 Simulation::Simulation(PluginContext& context) noexcept
     : m_pluginContext(context)
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     , m_world{b2Vec2{0.0f, 0.0f}}
 #endif
 {
@@ -215,7 +215,7 @@ Simulation::~Simulation()
 
 AccelerationVector Simulation::getGravity() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     return m_converter.convertLinearAcceleration(m_world.GetGravity());
 #else
     return AccelerationVector{Zero};
@@ -237,7 +237,7 @@ ViewPtr<const ObjectType> Simulation::findObjectType(const StringView& name) con
 
 void Simulation::setGravity(const AccelerationVector& gravity) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     m_world.SetGravity(m_converter.convertLinearAcceleration(gravity));
 #else
     // TODO: store
@@ -412,7 +412,7 @@ bool Simulation::update(units::Duration dt)
         }
     }
 
-#ifdef ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     {
         auto _ = measure_time("sim.physics", TimeMeasurementIterationOutput(this));
 
@@ -570,7 +570,7 @@ void Simulation::configure(const Configuration& config)
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
@@ -597,7 +597,7 @@ void Simulation::draw(render::Context& context)
             obj->draw(context);
     }
 
-#if ENABLE_RENDER && ENABLE_PHYSICS && ENABLE_PHYSICS_DEBUG
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
     if (isDrawPhysics())
         m_world.DrawDebugData();
 #endif
@@ -730,7 +730,7 @@ void Simulation::storeDataTables()
 
 ViewPtr<Object> Simulation::query(const PositionVector& position) const noexcept
 {
-#ifdef ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     const auto pos = getConverter().convertPosition(position);
     QueryCallback query(pos);
 

@@ -27,6 +27,17 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
+#ifndef CECE_ENABLE_RENDER
+#error Rendering part requires enabled rendering.
+#endif
+
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/core/Units.hpp"
 #include "cece/core/DynamicArray.hpp"

@@ -27,19 +27,24 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/simulator/Object.hpp"
 #include "cece/simulator/Shape.hpp"
 
-#ifdef ENABLE_RENDER
-#include "cece/render/Object.hpp"
-#include "cece/render/Circle.hpp"
-#include "cece/render/Rectangle.hpp"
-#include "cece/render/Lines.hpp"
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Object.hpp"
+#  include "cece/render/Circle.hpp"
+#  include "cece/render/Rectangle.hpp"
+#  include "cece/render/Lines.hpp"
 #endif
 
-#if ENABLE_PHYSICS
-#include <Box2D/Box2D.h>
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+#  include <Box2D/Box2D.h>
 #endif
 
 /* ************************************************************************ */
@@ -89,33 +94,40 @@ public:
     void configure(const Configuration& config, Simulation& simulation) override;
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render obstacle.
      *
      * @param context Rendering context.
      */
     void draw(render::Context& context) override;
+
 #endif
 
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
     /**
      * @brief Init obstacle physics shapes.
      */
     void initShapes();
+
 #endif
 
 
 // Private Data Members
 private:
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
     /// Physical body shapes.
     DynamicArray<UniquePtr<b2Shape>> m_bodyShapes;
+
 #endif
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /// Shared object for drawing circle.
     render::ObjectSharedPtr<render::Circle> m_drawCircle;
 
@@ -124,6 +136,7 @@ private:
 
     /// Object for drawing lines
     render::ObjectPtr<render::Lines> m_drawEdges;
+
 #endif
 };
 

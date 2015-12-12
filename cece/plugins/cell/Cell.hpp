@@ -27,12 +27,17 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/render/Context.hpp"
 #include "cece/render/Object.hpp"
 
-#if THREAD_SAFE
-#include "cece/core/Mutex.hpp"
+#ifdef CECE_THREAD_SAFE
+#  include "cece/core/Mutex.hpp"
 #endif
 
 // Plugin
@@ -106,24 +111,27 @@ public:
                    simulator::Simulation& simulation) override;
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render cell.
      *
      * @param context
      */
     void draw(render::Context& context) override;
+
 #endif
 
 
 // Private Data Members
 private:
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+    /// Cell drawable.
     render::ObjectSharedPtr<DrawableCell> m_renderObject;
 #endif
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     /// Access mutex.
     mutable Mutex m_mutex;
 #endif

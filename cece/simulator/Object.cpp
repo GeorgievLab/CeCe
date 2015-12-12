@@ -49,7 +49,7 @@ namespace {
 
 /* ************************************************************************ */
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
 /**
  * @brief Convert object type into Box2 body type.
  *
@@ -109,7 +109,7 @@ Object::Object(Simulation& simulation, String typeName, Type type) noexcept
     , m_id(++s_id)
     , m_type(type)
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     auto& world = getSimulation().getWorld();
 
     b2BodyDef bodyDef;
@@ -139,7 +139,7 @@ Object::Object(Simulation& simulation, String typeName, Type type) noexcept
 
 Object::~Object()
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     auto& world = getSimulation().getWorld();
 
     // Pin the body
@@ -158,7 +158,7 @@ Object::~Object()
 
 PositionVector Object::getPosition() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertPosition(m_body->GetPosition());
 #else
@@ -170,7 +170,7 @@ PositionVector Object::getPosition() const noexcept
 
 PositionVector Object::getMassCenterPosition() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertPosition(m_body->GetWorldCenter());
 #else
@@ -182,7 +182,7 @@ PositionVector Object::getMassCenterPosition() const noexcept
 
 PositionVector Object::getMassCenterOffset() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertPosition(m_body->GetLocalCenter());
 #else
@@ -194,7 +194,7 @@ PositionVector Object::getMassCenterOffset() const noexcept
 
 PositionVector Object::getWorldPosition(PositionVector local) const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertPosition(m_body->GetWorldPoint(getConverter().convertPosition(local)));
 #else
@@ -206,7 +206,7 @@ PositionVector Object::getWorldPosition(PositionVector local) const noexcept
 
 units::Angle Object::getRotation() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertAngle(m_body->GetAngle());
 #else
@@ -218,7 +218,7 @@ units::Angle Object::getRotation() const noexcept
 
 VelocityVector Object::getVelocity() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertLinearVelocity(m_body->GetLinearVelocity());
 #else
@@ -230,7 +230,7 @@ VelocityVector Object::getVelocity() const noexcept
 
 units::AngularVelocity Object::getAngularVelocity() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertAngularVelocity(m_body->GetAngularVelocity());
 #else
@@ -242,7 +242,7 @@ units::AngularVelocity Object::getAngularVelocity() const noexcept
 
 units::Mass Object::getMass() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     return getConverter().convertMass(m_body->GetMass());
 #else
@@ -252,7 +252,7 @@ units::Mass Object::getMass() const noexcept
 
 /* ************************************************************************ */
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
 ConverterBox2D& Object::getConverter() noexcept
 {
     return m_simulation.getConverter();
@@ -261,7 +261,7 @@ ConverterBox2D& Object::getConverter() noexcept
 
 /* ************************************************************************ */
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
 const ConverterBox2D& Object::getConverter() const noexcept
 {
     return m_simulation.getConverter();
@@ -272,8 +272,10 @@ const ConverterBox2D& Object::getConverter() const noexcept
 
 units::Length Object::getMaxTranslation() const noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     return getConverter().getMaxObjectTranslation();
+#else
+    return units::Length(NAN);
 #endif
 }
 
@@ -282,7 +284,7 @@ units::Length Object::getMaxTranslation() const noexcept
 void Object::setType(Type type) noexcept
 {
     m_type = type;
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->SetType(convert(type));
 #endif
@@ -292,7 +294,7 @@ void Object::setType(Type type) noexcept
 
 void Object::setPosition(PositionVector pos) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->SetTransform(getConverter().convertPosition(pos), m_body->GetAngle());
 
@@ -307,7 +309,7 @@ void Object::setPosition(PositionVector pos) noexcept
 
 void Object::setRotation(units::Angle angle) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->SetTransform(m_body->GetPosition(), getConverter().convertAngle(angle));
 #else
@@ -319,7 +321,7 @@ void Object::setRotation(units::Angle angle) noexcept
 
 void Object::setVelocity(VelocityVector vel) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->SetLinearVelocity(getConverter().convertLinearVelocity(vel));
 #else
@@ -331,7 +333,7 @@ void Object::setVelocity(VelocityVector vel) noexcept
 
 void Object::setAngularVelocity(units::AngularVelocity vel) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->SetAngularVelocity(getConverter().convertAngularVelocity(vel));
 #endif
@@ -341,7 +343,7 @@ void Object::setAngularVelocity(units::AngularVelocity vel) noexcept
 
 void Object::applyForce(const ForceVector& force) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->ApplyForceToCenter(getConverter().convertForce(force), true);
 #endif
@@ -351,7 +353,7 @@ void Object::applyForce(const ForceVector& force) noexcept
 
 void Object::applyForce(const ForceVector& force, const PositionVector& offset) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->ApplyForce(
         getConverter().convertForce(force),
@@ -367,7 +369,7 @@ void Object::applyForce(const ForceVector& force, const PositionVector& offset) 
 
 void Object::applyLinearImpulse(const ImpulseVector& impulse, const PositionVector& offset) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->ApplyLinearImpulse(
         getConverter().convertLinearImpulse(impulse),
@@ -383,7 +385,7 @@ void Object::applyLinearImpulse(const ImpulseVector& impulse, const PositionVect
 
 void Object::applyAngularImpulse(const units::Impulse& impulse) noexcept
 {
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->ApplyAngularImpulse(getConverter().convertAngularImpulse(impulse), true);
 #endif
@@ -407,7 +409,7 @@ void Object::destroy()
 
 void Object::update(units::Duration dt)
 {
-#if !ENABLE_PHYSICS
+#ifndef CECE_ENABLE_BOX2D_PHYSICS
     // Calculate new object position
     setPosition(getPosition() + getVelocity() * dt);
 #endif
@@ -462,7 +464,7 @@ void Object::update(units::Duration dt)
 
 void Object::configure(const Configuration& config, Simulation& simulation)
 {
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     // Set object position
     setVisible(config.get("visible", isVisible()));
 #endif

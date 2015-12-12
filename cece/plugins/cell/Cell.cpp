@@ -29,8 +29,8 @@
 // CeCe
 #include "cece/core/Assert.hpp"
 
-#ifdef ENABLE_PHYSICS
-#include <Box2D/Box2D.h>
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+#  include <Box2D/Box2D.h>
 #endif
 
 /* ************************************************************************ */
@@ -46,7 +46,7 @@ Cell::Cell(simulator::Simulation& simulation, String typeName, simulator::Object
 {
     setDensity(units::kg(1200) / units::m3(1));
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     b2CircleShape shape;
     shape.m_radius = getConverter().convertLength(getRadius());
 
@@ -62,14 +62,14 @@ Cell::Cell(simulator::Simulation& simulation, String typeName, simulator::Object
 
 void Cell::update(units::Duration dt)
 {
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);
 #endif
 
     CellBase::update(dt);
 
-#if ENABLE_PHYSICS
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
     // Update cell shape
     b2CircleShape shape;
     shape.m_radius = getConverter().convertLength(getRadius());
@@ -97,7 +97,7 @@ void Cell::configure(const simulator::Configuration& config,
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Cell::draw(render::Context& context)
 {
     if (!m_renderObject)
@@ -108,7 +108,7 @@ void Cell::draw(render::Context& context)
     render::Color color;
 
     {
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
         // Lock access
         MutexGuard guard(m_mutex);
 #endif

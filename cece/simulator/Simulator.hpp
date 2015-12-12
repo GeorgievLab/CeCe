@@ -27,13 +27,18 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <atomic>
 
 // CeCe
 #include "cece/core/Units.hpp"
 #include "cece/core/UniquePtr.hpp"
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 #include "cece/render/Context.hpp"
 #endif
 
@@ -95,7 +100,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Returns rendering context.
      *
@@ -105,10 +111,8 @@ public:
     {
         return m_renderContext;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Returns rendering context.
      *
@@ -118,10 +122,8 @@ public:
     {
         return m_renderContext;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Returns if rendering context is initialized.
      *
@@ -131,6 +133,7 @@ public:
     {
         return m_renderContext.isInitialized();
     }
+
 #endif
 
 
@@ -192,7 +195,8 @@ public:
     bool update();
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Initialize simulation for rendering.
      *
@@ -202,10 +206,8 @@ public:
     {
         m_renderContext.init(clearColor);
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Render simulation.
      *
@@ -213,6 +215,7 @@ public:
      * @param height
      */
     void draw(unsigned int width, unsigned int height);
+
 #endif
 
 
@@ -222,7 +225,7 @@ private:
     /// Flag if thread is running
     std::atomic<bool> m_isRunning{false};
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /// Rendering context.
     render::Context m_renderContext;
 #endif

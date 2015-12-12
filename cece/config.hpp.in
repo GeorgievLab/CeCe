@@ -40,6 +40,34 @@ namespace config {
 /* ************************************************************************ */
 
 /**
+ * @brief If CeCe is built with rendering support.
+ */
+#cmakedefine CECE_ENABLE_RENDER
+
+/* ************************************************************************ */
+
+/**
+ * @brief If Box2D physics is enabled.
+ */
+#cmakedefine CECE_ENABLE_BOX2D_PHYSICS
+
+/* ************************************************************************ */
+
+/**
+ * @brief If Box2D physics engine debug is enabled.
+ */
+#cmakedefine CECE_ENABLE_BOX2D_PHYSICS_DEBUG
+
+/* ************************************************************************ */
+
+/**
+ * @brief If CeCe is built with thread support.
+ */
+#cmakedefine CECE_THREAD_SAFE
+
+/* ************************************************************************ */
+
+/**
  * @brief Simulator real type.
  */
 using RealType = ${CONFIG_REAL_TYPE};
@@ -47,9 +75,37 @@ using RealType = ${CONFIG_REAL_TYPE};
 /* ************************************************************************ */
 
 /**
+ * @brief CeCe version string.
+ */
+constexpr auto VERSION_STRING = "${VERSION}";
+
+/* ************************************************************************ */
+
+/**
+ * @brief CeCe major version.
+ */
+constexpr int VERSION_MAJOR = ${VERSION_MAJOR};
+
+/* ************************************************************************ */
+
+/**
+ * @brief CeCe minor version.
+ */
+constexpr int VERSION_MINOR = ${VERSION_MINOR};
+
+/* ************************************************************************ */
+
+/**
+ * @brief CeCe patch version.
+ */
+constexpr int VERSION_PATCH = ${VERSION_PATCH};
+
+/* ************************************************************************ */
+
+/**
  * @brief Simulator space dimension - only 2D is supported now.
  */
-constexpr unsigned int Dimension = 2;
+constexpr unsigned int DIMENSION = 2;
 
 /* ************************************************************************ */
 

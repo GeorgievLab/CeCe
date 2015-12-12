@@ -23,13 +23,18 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <iostream>
 #include <csignal>
 #include <atomic>
 #include <fstream>
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 #include <GLFW/glfw3.h>
 #endif
 
@@ -54,12 +59,12 @@
 #include "cece/core/StringStream.hpp"
 #endif
 
-#if ENABLE_RENDER
-#include "cece/core/TriBool.hpp"
-#include "cece/render/Context.hpp"
-#if ENABLE_PHYSICS_DEBUG
-#include "cece/render/PhysicsDebugger.hpp"
-#endif
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/core/TriBool.hpp"
+#  include "cece/render/Context.hpp"
+#  ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
+#    include "cece/render/PhysicsDebugger.hpp"
+#  endif
 #endif
 
 // Version
@@ -92,7 +97,7 @@ struct Arguments
     /// Simulation parameters.
     Parameters parameters;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     // If simulation should be rendered.
     TriBool visualize = Indeterminate;
 
@@ -154,7 +159,7 @@ void terminate_simulation(int param)
             "[ --plugins "
             "| --plugins-dir "
             "| --param | -p "
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
             "| --visualize "
             "| --novisualize "
             "| --fullscreen "
@@ -171,7 +176,7 @@ void terminate_simulation(int param)
         "    --plugins-dir <dir>  Directory where plugins are located.\n"
         "    --param <name> <value> Set simulation parameter.\n"
         "    -p <name> <value>    Set simulation parameter.\n"
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
         "    --visualize          Enable visualization (default).\n"
         "    --fullscreen         Visualization window in fullscreen mode.\n"
         "    --novisualize        Disable visualization.\n"
@@ -267,7 +272,7 @@ Arguments parseArguments(int argc, char** argv)
                 args.parameters[argv[i + 1]] = units::parse(argv[i + 2]);
                 i += 2;
             }
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
             else if (arg == "--visualize")
             {
                 args.visualize = true;
@@ -397,7 +402,7 @@ public:
         // Set parameters
         m_simulator.getSimulation()->getParameters().merge(args.parameters);
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
         const auto simViz = m_simulator.getSimulation()->getVisualize();
 
         // Decide if simulation should be visualized
@@ -420,7 +425,7 @@ public:
     {
         // Delete simulation
         m_simulator.setSimulation(nullptr);
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
         // Delete all released object before visualization cleanup
         m_simulator.getRenderContext().deleteReleasedObjects();
         cleanupVisualization();
@@ -451,7 +456,7 @@ public:
      */
     void start()
     {
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
         if (m_visualize)
         {
             // Make the window's context current
@@ -489,7 +494,7 @@ public:
             // Update simulation
             while (!g_terminated && update())
                 continue;
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
         }
 #endif
     }
@@ -506,7 +511,7 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Draw scene.
      */
@@ -526,7 +531,7 @@ public:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Window resize callback.
      *
@@ -554,7 +559,7 @@ public:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Keyboard callback function.
      *
@@ -680,7 +685,7 @@ public:
         }
 #endif
 
-#if ENABLE_PHYSICS_DEBUG
+#ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
         case GLFW_KEY_D:
             ptr->swapPhysicsDebug();
             ptr->draw();
@@ -690,7 +695,7 @@ public:
             break;
 #endif
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
         case GLFW_KEY_V:
         {
             auto streamlines = ptr->getSimulation()->getModule("streamlines");
@@ -750,7 +755,7 @@ public:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Mouse scroll callback.
      *
@@ -785,7 +790,7 @@ public:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Mouse button callback.
      *
@@ -821,7 +826,7 @@ public:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Mouse position callback.
      *
@@ -866,7 +871,7 @@ public:
 private:
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Init visualization.
      *
@@ -1000,7 +1005,7 @@ private:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Visualization error callback.
      *
@@ -1014,7 +1019,7 @@ private:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Cleanup visualization.
      */
@@ -1031,7 +1036,7 @@ private:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Initialize rendering scene.
      */
@@ -1040,7 +1045,7 @@ private:
         // Get simulation
         auto simulation = m_simulator.getSimulation();
 
-#if ENABLE_PHYSICS_DEBUG
+#ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
 
         m_physicsDebugger.SetFlags(
             render::PhysicsDebugger::e_shapeBit |
@@ -1061,7 +1066,7 @@ private:
 #endif
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     /**
      * @brief Calculate zoom to render scene in whole window.
      */
@@ -1077,7 +1082,7 @@ private:
 #endif
 
 
-#if ENABLE_RENDER && ENABLE_PHYSICS_DEBUG
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
     /**
      * @brief Swap physics debug rendering.
      */
@@ -1150,7 +1155,7 @@ private:
 // Private Data Members
 private:
 
-#if ENABLE_PHYSICS_DEBUG
+#ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
     // Physics engine debug draw.
     render::PhysicsDebugger m_physicsDebugger;
 #endif
@@ -1161,7 +1166,7 @@ private:
     // Simulator
     simulator::Simulator m_simulator;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     // If simulation should be rendered.
     bool m_visualize;
 

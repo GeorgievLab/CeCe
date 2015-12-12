@@ -27,8 +27,13 @@
 
 /* ************************************************************************ */
 
-#ifndef ENABLE_PHYSICS_DEBUG
-#error ENABLE_PHYSICS_DEBUG macro required
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
+#ifndef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
+#error Physics debugging has to be enabled.
 #endif
 
 /* ************************************************************************ */

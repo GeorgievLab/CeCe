@@ -1552,7 +1552,7 @@ private:
  * @brief Basic vector.
  */
 template<typename T>
-using Vector = BasicVector<T, config::Dimension>;
+using Vector = BasicVector<T, config::DIMENSION>;
 
 /* ************************************************************************ */
 

@@ -221,7 +221,6 @@ endif ()
 # Rendering enabled
 if (CONFIG_RENDER_ENABLE)
     message(STATUS "OpenGL rendering support")
-    add_definitions(-DENABLE_RENDER=1)
 endif ()
 
 # Build-in physics enabled
@@ -230,11 +229,8 @@ if (CONFIG_PHYSICS_BUILTIN)
     find_package(BOX2D REQUIRED)
     include_directories(${BOX2D_INCLUDE_DIR})
 
-    add_definitions(-DENABLE_PHYSICS=1)
-
     if (DEV_PHYSICS_BUILTIN_DEBUG)
         message(STATUS "Physics engine debugging enabled")
-        add_definitions(-DENABLE_PHYSICS_DEBUG=1)
     endif ()
 endif ()
 
@@ -250,10 +246,6 @@ if (DEV_TESTS_BUILD)
     enable_testing()
     find_package(GTest REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
-endif ()
-
-if (THREAD_SAFE)
-    add_definitions(-DTHREAD_SAFE)
 endif ()
 
 # Set real type

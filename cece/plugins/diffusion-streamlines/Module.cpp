@@ -171,7 +171,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     }
 
     {
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
         // Lock diffusion
         MutexGuard guardDiffusion(m_diffusion->getMutex());
 #endif

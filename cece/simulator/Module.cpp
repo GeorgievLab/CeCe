@@ -69,7 +69,7 @@ void Module::loadConfig(Simulation& simulation, const Configuration& config)
     // Get module priority
     setPriority(config.get("priority", getPriority()));
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     setZOrder(config.get("z-order", getZOrder()));
 #endif
 }
@@ -81,14 +81,14 @@ void Module::storeConfig(Simulation& simulation, Configuration& config)
     // Store module priority
     config.set("priority", getPriority());
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     config.set("z-order", getZOrder());
 #endif
 }
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Module::draw(const Simulation& simulation, render::Context& context)
 {
     // Nothing to do

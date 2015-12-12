@@ -72,6 +72,12 @@ endif ()
 
 # ######################################################################### #
 
+# Convert configuration names
+set(CECE_ENABLE_RENDER ${CONFIG_RENDER_ENABLE})
+set(CECE_ENABLE_BOX2D_PHYSICS ${CONFIG_PHYSICS_BUILTIN})
+set(CECE_ENABLE_BOX2D_PHYSICS_DEBUG ${DEV_PHYSICS_BUILTIN_DEBUG})
+set(CECE_THREAD_SAFE ${THREAD_SAFE})
+
 # Create config file
 configure_file(config.hpp.in config.hpp)
 

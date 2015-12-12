@@ -324,7 +324,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         m_dataOut->flush();
     }
 
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);
 #endif
@@ -415,7 +415,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
         *m_dataOut << "\n";
     }
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
     setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
 #endif
 
@@ -425,7 +425,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
 #if DEV_PLUGIN_streamlines_RENDER
@@ -451,7 +451,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     const auto maxVel = m_debugMagnitudeScale * maxInlet / vMax.getLength();
 
     {
-#if THREAD_SAFE
+#ifdef CECE_THREAD_SAFE
         // Lock access
         MutexGuard guard(m_mutex);
 #endif

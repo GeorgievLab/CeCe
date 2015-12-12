@@ -79,7 +79,7 @@ struct ObjectDesc
     using SpawnRate = typename units::Divide<units::Probability, units::Time>::type;
 
     /// Position distributions.
-    using Distributions = StaticArray<Distribution, config::Dimension>;
+    using Distributions = StaticArray<Distribution, config::DIMENSION>;
 
 
     /// Object class name.

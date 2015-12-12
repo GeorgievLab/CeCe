@@ -27,12 +27,17 @@
 
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/core/Units.hpp"
 
 /* ************************************************************************ */
 
-#ifdef ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 namespace cece { namespace render { class Context; } }
 #endif
 
@@ -87,16 +92,14 @@ public:
     /// Module update priority type.
     using PriorityType = int;
 
+#ifdef CECE_ENABLE_RENDER
 
-#if ENABLE_RENDER
     /// Z order type.
     using ZOrderType = int;
-#endif
 
-
-#if ENABLE_RENDER
     /// Flags for module drawing.
     using DrawFlags = int;
+
 #endif
 
 
@@ -125,7 +128,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Returns module draw Z order.
      *
@@ -135,10 +139,8 @@ public:
     {
         return m_zOrder;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Returns module draw flags.
      *
@@ -148,6 +150,7 @@ public:
     {
         return m_drawFlags;
     }
+
 #endif
 
 
@@ -166,7 +169,8 @@ public:
     }
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Set module draw Z order.
      *
@@ -176,10 +180,8 @@ public:
     {
         m_zOrder = zOrder;
     }
-#endif
 
 
-#if ENABLE_RENDER
     /**
      * @brief Set module draw flags.
      *
@@ -189,6 +191,7 @@ public:
     {
         m_drawFlags = flags;
     }
+
 #endif
 
 
@@ -247,7 +250,8 @@ public:
     virtual void storeConfig(Simulation& simulation, Configuration& config);
 
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Render module.
      *
@@ -255,6 +259,7 @@ public:
      * @param context    Rendering context.
      */
     virtual void draw(const Simulation& simulation, render::Context& context);
+
 #endif
 
 
@@ -264,14 +269,14 @@ private:
     /// Module update priority.
     PriorityType m_priority = 0;
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
+
     /// Module Z order.
     ZOrderType m_zOrder = 0;
-#endif
 
-#if ENABLE_RENDER
     /// Module draw flags.
     DrawFlags m_drawFlags = 0;
+
 #endif
 };
 

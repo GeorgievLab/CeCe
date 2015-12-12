@@ -55,29 +55,17 @@ void CellBase::configure(const simulator::Configuration& config,
     for (auto&& cfg : config.getConfigurations("molecule"))
         setMoleculeCount(cfg.get("name"), cfg.get<MoleculeCount>("amount"));
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     // Identification color
     setIdentificationColor(config.get("identification-color", getIdentificationColor()));
-#endif
-
-#if ENABLE_RENDER
     setGfpSaturation(config.get("saturation-gfp", getGfpSaturation()));
-#endif
-
-#if ENABLE_RENDER
     setRfpSaturation(config.get("saturation-rfp", getRfpSaturation()));
-#endif
-
-#if ENABLE_RENDER
     setYfpSaturation(config.get("saturation-yfp", getYfpSaturation()));
-#endif
-
-#if ENABLE_RENDER
     setCfpSaturation(config.get("saturation-cfp", getCfpSaturation()));
-#endif
 
-#if ENABLE_RENDER && CONFIG_PLUGIN_cell_BFP_COLOR
+#  if CONFIG_PLUGIN_cell_BFP_COLOR
     setBfpSaturation(config.get("saturation-bfp", getBfpSaturation()));
+#  endif
 #endif
 }
 
@@ -96,7 +84,7 @@ void CellBase::update(units::Time dt)
 
 /* ************************************************************************ */
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
 render::Color CellBase::calcFluorescentColor(const units::Volume volume) const noexcept
 {
     const auto gfp = getMoleculeCount("GFP");
