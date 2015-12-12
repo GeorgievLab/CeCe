@@ -27,6 +27,7 @@
 #include <gtest/gtest.h>
 
 // CeCe
+#include "cece/core/StringStream.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/UnitsCtors.hpp"
 
@@ -158,7 +159,7 @@ TEST(UnitsTest, symbol)
 TEST(UnitsTest, istream)
 {
     {
-        std::istringstream is("0");
+        InStringStream is("0");
 
         units::Length val;
         is >> val;
@@ -167,7 +168,7 @@ TEST(UnitsTest, istream)
     }
 
     {
-        std::istringstream is("0um");
+        InStringStream is("0um");
 
         units::Length val;
         is >> val;
@@ -176,7 +177,7 @@ TEST(UnitsTest, istream)
     }
 
     {
-        std::istringstream is("100um");
+        InStringStream is("100um");
 
         units::Length val;
         is >> val;
@@ -185,7 +186,7 @@ TEST(UnitsTest, istream)
     }
 
     {
-        std::istringstream is("  500ms    ");
+        InStringStream is("  500ms    ");
 
         units::Time val;
         is >> val;
@@ -194,7 +195,7 @@ TEST(UnitsTest, istream)
     }
 
     {
-        std::istringstream is("2um2");
+        InStringStream is("2um2");
 
         units::Area val;
         is >> val;
@@ -203,7 +204,7 @@ TEST(UnitsTest, istream)
     }
 
     {
-        std::istringstream is("1umol/um3");
+        InStringStream is("1umol/um3");
 
         units::MolarConcentration val;
         is >> val;
@@ -217,12 +218,81 @@ TEST(UnitsTest, istream)
 TEST(UnitsTest, abbr)
 {
     {
-        std::istringstream is("15mM"); // 1mM = 1mol/m3
+        InStringStream is("15mM"); // 1mM = 1mol/m3
 
         units::MolarConcentration val;
         is >> val;
 
         EXPECT_EQ(units::mol_m3(15), val);
+    }
+}
+
+/* ************************************************************************ */
+
+TEST(UnitsTest, parse)
+{
+    {
+        InStringStream is("0");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(0, val);
+    }
+
+    {
+        InStringStream is("0um");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(0, val);
+    }
+
+    {
+        InStringStream is("100um");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(units::um(100).value(), val);
+    }
+
+    {
+        InStringStream is("  500ms    ");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(units::ms(500).value(), val);
+    }
+
+    {
+        InStringStream is("2um2");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(units::um2(2).value(), val);
+    }
+
+    {
+        InStringStream is("1umol/um3");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(units::umol_um3(1).value(), val);
+    }
+
+    {
+        InStringStream is("15mM");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(units::mM(15).value(), val);
+    }
+
+    {
+        InStringStream is("50uM");
+
+        units::Value val = units::parse(is);
+
+        EXPECT_FLOAT_EQ(units::uM(50).value(), val);
     }
 }
 

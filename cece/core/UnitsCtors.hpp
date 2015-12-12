@@ -920,7 +920,6 @@ inline constexpr Probability precent(Value value) noexcept
     return Probability(value / 100.0);
 }
 
-
 /* ************************************************************************ */
 
 }

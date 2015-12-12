@@ -29,6 +29,7 @@
 // CeCe
 #include "cece/core/Map.hpp"
 #include "cece/core/StringStream.hpp"
+#include "cece/core/UnitsCtors.hpp"
 
 /* ************************************************************************ */
 
@@ -163,15 +164,6 @@ int calcPrefixExponent(const String& symbol, StringView typeSymbol, unsigned int
 
 Value parse(InStream& is)
 {
-    static const Map<String, int> predefinedSymbols = {
-        // Millimolar - mol/m3
-        {"mM", AMOUNT_OF_SUBSTANCE_EXPONENT - 3 * LENGTH_EXPONENT},
-        // Micromolar - 10e-3 mol/m3
-        {"uM", AMOUNT_OF_SUBSTANCE_EXPONENT - 3 * LENGTH_EXPONENT - 3},
-        // Nanomolar - 10e-6 mol/m3
-        {"nM", AMOUNT_OF_SUBSTANCE_EXPONENT - 3 * LENGTH_EXPONENT - 6}
-    };
-
     Value value;
     String symbol;
 
@@ -190,48 +182,105 @@ Value parse(InStream& is)
         return value;
     }
 
+    // Predefined symbols
+#define SYMBOL_TEST(nom) if (symbol == #nom) return nom(value).value()
+#define SYMBOL_TEST2(nom, denom) if (symbol == #nom "/" #denom) return nom ## _ ## denom(value).value()
+
+    SYMBOL_TEST(m);
+    SYMBOL_TEST(dm);
+    SYMBOL_TEST(mm);
+    SYMBOL_TEST(um);
+    SYMBOL_TEST(g);
+    SYMBOL_TEST(kg);
+    SYMBOL_TEST(mg);
+    SYMBOL_TEST(ug);
+    SYMBOL_TEST(ng);
+    SYMBOL_TEST(pg);
+    SYMBOL_TEST(s);
+    SYMBOL_TEST(ms);
+    SYMBOL_TEST(us);
+    SYMBOL_TEST(min);
+    SYMBOL_TEST(h);
+    SYMBOL_TEST(m2);
+    SYMBOL_TEST(dm2);
+    SYMBOL_TEST(mm2);
+    SYMBOL_TEST(um2);
+    SYMBOL_TEST(m3);
+    SYMBOL_TEST(dm3);
+    SYMBOL_TEST(mm3);
+    SYMBOL_TEST(um3);
+    SYMBOL_TEST2(m, s);
+    SYMBOL_TEST2(mm, s);
+    SYMBOL_TEST2(um, s);
+    SYMBOL_TEST2(m, s2);
+    SYMBOL_TEST2(mm, s2);
+    SYMBOL_TEST2(um, s2);
+    SYMBOL_TEST2(kgm, s2);
+    SYMBOL_TEST2(gm, s2);
+    SYMBOL_TEST2(mgm, s2);
+    SYMBOL_TEST(N);
+    SYMBOL_TEST(mN);
+    SYMBOL_TEST(uN);
+    SYMBOL_TEST2(Ns, m2);
+    SYMBOL_TEST(Pas);
+    SYMBOL_TEST(mPas);
+    SYMBOL_TEST2(m2, s);
+    SYMBOL_TEST2(mm2, s);
+    SYMBOL_TEST2(um2, s);
+    SYMBOL_TEST(mol);
+    SYMBOL_TEST(mmol);
+    SYMBOL_TEST(umol);
+    SYMBOL_TEST(nmol);
+    SYMBOL_TEST2(mol, m3);
+    SYMBOL_TEST2(mmol, m3);
+    SYMBOL_TEST2(umol, m3);
+    SYMBOL_TEST2(nmol, m3);
+    SYMBOL_TEST(M);
+    SYMBOL_TEST(mM);
+    SYMBOL_TEST(uM);
+    SYMBOL_TEST(nM);
+    SYMBOL_TEST2(mol, um3);
+    SYMBOL_TEST2(mmol, um3);
+    SYMBOL_TEST2(umol, um3);
+    SYMBOL_TEST2(nmol, um3);
+
+#undef SYMBOL_TEST
+#undef SYMBOL_TEST2
+
+    // Fallback
+
     int exponent = 0;
 
-    // Try to find predefined symbols
-    const auto it = predefinedSymbols.find(symbol);
-
-    if (it != predefinedSymbols.end())
+    // Foreach characters
+    for (auto it = symbol.begin(); it != symbol.end(); ++it)
     {
-        exponent = it->second;
-    }
-    else
-    {
-        // Foreach characters
-        for (auto it = symbol.begin(); it != symbol.end(); ++it)
+        switch (*it)
         {
-            switch (*it)
+        case 'g':
+            exponent += MASS_EXPONENT;
+            break;
+
+        case 's':
+            exponent += TIME_EXPONENT;
+            break;
+
+        case 'm':
+            // This is problematic, because it can be 'm' or 'mol'
+            if (*(it + 1) == 'o')
             {
-            case 'g':
-                exponent += MASS_EXPONENT;
-                break;
+                // Skip other two characters
+                it += 2;
 
-            case 's':
-                exponent += TIME_EXPONENT;
-                break;
-
-            case 'm':
-                // This is problematic, because it can be 'm' or 'mol'
-                if (*(it + 1) == 'o')
-                {
-                    // Skip other two characters
-                    it += 2;
-
-                    exponent += AMOUNT_OF_SUBSTANCE_EXPONENT;
-                }
-                else
-                {
-                    exponent += LENGTH_EXPONENT;
-                }
-                break;
-
-            default:
-                throw InvalidArgumentException("Unsupported unit character '" + String(1, *it) + "' in '" + symbol + "'");
+                exponent += AMOUNT_OF_SUBSTANCE_EXPONENT;
             }
+            else
+            {
+                exponent += LENGTH_EXPONENT;
+            }
+            break;
+
+        default:
+            throw InvalidArgumentException("Unsupported unit character '" + String(1, *it) + "' in '" + symbol + "'");
         }
     }
 
