@@ -69,6 +69,25 @@ const Map<String, int> g_abbreviations = {
 
 /* ************************************************************************ */
 
+/**
+ * @brief Check if given character can be a part of symbol.
+ *
+ * @param c
+ *
+ * @return
+ */
+bool isSymbolChar(char c) noexcept
+{
+    return (
+        (c >= 'a' && c <= 'z') ||
+        (c >= 'A' && c <= 'Z') ||
+        (c >= '0' && c <= '9') ||
+        (c == '/')
+    );
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
@@ -164,23 +183,35 @@ int calcPrefixExponent(const String& symbol, StringView typeSymbol, unsigned int
 
 Value parse(InStream& is)
 {
-    Value value;
+    String str;
+    is >> str;
+
+    return parse(str);
+}
+
+/* ************************************************************************ */
+
+Value parse(StringView str)
+{
+    char* fSymbol;
+
+    // Read float value
+    const Value value = std::strtof(str.getData(), &fSymbol);
+
+    // Cannot be read
+    if (fSymbol == str.getData())
+        throw InvalidArgumentException("Cannot parse unit value: " + String(str));
+
     String symbol;
+    const char* eSymbol = str.getData() + str.getLength();
 
-    is >> std::ws >> value;
+    // Store symbol characters
+    for (; fSymbol != eSymbol && isSymbolChar(*fSymbol); ++fSymbol)
+        symbol.push_back(*fSymbol);
 
-    // Unable to load unit
-    if (!is)
-        throw InvalidArgumentException("Cannot parse unit value");
-
-    // No symbol given
-    if (!(is >> std::noskipws >> symbol))
-    {
-        is.clear();
-
-        // Return value without symbol
+    // No symbol
+    if (symbol.empty())
         return value;
-    }
 
     // Predefined symbols
 #define SYMBOL_TEST(nom) if (symbol == #nom) return nom(value).value()
@@ -285,14 +316,6 @@ Value parse(InStream& is)
     }
 
     return value * exponentToCoefficient(exponent);
-}
-
-/* ************************************************************************ */
-
-Value parse(StringView value)
-{
-    InStringStream is(value.getData());
-    return parse(is);
 }
 
 /* ************************************************************************ */
