@@ -118,7 +118,7 @@ set(MACOSX_BUNDLE_ICON_FILE "${APP_NAME}.icns")
 # ######################################################################### #
 
 # Create executable
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE
+add_executable(${PROJECT_NAME}
     ${SRCS}
 )
 
@@ -128,6 +128,10 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE
 set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}"
 )
+
+if (APPLE)
+    set_target_properties(${PROJECT_NAME} PROPERTIES INSTALL_RPATH "@loader_path/../lib;@loader_path/../plugins")
+endif ()
 
 # ######################################################################### #
 

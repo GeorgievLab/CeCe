@@ -432,7 +432,7 @@ Arguments parseArguments(int argc, char** argv)
 #elif __linux__
         simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
 #elif __APPLE__ && __MACH__
-            // Not supported yet
+        simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "../plugins"));
 #elif _WIN32
         simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "."));
 #endif

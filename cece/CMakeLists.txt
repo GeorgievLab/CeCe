@@ -115,6 +115,7 @@ add_library(${PROJECT_NAME} SHARED ${SRCS})
 
 # Set framework flag
 #set_target_properties(${PROJECT_NAME} PROPERTIES FRAMEWORK 1)
+set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_RPATH On)
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
@@ -145,6 +146,7 @@ endif ()
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${INSTALL_DIR_LIBRARY}
     LIBRARY DESTINATION ${INSTALL_DIR_LIBRARY}
+    COMPONENT Library
 )
 
 if (MINGW)
