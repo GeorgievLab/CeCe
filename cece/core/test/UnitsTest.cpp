@@ -288,11 +288,11 @@ TEST(UnitsTest, parse)
     }
 
     {
-        InStringStream is("50uM");
+        InStringStream is("50nM");
 
         units::Value val = units::parse(is);
 
-        EXPECT_FLOAT_EQ(units::uM(50).value(), val);
+        EXPECT_FLOAT_EQ(units::nM(50).value(), val);
     }
 }
 
