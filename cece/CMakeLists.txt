@@ -159,7 +159,7 @@ if (APPLE)
     )
 endif ()
 
-if (WIN32)
+if (APPLE OR WIN32)
     # Install Box2D library
     install(FILES
         ${BOX2D_LIBRARIES}

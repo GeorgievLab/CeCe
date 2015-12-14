@@ -115,28 +115,40 @@ function fix_binary()
     # Foreach binary dependencies
     for LIBRARY in `get_dependency "${ID}" "${BINARY}"`
     do
-        # Get real path
-        local REALPATH=`follow_symlink "${LIBRARY}"`
-
-        local BASENAME=`basename ${REALPATH}`
-        local FILEPATH="${LIBRARY_DIRECTORY}/${BASENAME}"
-
-        # Only libraries from sources
-        # /usr/local
-        if [[ $LIBRARY == *"${SOURCE_DIR}"* ]]
+        # If library contains separator is from system
+        if [[ $LIBRARY == *"/"* ]]
         then
-            if [[ ! -f "${FILEPATH}" ]]
+            # Get real path
+            local REALPATH=`follow_symlink "${LIBRARY}"`
+
+            local BASENAME=`basename ${REALPATH}`
+            local FILEPATH="${LIBRARY_DIRECTORY}/${BASENAME}"
+
+            # Only libraries from sources
+            # /usr/local
+            if [[ $LIBRARY == *"${SOURCE_DIR}"* ]]
             then
-                # Copy library (realpath) into bundle
-                cp "${REALPATH}" "${LIBRARY_DIRECTORY}"
+                if [[ ! -f "${FILEPATH}" ]]
+                then
+                    # Copy library (realpath) into bundle
+                    cp "${REALPATH}" "${LIBRARY_DIRECTORY}"
 
-                # Recursive fix
-                fix_binary $FILEPATH
+                    # Recursive fix
+                    fix_binary $FILEPATH
+                fi
+
+                chmod a+w ${BINARY}
+                install_name_tool -change ${LIBRARY} @rpath/${BASENAME} ${BINARY}
+                chmod a-w ${BINARY}
             fi
+        else
+            # Local
+            chmod u+w ${BINARY}
+            install_name_tool -change ${LIBRARY} @rpath/${LIBRARY} ${BINARY}
+            chmod u-w ${BINARY}
 
-            chmod a+w ${BINARY}
-            install_name_tool -change ${LIBRARY} @rpath/${BASENAME} ${BINARY}
-            chmod a-w ${BINARY}
+            # Recursive fix
+            fix_binary ${LIBRARY_DIRECTORY}/${LIBRARY}
         fi
     done
 }
