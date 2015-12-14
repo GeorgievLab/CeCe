@@ -48,7 +48,7 @@ build_plugin(picture
 
 # ######################################################################### #
 
-if (WIN32 OR APPLE)
+if (WIN32)
     # Install PNG libraries
     install(FILES ${PNG_LIBRARIES}
         DESTINATION ${INSTALL_DIR_LIBRARY}
