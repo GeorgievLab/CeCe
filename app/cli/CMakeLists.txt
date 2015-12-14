@@ -65,36 +65,18 @@ if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
         message(FATAL_ERROR "Video/image capture requires rendering support")
     endif ()
 
-    set(OPENCV_COMPONENTS core)
+    message(STATUS "Video/image capture support")
+
+    # LibPNG is required
+    find_package(PNG REQUIRED)
+    include_directories(${PNG_INCLUDE_DIRS})
 
     if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
-        set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} imgproc highgui)
+        add_definitions(-DCONFIG_CLI_ENABLE_IMAGE_CAPTURE=1)
     endif ()
 
     if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
-        # OpenCV 2
-        set(OPENCV_COMPONENTS ${OPENCV_COMPONENTS} highgui)
-    endif ()
-
-    # Find OpenCV
-    find_package(OpenCV 2.4 COMPONENTS ${OPENCV_COMPONENTS})
-
-    # OpenCV not found
-    if (OpenCV_FOUND)
-        message(STATUS "Video/image capture support: OpenCV ${OpenCV_VERSION}")
-        include_directories(${OpenCV_INCLUDE_DIRS})
-
-        if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
-            add_definitions(-DCONFIG_CLI_ENABLE_IMAGE_CAPTURE=1)
-        endif ()
-
-        if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
-            add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=1)
-        endif ()
-    else ()
-        message(WARNING "OpenCV not found, disabling video/image capture")
-        set(CONFIG_CLI_ENABLE_VIDEO_CAPTURE Off)
-        set(CONFIG_CLI_ENABLE_IMAGE_CAPTURE Off)
+        add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=1)
     endif ()
 endif ()
 
@@ -173,9 +155,9 @@ if (UNIX AND NOT APPLE)
     )
 endif ()
 
-if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
     target_link_libraries(${PROJECT_NAME}
-        ${OpenCV_LIBRARIES}
+        ${PNG_LIBRARIES}
     )
 endif ()
 
@@ -188,47 +170,9 @@ install(TARGETS ${PROJECT_NAME}
     COMPONENT Runtime
 )
 
-# Fixup shared libraries for bundle
-if (APPLE)
-    install(PROGRAMS
-        "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.sh"
-        DESTINATION "${INSTALL_DIR_RUNTIME}"
-        COMPONENT Runtime
-    )
-
-    set(APP "\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_BUNDLE}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}.app")
-    set(DIRS "/usr/local/lib;\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_LIBRARY};${OSX_LIB_DIRS}")
-
-    message(STATUS "Bundle lib dirs: ${DIRS}")
-
-    install(CODE
-        "
-        file(GLOB PLUGINS RELATIVE \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}\"
-            \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_PLUGINS}/*${CMAKE_SHARED_LIBRARY_SUFFIX}\"
-        )
-        include(BundleUtilities)
-        fixup_bundle(\"${APP}\" \"\${PLUGINS}\" \"${DIRS}\")
-        "
-        COMPONENT Runtime
-    )
-endif ()
-
-if (WIN32 AND (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE))
-    set(LIBRARIES "")
-    set(COMPONENTS ${OPENCV_COMPONENTS})
-
-    foreach (DIR ${OpenCV_LIB_DIR})
-        set(DIR "${DIR}/../bin")
-
-        foreach (COMPONENT ${COMPONENTS})
-            file(GLOB FILES "${DIR}/libopencv_${COMPONENT}*.dll")
-            set(LIBRARIES ${LIBRARIES} ${FILES})
-        endforeach ()
-    endforeach ()
-
-    list(REMOVE_DUPLICATES LIBRARIES)
-
-    install(FILES ${LIBRARIES}
+if ((WIN32 OR APPLE) AND CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
+    # Install PNG libraries
+    install(FILES ${PNG_LIBRARIES}
         DESTINATION ${INSTALL_DIR_LIBRARY}
     )
 endif ()

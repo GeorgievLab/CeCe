@@ -38,9 +38,12 @@
 #include <GLFW/glfw3.h>
 #endif
 
-#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE || CONFIG_CLI_ENABLE_IMAGE_CAPTURE
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
+#include <png.h>
+#endif
+
+#if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+#include <cstdio>
 #endif
 
 // CeCe
@@ -57,6 +60,7 @@
 
 #if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
 #include "cece/core/StringStream.hpp"
+#include "cece/core/FileStream.hpp"
 #endif
 
 #ifdef CECE_ENABLE_RENDER
@@ -223,6 +227,80 @@ void terminate_simulation(int param)
 
     exit(1);
 }
+
+/* ************************************************************************ */
+
+#if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
+void saveImage(const FilePath& filename, render::Context& context)
+{
+    auto size = context.getSize();
+    DynamicArray<unsigned char> data(size.getHeight() * size.getWidth() * 3);
+
+    // Get image data
+    context.getData(data.data(), false);
+
+    OutFileStream file(filename.string(), OutFileStream::binary);
+
+    if (!file.is_open())
+        throw InvalidArgumentException("Cannot open output file: " + filename.string());
+
+    // Create write struct
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+
+    if (!png)
+        throw RuntimeException("Internal PNG error");
+
+    // Create info struct
+    png_infop info = png_create_info_struct(png);
+
+    if (!info)
+    {
+        png_destroy_write_struct(&png, nullptr);
+        throw RuntimeException("Internal PNG error");
+    }
+
+    // Set error function. In case of error, program jumps here
+    if (setjmp(png_jmpbuf(png)))
+    {
+        png_destroy_write_struct(&png, &info);
+        throw RuntimeException("Internal PNG error");
+    }
+
+    // Set write/flush function
+    png_set_write_fn(png, &file, [](png_structp png, png_bytep buf, png_size_t size) noexcept {
+        OutFileStream* file = reinterpret_cast<OutFileStream*>(png_get_io_ptr(png));
+        file->write(reinterpret_cast<const char*>(buf), size);
+    }, [](png_structp png) noexcept {
+        OutFileStream* file = reinterpret_cast<OutFileStream*>(png_get_io_ptr(png));
+        file->flush();
+    });
+
+    // Set info
+    png_set_IHDR(png, info, size.getWidth(), size.getHeight(),
+        8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE
+    );
+
+    // Write header
+    png_write_info(png, info);
+
+    // Allocate memory for row pointers. It stores pointer to part of data buffer.
+    DynamicArray<png_bytep> rowPtrs(size.getHeight());
+
+    // Row size
+    const auto rowSize = png_get_rowbytes(png, info);
+
+    for (png_int_32 y = size.getHeight(); y >= 0; y--)
+    //for (png_int_32 y = 0; y < size.getHeight(); y++)
+        rowPtrs[y] = data.data() + y * rowSize;
+
+    // Write data
+    png_write_image(png, rowPtrs.data());
+
+    // Write end info
+    png_write_end(png, nullptr);
+}
+#endif
 
 /* ************************************************************************ */
 
@@ -521,10 +599,17 @@ public:
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
         // Store image
-        if (m_videoWriter.isOpened() && m_simulator.getSimulation()->getIteration() > 2)
+        if (m_videoWriter && m_simulator.getSimulation()->getIteration() > 2)
         {
-            // Store image
-            m_videoWriter << getFrame(false);
+            auto& context = m_simulator.getRenderContext();
+            auto size = context.getSize();
+            DynamicArray<unsigned char> data(size.getHeight() * size.getWidth() * 4);
+
+            // Get image data
+            context.getData(data.data(), true);
+
+            // Store frame
+            fwrite(data.data(), data.size(), 1, m_videoWriter);
         }
 #endif
     }
@@ -679,7 +764,7 @@ public:
 
             const String filename = oss.str();
 
-            cv::imwrite(filename, ptr->getFrame(true));
+            saveImage(filename, ptr->m_simulator.getRenderContext());
             Log::info("Image captured: ", filename);
             break;
         }
@@ -938,22 +1023,39 @@ private:
 
             Log::info("Video output '", filename, "'");
 
-            // Open video writer
-            m_videoWriter.open(
-                filename,
-#if _WIN32
-                CV_FOURCC('M', 'J', 'P', 'G'),
-#elif __APPLE__ && __MACH__
-                CV_FOURCC('M', 'P', '4', 'V'),
-#else
-                CV_FOURCC('M', 'P', 'E', 'G'),
-#endif
-                60,
-                cv::Size(m_windowWidth, m_windowHeight)
-            );
+            if (system("which ffmpeg") == 0)
+            {
+                OutStringStream oss;
+                oss <<
+                    "ffmpeg -r 60 -f rawvideo -pix_fmt rgba "
+                    "-s " << m_windowWidth << "x" << m_windowHeight << " "
+                    "-i - -threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip "
+                    "" << filename
+                ;
+
+                Log::info("FFMPEG: ", oss.str());
+
+                // Open video writer
+                m_videoWriter = popen(oss.str().c_str(), "w");
+            }
+            else if (system("which avconv") == 0)
+            {
+                OutStringStream oss;
+                oss <<
+                    "avconv -r 60 -f rawvideo -pix_fmt rgba "
+                    "-s " << m_windowWidth << "x" << m_windowHeight << " "
+                    "-i - -threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip "
+                    "" << filename
+                ;
+
+                Log::info("AVCONV: ", oss.str());
+
+                // Open video writer
+                m_videoWriter = popen(oss.str().c_str(), "w");
+            }
 
             // Disable window resizing
-            if (m_videoWriter.isOpened())
+            if (m_videoWriter)
                 glfwWindowHint(GLFW_RESIZABLE, false);
             else
                 Log::warning("Unable to capture video");
@@ -1025,6 +1127,9 @@ private:
      */
     void cleanupVisualization() noexcept
     {
+        if (m_videoWriter)
+            pclose(m_videoWriter);
+
         if (!m_visualize)
             return;
 
@@ -1131,27 +1236,6 @@ private:
     }
 
 
-#if CONFIG_CLI_ENABLE_IMAGE_CAPTURE || CONFIG_CLI_ENABLE_VIDEO_CAPTURE
-    /**
-     * @brief Get current OpenGL frame.
-     *
-     * @param alpha If alfa should be stored.
-     *
-     * @return Current frame.
-     */
-    cv::Mat getFrame(bool alpha) const noexcept
-    {
-        const auto& context = m_simulator.getRenderContext();
-        const auto size = context.getSize();
-
-        // Get image data
-        cv::Mat img(size.getHeight(), size.getWidth(), alpha ? CV_8UC4 : CV_8UC3);
-        context.getData(img.data, alpha, true);
-        cv::flip(img, img, 0);
-        return img;
-    }
-#endif
-
 // Private Data Members
 private:
 
@@ -1188,7 +1272,7 @@ private:
 
 #if CONFIG_CLI_ENABLE_VIDEO_CAPTURE
     /// Video writer.
-    cv::VideoWriter m_videoWriter;
+    FILE* m_videoWriter = nullptr;
 #endif
 };
 
