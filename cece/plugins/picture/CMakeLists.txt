@@ -27,11 +27,9 @@ if (!CONFIG_RENDER_ENABLE)
     message(FATAL_ERROR "Cannot build module without CONFIG_RENDER_ENABLE")
 endif ()
 
-# Find OpenCV 2
-find_package(OpenCV 2.4 REQUIRED core imgproc highgui)
-
-# Include OpenCV
-include_directories(${OpenCV_INCLUDE_DIRS})
+# LibPNG is required
+find_package(PNG REQUIRED)
+include_directories(${PNG_INCLUDE_DIRS})
 
 # ######################################################################### #
 
@@ -39,13 +37,22 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 set(SRCS
     Module.hpp
     Module.cpp
-    Library.cpp
+    Plugin.cpp
 )
 
 # Build plugin
 build_plugin(picture
     SOURCES ${SRCS}
-    LIBRARIES ${OpenCV_LIBRARIES}
+    LIBRARIES ${PNG_LIBRARIES}
 )
+
+# ######################################################################### #
+
+if (WIN32 OR APPLE)
+    # Install PNG libraries
+    install(FILES ${PNG_LIBRARIES}
+        DESTINATION ${INSTALL_DIR_LIBRARY}
+    )
+endif ()
 
 # ######################################################################### #

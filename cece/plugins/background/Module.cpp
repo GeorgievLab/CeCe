@@ -137,7 +137,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
     // Allocate memory for data
     m_data.resize(m_size.getHeight() * rowSize);
 
-    for (png_uint_32 y = 0; y < m_size.getHeight(); y++)
+    for (png_int_32 y = m_size.getHeight(); y >= 0; y--)
         rowPtrs[y] = m_data.data() + y * rowSize;
 
     // Read image data
@@ -179,7 +179,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
                 break;
             }
 
-            m_drawable->set({c.getX(), m_size.getHeight() - c.getY()}, pixel);
+            m_drawable->set(c, pixel);
         }
     }
 

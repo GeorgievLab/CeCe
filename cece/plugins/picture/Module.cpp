@@ -29,15 +29,16 @@
 // C++
 #include <cstdio>
 
-// OpenCV
-#include <opencv2/highgui/highgui.hpp>
+// LibPNG
+#include <png.h>
 
 // CeCe
 #include "cece/core/Log.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Exception.hpp"
-#include "cece/core/DynamicArray.hpp"
+#include "cece/core/FileStream.hpp"
 #include "cece/simulator/Simulation.hpp"
+#include "cece/render/ImageData.hpp"
 
 /* ************************************************************************ */
 
@@ -57,17 +58,19 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
 
     // Save iteration
     setSaveIteration(config.get("iteration", getSaveIteration()));
+
+    // Store alpha channel.
+    m_alpha = config.get("alpha", m_alpha);
 }
 
 /* ************************************************************************ */
 
 void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
-    const auto stepNumber = simulation.getIteration();
-
-    // Skip first image, because it's not rendered yet
-    if (stepNumber <= 1)
+    if (m_size == Zero)
         return;
+
+    const auto stepNumber = simulation.getIteration();
 
     // Skip steps
     if (stepNumber % getSaveIteration() != 0)
@@ -105,7 +108,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
     // Skip first image, because it's not rendered yet
-    if (simulation.getIteration() == 0)
+    if (simulation.getIteration() <= 1)
         return;
 
 #ifdef CECE_THREAD_SAFE
@@ -113,19 +116,76 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     MutexGuard guard(m_mutex);
 #endif
 
-    const auto size = context.getSize();
+    m_size = context.getSize();
+    m_data.resize(m_size.getHeight() * m_size.getWidth() * (m_alpha ? 4 : 3));
 
     // Get image data
-    m_image = cv::Mat(size.getHeight(), size.getWidth(), CV_8UC4);
-    context.getData(m_image.data, true, true);
+    context.getData(m_data.data(), m_alpha);
 }
 
 /* ************************************************************************ */
 
 void Module::save(const FilePath& filename)
 {
-    cv::flip(m_image, m_image, 0);
-    cv::imwrite(filename.string(), m_image);
+    OutFileStream file(filename.string(), OutFileStream::binary);
+
+    if (!file.is_open())
+        throw InvalidArgumentException("Cannot open output file: " + filename.string());
+
+    // Create write struct
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+
+    if (!png)
+        throw RuntimeException("Internal PNG error");
+
+    // Create info struct
+    png_infop info = png_create_info_struct(png);
+
+    if (!info)
+    {
+        png_destroy_write_struct(&png, nullptr);
+        throw RuntimeException("Internal PNG error");
+    }
+
+    // Set error function. In case of error, program jumps here
+    if (setjmp(png_jmpbuf(png)))
+    {
+        png_destroy_write_struct(&png, &info);
+        throw RuntimeException("Internal PNG error");
+    }
+
+    // Set write/flush function
+    png_set_write_fn(png, &file, [](png_structp png, png_bytep buf, png_size_t size) noexcept {
+        OutFileStream* file = reinterpret_cast<OutFileStream*>(png_get_io_ptr(png));
+        file->write(reinterpret_cast<const char*>(buf), size);
+    }, [](png_structp png) noexcept {
+        OutFileStream* file = reinterpret_cast<OutFileStream*>(png_get_io_ptr(png));
+        file->flush();
+    });
+
+    // Set info
+    png_set_IHDR(png, info, m_size.getWidth(), m_size.getHeight(),
+        8, m_alpha ? PNG_COLOR_TYPE_RGBA : PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE
+    );
+
+    // Write header
+    png_write_info(png, info);
+
+    // Allocate memory for row pointers. It stores pointer to part of data buffer.
+    DynamicArray<png_bytep> rowPtrs(m_size.getHeight());
+
+    // Row size
+    const auto rowSize = png_get_rowbytes(png, info);
+
+    for (png_int_32 y = m_size.getHeight(); y >= 0; y--)
+        rowPtrs[y] = m_data.data() + y * rowSize;
+
+    // Write data
+    png_write_image(png, rowPtrs.data());
+
+    // Write end info
+    png_write_end(png, nullptr);
 }
 
 /* ************************************************************************ */

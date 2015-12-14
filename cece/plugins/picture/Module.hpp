@@ -27,15 +27,12 @@
 
 /* ************************************************************************ */
 
-// OpenCV
-#include <opencv2/core/core.hpp>
-
 // CeCe
 #include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
+#include "cece/core/DynamicArray.hpp"
 #include "cece/simulator/Module.hpp"
 #include "cece/render/Context.hpp"
-#include "cece/render/ImageData.hpp"
 
 #ifdef CECE_THREAD_SAFE
 #  include "cece/core/Mutex.hpp"
@@ -160,7 +157,13 @@ private:
     unsigned int m_saveIteration = 1;
 
     /// Image data.
-    cv::Mat m_image;
+    DynamicArray<unsigned char> m_data;
+
+    /// Image size.
+    Vector<unsigned int> m_size = Zero;
+
+    /// If alpha channel should be stored too.
+    bool m_alpha = false;
 
 #ifdef CECE_THREAD_SAFE
     /// Access mutex.
