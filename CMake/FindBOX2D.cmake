@@ -16,11 +16,6 @@ if (BOX2D_INCLUDE_DIR)
     set(BOX2D_FIND_QUIETLY TRUE)
 endif (BOX2D_INCLUDE_DIR)
 
-if (APPLE OR WIN32)
-    # On Apple/Windows use static build
-    set(BOX2D_STATIC_LIB On)
-endif ()
-
 # Find header files
 find_path(BOX2D_INCLUDE_DIR Box2D/Box2D.h
     PATH_SUFFIXES
