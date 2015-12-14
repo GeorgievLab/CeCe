@@ -56,7 +56,7 @@ before_install:
       cmake --build . && make install && cd -; fi"
 
     # Build LibPNG
-    - "if [ ! -d $VENDOR_DIR/libpng ]; then wget https://github.com/glennrp/libpng/archive/libpng16.zip -O libpng.zip && unzip libpng.zip && cd libpng16 &&
+    - "if [ ! -d $VENDOR_DIR/libpng ]; then wget https://github.com/glennrp/libpng/archive/libpng16.zip -O libpng.zip && unzip libpng.zip && cd libpng-libpng16 &&
       cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/libpng -DCMAKE_BUILD_TYPE=release &&
       cmake --build . && make install && cd -; fi"
 
