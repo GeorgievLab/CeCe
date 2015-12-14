@@ -174,6 +174,14 @@ install(TARGETS ${PROJECT_NAME}
     COMPONENT Runtime
 )
 
+if (APPLE)
+    # Fix library paths
+    install(
+        CODE "execute_process(COMMAND \"${CMAKE_SOURCE_DIR}/resources/scripts/macosx-libraries.sh\" \"$<TARGET_FILE:${PROJECT_NAME}>\")"
+        COMPONENT Runtime
+    )
+endif ()
+
 if (WIN32 AND CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
     # Install PNG libraries
     install(FILES ${PNG_LIBRARIES}

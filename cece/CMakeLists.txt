@@ -149,7 +149,15 @@ install(TARGETS ${PROJECT_NAME}
     COMPONENT Library
 )
 
-if (APPLE OR WIN32)
+if (APPLE)
+    # Fix library paths
+    install(
+        CODE "execute_process(COMMAND \"${CMAKE_SOURCE_DIR}/resources/scripts/macosx-libraries.sh\" \"$<TARGET_FILE:${PROJECT_NAME}>\")"
+        COMPONENT Runtime
+    )
+endif ()
+
+if (WIN32)
     # Install Box2D library
     install(FILES
         ${BOX2D_LIBRARIES}
