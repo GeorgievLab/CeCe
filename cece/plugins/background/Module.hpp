@@ -38,14 +38,12 @@
 
 /* ************************************************************************ */
 
-// OpenCV
-#include <opencv2/core/core.hpp>
-
 // CeCe
 #include "cece/core/String.hpp"
+#include "cece/core/Grid.hpp"
 #include "cece/simulator/Module.hpp"
-
 #include "cece/render/Object.hpp"
+#include "cece/render/Color.hpp"
 #include "cece/render/GridColor.hpp"
 
 /* ************************************************************************ */
@@ -88,8 +86,14 @@ public:
 // Private Data Members
 private:
 
-    /// Source image.
-    cv::Mat m_img;
+    /// Image data.
+    DynamicArray<unsigned char> m_data;
+
+    /// Image size.
+    Vector<unsigned int> m_size = Zero;
+
+    // Number of channels.
+    int m_channels;
 
     /// Drawable object.
     render::ObjectPtr<render::GridColor> m_drawable;

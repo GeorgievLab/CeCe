@@ -17,11 +17,12 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="Library.cpp"/>
     <File Name="Module.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
+    <File Name="Plugin.cpp"/>
     <File Name="Module.hpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
