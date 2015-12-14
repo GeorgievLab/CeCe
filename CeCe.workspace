@@ -5,7 +5,6 @@
   <Project Name="diffusion" Path="cece/plugins/diffusion/diffusion.project" Active="No"/>
   <Project Name="cell" Path="cece/plugins/cell/cell.project" Active="No"/>
   <Project Name="picture" Path="cece/plugins/picture/picture.project" Active="No"/>
-  <Project Name="tool_shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <Project Name="python" Path="cece/plugins/python/python.project" Active="No"/>
   <Project Name="streamlines" Path="cece/plugins/streamlines/streamlines.project" Active="No"/>
   <Project Name="streamlines-python" Path="cece/plugins/streamlines-python/streamlines-python.project" Active="No"/>
@@ -45,7 +44,6 @@
       <Project Name="plugin_stochastic-reactions-intracellular" ConfigName="Debug"/>
       <Project Name="plugin_streamlines-image" ConfigName="Debug"/>
       <Project Name="plugin_background" ConfigName="Debug"/>
-      <Project Name="plugin_obstacles-image" ConfigName="Debug"/>
       <Project Name="plugin_chemostat" ConfigName="Debug"/>
       <Project Name="plugin_xml" ConfigName="Debug"/>
       <Project Name="plugin_obstacles-svg" ConfigName="Debug"/>
@@ -71,7 +69,6 @@
       <Project Name="plugin_stochastic-reactions-intracellular" ConfigName="Release"/>
       <Project Name="plugin_streamlines-image" ConfigName="Release"/>
       <Project Name="plugin_background" ConfigName="Release"/>
-      <Project Name="plugin_obstacles-image" ConfigName="Release"/>
       <Project Name="plugin_chemostat" ConfigName="Release"/>
       <Project Name="plugin_xml" ConfigName="Release"/>
       <Project Name="plugin_obstacles-svg" ConfigName="Release"/>
