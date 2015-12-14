@@ -284,6 +284,9 @@ install(FILES "${CMAKE_SOURCE_DIR}/Copyright.txt"
     DESTINATION ${INSTALL_DIR_DATA}
 )
 
+# PostInstall
+install(SCRIPT ${CMAKE_SOURCE_DIR}/CMake/PostInstall.cmake)
+
 # ######################################################################### #
 
 # Add testing by examples
