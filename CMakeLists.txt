@@ -286,11 +286,6 @@ install(FILES "${CMAKE_SOURCE_DIR}/Copyright.txt"
 
 # ######################################################################### #
 
-# PostInstall
-#add_subdirectory(PostInstall)
-
-# ######################################################################### #
-
 # Add testing by examples
 include(ExampleTests)
 
