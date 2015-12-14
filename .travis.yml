@@ -52,37 +52,12 @@ before_install:
     # Build Box2D
     - "if [ ! -d $VENDOR_DIR/box2d ]; then wget https://github.com/erincatto/Box2D/archive/v2.3.1.zip -O box2d.zip && unzip box2d.zip && cd Box2D-2.3.1/Box2D &&
       cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/box2d -DCMAKE_BUILD_TYPE=release -DBOX2D_BUILD_EXAMPLES=Off
-            -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=On . &&
+            -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off . &&
       cmake --build . && make install && cd -; fi"
 
-    # Build OpenCV
-    - "if [ ! -d $VENDOR_DIR/opencv ]; then wget https://github.com/Itseez/opencv/archive/2.4.12.2.zip -O opencv.zip && unzip opencv.zip -d . && cd opencv-2.4.12.2 &&
-      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/opencv -DCMAKE_BUILD_TYPE=release
-            -DBUILD_DOCS=Off
-            -DBUILD_TESTS=Off
-            -DBUILD_WITH_DEBUG_INFO=Off
-            -DBUILD_opencv_apps=Off
-            -DBUILD_opencv_calib3d=Off
-            -DBUILD_opencv_contrib=Off
-            -DBUILD_opencv_core=ON
-            -DBUILD_opencv_features2d=Off
-            -DBUILD_opencv_flann=Off
-            -DBUILD_opencv_gpu=Off
-            -DBUILD_opencv_highgui=ON
-            -DBUILD_opencv_imgproc=ON
-            -DBUILD_opencv_legacy=Off
-            -DBUILD_opencv_ml=Off
-            -DBUILD_opencv_nonfree=Off
-            -DBUILD_opencv_objdetect=Off
-            -DBUILD_opencv_ocl=Off
-            -DBUILD_opencv_photo=Off
-            -DBUILD_opencv_python=Off
-            -DBUILD_opencv_stitching=Off
-            -DBUILD_opencv_superres=Off
-            -DBUILD_opencv_ts=Off
-            -DBUILD_opencv_video=Off
-            -DBUILD_opencv_videostab=Off
-            -DBUILD_opencv_world=Off . &&
+    # Build LibPNG
+    - "if [ ! -d $VENDOR_DIR/libpng ]; then wget https://github.com/glennrp/libpng/archive/libpng16.zip -O libpng.zip && unzip libpng.zip && cd libpng16 &&
+      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/libpng -DCMAKE_BUILD_TYPE=release &&
       cmake --build . && make install && cd -; fi"
 
     # Build GTest
@@ -95,10 +70,9 @@ before_script:
     - mkdir build && cd build
     - "cmake
         -DCMAKE_BUILD_TYPE=release
-        -DOSX_LIB_DIRS=$VENDOR_DIR/opencv
         -DGLFW_LOCATION=$VENDOR_DIR/glfw3
         -DBOX2DDIR=$VENDOR_DIR/box2d
-        -DOpenCV_DIR=$VENDOR_DIR/opencv/share/OpenCV
+        -DCMAKE_LIBRARY_PATH=$VENDOR_DIR/libpng
         -DGTEST_ROOT=$VENDOR_DIR/gtest
         -DDEV_TESTS_BUILD=On
         -DDEV_PHYSICS_BUILTIN_DEBUG=On
