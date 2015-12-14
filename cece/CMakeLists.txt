@@ -149,7 +149,7 @@ install(TARGETS ${PROJECT_NAME}
     COMPONENT Library
 )
 
-if (MINGW)
+if (APPLE OR WIN32)
     # Install Box2D library
     install(FILES
         ${BOX2D_LIBRARIES}
