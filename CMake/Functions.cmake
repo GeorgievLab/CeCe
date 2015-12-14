@@ -103,9 +103,15 @@ function(build_plugin NAME)
         )
 
         # Allow to link other plugins
-        set_target_properties(${PROJECT_NAME} PROPERTIES
-            INSTALL_RPATH "$ORIGIN"
-        )
+        if (UNIX AND NOT APPLE)
+            set_target_properties(${PROJECT_NAME} PROPERTIES
+                INSTALL_RPATH "$ORIGIN"
+            )
+        elseif (APPLE)
+            set_target_properties(${PROJECT_NAME} PROPERTIES
+                MACOSX_RPATH On
+            )
+        endif ()
 
         # Create symbolic link
         if (DEV_PLUGINS)
