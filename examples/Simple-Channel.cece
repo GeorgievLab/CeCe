@@ -2,6 +2,8 @@
 <!-- Simulation definition -->
 <simulation world-size="3000um 500um" dt="20ms" background="black" length-coefficient="1e-1">
 
+    <plugin name="streamlines" />
+
     <!--
         Streamlines module initialization.
 

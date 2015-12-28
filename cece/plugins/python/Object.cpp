@@ -61,12 +61,12 @@ Object::Object(simulator::Simulation& simulation, const String& name, Type type)
     // External file
     if (ends_with(name, ".py"))
     {
-        String foundPath;
+        FilePath foundPath;
 
         // Foreach possible paths
         for (const auto& p : simulator::PluginManager::s().getDirectories())
         {
-            auto path = p + "/" + name;
+            auto path = p / name;
 
             if (fileExists(path))
             {

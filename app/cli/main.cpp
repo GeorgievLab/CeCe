@@ -438,8 +438,8 @@ Arguments parseArguments(int argc, char** argv)
 #endif
     }
 
-    // Initialize plugins
-    simulator::PluginManager::s().init();
+    // Preload XML plugin
+    simulator::PluginManager::s().load("xml");
 
     if (printHelpFlag)
         printHelp(argv[0]);
@@ -475,7 +475,7 @@ public:
         m_simulationFile = args.simulationFile;
 
         // Create simulation
-        m_simulator.setSimulation(simulator::PluginManager::s().createSimulation(m_simulationFile));
+        m_simulator.setSimulation(simulator::PluginManager::s().getContext().createSimulation(m_simulationFile));
 
         // Set parameters
         m_simulator.getSimulation()->getParameters().merge(args.parameters);

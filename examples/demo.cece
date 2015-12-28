@@ -4,6 +4,12 @@
 
     <parameter name="T" value="1nM" />
 
+    <plugin name="streamlines" />
+    <plugin name="diffusion" />
+    <plugin name="diffusion-streamlines" />
+    <plugin name="stochastic-reactions" />
+    <plugin name="object-generator" />
+
     <!-- Define streamlines -->
     <module name="streamlines" grid="320 200" inlet-velocity="200um/s" layout="barrier outlet barrier inlet"/>
     <module name="diffusion-streamlines" />
@@ -17,14 +23,14 @@
         <signal name="YFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="yellow" saturation="5nM" />
     </module>
 
-    <program name="p1" language="stochastic-reactions-intercellular">
+    <program name="p1" language="stochastic-reactions">
 <![CDATA[
         null > 50 > env_GFP;
         if env_RFP > T: null > 50 > YFP;
 ]]>
     </program>
 
-    <program name="p2" language="stochastic-reactions-intercellular">
+    <program name="p2" language="stochastic-reactions">
 <![CDATA[
         null > 50 > env_RFP;
         if env_GFP > T: null > 50 > CFP;

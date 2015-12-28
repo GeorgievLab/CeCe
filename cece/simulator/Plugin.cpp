@@ -206,30 +206,32 @@ Plugin::Plugin(String name, FilePath path)
     m_impl.reset(new Impl{std::move(path)});
 
     if (!m_impl->isLoaded())
-        throw RuntimeException("Plugin is not loaded: " + m_impl->getError());
+        throw RuntimeException("Plugin '" + name + "' cannot be loaded: " + m_impl->getError());
 
     // Check API version
     auto apiVerFn = m_impl->getAddr<ApiVersionFn>("api_version");
 
     if (!apiVerFn)
-        throw RuntimeException("Plugin doesn't contains 'api_version' function");
+        throw RuntimeException("Plugin '" + name + "' doesn't contains 'api_version' function");
 
     if (apiVerFn() != PLUGIN_API_VERSION)
-        throw RuntimeException("Plugin API version is different from the simulator");
+        throw RuntimeException("Plugin '" + name + "' API version is different from the simulator");
 
     // Check real type size
     auto realSizeFn = m_impl->getAddr<RealSizeFn>("real_size");
 
     if (!realSizeFn)
-        throw RuntimeException("Plugin doesn't contains 'real_size' function");
+        throw RuntimeException("Plugin '" + name + "' doesn't contains 'real_size' function");
 
     if (realSizeFn() != sizeof(RealType))
-        throw RuntimeException("Plugin real type size is different from the simulator");
+        throw RuntimeException("Plugin '" + name + "' real type size is different from the simulator");
 
     auto fn = m_impl->getAddr<CreateFn>("create");
 
     if (!fn)
-        throw RuntimeException("Plugin doesn't contains 'create' function");
+        throw RuntimeException("Plugin '" + name + "' doesn't contains 'create' function");
+
+    Log::debug("Plugin loaded `", getName(), "`.");
 
     // Create extension object
     m_api.reset(fn());
@@ -239,7 +241,7 @@ Plugin::Plugin(String name, FilePath path)
 
 Plugin::~Plugin()
 {
-    Log::debug("Plugin released `", getName(), "`");
+    Log::debug("Plugin released `", getName(), "`.");
 }
 
 /* ************************************************************************ */

@@ -5,6 +5,7 @@
     <!-- Required plugins -->
     <plugin name="python" />
     <plugin name="cell-python" />
+    <plugin name="stochastic-reactions" />
 
     <!-- Initialize simulation -->
     <init language="python">

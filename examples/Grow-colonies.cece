@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
 <simulation world-size="300um 300um" dt="60s" iterations="10000">
+
+    <plugin name="cell" />
+    <plugin name="python" />
+
     <!-- Specify yeast cell growth rate -->
     <object class="cell.Yeast" growth-rate="0.0001/s" volume="10um3" position="30um 0" volume-max="80um3">
-    	<molecule name="GFP" amount="100000" />
+        <molecule name="GFP" amount="100000" />
     </object>
 
     <object class="cell.Yeast" growth-rate="0.0001/s" volume="10um3" position="-30um 0" volume-max="80um3" >

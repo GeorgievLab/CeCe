@@ -5,6 +5,9 @@
     <plugin name="python" />
     <plugin name="cell-python" />
     <plugin name="streamlines-python" />
+    <plugin name="stochastic-reactions" />
+    <plugin name="object-generator" />
+    <plugin name="agglutination" />
 
     <module name="streamlines" grid="200 100" inlet-velocity="500um/s" />
 
@@ -56,7 +59,7 @@ def call(object, simulation, dt):
         </object>
     </module>
 
-    <module name="agglutination" >
+    <module name="agglutination">
         <bond association-constant="5" disassociation-constant="3" ligand="B" receptor="C" />
     </module>
 

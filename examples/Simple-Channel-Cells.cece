@@ -2,13 +2,17 @@
 <!-- Simulation definition -->
 <simulation world-size="3000um 500um" dt="20ms" iterations="1000" background="black" length-coefficient="1e-1" adata-out-objects-filename="objects-cells.csv">
 
+    <plugin name="cell" />
+    <plugin name="streamlines" />
+    <plugin name="object-generator" />
+
     <module name="streamlines"
             ainit-iterations="1000"
             grid="500 100"
             inlet-velocity="200um/s"
             tau="1.3"
             layout="barrier outlet barrier inlet"
-			layout-type="poiseuilleLR"
+            layout-type="poiseuilleLR"
             debug-magnitude-scale="2"
             adata-out-filename="streamlines-cells.csv"
     />
@@ -18,7 +22,7 @@
         <object class="cell.Yeast" rate="100/s" distribution="uniform -1500um -1500um uniform -240um 240um" />
     </module>
 
-	<aobstacle class="circle" radius="50um" />
+    <aobstacle class="circle" radius="50um" />
 
 </simulation>
 

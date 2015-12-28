@@ -28,14 +28,21 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/FilePath.hpp"
+#include "cece/core/StringView.hpp"
 #include "cece/simulator/ObjectFactoryManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/simulator/Object.hpp"
 #include "cece/loader/FactoryManager.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace simulator {
+
+/* ************************************************************************ */
+
+class Simulation;
 
 /* ************************************************************************ */
 
@@ -159,6 +166,45 @@ public:
     {
         m_objectFactoryManager.remove(name);
     }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create a simulation from file.
+     *
+     * @param filepath Path to file.
+     *
+     * @return Pointer to simulation.
+     *
+     * @throw In case of missing file or error in simulation file.
+     */
+    UniquePtr<Simulation> createSimulation(const FilePath& filepath);
+
+
+    /**
+     * @brief Create a module of given type name.
+     *
+     * @param typeName   Type of required module.
+     * @param simulation Simulation object.
+     *
+     * @return Pointer to created module.
+     */
+    UniquePtr<Module> createModule(StringView typeName, Simulation& simulation);
+
+
+    /**
+     * @brief Create an object of given type name.
+     *
+     * @param typeName   Type of required object.
+     * @param simulation Simulation object.
+     * @param type       Type of created object.
+     *
+     * @return Pointer to created object.
+     */
+    UniquePtr<Object> createObject(StringView typeName, Simulation& simulation, Object::Type type);
 
 
 // Private Data Members

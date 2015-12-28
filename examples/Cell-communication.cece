@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
 <simulation world-size="20um 20um" dt="1s" iterations="5000">
+
     <parameter name="T1" value="0.2uM" />
     <parameter name="T2" value="0.2uM" />
+
+    <plugin name="diffusion" />
+    <plugin name="stochastic-reactions" />
+    <plugin name="cell" />
+
     <!-- Define diffusion module -->
     <module name="diffusion" grid="100" background="black">
         <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.001/s" color="green"  saturation="1uM" />

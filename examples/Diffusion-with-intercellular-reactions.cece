@@ -3,6 +3,13 @@
 
     <parameter name="T1" value="0.1uM" />
 
+    <plugin name="cell" />
+    <plugin name="diffusion" />
+    <plugin name="object-generator" />
+    <plugin name="streamlines" />
+    <plugin name="diffusion-streamlines" />
+    <plugin name="stochastic-reactions" />
+
     <program name="produce-gfp" language="stochastic-reactions">
 <![CDATA[
         null > 0.3 > env GFP;

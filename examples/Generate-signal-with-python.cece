@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
 <simulation world-size="20um 20um" dt="1s" iterations="50">
+
     <!-- Python plugin required -->
+    <plugin name="diffusion" />
     <plugin name="python" />
     <plugin name="diffusion-python" />
 

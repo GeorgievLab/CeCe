@@ -272,7 +272,7 @@ ViewPtr<Module> Simulation::useModule(const String& nameSrc, String storePath)
     Log::debug("Create module '", name, "'");
 
     // Create module with given name
-    auto module = getPluginContext().getModuleFactoryManager().createModule(name, *this);
+    auto module = getPluginContext().createModule(name, *this);
 
     // Register module
     if (module)
@@ -315,7 +315,7 @@ Object* Simulation::buildObject(const String& name, Object::Type type)
     Log::debug("Create object '", name, "'");
 
     // Create object with given name
-    auto object = getPluginContext().getObjectFactoryManager().createObject(name, *this, type);
+    auto object = getPluginContext().createObject(name, *this, type);
 
     // Register module
     if (object)
