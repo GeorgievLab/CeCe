@@ -15,7 +15,6 @@
   <Project Name="object-generator" Path="cece/plugins/object-generator/object-generator.project" Active="No"/>
   <Project Name="stochastic-reactions" Path="cece/plugins/stochastic-reactions/stochastic-reactions.project" Active="No"/>
   <Project Name="background" Path="cece/plugins/background/background.project" Active="No"/>
-  <Project Name="obstacles-image" Path="cece/plugins/obstacles-image/obstacles-image.project" Active="No"/>
   <Project Name="chemostat" Path="cece/plugins/chemostat/chemostat.project" Active="No"/>
   <Environment>
     <![CDATA[]]>
