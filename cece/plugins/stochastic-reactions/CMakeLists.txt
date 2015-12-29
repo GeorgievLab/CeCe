@@ -57,6 +57,7 @@ build_test(stochastic-reactions
     PLUGINS_REQUIRED
         stochastic-reactions
         diffusion
+        cell
 )
 
 # ######################################################################### #

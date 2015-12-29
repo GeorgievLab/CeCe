@@ -60,7 +60,7 @@ namespace stochastic_reactions {
 /**
  * @brief Base class for reactions implementations.
  */
-class Reactions
+class Reactions : public program::Program
 {
 
 // Public Acessors:
@@ -276,12 +276,37 @@ private:
      */
     void changeMoleculesInEnvironment(const int change, const String& id, const Context& pointers);
 
+
+// Public Operations
 public:
 
+
     /**
-     * @brief Plugin functor.
+     * @brief Clone program.
+     *
+     * @return
      */
-    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step);
+    UniquePtr<program::Program> clone() const override;
+
+
+    /**
+     * @brief Load program configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
+     */
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+
+
+    /**
+     * @brief Call program for given object.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     * @param dt         Simulation time step.
+     */
+    void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt) override;
+
 
     /**
      * @brief Returns molecule inner identifier. In case the molecule doesn't exists

@@ -24,11 +24,11 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/PluginApi.hpp"
+#include "cece/simulator/PluginContext.hpp"
 
 // Reactions
-#include "ReactionsParser.hpp"
+#include "Reactions.hpp"
 
 /************************************************************************** */
 
@@ -40,16 +40,42 @@ using namespace cece::simulator;
 class StochasticReactionsApi : public PluginApi
 {
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Returns a list of required plugins.
+     *
+     * @return
+     */
     DynamicArray<String> requiredPlugins() const override
     {
         return {"cell", "diffusion"};
     }
 
-    Program createProgram(Simulation& simulation, const String& name, String code = {}) override
+
+    /**
+     * @brief On plugin load.
+     *
+     * @param context Plugin context.
+     */
+    void onLoad(PluginContext& context) override
     {
-        using namespace plugin::stochastic_reactions;
-        return parseReactions(code);
+        context.registerProgram<plugin::stochastic_reactions::Reactions>("stochastic-reactions");
     }
+
+
+    /**
+     * @brief On plugin unload.
+     *
+     * @param context Plugin context.
+     */
+    void onUnload(PluginContext& context) override
+    {
+        context.unregisterProgram("stochastic-reactions");
+    }
+
 };
 
 /* ************************************************************************ */

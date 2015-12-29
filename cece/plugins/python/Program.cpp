@@ -23,15 +23,15 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "cece/plugins/python/Python.hpp"
-
 // Declaration
 #include "cece/plugins/python/Program.hpp"
 
+// CeCe
+#include "cece/simulator/Object.hpp"
+#include "cece/simulator/Simulation.hpp"
+
 // Plugin
 #include "cece/plugins/python/Utils.hpp"
-#include "cece/plugins/python/Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -41,27 +41,34 @@ namespace python {
 
 /* ************************************************************************ */
 
-Program::Program()
+UniquePtr<program::Program> Program::clone() const
 {
-
+    return makeUnique<Program>(*this);
 }
 
 /* ************************************************************************ */
 
-Program::~Program()
+void Program::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    if (config.has("filename"))
+    {
+        m_source.initFile(config.get("filename"));
+    }
+    else
+    {
+        m_source.initSource(config.getContent());
+    }
 
+    // Store function pointer
+    m_call = m_source.getFunction("call");
 }
 
 /* ************************************************************************ */
 
-void Program::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Time dt) const
+void Program::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
 {
-    if (!m_call)
-        return;
-
     // Call function
-    call(m_call, &object, &simulation, dt.value());
+    python::call(m_call, &object, &simulation, dt.value());
 }
 
 /* ************************************************************************ */

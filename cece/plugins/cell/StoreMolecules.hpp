@@ -29,8 +29,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
-#include "cece/simulator/Object.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/program/Program.hpp"
 
 /* ************************************************************************ */
 
@@ -41,22 +40,41 @@ namespace cell {
 /* ************************************************************************ */
 
 /**
- * @brief Functor for storing cell molecules amount.
+ * @brief Program for storing cell molecules amount.
  */
-class StoreMolecules
+class StoreMolecules : public program::Program
 {
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~StoreMolecules();
+
 
 // Public Operations
 public:
 
 
     /**
-     * @brief Call operator.
+     * @brief Clone program.
      *
-     * @param object     Simulation object.
-     * @param simulation Simulation.
+     * @return
      */
-    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration);
+    UniquePtr<program::Program> clone() const override;
+
+
+    /**
+     * @brief Call program for given object.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     * @param dt         Simulation time step.
+     */
+    void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt) override;
 
 };
 

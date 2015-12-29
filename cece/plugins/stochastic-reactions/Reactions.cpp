@@ -23,7 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// Declaration
 #include "Reactions.hpp"
+
+// Reactions
+#include "ReactionsParser.hpp"
 
 /* ************************************************************************ */
 
@@ -38,7 +42,21 @@ std::random_device g_rd;
 
 /* ************************************************************************ */
 
-void Reactions::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration step)
+UniquePtr<program::Program> Reactions::clone() const
+{
+    return makeUnique<Reactions>(*this);
+}
+
+/* ************************************************************************ */
+
+void Reactions::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+{
+    *this = parseReactions(config.getContent());
+}
+
+/* ************************************************************************ */
+
+void Reactions::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
 {
     // get context
     auto& cell = object.castThrow<cell::CellBase>();
@@ -51,8 +69,10 @@ void Reactions::operator()(simulator::Object& object, simulator::Simulation& sim
         coords = getCoordinates(diffusion->getGridSize(), worldSize, cell);
 
     // start
-    executeReactions(step, Context(diffusion, cell, &coords, parameters));
+    executeReactions(dt, Context(diffusion, cell, &coords, parameters));
 }
+
+/* ************************************************************************ */
 
 void Reactions::executeReactions(units::Time step, const Context& pointers)
 {

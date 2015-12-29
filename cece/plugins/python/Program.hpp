@@ -32,8 +32,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
-#include "cece/simulator/Object.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/program/Program.hpp"
 
 // Plugin
 #include "cece/plugins/python/Source.hpp"
@@ -49,66 +48,42 @@ namespace python {
 /**
  * @brief Simple wrapper functor for Python code.
  */
-class Program
+class Program : public program::Program
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    Program();
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Program();
-
 
 // Public Operations
 public:
 
 
     /**
-     * @brief Initialize from source.
+     * @brief Clone program.
      *
-     * @param source Source code.
+     * @return
      */
-    void initSource(const String& source)
-    {
-        m_source.initSource(source);
-        m_call = m_source.getFunction("call");
-    }
+    UniquePtr<program::Program> clone() const override;
 
 
     /**
-     * @brief Initialize from file.
+     * @brief Load program configuration.
      *
-     * @param filename Path to source file.
-     */
-    void initFile(const FilePath& filename)
-    {
-        m_source.initFile(filename);
-        m_call = m_source.getFunction("call");
-    }
-
-
-    /**
-     * @brief Call program.
-     *
-     * @param object     Simulation object.
      * @param simulation Current simulation.
+     * @param config     Source configuration.
+     */
+    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+
+
+    /**
+     * @brief Call program for given object.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
      * @param dt         Simulation time step.
      */
-    void operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration dt) const;
+    void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt) override;
 
 
 // Private Data Members
 private:
-
 
     /// Source.
     Source m_source;

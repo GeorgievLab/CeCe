@@ -28,6 +28,8 @@
 
 // CeCe
 #include "cece/core/DataTable.hpp"
+#include "cece/simulator/Object.hpp"
+#include "cece/simulator/Simulation.hpp"
 
 // Plugin
 #include "cece/plugins/cell/CellBase.hpp"
@@ -40,7 +42,18 @@ namespace cell {
 
 /* ************************************************************************ */
 
-void StoreMolecules::operator()(simulator::Object& object, simulator::Simulation& simulation, units::Duration)
+StoreMolecules::~StoreMolecules() = default;
+
+/* ************************************************************************ */
+
+UniquePtr<program::Program> StoreMolecules::clone() const
+{
+    return makeUnique<StoreMolecules>(*this);
+}
+
+/* ************************************************************************ */
+
+void StoreMolecules::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
 {
     // Cast to cell
     auto& cell = object.castThrow<CellBase>("Cell object required");

@@ -95,6 +95,7 @@ class PythonApi : public PluginApi, public SimulationListener
         Py_Initialize();
 
         context.registerModule<plugin::python::Module>("python");
+        context.registerProgram<plugin::python::Program>("python");
     }
 
 
@@ -106,6 +107,7 @@ class PythonApi : public PluginApi, public SimulationListener
     void onUnload(PluginContext& context) override
     {
         context.unregisterModule("python");
+        context.unregisterProgram("python");
 
         Py_Finalize();
     }
@@ -136,41 +138,6 @@ class PythonApi : public PluginApi, public SimulationListener
         plugin::python::Initializer init;
         init.initSource(code);
         return init;
-    }
-
-
-    /**
-     * @brief Create program from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Object name.
-     * @param dynamic    If object should be dynamic.
-     *
-     * @return Created object.
-     */
-    Program createProgram(Simulation& simulation, const String& name, String code = {}) noexcept override
-    {
-        try
-        {
-            plugin::python::Program program;
-
-            if (code.empty())
-            {
-                program.initFile(name);
-            }
-            else
-            {
-                program.initSource(code);
-            }
-
-            return program;
-        }
-        catch (const std::exception& e)
-        {
-            Log::warning(e.what());
-        }
-
-        return {};
     }
 
 };

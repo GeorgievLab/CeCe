@@ -58,6 +58,7 @@ class CellApi : public PluginApi
     {
         context.registerObject<Cell>("cell.Cell");
         context.registerObject<Yeast>("cell.Yeast");
+        context.registerProgram<StoreMolecules>("cell.store-molecules");
     }
 
 
@@ -68,26 +69,9 @@ class CellApi : public PluginApi
      */
     void onUnload(PluginContext& context) override
     {
+        context.unregisterProgram("cell.store-molecules");
         context.unregisterObject("cell.Cell");
         context.unregisterObject("cell.Yeast");
-    }
-
-
-    /**
-     * @brief Create program from current library.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param name       Program name.
-     * @param code       Optional program code.
-     *
-     * @return Created program.
-     */
-    Program createProgram(Simulation& simulation, const String& name, String code = {}) override
-    {
-        if (name == "store-molecules")
-            return StoreMolecules{};
-
-        return {};
     }
 
 };
