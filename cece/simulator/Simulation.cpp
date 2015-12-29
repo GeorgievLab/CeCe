@@ -505,8 +505,16 @@ void Simulation::configure(const Configuration& config)
             ? programConfig.get("language")
             : programConfig.get("type");
 
-        // Register program
-        addProgram(programConfig.get("name"), buildProgram(typeName));
+        auto program = buildProgram(typeName);
+
+        if (program)
+        {
+            // Configure program
+            program->loadConfig(*this, programConfig);
+
+            // Register program
+            addProgram(programConfig.get("name"), std::move(program));
+        }
     }
 
     // Parse objects
