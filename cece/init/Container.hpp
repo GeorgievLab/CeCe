@@ -23,97 +23,180 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "cece/plugins/python/Python.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Exception.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginManager.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/DynamicArray.hpp"
 
-// Plugin
-#include "cece/plugins/python/Module.hpp"
-#include "cece/plugins/python/Object.hpp"
-#include "cece/plugins/python/Program.hpp"
-#include "cece/plugins/python/Initializer.hpp"
+/* ************************************************************************ */
+
+namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace python {
+namespace init {
 
 /* ************************************************************************ */
 
-void init_stdout(void);
-void init_core(void);
-void init_simulator(void);
-
-/* ************************************************************************ */
-
-}
-}
-}
+class Initializer;
 
 /* ************************************************************************ */
 
 /**
- * @brief Python modules initialization table.
+ * @brief Container for programs.
  */
-static const struct _inittab INIT_TABLE[] = {
-    {const_cast<char*>("cppout"),    cece::plugin::python::init_stdout},
-    {const_cast<char*>("core"),      cece::plugin::python::init_core},
-    {const_cast<char*>("simulator"), cece::plugin::python::init_simulator},
-    {NULL, NULL}
-};
-
-/* ************************************************************************ */
-
-using namespace cece;
-using namespace cece::simulator;
-
-/* ************************************************************************ */
-
-class PythonApi : public PluginApi
+class Container
 {
 
+// Public Ctors & Dtors
+public:
+
+
     /**
-     * @brief On plugin load.
-     *
-     * @param context Plugin context.
+     * @brief Default constructor.
      */
-    void onLoad(PluginContext& context) override
+    Container() = default;
+
+
+    /**
+     * @brief Copy constructor.
+     *
+     * @param rhs
+     */
+    Container(const Container& rhs);
+
+
+    /**
+     * @brief Move constructor.
+     *
+     * @param rhs
+     */
+    Container(Container&& rhs) noexcept;
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~Container();
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Copy assignment operator.
+     *
+     * @param rhs
+     *
+     * @return *this
+     */
+    Container& operator=(const Container& rhs);
+
+
+    /**
+     * @brief Move assignment operator.
+     *
+     * @param rhs
+     *
+     * @return *this
+     */
+    Container& operator=(Container&& rhs);
+
+
+    /**
+     * @brief Returns n-th initializer.
+     *
+     * @param pos
+     *
+     * @return Pointer to initializer.
+     */
+    ViewPtr<Initializer> operator[](std::size_t pos) const noexcept
     {
-        if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
-            throw RuntimeException("Unable to initialize Python import table");
+        return m_initializers[pos];
+    }
 
-        // Initialize Python interpreter
-        Py_Initialize();
 
-        context.registerInitializer<plugin::python::Initializer>("python");
-        context.registerModule<plugin::python::Module>("python");
-        context.registerProgram<plugin::python::Program>("python");
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns a number of stored initializers.
+     *
+     * @return
+     */
+    std::size_t getCount() const noexcept
+    {
+        return m_initializers.size();
     }
 
 
     /**
-     * @brief On plugin unload.
+     * @brief Returns n-th initializer.
      *
-     * @param context Plugin context.
+     * @param pos
+     *
+     * @return Pointer to initializer.
      */
-    void onUnload(PluginContext& context) override
+    ViewPtr<Initializer> get(std::size_t pos) const
     {
-        context.unregisterModule("python");
-        context.unregisterProgram("python");
-        context.unregisterInitializer("python");
-
-        Py_Finalize();
+        return m_initializers.at(pos);
     }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Store an initializer.
+     *
+     * @param initializer Initializer object.
+     *
+     * @return View pointer to stored initializer.
+     */
+    ViewPtr<Initializer> add(UniquePtr<Initializer> initializer)
+    {
+        m_initializers.push_back(std::move(initializer));
+        return m_initializers.back();
+    }
+
+
+    /**
+     * @brief Clear container.
+     */
+    void clear();
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Call all initialzers.
+     *
+     * @param simulation Simulation object.
+     */
+    void call(simulator::Simulation& simulation);
+
+
+// Private Data Members
+private:
+
+    /// Stored initializers.
+    DynamicArray<UniquePtr<Initializer>> m_initializers;
 
 };
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(python, PythonApi)
+}
+}
 
 /* ************************************************************************ */

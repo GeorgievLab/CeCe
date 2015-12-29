@@ -338,4 +338,15 @@
     <File Name="program/NamedContainer.hpp"/>
     <File Name="program/Program.hpp"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="init">
+    <File Name="init/Container.cpp"/>
+    <File Name="init/Container.hpp"/>
+    <File Name="init/Factory.hpp"/>
+    <File Name="init/FactoryManager.cpp"/>
+    <File Name="init/FactoryManager.hpp"/>
+    <File Name="init/Initializer.hpp"/>
+    <VirtualDirectory Name="CMake">
+      <File Name="init/CMakeLists.txt"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
 </CodeLite_Project>

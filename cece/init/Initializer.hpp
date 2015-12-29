@@ -23,62 +23,88 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/simulator/PluginContext.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // CeCe
-#include "cece/loader/Loader.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/core/UniquePtr.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace simulator { class Simulation; } }
+namespace cece { namespace simulator { class Configuration; } }
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace init {
 
 /* ************************************************************************ */
 
-UniquePtr<Simulation> PluginContext::createSimulation(const FilePath& filepath)
+/**
+ * @brief Simulation initialization program.
+ */
+class Initializer
 {
-    // File extension
-    auto ext = filepath.extension().string().substr(1);
 
-    // Find loader by extension
-    auto loader = getLoaderFactoryManager().create(ext);
+// Public Ctors & Dtors
+public:
 
-    if (!loader)
-        throw RuntimeException("Unable to load file with extension: '" + ext + "'");
 
-    // Create simulation
-    return loader->fromFile(*this, filepath);
-}
+    /**
+     * @brief Destructor.
+     */
+    virtual ~Initializer()
+    {
+        // Nothing to do
+    }
 
-/* ************************************************************************ */
 
-UniquePtr<init::Initializer> PluginContext::createInitializer(StringView typeName)
-{
-    return getInitFactoryManager().createInitializer(typeName);
-}
+// Public Operations
+public:
 
-/* ************************************************************************ */
 
-UniquePtr<Module> PluginContext::createModule(StringView typeName, Simulation& simulation)
-{
-    return getModuleFactoryManager().createModule(typeName, simulation);
-}
+    /**
+     * @brief Clone initializer.
+     *
+     * @return
+     */
+    virtual UniquePtr<Initializer> clone() const = 0;
 
-/* ************************************************************************ */
 
-UniquePtr<Object> PluginContext::createObject(StringView typeName, Simulation& simulation, Object::Type type)
-{
-    return getObjectFactoryManager().createObject(typeName, simulation, type);
-}
+    /**
+     * @brief Load initializer configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
+     */
+    virtual void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+    {
+        // Nothing to do
+    }
 
-/* ************************************************************************ */
 
-UniquePtr<program::Program> PluginContext::createProgram(StringView typeName)
-{
-    return getProgramFactoryManager().createProgram(typeName);
-}
+    /**
+     * @brief Store initializer configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Output configuration.
+     */
+    virtual void storeConfig(simulator::Simulation& simulation, simulator::Configuration& config)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Invoke initializer.
+     *
+     * @param simulation Simulation.
+     */
+    virtual void call(simulator::Simulation& simulation) = 0;
+
+};
 
 /* ************************************************************************ */
 

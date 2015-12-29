@@ -24,60 +24,36 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/simulator/PluginContext.hpp"
+#include "cece/init/FactoryManager.hpp"
 
 // CeCe
-#include "cece/loader/Loader.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/init/Initializer.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace init {
 
 /* ************************************************************************ */
 
-UniquePtr<Simulation> PluginContext::createSimulation(const FilePath& filepath)
+ViewPtr<Factory> FactoryManager::get(StringView name) const noexcept
 {
-    // File extension
-    auto ext = filepath.extension().string().substr(1);
+    // FIXME: C++14
+    auto it = m_factories.find(String(name));
 
-    // Find loader by extension
-    auto loader = getLoaderFactoryManager().create(ext);
-
-    if (!loader)
-        throw RuntimeException("Unable to load file with extension: '" + ext + "'");
-
-    // Create simulation
-    return loader->fromFile(*this, filepath);
+    return it != m_factories.end() ? it->second.get() : nullptr;
 }
 
 /* ************************************************************************ */
 
-UniquePtr<init::Initializer> PluginContext::createInitializer(StringView typeName)
+UniquePtr<Initializer> FactoryManager::createInitializer(StringView name) const
 {
-    return getInitFactoryManager().createInitializer(typeName);
-}
+    auto factory = get(name);
 
-/* ************************************************************************ */
+    if (factory)
+        return factory->create();
 
-UniquePtr<Module> PluginContext::createModule(StringView typeName, Simulation& simulation)
-{
-    return getModuleFactoryManager().createModule(typeName, simulation);
-}
-
-/* ************************************************************************ */
-
-UniquePtr<Object> PluginContext::createObject(StringView typeName, Simulation& simulation, Object::Type type)
-{
-    return getObjectFactoryManager().createObject(typeName, simulation, type);
-}
-
-/* ************************************************************************ */
-
-UniquePtr<program::Program> PluginContext::createProgram(StringView typeName)
-{
-    return getProgramFactoryManager().createProgram(typeName);
+    throw FactoryNotFoundException("Initializer factory not found: " + String(name));
 }
 
 /* ************************************************************************ */

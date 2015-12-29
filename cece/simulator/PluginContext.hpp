@@ -34,6 +34,7 @@
 #include "cece/simulator/ModuleFactoryManager.hpp"
 #include "cece/simulator/Object.hpp"
 #include "cece/loader/FactoryManager.hpp"
+#include "cece/init/FactoryManager.hpp"
 #include "cece/program/FactoryManager.hpp"
 
 /* ************************************************************************ */
@@ -65,6 +66,17 @@ public:
     loader::FactoryManager& getLoaderFactoryManager() noexcept
     {
         return m_loaderFactoryManager;
+    }
+
+
+    /**
+     * @brief Returns init factory manager.
+     *
+     * @return
+     */
+    init::FactoryManager& getInitFactoryManager() noexcept
+    {
+        return m_initFactoryManager;
     }
 
 
@@ -116,6 +128,20 @@ public:
     void registerLoader(String name) noexcept
     {
         m_loaderFactoryManager.createForLoader<LoaderType>(std::move(name));
+    }
+
+
+    /**
+     * @brief Register new initializer type and create factory for it.
+     *
+     * @tparam InitializerType Type of initializer that is created by factory.
+     *
+     * @param name Initializer name.
+     */
+    template<typename InitializerType>
+    void registerInitializer(String name) noexcept
+    {
+        m_initFactoryManager.createForInitializer<InitializerType>(std::move(name));
     }
 
 
@@ -173,6 +199,17 @@ public:
 
 
     /**
+     * @brief Unregister initializer type.
+     *
+     * @param name Initializer type name.
+     */
+    void unregisterInitializer(StringView name) noexcept
+    {
+        m_initFactoryManager.remove(name);
+    }
+
+
+    /**
      * @brief Unregister module type.
      *
      * @param name Module type name.
@@ -222,6 +259,16 @@ public:
 
 
     /**
+     * @brief Create an initializer of given type name.
+     *
+     * @param typeName Type of required initializer.
+     *
+     * @return Pointer to created initializer.
+     */
+    UniquePtr<init::Initializer> createInitializer(StringView typeName);
+
+
+    /**
      * @brief Create a module of given type name.
      *
      * @param typeName   Type of required module.
@@ -259,6 +306,9 @@ private:
 
     /// Loader factory manager.
     loader::FactoryManager m_loaderFactoryManager;
+
+    /// Initializer factory manager.
+    init::FactoryManager m_initFactoryManager;
 
     /// Module factory manager.
     ModuleFactoryManager m_moduleFactoryManager;

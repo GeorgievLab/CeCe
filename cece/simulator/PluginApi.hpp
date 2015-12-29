@@ -31,7 +31,10 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/simulator/Simulation.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
 
@@ -134,19 +137,6 @@ public:
         // Nothing to do
     }
 
-
-    /**
-     * @brief Create initializer.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
-     */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
-    {
-        return {};
-    }
 
 };
 

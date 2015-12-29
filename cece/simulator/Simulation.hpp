@@ -55,6 +55,8 @@
 #include "cece/core/OutStream.hpp"
 #include "cece/program/Program.hpp"
 #include "cece/program/NamedContainer.hpp"
+#include "cece/init/Initializer.hpp"
+#include "cece/init/Container.hpp"
 #include "cece/simulator/Module.hpp"
 #include "cece/simulator/Object.hpp"
 #include "cece/simulator/ObjectType.hpp"
@@ -120,12 +122,6 @@ public:
 
     /// Type of simulation parameter value.
     using ParameterValueType = float;
-
-    /// Initialization function.
-    using Initializer = std::function<void(Simulation&)>;
-
-    /// Initializer container type.
-    using InitializerContainer = DynamicArray<Initializer>;
 
     /// Data table container type.
     using DataTableContainer = Map<String, DataTable>;
@@ -709,11 +705,11 @@ public:
     /**
      * @brief Register initializer.
      *
-     * @param init Initializer function.
+     * @param initializer Initializer program.
      */
-    void addInitializer(Initializer init)
+    void addInitializer(UniquePtr<init::Initializer> initializer)
     {
-        m_initializers.push_back(std::move(init));
+        m_initializers.add(std::move(initializer));
     }
 
 
@@ -1209,7 +1205,7 @@ private:
     bool m_initialized = false;
 
     /// A list of simulation initializers.
-    InitializerContainer m_initializers;
+    init::Container m_initializers;
 
     /// Number of simulation steps.
     IterationNumber m_iteration = 0;

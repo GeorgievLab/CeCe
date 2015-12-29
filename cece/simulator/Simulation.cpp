@@ -400,10 +400,10 @@ bool Simulation::update(units::Duration dt)
 
 void Simulation::initialize()
 {
-    assert(!isInitialized());
+    Assert(!isInitialized());
 
-    for (auto& init : m_initializers)
-        init(*this);
+    // Initialize simulation
+    m_initializers.call(*this);
 
     m_initialized = true;
 }
@@ -451,6 +451,13 @@ void Simulation::configure(const Configuration& config)
     setSimulationTimeRender(config.get("show-simulation-time", isSimulationTimeRender()));
 #endif
 
+    // Parse plugins
+    for (auto&& pluginConfig : config.getConfigurations("plugin"))
+    {
+        // Returns valid pointer or throws an exception
+        requirePlugin(pluginConfig.get("name"))->configure(*this, pluginConfig);
+    }
+
     // Parse parameters
     for (auto&& parameterConfig : config.getConfigurations("parameter"))
     {
@@ -470,18 +477,20 @@ void Simulation::configure(const Configuration& config)
     // Parse init
     for (auto&& initConfig : config.getConfigurations("init"))
     {
-        // Plugin is required
-        auto api = requirePlugin(initConfig.get("language"));
+        const String typeName = initConfig.has("language")
+            ? initConfig.get("language")
+            : initConfig.get("type");
 
-        // Register program
-        addInitializer(api->createInitializer(*this, initConfig.getContent()));
-    }
+        auto initializer = getPluginContext().createInitializer(typeName);
 
-    // Parse plugins
-    for (auto&& pluginConfig : config.getConfigurations("plugin"))
-    {
-        // Returns valid pointer or throws an exception
-        requirePlugin(pluginConfig.get("name"))->configure(*this, pluginConfig);
+        if (initializer)
+        {
+            // Configure initializer
+            initializer->loadConfig(*this, initConfig);
+
+            // Register initializer
+            addInitializer(std::move(initializer));
+        }
     }
 
     // Parse modules
@@ -505,7 +514,7 @@ void Simulation::configure(const Configuration& config)
             ? programConfig.get("language")
             : programConfig.get("type");
 
-        auto program = buildProgram(typeName);
+        auto program = getPluginContext().createProgram(typeName);
 
         if (program)
         {

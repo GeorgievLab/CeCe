@@ -24,60 +24,67 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/simulator/PluginContext.hpp"
+#include "cece/init/Container.hpp"
 
 // CeCe
-#include "cece/loader/Loader.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/init/Initializer.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace init {
 
 /* ************************************************************************ */
 
-UniquePtr<Simulation> PluginContext::createSimulation(const FilePath& filepath)
+Container::Container(const Container& rhs)
 {
-    // File extension
-    auto ext = filepath.extension().string().substr(1);
+    m_initializers.reserve(rhs.m_initializers.size());
 
-    // Find loader by extension
-    auto loader = getLoaderFactoryManager().create(ext);
-
-    if (!loader)
-        throw RuntimeException("Unable to load file with extension: '" + ext + "'");
-
-    // Create simulation
-    return loader->fromFile(*this, filepath);
+    // Clone initializers
+    for (const auto& initializer : rhs.m_initializers)
+        add(initializer->clone());
 }
 
 /* ************************************************************************ */
 
-UniquePtr<init::Initializer> PluginContext::createInitializer(StringView typeName)
+Container::Container(Container&& rhs) noexcept = default;
+
+/* ************************************************************************ */
+
+Container::~Container() = default;
+
+/* ************************************************************************ */
+
+Container& Container::operator=(const Container& rhs)
 {
-    return getInitFactoryManager().createInitializer(typeName);
+    m_initializers.clear();
+    m_initializers.reserve(rhs.m_initializers.size());
+
+    // Clone initializers
+    for (const auto& initializer : rhs.m_initializers)
+        add(initializer->clone());
+
+    return *this;
 }
 
 /* ************************************************************************ */
 
-UniquePtr<Module> PluginContext::createModule(StringView typeName, Simulation& simulation)
+Container& Container::operator=(Container&& rhs) = default;
+
+/* ************************************************************************ */
+
+void Container::clear()
 {
-    return getModuleFactoryManager().createModule(typeName, simulation);
+    m_initializers.clear();
 }
 
 /* ************************************************************************ */
 
-UniquePtr<Object> PluginContext::createObject(StringView typeName, Simulation& simulation, Object::Type type)
+void Container::call(simulator::Simulation& simulation)
 {
-    return getObjectFactoryManager().createObject(typeName, simulation, type);
-}
-
-/* ************************************************************************ */
-
-UniquePtr<program::Program> PluginContext::createProgram(StringView typeName)
-{
-    return getProgramFactoryManager().createProgram(typeName);
+    // Invoke all stored initializers
+    for (auto& initializer : m_initializers)
+        initializer->call(simulation);
 }
 
 /* ************************************************************************ */

@@ -27,72 +27,144 @@
 
 /* ************************************************************************ */
 
-// This must be first
-#include "cece/plugins/python/Python.hpp"
-
 // CeCe
+#include "cece/core/String.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/Map.hpp"
+#include "cece/core/Exception.hpp"
 #include "cece/init/Initializer.hpp"
-
-// Plugin
-#include "cece/plugins/python/Source.hpp"
+#include "cece/init/Factory.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace python {
+namespace init {
 
 /* ************************************************************************ */
 
 /**
- * @brief Python simulation initializer.
+ * @brief Exception for access to unregistred initializer factory.
  */
-class Initializer : public init::Initializer
+class FactoryNotFoundException : public InvalidArgumentException
 {
+    using InvalidArgumentException::InvalidArgumentException;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Initializer factory manager.
+ */
+class FactoryManager
+{
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Find initializer factory by name.
+     *
+     * @param name Factory name.
+     *
+     * @return
+     */
+    ViewPtr<Factory> get(StringView name) const noexcept;
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Register a new factory.
+     *
+     * @param name    Factory name.
+     * @param factory Factory pointer.
+     */
+    void add(String name, UniquePtr<Factory> factory) noexcept
+    {
+        m_factories.emplace(std::move(name), std::move(factory));
+    }
+
+
+    /**
+     * @brief Unregister factory.
+     *
+     * @param name Factory name.
+     */
+    void remove(StringView name) noexcept
+    {
+        m_factories.erase(String(name));
+    }
+
+
+    /**
+     * @brief Register a new factory.
+     *
+     * @tparam FactoryType
+     *
+     * @param name Factory name.
+     */
+    template<typename FactoryType>
+    void create(String name) noexcept
+    {
+        add(std::move(name), makeUnique<FactoryType>());
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename InitializerType>
+    void createForInitializer(String name) noexcept
+    {
+        create<FactoryTyped<InitializerType>>(std::move(name));
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename Callable>
+    void createFromCallback(Callable callable) noexcept
+    {
+        create<FactoryCallable<Callable>>(std::move(callable));
+    }
+
 
 // Public Operations
 public:
 
 
     /**
-     * @brief Clone initializer.
+     * @brief Create an initializer by name.
      *
-     * @return
-     */
-    UniquePtr<init::Initializer> clone() const override;
-
-
-    /**
-     * @brief Load initializer configuration.
+     * @param name Factory name.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
-     */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
-
-
-    /**
-     * @brief Invoke initializer.
+     * @return Created initializer.
      *
-     * @param simulation Simulation object.
+     * @throw InitializerFactoryNotFoundException In case of factory with given name doesn't exists.
      */
-    void call(simulator::Simulation& simulation) override;
+    UniquePtr<Initializer> createInitializer(StringView name) const;
 
 
 // Private Data Members
 private:
 
-    /// Source.
-    Source m_source;
-
-    /// Call function.
-    Handle<PyObject> m_call;
+    /// Registered module factories.
+    Map<String, UniquePtr<Factory>> m_factories;
 
 };
 
 /* ************************************************************************ */
 
-}
 }
 }
 

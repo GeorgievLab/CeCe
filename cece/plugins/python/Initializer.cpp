@@ -23,15 +23,15 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "cece/plugins/python/Python.hpp"
-
 // Declaration
 #include "cece/plugins/python/Initializer.hpp"
 
+// CeCe
+#include "cece/core/Exception.hpp"
+#include "cece/simulator/Simulation.hpp"
+
 // Plugin
 #include "cece/plugins/python/Utils.hpp"
-#include "cece/plugins/python/Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -41,28 +41,41 @@ namespace python {
 
 /* ************************************************************************ */
 
-Initializer::Initializer()
+UniquePtr<init::Initializer> Initializer::clone() const
 {
-
+    return makeUnique<Initializer>(*this);
 }
 
 /* ************************************************************************ */
 
-Initializer::~Initializer()
+void Initializer::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
 {
+    if (config.has("filename"))
+    {
+        m_source.initFile(config.get("filename"));
+    }
+    else
+    {
+        m_source.initSource(config.getContent());
+    }
 
-}
+    // Store function pointer
+    m_call = m_source.getFunction("__call__");
 
-/* ************************************************************************ */
-
-void Initializer::operator()(simulator::Simulation& simulation) const
-{
+    // Fallback
     if (!m_call)
-        return;
+        m_call = m_source.getFunction("call");
 
+    if (!m_call)
+        throw InvalidArgumentException("Python initializer doesn't have '__call__' or 'call' function");
+}
+
+/* ************************************************************************ */
+
+void Initializer::call(simulator::Simulation& simulation)
+{
     // Call function
-    if (!call(m_call, &simulation))
-        throw Exception();
+    python::call(m_call, &simulation);
 }
 
 /* ************************************************************************ */

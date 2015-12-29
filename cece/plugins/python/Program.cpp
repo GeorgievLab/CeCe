@@ -60,7 +60,14 @@ void Program::loadConfig(simulator::Simulation& simulation, const simulator::Con
     }
 
     // Store function pointer
-    m_call = m_source.getFunction("call");
+    m_call = m_source.getFunction("__call__");
+
+    // Fallback
+    if (!m_call)
+        m_call = m_source.getFunction("call");
+
+    if (!m_call)
+        throw InvalidArgumentException("Python program doesn't have '__call__' or 'call' function");
 }
 
 /* ************************************************************************ */
