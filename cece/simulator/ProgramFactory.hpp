@@ -28,11 +28,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
+#include "cece/core/Factory.hpp"
 #include "cece/core/String.hpp"
-#include "cece/core/DynamicArray.hpp"
 #include "cece/simulator/Program.hpp"
-#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -41,115 +39,45 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Configuration;
-class PluginContext;
+/**
+ * @brief Program factory interface.
+ */
+using ProgramFactory = Factory<Program>;
 
 /* ************************************************************************ */
 
 /**
- * @brief Library API type.
+ * @brief Program factory for specific module.
+ *
+ * @tparam ProgramType
  */
-class PluginApi
+template<typename ProgramType>
+using ProgramFactoryTyped = FactoryTyped<Factory, ProgramType, Program>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Program factory with callable backend.
+ *
+ * @tparam Callable
+ */
+template<typename Callable>
+using ProgramFactoryCallable = FactoryCallable<Factory, Callable, Program>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Make callable module factory.
+ *
+ * @param callable Callable object.
+ *
+ * @return Callable module factory.
+ */
+template<typename Callable>
+ProgramFactoryCallable<Callable> makeCallableProgramFactory(Callable callable) noexcept
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~PluginApi()
-    {
-        // Nothing to do
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Returns a list of required plugins.
-     *
-     * @return
-     */
-    virtual DynamicArray<String> requiredPlugins() const
-    {
-        return {};
-    }
-
-
-    /**
-     * @brief On plugin load.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onLoad(PluginContext& context)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onUnload(PluginContext& context)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Init simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void initSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void finalizeSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Configure plugin.
-     *
-     * @param simulation Current simulation.
-     * @param config     Plugin configuration.
-     */
-    virtual void configure(Simulation& simulation, const Configuration& config)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Create initializer.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
-     */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
-    {
-        return {};
-    }
-
-};
+    return ProgramFactoryCallable<Callable>{std::move(callable)};
+}
 
 /* ************************************************************************ */
 

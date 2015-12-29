@@ -23,16 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
+// Declaration
+#include "cece/simulator/ProgramFactoryManager.hpp"
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/String.hpp"
-#include "cece/core/DynamicArray.hpp"
 #include "cece/simulator/Program.hpp"
-#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -41,115 +36,25 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Configuration;
-class PluginContext;
+ViewPtr<ProgramFactory> ProgramFactoryManager::get(StringView name) const noexcept
+{
+    // FIXME: C++14
+    auto it = m_factories.find(String(name));
+
+    return it != m_factories.end() ? it->second.get() : nullptr;
+}
 
 /* ************************************************************************ */
 
-/**
- * @brief Library API type.
- */
-class PluginApi
+UniquePtr<Program> ProgramFactoryManager::createProgram(StringView name) const
 {
+    auto factory = get(name);
 
-// Public Ctors & Dtors
-public:
+    if (factory)
+        return factory->create();
 
-
-    /**
-     * @brief Destructor.
-     */
-    virtual ~PluginApi()
-    {
-        // Nothing to do
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Returns a list of required plugins.
-     *
-     * @return
-     */
-    virtual DynamicArray<String> requiredPlugins() const
-    {
-        return {};
-    }
-
-
-    /**
-     * @brief On plugin load.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onLoad(PluginContext& context)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onUnload(PluginContext& context)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Init simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void initSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void finalizeSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Configure plugin.
-     *
-     * @param simulation Current simulation.
-     * @param config     Plugin configuration.
-     */
-    virtual void configure(Simulation& simulation, const Configuration& config)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Create initializer.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
-     */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
-    {
-        return {};
-    }
-
-};
+    throw ProgramFactoryNotFoundException("Program factory not found: " + String(name));
+}
 
 /* ************************************************************************ */
 

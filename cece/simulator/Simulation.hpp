@@ -58,7 +58,7 @@
 #include "cece/simulator/ObjectType.hpp"
 #include "cece/simulator/Plugin.hpp"
 #include "cece/simulator/Program.hpp"
-#include "cece/simulator/ProgramContainer.hpp"
+#include "cece/simulator/NamedProgramContainer.hpp"
 #include "cece/simulator/SimulationListener.hpp"
 #include "cece/simulator/ModuleContainer.hpp"
 #include "cece/simulator/ObjectContainer.hpp"
@@ -554,7 +554,7 @@ public:
      *
      * @return
      */
-    const ProgramContainer& getPrograms() const noexcept
+    const NamedProgramContainer& getPrograms() const noexcept
     {
         return m_programs;
     }
@@ -580,7 +580,7 @@ public:
      *
      * @return Pointer to program.
      */
-    Program getProgram(const String& name)
+    UniquePtr<Program> getProgram(StringView name)
     {
         auto ptr = m_programs.get(name);
 
@@ -588,7 +588,8 @@ public:
         if (ptr == nullptr)
             return buildProgram(name);
 
-        return *ptr;
+        // Clone stored program
+        return ptr->clone();
     }
 
 
@@ -960,7 +961,7 @@ public:
      * @param name    Program name.
      * @param program Added program.
      */
-    void addProgram(String name, Program program)
+    void addProgram(String name, UniquePtr<Program> program)
     {
         m_programs.add(std::move(name), std::move(program));
     }
@@ -973,7 +974,7 @@ public:
      *
      * @return Created program.
      */
-    Program buildProgram(const String& path);
+    UniquePtr<Program> buildProgram(StringView name);
 
 
     /**
@@ -1246,7 +1247,7 @@ private:
     ObjectContainer m_objects;
 
     /// A map of preddefined programs.
-    ProgramContainer m_programs;
+    NamedProgramContainer m_programs;
 
     /// Managed data tables.
     DataTableContainer m_dataTables;

@@ -28,18 +28,18 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/StringView.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
-#include "cece/core/Pair.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/simulator/Program.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace simulator {
+
+/* ************************************************************************ */
+
+class Program;
 
 /* ************************************************************************ */
 
@@ -54,7 +54,63 @@ public:
 
 
     /// Data type.
-    using DataType = DynamicArray<Pair<String, Program>>;
+    using DataType = DynamicArray<UniquePtr<Program>>;
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Default constructor.
+     */
+    ProgramContainer() = default;
+
+
+    /**
+     * @brief Copy constructor.
+     *
+     * @param rhs
+     */
+    ProgramContainer(const ProgramContainer& rhs);
+
+
+    /**
+     * @brief Move constructor.
+     *
+     * @param rhs
+     */
+    ProgramContainer(ProgramContainer&& rhs);
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~ProgramContainer();
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Copy assignment operator.
+     *
+     * @param rhs
+     *
+     * @return *this
+     */
+    ProgramContainer& operator=(const ProgramContainer& rhs);
+
+
+    /**
+     * @brief MOve assignment operator.
+     *
+     * @param rhs
+     *
+     * @return *this
+     */
+    ProgramContainer& operator=(ProgramContainer&& rhs);
 
 
 // Public Accessors
@@ -62,23 +118,27 @@ public:
 
 
     /**
-     * @brief Returns if program with given name exists.
-     *
-     * @param name Program name.
+     * @brief Returns a number of stored programs.
      *
      * @return
      */
-    bool exists(const StringView& name) const noexcept;
+    std::size_t getCount() const noexcept
+    {
+        return m_data.size();
+    }
 
 
     /**
-     * @brief Returns parameter with given value.
+     * @brief Returns n-th program.
      *
-     * @param name Program name.
+     * @param pos
      *
-     * @return Pointer to program. Can be nullptr.
+     * @return Pointer to program.
      */
-    ViewPtr<const Program> get(const StringView& name) const noexcept;
+    ViewPtr<Program> get(std::size_t pos) const noexcept
+    {
+        return m_data[pos];
+    }
 
 
     /**
@@ -152,12 +212,17 @@ public:
 
 
     /**
-     * @brief Store or replace program.
+     * @brief Store a program.
      *
-     * @param name    Program name.
      * @param program Program object.
+     *
+     * @return View pointer to stored program.
      */
-    void add(String name, Program program);
+    ViewPtr<Program> add(UniquePtr<Program> program)
+    {
+        m_data.push_back(std::move(program));
+        return m_data.back();
+    }
 
 
 // Private Data Members

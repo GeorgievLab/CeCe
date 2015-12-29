@@ -28,11 +28,14 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
-#include "cece/core/DynamicArray.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/Map.hpp"
+#include "cece/core/Exception.hpp"
 #include "cece/simulator/Program.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/ProgramFactory.hpp"
 
 /* ************************************************************************ */
 
@@ -41,27 +44,102 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Configuration;
-class PluginContext;
+class Simulation;
 
 /* ************************************************************************ */
 
 /**
- * @brief Library API type.
+ * @brief Exception for access to unregistred program factory.
  */
-class PluginApi
+class ProgramFactoryNotFoundException : public InvalidArgumentException
+{
+    using InvalidArgumentException::InvalidArgumentException;
+};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Program factory manager.
+ */
+class ProgramFactoryManager
 {
 
-// Public Ctors & Dtors
+// Public Accessors
 public:
 
 
     /**
-     * @brief Destructor.
+     * @brief Find program factory by name.
+     *
+     * @param name Factory name.
+     *
+     * @return
      */
-    virtual ~PluginApi()
+    ViewPtr<ProgramFactory> get(StringView name) const noexcept;
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Register a new factory.
+     *
+     * @param name    Factory name.
+     * @param factory Factory pointer.
+     */
+    void add(String name, UniquePtr<ProgramFactory> factory) noexcept
     {
-        // Nothing to do
+        m_factories.emplace(std::move(name), std::move(factory));
+    }
+
+
+    /**
+     * @brief Unregister factory.
+     *
+     * @param name Factory name.
+     */
+    void remove(StringView name) noexcept
+    {
+        m_factories.erase(String(name));
+    }
+
+
+    /**
+     * @brief Register a new factory.
+     *
+     * @tparam FactoryType
+     *
+     * @param name Factory name.
+     */
+    template<typename FactoryType>
+    void create(String name) noexcept
+    {
+        add(std::move(name), makeUnique<FactoryType>());
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename ProgramType>
+    void createForProgram(String name) noexcept
+    {
+        create<ProgramFactoryTyped<ProgramType>>(std::move(name));
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename Callable>
+    void createFromCallback(Callable callable) noexcept
+    {
+        create<ProgramFactoryCallable<Callable>>(std::move(callable));
     }
 
 
@@ -70,84 +148,22 @@ public:
 
 
     /**
-     * @brief Returns a list of required plugins.
+     * @brief Create a program by name.
      *
-     * @return
+     * @param name Factory name.
+     *
+     * @return Created program.
+     *
+     * @throw ProgramFactoryNotFoundException In case of factory with given name doesn't exists.
      */
-    virtual DynamicArray<String> requiredPlugins() const
-    {
-        return {};
-    }
+    UniquePtr<Program> createProgram(StringView name) const;
 
 
-    /**
-     * @brief On plugin load.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onLoad(PluginContext& context)
-    {
-        // Nothing to do
-    }
+// Private Data Members
+private:
 
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onUnload(PluginContext& context)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Init simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void initSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void finalizeSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Configure plugin.
-     *
-     * @param simulation Current simulation.
-     * @param config     Plugin configuration.
-     */
-    virtual void configure(Simulation& simulation, const Configuration& config)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Create initializer.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
-     */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
-    {
-        return {};
-    }
+    /// Registered module factories.
+    Map<String, UniquePtr<ProgramFactory>> m_factories;
 
 };
 

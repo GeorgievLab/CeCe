@@ -28,11 +28,12 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/Pair.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/simulator/Program.hpp"
-#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -41,16 +42,23 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Configuration;
-class PluginContext;
+class Program;
 
 /* ************************************************************************ */
 
 /**
- * @brief Library API type.
+ * @brief Container for named programs.
  */
-class PluginApi
+class NamedProgramContainer
 {
+
+// Public Types
+public:
+
+
+    /// Data type.
+    using DataType = DynamicArray<Pair<String, UniquePtr<Program>>>;
+
 
 // Public Ctors & Dtors
 public:
@@ -59,95 +67,117 @@ public:
     /**
      * @brief Destructor.
      */
-    virtual ~PluginApi()
-    {
-        // Nothing to do
-    }
+    ~NamedProgramContainer();
 
 
-// Public Operations
+// Public Accessors
 public:
 
 
     /**
-     * @brief Returns a list of required plugins.
+     * @brief Returns if program with given name exists.
+     *
+     * @param name Program name.
      *
      * @return
      */
-    virtual DynamicArray<String> requiredPlugins() const
+    bool exists(StringView name) const noexcept;
+
+
+    /**
+     * @brief Returns parameter with given value.
+     *
+     * @param name Program name.
+     *
+     * @return Pointer to program. Can be nullptr.
+     */
+    ViewPtr<Program> get(StringView name) const noexcept;
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DataType::iterator begin() noexcept
     {
-        return {};
+        return m_data.begin();
     }
 
 
     /**
-     * @brief On plugin load.
+     * @brief Returns begin iterator.
      *
-     * @param context Plugin context.
+     * @return
      */
-    virtual void onLoad(PluginContext& context)
+    DataType::const_iterator begin() const noexcept
     {
-        // Nothing to do
+        return m_data.begin();
     }
 
 
     /**
-     * @brief On plugin unload.
+     * @brief Returns begin iterator.
      *
-     * @param context Plugin context.
+     * @return
      */
-    virtual void onUnload(PluginContext& context)
+    DataType::const_iterator cbegin() const noexcept
     {
-        // Nothing to do
+        return m_data.cbegin();
     }
 
 
     /**
-     * @brief Init simulation.
+     * @brief Returns end iterator.
      *
-     * @param simulation Simulation.
+     * @return
      */
-    virtual void initSimulation(Simulation& simulation)
+    DataType::iterator end() noexcept
     {
-        // Nothing to do
+        return m_data.end();
     }
 
 
     /**
-     * @brief Finalize simulation.
+     * @brief Returns end iterator.
      *
-     * @param simulation Simulation.
+     * @return
      */
-    virtual void finalizeSimulation(Simulation& simulation)
+    DataType::const_iterator end() const noexcept
     {
-        // Nothing to do
+        return m_data.end();
     }
 
 
     /**
-     * @brief Configure plugin.
+     * @brief Returns end iterator.
      *
-     * @param simulation Current simulation.
-     * @param config     Plugin configuration.
+     * @return
      */
-    virtual void configure(Simulation& simulation, const Configuration& config)
+    DataType::const_iterator cend() const noexcept
     {
-        // Nothing to do
+        return m_data.cend();
     }
+
+
+// Public Mutators
+public:
 
 
     /**
-     * @brief Create initializer.
+     * @brief Store or replace program.
      *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
+     * @param name    Program name.
+     * @param program Program object.
      */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
-    {
-        return {};
-    }
+    void add(String name, UniquePtr<Program> program);
+
+
+// Private Data Members
+private:
+
+    /// Data.
+    DataType m_data;
 
 };
 

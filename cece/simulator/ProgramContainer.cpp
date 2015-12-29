@@ -26,8 +26,8 @@
 // Declaration
 #include "cece/simulator/ProgramContainer.hpp"
 
-// C++
-#include <algorithm>
+// CeCe
+#include "cece/simulator/Program.hpp"
 
 /* ************************************************************************ */
 
@@ -36,67 +36,43 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-namespace {
-
-/* ************************************************************************ */
-
-/**
- * @brief Find parameter in container.
- *
- * @param data
- *
- * @return
- */
-template<typename Container>
-auto find(Container& data, const StringView& name) noexcept -> decltype(&(data.begin()->second))
+ProgramContainer::ProgramContainer(const ProgramContainer& rhs)
+    : m_data()
 {
-    auto it = std::find_if(data.begin(), data.end(),
-        [&name](const Pair<String, Program>& p) {
-            return p.first == name;
-        }
-    );
+    m_data.reserve(rhs.m_data.size());
 
-    return it != data.end() ? &(it->second) : nullptr;
+    // Clone programs
+    for (const auto& program : rhs.m_data)
+        add(program->clone());
 }
 
 /* ************************************************************************ */
 
-}
+ProgramContainer::ProgramContainer(ProgramContainer&& rhs) = default;
 
 /* ************************************************************************ */
 
-bool ProgramContainer::exists(const StringView& name) const noexcept
+ProgramContainer::~ProgramContainer()
 {
-    return find(m_data, name) != nullptr;
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
-ViewPtr<const Program> ProgramContainer::get(const StringView& name) const noexcept
+ProgramContainer& ProgramContainer::operator=(const ProgramContainer& rhs)
 {
-    auto ptr = find(m_data, name);
+    m_data.reserve(rhs.m_data.size());
 
-    if (ptr)
-        return ptr;
+    // Clone programs
+    for (const auto& program : rhs.m_data)
+        add(program->clone());
 
-    return nullptr;
+    return *this;
 }
 
 /* ************************************************************************ */
 
-void ProgramContainer::add(String name, Program program)
-{
-    auto ptr = find(m_data, name);
-
-    if (ptr)
-    {
-        *ptr = std::move(program);
-    }
-    else
-    {
-        m_data.emplace_back(std::move(name), std::move(program));
-    }
-}
+ProgramContainer& ProgramContainer::operator=(ProgramContainer&& rhs) = default;
 
 /* ************************************************************************ */
 

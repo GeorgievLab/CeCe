@@ -393,7 +393,7 @@ void Object::applyAngularImpulse(const units::Impulse& impulse) noexcept
 
 /* ************************************************************************ */
 
-void Object::useProgram(const String& name) noexcept
+void Object::useProgram(StringView name) noexcept
 {
     addProgram(getSimulation().getProgram(name));
 }
@@ -416,7 +416,7 @@ void Object::update(units::Duration dt)
 
     // Call object programs
     for (auto& program : getPrograms())
-        program(*this, getSimulation(), dt);
+        program->call(getSimulation(), *this, dt);
 
     // Store streamlines data
     if (m_dataOut)

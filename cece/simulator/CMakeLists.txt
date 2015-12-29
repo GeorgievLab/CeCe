@@ -53,6 +53,11 @@ set(SRCS
     Program.hpp
     ProgramContainer.hpp
     ProgramContainer.cpp
+    NamedProgramContainer.hpp
+    NamedProgramContainer.cpp
+    ProgramFactory.hpp
+    ProgramFactoryManager.hpp
+    ProgramFactoryManager.cpp
     Obstacle.hpp
     Obstacle.cpp
     SimulationListener.hpp

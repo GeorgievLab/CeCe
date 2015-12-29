@@ -23,16 +23,14 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "cece/simulator/NamedProgramContainer.hpp"
 
-/* ************************************************************************ */
+// C++
+#include <algorithm>
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/String.hpp"
-#include "cece/core/DynamicArray.hpp"
 #include "cece/simulator/Program.hpp"
-#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -41,115 +39,74 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-class Configuration;
-class PluginContext;
+namespace {
 
 /* ************************************************************************ */
 
 /**
- * @brief Library API type.
+ * @brief Find parameter in container.
+ *
+ * @param data
+ *
+ * @return
  */
-class PluginApi
+template<typename Container>
+auto find(Container& data, StringView name) noexcept -> decltype(&(data.begin()->second))
 {
+    auto it = std::find_if(data.begin(), data.end(),
+        [&name](const Pair<String, UniquePtr<Program>>& p) {
+            return p.first == name;
+        }
+    );
 
-// Public Ctors & Dtors
-public:
+    return it != data.end() ? &(it->second) : nullptr;
+}
 
+/* ************************************************************************ */
 
-    /**
-     * @brief Destructor.
-     */
-    virtual ~PluginApi()
+}
+
+/* ************************************************************************ */
+
+NamedProgramContainer::~NamedProgramContainer()
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+bool NamedProgramContainer::exists(StringView name) const noexcept
+{
+    return find(m_data, name) != nullptr;
+}
+
+/* ************************************************************************ */
+
+ViewPtr<Program> NamedProgramContainer::get(StringView name) const noexcept
+{
+    auto ptr = find(m_data, name);
+
+    if (ptr)
+        return *ptr;
+
+    return nullptr;
+}
+
+/* ************************************************************************ */
+
+void NamedProgramContainer::add(String name, UniquePtr<Program> program)
+{
+    auto ptr = find(m_data, name);
+
+    if (ptr)
     {
-        // Nothing to do
+        *ptr = std::move(program);
     }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Returns a list of required plugins.
-     *
-     * @return
-     */
-    virtual DynamicArray<String> requiredPlugins() const
+    else
     {
-        return {};
+        m_data.emplace_back(std::move(name), std::move(program));
     }
-
-
-    /**
-     * @brief On plugin load.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onLoad(PluginContext& context)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    virtual void onUnload(PluginContext& context)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Init simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void initSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Finalize simulation.
-     *
-     * @param simulation Simulation.
-     */
-    virtual void finalizeSimulation(Simulation& simulation)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Configure plugin.
-     *
-     * @param simulation Current simulation.
-     * @param config     Plugin configuration.
-     */
-    virtual void configure(Simulation& simulation, const Configuration& config)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Create initializer.
-     *
-     * @param simulation Simulation for that module is created.
-     * @param code       Program code.
-     *
-     * @return Created initializer.
-     */
-    virtual Simulation::Initializer createInitializer(Simulation& simulation, String code)
-    {
-        return {};
-    }
-
-};
+}
 
 /* ************************************************************************ */
 

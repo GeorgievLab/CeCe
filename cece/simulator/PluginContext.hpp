@@ -30,6 +30,7 @@
 // CeCe
 #include "cece/core/FilePath.hpp"
 #include "cece/core/StringView.hpp"
+#include "cece/simulator/ProgramFactoryManager.hpp"
 #include "cece/simulator/ObjectFactoryManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 #include "cece/simulator/Object.hpp"
@@ -89,6 +90,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns program factory manager.
+     *
+     * @return
+     */
+    ProgramFactoryManager& getProgramFactoryManager() noexcept
+    {
+        return m_programFactoryManager;
+    }
+
+
 // Public Mutators
 public:
 
@@ -136,6 +148,20 @@ public:
 
 
     /**
+     * @brief Register new program type and create factory for it.
+     *
+     * @tparam ObjectType Type of program that is created by factory.
+     *
+     * @param name Factory name.
+     */
+    template<typename ProgramType>
+    void registerProgram(String name) noexcept
+    {
+        m_programFactoryManager.createForProgram<ProgramType>(std::move(name));
+    }
+
+
+    /**
      * @brief Unregister loader type.
      *
      * @param name Loader type name.
@@ -165,6 +191,17 @@ public:
     void unregisterObject(StringView name) noexcept
     {
         m_objectFactoryManager.remove(name);
+    }
+
+
+    /**
+     * @brief Unregister program type.
+     *
+     * @param name Program type name.
+     */
+    void unregisterProgram(StringView name) noexcept
+    {
+        m_programFactoryManager.remove(name);
     }
 
 
@@ -207,6 +244,16 @@ public:
     UniquePtr<Object> createObject(StringView typeName, Simulation& simulation, Object::Type type);
 
 
+    /**
+     * @brief Create a program of given type name.
+     *
+     * @param typeName Type of required program.
+     *
+     * @return Pointer to created program.
+     */
+    UniquePtr<Program> createProgram(StringView typeName);
+
+
 // Private Data Members
 private:
 
@@ -218,6 +265,9 @@ private:
 
     /// Object factory manager.
     ObjectFactoryManager m_objectFactoryManager;
+
+    /// Program factory manager.
+    ProgramFactoryManager m_programFactoryManager;
 
 };
 

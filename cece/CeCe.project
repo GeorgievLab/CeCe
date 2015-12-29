@@ -305,6 +305,11 @@
       <File Name="simulator/Program.hpp"/>
       <File Name="simulator/ProgramContainer.cpp"/>
       <File Name="simulator/ProgramContainer.hpp"/>
+      <File Name="simulator/NamedProgramContainer.hpp"/>
+      <File Name="simulator/NamedProgramContainer.cpp"/>
+      <File Name="simulator/ProgramFactoryManager.cpp"/>
+      <File Name="simulator/ProgramFactoryManager.hpp"/>
+      <File Name="simulator/ProgramFactory.hpp"/>
     </VirtualDirectory>
     <File Name="simulator/Simulation.cpp"/>
     <File Name="simulator/Simulation.hpp"/>

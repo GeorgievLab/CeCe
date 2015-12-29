@@ -328,22 +328,19 @@ Object* Simulation::buildObject(const String& name, Object::Type type)
 
 /* ************************************************************************ */
 
-Program Simulation::buildProgram(const String& path)
+UniquePtr<Program> Simulation::buildProgram(StringView name)
 {
-    // Split path into parts
-    String library, type;
-    std::tie(library, type) = splitModulePath(path);
+    Log::debug("Create program '", name, "'");
 
-    if (type.empty())
-        throw InvalidArgumentException("Missing program type");
+    // Create a program
+    auto program = getPluginContext().createProgram(name);
 
-    // Get API
-    PluginApi* api = requirePlugin(library);
+    if (program)
+        return program;
 
-    Log::debug("Create program '", library, ".", type, "'");
+    Log::warning("Unable to create program '", name, "'");
 
-    // Create object with given name
-    return api->createProgram(*this, type);
+    return nullptr;
 }
 
 /* ************************************************************************ */
@@ -528,14 +525,12 @@ void Simulation::configure(const Configuration& config)
     // Parse programs
     for (auto&& programConfig : config.getConfigurations("program"))
     {
-        // Plugin is required
-        auto api = requirePlugin(programConfig.get("language"));
-
-        // Program name
-        const auto name = programConfig.get("name");
+        const String typeName = programConfig.has("language")
+            ? programConfig.get("language")
+            : programConfig.get("type");
 
         // Register program
-        addProgram(name, api->createProgram(*this, name, programConfig.getContent()));
+        addProgram(programConfig.get("name"), buildProgram(typeName));
     }
 
     // Parse objects

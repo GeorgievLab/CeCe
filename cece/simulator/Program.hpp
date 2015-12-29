@@ -27,10 +27,8 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <functional>
-
 // CeCe
+#include "cece/core/UniquePtr.hpp"
 #include "cece/core/Units.hpp"
 
 /* ************************************************************************ */
@@ -42,13 +40,101 @@ namespace simulator {
 
 class Object;
 class Simulation;
+class Configuration;
 
 /* ************************************************************************ */
 
 /**
- * @brief Program for objects.
+ * @brief Program that can be executed by objects.
+ *
+ * Programs are allowed to store information bound to specific object.
  */
-using Program = std::function<void(Object&, Simulation&, units::Time)>;
+class Program
+{
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Destructor.
+     */
+    virtual ~Program()
+    {
+        // Nothing to do
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Clone program.
+     *
+     * @return
+     */
+    virtual UniquePtr<Program> clone() const = 0;
+
+
+    /**
+     * @brief Load program configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
+     */
+    virtual void loadConfig(Simulation& simulation, const Configuration& config)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Store program configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Output configuration.
+     */
+    virtual void storeConfig(Simulation& simulation, Configuration& config)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Allow to initialize program when is bound to specific object.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     */
+    virtual void init(Simulation& simulation, Object& object)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Call program for given object.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     * @param dt         Simulation time step.
+     */
+    virtual void call(Simulation& simulation, Object& object, units::Time dt) = 0;
+
+
+    /**
+     * @brief Called when the program is unbound from object (or object is being deleted).
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     */
+    virtual void terminate(Simulation& simulation, Object& object)
+    {
+        // Nothing to do
+    }
+
+};
 
 /* ************************************************************************ */
 
