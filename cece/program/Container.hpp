@@ -31,11 +31,17 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/DynamicArray.hpp"
+#include "cece/core/Units.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace simulator { class Simulation; } }
+namespace cece { namespace simulator { class Object; } }
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace program {
 
 /* ************************************************************************ */
 
@@ -46,16 +52,8 @@ class Program;
 /**
  * @brief Container for programs.
  */
-class ProgramContainer
+class Container
 {
-
-// Public Types
-public:
-
-
-    /// Data type.
-    using DataType = DynamicArray<UniquePtr<Program>>;
-
 
 // Public Ctors & Dtors
 public:
@@ -64,7 +62,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    ProgramContainer() = default;
+    Container() = default;
 
 
     /**
@@ -72,7 +70,7 @@ public:
      *
      * @param rhs
      */
-    ProgramContainer(const ProgramContainer& rhs);
+    Container(const Container& rhs);
 
 
     /**
@@ -80,13 +78,13 @@ public:
      *
      * @param rhs
      */
-    ProgramContainer(ProgramContainer&& rhs);
+    Container(Container&& rhs) noexcept;
 
 
     /**
      * @brief Destructor.
      */
-    ~ProgramContainer();
+    ~Container();
 
 
 // Public Operators
@@ -100,7 +98,7 @@ public:
      *
      * @return *this
      */
-    ProgramContainer& operator=(const ProgramContainer& rhs);
+    Container& operator=(const Container& rhs);
 
 
     /**
@@ -110,7 +108,20 @@ public:
      *
      * @return *this
      */
-    ProgramContainer& operator=(ProgramContainer&& rhs);
+    Container& operator=(Container&& rhs);
+
+
+    /**
+     * @brief Returns n-th program.
+     *
+     * @param pos
+     *
+     * @return Pointer to program.
+     */
+    ViewPtr<Program> operator[](std::size_t pos) const noexcept
+    {
+        return m_programs[pos];
+    }
 
 
 // Public Accessors
@@ -124,7 +135,7 @@ public:
      */
     std::size_t getCount() const noexcept
     {
-        return m_data.size();
+        return m_programs.size();
     }
 
 
@@ -135,75 +146,9 @@ public:
      *
      * @return Pointer to program.
      */
-    ViewPtr<Program> get(std::size_t pos) const noexcept
+    ViewPtr<Program> get(std::size_t pos) const
     {
-        return m_data[pos];
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DataType::iterator begin() noexcept
-    {
-        return m_data.begin();
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator begin() const noexcept
-    {
-        return m_data.begin();
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator cbegin() const noexcept
-    {
-        return m_data.cbegin();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DataType::iterator end() noexcept
-    {
-        return m_data.end();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator end() const noexcept
-    {
-        return m_data.end();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator cend() const noexcept
-    {
-        return m_data.cend();
+        return m_programs.at(pos);
     }
 
 
@@ -220,16 +165,36 @@ public:
      */
     ViewPtr<Program> add(UniquePtr<Program> program)
     {
-        m_data.push_back(std::move(program));
-        return m_data.back();
+        m_programs.push_back(std::move(program));
+        return m_programs.back();
     }
+
+
+    /**
+     * @brief Clear container.
+     */
+    void clear();
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Call all programs.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     * @param dt         Simulation time step.
+     */
+    void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt);
 
 
 // Private Data Members
 private:
 
-    /// Data.
-    DataType m_data;
+    /// Stored programs.
+    DynamicArray<UniquePtr<Program>> m_programs;
 
 };
 

@@ -109,30 +109,6 @@ private:
 
 /* ************************************************************************ */
 
-Tuple<String, String> splitModulePath(const String& path) noexcept
-{
-    auto pos = path.find(':');
-
-    // Using wrapper
-    if (pos != String::npos)
-    {
-        // Create wrapper version
-        return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
-    }
-    else
-    {
-        // Find dot separator
-        auto pos = path.find('.');
-
-        if (pos == String::npos)
-            return std::make_tuple(path, String{});
-        else
-            return std::make_tuple(path.substr(0, pos), path.substr(pos + 1));
-    }
-}
-
-/* ************************************************************************ */
-
 /**
  * @brief Write CSV line into output stream.
  *
@@ -328,7 +304,7 @@ Object* Simulation::buildObject(const String& name, Object::Type type)
 
 /* ************************************************************************ */
 
-UniquePtr<Program> Simulation::buildProgram(StringView name)
+UniquePtr<program::Program> Simulation::buildProgram(StringView name)
 {
     Log::debug("Create program '", name, "'");
 

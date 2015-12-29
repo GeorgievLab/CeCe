@@ -415,8 +415,7 @@ void Object::update(units::Duration dt)
 #endif
 
     // Call object programs
-    for (auto& program : getPrograms())
-        program->call(getSimulation(), *this, dt);
+    m_programs.call(getSimulation(), *this, dt);
 
     // Store streamlines data
     if (m_dataOut)

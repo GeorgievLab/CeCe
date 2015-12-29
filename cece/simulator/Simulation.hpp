@@ -53,12 +53,12 @@
 #include "cece/core/DataTable.hpp"
 #include "cece/core/Parameters.hpp"
 #include "cece/core/OutStream.hpp"
+#include "cece/program/Program.hpp"
+#include "cece/program/NamedContainer.hpp"
 #include "cece/simulator/Module.hpp"
 #include "cece/simulator/Object.hpp"
 #include "cece/simulator/ObjectType.hpp"
 #include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/Program.hpp"
-#include "cece/simulator/NamedProgramContainer.hpp"
 #include "cece/simulator/SimulationListener.hpp"
 #include "cece/simulator/ModuleContainer.hpp"
 #include "cece/simulator/ObjectContainer.hpp"
@@ -554,7 +554,7 @@ public:
      *
      * @return
      */
-    const NamedProgramContainer& getPrograms() const noexcept
+    const program::NamedContainer& getPrograms() const noexcept
     {
         return m_programs;
     }
@@ -580,7 +580,7 @@ public:
      *
      * @return Pointer to program.
      */
-    UniquePtr<Program> getProgram(StringView name)
+    UniquePtr<program::Program> getProgram(StringView name)
     {
         auto ptr = m_programs.get(name);
 
@@ -961,7 +961,7 @@ public:
      * @param name    Program name.
      * @param program Added program.
      */
-    void addProgram(String name, UniquePtr<Program> program)
+    void addProgram(String name, UniquePtr<program::Program> program)
     {
         m_programs.add(std::move(name), std::move(program));
     }
@@ -974,7 +974,7 @@ public:
      *
      * @return Created program.
      */
-    UniquePtr<Program> buildProgram(StringView name);
+    UniquePtr<program::Program> buildProgram(StringView name);
 
 
     /**
@@ -1247,7 +1247,7 @@ private:
     ObjectContainer m_objects;
 
     /// A map of preddefined programs.
-    NamedProgramContainer m_programs;
+    program::NamedContainer m_programs;
 
     /// Managed data tables.
     DataTableContainer m_dataTables;

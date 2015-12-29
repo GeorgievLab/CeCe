@@ -23,56 +23,89 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/simulator/ProgramContainer.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Program.hpp"
+#include "cece/core/String.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/Pair.hpp"
+#include "cece/core/DynamicArray.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace program {
 
 /* ************************************************************************ */
 
-ProgramContainer::ProgramContainer(const ProgramContainer& rhs)
-    : m_data()
+class Program;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Container for named programs.
+ */
+class NamedContainer
 {
-    m_data.reserve(rhs.m_data.size());
 
-    // Clone programs
-    for (const auto& program : rhs.m_data)
-        add(program->clone());
-}
+// Public Ctors & Dtors
+public:
 
-/* ************************************************************************ */
 
-ProgramContainer::ProgramContainer(ProgramContainer&& rhs) = default;
+    /**
+     * @brief Destructor.
+     */
+    ~NamedContainer();
 
-/* ************************************************************************ */
 
-ProgramContainer::~ProgramContainer()
-{
-    // Nothing to do
-}
+// Public Accessors
+public:
 
-/* ************************************************************************ */
 
-ProgramContainer& ProgramContainer::operator=(const ProgramContainer& rhs)
-{
-    m_data.reserve(rhs.m_data.size());
+    /**
+     * @brief Returns if program with given name exists.
+     *
+     * @param name Program name.
+     *
+     * @return
+     */
+    bool exists(StringView name) const noexcept;
 
-    // Clone programs
-    for (const auto& program : rhs.m_data)
-        add(program->clone());
 
-    return *this;
-}
+    /**
+     * @brief Returns parameter with given value.
+     *
+     * @param name Program name.
+     *
+     * @return Pointer to program. Can be nullptr.
+     */
+    ViewPtr<Program> get(StringView name) const noexcept;
 
-/* ************************************************************************ */
 
-ProgramContainer& ProgramContainer::operator=(ProgramContainer&& rhs) = default;
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Store or replace program.
+     *
+     * @param name    Program name.
+     * @param program Program object.
+     */
+    void add(String name, UniquePtr<Program> program);
+
+
+// Private Data Members
+private:
+
+    /// Stored programs.
+    DynamicArray<Pair<String, UniquePtr<Program>>> m_programs;
+
+};
 
 /* ************************************************************************ */
 

@@ -30,11 +30,11 @@
 // CeCe
 #include "cece/core/FilePath.hpp"
 #include "cece/core/StringView.hpp"
-#include "cece/simulator/ProgramFactoryManager.hpp"
 #include "cece/simulator/ObjectFactoryManager.hpp"
 #include "cece/simulator/ModuleFactoryManager.hpp"
 #include "cece/simulator/Object.hpp"
 #include "cece/loader/FactoryManager.hpp"
+#include "cece/program/FactoryManager.hpp"
 
 /* ************************************************************************ */
 
@@ -95,7 +95,7 @@ public:
      *
      * @return
      */
-    ProgramFactoryManager& getProgramFactoryManager() noexcept
+    program::FactoryManager& getProgramFactoryManager() noexcept
     {
         return m_programFactoryManager;
     }
@@ -251,7 +251,7 @@ public:
      *
      * @return Pointer to created program.
      */
-    UniquePtr<Program> createProgram(StringView typeName);
+    UniquePtr<program::Program> createProgram(StringView typeName);
 
 
 // Private Data Members
@@ -267,7 +267,7 @@ private:
     ObjectFactoryManager m_objectFactoryManager;
 
     /// Program factory manager.
-    ProgramFactoryManager m_programFactoryManager;
+    program::FactoryManager m_programFactoryManager;
 
 };
 

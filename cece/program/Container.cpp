@@ -24,36 +24,68 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/simulator/ProgramFactoryManager.hpp"
+#include "cece/program/Container.hpp"
 
 // CeCe
-#include "cece/simulator/Program.hpp"
+#include "cece/program/Program.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace program {
 
 /* ************************************************************************ */
 
-ViewPtr<ProgramFactory> ProgramFactoryManager::get(StringView name) const noexcept
+Container::Container(const Container& rhs)
+    : m_programs()
 {
-    // FIXME: C++14
-    auto it = m_factories.find(String(name));
+    m_programs.reserve(rhs.m_programs.size());
 
-    return it != m_factories.end() ? it->second.get() : nullptr;
+    // Clone programs
+    for (const auto& program : rhs.m_programs)
+        add(program->clone());
 }
 
 /* ************************************************************************ */
 
-UniquePtr<Program> ProgramFactoryManager::createProgram(StringView name) const
+Container::Container(Container&& rhs) noexcept = default;
+
+/* ************************************************************************ */
+
+Container::~Container() = default;
+
+/* ************************************************************************ */
+
+Container& Container::operator=(const Container& rhs)
 {
-    auto factory = get(name);
+    m_programs.clear();
+    m_programs.reserve(rhs.m_programs.size());
 
-    if (factory)
-        return factory->create();
+    // Clone programs
+    for (const auto& program : rhs.m_programs)
+        add(program->clone());
 
-    throw ProgramFactoryNotFoundException("Program factory not found: " + String(name));
+    return *this;
+}
+
+/* ************************************************************************ */
+
+Container& Container::operator=(Container&& rhs) = default;
+
+/* ************************************************************************ */
+
+void Container::clear()
+{
+    m_programs.clear();
+}
+
+/* ************************************************************************ */
+
+void Container::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
+{
+    // Invoke all stored programs
+    for (auto& program : m_programs)
+        program->call(simulation, object, dt);
 }
 
 /* ************************************************************************ */

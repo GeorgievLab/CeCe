@@ -23,60 +23,89 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "cece/program/NamedContainer.hpp"
 
-/* ************************************************************************ */
+// C++
+#include <algorithm>
 
 // CeCe
-#include "cece/core/Factory.hpp"
-#include "cece/core/String.hpp"
-#include "cece/simulator/Program.hpp"
+#include "cece/program/Program.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace program {
+
+/* ************************************************************************ */
+
+namespace {
 
 /* ************************************************************************ */
 
 /**
- * @brief Program factory interface.
- */
-using ProgramFactory = Factory<Program>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Program factory for specific module.
+ * @brief Find parameter in container.
  *
- * @tparam ProgramType
- */
-template<typename ProgramType>
-using ProgramFactoryTyped = FactoryTyped<Factory, ProgramType, Program>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Program factory with callable backend.
+ * @param data
  *
- * @tparam Callable
+ * @return
  */
-template<typename Callable>
-using ProgramFactoryCallable = FactoryCallable<Factory, Callable, Program>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-ProgramFactoryCallable<Callable> makeCallableProgramFactory(Callable callable) noexcept
+template<typename Container>
+auto find(Container& data, StringView name) noexcept -> decltype(&(data.begin()->second))
 {
-    return ProgramFactoryCallable<Callable>{std::move(callable)};
+    auto it = std::find_if(data.begin(), data.end(),
+        [&name](const Pair<String, UniquePtr<Program>>& p) {
+            return p.first == name;
+        }
+    );
+
+    return it != data.end() ? &(it->second) : nullptr;
+}
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+NamedContainer::~NamedContainer()
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
+bool NamedContainer::exists(StringView name) const noexcept
+{
+    return find(m_programs, name) != nullptr;
+}
+
+/* ************************************************************************ */
+
+ViewPtr<Program> NamedContainer::get(StringView name) const noexcept
+{
+    auto ptr = find(m_programs, name);
+
+    if (ptr)
+        return *ptr;
+
+    return nullptr;
+}
+
+/* ************************************************************************ */
+
+void NamedContainer::add(String name, UniquePtr<Program> program)
+{
+    auto ptr = find(m_programs, name);
+
+    if (ptr)
+    {
+        *ptr = std::move(program);
+    }
+    else
+    {
+        m_programs.emplace_back(std::move(name), std::move(program));
+    }
 }
 
 /* ************************************************************************ */

@@ -30,134 +30,48 @@
 // CeCe
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
-#include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
-#include "cece/core/Pair.hpp"
-#include "cece/core/DynamicArray.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/Map.hpp"
+#include "cece/core/Exception.hpp"
+#include "cece/program/Program.hpp"
+#include "cece/program/Factory.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
-
-/* ************************************************************************ */
-
-class Program;
+namespace program {
 
 /* ************************************************************************ */
 
 /**
- * @brief Container for named programs.
+ * @brief Exception for access to unregistred program factory.
  */
-class NamedProgramContainer
+class FactoryNotFoundException : public InvalidArgumentException
 {
+    using InvalidArgumentException::InvalidArgumentException;
+};
 
-// Public Types
-public:
+/* ************************************************************************ */
 
-
-    /// Data type.
-    using DataType = DynamicArray<Pair<String, UniquePtr<Program>>>;
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~NamedProgramContainer();
-
+/**
+ * @brief Program factory manager.
+ */
+class FactoryManager
+{
 
 // Public Accessors
 public:
 
 
     /**
-     * @brief Returns if program with given name exists.
+     * @brief Find program factory by name.
      *
-     * @param name Program name.
-     *
-     * @return
-     */
-    bool exists(StringView name) const noexcept;
-
-
-    /**
-     * @brief Returns parameter with given value.
-     *
-     * @param name Program name.
-     *
-     * @return Pointer to program. Can be nullptr.
-     */
-    ViewPtr<Program> get(StringView name) const noexcept;
-
-
-    /**
-     * @brief Returns begin iterator.
+     * @param name Factory name.
      *
      * @return
      */
-    DataType::iterator begin() noexcept
-    {
-        return m_data.begin();
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator begin() const noexcept
-    {
-        return m_data.begin();
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator cbegin() const noexcept
-    {
-        return m_data.cbegin();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DataType::iterator end() noexcept
-    {
-        return m_data.end();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator end() const noexcept
-    {
-        return m_data.end();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DataType::const_iterator cend() const noexcept
-    {
-        return m_data.cend();
-    }
+    ViewPtr<Factory> get(StringView name) const noexcept;
 
 
 // Public Mutators
@@ -165,19 +79,87 @@ public:
 
 
     /**
-     * @brief Store or replace program.
+     * @brief Register a new factory.
      *
-     * @param name    Program name.
-     * @param program Program object.
+     * @param name    Factory name.
+     * @param factory Factory pointer.
      */
-    void add(String name, UniquePtr<Program> program);
+    void add(String name, UniquePtr<Factory> factory) noexcept
+    {
+        m_factories.emplace(std::move(name), std::move(factory));
+    }
+
+
+    /**
+     * @brief Unregister factory.
+     *
+     * @param name Factory name.
+     */
+    void remove(StringView name) noexcept
+    {
+        m_factories.erase(String(name));
+    }
+
+
+    /**
+     * @brief Register a new factory.
+     *
+     * @tparam FactoryType
+     *
+     * @param name Factory name.
+     */
+    template<typename FactoryType>
+    void create(String name) noexcept
+    {
+        add(std::move(name), makeUnique<FactoryType>());
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename ProgramType>
+    void createForProgram(String name) noexcept
+    {
+        create<FactoryTyped<ProgramType>>(std::move(name));
+    }
+
+
+    /**
+     * @brief Register a new factory for specified module.
+     *
+     * @param name Factory name.
+     */
+    template<typename Callable>
+    void createFromCallback(Callable callable) noexcept
+    {
+        create<FactoryCallable<Callable>>(std::move(callable));
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Create a program by name.
+     *
+     * @param name Factory name.
+     *
+     * @return Created program.
+     *
+     * @throw ProgramFactoryNotFoundException In case of factory with given name doesn't exists.
+     */
+    UniquePtr<Program> createProgram(StringView name) const;
 
 
 // Private Data Members
 private:
 
-    /// Data.
-    DataType m_data;
+    /// Registered module factories.
+    Map<String, UniquePtr<Factory>> m_factories;
 
 };
 

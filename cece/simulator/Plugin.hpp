@@ -34,9 +34,7 @@
 #include "cece/core/Map.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
-#include "cece/simulator/Program.hpp"
-#include "cece/simulator/Module.hpp"
-#include "cece/simulator/Object.hpp"
+#include "cece/core/FilePath.hpp"
 
 /* ************************************************************************ */
 

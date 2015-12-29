@@ -44,10 +44,10 @@
 #include "cece/core/Map.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/OutStream.hpp"
+#include "cece/program/Program.hpp"
+#include "cece/program/Container.hpp"
 #include "cece/simulator/Shape.hpp"
 #include "cece/simulator/Configuration.hpp"
-#include "cece/simulator/Program.hpp"
-#include "cece/simulator/ProgramContainer.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
@@ -421,7 +421,7 @@ public:
      *
      * @return
      */
-    const ProgramContainer& getPrograms() const noexcept
+    const program::Container& getPrograms() const noexcept
     {
         return m_programs;
     }
@@ -592,7 +592,7 @@ public:
      *
      * @param programs
      */
-    void setPrograms(ProgramContainer programs) noexcept
+    void setPrograms(program::Container programs) noexcept
     {
         m_programs = std::move(programs);
     }
@@ -603,7 +603,7 @@ public:
      *
      * @param program
      */
-    void addProgram(UniquePtr<Program> program) noexcept
+    void addProgram(UniquePtr<program::Program> program) noexcept
     {
         // Store program and init
         m_programs.add(std::move(program))->init(getSimulation(), *this);
@@ -765,7 +765,7 @@ private:
     DynamicArray<Shape> m_shapes;
 
     /// Registered object programs.
-    ProgramContainer m_programs;
+    program::Container m_programs;
 
     /// Object density.
     units::Density m_density = units::Density(1); // FIXME: use better value

@@ -23,118 +23,38 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
+// Declaration
+#include "cece/program/FactoryManager.hpp"
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/Units.hpp"
+#include "cece/program/Program.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+namespace program {
 
 /* ************************************************************************ */
 
-class Object;
-class Simulation;
-class Configuration;
-
-/* ************************************************************************ */
-
-/**
- * @brief Program that can be executed by objects.
- *
- * Programs are allowed to store information bound to specific object.
- */
-class Program
+ViewPtr<Factory> FactoryManager::get(StringView name) const noexcept
 {
+    // FIXME: C++14
+    auto it = m_factories.find(String(name));
 
-// Public Ctors & Dtors
-public:
+    return it != m_factories.end() ? it->second.get() : nullptr;
+}
 
+/* ************************************************************************ */
 
-    /**
-     * @brief Destructor.
-     */
-    virtual ~Program()
-    {
-        // Nothing to do
-    }
+UniquePtr<Program> FactoryManager::createProgram(StringView name) const
+{
+    auto factory = get(name);
 
+    if (factory)
+        return factory->create();
 
-// Public Operations
-public:
-
-
-    /**
-     * @brief Clone program.
-     *
-     * @return
-     */
-    virtual UniquePtr<Program> clone() const = 0;
-
-
-    /**
-     * @brief Load program configuration.
-     *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
-     */
-    virtual void loadConfig(Simulation& simulation, const Configuration& config)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Store program configuration.
-     *
-     * @param simulation Current simulation.
-     * @param config     Output configuration.
-     */
-    virtual void storeConfig(Simulation& simulation, Configuration& config)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Allow to initialize program when is bound to specific object.
-     *
-     * @param simulation Simulation object.
-     * @param object     Object.
-     */
-    virtual void init(Simulation& simulation, Object& object)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Call program for given object.
-     *
-     * @param simulation Simulation object.
-     * @param object     Object.
-     * @param dt         Simulation time step.
-     */
-    virtual void call(Simulation& simulation, Object& object, units::Time dt) = 0;
-
-
-    /**
-     * @brief Called when the program is unbound from object (or object is being deleted).
-     *
-     * @param simulation Simulation object.
-     * @param object     Object.
-     */
-    virtual void terminate(Simulation& simulation, Object& object)
-    {
-        // Nothing to do
-    }
-
-};
+    throw FactoryNotFoundException("Program factory not found: " + String(name));
+}
 
 /* ************************************************************************ */
 

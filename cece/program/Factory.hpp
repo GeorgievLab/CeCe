@@ -23,89 +23,60 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/simulator/NamedProgramContainer.hpp"
+#pragma once
 
-// C++
-#include <algorithm>
+/* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Program.hpp"
+#include "cece/core/Factory.hpp"
+#include "cece/core/String.hpp"
+#include "cece/program/Program.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
-
-/* ************************************************************************ */
-
-namespace {
+namespace program {
 
 /* ************************************************************************ */
 
 /**
- * @brief Find parameter in container.
- *
- * @param data
- *
- * @return
+ * @brief Program factory interface.
  */
-template<typename Container>
-auto find(Container& data, StringView name) noexcept -> decltype(&(data.begin()->second))
-{
-    auto it = std::find_if(data.begin(), data.end(),
-        [&name](const Pair<String, UniquePtr<Program>>& p) {
-            return p.first == name;
-        }
-    );
-
-    return it != data.end() ? &(it->second) : nullptr;
-}
+using Factory = Factory<Program>;
 
 /* ************************************************************************ */
 
-}
+/**
+ * @brief Program factory for specific module.
+ *
+ * @tparam ProgramType
+ */
+template<typename ProgramType>
+using FactoryTyped = FactoryTyped<core::Factory, ProgramType, Program>;
 
 /* ************************************************************************ */
 
-NamedProgramContainer::~NamedProgramContainer()
-{
-    // Nothing to do
-}
+/**
+ * @brief Program factory with callable backend.
+ *
+ * @tparam Callable
+ */
+template<typename Callable>
+using FactoryCallable = FactoryCallable<core::Factory, Callable, Program>;
 
 /* ************************************************************************ */
 
-bool NamedProgramContainer::exists(StringView name) const noexcept
+/**
+ * @brief Make callable module factory.
+ *
+ * @param callable Callable object.
+ *
+ * @return Callable module factory.
+ */
+template<typename Callable>
+FactoryCallable<Callable> makeCallableFactory(Callable callable) noexcept
 {
-    return find(m_data, name) != nullptr;
-}
-
-/* ************************************************************************ */
-
-ViewPtr<Program> NamedProgramContainer::get(StringView name) const noexcept
-{
-    auto ptr = find(m_data, name);
-
-    if (ptr)
-        return *ptr;
-
-    return nullptr;
-}
-
-/* ************************************************************************ */
-
-void NamedProgramContainer::add(String name, UniquePtr<Program> program)
-{
-    auto ptr = find(m_data, name);
-
-    if (ptr)
-    {
-        *ptr = std::move(program);
-    }
-    else
-    {
-        m_data.emplace_back(std::move(name), std::move(program));
-    }
+    return FactoryCallable<Callable>{std::move(callable)};
 }
 
 /* ************************************************************************ */

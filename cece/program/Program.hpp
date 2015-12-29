@@ -28,118 +28,40 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/StringView.hpp"
-#include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
-#include "cece/core/Map.hpp"
-#include "cece/core/Exception.hpp"
-#include "cece/simulator/Program.hpp"
-#include "cece/simulator/ProgramFactory.hpp"
+#include "cece/core/Units.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace simulator { class Simulation; } }
+namespace cece { namespace simulator { class Object; } }
+namespace cece { namespace simulator { class Configuration; } }
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
-
-/* ************************************************************************ */
-
-class Simulation;
+namespace program {
 
 /* ************************************************************************ */
 
 /**
- * @brief Exception for access to unregistred program factory.
+ * @brief Program that can be executed by objects.
+ *
+ * Programs are allowed to store information bound to specific object.
  */
-class ProgramFactoryNotFoundException : public InvalidArgumentException
-{
-    using InvalidArgumentException::InvalidArgumentException;
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Program factory manager.
- */
-class ProgramFactoryManager
+class Program
 {
 
-// Public Accessors
+// Public Ctors & Dtors
 public:
 
 
     /**
-     * @brief Find program factory by name.
-     *
-     * @param name Factory name.
-     *
-     * @return
+     * @brief Destructor.
      */
-    ViewPtr<ProgramFactory> get(StringView name) const noexcept;
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Register a new factory.
-     *
-     * @param name    Factory name.
-     * @param factory Factory pointer.
-     */
-    void add(String name, UniquePtr<ProgramFactory> factory) noexcept
+    virtual ~Program()
     {
-        m_factories.emplace(std::move(name), std::move(factory));
-    }
-
-
-    /**
-     * @brief Unregister factory.
-     *
-     * @param name Factory name.
-     */
-    void remove(StringView name) noexcept
-    {
-        m_factories.erase(String(name));
-    }
-
-
-    /**
-     * @brief Register a new factory.
-     *
-     * @tparam FactoryType
-     *
-     * @param name Factory name.
-     */
-    template<typename FactoryType>
-    void create(String name) noexcept
-    {
-        add(std::move(name), makeUnique<FactoryType>());
-    }
-
-
-    /**
-     * @brief Register a new factory for specified module.
-     *
-     * @param name Factory name.
-     */
-    template<typename ProgramType>
-    void createForProgram(String name) noexcept
-    {
-        create<ProgramFactoryTyped<ProgramType>>(std::move(name));
-    }
-
-
-    /**
-     * @brief Register a new factory for specified module.
-     *
-     * @param name Factory name.
-     */
-    template<typename Callable>
-    void createFromCallback(Callable callable) noexcept
-    {
-        create<ProgramFactoryCallable<Callable>>(std::move(callable));
+        // Nothing to do
     }
 
 
@@ -148,22 +70,69 @@ public:
 
 
     /**
-     * @brief Create a program by name.
+     * @brief Clone program.
      *
-     * @param name Factory name.
-     *
-     * @return Created program.
-     *
-     * @throw ProgramFactoryNotFoundException In case of factory with given name doesn't exists.
+     * @return
      */
-    UniquePtr<Program> createProgram(StringView name) const;
+    virtual UniquePtr<Program> clone() const = 0;
 
 
-// Private Data Members
-private:
+    /**
+     * @brief Load program configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Source configuration.
+     */
+    virtual void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+    {
+        // Nothing to do
+    }
 
-    /// Registered module factories.
-    Map<String, UniquePtr<ProgramFactory>> m_factories;
+
+    /**
+     * @brief Store program configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Output configuration.
+     */
+    virtual void storeConfig(simulator::Simulation& simulation, simulator::Configuration& config)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Allow to initialize program when is bound to specific object.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     */
+    virtual void init(simulator::Simulation& simulation, simulator::Object& object)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Call program for given object.
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     * @param dt         Simulation time step.
+     */
+    virtual void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt) = 0;
+
+
+    /**
+     * @brief Called when the program is unbound from object (or object is being deleted).
+     *
+     * @param simulation Simulation object.
+     * @param object     Object.
+     */
+    virtual void terminate(simulator::Simulation& simulation, simulator::Object& object)
+    {
+        // Nothing to do
+    }
 
 };
 

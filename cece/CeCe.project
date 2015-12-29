@@ -301,16 +301,6 @@
       <File Name="simulator/PluginContext.hpp"/>
       <File Name="simulator/PluginContext.cpp"/>
     </VirtualDirectory>
-    <VirtualDirectory Name="program">
-      <File Name="simulator/Program.hpp"/>
-      <File Name="simulator/ProgramContainer.cpp"/>
-      <File Name="simulator/ProgramContainer.hpp"/>
-      <File Name="simulator/NamedProgramContainer.hpp"/>
-      <File Name="simulator/NamedProgramContainer.cpp"/>
-      <File Name="simulator/ProgramFactoryManager.cpp"/>
-      <File Name="simulator/ProgramFactoryManager.hpp"/>
-      <File Name="simulator/ProgramFactory.hpp"/>
-    </VirtualDirectory>
     <File Name="simulator/Simulation.cpp"/>
     <File Name="simulator/Simulation.hpp"/>
     <File Name="simulator/SimulationListener.hpp"/>
@@ -334,5 +324,18 @@
     <File Name="loader/FactoryManager.hpp"/>
     <File Name="loader/FactoryManager.cpp"/>
     <File Name="loader/Factory.hpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="program">
+    <VirtualDirectory Name="CMake">
+      <File Name="program/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <File Name="program/Container.cpp"/>
+    <File Name="program/Container.hpp"/>
+    <File Name="program/Factory.hpp"/>
+    <File Name="program/FactoryManager.cpp"/>
+    <File Name="program/FactoryManager.hpp"/>
+    <File Name="program/NamedContainer.cpp"/>
+    <File Name="program/NamedContainer.hpp"/>
+    <File Name="program/Program.hpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

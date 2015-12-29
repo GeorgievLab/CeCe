@@ -68,7 +68,7 @@ UniquePtr<Object> PluginContext::createObject(StringView typeName, Simulation& s
 
 /* ************************************************************************ */
 
-UniquePtr<Program> PluginContext::createProgram(StringView typeName)
+UniquePtr<program::Program> PluginContext::createProgram(StringView typeName)
 {
     return getProgramFactoryManager().createProgram(typeName);
 }
