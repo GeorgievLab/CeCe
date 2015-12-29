@@ -2,6 +2,9 @@
 <!-- Simulation definition -->
 <simulation world-size="64um 48um" dt="1ms" aiterations="1000" background="transparent">
 
+    <plugin name="background" />
+    <plugin name="cell" />
+
     <module name="background" image="transparent.png" />
 
     <object class="cell.Yeast" position="0um 0um">
