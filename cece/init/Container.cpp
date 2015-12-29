@@ -42,7 +42,7 @@ Container::Container(const Container& rhs)
 
     // Clone initializers
     for (const auto& initializer : rhs.m_initializers)
-        add(initializer->clone());
+        m_initializers.push_back(initializer->clone());
 }
 
 /* ************************************************************************ */
@@ -62,7 +62,7 @@ Container& Container::operator=(const Container& rhs)
 
     // Clone initializers
     for (const auto& initializer : rhs.m_initializers)
-        add(initializer->clone());
+        m_initializers.push_back(initializer->clone());
 
     return *this;
 }
