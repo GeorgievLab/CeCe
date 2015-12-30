@@ -54,9 +54,9 @@
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/VectorRange.hpp"
+#include "cece/plugin/Manager.hpp"
 #include "cece/simulator/Simulator.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/PluginManager.hpp"
 
 #if CONFIG_CLI_ENABLE_IMAGE_CAPTURE
 #include "cece/core/StringStream.hpp"
@@ -208,7 +208,7 @@ void terminate_simulation(int param)
     std::cout <<
         "Plugins directories:\n";
 
-    for (auto name : simulator::PluginManager::s().getDirectories())
+    for (auto name : plugin::Manager::s().getDirectories())
     {
         std::cout << "    " << name << "\n";
     }
@@ -218,7 +218,7 @@ void terminate_simulation(int param)
     std::cout <<
         "Plugins:\n";
 
-    for (auto name : simulator::PluginManager::s().getNames())
+    for (auto name : plugin::Manager::s().getNames())
     {
         std::cout << "    " << name << "\n";
     }
@@ -403,7 +403,7 @@ Arguments parseArguments(int argc, char** argv)
                 if (i + 1 >= argc)
                     throw InvalidArgumentException("missing directory path");
 
-                simulator::PluginManager::s().addDirectory(argv[i + 1]);
+                plugin::Manager::s().addDirectory(argv[i + 1]);
                 ++i;
             }
             if (arg == "--plugins")
@@ -425,21 +425,21 @@ Arguments parseArguments(int argc, char** argv)
         }
     }
 
-    if (simulator::PluginManager::s().getDirectories().empty())
+    if (plugin::Manager::s().getDirectories().empty())
     {
 #ifdef DIR_PLUGINS
-        simulator::PluginManager::s().addDirectory(DIR_PLUGINS);
+        plugin::Manager::s().addDirectory(DIR_PLUGINS);
 #elif __linux__
-        simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
+        plugin::Manager::s().addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
 #elif __APPLE__ && __MACH__
-        simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "../plugins"));
+        plugin::Manager::s().addDirectory(getPluginsDirectory(argv[0], "../plugins"));
 #elif _WIN32
-        simulator::PluginManager::s().addDirectory(getPluginsDirectory(argv[0], "."));
+        plugin::Manager::s().addDirectory(getPluginsDirectory(argv[0], "."));
 #endif
     }
 
     // Preload XML plugin
-    simulator::PluginManager::s().load("xml");
+    plugin::Manager::s().load("xml");
 
     if (printHelpFlag)
         printHelp(argv[0]);
@@ -475,7 +475,7 @@ public:
         m_simulationFile = args.simulationFile;
 
         // Create simulation
-        m_simulator.setSimulation(simulator::PluginManager::s().getContext().createSimulation(m_simulationFile));
+        m_simulator.setSimulation(plugin::Manager::s().getContext().createSimulation(m_simulationFile));
 
         // Set parameters
         m_simulator.getSimulation()->getParameters().merge(args.parameters);
