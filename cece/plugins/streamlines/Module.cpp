@@ -39,6 +39,8 @@
 #include "cece/core/constants.hpp"
 #include "cece/core/FileStream.hpp"
 #include "cece/core/TimeMeasurement.hpp"
+#include "cece/core/BinaryInput.hpp"
+#include "cece/core/BinaryOutput.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/Obstacle.hpp"
@@ -93,6 +95,10 @@ InStream& operator>>(InStream& is, Module::InletVelocities& velocities)
 /* ************************************************************************ */
 
 namespace {
+
+/* ************************************************************************ */
+
+constexpr StaticArray<char, 5> FILE_GUARD{{'C', 'E', 'S', 'L', '\0'}};
 
 /* ************************************************************************ */
 
@@ -173,45 +179,42 @@ void Module::init(simulator::Simulation& simulation)
 
     Log::info("[streamlines] Initialization...");
 
-    if (m_layoutType == "poiseuilleLR")
+    bool initialized = false;
+
+    if (!m_initFile.empty() && fileExists(m_initFile))
     {
-        LatticeCell::DensityType rho = 1.0;
-        const auto speed = getInletVelocities()[LayoutPosLeft];
-        const Lattice::CoordinateType::ValueType inletRange[2] = {
-            1,
-            m_lattice.getSize().getHeight() - 2
-        };
-
-        Log::info("[streamlines] Re: ", speed * (m_lattice.getSize().getHeight() - 2) / getKinematicViscosity());
-
-        // Init cells
-        for (auto&& c : range(m_lattice.getSize()))
+        try
         {
-            LatticeCell& cell = m_lattice[c];
+            Log::info("[streamlines] Loading from external file: ", m_initFile);
 
-            if (cell.hasObstacleDynamics())
-                continue;
-
-            LatticeCell::VelocityType velocity = VelocityVector{calcPoiseuilleFlow(
-                speed,
-                c.getY() - inletRange[0],
-                (inletRange[1] - inletRange[0]) + 1
-            ), Zero} / vMax;
-
-            cell.initEquilibrium(velocity, rho);
+            loadFromFile(m_initFile);
+            initialized = true;
+        }
+        catch (const Exception& e)
+        {
+            Log::warning("[streamlines] ", e.what());
         }
     }
 
-    // Initialization iterations
-    for (simulator::IterationNumber it = 1; it <= getInitIterations(); it++)
+    if (!initialized)
     {
-        if ((it % 100) == 0)
-            Log::info("[streamlines] Initialization ", it, "/", getInitIterations());
+        // Initialization iterations
+        for (simulator::IterationNumber it = 1; it <= getInitIterations(); it++)
+        {
+            if ((it % 100) == 0)
+                Log::info("[streamlines] Initialization ", it, "/", getInitIterations());
 
-        m_lattice.collideAndStream(omega);
+            m_lattice.collideAndStream(omega);
 
-        // Apply boundary conditions
-        applyBoundaryConditions(simulation, vMax);
+            // Apply boundary conditions
+            applyBoundaryConditions(simulation, vMax);
+        }
+
+        // Store initialization
+        if (!m_initFile.empty())
+        {
+            storeToFile(m_initFile);
+        }
     }
 
     Log::info("[streamlines] Initialization done.");
@@ -415,9 +418,26 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
         *m_dataOut << "\n";
     }
 
-#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
     setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
 #endif
+
+    // Get initialization file
+    if (config.has("init-file"))
+    {
+        // Get file name
+        auto file = config.get("init-file");
+
+        // In case of %temp%
+        if (file.substr(0, 6) == "%temp%")
+        {
+            m_initFile = tempDirectory() / file.substr(6);
+        }
+        else
+        {
+            m_initFile = config.buildFilePath(file);
+        }
+    }
 
     // Initialize lattice
     init(simulation);
@@ -1076,6 +1096,71 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
                     m_lattice[{x, y}].initInlet(dir, inletVelocityProfile({x, y}, pos, inlets) / vMax);
             }
         }
+    }
+}
+
+/* ************************************************************************ */
+
+void Module::storeToFile(const FilePath& filename)
+{
+    OutFileStream ofs(filename.string(), OutFileStream::binary);
+    BinaryOutput out(ofs);
+
+    // Write file guard
+    out.write(FILE_GUARD);
+
+    // Write lattice size
+    out.write(m_lattice.getSize());
+
+    // Number of init iterations
+    out.write(m_initIterations);
+
+    for (auto&& c : range(m_lattice.getSize()))
+    {
+        const LatticeCell& cell = m_lattice[c];
+
+        // Write cell populations
+        out.write(cell.getValues());
+    }
+}
+
+/* ************************************************************************ */
+
+void Module::loadFromFile(const FilePath& filename)
+{
+    InFileStream ifs(filename.string(), OutFileStream::binary);
+
+    if (!ifs.is_open())
+        throw InvalidArgumentException("[streamlines] Cannot load from file: File not found '" + filename.string() + "'");
+
+    BinaryInput in(ifs);
+
+    // Read guard
+    StaticArray<char, FILE_GUARD.size()> guard;
+    in.read(guard);
+
+    if (guard != FILE_GUARD)
+        throw InvalidArgumentException("[streamlines] Cannot load from file: File is not valid");
+
+    // Read lattice size
+    Lattice::Size size;
+    in.read(size);
+
+    if (size != m_lattice.getSize())
+        throw InvalidArgumentException("[streamlines] Cannot load from file: different lattice sizes");
+
+    decltype(m_initIterations) iterations;
+    in.read(iterations);
+
+    if (iterations != m_initIterations)
+        throw InvalidArgumentException("[streamlines] Cannot load from file: different init iterations");
+
+    for (auto&& c : range(m_lattice.getSize()))
+    {
+        LatticeCell& cell = m_lattice[c];
+
+        // Read cell populations
+        in.read(cell.getValues());
     }
 }
 

@@ -43,6 +43,13 @@ bool fileExists(const FilePath& path) noexcept
 
 /* ************************************************************************ */
 
+FilePath tempDirectory() noexcept
+{
+    return boost::filesystem::temp_directory_path();
+}
+
+/* ************************************************************************ */
+
 }
 }
 

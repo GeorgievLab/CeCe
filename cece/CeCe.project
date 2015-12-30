@@ -199,6 +199,10 @@
     <VirtualDirectory Name="exception">
       <File Name="core/Exception.hpp"/>
     </VirtualDirectory>
+    <VirtualDirectory Name="serialize">
+      <File Name="core/BinaryOutput.hpp"/>
+      <File Name="core/BinaryInput.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="render">
     <File Name="render/Buffer.cpp"/>

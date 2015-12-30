@@ -263,7 +263,20 @@ public:
 
 
     /**
-     * @brief Returns function value.
+     * @brief Returns mutable population value.
+     *
+     * @param pos
+     *
+     * @return
+     */
+    ValueType& get(IndexType pos) noexcept
+    {
+        return m_values[pos];
+    }
+
+
+    /**
+     * @brief Returns population value.
      *
      * @param pos
      *
@@ -276,7 +289,18 @@ public:
 
 
     /**
-     * @brief Returns values.
+     * @brief Returns mutable populations.
+     *
+     * @return
+     */
+    StaticArray<ValueType, SIZE>& getValues() noexcept
+    {
+        return m_values;
+    }
+
+
+    /**
+     * @brief Returns populations.
      *
      * @return
      */

@@ -67,6 +67,15 @@ bool fileExists(const FilePath& path) noexcept;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Returns temporary directory.
+ *
+ * @return
+ */
+FilePath tempDirectory() noexcept;
+
+/* ************************************************************************ */
+
 }
 }
 

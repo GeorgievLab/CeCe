@@ -41,6 +41,7 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/InStream.hpp"
+#include "cece/core/FilePath.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
@@ -577,6 +578,22 @@ protected:
         LayoutPosition pos, const VelocityVector& vMax);
 
 
+    /**
+     * @brief Store streamlines data to file.
+     *
+     * @param filename
+     */
+    void storeToFile(const FilePath& filename);
+
+
+    /**
+     * @brief Load streamlines data from file.
+     *
+     * @param filename
+     */
+    void loadFromFile(const FilePath& filename);
+
+
 // Private Data Members
 private:
 
@@ -597,6 +614,9 @@ private:
 
     /// Number of init iterations.
     simulator::IterationCount m_initIterations = 100;
+
+    /// Path to initialization file.
+    FilePath m_initFile;
 
     /// Lattice.
     Lattice m_lattice;
