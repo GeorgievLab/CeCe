@@ -33,10 +33,9 @@
 #include "cece/core/Log.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
+#include "cece/config/Configuration.hpp"
+#include "cece/plugin/Manager.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Configuration.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginManager.hpp"
 
 // Plugin
 #include "cece/plugins/python/Utils.hpp"
@@ -51,7 +50,7 @@ namespace python {
 /* ************************************************************************ */
 
 Object::Object(simulator::Simulation& simulation, const String& name, Type type)
-    : simulator::Object(simulation, "python.Object", type)
+    : object::Object(simulation, "python.Object", type)
 {
     auto ends_with = [](const std::string& value, const std::string& ending) {
         if (ending.size() > value.size()) return false;
@@ -64,7 +63,7 @@ Object::Object(simulator::Simulation& simulation, const String& name, Type type)
         FilePath foundPath;
 
         // Foreach possible paths
-        for (const auto& p : simulator::PluginManager::s().getDirectories())
+        for (const auto& p : plugin::Manager::s().getDirectories())
         {
             auto path = p / name;
 
@@ -88,7 +87,7 @@ Object::Object(simulator::Simulation& simulation, const String& name, Type type)
 
 /* ************************************************************************ */
 
-void Object::configure(const simulator::Configuration& config, simulator::Simulation& simulation)
+void Object::configure(const config::Configuration& config, simulator::Simulation& simulation)
 {
     // Check if configuration contains code
     if (config.hasContent())
@@ -112,7 +111,7 @@ void Object::configure(const simulator::Configuration& config, simulator::Simula
         return;
 
     // Call configure
-    if (!call(m_configureFn, static_cast<simulator::Object*>(this), &config))
+    if (!call(m_configureFn, static_cast<object::Object*>(this), &config))
         throw Exception();
 }
 
@@ -124,7 +123,7 @@ void Object::update(units::Duration dt)
         return;
 
     // Call update
-    if (!call(m_updateFn, static_cast<simulator::Object*>(this), dt.value()))
+    if (!call(m_updateFn, static_cast<object::Object*>(this), dt.value()))
         throw Exception();
 }
 
@@ -137,7 +136,7 @@ void Object::draw(render::Context& context)
         return;
 
     // Call draw
-    if (!call(m_drawFn, static_cast<simulator::Object*>(this), &context))
+    if (!call(m_drawFn, static_cast<object::Object*>(this), &context))
         throw Exception();
 }
 #endif

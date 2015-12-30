@@ -69,7 +69,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**
@@ -79,7 +79,7 @@ public:
      * @param object     Object.
      * @param dt         Simulation time step.
      */
-    void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt) override;
+    void call(simulator::Simulation& simulation, object::Object& object, units::Time dt) override;
 
 
 // Private Data Members

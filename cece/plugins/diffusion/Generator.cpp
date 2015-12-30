@@ -167,7 +167,7 @@ void Generator::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Generator::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Generator::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     m_diffusionModule = simulation.getModule("diffusion");
 

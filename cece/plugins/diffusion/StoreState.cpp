@@ -41,7 +41,7 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-void StoreState::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void StoreState::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     m_diffusionModule = simulation.getModule("diffusion");
 

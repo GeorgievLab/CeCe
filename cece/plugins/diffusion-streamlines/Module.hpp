@@ -29,7 +29,7 @@
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 
 // Plugins
 #include "cece/plugins/diffusion/Module.hpp"
@@ -46,7 +46,7 @@ namespace diffusion_streamlines {
 /**
  * @brief Module for diffusion & streamlines.
  */
-class Module : public simulator::Module
+class Module : public module::Module
 {
 
 
@@ -60,7 +60,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

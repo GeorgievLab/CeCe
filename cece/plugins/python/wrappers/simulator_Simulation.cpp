@@ -269,14 +269,14 @@ public:
     static PyObject* buildObject(SelfType* self, PyObject* args) noexcept
     {
         char* name;
-        int type = static_cast<int>(simulator::Object::Type::Dynamic);
+        int type = static_cast<int>(object::Object::Type::Dynamic);
 
         if (!PyArg_ParseTuple(args, "s|i", &name, &type))
             return nullptr;
 
         try
         {
-            return makeObject(self->value->buildObject(name, static_cast<simulator::Object::Type>(type))).release();
+            return makeObject(self->value->buildObject(name, static_cast<object::Object::Type>(type))).release();
         }
         catch (const cece::Exception& e)
         {

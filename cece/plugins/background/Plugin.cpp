@@ -24,12 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/SimulationListener.hpp"
-#include "cece/simulator/PluginManager.hpp"
-#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Plugin
 #include "cece/plugins/background/Module.hpp"
@@ -37,11 +34,10 @@
 /* ************************************************************************ */
 
 using namespace cece;
-using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class BackgroundApi : public PluginApi
+class BackgroundApi : public plugin::Api
 {
 
     /**
@@ -49,7 +45,7 @@ class BackgroundApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         context.registerModule<plugin::background::Module>("background");
     }
@@ -60,7 +56,7 @@ class BackgroundApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterModule("background");
     }

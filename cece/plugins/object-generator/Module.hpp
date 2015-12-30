@@ -38,9 +38,9 @@
 #include "cece/core/Units.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Configuration.hpp"
 
 /* ************************************************************************ */
 
@@ -95,7 +95,7 @@ struct ObjectDesc
     DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> active;
 
     /// Object configuration
-    simulator::Configuration config;
+    config::Configuration config;
 };
 
 /* ************************************************************************ */
@@ -103,7 +103,7 @@ struct ObjectDesc
 /**
  * @brief Object generator module.
  */
-class Module : public simulator::Module
+class Module : public module::Module
 {
 
 // Public Mutators
@@ -131,7 +131,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

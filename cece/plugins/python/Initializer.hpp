@@ -68,7 +68,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

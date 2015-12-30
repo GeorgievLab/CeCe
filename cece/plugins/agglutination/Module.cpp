@@ -152,10 +152,10 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     // Configure parent
-    simulator::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(simulation, config);
 
     simulation.getWorld().SetContactListener(this);
 
@@ -176,12 +176,12 @@ void Module::BeginContact(b2Contact* contact)
 {
     auto ba = contact->GetFixtureA()->GetBody();
     auto bb = contact->GetFixtureB()->GetBody();
-    auto oa = static_cast<simulator::Object*>(ba->GetUserData());
-    auto ob = static_cast<simulator::Object*>(bb->GetUserData());
+    auto oa = static_cast<object::Object*>(ba->GetUserData());
+    auto ob = static_cast<object::Object*>(bb->GetUserData());
     if (!oa->is<plugin::cell::CellBase>() || !ob->is<plugin::cell::CellBase>())
         return;
-    auto& ca = static_cast<simulator::Object*>(ba->GetUserData())->castThrow<plugin::cell::CellBase>();
-    auto& cb = static_cast<simulator::Object*>(bb->GetUserData())->castThrow<plugin::cell::CellBase>();
+    auto& ca = static_cast<object::Object*>(ba->GetUserData())->castThrow<plugin::cell::CellBase>();
+    auto& cb = static_cast<object::Object*>(bb->GetUserData())->castThrow<plugin::cell::CellBase>();
     auto radius1 = ca.getShapes()[0].getCircle().radius;
     auto radius2 = cb.getShapes()[0].getCircle().radius;
 

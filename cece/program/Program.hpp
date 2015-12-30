@@ -33,9 +33,9 @@
 
 /* ************************************************************************ */
 
+namespace cece { namespace object { class Object; } }
+namespace cece { namespace config { class Configuration; } }
 namespace cece { namespace simulator { class Simulation; } }
-namespace cece { namespace simulator { class Object; } }
-namespace cece { namespace simulator { class Configuration; } }
 
 /* ************************************************************************ */
 
@@ -83,7 +83,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    virtual void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+    virtual void loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
     {
         // Nothing to do
     }
@@ -95,7 +95,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Output configuration.
      */
-    virtual void storeConfig(simulator::Simulation& simulation, simulator::Configuration& config)
+    virtual void storeConfig(simulator::Simulation& simulation, config::Configuration& config)
     {
         // Nothing to do
     }
@@ -107,7 +107,7 @@ public:
      * @param simulation Simulation object.
      * @param object     Object.
      */
-    virtual void init(simulator::Simulation& simulation, simulator::Object& object)
+    virtual void init(simulator::Simulation& simulation, object::Object& object)
     {
         // Nothing to do
     }
@@ -120,7 +120,7 @@ public:
      * @param object     Object.
      * @param dt         Simulation time step.
      */
-    virtual void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt) = 0;
+    virtual void call(simulator::Simulation& simulation, object::Object& object, units::Time dt) = 0;
 
 
     /**
@@ -129,7 +129,7 @@ public:
      * @param simulation Simulation object.
      * @param object     Object.
      */
-    virtual void terminate(simulator::Simulation& simulation, simulator::Object& object)
+    virtual void terminate(simulator::Simulation& simulation, object::Object& object)
     {
         // Nothing to do
     }

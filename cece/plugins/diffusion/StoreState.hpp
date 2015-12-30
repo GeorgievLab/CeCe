@@ -29,7 +29,7 @@
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"
@@ -45,7 +45,7 @@ namespace diffusion {
 /**
  * @brief Diffusion store state module.
  */
-class StoreState : public simulator::Module
+class StoreState : public module::Module
 {
 
 
@@ -59,7 +59,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

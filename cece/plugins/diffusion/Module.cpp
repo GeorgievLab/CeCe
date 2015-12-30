@@ -167,10 +167,10 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     // Configure parent
-    simulator::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(simulation, config);
 
     // Grid size
     setGridSize(config.get<Vector<GridType::SizeType>>("grid"));
@@ -392,7 +392,7 @@ void Module::updateObstacles(simulator::Simulation& simulation)
     for (auto& obj : simulation.getObjects())
     {
         // Ignore non-static objects
-        if (obj->getType() == simulator::Object::Type::Dynamic)
+        if (obj->getType() == object::Object::Type::Dynamic)
             continue;
 
         // Get object position

@@ -48,7 +48,7 @@ UniquePtr<init::Initializer> Initializer::clone() const
 
 /* ************************************************************************ */
 
-void Initializer::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Initializer::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     if (config.has("filename"))
     {

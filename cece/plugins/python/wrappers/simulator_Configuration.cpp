@@ -28,7 +28,7 @@
 
 // CeCe
 #include "cece/core/Assert.hpp"
-#include "cece/simulator/Configuration.hpp"
+#include "cece/config/Configuration.hpp"
 
 // Plugin
 #include "cece/plugins/python/Type.hpp"
@@ -49,7 +49,7 @@ namespace {
 /**
  * @brief Type definition.
  */
-class ConfigurationType : public Type<simulator::Configuration*>
+class ConfigurationType : public Type<config::Configuration*>
 {
 
 // Ctors & Dtors
@@ -60,7 +60,7 @@ public:
      * @brief Constructor.
      */
     ConfigurationType()
-        : Type("simulator.Configuration")
+        : Type("config.Configuration")
     {
         tp_methods = m_methods;
     }

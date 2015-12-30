@@ -47,10 +47,10 @@ constexpr png_size_t PNGSIGSIZE = 8;
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     // Configure parent
-    simulator::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(simulation, config);
 
     // Get image file path
     const auto imagePath = config.buildFilePath(config.get("image"));

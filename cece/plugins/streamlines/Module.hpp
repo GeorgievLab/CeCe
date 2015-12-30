@@ -41,9 +41,9 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/InStream.hpp"
+#include "cece/module/Module.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Module.hpp"
-#include "cece/simulator/Object.hpp"
 #include "cece/simulator/Obstacle.hpp"
 
 #ifdef CECE_ENABLE_RENDER
@@ -71,7 +71,7 @@ namespace streamlines {
 /**
  * @brief Module for streamlines.
  */
-class Module : public simulator::Module
+class Module : public module::Module
 {
 
 // Public Enums
@@ -442,7 +442,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**
@@ -507,7 +507,7 @@ protected:
      * @param dt
      * @param vMax
      */
-    void applyToObject(simulator::Object& object, const simulator::Simulation& simulation,
+    void applyToObject(object::Object& object, const simulator::Simulation& simulation,
         units::Time dt, const VelocityVector& vMax);
 
 

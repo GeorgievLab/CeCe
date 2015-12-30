@@ -23,20 +23,14 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// This must be first
-#include "cece/plugins/python/Python.hpp"
-
 // Declaration
 #include "cece/plugins/python/Module.hpp"
 
 // CeCe
 #include "cece/core/Log.hpp"
 #include "cece/core/String.hpp"
-#include "cece/core/FilePath.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Configuration.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginManager.hpp"
 
 // Plugin
 #include "cece/plugins/python/Exception.hpp"
@@ -50,10 +44,10 @@ namespace python {
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     // Configure parent
-    simulator::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(simulation, config);
 
     // Check if configuration contains code
     if (config.hasContent())

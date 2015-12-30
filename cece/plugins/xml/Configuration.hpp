@@ -31,7 +31,7 @@
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/simulator/Configuration.hpp"
+#include "cece/config/Implementation.hpp"
 
 // pugixml
 #include "pugixml/pugixml.hpp"
@@ -47,7 +47,7 @@ namespace xml {
 /**
  * @brief XML configuration implementation.
  */
-class ConfigImplementation : public simulator::Configuration::Implementation
+class ConfigImplementation : public config::Implementation
 {
 
 // Public Ctors & Dtors
@@ -91,7 +91,7 @@ public:
      *
      * @return
      */
-    bool has(const StringView& name) const noexcept override
+    bool has(StringView name) const noexcept override
     {
         return !m_node.attribute(name.getData()).empty();
     }
@@ -104,7 +104,7 @@ public:
      *
      * @return
      */
-    String get(const StringView& name) const noexcept override
+    String get(StringView name) const noexcept override
     {
         return m_node.attribute(name.getData()).value();
     }
@@ -155,7 +155,7 @@ public:
      *
      * @return
      */
-    bool hasSubs(const StringView& name) const noexcept override
+    bool hasSubs(StringView name) const noexcept override
     {
         auto rng = m_node.children(name.getData());
         return rng.begin() != rng.end();
@@ -169,9 +169,9 @@ public:
      *
      * @return
      */
-    DynamicArray<UniquePtr<Implementation>> getSubs(const StringView& name) const noexcept override
+    DynamicArray<UniquePtr<config::Implementation>> getSubs(StringView name) const noexcept override
     {
-        DynamicArray<UniquePtr<Implementation>> res;
+        DynamicArray<UniquePtr<config::Implementation>> res;
 
         // Foreach children
         for (const auto& node : m_node.children(name.getData()))
@@ -212,7 +212,7 @@ public:
      *
      * @return
      */
-    void set(const StringView& name, const StringView& value) noexcept override
+    void set(StringView name, StringView value) noexcept override
     {
         m_node.attribute(name.getData()).set_value(value.getData());
     }
@@ -223,7 +223,7 @@ public:
      *
      * @param content Content text.
      */
-    void setContent(const StringView& content) noexcept override
+    void setContent(StringView content) noexcept override
     {
         m_node.text().set(content.getData());
     }
@@ -236,7 +236,7 @@ public:
      *
      * @return
      */
-    UniquePtr<simulator::Configuration::Implementation> addSub(const StringView& name) noexcept override
+    UniquePtr<config::Implementation> addSub(StringView name) noexcept override
     {
         return makeUnique<ConfigImplementation>(m_node.append_child(name.getData()));
     }

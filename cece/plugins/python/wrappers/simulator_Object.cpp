@@ -28,7 +28,7 @@
 
 // CeCe
 #include "cece/core/Assert.hpp"
-#include "cece/simulator/Object.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
@@ -50,7 +50,7 @@ namespace {
 /**
  * @brief Type definition.
  */
-class ObjectType : public Type<simulator::Object*>
+class ObjectType : public Type<object::Object*>
 {
 
 
@@ -62,7 +62,7 @@ public:
      * @brief Constructor.
      */
     explicit ObjectType()
-        : Type("simulator.Object")
+        : Type("cece.Object")
     {
         tp_getset = m_properties;
         tp_methods = m_methods;
@@ -340,9 +340,9 @@ void init_simulator_Object(PyObject* module)
     g_type.add(module);
 
     // Define constants
-    PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(simulator::Object::Type::Static));
-    PyModule_AddIntConstant(module, "OBJECT_TYPE_DYNAMIC", static_cast<int>(simulator::Object::Type::Dynamic));
-    PyModule_AddIntConstant(module, "OBJECT_TYPE_PINNED", static_cast<int>(simulator::Object::Type::Pinned));
+    PyModule_AddIntConstant(module, "OBJECT_TYPE_STATIC", static_cast<int>(object::Object::Type::Static));
+    PyModule_AddIntConstant(module, "OBJECT_TYPE_DYNAMIC", static_cast<int>(object::Object::Type::Dynamic));
+    PyModule_AddIntConstant(module, "OBJECT_TYPE_PINNED", static_cast<int>(object::Object::Type::Pinned));
 }
 
 /* ************************************************************************ */

@@ -74,7 +74,7 @@ public:
      * @param object     Object.
      * @param dt         Simulation time step.
      */
-    void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt) override;
+    void call(simulator::Simulation& simulation, object::Object& object, units::Time dt) override;
 
 };
 

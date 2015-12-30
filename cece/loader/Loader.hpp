@@ -37,7 +37,7 @@
 /* ************************************************************************ */
 
 namespace cece { namespace simulator { class Simulation; } }
-namespace cece { namespace simulator { class PluginContext; } }
+namespace cece { namespace plugin { class Context; } }
 
 /* ************************************************************************ */
 
@@ -76,7 +76,7 @@ public:
      *
      * @return Pointer to created simulation.
      */
-    virtual UniquePtr<simulator::Simulation> fromFile(simulator::PluginContext& context,
+    virtual UniquePtr<simulator::Simulation> fromFile(plugin::Context& context,
         const FilePath& filename) const;
 
 
@@ -88,7 +88,7 @@ public:
      *
      * @return Pointer to created simulation.
      */
-    virtual UniquePtr<simulator::Simulation> fromSource(simulator::PluginContext& context,
+    virtual UniquePtr<simulator::Simulation> fromSource(plugin::Context& context,
         const String& source, const FilePath& filename = "<source>") const;
 
 
@@ -121,7 +121,7 @@ public:
      *
      * @return Created simulation.
      */
-    virtual UniquePtr<simulator::Simulation> fromStream(simulator::PluginContext& context,
+    virtual UniquePtr<simulator::Simulation> fromStream(plugin::Context& context,
         InStream& is, const FilePath& filename = "<stream>") const = 0;
 
 

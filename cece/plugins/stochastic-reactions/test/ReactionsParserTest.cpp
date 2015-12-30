@@ -30,10 +30,12 @@
 #include <gtest/gtest.h>
 
 // CeCe
-#include "cece/simulator/PluginContext.hpp"
-#include "cece/simulator/Simulation.hpp"
-#include "cece/plugins/cell/CellBase.hpp"
 #include "cece/core/UnitsCtors.hpp"
+#include "cece/plugin/Context.hpp"
+#include "cece/simulator/Simulation.hpp"
+
+// Plugins
+#include "cece/plugins/cell/CellBase.hpp"
 
 // Plugin
 #include "cece/plugins/stochastic-reactions/ReactionsParser.hpp"
@@ -67,7 +69,7 @@ static void test_impl(
 {
     SCOPED_TRACE(code);
 
-    simulator::PluginContext pluginContext;
+    plugin::Context pluginContext;
     simulator::Simulation simulation(pluginContext);
     plugin::cell::CellBase cell(simulation);
     Context context(nullptr, cell, nullptr, simulation.getParameters());

@@ -36,7 +36,7 @@
 #include "cece/plugins/python/Python.hpp"
 
 // CeCe
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 #include "cece/render/Context.hpp"
 
 // Plugin
@@ -54,7 +54,7 @@ namespace python {
 /**
  * @brief Module for Python support.
  */
-class Module : public simulator::Module
+class Module : public module::Module
 {
 
 // Public Operations
@@ -67,7 +67,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

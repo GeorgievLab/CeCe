@@ -35,8 +35,8 @@
 
 /* ************************************************************************ */
 
+namespace cece { namespace object { class Object; } }
 namespace cece { namespace simulator { class Simulation; } }
-namespace cece { namespace simulator { class Object; } }
 
 /* ************************************************************************ */
 
@@ -187,7 +187,7 @@ public:
      * @param object     Object.
      * @param dt         Simulation time step.
      */
-    void call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt);
+    void call(simulator::Simulation& simulation, object::Object& object, units::Time dt);
 
 
 // Private Data Members

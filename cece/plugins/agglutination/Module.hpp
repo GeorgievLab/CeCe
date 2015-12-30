@@ -46,7 +46,9 @@
 #include "cece/core/String.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Tuple.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
+
+// Plugins
 #include "cece/plugins/cell/CellBase.hpp"
 
 // Physics
@@ -63,7 +65,7 @@ namespace agglutination {
 /**
  * @brief Module for agglutination.
  */
-class Module : public simulator::Module, public b2ContactListener
+class Module : public module::Module, public b2ContactListener
 {
 
 // Public Operations
@@ -76,7 +78,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

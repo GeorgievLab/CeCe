@@ -48,10 +48,10 @@ namespace picture {
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     // Configure parent
-    simulator::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(simulation, config);
 
     // File name pattern
     setFilePattern(config.get("pattern", getFilePattern()));

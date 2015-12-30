@@ -27,7 +27,7 @@
 #include "cece/plugins/python/Python.hpp"
 
 // CeCe
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 
 // Plugin
 #include "cece/plugins/python/Type.hpp"
@@ -47,7 +47,7 @@ namespace {
 /**
  * @brief Type definition.
  */
-class ModuleType : public Type<simulator::Module*>
+class ModuleType : public Type<module::Module*>
 {
 
 // Ctors & Dtors

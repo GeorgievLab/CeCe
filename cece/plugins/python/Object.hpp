@@ -37,7 +37,7 @@
 
 // CeCe
 #include "cece/core/String.hpp"
-#include "cece/simulator/Object.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/render/Context.hpp"
 
 // Plugin
@@ -55,7 +55,7 @@ namespace python {
 /**
  * @brief Python defined simulation object.
  */
-class Object : public simulator::Object
+class Object : public object::Object
 {
 
 // Public Ctors & Dtors
@@ -80,7 +80,7 @@ public:
      * @param config
      * @param simulation
      */
-    void configure(const simulator::Configuration& config, simulator::Simulation& simulation) override;
+    void configure(const config::Configuration& config, simulator::Simulation& simulation) override;
 
 
     /**

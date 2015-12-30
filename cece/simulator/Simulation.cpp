@@ -39,13 +39,13 @@
 #include "cece/core/Exception.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/FileStream.hpp"
-#include "cece/simulator/Simulator.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginManager.hpp"
+#include "cece/object/FactoryManager.hpp"
+#include "cece/plugin/Library.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Manager.hpp"
+#include "cece/config/Exception.hpp"
 #include "cece/simulator/Obstacle.hpp"
-#include "cece/simulator/ModuleFactoryManager.hpp"
-#include "cece/simulator/ObjectFactoryManager.hpp"
+#include "cece/module/FactoryManager.hpp"
 
 #if CONFIG_RENDER_TEXT_ENABLE
 #include "cece/simulator/font.hpp"
@@ -138,32 +138,7 @@ void writeCsvLine(OutStream& os, const Container& container)
 
 /* ************************************************************************ */
 
-/**
- * @brief Read object type from stream.
- *
- * @param is   Input stream.
- * @param type
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Object::Type& type)
-{
-    String value;
-    is >> value;
-
-    if (value == "static")
-        type = Object::Type::Static;
-    else if (value == "pinned")
-        type = Object::Type::Pinned;
-    else
-        type = Object::Type::Dynamic; // Default
-
-    return is;
-}
-
-/* ************************************************************************ */
-
-Simulation::Simulation(PluginContext& context) noexcept
+Simulation::Simulation(plugin::Context& context) noexcept
     : m_pluginContext(context)
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     , m_world{b2Vec2{0.0f, 0.0f}}
@@ -200,13 +175,9 @@ AccelerationVector Simulation::getGravity() const noexcept
 
 /* ************************************************************************ */
 
-ViewPtr<const ObjectType> Simulation::findObjectType(const StringView& name) const noexcept
+ViewPtr<const object::Type> Simulation::findObjectType(StringView name) const noexcept
 {
-    auto it = std::find_if(m_objectClasses.begin(), m_objectClasses.end(), [&name] (const ObjectType& type) {
-        return type.name == name;
-    });
-
-    return it != m_objectClasses.end() ? &*it : nullptr;
+    return m_objectClasses.get(name);
 }
 
 /* ************************************************************************ */
@@ -222,7 +193,7 @@ void Simulation::setGravity(const AccelerationVector& gravity) noexcept
 
 /* ************************************************************************ */
 
-ViewPtr<Module> Simulation::useModule(const String& nameSrc, String storePath)
+ViewPtr<module::Module> Simulation::useModule(const String& nameSrc, String storePath)
 {
     String name = nameSrc;
 
@@ -272,7 +243,7 @@ ViewPtr<Module> Simulation::useModule(const String& nameSrc, String storePath)
 
 /* ************************************************************************ */
 
-Object* Simulation::buildObject(const String& name, Object::Type type)
+object::Object* Simulation::buildObject(const String& name, object::Object::Type type)
 {
     // Try to find object internal object type
     auto desc = findObjectType(name);
@@ -410,14 +381,14 @@ void Simulation::initialize()
 
 /* ************************************************************************ */
 
-void Simulation::configure(const Configuration& config)
+void Simulation::configure(const config::Configuration& config)
 {
     // Resize world
     {
         auto size = config.get<SizeVector>("world-size");
 
         if (size.getWidth() == Zero || size.getHeight() == Zero)
-            throw ConfigException("Width or height is zero!");
+            throw config::Exception("Width or height is zero!");
 
         setWorldSize(size);
     }
@@ -496,15 +467,27 @@ void Simulation::configure(const Configuration& config)
     // Parse modules
     for (auto&& moduleConfig : config.getConfigurations("module"))
     {
-        // Create module by given name
-        auto module = useModule(
-            moduleConfig.get("name"),
-            moduleConfig.get("access-name", String{})
-        );
+        // Get name
+        auto name = moduleConfig.get("name");
 
-        // Configure module
+        if (hasModule(name))
+            continue;
+
+        const String typeName = moduleConfig.has("language")
+            ? moduleConfig.get("language")
+            : moduleConfig.has("type")
+                ? moduleConfig.get("type")
+                : name
+        ;
+
+        auto module = getPluginContext().createModule(typeName, *this);
+
         if (module)
+        {
             module->loadConfig(*this, moduleConfig);
+
+            addModule(std::move(name), std::move(module));
+        }
     }
 
     // Parse programs
@@ -532,7 +515,7 @@ void Simulation::configure(const Configuration& config)
         // Create object
         auto object = buildObject(
             objectConfig.get("class"),
-            objectConfig.get("type", Object::Type::Dynamic)
+            objectConfig.get("type", object::Object::Type::Dynamic)
         );
 
         if (object)
@@ -563,19 +546,8 @@ void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
 
-    // Store modules
-    DynamicArray<ViewPtr<Module>> modules;
-    for (auto& module : m_modules)
-        modules.push_back(module.second);
-
-    // Sort modules by rendering order
-    std::sort(modules.begin(), modules.end(), [](const ViewPtr<Module>& lhs, const ViewPtr<Module>& rhs) {
-        return lhs->getZOrder() < rhs->getZOrder();
-    });
-
     // Render modules
-    for (auto& module : modules)
-        module->draw(*this, context);
+    m_modules.draw(*this, context);
 
     // Draw objects
     for (auto& obj : m_objects)
@@ -643,7 +615,7 @@ void Simulation::draw(render::Context& context)
 
 /* ************************************************************************ */
 
-ViewPtr<PluginApi> Simulation::requirePlugin(const String& name)
+ViewPtr<plugin::Api> Simulation::requirePlugin(const String& name)
 {
     // Load plugin
     auto api = loadPlugin(name);
@@ -656,7 +628,7 @@ ViewPtr<PluginApi> Simulation::requirePlugin(const String& name)
 
 /* ************************************************************************ */
 
-ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) noexcept
+ViewPtr<plugin::Api> Simulation::loadPlugin(const String& name) noexcept
 {
     try
     {
@@ -668,16 +640,13 @@ ViewPtr<PluginApi> Simulation::loadPlugin(const String& name) noexcept
             return it->second;
 
         // Load plugin
-        ViewPtr<PluginApi> api = PluginManager::s().load(name);
+        auto api = plugin::Manager::s().load(name);
 
         if (!api)
             return nullptr;
 
         // Register API
         m_plugins.emplace(name, api);
-
-        // Plugin loaded
-        invoke(&SimulationListener::onPluginLoad, *this, name);
 
         // Init simulation
         api->initSimulation(*this);
@@ -716,7 +685,7 @@ void Simulation::storeDataTables()
 
 /* ************************************************************************ */
 
-ViewPtr<Object> Simulation::query(const PositionVector& position) const noexcept
+ViewPtr<object::Object> Simulation::query(const PositionVector& position) const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     const auto pos = getConverter().convertPosition(position);
@@ -747,14 +716,7 @@ void Simulation::updateModules(units::Time dt)
 {
     auto _ = measure_time("sim.modules", TimeMeasurementIterationOutput(this));
 
-    // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
-    std::sort(m_modules.begin(), m_modules.end(),
-        [](const ModuleContainer::ValueType& lhs, const ModuleContainer::ValueType& rhs) {
-            return lhs.second->getPriority() > rhs.second->getPriority();
-    });
-
-    for (auto& module : m_modules)
-        module.second->update(*this, dt);
+    m_modules.update(*this, dt);
 }
 
 /* ************************************************************************ */
@@ -765,7 +727,7 @@ void Simulation::updateObjects(units::Time dt)
 
     // Update simulations objects
     // Can't use range-for because update can add a new object.
-    for (ObjectContainer::SizeType i = 0u; i < m_objects.getCount(); ++i)
+    for (object::Container::SizeType i = 0u; i < m_objects.getCount(); ++i)
     {
         auto obj = m_objects[i];
 
@@ -784,7 +746,7 @@ void Simulation::detectDeserters()
     for (auto& obj : m_objects)
     {
         // Ignore static objects
-        if (obj->getType() == Object::Type::Static)
+        if (obj->getType() == object::Object::Type::Static)
             continue;
 
         // Get object position

@@ -26,10 +26,10 @@
 // CeCe
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/StaticArray.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Configuration.hpp"
 #include "cece/simulator/Obstacle.hpp"
 
 // NanoSVG
@@ -39,7 +39,6 @@
 /* ************************************************************************ */
 
 using namespace cece;
-using namespace cece::simulator;
 
 /* ************************************************************************ */
 
@@ -158,9 +157,9 @@ void storePath(Fn store, NSVGpath* path, float tol)
 
 /* ************************************************************************ */
 
-class ObstaclesSvgApi : public PluginApi
+class ObstaclesSvgApi : public plugin::Api
 {
-    void configure(Simulation& simulation, const Configuration& config) override
+    void configure(simulator::Simulation& simulation, const config::Configuration& config) override
     {
         const float px = 0.3;
         const auto filepath = config.buildFilePath(config.get("filename"));

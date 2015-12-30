@@ -35,12 +35,12 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
-#include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginContext.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 #include "cece/loader/Loader.hpp"
 #include "cece/loader/FactoryManager.hpp"
+#include "cece/simulator/Simulation.hpp"
 
 // Plugin
 #include "Configuration.hpp"
@@ -49,14 +49,13 @@
 
 using namespace cece;
 using namespace cece::simulator;
-using namespace cece::loader;
 
 /* ************************************************************************ */
 
-class XmlLoader : public Loader
+class XmlLoader : public loader::Loader
 {
 
-    UniquePtr<Simulation> fromStream(PluginContext& context, InStream& source,
+    UniquePtr<Simulation> fromStream(plugin::Context& context, InStream& source,
         const FilePath& filename) const override
     {
         auto simulation = makeUnique<Simulation>(context);
@@ -68,7 +67,7 @@ class XmlLoader : public Loader
             throw RuntimeException("XML parse error: " + String(result.description()));
 
         // Create configuration
-        const Configuration config(
+        const config::Configuration config(
             makeUnique<plugin::xml::ConfigImplementation>(doc.document_element()),
             filename
         );
@@ -89,7 +88,7 @@ class XmlLoader : public Loader
 
 /* ************************************************************************ */
 
-class XmlApi : public PluginApi
+class XmlApi : public plugin::Api
 {
 
     /**
@@ -97,7 +96,7 @@ class XmlApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         context.registerLoader<XmlLoader>("xml");
         context.registerLoader<XmlLoader>("cece");
@@ -109,7 +108,7 @@ class XmlApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterLoader("cece");
         context.unregisterLoader("xml");

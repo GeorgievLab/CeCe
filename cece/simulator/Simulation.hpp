@@ -49,22 +49,20 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/TimeMeasurement.hpp"
-#include "cece/core/ListenerContainer.hpp"
 #include "cece/core/DataTable.hpp"
 #include "cece/core/Parameters.hpp"
 #include "cece/core/OutStream.hpp"
-#include "cece/program/Program.hpp"
-#include "cece/program/NamedContainer.hpp"
 #include "cece/init/Initializer.hpp"
 #include "cece/init/Container.hpp"
-#include "cece/simulator/Module.hpp"
-#include "cece/simulator/Object.hpp"
-#include "cece/simulator/ObjectType.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/SimulationListener.hpp"
-#include "cece/simulator/ModuleContainer.hpp"
-#include "cece/simulator/ObjectContainer.hpp"
-#include "cece/simulator/ObjectTypeContainer.hpp"
+#include "cece/module/Module.hpp"
+#include "cece/module/Container.hpp"
+#include "cece/object/Object.hpp"
+#include "cece/object/Container.hpp"
+#include "cece/object/Type.hpp"
+#include "cece/object/TypeContainer.hpp"
+#include "cece/program/Program.hpp"
+#include "cece/program/NamedContainer.hpp"
+#include "cece/plugin/Library.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #include "cece/core/TriBool.hpp"
@@ -84,13 +82,13 @@
 
 /* ************************************************************************ */
 
-namespace cece {
-namespace simulator {
+namespace cece { namespace plugin { class Context; } }
+namespace cece { namespace config { class Configuration; } }
 
 /* ************************************************************************ */
 
-class Configuration;
-class PluginContext;
+namespace cece {
+namespace simulator {
 
 /* ************************************************************************ */
 
@@ -112,7 +110,6 @@ using IterationCount = IterationNumber;
  * @brief Simulation class.
  */
 class Simulation
-    : public ListenerContainer<SimulationListener>
 {
 
 
@@ -136,7 +133,7 @@ public:
      *
      * @param context Plugin context.
      */
-    explicit Simulation(PluginContext& context) noexcept;
+    explicit Simulation(plugin::Context& context) noexcept;
 
 
     /**
@@ -154,7 +151,7 @@ public:
      *
      * @return
      */
-    PluginContext& getPluginContext() noexcept
+    plugin::Context& getPluginContext() noexcept
     {
         return m_pluginContext;
     }
@@ -165,7 +162,7 @@ public:
      *
      * @return
      */
-    const PluginContext& getPluginContext() const noexcept
+    const plugin::Context& getPluginContext() const noexcept
     {
         return m_pluginContext;
     }
@@ -220,7 +217,7 @@ public:
      *
      * @return
      */
-    const ModuleContainer& getModules() const noexcept
+    const module::Container& getModules() const noexcept
     {
         return m_modules;
     }
@@ -287,7 +284,7 @@ public:
      *
      * @return
      */
-    bool hasModule(const StringView& name) const noexcept
+    bool hasModule(StringView name) const noexcept
     {
         return m_modules.exists(name);
     }
@@ -300,7 +297,7 @@ public:
      *
      * @return Pointer to module. If module doesn't exists, nullptr is returned.
      */
-    ViewPtr<Module> getModule(const StringView& name) noexcept
+    ViewPtr<module::Module> getModule(StringView name) noexcept
     {
         return m_modules.get(name);
     }
@@ -332,7 +329,7 @@ public:
      *
      * @return
      */
-    ObjectContainer& getObjects() noexcept
+    object::Container& getObjects() noexcept
     {
         return m_objects;
     }
@@ -343,7 +340,7 @@ public:
      *
      * @return
      */
-    const ObjectContainer& getObjects() const noexcept
+    const object::Container& getObjects() const noexcept
     {
         return m_objects;
     }
@@ -367,7 +364,7 @@ public:
      *
      * @return
      */
-    unsigned long getObjectCountType(const String& className) const noexcept
+    unsigned long getObjectCountType(StringView className) const noexcept
     {
         return m_objects.getCountByType(className);
     }
@@ -453,7 +450,7 @@ public:
      *
      * @return
      */
-    ViewPtr<const ObjectType> findObjectType(const StringView& name) const noexcept;
+    ViewPtr<const object::Type> findObjectType(StringView name) const noexcept;
 
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
@@ -779,7 +776,7 @@ public:
      *
      * @param rec.
      */
-    void addObjectType(ObjectType rec)
+    void addObjectType(object::Type rec)
     {
         m_objectClasses.add(std::move(rec));
     }
@@ -793,7 +790,7 @@ public:
      *
      * @return A pointer to inserted module.
      */
-    ViewPtr<Module> addModule(String name, UniquePtr<Module> module)
+    ViewPtr<module::Module> addModule(String name, UniquePtr<module::Module> module)
     {
         return m_modules.add(std::move(name), std::move(module));
     }
@@ -810,7 +807,7 @@ public:
     template<typename T>
     ViewPtr<T> addModule(String name, UniquePtr<T> mod)
     {
-        return addModule(std::move(name), UniquePtr<Module>(mod));
+        return addModule(std::move(name), UniquePtr<module::Module>(mod));
     }
 
 
@@ -840,7 +837,7 @@ public:
      *
      * @return A pointer to created module.
      */
-    ViewPtr<Module> useModule(const String& path, String storePath = {});
+    ViewPtr<module::Module> useModule(const String& path, String storePath = {});
 
 
     /**
@@ -905,7 +902,7 @@ public:
      *
      * @return Created object.
      */
-    Object* buildObject(const String& name, Object::Type type = Object::Type::Dynamic);
+    object::Object* buildObject(const String& name, object::Object::Type type = object::Object::Type::Dynamic);
 
 
     /**
@@ -917,7 +914,7 @@ public:
      * This is important in case the object is deleted from within (some program want
      * to delete object) and direct deletion will cause crash.
      */
-    void deleteObject(ViewPtr<Object> obj)
+    void deleteObject(ViewPtr<object::Object> obj)
     {
         m_objects.deleteObject(obj);
     }
@@ -1072,7 +1069,7 @@ public:
      *
      * @param config
      */
-    void configure(const Configuration& config);
+    void configure(const config::Configuration& config);
 
 
     /**
@@ -1117,7 +1114,7 @@ public:
      *
      * @throw In case the plugin cannot be loaded.
      */
-    ViewPtr<PluginApi> requirePlugin(const String& name);
+    ViewPtr<plugin::Api> requirePlugin(const String& name);
 
 
     /**
@@ -1131,7 +1128,7 @@ public:
      *
      * @see requirePlugin
      */
-    ViewPtr<PluginApi> loadPlugin(const String& name) noexcept;
+    ViewPtr<plugin::Api> loadPlugin(const String& name) noexcept;
 
 
     /**
@@ -1159,7 +1156,7 @@ public:
      *
      * @return
      */
-    ViewPtr<Object> query(const PositionVector& position) const noexcept;
+    ViewPtr<object::Object> query(const PositionVector& position) const noexcept;
 
 
 // Protected Operations
@@ -1199,7 +1196,7 @@ protected:
 private:
 
     /// Simulation plugin context.
-    PluginContext& m_pluginContext;
+    plugin::Context& m_pluginContext;
 
     /// If simulation is initialized.
     bool m_initialized = false;
@@ -1226,10 +1223,10 @@ private:
     Parameters m_parameters;
 
     /// Used plugins.
-    Map<String, ViewPtr<PluginApi>> m_plugins;
+    Map<String, ViewPtr<plugin::Api>> m_plugins;
 
     /// Simulation modules.
-    ModuleContainer m_modules;
+    module::Container m_modules;
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     /// Box2D world
@@ -1240,7 +1237,7 @@ private:
 #endif
 
     /// Simulation objects.
-    ObjectContainer m_objects;
+    object::Container m_objects;
 
     /// A map of preddefined programs.
     program::NamedContainer m_programs;
@@ -1249,7 +1246,7 @@ private:
     DataTableContainer m_dataTables;
 
     /// Registered object classes.
-    ObjectTypeContainer m_objectClasses;
+    object::TypeContainer m_objectClasses;
 
 #ifdef CECE_ENABLE_RENDER
 

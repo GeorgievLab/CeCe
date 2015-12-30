@@ -27,10 +27,10 @@
 #include "cece/core/Units.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Configuration.hpp"
 #include "cece/simulator/Obstacle.hpp"
 
 /* ************************************************************************ */
@@ -40,9 +40,9 @@ using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class ChemostatApi : public PluginApi
+class ChemostatApi : public plugin::Api
 {
-    void configure(Simulation& simulation, const Configuration& config) override
+    void configure(simulator::Simulation& simulation, const config::Configuration& config) override
     {
         constexpr auto SLOPE = units::um(5);
 

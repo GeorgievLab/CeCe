@@ -28,8 +28,9 @@
 
 // CeCe
 #include "cece/core/Exception.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginManager.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Plugin
 #include "cece/plugins/python/Module.hpp"
@@ -70,11 +71,10 @@ static const struct _inittab INIT_TABLE[] = {
 /* ************************************************************************ */
 
 using namespace cece;
-using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class PythonApi : public PluginApi
+class PythonApi : public plugin::Api
 {
 
     /**
@@ -82,7 +82,7 @@ class PythonApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
             throw RuntimeException("Unable to initialize Python import table");
@@ -101,7 +101,7 @@ class PythonApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterModule("python");
         context.unregisterProgram("python");

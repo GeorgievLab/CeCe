@@ -47,7 +47,7 @@ namespace diffusion_streamlines {
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     m_streamlines = simulation.useModule<plugin::streamlines::Module>("streamlines");
     m_diffusion = simulation.useModule<plugin::diffusion::Module>("diffusion");

@@ -49,14 +49,14 @@ UniquePtr<program::Program> Reactions::clone() const
 
 /* ************************************************************************ */
 
-void Reactions::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Reactions::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     *this = parseReactions(config.getContent());
 }
 
 /* ************************************************************************ */
 
-void Reactions::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
+void Reactions::call(simulator::Simulation& simulation, object::Object& object, units::Time dt)
 {
     // get context
     auto& cell = object.castThrow<cell::CellBase>();

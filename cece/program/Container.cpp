@@ -81,7 +81,7 @@ void Container::clear()
 
 /* ************************************************************************ */
 
-void Container::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
+void Container::call(simulator::Simulation& simulation, object::Object& object, units::Time dt)
 {
     // Invoke all stored programs
     for (auto& program : m_programs)

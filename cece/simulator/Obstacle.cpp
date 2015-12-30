@@ -31,7 +31,7 @@
 
 // CeCe
 #include "cece/core/VectorUnits.hpp"
-#include "cece/simulator/Configuration.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -41,7 +41,7 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-void Obstacle::configure(const Configuration& config, Simulation& simulation)
+void Obstacle::configure(const config::Configuration& config, Simulation& simulation)
 {
     Object::configure(config, simulation);
 

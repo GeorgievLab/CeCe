@@ -24,11 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginContext.hpp"
-#include "cece/simulator/ObjectFactoryManager.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Plugin
 #include "Yeast.hpp"
@@ -38,7 +36,6 @@
 /* ************************************************************************ */
 
 using namespace cece;
-using namespace cece::simulator;
 using namespace cece::plugin::cell;
 
 /* ************************************************************************ */
@@ -46,7 +43,7 @@ using namespace cece::plugin::cell;
 /**
  * @brief Cell plugin API.
  */
-class CellApi : public PluginApi
+class CellApi : public plugin::Api
 {
 
     /**
@@ -54,7 +51,7 @@ class CellApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         context.registerObject<Cell>("cell.Cell");
         context.registerObject<Yeast>("cell.Yeast");
@@ -67,7 +64,7 @@ class CellApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterProgram("cell.store-molecules");
         context.unregisterObject("cell.Cell");

@@ -256,8 +256,6 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="simulator">
-    <File Name="simulator/Configuration.cpp"/>
-    <File Name="simulator/Configuration.hpp"/>
     <File Name="simulator/Obstacle.cpp"/>
     <File Name="simulator/Obstacle.hpp"/>
     <File Name="simulator/Shape.hpp"/>
@@ -270,40 +268,8 @@
     <VirtualDirectory Name="resource">
       <File Name="simulator/font.hpp"/>
     </VirtualDirectory>
-    <VirtualDirectory Name="module">
-      <File Name="simulator/Module.cpp"/>
-      <File Name="simulator/Module.hpp"/>
-      <File Name="simulator/ModuleContainer.cpp"/>
-      <File Name="simulator/ModuleContainer.hpp"/>
-      <File Name="simulator/ModuleFactory.hpp"/>
-      <File Name="simulator/ModuleFactoryManager.cpp"/>
-      <File Name="simulator/ModuleFactoryManager.hpp"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="object">
-      <File Name="simulator/Object.cpp"/>
-      <File Name="simulator/Object.hpp"/>
-      <File Name="simulator/ObjectContainer.cpp"/>
-      <File Name="simulator/ObjectContainer.hpp"/>
-      <File Name="simulator/ObjectFactory.hpp"/>
-      <File Name="simulator/ObjectFactoryManager.cpp"/>
-      <File Name="simulator/ObjectFactoryManager.hpp"/>
-      <File Name="simulator/ObjectType.hpp"/>
-      <File Name="simulator/ObjectTypeContainer.cpp"/>
-      <File Name="simulator/ObjectTypeContainer.hpp"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="plugin">
-      <File Name="simulator/Plugin.cpp"/>
-      <File Name="simulator/Plugin.hpp"/>
-      <File Name="simulator/PluginApi.cpp"/>
-      <File Name="simulator/PluginApi.hpp"/>
-      <File Name="simulator/PluginManager.cpp"/>
-      <File Name="simulator/PluginManager.hpp"/>
-      <File Name="simulator/PluginContext.hpp"/>
-      <File Name="simulator/PluginContext.cpp"/>
-    </VirtualDirectory>
     <File Name="simulator/Simulation.cpp"/>
     <File Name="simulator/Simulation.hpp"/>
-    <File Name="simulator/SimulationListener.hpp"/>
     <File Name="simulator/ConverterBox2D.cpp"/>
     <File Name="simulator/ConverterBox2D.hpp"/>
   </VirtualDirectory>
@@ -314,6 +280,16 @@
   <Dependencies Name="Release"/>
   <VirtualDirectory Name="config">
     <File Name="config.hpp.in"/>
+    <File Name="config/Configuration.cpp"/>
+    <File Name="config/Configuration.hpp"/>
+    <VirtualDirectory Name="CMake">
+      <File Name="config/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <File Name="config/Implementation.hpp"/>
+    <File Name="config/Implementation.cpp"/>
+    <File Name="config/MemoryImplementation.hpp"/>
+    <File Name="config/MemoryImplementation.cpp"/>
+    <File Name="config/Exception.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="loader">
     <File Name="loader/Loader.cpp"/>
@@ -348,5 +324,46 @@
     <VirtualDirectory Name="CMake">
       <File Name="init/CMakeLists.txt"/>
     </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="module">
+    <File Name="module/Container.cpp"/>
+    <File Name="module/Container.hpp"/>
+    <File Name="module/Factory.hpp"/>
+    <File Name="module/FactoryManager.cpp"/>
+    <File Name="module/FactoryManager.hpp"/>
+    <File Name="module/Module.cpp"/>
+    <File Name="module/Module.hpp"/>
+    <VirtualDirectory Name="CMake">
+      <File Name="module/CMakeLists.txt"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="object">
+    <VirtualDirectory Name="CMake">
+      <File Name="object/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <File Name="object/Container.cpp"/>
+    <File Name="object/Container.hpp"/>
+    <File Name="object/Factory.hpp"/>
+    <File Name="object/FactoryManager.cpp"/>
+    <File Name="object/FactoryManager.hpp"/>
+    <File Name="object/Object.cpp"/>
+    <File Name="object/Object.hpp"/>
+    <File Name="object/Type.hpp"/>
+    <File Name="object/TypeContainer.cpp"/>
+    <File Name="object/TypeContainer.hpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="plugin">
+    <VirtualDirectory Name="CMake">
+      <File Name="plugin/CMakeLists.txt"/>
+    </VirtualDirectory>
+    <File Name="plugin/Api.cpp"/>
+    <File Name="plugin/Api.hpp"/>
+    <File Name="plugin/Context.cpp"/>
+    <File Name="plugin/Context.hpp"/>
+    <File Name="plugin/Library.cpp"/>
+    <File Name="plugin/Library.hpp"/>
+    <File Name="plugin/Manager.cpp"/>
+    <File Name="plugin/Manager.hpp"/>
+    <File Name="plugin/definition.hpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

@@ -33,7 +33,7 @@
 #include "cece/core/Units.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/Pair.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
@@ -50,7 +50,7 @@ namespace diffusion {
 /**
  * @brief Module for diffusion generation.
  */
-class Generator : public simulator::Module
+class Generator : public module::Module
 {
 
 // Public Types
@@ -71,7 +71,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

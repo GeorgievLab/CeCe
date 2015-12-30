@@ -28,6 +28,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/config/Configuration.hpp"
 
 /* ************************************************************************ */
 
@@ -37,8 +38,7 @@ namespace cell {
 
 /* ************************************************************************ */
 
-void CellBase::configure(const simulator::Configuration& config,
-                         simulator::Simulation& simulation)
+void CellBase::configure(const config::Configuration& config, simulator::Simulation& simulation)
 {
     Object::configure(config, simulation);
 

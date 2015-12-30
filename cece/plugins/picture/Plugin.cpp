@@ -24,10 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginContext.hpp"
-#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Plugin
 #include "cece/plugins/picture/Module.hpp"
@@ -35,11 +34,10 @@
 /* ************************************************************************ */
 
 using namespace cece;
-using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class PictureApi : public PluginApi
+class PictureApi : public plugin::Api
 {
 
     /**
@@ -47,7 +45,7 @@ class PictureApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         context.registerModule<plugin::picture::Module>("picture");
     }
@@ -58,7 +56,7 @@ class PictureApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterModule("picture");
     }

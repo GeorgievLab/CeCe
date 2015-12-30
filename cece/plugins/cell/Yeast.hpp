@@ -98,7 +98,7 @@ public:
      * @param type       Cell type.
      */
     explicit Yeast(simulator::Simulation& simulation, String typeName = "cell.Yeast",
-                   simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
+                   object::Object::Type type = object::Object::Type::Dynamic) noexcept;
 
 
     /**
@@ -244,8 +244,7 @@ public:
      * @param config
      * @param simulation
      */
-    void configure(const simulator::Configuration& config,
-                   simulator::Simulation& simulation) override;
+    void configure(const config::Configuration& config, simulator::Simulation& simulation) override;
 
 
     /**

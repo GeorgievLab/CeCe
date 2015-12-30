@@ -31,7 +31,7 @@
 #include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 #include "cece/render/Context.hpp"
 
 #ifdef CECE_THREAD_SAFE
@@ -49,7 +49,7 @@ namespace picture {
 /**
  * @brief Module for storing pictures.
  */
-class Module : public simulator::Module
+class Module : public module::Module
 {
 
 // Public Accessors
@@ -115,7 +115,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

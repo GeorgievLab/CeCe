@@ -40,7 +40,7 @@ namespace loader {
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> Loader::fromFile(simulator::PluginContext& context,
+UniquePtr<simulator::Simulation> Loader::fromFile(plugin::Context& context,
     const FilePath& filename) const
 {
     std::ifstream file(filename.string(), std::ios::in);
@@ -49,7 +49,7 @@ UniquePtr<simulator::Simulation> Loader::fromFile(simulator::PluginContext& cont
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> Loader::fromSource(simulator::PluginContext& context,
+UniquePtr<simulator::Simulation> Loader::fromSource(plugin::Context& context,
     const String& source, const FilePath& filename) const
 {
     std::istringstream is(source, std::ios::in);

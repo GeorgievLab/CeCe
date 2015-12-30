@@ -24,9 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginContext.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/Module.hpp"
@@ -34,11 +34,10 @@
 /* ************************************************************************ */
 
 using namespace cece;
-using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class StreamlinesApi : public PluginApi
+class StreamlinesApi : public plugin::Api
 {
 
     /**
@@ -46,7 +45,7 @@ class StreamlinesApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         context.registerModule<plugin::streamlines::Module>("streamlines");
     }
@@ -57,7 +56,7 @@ class StreamlinesApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterModule("streamlines");
     }

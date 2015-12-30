@@ -27,7 +27,7 @@
 #include "cece/plugins/python/Program.hpp"
 
 // CeCe
-#include "cece/simulator/Object.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
@@ -48,7 +48,7 @@ UniquePtr<program::Program> Program::clone() const
 
 /* ************************************************************************ */
 
-void Program::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Program::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     if (config.has("filename"))
     {
@@ -72,7 +72,7 @@ void Program::loadConfig(simulator::Simulation& simulation, const simulator::Con
 
 /* ************************************************************************ */
 
-void Program::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
+void Program::call(simulator::Simulation& simulation, object::Object& object, units::Time dt)
 {
     // Call function
     python::call(m_call, &object, &simulation, dt.value());

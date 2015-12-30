@@ -71,7 +71,7 @@ public:
      * @param type       Cell type.
      */
     explicit Cell(simulator::Simulation& simulation, String typeName = "cell.Cell",
-                  simulator::Object::Type type = simulator::Object::Type::Dynamic) noexcept;
+                  object::Object::Type type = object::Object::Type::Dynamic) noexcept;
 
 
 // Public Accessors
@@ -107,8 +107,7 @@ public:
      * @param config
      * @param simulation
      */
-    void configure(const simulator::Configuration& config,
-                   simulator::Simulation& simulation) override;
+    void configure(const config::Configuration& config, simulator::Simulation& simulation) override;
 
 
 #ifdef CECE_ENABLE_RENDER

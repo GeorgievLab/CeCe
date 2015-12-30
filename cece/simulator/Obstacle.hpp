@@ -33,7 +33,7 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Object.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/simulator/Shape.hpp"
 
 #ifdef CECE_ENABLE_RENDER
@@ -62,7 +62,7 @@ class Configuration;
 /**
  * @brief Physical obstacle.
  */
-class Obstacle : public Object
+class Obstacle : public object::Object
 {
 
 // Public Ctors & Dtors
@@ -75,7 +75,7 @@ public:
      * @param simulation Simulation object reference.
      */
     explicit Obstacle(Simulation& simulation) noexcept
-        : Object(simulation, "simulator.Obstacle", Type::Static)
+        : object::Object(simulation, "simulator.Obstacle", Type::Static)
     {
         getMutableShapes().push_back(Shape::makeUndefined());
     }
@@ -91,7 +91,7 @@ public:
      * @param config
      * @param simulation
      */
-    void configure(const Configuration& config, Simulation& simulation) override;
+    void configure(const config::Configuration& config, Simulation& simulation) override;
 
 
 #ifdef CECE_ENABLE_RENDER

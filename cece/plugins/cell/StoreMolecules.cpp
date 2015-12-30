@@ -28,7 +28,7 @@
 
 // CeCe
 #include "cece/core/DataTable.hpp"
-#include "cece/simulator/Object.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
@@ -53,7 +53,7 @@ UniquePtr<program::Program> StoreMolecules::clone() const
 
 /* ************************************************************************ */
 
-void StoreMolecules::call(simulator::Simulation& simulation, simulator::Object& object, units::Time dt)
+void StoreMolecules::call(simulator::Simulation& simulation, object::Object& object, units::Time dt)
 {
     // Cast to cell
     auto& cell = object.castThrow<CellBase>("Cell object required");

@@ -42,7 +42,7 @@
 #include "cece/core/Map.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
-#include "cece/simulator/Object.hpp"
+#include "cece/object/Object.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #include "cece/render/Color.hpp"
@@ -59,7 +59,7 @@ namespace cell {
 /**
  * @brief Base class for cells.
  */
-class CellBase : public simulator::Object
+class CellBase : public object::Object
 {
 
 
@@ -94,8 +94,8 @@ public:
      * @param type
      */
     explicit CellBase(simulator::Simulation& simulation, String typeName = "cell.CellBase",
-        simulator::Object::Type type = simulator::Object::Type::Dynamic)
-        : simulator::Object(simulation, std::move(typeName), type)
+        object::Object::Type type = object::Object::Type::Dynamic)
+        : object::Object(simulation, std::move(typeName), type)
     {
         // Nothing to do
     }
@@ -433,8 +433,7 @@ public:
      * @param config
      * @param simulation
      */
-    void configure(const simulator::Configuration& config,
-                   simulator::Simulation& simulation) override;
+    void configure(const config::Configuration& config, simulator::Simulation& simulation) override;
 
 
     /**

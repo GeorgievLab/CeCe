@@ -27,9 +27,9 @@
 #include "cece/plugins/python/Python.hpp"
 
 // CeCe
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
 
 /* ************************************************************************ */
 
@@ -65,7 +65,7 @@ using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class CellPythonApi : public PluginApi
+class CellPythonApi : public plugin::Api
 {
 
     DynamicArray<String> requiredPlugins() const override

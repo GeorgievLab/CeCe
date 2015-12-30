@@ -85,9 +85,13 @@ configure_file(config.hpp.in config.hpp)
 
 # Core files
 add_subdirectory(core)
+add_subdirectory(config)
 add_subdirectory(loader)
 add_subdirectory(init)
+add_subdirectory(module)
+add_subdirectory(object)
 add_subdirectory(program)
+add_subdirectory(plugin)
 
 # Renderer files
 if (CONFIG_RENDER_ENABLE)
@@ -102,9 +106,13 @@ add_subdirectory(simulator)
 # Sources
 set(SRCS
     $<TARGET_OBJECTS:core>
+    $<TARGET_OBJECTS:config>
     $<TARGET_OBJECTS:loader>
     $<TARGET_OBJECTS:init>
+    $<TARGET_OBJECTS:module>
+    $<TARGET_OBJECTS:object>
     $<TARGET_OBJECTS:program>
+    $<TARGET_OBJECTS:plugin>
     $<TARGET_OBJECTS:simulator>
 )
 

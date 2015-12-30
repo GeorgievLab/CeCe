@@ -51,7 +51,7 @@ static std::random_device g_rd;
 
 /* ************************************************************************ */
 
-Yeast::Yeast(simulator::Simulation& simulation, String typeName, simulator::Object::Type type) noexcept
+Yeast::Yeast(simulator::Simulation& simulation, String typeName, object::Object::Type type) noexcept
     : CellBase(simulation, std::move(typeName), type)
 {
     setVolume(units::um3(13));
@@ -112,8 +112,7 @@ void Yeast::update(units::Duration dt)
 
 /* ************************************************************************ */
 
-void Yeast::configure(const simulator::Configuration& config,
-                      simulator::Simulation& simulation)
+void Yeast::configure(const config::Configuration& config, simulator::Simulation& simulation)
 {
     CellBase::configure(config, simulation);
 

@@ -39,8 +39,8 @@
 #include "cece/core/constants.hpp"
 #include "cece/core/FileStream.hpp"
 #include "cece/core/TimeMeasurement.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Object.hpp"
 #include "cece/simulator/Obstacle.hpp"
 #include "cece/simulator/ShapeToGrid.hpp"
 
@@ -344,10 +344,10 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config)
+void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
 {
     // Configure parent
-    simulator::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(simulation, config);
 
     // Number of init iterations
     setInitIterations(config.get("init-iterations", getInitIterations()));
@@ -553,7 +553,7 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
     // Foreach all cells
     for (auto& obj : simulation.getObjects())
     {
-        const bool isDynamic = obj->getType() == simulator::Object::Type::Dynamic;
+        const bool isDynamic = obj->getType() == object::Object::Type::Dynamic;
 
         // Ignore dynamic objects
         if (!isDynamicObjectsObstacles() && isDynamic)
@@ -612,11 +612,11 @@ void Module::applyToObjects(const simulator::Simulation& simulation, units::Time
 
 /* ************************************************************************ */
 
-void Module::applyToObject(simulator::Object& object, const simulator::Simulation& simulation,
+void Module::applyToObject(object::Object& object, const simulator::Simulation& simulation,
     units::Time dt, const VelocityVector& vMax)
 {
     // Ignore static objects
-    if (object.getType() != simulator::Object::Type::Dynamic)
+    if (object.getType() != object::Object::Type::Dynamic)
         return;
 
     // Maximum object speed that is allowed by physical engine

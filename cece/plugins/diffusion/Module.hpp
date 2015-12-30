@@ -42,7 +42,7 @@
 #include "cece/core/Grid.hpp"
 #include "cece/core/Range.hpp"
 #include "cece/core/InStream.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Color.hpp"
@@ -70,7 +70,7 @@ namespace diffusion {
 /**
  * @brief Module for diffusion.
  */
-class Module : public simulator::Module
+class Module : public module::Module
 {
 
 // Public Types
@@ -825,7 +825,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

@@ -41,7 +41,7 @@
 // CeCe
 #include "cece/core/String.hpp"
 #include "cece/core/Grid.hpp"
-#include "cece/simulator/Module.hpp"
+#include "cece/module/Module.hpp"
 #include "cece/render/Object.hpp"
 #include "cece/render/Color.hpp"
 #include "cece/render/GridColor.hpp"
@@ -57,7 +57,7 @@ namespace background {
 /**
  * @brief Module for rendering background image.
  */
-class Module : public simulator::Module
+class Module : public module::Module
 {
 
 
@@ -71,7 +71,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const simulator::Configuration& config) override;
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
     /**

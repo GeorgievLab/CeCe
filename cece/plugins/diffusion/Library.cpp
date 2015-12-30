@@ -24,11 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Plugin.hpp"
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginManager.hpp"
-#include "cece/simulator/ModuleFactoryManager.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"
@@ -38,11 +36,10 @@
 /* ************************************************************************ */
 
 using namespace cece;
-using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class DiffusionApi : public PluginApi
+class DiffusionApi : public plugin::Api
 {
 
     /**
@@ -50,7 +47,7 @@ class DiffusionApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         context.registerModule<plugin::diffusion::Module>("diffusion");
         context.registerModule<plugin::diffusion::Generator>("diffusion.generator");
@@ -63,7 +60,7 @@ class DiffusionApi : public PluginApi
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterModule("diffusion.store-state");
         context.unregisterModule("diffusion.generator");

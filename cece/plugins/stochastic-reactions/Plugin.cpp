@@ -24,8 +24,9 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/simulator/PluginApi.hpp"
-#include "cece/simulator/PluginContext.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Reactions
 #include "Reactions.hpp"
@@ -37,7 +38,7 @@ using namespace cece::simulator;
 
 /* ************************************************************************ */
 
-class StochasticReactionsApi : public PluginApi
+class StochasticReactionsApi : public plugin::Api
 {
 
 // Public Operations
@@ -60,7 +61,7 @@ public:
      *
      * @param context Plugin context.
      */
-    void onLoad(PluginContext& context) override
+    void onLoad(plugin::Context& context) override
     {
         context.registerProgram<plugin::stochastic_reactions::Reactions>("stochastic-reactions");
     }
@@ -71,7 +72,7 @@ public:
      *
      * @param context Plugin context.
      */
-    void onUnload(PluginContext& context) override
+    void onUnload(plugin::Context& context) override
     {
         context.unregisterProgram("stochastic-reactions");
     }
