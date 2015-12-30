@@ -98,6 +98,10 @@ namespace {
 
 /* ************************************************************************ */
 
+constexpr StaticArray<char, 5> FILE_GUARD{{'C', 'E', 'S', 'L', '\0'}};
+
+/* ************************************************************************ */
+
 constexpr StaticArray<StaticArray<Vector<int>, 2>, Module::LayoutPosCount> EDGES{{
     {{{ 1, -1}, { 1,  1}}},
     {{{-1, -1}, {-1,  1}}},
@@ -181,6 +185,8 @@ void Module::init(simulator::Simulation& simulation)
     {
         try
         {
+            Log::info("[streamlines] Loading from external file: ", m_initFile);
+
             loadFromFile(m_initFile);
             initialized = true;
         }
@@ -416,8 +422,22 @@ void Module::loadConfig(simulator::Simulation& simulation, const simulator::Conf
     setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
 #endif
 
-    // Number of init iterations
-    config.get("init-file");
+    // Get initialization file
+    if (config.has("init-file"))
+    {
+        // Get file name
+        auto file = config.get("init-file");
+
+        // In case of %temp%
+        if (file.substr(0, 6) == "%temp%")
+        {
+            m_initFile = tempDirectory() / file.substr(6);
+        }
+        else
+        {
+            m_initFile = config.buildFilePath(file);
+        }
+    }
 
     // Initialize lattice
     init(simulation);
@@ -1086,8 +1106,14 @@ void Module::storeToFile(const FilePath& filename)
     OutFileStream ofs(filename.string(), OutFileStream::binary);
     BinaryOutput out(ofs);
 
+    // Write file guard
+    out.write(FILE_GUARD);
+
     // Write lattice size
     out.write(m_lattice.getSize());
+
+    // Number of init iterations
+    out.write(m_initIterations);
 
     for (auto&& c : range(m_lattice.getSize()))
     {
@@ -1103,14 +1129,31 @@ void Module::storeToFile(const FilePath& filename)
 void Module::loadFromFile(const FilePath& filename)
 {
     InFileStream ifs(filename.string(), OutFileStream::binary);
+
+    if (!ifs.is_open())
+        throw InvalidArgumentException("[streamlines] Cannot load from file: File not found '" + filename.string() + "'");
+
     BinaryInput in(ifs);
+
+    // Read guard
+    StaticArray<char, FILE_GUARD.size()> guard;
+    in.read(guard);
+
+    if (guard != FILE_GUARD)
+        throw InvalidArgumentException("[streamlines] Cannot load from file: File is not valid");
 
     // Read lattice size
     Lattice::Size size;
     in.read(size);
 
     if (size != m_lattice.getSize())
-        throw InvalidArgumentException("Cannot load streamlines from file - different lattice sizes");
+        throw InvalidArgumentException("[streamlines] Cannot load from file: different lattice sizes");
+
+    decltype(m_initIterations) iterations;
+    in.read(iterations);
+
+    if (iterations != m_initIterations)
+        throw InvalidArgumentException("[streamlines] Cannot load from file: different init iterations");
 
     for (auto&& c : range(m_lattice.getSize()))
     {
