@@ -94,7 +94,7 @@ public:
      * @param val.
      */
     template<typename T>
-    void read(T val)
+    void read(T& val)
     {
         is().read(reinterpret_cast<char*>(&val), sizeof(T));
     }
@@ -126,7 +126,7 @@ public:
     template<typename Tfrom, typename Tto>
     void readCast(Tto& val)
     {
-        Tfrom c;
+        Tfrom c{};
         read<Tfrom>(c);
         val = static_cast<Tto>(c);
     }
