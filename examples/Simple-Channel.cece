@@ -18,6 +18,7 @@
     -->
     <module name="streamlines"
             init-iterations="20000"
+            init-file="%temp%/Simple-Channel.cece"
             grid="600 100"
             inlet-velocity="20um/s"
             _layout="barrier outlet barrier inlet"
