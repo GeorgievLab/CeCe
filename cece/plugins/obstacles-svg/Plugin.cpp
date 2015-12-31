@@ -165,7 +165,7 @@ class ObstaclesSvgApi : public plugin::Api
         const auto filepath = config.buildFilePath(config.get("filename"));
 
         // SVG image
-        NSVGimage* image = nsvgParseFromFile(filepath.c_str(), "px", 96);
+        NSVGimage* image = nsvgParseFromFile(filepath.string().c_str(), "px", 96);
 
         if (!image)
             throw RuntimeException("Cannot parse SVG");
