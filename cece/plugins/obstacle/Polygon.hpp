@@ -111,7 +111,7 @@ private:
 #ifdef CECE_ENABLE_RENDER
 
     /// Shared object for drawing polygon.
-    render::ObjectSharedPtr<render::Lines> m_drawPolygon;
+    render::ObjectPtr<render::Lines> m_drawPolygon;
 
 #endif
 };
