@@ -30,7 +30,6 @@
 #include "cece/plugin/Api.hpp"
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Obstacle.hpp"
 
 // NanoSVG
 #define NANOSVG_IMPLEMENTATION  // Expands implementation
@@ -159,6 +158,18 @@ void storePath(Fn store, NSVGpath* path, float tol)
 
 class ObstaclesSvgApi : public plugin::Api
 {
+
+    /**
+     * @brief Returns a list of required plugins.
+     *
+     * @return
+     */
+    DynamicArray<String> requiredPlugins() const override
+    {
+        return {"obstacle"};
+    }
+
+
     void configure(simulator::Simulation& simulation, const config::Configuration& config) override
     {
         const float px = 0.3;
@@ -170,7 +181,7 @@ class ObstaclesSvgApi : public plugin::Api
         if (!image)
             throw RuntimeException("Cannot parse SVG");
 
-        auto obstacle = simulation.createObject<simulator::Obstacle>();
+        auto obstacle = simulation.buildObject("obstacle.Polygon");
         auto& shapes = obstacle->getMutableShapes();
 
         const auto size = Vector<float>(image->width, image->height);

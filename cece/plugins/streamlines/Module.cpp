@@ -43,7 +43,6 @@
 #include "cece/core/BinaryOutput.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Obstacle.hpp"
 #include "cece/simulator/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
@@ -894,7 +893,7 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
     const auto dl = simulation.getWorldSize() / size;
 
     // Create barrier
-    auto obstacle = simulation.createObject<simulator::Obstacle>();
+    auto obstacle = simulation.buildObject("obstacle.Polygon");
     auto& shapes = obstacle->getMutableShapes();
     shapes.resize(1);
 

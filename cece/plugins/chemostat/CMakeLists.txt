@@ -25,7 +25,7 @@
 
 # Sources
 set(SRCS
-    Library.cpp
+    Plugin.cpp
 )
 
 # Build plugin

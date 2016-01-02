@@ -31,7 +31,6 @@
 #include "cece/plugin/Api.hpp"
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Obstacle.hpp"
 
 /* ************************************************************************ */
 
@@ -42,6 +41,18 @@ using namespace cece::simulator;
 
 class ChemostatApi : public plugin::Api
 {
+
+    /**
+     * @brief Returns a list of required plugins.
+     *
+     * @return
+     */
+    DynamicArray<String> requiredPlugins() const override
+    {
+        return {"obstacle"};
+    }
+
+
     void configure(simulator::Simulation& simulation, const config::Configuration& config) override
     {
         constexpr auto SLOPE = units::um(5);
@@ -55,7 +66,7 @@ class ChemostatApi : public plugin::Api
 
         // Upper part
         {
-            Obstacle* obstacle = simulation.createObject<Obstacle>();
+            auto obstacle = simulation.buildObject("obstacle.Polygon");
             auto& shapes = obstacle->getMutableShapes();
             shapes.resize(1);
 
@@ -86,7 +97,7 @@ class ChemostatApi : public plugin::Api
         {
             const auto sizeHalf = size * 0.5;
 
-            Obstacle* obstacle = simulation.createObject<Obstacle>();
+            auto obstacle = simulation.buildObject("obstacle.Polygon");
             auto& shapes = obstacle->getMutableShapes();
             shapes.resize(1);
 

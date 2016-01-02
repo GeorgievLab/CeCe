@@ -45,7 +45,6 @@
 #include "cece/module/Module.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Obstacle.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
@@ -628,7 +627,7 @@ private:
     String m_layoutType;
 
     /// Barriers created for layout.
-    StaticArray<ViewPtr<simulator::Obstacle>, LayoutPosCount> m_layoutBarriers;
+    StaticArray<ViewPtr<object::Object>, LayoutPosCount> m_layoutBarriers;
 
     /// Use dynamic objects as obstacles
     bool m_dynamicObjectsObstacles = false;
