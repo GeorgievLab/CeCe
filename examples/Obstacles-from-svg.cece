@@ -3,21 +3,20 @@
 <simulation world-size="1540um 600um" dt="10ms" background="black" length-coefficient="1e-1">
 
     <plugin name="streamlines" />
-    <plugin name="obstacles-svg" />
     <plugin name="object-generator" />
     <plugin name="cell" />
-
-    <!--
-        Streamlines module.
-        Default layout is "barrier outlet barrier inlet".
-    -->
-    <module name="streamlines" grid="385 150" inlet-velocity="200um/s" init-iterations="1000" />
 
     <!--
         Plugin loads SVG file and create obstacles from it.
         Path is taken as relative from simulation directory.
     -->
     <plugin name="obstacles-svg" filename="obstacles.svg" />
+
+    <!--
+        Streamlines module.
+        Default layout is "barrier outlet barrier inlet".
+    -->
+    <module name="streamlines" grid="385 150" inlet-velocity="200um/s" init-iterations="1000" />
 
     <!-- Generate Yeast cells -->
     <module name="object-generator">
