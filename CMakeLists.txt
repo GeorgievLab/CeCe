@@ -43,7 +43,7 @@ set(APP_NAME "CeCe")
 # Application version
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 4)
-set(VERSION_PATCH 2)
+set(VERSION_PATCH 3)
 set(VERSION_SPECIAL "")
 
 # Full version string
