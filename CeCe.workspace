@@ -22,6 +22,7 @@
   <Project Name="plugin-xml" Path="cece/plugins/xml/plugin-xml.project" Active="No"/>
   <Project Name="obstacles-svg" Path="cece/plugins/obstacles-svg/obstacles-svg.project" Active="No"/>
   <Project Name="CeCe" Path="cece/CeCe.project" Active="No"/>
+  <Project Name="obstacle" Path="cece/plugins/obstacle/obstacle.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="gui" ConfigName="Debug"/>
@@ -47,6 +48,7 @@
       <Project Name="plugin_xml" ConfigName="Debug"/>
       <Project Name="plugin_obstacles-svg" ConfigName="Debug"/>
       <Project Name="CeCe" ConfigName="Debug"/>
+      <Project Name="plugin_obstacle" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="gui" ConfigName="Release"/>
@@ -72,6 +74,7 @@
       <Project Name="plugin_xml" ConfigName="Release"/>
       <Project Name="plugin_obstacles-svg" ConfigName="Release"/>
       <Project Name="CeCe" ConfigName="Release"/>
+      <Project Name="plugin_obstacle" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
