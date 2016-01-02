@@ -34,8 +34,6 @@ set(SRCS
     Simulation.cpp
     Simulator.hpp
     Simulator.cpp
-    Shape.hpp
-    ShapeToGrid.hpp
 )
 
 if (CONFIG_PHYSICS_BUILTIN)

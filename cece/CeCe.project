@@ -203,6 +203,10 @@
       <File Name="core/BinaryOutput.hpp"/>
       <File Name="core/BinaryInput.hpp"/>
     </VirtualDirectory>
+    <VirtualDirectory Name="shape">
+      <File Name="core/Shape.hpp"/>
+      <File Name="core/ShapeToGrid.hpp"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="render">
     <File Name="render/Buffer.cpp"/>
@@ -260,8 +264,6 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="simulator">
-    <File Name="simulator/Shape.hpp"/>
-    <File Name="simulator/ShapeToGrid.hpp"/>
     <File Name="simulator/Simulator.cpp"/>
     <File Name="simulator/Simulator.hpp"/>
     <VirtualDirectory Name="CMake">

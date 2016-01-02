@@ -32,6 +32,7 @@
 
 // CeCe
 #include "cece/core/VectorUnits.hpp"
+#include "cece/core/Shape.hpp"
 #include "cece/core/StringStream.hpp"
 #include "cece/config/Configuration.hpp"
 
@@ -55,7 +56,7 @@ void Polygon::configure(const config::Configuration& config, simulator::Simulati
         edges.push_back(vector);
 
     // Init shape
-    getMutableShapes().push_back(simulator::Shape::makeEdges(std::move(edges)));
+    getMutableShapes().push_back(Shape::makeEdges(std::move(edges)));
 
     initShapes();
 }

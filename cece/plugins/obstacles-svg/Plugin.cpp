@@ -193,7 +193,7 @@ class ObstaclesSvgApi : public plugin::Api
         // Foreach shapes
         for (NSVGshape* shape = image->shapes; shape != nullptr; shape = shape->next)
         {
-            simulator::ShapeEdges oShape;
+            ShapeEdges oShape;
 
             // Foreach paths
             for (NSVGpath* path = shape->paths; path != nullptr; path = path->next)

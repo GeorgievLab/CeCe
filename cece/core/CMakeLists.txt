@@ -83,6 +83,8 @@ add_library(${PROJECT_NAME} OBJECT
     Parameters.hpp
     Parameters.cpp
     Factory.hpp
+    Shape.hpp
+    ShapeToGrid.hpp
 )
 
 # ######################################################################### #

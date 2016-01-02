@@ -36,7 +36,6 @@
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/object/Object.hpp"
-#include "cece/simulator/Shape.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Object.hpp"

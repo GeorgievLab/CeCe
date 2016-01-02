@@ -45,9 +45,9 @@
 #include "cece/core/StringView.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
+#include "cece/core/Shape.hpp"
 #include "cece/program/Program.hpp"
 #include "cece/program/Container.hpp"
-#include "cece/simulator/Shape.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
@@ -396,7 +396,7 @@ public:
      *
      * @return
      */
-    const DynamicArray<simulator::Shape>& getShapes() const noexcept
+    const DynamicArray<Shape>& getShapes() const noexcept
     {
         return m_shapes;
     }
@@ -411,7 +411,7 @@ public:
      *
      * @return
      */
-    DynamicArray<simulator::Shape>& getMutableShapes() noexcept
+    DynamicArray<Shape>& getMutableShapes() noexcept
     {
         return m_shapes;
     }
@@ -582,7 +582,7 @@ public:
      *
      * @param shapes
      */
-    void setShapes(DynamicArray<simulator::Shape> shapes) noexcept
+    void setShapes(DynamicArray<Shape> shapes) noexcept
     {
         m_shapes = std::move(shapes);
     }
@@ -772,7 +772,7 @@ private:
     Map<String, Any> m_values;
 
     /// A list of object shapes.
-    DynamicArray<simulator::Shape> m_shapes;
+    DynamicArray<Shape> m_shapes;
 
     /// Registered object programs.
     program::Container m_programs;

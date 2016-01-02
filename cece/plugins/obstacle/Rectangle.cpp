@@ -32,6 +32,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/core/Shape.hpp"
 #include "cece/config/Configuration.hpp"
 
 /* ************************************************************************ */
@@ -47,7 +48,7 @@ void Rectangle::configure(const config::Configuration& config, simulator::Simula
     object::Object::configure(config, simulation);
 
     // Init shape
-    getMutableShapes().push_back(simulator::Shape::makeRectangle(config.get<PositionVector>("size")));
+    getMutableShapes().push_back(Shape::makeRectangle(config.get<PositionVector>("size")));
 
     initShapes();
 }

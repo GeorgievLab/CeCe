@@ -55,7 +55,7 @@ Cell::Cell(simulator::Simulation& simulation, String typeName, object::Object::T
 
     // Create initial shape
     auto& shapes = getMutableShapes();
-    shapes.push_back(simulator::Shape::makeCircle(getRadius()));
+    shapes.push_back(Shape::makeCircle(getRadius()));
 }
 
 /* ************************************************************************ */

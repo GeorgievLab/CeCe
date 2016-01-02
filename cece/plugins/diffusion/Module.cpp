@@ -38,8 +38,8 @@
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/VectorRange.hpp"
 #include "cece/core/FileStream.hpp"
+#include "cece/core/ShapeToGrid.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
 

@@ -41,9 +41,9 @@
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/BinaryInput.hpp"
 #include "cece/core/BinaryOutput.hpp"
+#include "cece/core/ShapeToGrid.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
 
@@ -658,7 +658,7 @@ void Module::applyToObject(object::Object& object, const simulator::Simulation& 
     for (const auto& shape : object.getShapes())
     {
         // Only circle shapes are supported
-        if (shape.getType() != simulator::ShapeType::Circle)
+        if (shape.getType() != ShapeType::Circle)
             continue;
 
         // Shape alias
@@ -898,7 +898,7 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
     shapes.resize(1);
 
     // Init shape
-    shapes[0] = simulator::Shape::makeEdges({
+    shapes[0] = Shape::makeEdges({
         EDGES[pos][0] * (worldSizeHalf - 0.5 * dl),
         EDGES[pos][1] * (worldSizeHalf - 0.5 * dl)
     });

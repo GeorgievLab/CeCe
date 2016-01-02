@@ -34,12 +34,12 @@
 #include "cece/core/Assert.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/Units.hpp"
-#include "cece/simulator/Shape.hpp"
+#include "cece/core/Shape.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+inline namespace core {
 
 /* ************************************************************************ */
 

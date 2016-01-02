@@ -29,8 +29,8 @@
 // cece
 #include "cece/core/Assert.hpp"
 #include "cece/core/TimeMeasurement.hpp"
-#include "cece/simulator/Shape.hpp"
-#include "cece/simulator/ShapeToGrid.hpp"
+#include "cece/core/Shape.hpp"
+#include "cece/core/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
 
@@ -144,7 +144,7 @@ void Generator::update(simulator::Simulation& simulation, units::Time dt)
             continue;
 
         // Source shape
-        const auto shape = simulator::Shape::makeRectangle(source.size);
+        const auto shape = Shape::makeRectangle(source.size);
 
         // Get coordinate to grid
         const auto coord = diffusion::Module::Coordinate(pos / step);

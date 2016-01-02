@@ -32,8 +32,8 @@
 
 // CeCe
 #include "cece/core/constants.hpp"
+#include "cece/core/Shape.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/Shape.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Color.hpp"
@@ -60,7 +60,7 @@ Yeast::Yeast(simulator::Simulation& simulation, String typeName, object::Object:
     // Max 2 shapes
     auto& shapes = getMutableShapes();
     shapes.reserve(2);
-    shapes.push_back(simulator::Shape::makeCircle(calcRadius(getVolume())));
+    shapes.push_back(Shape::makeCircle(calcRadius(getVolume())));
 
     //getBody()->SetAngularDamping(10);
 }
@@ -301,7 +301,7 @@ void Yeast::updateShape()
 
         if (shapes.size() != 2)
         {
-            shapes.push_back(simulator::Shape::makeCircle(newBudRadius, center));
+            shapes.push_back(Shape::makeCircle(newBudRadius, center));
         }
         else
         {

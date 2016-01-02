@@ -32,6 +32,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/core/Shape.hpp"
 #include "cece/config/Configuration.hpp"
 
 /* ************************************************************************ */
@@ -47,7 +48,7 @@ void Circle::configure(const config::Configuration& config, simulator::Simulatio
     object::Object::configure(config, simulation);
 
     // Init shape
-    getMutableShapes().push_back(simulator::Shape::makeCircle(config.get<units::Length>("radius")));
+    getMutableShapes().push_back(Shape::makeCircle(config.get<units::Length>("radius")));
 
     initShapes();
 }

@@ -30,8 +30,8 @@
 #include <random>
 
 // CeCe
+#include "cece/core/ShapeToGrid.hpp"
 #include "cece/simulator/Simulation.hpp"
-#include "cece/simulator/ShapeToGrid.hpp"
 
 /* ************************************************************************ */
 
