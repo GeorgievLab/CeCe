@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="20um 20um" dt="1s" iterations="1000">
+<simulation world-size="20um 20um" dt="1s" iterations="1000" visualized="false">
 
     <plugin name="diffusion" />
     <plugin name="cell" />

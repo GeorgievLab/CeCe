@@ -65,7 +65,6 @@
 #include "cece/plugin/Library.hpp"
 
 #ifdef CECE_ENABLE_RENDER
-#include "cece/core/TriBool.hpp"
 #include "cece/render/Context.hpp"
 #include "cece/render/Color.hpp"
 #include "cece/render/Object.hpp"
@@ -637,9 +636,9 @@ public:
      *
      * @return
      */
-    TriBool getVisualize() const noexcept
+    bool isVisualized() const noexcept
     {
-        return m_visualize;
+        return m_visualized;
     }
 
 
@@ -990,9 +989,9 @@ public:
      *
      * @param value
      */
-    void setVisualize(TriBool value) noexcept
+    void setVisualized(bool value) noexcept
     {
-        m_visualize = value;
+        m_visualized = value;
     }
 
 
@@ -1250,8 +1249,8 @@ private:
 
 #ifdef CECE_ENABLE_RENDER
 
-    /// Option if visualization should be enabled.
-    TriBool m_visualize = Indeterminate;
+    /// Option if visualization is enabled.
+    bool m_visualized = true;
 
     /// Background (clear) color.
     render::Color m_backgroundColor = render::colors::WHITE;

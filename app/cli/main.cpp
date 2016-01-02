@@ -481,7 +481,7 @@ public:
         m_simulator.getSimulation()->getParameters().merge(args.parameters);
 
 #ifdef CECE_ENABLE_RENDER
-        const auto simViz = m_simulator.getSimulation()->getVisualize();
+        const auto simViz = m_simulator.getSimulation()->isVisualized();
 
         // Decide if simulation should be visualized
         if (args.visualize)
@@ -489,7 +489,7 @@ public:
         else if (!args.visualize)
             m_visualize = false;
         else
-            m_visualize = simViz || indeterminate(simViz);
+            m_visualize = simViz;
 
         initVisualization(args);
 #endif

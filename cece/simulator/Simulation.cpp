@@ -421,6 +421,10 @@ void Simulation::configure(const config::Configuration& config)
     setSimulationTimeRender(config.get("show-simulation-time", isSimulationTimeRender()));
 #endif
 
+#ifdef CECE_ENABLE_RENDER
+    setVisualized(config.get("visualized", isVisualized()));
+#endif
+
     // Parse plugins
     for (auto&& pluginConfig : config.getConfigurations("plugin"))
     {
