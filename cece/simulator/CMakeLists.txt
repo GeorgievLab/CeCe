@@ -36,8 +36,6 @@ set(SRCS
     Simulator.cpp
     Shape.hpp
     ShapeToGrid.hpp
-    Obstacle.hpp
-    Obstacle.cpp
 )
 
 if (CONFIG_PHYSICS_BUILTIN)

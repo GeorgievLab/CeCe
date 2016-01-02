@@ -44,7 +44,6 @@
 #include "cece/plugin/Api.hpp"
 #include "cece/plugin/Manager.hpp"
 #include "cece/config/Exception.hpp"
-#include "cece/simulator/Obstacle.hpp"
 #include "cece/module/FactoryManager.hpp"
 
 #if CONFIG_RENDER_TEXT_ENABLE
@@ -520,16 +519,6 @@ void Simulation::configure(const config::Configuration& config)
 
         if (object)
             object->configure(objectConfig, *this);
-    }
-
-    // Parse obstacles
-    for (auto&& obstacleConfig : config.getConfigurations("obstacle"))
-    {
-        // Create object
-        auto object = createObject<simulator::Obstacle>();
-
-        if (object)
-            object->configure(obstacleConfig, *this);
     }
 
     if (config.has("data-out-objects-filename"))

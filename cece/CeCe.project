@@ -260,8 +260,6 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="simulator">
-    <File Name="simulator/Obstacle.cpp"/>
-    <File Name="simulator/Obstacle.hpp"/>
     <File Name="simulator/Shape.hpp"/>
     <File Name="simulator/ShapeToGrid.hpp"/>
     <File Name="simulator/Simulator.cpp"/>
