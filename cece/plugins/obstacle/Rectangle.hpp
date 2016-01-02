@@ -98,6 +98,12 @@ public:
 #endif
 
 
+    /**
+     * @brief Initialize shapes for physics engine.
+     */
+    void initShapes() override;
+
+
 // Private Data Members
 private:
 

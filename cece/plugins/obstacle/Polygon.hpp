@@ -33,6 +33,8 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/DynamicArray.hpp"
+#include "cece/core/UniquePtr.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Shape.hpp"
 
@@ -98,13 +100,19 @@ public:
 #endif
 
 
+    /**
+     * @brief Initialize shapes for physics engine.
+     */
+    void initShapes() override;
+
+
 // Private Data Members
 private:
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
 
-    /// Physical body shape.
-    b2ChainShape m_bodyShape;
+    /// Physical body shapes.
+    DynamicArray<UniquePtr<b2ChainShape>> m_bodyShapes;
 
 #endif
 

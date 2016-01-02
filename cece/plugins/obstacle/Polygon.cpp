@@ -57,21 +57,7 @@ void Polygon::configure(const config::Configuration& config, simulator::Simulati
     // Init shape
     getMutableShapes().push_back(simulator::Shape::makeEdges(std::move(edges)));
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    DynamicArray<b2Vec2> vertices;
-    const auto& shape = getShapes().back();
-
-    for (const auto& v : shape.getEdges().edges)
-        vertices.push_back(getConverter().convertPosition(v));
-
-    // Create edges loop
-    if (vertices.size() < 3)
-        m_bodyShape.CreateChain(vertices.data(), vertices.size());
-    else
-        m_bodyShape.CreateLoop(vertices.data(), vertices.size());
-
-    getBody()->CreateFixture(&m_bodyShape, 1);
-#endif
+    initShapes();
 }
 
 /* ************************************************************************ */
@@ -81,26 +67,29 @@ void Polygon::draw(render::Context& context)
 {
     if (!m_drawPolygon)
     {
-        const auto& shape = getShapes().back();
-        const auto& edges = shape.getEdges().edges;
         DynamicArray<render::Lines::LineType> lines;
-        lines.reserve(edges.size());
 
-        // Create lines from shape
-        for (std::size_t i = 1u; i < edges.size(); ++i)
+        for (const auto& shape : getShapes())
         {
-            lines.push_back(makePair(
-                render::Lines::PointType(edges[i - 1].getX().value(), edges[i - 1].getY().value()),
-                render::Lines::PointType(edges[i].getX().value(), edges[i].getY().value())
-            ));
-        }
+            const auto& edges = shape.getEdges().edges;
+            lines.reserve(lines.size() + edges.size());
 
-        if (edges.size() > 2)
-        {
-            lines.push_back(makePair(
-                render::Lines::PointType(edges.back().getX().value(), edges.back().getY().value()),
-                render::Lines::PointType(edges.front().getX().value(), edges.front().getY().value())
-            ));
+            // Create lines from shape
+            for (std::size_t i = 1u; i < edges.size(); ++i)
+            {
+                lines.push_back(makePair(
+                    render::Lines::PointType(edges[i - 1].getX().value(), edges[i - 1].getY().value()),
+                    render::Lines::PointType(edges[i].getX().value(), edges[i].getY().value())
+                ));
+            }
+
+            if (edges.size() > 2)
+            {
+                lines.push_back(makePair(
+                    render::Lines::PointType(edges.back().getX().value(), edges.back().getY().value()),
+                    render::Lines::PointType(edges.front().getX().value(), edges.front().getY().value())
+                ));
+            }
         }
 
         m_drawPolygon.create(context, std::move(lines));
@@ -112,6 +101,35 @@ void Polygon::draw(render::Context& context)
     context.matrixPop();
 }
 #endif
+
+/* ************************************************************************ */
+
+void Polygon::initShapes()
+{
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
+    for (const auto& shape : getShapes())
+    {
+        DynamicArray<b2Vec2> vertices;
+
+        for (const auto& v : shape.getEdges().edges)
+            vertices.push_back(getConverter().convertPosition(v));
+
+        auto s = makeUnique<b2ChainShape>();
+
+        // Create edges loop
+        if (vertices.size() < 3)
+            s->CreateChain(vertices.data(), vertices.size());
+        else
+            s->CreateLoop(vertices.data(), vertices.size());
+
+        getBody()->CreateFixture(s.get(), 1);
+
+        // Create new shape
+        m_bodyShapes.push_back(std::move(s));
+    }
+#endif
+}
 
 /* ************************************************************************ */
 

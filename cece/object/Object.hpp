@@ -732,6 +732,15 @@ public:
     virtual void configure(const config::Configuration& config, simulator::Simulation& simulation);
 
 
+    /**
+     * @brief Initialize shapes for physics engine.
+     */
+    virtual void initShapes()
+    {
+        // Nothing to do
+    }
+
+
 #ifdef CECE_ENABLE_RENDER
 
     /**

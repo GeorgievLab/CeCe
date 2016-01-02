@@ -49,11 +49,7 @@ void Circle::configure(const config::Configuration& config, simulator::Simulatio
     // Init shape
     getMutableShapes().push_back(simulator::Shape::makeCircle(config.get<units::Length>("radius")));
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    const auto& shape = getShapes().back();
-    m_bodyShape.m_radius = getConverter().convertLength(shape.getCircle().radius);
-    getBody()->CreateFixture(&m_bodyShape, 1);
-#endif
+    initShapes();
 }
 
 /* ************************************************************************ */
@@ -73,6 +69,17 @@ void Circle::draw(render::Context& context)
     context.matrixPop();
 }
 #endif
+
+/* ************************************************************************ */
+
+void Circle::initShapes()
+{
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+    const auto& shape = getShapes().back();
+    m_bodyShape.m_radius = getConverter().convertLength(shape.getCircle().radius);
+    getBody()->CreateFixture(&m_bodyShape, 1);
+#endif
+}
 
 /* ************************************************************************ */
 
