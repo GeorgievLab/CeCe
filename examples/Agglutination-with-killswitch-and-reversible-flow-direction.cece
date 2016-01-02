@@ -11,7 +11,7 @@
 
     <module name="streamlines" grid="200 100" inlet-velocity="500um/s" />
 
-    <module name="python:shake">
+    <module name="shake" language="python">
 <![CDATA[
 layouts = [
     ["barrier", "outlet", "barrier", "inlet"],
