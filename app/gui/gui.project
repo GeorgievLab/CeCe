@@ -29,31 +29,18 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="main.cpp"/>
-    <File Name="MainFrame.cpp"/>
-    <File Name="wxcrafter.cpp"/>
-    <File Name="wxcrafter_bitmaps.cpp"/>
-    <File Name="CanvasWidget.cpp"/>
-    <File Name="SimulatorThread.cpp"/>
-    <File Name="Logger.cpp"/>
     <File Name="AboutDialog.cpp"/>
-    <File Name="PluginsDialog.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
-    <File Name="SimulatorThread.hpp"/>
-    <File Name="CanvasWidget.hpp"/>
-    <File Name="MainFrame.h"/>
-    <File Name="wxcrafter.h"/>
-    <File Name="Logger.hpp"/>
-    <File Name="AboutDialog.h"/>
-    <File Name="PluginsDialog.h"/>
+    <File Name="AboutDialog.hpp"/>
+    <File Name="main.cpp"/>
+    <File Name="MainWindow.cpp"/>
+    <File Name="MainWindow.hpp"/>
     <File Name="version.hpp.in"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
-    <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
     <File Name="version.rc"/>
     <File Name="app.desktop"/>
+    <File Name="icons.qrc"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -160,4 +147,8 @@
   </Settings>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="ui">
+    <File Name="MainWindow.ui"/>
+    <File Name="AboutDialog.ui"/>
+  </VirtualDirectory>
 </CodeLite_Project>

@@ -28,47 +28,26 @@ project(gui CXX)
 
 # ######################################################################### #
 
-# Set some definitions
-add_definitions(
-    -DAPP_NAME="${APP_NAME}"
-    -DDIR_PLUGINS="${PLUGINS_DIRECTORY}"
-)
+set(CMAKE_INCLUDE_CURRENT_DIR On)
+set(CMAKE_AUTOMOC On)
+set(CMAKE_AUTOUIC On)
+set(CMAKE_AUTORRC On)
 
-if (APPLE)
-    # Static version on MacOSX
-    set(wxWidgets_USE_STATIC On)
-endif ()
-
-# wxWidgets
-if (WIN32)
-    # On Windows the scintilla library is required
-    find_package(wxWidgets REQUIRED xrc xml adv gl stc scintilla core base)
-else ()
-    find_package(wxWidgets REQUIRED xrc xml adv gl stc core base)
-endif ()
-
-include(${wxWidgets_USE_FILE})
+# Find the QtWidgets library
+find_package(Qt5Widgets)
 
 # ######################################################################### #
 
 # Sources
 set(SRCS
     main.cpp
-    MainFrame.h
-    MainFrame.cpp
-    AboutDialog.h
+    MainWindow.hpp
+    MainWindow.cpp
+    MainWindow.ui
+    AboutDialog.hpp
     AboutDialog.cpp
-    PluginsDialog.h
-    PluginsDialog.cpp
-    wxcrafter.h
-    wxcrafter.cpp
-    wxcrafter_bitmaps.cpp
-    CanvasWidget.hpp
-    CanvasWidget.cpp
-    SimulatorThread.hpp
-    SimulatorThread.cpp
-    Logger.hpp
-    Logger.cpp
+    AboutDialog.ui
+    icons.qrc
 )
 
 # Configure version file
@@ -117,11 +96,10 @@ endif ()
 
 # ######################################################################### #
 
-# Link libraries
+# Use the Widgets module from Qt 5.
 target_link_libraries(${PROJECT_NAME}
-    loader-xml
-    simulator
-    ${wxWidgets_LIBRARIES}
+    cece
+    Qt5::Widgets
 )
 
 if (UNIX AND NOT APPLE)

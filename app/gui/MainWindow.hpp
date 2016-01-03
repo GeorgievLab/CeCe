@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,62 +23,125 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "gui/Logger.hpp"
-
-// wxWidgets
-#include <wx/scopedptr.h>
+#pragma once
 
 /* ************************************************************************ */
 
-wxDEFINE_EVENT(EVT_LOG, wxCommandEvent);
+// Qt
+#include <QMainWindow>
 
 /* ************************************************************************ */
 
-Logger::Buffer::Buffer(wxEvtHandler* handler)
-    : m_handler(handler)
+namespace Ui
 {
-    setp(m_buffer.data(), m_buffer.data() + m_buffer.size() - 1);
+class MainWindow;
 }
 
 /* ************************************************************************ */
 
-int Logger::Buffer::flushBuffer()
+/**
+ * @brief Main GUI window.
+ */
+class MainWindow : public QMainWindow
 {
-    int num = pptr() - pbase();
+    Q_OBJECT
 
-    wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_LOG));
-    event->SetString(wxString(m_buffer.data(), num));
-    wxQueueEvent(m_handler, event.release());
+public:
+    /**
+     * @brief Constructor.
+     * @param parent
+     */
+    explicit MainWindow(QWidget* parent = nullptr);
 
-    pbump(-num);
-    return num;
-}
+    /**
+     * @brief Destructor.
+     */
+    ~MainWindow();
 
-/* ************************************************************************ */
+public slots:
+    /**
+     * @brief Create a new simulation file.
+     */
+    void fileNew();
 
-int Logger::Buffer::overflow(int c)
-{
-    if (c != EOF)
-    {
-        *pptr() = c;
-        pbump(1);
-    }
+    /**
+     * @brief Open an existing simulation file.
+     */
+    void fileOpen();
 
-    if (flushBuffer() == EOF)
-        return EOF;
+    /**
+     * @brief Save current simulation file.
+     */
+    void fileSave();
 
-    return c;
-}
+    /**
+     * @brief Save current simulation file as.
+     */
+    void fileSaveAs();
 
-/* ************************************************************************ */
+    /**
+     * @brief Toggle toolbar visibility.
+     */
+    void viewToolbar(bool);
 
-int Logger::Buffer::sync()
-{
-    if (flushBuffer() == EOF)
-        return -1;
+    /**
+     * @brief Toggle fullscreen mode.
+     */
+    void viewFullscreen(bool);
 
-    return 0;
-}
+    /**
+     * @brief Start simulation.
+     */
+    void simulationStart();
+
+    /**
+     * @brief Pause simulation.
+     */
+    void simulationPause();
+
+    /**
+     * @brief Step simulation.
+     */
+    void simulationStep();
+
+    /**
+     * @brief Reset simulace.
+     */
+    void simulationReset();
+
+    /**
+     * @brief Show about dialog.
+     */
+    void helpAbout();
+
+protected:
+    /**
+     * @brief Set current file name.
+     * @param filename
+     */
+    void setCurrentFile(QString filename);
+
+    /**
+     * @brief Open a file.
+     * @param filename
+     */
+    void fileOpen(QString filename);
+
+    /**
+     * @brief Save current simulation file.
+     * @param filename
+     */
+    void fileSave(QString filename);
+
+private:
+    /// UI members.
+    Ui::MainWindow* ui;
+
+    /// Current file name.
+    QString m_filename;
+
+    /// Previous window state.
+    Qt::WindowStates m_previousState = Qt::WindowNoState;
+};
 
 /* ************************************************************************ */

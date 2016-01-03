@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns="http://www.wxwindows.org/wxxrc">
-  <object class="wxBitmap" name="logo">images/logo.png</object>
-  <object class="wxBitmap" name="play-24">icons/play-24.png</object>
-  <object class="wxBitmap" name="restart-24">icons/restart-24.png</object>
-  <object class="wxBitmap" name="step-24">icons/step-24.png</object>
-  <object class="wxBitmap" name="stop-24">icons/stop-24.png</object>
-</resource>
