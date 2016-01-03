@@ -31,7 +31,7 @@ project(gui CXX)
 set(CMAKE_INCLUDE_CURRENT_DIR On)
 set(CMAKE_AUTOMOC On)
 set(CMAKE_AUTOUIC On)
-set(CMAKE_AUTORRC On)
+set(CMAKE_AUTORCC On)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets)

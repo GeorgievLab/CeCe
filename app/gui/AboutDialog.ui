@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>324</width>
+    <height>346</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>About</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -38,7 +41,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>images/logo.png</pixmap>
+         <pixmap resource="icons.qrc">:/cece/images/logo.png</pixmap>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -142,7 +145,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
