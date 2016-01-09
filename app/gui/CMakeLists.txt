@@ -38,6 +38,19 @@ find_package(Qt5Widgets)
 
 # ######################################################################### #
 
+if (DEV_PLUGINS)
+    # Directory is in build directory
+    add_definitions(
+        -DDIR_PLUGINS="${CMAKE_BINARY_DIR}/${DIR_PLUGINS}"
+    )
+endif ()
+
+# Configure version file
+configure_file(version.hpp.in version.hpp @ONLY)
+include_directories(${PROJECT_BINARY_DIR})
+
+# ######################################################################### #
+
 # Sources
 set(SRCS
     main.cpp
@@ -47,12 +60,10 @@ set(SRCS
     AboutDialog.hpp
     AboutDialog.cpp
     AboutDialog.ui
+    Simulator.hpp
+    Simulator.cpp
     icons.qrc
 )
-
-# Configure version file
-configure_file(version.hpp.in version.hpp @ONLY)
-include_directories(${PROJECT_BINARY_DIR})
 
 if (APPLE)
     set(SRCS ${SRCS} icons/${APP_NAME}.icns)

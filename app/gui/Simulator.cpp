@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,66 +23,83 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Qt
-#include <QApplication>
+// Declaration
+#include "Simulator.hpp"
 
 // CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/FilePath.hpp"
+#include "cece/core/Exception.hpp"
 #include "cece/plugin/Manager.hpp"
-
-// GUI
-#include "MainWindow.hpp"
 
 /* ************************************************************************ */
 
-/**
- * @brief Returns plugins directory.
- *
- * @param app Executable path.
- * @param dir Directory to plugins.
- *
- * @return
- */
-cece::String getPluginsDirectory(cece::FilePath app, cece::FilePath dir) noexcept
+Simulator::Simulator(QObject* parent) : QObject(parent)
 {
-    return (app.remove_filename() / dir).string();
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
-int main(int argc, char* argv[])
+void Simulator::start()
 {
-    QApplication app(argc, argv);
+    m_running = true;
 
-    auto& pluginManager = cece::plugin::Manager::s();
-
-    if (pluginManager.getDirectories().empty())
+    while (m_running)
     {
-#ifdef DIR_PLUGINS
-        pluginManager.addDirectory(DIR_PLUGINS);
-#elif __linux__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
-#elif __APPLE__ && __MACH__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../plugins"));
-#elif _WIN32
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "."));
-#endif
+        step();
     }
+}
 
-    // Preload XML plugin
-    pluginManager.load("xml");
+/* ************************************************************************ */
 
-    app.setOrganizationName("GeorgievLab");
-    app.setOrganizationDomain("ccy.zcu.cz");
-    app.setApplicationName("cece");
-    app.setApplicationVersion("0.4.3");
-    app.setApplicationDisplayName("CeCe");
+void Simulator::step()
+{
+    Q_ASSERT(m_simulation);
 
-    MainWindow w;
-    w.show();
+    // Do a step
+    m_simulation->update();
 
-    return app.exec();
+    emit stepped(m_simulation->getIteration());
+    emit running(true);
+}
+
+/* ************************************************************************ */
+
+void Simulator::pause()
+{
+    m_running = false;
+    emit running(false);
+}
+
+/* ************************************************************************ */
+
+void Simulator::reset()
+{
+    createSimulation(m_source, m_type);
+}
+
+/* ************************************************************************ */
+
+void Simulator::createSimulation(QString source, QString type)
+{
+    m_source = source;
+    m_type = type;
+
+    try
+    {
+        // Create a simulation
+        auto simulation = cece::plugin::Manager::s().getContext().createSimulation(
+            type.toLocal8Bit().data(), source.toLocal8Bit().data());
+
+        // Create simulation
+        m_simulation.reset(simulation.release());
+
+        emit loaded(true);
+    }
+    catch (const cece::Exception& e)
+    {
+        emit loadError(e.what());
+        emit loaded(false);
+    }
 }
 
 /* ************************************************************************ */

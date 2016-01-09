@@ -32,12 +32,21 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QFileInfo>
+#include <QSettings>
+#include <QStringList>
+
+// CeCe
+#include "cece/plugin/Manager.hpp"
 
 // UI
 #include "ui_MainWindow.h"
 
-// CeCe
+// GUI
 #include "AboutDialog.hpp"
+
+/* ************************************************************************ */
+
+constexpr int MainWindow::MAX_RECENT_FILES;
 
 /* ************************************************************************ */
 
@@ -46,15 +55,41 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
 
+    ui->actionStart->setEnabled(false);
     ui->actionStep->setEnabled(false);
     ui->actionPause->setEnabled(false);
     ui->actionReset->setEnabled(false);
+
+    restoreSettings();
+    initRecentFiles();
+
+    m_pluginsItem = new QTreeWidgetItem(ui->treeWidget);
+    m_pluginsItem->setText(0, tr("Plugins"));
+
+    // Foreach available plugins
+    for (const auto& plugin : cece::plugin::Manager::s().getNames())
+    {
+        auto pluginItem = new QTreeWidgetItem(m_pluginsItem);
+        pluginItem->setText(0, QString::fromStdString(plugin));
+    }
+
+    initSimulator();
+}
+
+/* ************************************************************************ */
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    storeSettings();
+    event->accept();
 }
 
 /* ************************************************************************ */
 
 MainWindow::~MainWindow()
 {
+    m_simulatorThread.quit();
+    m_simulatorThread.wait();
     delete ui;
 }
 
@@ -110,6 +145,15 @@ void MainWindow::fileSaveAs()
 
 /* ************************************************************************ */
 
+void MainWindow::fileRecentOpen()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        fileOpen(action->data().toString());
+}
+
+/* ************************************************************************ */
+
 void MainWindow::viewToolbar(bool flag)
 {
     ui->toolBar->setVisible(flag);
@@ -134,24 +178,28 @@ void MainWindow::viewFullscreen(bool flag)
 
 void MainWindow::simulationStart()
 {
+    emit simulatorStart();
 }
 
 /* ************************************************************************ */
 
 void MainWindow::simulationPause()
 {
+    emit simulatorPause();
 }
 
 /* ************************************************************************ */
 
 void MainWindow::simulationStep()
 {
+    emit simulatorStep();
 }
 
 /* ************************************************************************ */
 
 void MainWindow::simulationReset()
 {
+    emit simulatorReset();
 }
 
 /* ************************************************************************ */
@@ -163,10 +211,59 @@ void MainWindow::helpAbout()
 
 /* ************************************************************************ */
 
+void MainWindow::simulatorRunning(bool flag)
+{
+    ui->actionStart->setEnabled(!flag);
+    ui->actionStep->setEnabled(!flag);
+    ui->actionPause->setEnabled(flag);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::simulatorLoaded(bool flag)
+{
+    ui->actionStart->setEnabled(flag);
+    ui->actionStep->setEnabled(flag);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::simulatorError(QString message)
+{
+    QMessageBox::critical(this, tr("Error"), message);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::editTreeItemSelected(QTreeWidgetItem* item, int)
+{
+    if (item->parent() == m_pluginsItem)
+    {
+        ui->plainTextEdit->insertPlainText(
+            QString("<plugin name=\"%1\" />\n").arg(item->text(0)));
+    }
+}
+
+/* ************************************************************************ */
+
 void MainWindow::setCurrentFile(QString filename)
 {
     m_filename = filename;
     setWindowFilePath(m_filename);
+
+    // Get stored list of recent files
+    QSettings settings;
+    QStringList files = settings.value("recentFileList").toStringList();
+    files.removeAll(m_filename);
+    files.prepend(m_filename);
+
+    while (files.size() > MAX_RECENT_FILES)
+        files.removeLast();
+
+    // Store updated list
+    settings.setValue("recentFileList", files);
+
+    updateRecentFileActions();
 }
 
 /* ************************************************************************ */
@@ -185,6 +282,8 @@ void MainWindow::fileOpen(QString filename)
     QTextStream in(&file);
     ui->plainTextEdit->setPlainText(in.readAll());
     setCurrentFile(filename);
+
+    emit simulatorSource(ui->plainTextEdit->toPlainText(), "cece");
 }
 
 /* ************************************************************************ */
@@ -203,6 +302,90 @@ void MainWindow::fileSave(QString filename)
     QTextStream out(&file);
     out << ui->plainTextEdit->toPlainText();
     setCurrentFile(filename);
+
+    emit simulatorSource(ui->plainTextEdit->toPlainText(), "cece");
+}
+
+/* ************************************************************************ */
+
+void MainWindow::storeSettings() const
+{
+    QSettings settings;
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("windowState", saveState());
+}
+
+/* ************************************************************************ */
+
+void MainWindow::restoreSettings()
+{
+    QSettings settings;
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
+}
+
+/* ************************************************************************ */
+
+void MainWindow::initRecentFiles()
+{
+    m_recentFiles[0] = ui->actionRecentFile1;
+    m_recentFiles[1] = ui->actionRecentFile2;
+    m_recentFiles[2] = ui->actionRecentFile3;
+    m_recentFiles[3] = ui->actionRecentFile4;
+    m_recentFiles[4] = ui->actionRecentFile5;
+
+    for (int i = 0; i < MAX_RECENT_FILES; ++i)
+        m_recentFiles[i]->setVisible(false);
+
+    updateRecentFileActions();
+}
+
+/* ************************************************************************ */
+
+void MainWindow::updateRecentFileActions()
+{
+    QSettings settings;
+    QStringList files = settings.value("recentFileList").toStringList();
+
+    int numRecentFiles = qMin(files.size(), MAX_RECENT_FILES);
+
+    for (int i = 0; i < numRecentFiles; ++i)
+    {
+        QString text = tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+        m_recentFiles[i]->setText(text);
+        m_recentFiles[i]->setData(files[i]);
+        m_recentFiles[i]->setVisible(true);
+    }
+
+    for (int j = numRecentFiles; j < MAX_RECENT_FILES; ++j)
+        m_recentFiles[j]->setVisible(false);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::initSimulator()
+{
+    // Connect thread events
+    connect(this, &MainWindow::simulatorStart, &m_simulator, &Simulator::start);
+    connect(this, &MainWindow::simulatorStep, &m_simulator, &Simulator::step);
+    connect(this, &MainWindow::simulatorPause, &m_simulator, &Simulator::pause);
+    connect(this, &MainWindow::simulatorReset, &m_simulator, &Simulator::reset);
+    connect(this, &MainWindow::simulatorSource, &m_simulator,
+        &Simulator::createSimulation);
+    connect(
+        &m_simulator, &Simulator::loaded, this, &MainWindow::simulatorLoaded);
+    connect(
+        &m_simulator, &Simulator::loadError, this, &MainWindow::simulatorError);
+    connect(this, &MainWindow::simulatorRunning, &m_simulator, &Simulator::running);
+
+    // Stop simulation
+    connect(&m_simulatorThread, &QThread::finished, &m_simulator, &Simulator::pause);
+
+    // Move simulator into the simulator thread
+    m_simulator.moveToThread(&m_simulatorThread);
+
+    // Start the simulator thread
+    m_simulatorThread.start();
 }
 
 /* ************************************************************************ */

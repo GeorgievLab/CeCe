@@ -48,8 +48,22 @@ UniquePtr<simulator::Simulation> Context::createSimulation(const FilePath& filep
     if (!loader)
         throw RuntimeException("Unable to load file with extension: '" + ext + "'");
 
-    // Create simulation
+    // Create a simulation
     return loader->fromFile(*this, filepath);
+}
+
+/* ************************************************************************ */
+
+UniquePtr<simulator::Simulation> Context::createSimulation(StringView type, StringView source)
+{
+    // Create a loader from type
+    auto loader = getLoaderFactoryManager().create(type);
+
+    if (!loader)
+        throw RuntimeException("Unable to find loader '" + String(type) + "'");
+
+    // Create a simulation
+    return loader->fromSource(*this, String(source));
 }
 
 /* ************************************************************************ */

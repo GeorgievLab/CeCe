@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,66 +23,107 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+#pragma once
+
+/* ************************************************************************ */
+
 // Qt
-#include <QApplication>
+#include <QObject>
+#include <QScopedPointer>
 
 // CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/FilePath.hpp"
-#include "cece/plugin/Manager.hpp"
-
-// GUI
-#include "MainWindow.hpp"
+#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
 /**
- * @brief Returns plugins directory.
- *
- * @param app Executable path.
- * @param dir Directory to plugins.
- *
- * @return
+ * @brief GUI simulator class.
  */
-cece::String getPluginsDirectory(cece::FilePath app, cece::FilePath dir) noexcept
+class Simulator : public QObject
 {
-    return (app.remove_filename() / dir).string();
-}
+    Q_OBJECT
 
-/* ************************************************************************ */
+public:
+    /**
+     * @brief Constructor.
+     * @param parent
+     */
+    explicit Simulator(QObject* parent = nullptr);
 
-int main(int argc, char* argv[])
-{
-    QApplication app(argc, argv);
-
-    auto& pluginManager = cece::plugin::Manager::s();
-
-    if (pluginManager.getDirectories().empty())
+public:
+    /**
+     * @brief Returns if simulation is running.
+     * @return
+     */
+    bool isRunning() const noexcept
     {
-#ifdef DIR_PLUGINS
-        pluginManager.addDirectory(DIR_PLUGINS);
-#elif __linux__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
-#elif __APPLE__ && __MACH__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../plugins"));
-#elif _WIN32
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "."));
-#endif
+        return m_running;
     }
 
-    // Preload XML plugin
-    pluginManager.load("xml");
+signals:
+    /**
+     * @brief Simulation has been loaded.
+     * @param flag
+     */
+    void loaded(bool flag);
 
-    app.setOrganizationName("GeorgievLab");
-    app.setOrganizationDomain("ccy.zcu.cz");
-    app.setApplicationName("cece");
-    app.setApplicationVersion("0.4.3");
-    app.setApplicationDisplayName("CeCe");
+    /**
+     * @brief Load error.
+     * @param message
+     */
+    void loadError(QString message);
 
-    MainWindow w;
-    w.show();
+    /**
+     * @brief Report if simulation is running.
+     * @param flag
+     */
+    void running(bool flag);
 
-    return app.exec();
-}
+    /**
+     * @brief A step has been performed.
+     * @param iteration
+     */
+    void stepped(quint64 iteration);
+
+public slots:
+    /**
+     * @brief Start simulation.
+     */
+    void start();
+
+    /**
+     * @brief Do a simulation step.
+     */
+    void step();
+
+    /**
+     * @brief Pause simulation.
+     */
+    void pause();
+
+    /**
+     * @brief Reset simulation.
+     */
+    void reset();
+
+    /**
+     * @brief Create a simulation from source.
+     * @param source
+     */
+    void createSimulation(QString source, QString type);
+
+private:
+    /// Current simulation.
+    QScopedPointer<cece::simulator::Simulation> m_simulation;
+
+    /// If simulation is running.
+    bool m_running = false;
+
+    /// Current source.
+    QString m_source;
+
+    /// Source type.
+    QString m_type;
+};
 
 /* ************************************************************************ */

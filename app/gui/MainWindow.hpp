@@ -29,6 +29,11 @@
 
 // Qt
 #include <QMainWindow>
+#include <QThread>
+#include <QTreeWidget>
+
+// GUI
+#include "Simulator.hpp"
 
 /* ************************************************************************ */
 
@@ -48,6 +53,12 @@ class MainWindow : public QMainWindow
 
 public:
     /**
+     * @brief Maximum recent files.
+     */
+    static constexpr int MAX_RECENT_FILES = 5;
+
+public:
+    /**
      * @brief Constructor.
      * @param parent
      */
@@ -57,6 +68,13 @@ public:
      * @brief Destructor.
      */
     ~MainWindow();
+
+public:
+    /**
+     * @brief Close event.
+     * @param event
+     */
+    void closeEvent(QCloseEvent* event);
 
 public slots:
     /**
@@ -78,6 +96,11 @@ public slots:
      * @brief Save current simulation file as.
      */
     void fileSaveAs();
+
+    /**
+     * @brief Open recent file.
+     */
+    void fileRecentOpen();
 
     /**
      * @brief Toggle toolbar visibility.
@@ -114,6 +137,59 @@ public slots:
      */
     void helpAbout();
 
+    /**
+     * @brief If simulator is running.
+     * @param flag
+     */
+    void simulatorRunning(bool flag);
+
+    /**
+     * @brief If simulator contains valid simulation.
+     * @param flag
+     */
+    void simulatorLoaded(bool flag);
+
+    /**
+     * @brief On simulator error.
+     * @param message
+     */
+    void simulatorError(QString message);
+
+    /**
+     * @brief Selected item from tree.
+     * @param item
+     * @param column
+     */
+    void editTreeItemSelected(QTreeWidgetItem* item, int column);
+
+signals:
+    /**
+     * @brief Start simulator.
+     */
+    void simulatorStart();
+
+    /**
+     * @brief Pause simulator.
+     */
+    void simulatorPause();
+
+    /**
+     * @brief Simulator step.
+     */
+    void simulatorStep();
+
+    /**
+     * @brief Reset simulation.
+     */
+    void simulatorReset();
+
+    /**
+     * @brief Load new source to simulator.
+     * @param source
+     * @param type
+     */
+    void simulatorSource(QString source, QString type);
+
 protected:
     /**
      * @brief Set current file name.
@@ -134,14 +210,52 @@ protected:
     void fileSave(QString filename);
 
 private:
+    /**
+     * @brief Store window settings.
+     */
+    void storeSettings() const;
+
+    /**
+     * @brief Restore window settings.
+     */
+    void restoreSettings();
+
+    /**
+     * @brief Initialize recent files actions.
+     */
+    void initRecentFiles();
+
+    /**
+     * @brief Update recent file actions.
+     */
+    void updateRecentFileActions();
+
+    /**
+     * @brief Initialize simulator.
+     */
+    void initSimulator();
+
+private:
     /// UI members.
     Ui::MainWindow* ui;
+
+    /// Recent files action.
+    QAction* m_recentFiles[MAX_RECENT_FILES];
 
     /// Current file name.
     QString m_filename;
 
     /// Previous window state.
     Qt::WindowStates m_previousState = Qt::WindowNoState;
+
+    /// Background simulation thread.
+    QThread m_simulatorThread;
+
+    /// Simulator.
+    Simulator m_simulator;
+
+    /// Plugins tree item.
+    QTreeWidgetItem* m_pluginsItem;
 };
 
 /* ************************************************************************ */
