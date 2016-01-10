@@ -156,6 +156,13 @@ public slots:
     void simulatorError(QString message);
 
     /**
+     * @brief A simulator step is performed.
+     * @param iteration
+     * @param iterations
+     */
+    void simulatorStepped(int iteration, int iterations);
+
+    /**
      * @brief Selected item from tree.
      * @param item
      * @param column

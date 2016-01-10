@@ -23,85 +23,28 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "Simulator.hpp"
-
-// CeCe
-#include "cece/core/Exception.hpp"
-#include "cece/plugin/Manager.hpp"
+#pragma once
 
 /* ************************************************************************ */
 
-Simulator::Simulator(QObject* parent) : QObject(parent)
-{
-    // Nothing to do
-}
+// Qt
+#include <QGLWidget>
 
 /* ************************************************************************ */
 
-void Simulator::start()
+/**
+ * @brief OpenGL visualization widget.
+ */
+class VisualizationWidget : public QGLWidget
 {
-    m_running = true;
+    Q_OBJECT
 
-    while (m_running)
-    {
-        step();
-    }
-}
-
-/* ************************************************************************ */
-
-void Simulator::step()
-{
-    Q_ASSERT(m_simulation);
-
-    // Do a step
-    m_simulation->update();
-
-    emit stepped(static_cast<int>(m_simulation->getIteration()),
-        static_cast<int>(m_simulation->getIterations()));
-    emit running(true);
-}
-
-/* ************************************************************************ */
-
-void Simulator::pause()
-{
-    m_running = false;
-    emit running(false);
-}
-
-/* ************************************************************************ */
-
-void Simulator::reset()
-{
-    createSimulation(m_source, m_type);
-}
-
-/* ************************************************************************ */
-
-void Simulator::createSimulation(QString source, QString type)
-{
-    m_source = source;
-    m_type = type;
-
-    try
-    {
-        // Create a simulation
-        auto simulation =
-            cece::plugin::Manager::s().getContext().createSimulation(
-                type.toLocal8Bit().data(), source.toLocal8Bit().data());
-
-        // Create simulation
-        m_simulation.reset(simulation.release());
-
-        emit loaded(true);
-    }
-    catch (const cece::Exception& e)
-    {
-        emit loadError(e.what());
-        emit loaded(false);
-    }
-}
+public:
+    /**
+     * @brief Constructor.
+     * @param parent
+     */
+    VisualizationWidget(QWidget* parent = nullptr);
+};
 
 /* ************************************************************************ */

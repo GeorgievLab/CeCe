@@ -82,8 +82,9 @@ signals:
     /**
      * @brief A step has been performed.
      * @param iteration
+     * @param iterations
      */
-    void stepped(quint64 iteration);
+    void stepped(int iteration, int iterations);
 
 public slots:
     /**

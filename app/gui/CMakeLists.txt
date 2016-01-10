@@ -35,6 +35,7 @@ set(CMAKE_AUTORCC On)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets)
+find_package(Qt5OpenGL)
 
 # ######################################################################### #
 
@@ -62,6 +63,8 @@ set(SRCS
     AboutDialog.ui
     Simulator.hpp
     Simulator.cpp
+    VisualizationWidget.hpp
+    VisualizationWidget.cpp
     icons.qrc
 )
 
@@ -111,6 +114,7 @@ endif ()
 target_link_libraries(${PROJECT_NAME}
     cece
     Qt5::Widgets
+    Qt5::OpenGL
 )
 
 if (UNIX AND NOT APPLE)

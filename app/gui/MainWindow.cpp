@@ -235,6 +235,15 @@ void MainWindow::simulatorError(QString message)
 
 /* ************************************************************************ */
 
+void MainWindow::simulatorStepped(int iteration, int iterations)
+{
+    ui->progressBar->setMinimum(0);
+    ui->progressBar->setMaximum(iterations);
+    ui->progressBar->setValue(iteration);
+}
+
+/* ************************************************************************ */
+
 void MainWindow::editTreeItemSelected(QTreeWidgetItem* item, int)
 {
     if (item->parent() == m_pluginsItem)
@@ -351,7 +360,8 @@ void MainWindow::updateRecentFileActions()
 
     for (int i = 0; i < numRecentFiles; ++i)
     {
-        QString text = tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+        QString text =
+            tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
         m_recentFiles[i]->setText(text);
         m_recentFiles[i]->setData(files[i]);
         m_recentFiles[i]->setVisible(true);
@@ -376,10 +386,14 @@ void MainWindow::initSimulator()
         &m_simulator, &Simulator::loaded, this, &MainWindow::simulatorLoaded);
     connect(
         &m_simulator, &Simulator::loadError, this, &MainWindow::simulatorError);
-    connect(this, &MainWindow::simulatorRunning, &m_simulator, &Simulator::running);
+    connect(
+        &m_simulator, &Simulator::running, this, &MainWindow::simulatorRunning);
+    connect(
+        &m_simulator, &Simulator::stepped, this, &MainWindow::simulatorStepped);
 
     // Stop simulation
-    connect(&m_simulatorThread, &QThread::finished, &m_simulator, &Simulator::pause);
+    connect(&m_simulatorThread, &QThread::finished, &m_simulator,
+        &Simulator::pause);
 
     // Move simulator into the simulator thread
     m_simulator.moveToThread(&m_simulatorThread);

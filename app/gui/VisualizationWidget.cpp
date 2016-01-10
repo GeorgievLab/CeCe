@@ -24,84 +24,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "Simulator.hpp"
-
-// CeCe
-#include "cece/core/Exception.hpp"
-#include "cece/plugin/Manager.hpp"
+#include "VisualizationWidget.hpp"
 
 /* ************************************************************************ */
 
-Simulator::Simulator(QObject* parent) : QObject(parent)
+VisualizationWidget::VisualizationWidget(QWidget* parent) : QGLWidget(parent)
 {
     // Nothing to do
-}
-
-/* ************************************************************************ */
-
-void Simulator::start()
-{
-    m_running = true;
-
-    while (m_running)
-    {
-        step();
-    }
-}
-
-/* ************************************************************************ */
-
-void Simulator::step()
-{
-    Q_ASSERT(m_simulation);
-
-    // Do a step
-    m_simulation->update();
-
-    emit stepped(static_cast<int>(m_simulation->getIteration()),
-        static_cast<int>(m_simulation->getIterations()));
-    emit running(true);
-}
-
-/* ************************************************************************ */
-
-void Simulator::pause()
-{
-    m_running = false;
-    emit running(false);
-}
-
-/* ************************************************************************ */
-
-void Simulator::reset()
-{
-    createSimulation(m_source, m_type);
-}
-
-/* ************************************************************************ */
-
-void Simulator::createSimulation(QString source, QString type)
-{
-    m_source = source;
-    m_type = type;
-
-    try
-    {
-        // Create a simulation
-        auto simulation =
-            cece::plugin::Manager::s().getContext().createSimulation(
-                type.toLocal8Bit().data(), source.toLocal8Bit().data());
-
-        // Create simulation
-        m_simulation.reset(simulation.release());
-
-        emit loaded(true);
-    }
-    catch (const cece::Exception& e)
-    {
-        emit loadError(e.what());
-        emit loaded(false);
-    }
 }
 
 /* ************************************************************************ */
