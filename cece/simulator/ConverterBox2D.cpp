@@ -75,8 +75,8 @@ b2Vec2 ConverterBox2D::convertPosition(PositionVector position) const noexcept
     const auto coeff = getLengthCoefficient();
 
     return coeff * b2Vec2{
-        position.getX().value(),
-        position.getY().value()
+        static_cast<float32>(position.getX().value()),
+        static_cast<float32>(position.getY().value())
     };
 }
 
@@ -113,8 +113,8 @@ b2Vec2 ConverterBox2D::convertLinearVelocity(VelocityVector velocity) const noex
     const auto coeff = getLengthCoefficient() / getTimeCoefficient();
 
     return coeff * b2Vec2(
-        velocity.getX().value(),
-        velocity.getY().value()
+        static_cast<float32>(velocity.getX().value()),
+        static_cast<float32>(velocity.getY().value())
     );
 }
 
@@ -155,8 +155,8 @@ b2Vec2 ConverterBox2D::convertLinearAcceleration(AccelerationVector acceleration
     const auto coeff = getLengthCoefficient() / (getTimeCoefficient() * getTimeCoefficient());
 
     return coeff * b2Vec2(
-        acceleration.getX().value(),
-        acceleration.getY().value()
+        static_cast<float32>(acceleration.getX().value()),
+        static_cast<float32>(acceleration.getY().value())
     );
 }
 
@@ -197,8 +197,8 @@ b2Vec2 ConverterBox2D::convertForce(ForceVector force) const noexcept
     const auto coeff = getLengthCoefficient() / (getTimeCoefficient() * getTimeCoefficient());
 
     return coeff * b2Vec2{
-        force.getX().value(),
-        force.getY().value()
+        static_cast<float32>(force.getX().value()),
+        static_cast<float32>(force.getY().value())
     };
 }
 
@@ -239,8 +239,8 @@ b2Vec2 ConverterBox2D::convertLinearImpulse(ImpulseVector impulse) const noexcep
     const auto coeff = getLengthCoefficient() / getTimeCoefficient();
 
     return coeff * b2Vec2{
-        impulse.getX().value(),
-        impulse.getY().value()
+        static_cast<float32>(impulse.getX().value()),
+        static_cast<float32>(impulse.getY().value())
     };
 }
 

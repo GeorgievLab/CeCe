@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe
+#include "cece/core/Real.hpp"
+
+/* ************************************************************************ */
+
 namespace cece {
 inline namespace core {
 namespace constants {
@@ -34,16 +39,16 @@ namespace constants {
 /* ************************************************************************ */
 
 /**
- * @brief PI value.
+ * @brief PI constant.
  */
-static constexpr float PI = 3.14159265359f;
+static constexpr RealType PI = 3.14159265359;
 
 /* ************************************************************************ */
 
 /**
- * @brief EulerNumber value.
+ * @brief Euler number constant.
  */
-static constexpr float E = 2.718281828459f;
+static constexpr RealType E = 2.718281828459;
 
 /* ************************************************************************ */
 

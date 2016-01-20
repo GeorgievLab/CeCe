@@ -248,7 +248,7 @@ void Context::setView(int width, int height) noexcept
     glLoadIdentity();
 
     // Apply zoom matrix
-    float scale = 1 / m_camera.getZoom();
+    float scale = 1.0 / m_camera.getZoom();
     glScalef(scale, scale, scale);
 
     // Move camera
@@ -404,7 +404,7 @@ void Context::matrixTranslate(const PositionVector& pos) noexcept
 
 /* ************************************************************************ */
 
-void Context::matrixScale(const Vector<float>& scale) noexcept
+void Context::matrixScale(const ScaleVector& scale) noexcept
 {
     gl(glScalef(scale.getX(), scale.getY(), 1));
 }
@@ -564,6 +564,30 @@ void Context::setProgramParam(Program::UniformId id, int value1, int value2) noe
 /* ************************************************************************ */
 
 void Context::setProgramParam(Program::UniformId id, float value) noexcept
+{
+#ifdef _WIN32
+    if (!glUniform1f)
+        glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
+#endif
+
+    gl(glUniform1f(id, value));
+}
+
+/* ************************************************************************ */
+
+void Context::setProgramParam(Program::UniformId id, double value) noexcept
+{
+#ifdef _WIN32
+    if (!glUniform1f)
+        glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
+#endif
+
+    gl(glUniform1f(id, value));
+}
+
+/* ************************************************************************ */
+
+void Context::setProgramParam(Program::UniformId id, long double value) noexcept
 {
 #ifdef _WIN32
     if (!glUniform1f)

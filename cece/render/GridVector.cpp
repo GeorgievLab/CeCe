@@ -50,7 +50,7 @@ namespace render {
 
 /* ************************************************************************ */
 
-GridVector::GridVector(Context& context, Size size, const Vector<float>* data, float max)
+GridVector::GridVector(Context& context, Size size, const Vector<RealType>* data, RealType max)
     : m_buffer(context)
     , m_max(max)
 {
@@ -79,7 +79,7 @@ void GridVector::draw(Context& context) noexcept
 
 /* ************************************************************************ */
 
-void GridVector::resize(Size size, const Vector<float>* data)
+void GridVector::resize(Size size, const Vector<RealType>* data)
 {
     GridBase::resize(std::move(size));
 
@@ -88,12 +88,12 @@ void GridVector::resize(Size size, const Vector<float>* data)
 
 /* ************************************************************************ */
 
-void GridVector::update(const Vector<float>* data) noexcept
+void GridVector::update(const Vector<RealType>* data) noexcept
 {
     const auto size = getSize();
 
-    const auto start = Vector<float>::createSingle(-0.5f);
-    const Vector<float> step = getSize().inversed<float>();
+    const auto start = Vector<RealType>::createSingle(-0.5);
+    const Vector<RealType> step = getSize().inversed<RealType>();
 
     const auto width = size.getWidth();
     const auto height = size.getHeight();
@@ -108,16 +108,31 @@ void GridVector::update(const Vector<float>* data) noexcept
         {
             // Get vector normalized by max length
             const auto vec = data[i + j * width] / m_max;
-            const Vector<float> pos{
-                start.getX() + i * step.getX() + step.getX() / 2.f,
-                start.getY() + j * step.getY() + step.getY() / 2.f
+            const Vector<RealType> pos{
+                start.getX() + i * step.getX() + step.getX() / 2.0,
+                start.getY() + j * step.getY() + step.getY() / 2.0
             };
-            const float gray = std::min(vec.getLength(), 1.0f);
+            const RealType gray = std::min<RealType>(vec.getLength(), 1.0);
 
-            const Vector<float> dest = pos + vec * step;
+            const Vector<RealType> dest = pos + vec * step;
 
-            vertices.push_back(Vertex{pos.getX(), pos.getY(), 0, 0, 0});
-            vertices.push_back(Vertex{dest.getX(), dest.getY(), gray, gray, gray});
+            // Source vertex
+            vertices.push_back(Vertex{
+                static_cast<float>(pos.getX()),
+                static_cast<float>(pos.getY()),
+                0,
+                0,
+                0
+            });
+
+            // Destination vertex
+            vertices.push_back(Vertex{
+                static_cast<float>(dest.getX()),
+                static_cast<float>(dest.getY()),
+                static_cast<float>(gray),
+                static_cast<float>(gray),
+                static_cast<float>(gray)
+            });
         }
     }
 

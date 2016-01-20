@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/Real.hpp"
 #include "cece/core/VectorUnits.hpp"
 
 /* ************************************************************************ */
@@ -73,7 +74,7 @@ public:
      *
      * @return
      */
-    float getZoom() const noexcept
+    RealType getZoom() const noexcept
     {
         return m_zoom;
     }
@@ -99,7 +100,7 @@ public:
      *
      * @param zoom
      */
-    void setZoom(float zoom) noexcept
+    void setZoom(RealType zoom) noexcept
     {
         m_zoom = zoom;
     }
@@ -112,7 +113,7 @@ private:
     PositionVector m_position;
 
     /// Zoom value.
-    float m_zoom = 1.0f;
+    RealType m_zoom = 1.0;
 
 };
 

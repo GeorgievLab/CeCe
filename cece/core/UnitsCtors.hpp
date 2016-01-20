@@ -124,7 +124,7 @@ inline constexpr Mass g(Value value) noexcept
 inline constexpr Mass kg(Value value) noexcept
 {
     // 1g = 1/1'000 kg
-    return g(value * 1e3f);
+    return g(value * 1e3);
 }
 
 /* ************************************************************************ */
@@ -139,7 +139,7 @@ inline constexpr Mass kg(Value value) noexcept
 inline constexpr Mass mg(Value value) noexcept
 {
     // 1mg = 1/1'000 g
-    return g(value * 1e-3f);
+    return g(value * 1e-3);
 }
 
 /* ************************************************************************ */
@@ -154,7 +154,7 @@ inline constexpr Mass mg(Value value) noexcept
 inline constexpr Mass ug(Value value) noexcept
 {
     // 1ug = 1/1'000 mg
-    return mg(value * 1e-3f);
+    return mg(value * 1e-3);
 }
 
 /* ************************************************************************ */
@@ -169,7 +169,7 @@ inline constexpr Mass ug(Value value) noexcept
 inline constexpr Mass ng(Value value) noexcept
 {
     // 1ng = 1/1'000 ug
-    return ug(value * 1e-3f);
+    return ug(value * 1e-3);
 }
 
 /* ************************************************************************ */
@@ -184,7 +184,7 @@ inline constexpr Mass ng(Value value) noexcept
 inline constexpr Mass pg(Value value) noexcept
 {
     // 1pg = 1/1'000 ng
-    return ng(value * 1e-3f);
+    return ng(value * 1e-3);
 }
 
 /* ************************************************************************ */

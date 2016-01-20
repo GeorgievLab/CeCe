@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/Real.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/render/Buffer.hpp"
 #include "cece/render/GridBase.hpp"
@@ -61,7 +62,7 @@ public:
      * @param data    Vector data.
      * @param max     Maximum value.
      */
-    GridVector(Context& context, Size size, const Vector<float>* data, float max = 1);
+    GridVector(Context& context, Size size, const Vector<RealType>* data, RealType max = 1);
 
 
     /**
@@ -73,10 +74,10 @@ public:
      * @param max     Maximum value.
      */
     template<typename T>
-    GridVector(Context& context, Size size, const Vector<T>* data, float max = 1)
-        : GridVector(context, std::move(size), reinterpret_cast<const Vector<float>*>(data), max)
+    GridVector(Context& context, Size size, const Vector<T>* data, RealType max = 1)
+        : GridVector(context, std::move(size), reinterpret_cast<const Vector<RealType>*>(data), max)
     {
-        static_assert(sizeof(T) == sizeof(float), "T must have same size as float");
+        static_assert(sizeof(T) == sizeof(RealType), "T must have same size as RealType");
     }
 
 
@@ -89,7 +90,7 @@ public:
      *
      * @param max
      */
-    void setMax(float max) noexcept
+    void setMax(RealType max) noexcept
     {
         m_max = max;
     }
@@ -113,7 +114,7 @@ public:
      * @param size
      * @param data
      */
-    void resize(Size size, const Vector<float>* data);
+    void resize(Size size, const Vector<RealType>* data);
 
 
     /**
@@ -121,7 +122,7 @@ public:
      *
      * @param data
      */
-    void update(const Vector<float>* data) noexcept;
+    void update(const Vector<RealType>* data) noexcept;
 
 
     /**
@@ -134,8 +135,8 @@ public:
     template<typename T>
     void update(const Vector<T>* data) noexcept
     {
-        static_assert(sizeof(T) == sizeof(float), "T must have same size as float");
-        update(reinterpret_cast<const Vector<float>*>(data));
+        static_assert(sizeof(T) == sizeof(RealType), "T must have same size as RealType");
+        update(reinterpret_cast<const Vector<RealType>*>(data));
     }
 
 
@@ -146,7 +147,7 @@ private:
     Buffer m_buffer;
 
     /// Maximum value.
-    float m_max = 1;
+    RealType m_max = 1;
 };
 
 /* ************************************************************************ */

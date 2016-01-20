@@ -27,7 +27,8 @@
 
 /* ************************************************************************ */
 
-// Core
+// CeCe
+#include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Vector.hpp"
 
@@ -76,7 +77,7 @@ using ImpulseVector = Vector<units::Impulse>;
 /**
  * @brief Scale vector.
  */
-using ScaleVector = Vector<float>;
+using ScaleVector = Vector<RealType>;
 
 /* ************************************************************************ */
 

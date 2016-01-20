@@ -39,6 +39,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/VectorUnits.hpp"
@@ -305,7 +306,7 @@ public:
      *
      * @param scale Scale number.
      */
-    void matrixScale(float scale) noexcept
+    void matrixScale(RealType scale) noexcept
     {
         return matrixScale(ScaleVector::createSingle(scale));
     }
@@ -393,6 +394,24 @@ public:
     * @param value Parameter value.
     */
     void setProgramParam(Program::UniformId id, float value) noexcept;
+
+
+    /**
+    * @brief Set shader program parameter.
+    *
+    * @param id    Parameter ID.
+    * @param value Parameter value.
+    */
+    void setProgramParam(Program::UniformId id, double value) noexcept;
+
+
+    /**
+    * @brief Set shader program parameter.
+    *
+    * @param id    Parameter ID.
+    * @param value Parameter value.
+    */
+    void setProgramParam(Program::UniformId id, long double value) noexcept;
 
 
     /**

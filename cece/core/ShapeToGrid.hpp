@@ -35,6 +35,7 @@
 #include "cece/core/Vector.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Shape.hpp"
+#include "cece/core/Real.hpp"
 
 /* ************************************************************************ */
 
@@ -135,7 +136,7 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const ShapeCircle& shape, const Vect
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-    const auto radiusSteps = Vector<float>(shape.radius / steps);
+    const auto radiusSteps = Vector<RealType>(shape.radius / steps);
     const auto shapeCenter = Vector<Ts>(center + shape.center.rotated(rotation) / steps);
     const auto maxS = Vector<Ts>(max);
     const auto minS = Vector<Ts>(min);
@@ -146,11 +147,11 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const ShapeCircle& shape, const Vect
         for (Ts y = Ts(-radiusSteps.getY()); y < Ts(radiusSteps.getY()); ++y)
         {
             // Calculate normalized length for ellipse
-            const Vector<float> xyVec{ static_cast<float>(x), static_cast<float>(y) };
-            const Vector<float> lenVec = operator/(xyVec, radiusSteps);
-            const float len = lenVec.getLengthSquared();
+            const Vector<RealType> xyVec{ static_cast<RealType>(x), static_cast<RealType>(y) };
+            const Vector<RealType> lenVec = operator/(xyVec, radiusSteps);
+            const RealType len = lenVec.getLengthSquared();
 
-            if (len > 1.f)
+            if (len > RealType(1.0))
                 continue;
 
             // Calculate grid coordinates
@@ -218,7 +219,7 @@ void mapShapeToGrid(FnIn fnIn, FnOut fnOut, const ShapeRectangle& shape, const V
     using Ts = typename std::make_signed<T>::type;
 
     // Radius steps in grid
-    const auto sizeSteps = Vector<float>(shape.size / steps / 2.f);
+    const auto sizeSteps = Vector<RealType>(shape.size / steps / 2.f);
     const auto shapeCenter = Vector<Ts>(center + shape.center / steps);
     const auto maxS = Vector<Ts>(max);
     const auto minS = Vector<Ts>(min);
