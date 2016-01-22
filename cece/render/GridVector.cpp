@@ -109,8 +109,8 @@ void GridVector::update(const Vector<RealType>* data) noexcept
             // Get vector normalized by max length
             const auto vec = data[i + j * width] / m_max;
             const Vector<RealType> pos{
-                start.getX() + i * step.getX() + step.getX() / 2.0,
-                start.getY() + j * step.getY() + step.getY() / 2.0
+                start.getX() + i * step.getX() + step.getX() / RealType(2.0),
+                start.getY() + j * step.getY() + step.getY() / RealType(2.0)
             };
             const RealType gray = std::min<RealType>(vec.getLength(), 1.0);
 
