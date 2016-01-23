@@ -25,6 +25,8 @@
 
 #pragma once
 
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/core/Real.hpp"
 #include "cece/core/InStream.hpp"
@@ -50,9 +52,8 @@ public:
     /// Unsigned character type.
     using UCharType = unsigned char;
 
-
     /// Component type.
-    using ComponentType = RealType;
+    using ComponentType = float;
 
 
 // Public Ctors & Dtors

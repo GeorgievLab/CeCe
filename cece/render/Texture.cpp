@@ -53,6 +53,30 @@
 
 /* ************************************************************************ */
 
+namespace {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Supported component type by OpenGL.
+ */
+template<typename>
+struct ColorComponentType;
+
+/* ************************************************************************ */
+
+template<>
+struct ColorComponentType<float>
+{
+    static constexpr GLenum value = GL_FLOAT;
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
 namespace cece {
 namespace render {
 
@@ -107,7 +131,7 @@ void Texture::clear(const Color& color)
     DynamicArray<Color> colors(width * height, color);
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, colors.data()));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, ColorComponentType<Color::ComponentType>::value, colors.data()));
 }
 
 /* ************************************************************************ */
@@ -125,7 +149,7 @@ void Texture::resize(Size size, const Color& color)
     DynamicArray<Color> colors(width * height, color);
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, colors.data()));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, ColorComponentType<Color::ComponentType>::value, colors.data()));
 }
 
 /* ************************************************************************ */
@@ -136,7 +160,7 @@ void Texture::update(const Color* colors)
     const auto height = m_size.getHeight();
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
-    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, colors));
+    gl(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, ColorComponentType<Color::ComponentType>::value, colors));
 }
 
 /* ************************************************************************ */
@@ -151,7 +175,7 @@ void Texture::create(Size size, const Color* colors)
     const auto height = m_size.getHeight();
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
-    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, colors));
+    gl(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, ColorComponentType<Color::ComponentType>::value, colors));
 }
 
 /* ************************************************************************ */

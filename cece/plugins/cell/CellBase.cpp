@@ -111,7 +111,7 @@ render::Color CellBase::calcFluorescentColor(const units::Volume volume) const n
     const auto blue  = cfpValue;
 #endif
 
-    return {red, green, blue, 1};
+    return render::Color(red, green, blue, 1);
 }
 #endif
 
