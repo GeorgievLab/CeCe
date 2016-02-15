@@ -20,12 +20,23 @@
     <File Name="Module.cpp"/>
     <File Name="Lattice.cpp"/>
     <File Name="Plugin.cpp"/>
-    <File Name="Node.cpp"/>
+    <File Name="BgkDynamics.cpp"/>
+    <File Name="BounceBackDynamics.cpp"/>
+    <File Name="Dynamics.cpp"/>
+    <File Name="NoDynamics.cpp"/>
+    <File Name="ZouHeDynamics.cpp"/>
+    <File Name="Utils.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
     <File Name="Lattice.hpp"/>
     <File Name="Node.hpp"/>
+    <File Name="BgkDynamics.hpp"/>
+    <File Name="BounceBackDynamics.hpp"/>
+    <File Name="Dynamics.hpp"/>
+    <File Name="NoDynamics.hpp"/>
+    <File Name="ZouHeDynamics.hpp"/>
+    <File Name="Utils.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -46,12 +46,23 @@ endif ()
 # Sources
 set(SRCS
     Plugin.cpp
+    Utils.hpp
+    Utils.cpp
     Module.hpp
     Module.cpp
     Lattice.hpp
     Lattice.cpp
     Node.hpp
-    Node.cpp
+    Dynamics.hpp
+    Dynamics.cpp
+    NoDynamics.hpp
+    NoDynamics.cpp
+    BgkDynamics.hpp
+    BgkDynamics.cpp
+    BounceBackDynamics.hpp
+    BounceBackDynamics.cpp
+    ZouHeDynamics.hpp
+    ZouHeDynamics.cpp
 )
 
 # Build plugin

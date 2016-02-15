@@ -35,6 +35,7 @@
 
 // Plugin
 #include "cece/plugins/streamlines/Node.hpp"
+#include "cece/plugins/streamlines/Dynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -219,11 +220,15 @@ public:
 
 
     /**
-     * @brief Compute lattice collisions.
-     *
-     * @param omega
+     * @brief Init lattice equilibrium.
      */
-    void collide(Node::ValueType omega);
+    void initEquilibrium();
+
+
+    /**
+     * @brief Compute lattice collisions.
+     */
+    void collide();
 
 
     /**
@@ -237,7 +242,7 @@ public:
      *
      * @param omega
      */
-    void collideAndStream(Node::ValueType omega);
+    void collideAndStream();
 
 
     /**
@@ -245,7 +250,7 @@ public:
      *
      * @param dynamics
      */
-    void setDynamics(Node::Dynamics dynamics);
+    void setDynamics(ViewPtr<Dynamics> dynamics);
 
 
     /**
@@ -253,7 +258,7 @@ public:
      *
      * @param dynamics
      */
-    void fixupObstacles(Node::Dynamics dynamics) noexcept;
+    void fixupObstacles(ViewPtr<Dynamics> dynamics) noexcept;
 
 
 // Private Data Members

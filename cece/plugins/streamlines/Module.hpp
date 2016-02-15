@@ -297,6 +297,17 @@ public:
 #endif
 
 
+    /**
+     * @brief Returns fluid dynamics.
+     *
+     * @return
+     */
+    ViewPtr<Dynamics> getFluidDynamics() const noexcept
+    {
+        return m_fluidDynamics;
+    }
+
+
 // Public Mutators
 public:
 
@@ -414,6 +425,17 @@ public:
     }
 
 #endif
+
+
+    /**
+     * @brief Set fluid dynamics.
+     *
+     * @param dynamics
+     */
+    void setFluidDynamics(UniquePtr<Dynamics> dynamics) noexcept
+    {
+        m_fluidDynamics = std::move(dynamics);
+    }
 
 
 // Public Operations
@@ -629,6 +651,9 @@ private:
     /// Barriers created for layout.
     StaticArray<ViewPtr<object::Object>, LayoutPosCount> m_layoutBarriers;
 
+    /// Boundary dynamics
+    StaticArray<UniquePtr<Dynamics>, LayoutPosCount> m_boundaries;
+
     /// Use dynamic objects as obstacles
     bool m_dynamicObjectsObstacles = false;
 
@@ -646,6 +671,8 @@ private:
     /// Access mutex.
     mutable Mutex m_mutex;
 #endif
+
+    UniquePtr<Dynamics> m_fluidDynamics;
 
     /// Outstream for streamlines data
     UniquePtr<OutStream> m_dataOut;

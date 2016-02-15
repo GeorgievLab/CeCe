@@ -237,6 +237,70 @@ ViewPtr<T> makeView(T* ptr) noexcept
 
 /* ************************************************************************ */
 
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T>
+bool operator==(const ViewPtr<T>& lhs, const UniquePtr<T>& rhs) noexcept
+{
+    return lhs.get() == rhs.get();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T>
+bool operator==(const UniquePtr<T>& lhs, const ViewPtr<T>& rhs) noexcept
+{
+    return lhs.get() == rhs.get();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T>
+bool operator!=(const ViewPtr<T>& lhs, const UniquePtr<T>& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T>
+bool operator!=(const UniquePtr<T>& lhs, const ViewPtr<T>& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
 }
 }
 

@@ -99,7 +99,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
             // Get velocity
             assert(velocityGrid.inRange(vc));
-            const auto& velocity = velocityGrid[vc].calcVelocity() * vMax;
+            const auto& velocity = velocityGrid[vc].computeVelocity() * vMax;
 
 
             // TODO: Completely redesign

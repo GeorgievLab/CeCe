@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -29,8 +29,12 @@
 
 // CeCe
 #include "cece/core/Real.hpp"
+#include "cece/core/ViewPtr.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/StaticArray.hpp"
+
+// Plugin
+#include "cece/plugins/streamlines/Dynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -42,124 +46,35 @@ namespace streamlines {
 
 /**
  * @brief Class for storing lattice data and perform LB dynamics.
- *
- * Memory and speedup improvement taken from OpenLB TR1:
- * @link http://optilb.com/openlb/wp-content/uploads/2011/12/olb-tr1.pdf
  */
 class Node
 {
 
-// Public Enums
-public:
-
-
-    /**
-     * @brief Boundary condition position.
-     */
-    enum Position
-    {
-        PositionRight  = 0,
-        PositionLeft   = 1,
-        PositionTop    = 2,
-        PositionBottom = 3,
-        PositionCount
-    };
-
-
-    /**
-     * @brief Cell dynamics type.
-     */
-    enum class Dynamics
-    {
-        None,
-        StaticObstacle,
-        DynamicObstacle,
-        BGK
-    };
-
-
 // Public Types
 public:
 
-
-    /// Computation value type.
-    using ValueType = RealType;
-
-    /// Direction index type.
-    using IndexType = unsigned int;
-
-    /// Velocity type.
-    using VelocityType = Vector<ValueType>;
+    /// Population index type.
+    using DirectionType = typename Dynamics::DirectionType;
 
     /// Density type.
-    using DensityType = ValueType;
+    using DensityType = typename Dynamics::DensityType;
+
+    /// Momentum type.
+    using MomentumType = typename Dynamics::MomentumType;
+
+    /// Velocity type.
+    using VelocityType = typename Dynamics::VelocityType;
+
+    /// Data type.
+    using DataType = typename Dynamics::DataType;
 
 
 // Public Constants
 public:
 
 
-    /// Maximum speed in lattice (c^2 = 1/3, c ~= 0.577).
-    static constexpr ValueType MAX_SPEED = 0.5;
-
-    /// Number of stored values.
-    static constexpr IndexType SIZE = 9;
-
-    /// Direction index map.
-    static constexpr StaticArray<StaticArray<IndexType, 3>, 3> INDEX_MAP{{
-        {{1, 8, 7}},
-        {{2, 0, 6}},
-        {{3, 4, 5}}
-    }};
-
-    /// Direction weight for center.
-    static constexpr ValueType WEIGHT_CENTER = 4.0 / 9.0;
-
-    /// Direction weight for linear.
-    static constexpr ValueType WEIGHT_LINEAR = 1.0 / 9.0;
-
-    /// Direction weight for diagonal.
-    static constexpr ValueType WEIGHT_DIAGONAL = 1.0 / 36.0;
-
-    /// Direction weights
-    static constexpr StaticArray<ValueType, SIZE> DIRECTION_WEIGHTS = {{
-        WEIGHT_CENTER, // Center
-        WEIGHT_DIAGONAL,
-        WEIGHT_LINEAR,
-        WEIGHT_DIAGONAL,
-        WEIGHT_LINEAR,
-        WEIGHT_DIAGONAL,
-        WEIGHT_LINEAR,
-        WEIGHT_DIAGONAL,
-        WEIGHT_LINEAR
-    }};
-
-    /// Direction velocities
-    static constexpr StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
-        { 0,  0},
-        {-1,  1}, {-1,  0}, {-1, -1}, { 0, -1}, { 1, -1}, { 1,  0}, { 1,  1}, { 0,  1}
-    }};
-
-    /// Direction opposites
-    static constexpr StaticArray<IndexType, SIZE> DIRECTION_OPPOSITES = {{
-        0, 5, 6, 7, 8, 1, 2, 3, 4
-    }};
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param velocity Initial velocity vector.
-     * @param rho      Initial density.
-     */
-    Node(const VelocityType& velocity = Zero, DensityType rho = 1.0)
-    {
-        initEquilibrium(velocity, rho);
-    }
+    /// Default density.
+    static constexpr DensityType DEFAULT_DENSITY = 1.0;
 
 
 // Public Operators
@@ -167,28 +82,28 @@ public:
 
 
     /**
-     * @brief Returns function value.
+     * @brief Returns microscopic density population in required direction.
      *
-     * @param pos
+     * @param iPop Direction index.
      *
      * @return
      */
-    ValueType operator[](IndexType pos) const noexcept
+    DensityType operator[](DirectionType iPop) const noexcept
     {
-        return m_values[pos];
+        return get(iPop);
     }
 
 
     /**
-     * @brief Returns function value.
+     * @brief Returns microscopic density population in required direction.
      *
-     * @param pos
+     * @param iPop Direction index.
      *
      * @return
      */
-    ValueType& operator[](IndexType pos) noexcept
+    DensityType& operator[](DirectionType iPop) noexcept
     {
-        return m_values[pos];
+        return get(iPop);
     }
 
 
@@ -197,116 +112,61 @@ public:
 
 
     /**
-     * @brief Returns cell dynamics type.
+     * @brief Returns node dynamics.
      *
      * @return
      */
-    Dynamics getDynamics() const noexcept
+    ViewPtr<Dynamics> getDynamics() const noexcept
     {
         return m_dynamics;
     }
 
 
     /**
-     * @brief Returns if current cell has no dynamics
+     * @brief Returns microscopic density population in required direction.
+     *
+     * @param iPop Direction index.
      *
      * @return
      */
-    bool hasNoDynamics() const noexcept
+    DensityType& get(DirectionType iPop) noexcept
     {
-        return getDynamics() == Dynamics::None;
+        return m_data[iPop];
     }
 
 
     /**
-     * @brief Returns if current cell has BGK dynamics.
+     * @brief Returns microscopic density population in required direction.
+     *
+     * @param iPop Direction index.
      *
      * @return
      */
-    bool hasBgkDynamics() const noexcept
+    DensityType get(DirectionType iPop) const noexcept
     {
-        return getDynamics() == Dynamics::BGK;
+        return m_data[iPop];
     }
 
 
     /**
-     * @brief Returns if current cell is a static obstacle.
+     * @brief Returns node data.
      *
      * @return
      */
-    bool hasStaticObstacleDynamics() const noexcept
+    DataType& getData() noexcept
     {
-        return getDynamics() == Dynamics::StaticObstacle;
+        return m_data;
     }
 
 
     /**
-     * @brief Returns if current cell is a dynamic obstacle.
+     * @brief Returns node data.
      *
      * @return
      */
-    bool hasDynamicObstacleDynamics() const noexcept
+    const DataType& getData() const noexcept
     {
-        return getDynamics() == Dynamics::DynamicObstacle;
-    }
-
-
-    /**
-     * @brief Returns if current cell is an obstacle.
-     *
-     * @return
-     */
-    bool hasObstacleDynamics() const noexcept
-    {
-        return hasStaticObstacleDynamics() || hasDynamicObstacleDynamics();
-    }
-
-
-    /**
-     * @brief Returns mutable population value.
-     *
-     * @param pos
-     *
-     * @return
-     */
-    ValueType& get(IndexType pos) noexcept
-    {
-        return m_values[pos];
-    }
-
-
-    /**
-     * @brief Returns population value.
-     *
-     * @param pos
-     *
-     * @return
-     */
-    ValueType get(IndexType pos) const noexcept
-    {
-        return m_values[pos];
-    }
-
-
-    /**
-     * @brief Returns mutable populations.
-     *
-     * @return
-     */
-    StaticArray<ValueType, SIZE>& getValues() noexcept
-    {
-        return m_values;
-    }
-
-
-    /**
-     * @brief Returns populations.
-     *
-     * @return
-     */
-    const StaticArray<ValueType, SIZE>& getValues() const noexcept
-    {
-        return m_values;
+        return m_data;
     }
 
 
@@ -315,89 +175,41 @@ public:
 
 
     /**
-     * @brief Set cell dynamics.
+     * @brief Change node dynamics.
      *
-     * @param dynamics
+     * @param dynamics A pointer to new dynamics.
+     *
+     * @note Node doesn't take ownership.
      */
-    void setDynamics(Dynamics dynamics) noexcept
+    void setDynamics(ViewPtr<Dynamics> dynamics) noexcept
     {
         m_dynamics = dynamics;
     }
 
 
     /**
-     * @brief Disable cell dynamics.
+     * @brief Define node's velocity.
+     *
+     * @param velocity Required macroscopic velocity.
      */
-    void setNoDynamics() noexcept
+    void defineVelocity(const VelocityType& velocity) noexcept
     {
-        setDynamics(Dynamics::None);
+        Assert(m_dynamics);
+        return m_dynamics->defineVelocity(m_data, velocity);
     }
 
 
     /**
-     * @brief Set BGK cell dynamics.
+     * @brief Define node's density.
+     *
+     * @param context  Computation context.
+     * @param density  Required macroscopic density.
      */
-    void setBgkDynamics() noexcept
+    void defineDensity(DensityType density) noexcept
     {
-        setDynamics(Dynamics::BGK);
+        Assert(m_dynamics);
+        return m_dynamics->defineDensity(m_data, density);
     }
-
-
-    /**
-     * @brief Set if current cell is a static obstacle.
-     */
-    void setStaticObstacleDynamics() noexcept
-    {
-        setDynamics(Dynamics::StaticObstacle);
-    }
-
-
-    /**
-     * @brief Set if current cell is a dynamic obstacle.
-     *
-     * @param velocity Obstacle velocity.
-     */
-    void setDynamicObstacleDynamics(VelocityType velocity = Zero) noexcept
-    {
-        setDynamics(Dynamics::DynamicObstacle);
-        m_dynamicObstacleVelocity = std::move(velocity);
-    }
-
-
-    /**
-     * @brief Init cell velocity for boundary condition.
-     *
-     * @param velocity Cell velocity.
-     * @param position Boundary position.
-     */
-    void initVelocity(Position position, const VelocityType& velocity) noexcept;
-
-
-    /**
-     * @brief Init cell density for boundary condition.
-     *
-     * @param position Boundary position.
-     * @param rho      Cell density.
-     */
-    void initDensity(Position position, DensityType rho) noexcept;
-
-
-    /**
-     * @brief Init cell as inlet.
-     *
-     * @param position Boundary position.
-     * @param velocity Inlet velocity vector.
-     */
-    void initInlet(Position position, const VelocityType& velocity) noexcept;
-
-
-    /**
-     * @brief Init cell as outlet.
-     *
-     * @param position Boundary position.
-     * @param rho Outlet density.
-     */
-    void initOutlet(Position position, ValueType rho) noexcept;
 
 
 // Public Operations
@@ -405,182 +217,72 @@ public:
 
 
     /**
-     * @brief Calculate Rho, total density.
+     * @brief Compute macroscopic density.
      *
      * @return
      */
-    DensityType calcDensity() const noexcept
+    DensityType computeDensity() const noexcept
     {
-        if (hasNoDynamics())
-            return 0.0;
-
-        ValueType res{};
-
-        for (auto pop : m_values)
-            res += pop;
-
-        return res;
+        Assert(m_dynamics);
+        return m_dynamics->computeDensity(m_data);
     }
 
 
     /**
-     * @brief Compute of total sum of given value indices.
-     *
-     * @tparam N Number of indices.
-     *
-     * @param list List of indices to sum.
+     * @brief Compute macroscopic momentum.
      *
      * @return
      */
-    template<std::size_t N>
-    ValueType sumValues(StaticArray<IndexType, N> list) const noexcept
+    MomentumType computeMomentum() const noexcept
     {
-        ValueType res{};
-
-        for (auto i : list)
-            res += m_values[i];
-
-        return res;
+        Assert(m_dynamics);
+        return m_dynamics->computeMomentum(m_data);
     }
 
 
     /**
-     * @brief Calculate velocity vector.
+     * @brief Compute macroscopic velocity.
      *
      * @return
      */
-    VelocityType calcMomentum() const noexcept;
-
-
-    /**
-     * @brief Calculate velocity vector (normalized).
-     *
-     * @code calcMomentum() / calcDensity()
-     *
-     * @return
-     */
-    VelocityType calcVelocity() const noexcept
+    VelocityType computeVelocity() const noexcept
     {
-        if (hasNoDynamics())
-            return Zero;
-
-        const auto rho = calcDensity();
-        Assert(rho >= 0);
-        return calcMomentum() / rho;
+        Assert(m_dynamics);
+        return m_dynamics->computeVelocity(m_data);
     }
 
 
     /**
-     * @brief Initialize cell by equilibrium values.
+     * @brief Initialize node by equilibrium populations.
      *
      * @param velocity Cell velocity vector.
-     * @param rho      Cell density.
+     * @param density  Cell density.
      */
-    void initEquilibrium(const VelocityType& velocity = Zero, DensityType rho = 1.0) noexcept
+    void initEquilibrium(VelocityType velocity = Zero, DensityType density = DEFAULT_DENSITY) noexcept
     {
-        m_values = calcEquilibrium(velocity, rho);
+        Assert(m_dynamics);
+        m_dynamics->initEquilibrium(m_data, velocity, density);
     }
 
 
     /**
-     * @brief Perform cell collision.
-     *
-     * @param omega Relaxation parameter (1 / tau).
+     * @brief Perform node's populations collision.
      */
-    void collide(ValueType omega) noexcept;
-
-
-    /**
-     * @brief Perform static obstacle collision.
-     *
-     * @param omega Relaxation parameter (1 / tau).
-     */
-    void collideStatic(ValueType omega) noexcept;
-
-
-    /**
-     * @brief Perform dynamic obstacle collision.
-     *
-     * @param omega Relaxation parameter (1 / tau).
-     */
-    void collideDynamic(ValueType omega) noexcept;
-
-
-    /**
-     * @brief Perform BGK collision.
-     *
-     * @param omega Relaxation parameter (1 / tau).
-     */
-    void collideBgk(ValueType omega) noexcept;
-
-
-    /**
-     * @brief Calculate density for specified velocity.
-     *
-     * @param position Boundary position.
-     * @param velocity Required velocity.
-     *
-     * @return Calculated density vector for fixed velocity.
-     */
-    DensityType calcVelocity(Position position, const VelocityType& velocity) const noexcept;
-
-
-    /**
-     * @brief Calculate velocity for specified density for boundary condition.
-     *
-     * @param position Boundary position.
-     * @param rho      Required density.
-     *
-     * @return Calculated velocity for fixed density.
-     */
-    VelocityType calcDensity(Position position, DensityType rho) const noexcept;
-
-
-    /**
-     * @brief Apply ZouHe boundary conditions to calculate missing populations.
-     *
-     * @param position Cell position.
-     * @param velocity Cell velocity vector.
-     * @param rho      Cell density.
-     */
-    void applyZouHe(Position position, const VelocityType& velocity, DensityType rho) noexcept;
-
-
-    /**
-     * @brief Calculate equilibrum value.
-     *
-     * @param i        Population index.
-     * @param velocity Velocity vector.
-     * @param uSq      Squared velocity vector length.
-     * @param rho      Total density.
-     *
-     * @return
-     */
-    static ValueType calcEquilibrium(IndexType i, const VelocityType& velocity, ValueType uSq, DensityType rho) noexcept;
-
-
-    /**
-     * @brief Calculate equilibrum values.
-     *
-     * @param velocity Velocity vector.
-     * @param rho      Total density.
-     *
-     * @return
-     */
-    static StaticArray<ValueType, SIZE> calcEquilibrium(const VelocityType& velocity, DensityType rho) noexcept;
+    void collide() noexcept
+    {
+        Assert(m_dynamics);
+        return m_dynamics->collide(m_data);
+    }
 
 
 // Private Data Members
 public:
 
-    /// Cell dynamics type.
-    Dynamics m_dynamics = Dynamics::None;
+    /// Node dynamics type.
+    ViewPtr<Dynamics> m_dynamics = nullptr;
 
-    /// Distribution functions.
-    StaticArray<ValueType, SIZE> m_values;
-
-    // Velocity of dynamic obstacle.
-    VelocityType m_dynamicObstacleVelocity = Zero;
+    /// Node data.
+    DataType m_data;
 
 };
 
