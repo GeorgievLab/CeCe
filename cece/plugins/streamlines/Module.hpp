@@ -710,6 +710,17 @@ protected:
 
 
     /**
+     * @brief Calculate relaxation frequency.
+     *
+     * @return
+     */
+    RealType calculateOmega() const noexcept
+    {
+        return 1.0 / getTau();
+    }
+
+
+    /**
      * @brief Init border barrier.
      *
      * @param simulation

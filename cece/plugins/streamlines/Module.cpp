@@ -163,15 +163,20 @@ Module::~Module()
 void Module::init(simulator::Simulation& simulation)
 {
     // Calculate values
-    const auto omega = 1.0 / getTau();
+    const auto omega = calculateOmega();
     const auto size = m_lattice.getSize();
 
-    Log::info("[streamlines] Omega: ", omega);
-    Log::info("[streamlines] Tau: ", getTau());
-    Log::info("[streamlines] LB Viscosity: ", calculateViscosity());
-    Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
-    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation(), " um/it");
     Log::info("[streamlines] Viscosity: ", getKinematicViscosity(), " um2/s");
+    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation(), " um/it");
+    Log::info("[streamlines] Char. length: ", getCharLength(), " um");
+    Log::info("[streamlines] Char. time: ", getCharTime(), " s");
+    Log::info("[streamlines] Char. speed: ", getCharLength() / getCharTime(), " um/s");
+    Log::info("[streamlines] Re: ", getCharLength() * getCharLength() / getCharTime() / getKinematicViscosity());
+    Log::info("[streamlines] ## Lattice ##");
+    Log::info("[streamlines] Tau: ", getTau());
+    Log::info("[streamlines] Omega: ", omega);
+    Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
+    Log::info("[streamlines] LB Viscosity: ", calculateViscosity());
 
     // Set fluid dynamics
     setFluidDynamics(makeUnique<BgkDynamics>(omega));
@@ -331,20 +336,36 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
     // Characteristic length & time
     setCharLength(config.get("char-length", getCharLength()));
-    setCharTime(config.get("char-time", getCharTime()));
+    setCharTime(simulation.getTimeStep());
 
     setNumberNodes(config.get("number-nodes", 1));
     //setNumberSteps(getCharTime() / simulation.getTimeStep());
-    setNumberSteps(100);
+    setNumberSteps(getNumberNodes() * getNumberNodes());
 
-    // Calculate lattice size
-    const auto size = Lattice::Size(simulation.getWorldSize() / getCharLength() * getNumberNodes());
+    // Obsolete grid
+    auto gridSize = config.get<Lattice::Size>("grid", Lattice::Size{Zero});
 
-    if (size == Zero)
-        throw InvalidArgumentException("Lattice size cannot be zero");
+    if (gridSize != Zero)
+    {
+        Log::warning("[streamlines] Config option 'grid' is obsolete!");
 
-    // Grid size
-    m_lattice.setSize(size);
+        // Grid size
+        m_lattice.setSize(gridSize);
+
+        // Compute characteristic length
+        setNumberNodes(gridSize.getWidth() / simulation.getWorldSize().getWidth() * getCharLength());
+    }
+    else
+    {
+        // Calculate lattice size
+        const auto size = Lattice::Size(simulation.getWorldSize() / getCharLength() * getNumberNodes());
+
+        if (size == Zero)
+            throw InvalidArgumentException("Lattice size cannot be zero");
+
+        // Grid size
+        m_lattice.setSize(size);
+    }
 
     // Layout
     setLayout(config.get("layout", getLayout()));
