@@ -200,7 +200,7 @@ void LatticeCell::initOutlet(Position position, DensityType rho) noexcept
 
 /* ************************************************************************ */
 
-LatticeCell::VelocityType LatticeCell::calcVelocity() const noexcept
+LatticeCell::VelocityType LatticeCell::calcMomentum() const noexcept
 {
     if (hasNoDynamics())
         return Zero;
@@ -282,7 +282,7 @@ void LatticeCell::collideDynamic(ValueType omega) noexcept
 
 void LatticeCell::collideBgk(ValueType omega) noexcept
 {
-    const auto feq = calcEquilibrium(calcVelocity(), calcRho());
+    const auto feq = calcEquilibrium(calcVelocity(), calcDensity());
 
     // Update values
     for (IndexType alpha = 0; alpha < SIZE; ++alpha)

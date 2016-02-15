@@ -271,7 +271,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         for (auto&& c : range(m_lattice.getSize()))
         {
             const auto& data = m_lattice[c];
-            const auto vel = vMax * data.calcVelocityNormalized();
+            const auto vel = vMax * data.calcVelocity();
 
             *m_dataOut <<
                 // iteration
@@ -292,7 +292,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
             {
                 *m_dataOut << ";" <<
                     // rho
-                    data.calcRho()
+                    data.calcDensity()
                 ;
             }
 
@@ -517,7 +517,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
             else
             {
                 // Cell velocity
-                velocities[c] = cell.calcVelocityNormalized();
+                velocities[c] = cell.calcVelocity();
 
                 if (checkDebugDraw(DRAW_DEBUG_MAGNITUDE))
                     color = render::Color::fromGray(velocities[c].getLength() / maxVel);

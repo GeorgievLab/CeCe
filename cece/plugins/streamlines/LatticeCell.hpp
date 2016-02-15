@@ -409,7 +409,7 @@ public:
      *
      * @return
      */
-    DensityType calcRho() const noexcept
+    DensityType calcDensity() const noexcept
     {
         if (hasNoDynamics())
             return 0.0;
@@ -449,24 +449,24 @@ public:
      *
      * @return
      */
-    VelocityType calcVelocity() const noexcept;
+    VelocityType calcMomentum() const noexcept;
 
 
     /**
      * @brief Calculate velocity vector (normalized).
      *
-     * @code calcVelocity() / calcRho()
+     * @code calcMomentum() / calcDensity()
      *
      * @return
      */
-    VelocityType calcVelocityNormalized() const noexcept
+    VelocityType calcVelocity() const noexcept
     {
         if (hasNoDynamics())
             return Zero;
 
-        const auto rho = calcRho();
+        const auto rho = calcDensity();
         Assert(rho >= 0);
-        return calcVelocity() / rho;
+        return calcMomentum() / rho;
     }
 
 
