@@ -743,6 +743,20 @@ protected:
     void loadFromFile(const FilePath& filename);
 
 
+    /**
+     * @brief Write header into data file.
+     */
+    void storeDataHeader();
+
+
+    /**
+     * @brief Write data file.
+     *
+     * @param simulation
+     */
+    void storeData(simulator::Simulation& simulation);
+
+
 // Private Data Members
 private:
 

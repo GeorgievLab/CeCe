@@ -267,64 +267,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
     // Store streamlines data
     if (m_dataOut)
-    {
-        for (auto&& c : range(m_lattice.getSize()))
-        {
-            const auto& data = m_lattice[c];
-            const auto vel = convertVelocity(data.computeVelocity());
-
-            *m_dataOut <<
-                // iteration
-                simulation.getIteration() - 1 << ";" <<
-                // totalTime
-                simulation.getTotalTime().value() << ";" <<
-                // x
-                c.getX() << ";" <<
-                // y
-                c.getY() << ";" <<
-                // velX
-                vel.getX().value() << ";" <<
-                // velY
-                vel.getY().value()
-            ;
-
-            if (m_dataOutDensity)
-            {
-                *m_dataOut << ";" <<
-                    // rho
-                    data.computeDensity()
-                ;
-            }
-
-            if (m_dataOutPopulations)
-            {
-                *m_dataOut << ";" <<
-                    // d0
-                    data[0] << ";" <<
-                    // d1
-                    data[1] << ";" <<
-                    // d2
-                    data[2] << ";" <<
-                    // d3
-                    data[3] << ";" <<
-                    // d4
-                    data[4] << ";" <<
-                    // d5
-                    data[5] << ";" <<
-                    // d6
-                    data[6] << ";" <<
-                    // d7
-                    data[7] << ";" <<
-                    // d8
-                    data[8]
-                ;
-            }
-
-            *m_dataOut << "\n";
-        }
-
-        m_dataOut->flush();
-    }
+        storeData(simulation);
 
 #ifdef CECE_THREAD_SAFE
     // Lock access
@@ -416,16 +359,9 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
     {
         m_dataOut = makeUnique<OutFileStream>(config.get("data-out-filename"));
         m_dataOutDensity = config.get<bool>("data-out-density", false);
+        m_dataOutPopulations = config.get<bool>("data-out-populations", false);
 
-        *m_dataOut << "iteration;totalTime;x;y;velX;velY";
-
-        if (m_dataOutDensity)
-            *m_dataOut << ";rho";
-
-        if (m_dataOutPopulations)
-            *m_dataOut << ";d0;d1;d2;d3;d4;d5;d6;d7;d8";
-
-        *m_dataOut << "\n";
+        storeDataHeader();
     }
 
 #if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
@@ -1149,6 +1085,87 @@ void Module::loadFromFile(const FilePath& filename)
         // Read cell populations
         in.read(cell.getData());
     }
+}
+
+/* ************************************************************************ */
+
+void Module::storeDataHeader()
+{
+    Assert(m_dataOut);
+
+    *m_dataOut << "iteration;totalTime;x;y;velX;velY";
+
+    if (m_dataOutDensity)
+        *m_dataOut << ";rho";
+
+    if (m_dataOutPopulations)
+        *m_dataOut << ";d0;d1;d2;d3;d4;d5;d6;d7;d8";
+
+    *m_dataOut << "\n";
+}
+
+/* ************************************************************************ */
+
+void Module::storeData(simulator::Simulation& simulation)
+{
+    Assert(m_dataOut);
+
+    for (auto&& c : range(m_lattice.getSize()))
+    {
+        const auto& data = m_lattice[c];
+        const auto vel = convertVelocity(data.computeVelocity());
+
+        *m_dataOut <<
+            // iteration
+            simulation.getIteration() - 1 << ";" <<
+            // totalTime
+            simulation.getTotalTime().value() << ";" <<
+            // x
+            c.getX() << ";" <<
+            // y
+            c.getY() << ";" <<
+            // velX
+            vel.getX().value() << ";" <<
+            // velY
+            vel.getY().value()
+        ;
+
+        if (m_dataOutDensity)
+        {
+            *m_dataOut << ";" <<
+                // rho
+                data.computeDensity()
+            ;
+        }
+
+        if (m_dataOutPopulations)
+        {
+            *m_dataOut << ";" <<
+                // d0
+                data[0] << ";" <<
+                // d1
+                data[1] << ";" <<
+                // d2
+                data[2] << ";" <<
+                // d3
+                data[3] << ";" <<
+                // d4
+                data[4] << ";" <<
+                // d5
+                data[5] << ";" <<
+                // d6
+                data[6] << ";" <<
+                // d7
+                data[7] << ";" <<
+                // d8
+                data[8]
+            ;
+        }
+
+        *m_dataOut << "\n";
+    }
+
+    m_dataOut->flush();
 }
 
 /* ************************************************************************ */
