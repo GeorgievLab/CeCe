@@ -162,18 +162,14 @@ Module::~Module()
 
 void Module::init(simulator::Simulation& simulation)
 {
-    // Physical size of one lattice cell
-    const auto dl = simulation.getWorldSize() / m_lattice.getSize();
-
     // Calculate values
-    const auto vMax = calculateMaxVelocity(dl);
     const auto omega = 1.0 / getTau();
+    const auto size = m_lattice.getSize();
 
     Log::info("[streamlines] Omega: ", omega);
     Log::info("[streamlines] Tau: ", getTau());
-    Log::info("[streamlines] Viscosity: ", calculateViscosity());
-    Log::info("[streamlines] Cell size: (", dl.getX(), " um; ", dl.getY(), " um)");
-    Log::info("[streamlines] Max velocity: (", vMax.getX(), " um/s; ", vMax.getY(), " um/s)");
+    Log::info("[streamlines] LB Viscosity: ", calculateViscosity());
+    Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
     Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation(), " um/it");
     Log::info("[streamlines] Viscosity: ", getKinematicViscosity(), " um2/s");
 
@@ -188,7 +184,7 @@ void Module::init(simulator::Simulation& simulation)
     initBarriers(simulation);
 
     // Obstacles
-    updateObstacleMap(simulation, vMax);
+    updateObstacleMap(simulation);
 
     Log::info("[streamlines] Initialization...");
 
@@ -222,7 +218,7 @@ void Module::init(simulator::Simulation& simulation)
             m_lattice.collideAndStream();
 
             // Apply boundary conditions
-            applyBoundaryConditions(simulation, vMax);
+            applyBoundaryConditions(simulation);
         }
 
         // Store initialization
@@ -266,20 +262,8 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
     auto _ = measure_time("streamlines", simulator::TimeMeasurementIterationOutput(simulation));
 
-    // Physical size of one lattice cell
-    const auto dl = simulation.getWorldSize() / m_lattice.getSize();
-
-    // Calculate maximum flow velocity
-    const auto vMax = calculateMaxVelocity(dl);
-
-    // Relaxation parameter
-    const auto omega = 1.0 / getTau();
-
-    // Calculate conversion coefficient
-    setCoefficient(calculateCoefficient(dt, dl));
-
     // Obstacles
-    updateObstacleMap(simulation, vMax);
+    updateObstacleMap(simulation);
 
     // Store streamlines data
     if (m_dataOut)
@@ -287,7 +271,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         for (auto&& c : range(m_lattice.getSize()))
         {
             const auto& data = m_lattice[c];
-            const auto vel = vMax * data.computeVelocity();
+            const auto vel = convertVelocity(data.computeVelocity());
 
             *m_dataOut <<
                 // iteration
@@ -353,11 +337,11 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         m_lattice.collideAndStream();
 
         // Apply boundary conditions
-        applyBoundaryConditions(simulation, vMax);
+        applyBoundaryConditions(simulation);
     }
 
     // Apply streamlines to world objects
-    applyToObjects(simulation, dt, vMax);
+    applyToObjects(simulation, dt);
 }
 
 /* ************************************************************************ */
@@ -402,11 +386,22 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
     if (getKinematicViscosity() == Zero)
         throw InvalidArgumentException("Kinematic viscosity cannot be zero");
 
-    // Grid size
-    m_lattice.setSize(config.get<Vector<Lattice::SizeType>>("grid"));
+    // Characteristic length & time
+    setCharLength(config.get("char-length", getCharLength()));
+    setCharTime(config.get("char-time", getCharTime()));
 
-    if (m_lattice.getSize() == Zero)
+    setNumberNodes(config.get("number-nodes", 1));
+    //setNumberSteps(getCharTime() / simulation.getTimeStep());
+    setNumberSteps(100);
+
+    // Calculate lattice size
+    const auto size = Lattice::Size(simulation.getWorldSize() / getCharLength() * getNumberNodes());
+
+    if (size == Zero)
         throw InvalidArgumentException("Lattice size cannot be zero");
+
+    // Grid size
+    m_lattice.setSize(size);
 
     // Layout
     setLayout(config.get("layout", getLayout()));
@@ -475,15 +470,10 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     // Temporary for velocities
     Grid<Utils::VelocityType> velocities(size);
 
-    // Physical size of one lattice cell
-    const auto dl = simulation.getWorldSize() / m_lattice.getSize();
-    // Calculate maximum flow velocity
-    const auto vMax = calculateMaxVelocity(dl);
-
     // Calculate grid max velocity
     Assert(!m_inletVelocities.empty());
     const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
-    const auto maxVel = m_debugMagnitudeScale * maxInlet / vMax.getLength();
+    const auto maxVel = m_debugMagnitudeScale * convertVelocity(maxInlet);
 
     {
 #ifdef CECE_THREAD_SAFE
@@ -565,14 +555,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
 /* ************************************************************************ */
 
-VelocityVector Module::calculateMaxVelocity(PositionVector dl) const noexcept
-{
-    return (sqrt(Utils::SPEED_OF_SOUND_SQ) / calculateViscosity()) * getKinematicViscosity() / dl;
-}
-
-/* ************************************************************************ */
-
-void Module::updateObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax)
+void Module::updateObstacleMap(const simulator::Simulation& simulation)
 {
     // Clear previous flag
     m_lattice.setDynamics(getFluidDynamics());
@@ -600,7 +583,7 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
         const auto coord = Coordinate(pos / step);
 
         // Calculate object velocity in LB
-        const auto velocity = obj->getVelocity() / vMax;
+        const auto velocity = convertVelocity(obj->getVelocity());
 
         // In this case duplicate coordinates doesn't harm and calling
         // operation multiple times on same coordinate is faster than
@@ -628,19 +611,18 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation, const Ve
 
 /* ************************************************************************ */
 
-void Module::applyToObjects(const simulator::Simulation& simulation, units::Time dt, const VelocityVector& vMax)
+void Module::applyToObjects(const simulator::Simulation& simulation, units::Time dt)
 {
     // Foreach objects
     for (auto& obj : simulation.getObjects())
     {
-        applyToObject(*obj, simulation, dt, vMax);
+        applyToObject(*obj, simulation, dt);
     }
 }
 
 /* ************************************************************************ */
 
-void Module::applyToObject(object::Object& object, const simulator::Simulation& simulation,
-    units::Time dt, const VelocityVector& vMax)
+void Module::applyToObject(object::Object& object, const simulator::Simulation& simulation, units::Time dt)
 {
     // Ignore static objects
     if (object.getType() != object::Object::Type::Dynamic)
@@ -682,12 +664,12 @@ void Module::applyToObject(object::Object& object, const simulator::Simulation& 
         // Get coordinate to lattice
         const auto coord = Coordinate(pos / step);
 
-        Vector<float> velocityLB = Zero;
+        Vector<RealType> velocityLB = Zero;
         unsigned long count = 0;
 
         // Store velocity for each coordinate
         mapShapeBorderToGrid(
-            [this, &velocityLB, &vMax, &count] (Coordinate&& coord) {
+            [this, &velocityLB, &count] (Coordinate&& coord) {
                 velocityLB += m_lattice[coord].computeVelocity();
                 ++count;
             },
@@ -700,7 +682,7 @@ void Module::applyToObject(object::Object& object, const simulator::Simulation& 
 
         // Average
         velocityLB /= count;
-        const VelocityVector velocityEnv = velocityLB * vMax;
+        const VelocityVector velocityEnv = convertVelocity(velocityLB);
         //const VelocityVector velocityEnv{m_inletVelocities[0], Zero};
 
         if (velocityEnv.getLengthSquared() > maxSpeedSq)
@@ -769,11 +751,11 @@ void Module::applyToObject(object::Object& object, const simulator::Simulation& 
 
 /* ************************************************************************ */
 
-void Module::applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& vMax)
+void Module::applyBoundaryConditions(const simulator::Simulation& simulation)
 {
     // Init boundaries
     for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
-        initBorderInletOutlet(simulation, static_cast<LayoutPosition>(pos), vMax);
+        initBorderInletOutlet(simulation, static_cast<LayoutPosition>(pos));
 }
 
 /* ************************************************************************ */
@@ -882,13 +864,6 @@ VelocityVector Module::inletVelocityProfile(
 
 /* ************************************************************************ */
 
-RealType Module::calculateCoefficient(units::Time dt, PositionVector dl) const noexcept
-{
-    return calculateViscosity() * (getInnerIterations() * dl.getX() * dl.getY()) / getKinematicViscosity() / dt;
-}
-
-/* ************************************************************************ */
-
 void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition pos)
 {
     const auto& size = m_lattice.getSize();
@@ -951,8 +926,7 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
 
 /* ************************************************************************ */
 
-void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
-    LayoutPosition pos, const VelocityVector& vMax)
+void Module::initBorderInletOutlet(const simulator::Simulation& simulation, LayoutPosition pos)
 {
     const auto& size = m_lattice.getSize();
 
@@ -1107,7 +1081,7 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation,
                 node.setDynamics(m_boundaries[pos]);
 
             if (node.getDynamics() == m_boundaries[pos])
-                node.defineVelocity(inletVelocityProfile({x, y}, pos, inlets) / vMax);
+                node.defineVelocity(convertVelocity(inletVelocityProfile({x, y}, pos, inlets)));
         }
     }
 }

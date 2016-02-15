@@ -204,17 +204,6 @@ public:
 
 
     /**
-     * @brief Returns fixup coefficient.
-     *
-     * @return
-     */
-    RealType getCoefficient() const noexcept
-    {
-        return m_coefficient;
-    }
-
-
-    /**
      * @brief Returns relaxation time.
      *
      * @return
@@ -298,6 +287,50 @@ public:
 
 
     /**
+     * @brief Returns characteristic length.
+     *
+     * @return
+     */
+    units::Length getCharLength() const noexcept
+    {
+        return m_charLength;
+    }
+
+
+    /**
+     * @brief Returns characteristic time.
+     *
+     * @return
+     */
+    units::Time getCharTime() const noexcept
+    {
+        return m_charTime;
+    }
+
+
+    /**
+     * @brief Returns number of nodes in LB along characteristic length.
+     *
+     * @return
+     */
+    unsigned int getNumberNodes() const noexcept
+    {
+        return m_numberNodes;
+    }
+
+
+    /**
+     * @brief Returns number of time steps in LB for units conversion.
+     *
+     * @return
+     */
+    unsigned int getNumberSteps() const noexcept
+    {
+        return m_numberSteps;
+    }
+
+
+    /**
      * @brief Returns fluid dynamics.
      *
      * @return
@@ -343,17 +376,6 @@ public:
     void setKinematicViscosity(units::KinematicViscosity viscosity) noexcept
     {
         m_kinematicViscosity = viscosity;
-    }
-
-
-    /**
-     * @brief Set fixup coefficient.
-     *
-     * @param coefficient
-     */
-    void setCoefficient(RealType coefficient) noexcept
-    {
-        m_coefficient = coefficient;
     }
 
 
@@ -428,6 +450,52 @@ public:
 
 
     /**
+     * @brief Set characteristic length.
+     *
+     * @param length
+     */
+    void setCharLength(units::Length length) noexcept
+    {
+        m_charLength = length;
+    }
+
+
+    /**
+     * @brief Set characteristic time.
+     *
+     * @param time
+     */
+    void setCharTime(units::Time time) noexcept
+    {
+        m_charTime = time;
+    }
+
+
+    /**
+     * @brief Set number of nodes in LB for units conversion.
+     *
+     * @param nodes
+     */
+    void setNumberNodes(unsigned int nodes) noexcept
+    {
+        Assert(nodes > 0);
+        m_numberNodes = nodes;
+    }
+
+
+    /**
+     * @brief Set number of time steps in LB for units conversion.
+     *
+     * @param steps
+     */
+    void setNumberSteps(unsigned int steps) noexcept
+    {
+        Assert(steps > 0);
+        m_numberSteps = steps;
+    }
+
+
+    /**
      * @brief Set fluid dynamics.
      *
      * @param dynamics
@@ -490,13 +558,91 @@ public:
 
 
     /**
-     * @brief Calculate maximum velocity.
+     * @brief Convert length from LB to physical.
      *
-     * @param dl Grid cell size.
+     * @param length
      *
      * @return
      */
-    VelocityVector calculateMaxVelocity(PositionVector dl) const noexcept;
+    units::Length convertLength(RealType length) const noexcept
+    {
+        const auto charLength = m_charLength / getNumberNodes();
+        return charLength * length;
+    }
+
+
+    /**
+     * @brief Convert length from physical to LB.
+     *
+     * @param length
+     *
+     * @return
+     */
+    RealType convertLength(units::Length length) const noexcept
+    {
+        const auto charLength = m_charLength / getNumberNodes();
+        return length / charLength;
+    }
+
+
+    /**
+     * @brief Convert velocity from LB to physical.
+     *
+     * @param vel
+     *
+     * @return
+     */
+    units::Velocity convertVelocity(RealType vel) const noexcept
+    {
+        const auto charTime = m_charTime / getNumberSteps();
+        const auto charLength = m_charLength / getNumberNodes();
+        return charLength / charTime * vel;
+    }
+
+
+    /**
+     * @brief Convert velocity from LB to physical.
+     *
+     * @param vel
+     *
+     * @return
+     */
+    VelocityVector convertVelocity(Vector<RealType> vel) const noexcept
+    {
+        const auto charTime = m_charTime / getNumberSteps();
+        const auto charLength = m_charLength / getNumberNodes();
+        return charLength / charTime * vel;
+    }
+
+
+    /**
+     * @brief Convert velocity from physical to LB.
+     *
+     * @param vel
+     *
+     * @return
+     */
+    RealType convertVelocity(units::Velocity vel) const noexcept
+    {
+        const auto charTime = m_charTime / getNumberSteps();
+        const auto charLength = m_charLength / getNumberNodes();
+        return charTime / charLength * vel;
+    }
+
+
+    /**
+     * @brief Convert velocity from physical to LB.
+     *
+     * @param vel
+     *
+     * @return
+     */
+    Vector<RealType> convertVelocity(VelocityVector vel) const noexcept
+    {
+        const auto charTime = m_charTime / getNumberSteps();
+        const auto charLength = m_charLength / getNumberNodes();
+        return charTime / charLength * vel;
+    }
 
 
 // Protected Operations
@@ -507,9 +653,8 @@ protected:
      * @brief Update obstacle map from objects.
      *
      * @param simulation
-     * @param vMax
      */
-    void updateObstacleMap(const simulator::Simulation& simulation, const VelocityVector& vMax);
+    void updateObstacleMap(const simulator::Simulation& simulation);
 
 
     /**
@@ -517,9 +662,8 @@ protected:
      *
      * @param simulation
      * @param dt
-     * @param vMax
      */
-    void applyToObjects(const simulator::Simulation& simulation, units::Time dt, const VelocityVector& vMax);
+    void applyToObjects(const simulator::Simulation& simulation, units::Time dt);
 
     /**
      * @brief Apply streamlines to object.
@@ -527,19 +671,16 @@ protected:
      * @param object
      * @param simulation
      * @param dt
-     * @param vMax
      */
-    void applyToObject(object::Object& object, const simulator::Simulation& simulation,
-        units::Time dt, const VelocityVector& vMax);
+    void applyToObject(object::Object& object, const simulator::Simulation& simulation, units::Time dt);
 
 
     /**
      * @brief Apply boundary conditions.
      *
      * @param simulation
-     * @param vMax
      */
-    void applyBoundaryConditions(const simulator::Simulation& simulation, const VelocityVector& vMax);
+    void applyBoundaryConditions(const simulator::Simulation& simulation);
 
 
     /**
@@ -555,17 +696,6 @@ protected:
         Lattice::CoordinateType coord, LayoutPosition pos,
         DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets
     ) const noexcept;
-
-
-    /**
-     * @brief Calculate coefficient.
-     *
-     * @param step Time step.
-     * @param dl   Grid cell size.
-     *
-     * @return
-     */
-    RealType calculateCoefficient(units::Time step, PositionVector dl) const noexcept;
 
 
     /**
@@ -593,10 +723,8 @@ protected:
      *
      * @param simulation
      * @param pos
-     * @param vMax
      */
-    void initBorderInletOutlet(const simulator::Simulation& simulation,
-        LayoutPosition pos, const VelocityVector& vMax);
+    void initBorderInletOutlet(const simulator::Simulation& simulation, LayoutPosition pos);
 
 
     /**
@@ -627,14 +755,23 @@ private:
     /// Relaxation time.
     RealType m_tau = 1;
 
-    /// Fixup coefficient.
-    RealType m_coefficient = 1;
-
     /// Number of inner iterations.
     simulator::IterationCount m_innerIterations = 5;
 
     /// Number of init iterations.
     simulator::IterationCount m_initIterations = 100;
+
+    /// Characteristic length.
+    units::Length m_charLength = units::um(1);
+
+    /// Characteristic time.
+    units::Time m_charTime = units::s(1);
+
+    /// Number of LB nodes for units conversions.
+    unsigned int m_numberNodes = 1;
+
+    /// Number of LB time steps for units conversions
+    unsigned int m_numberSteps = 1;
 
     /// Path to initialization file.
     FilePath m_initFile;

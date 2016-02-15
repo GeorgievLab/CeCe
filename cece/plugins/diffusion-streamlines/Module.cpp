@@ -65,12 +65,6 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     const auto signalGridSize = m_diffusion->getGridSize();
     auto& velocityGrid = m_streamlines->getLattice();
 
-    // Physical size of one lattice cell
-    const auto dl = simulation.getWorldSize() / velocityGrid.getSize();
-
-    // Calculate maximum flow velocity
-    const VelocityVector vMax = m_streamlines->calculateMaxVelocity(dl);
-
     // Precompute values
     const auto step = simulation.getWorldSize() / signalGridSize;
 
@@ -99,7 +93,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
             // Get velocity
             assert(velocityGrid.inRange(vc));
-            const auto& velocity = velocityGrid[vc].computeVelocity() * vMax;
+            const auto& velocity = m_streamlines->convertVelocity(velocityGrid[vc].computeVelocity());
 
 
             // TODO: Completely redesign

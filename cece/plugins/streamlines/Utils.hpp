@@ -53,6 +53,18 @@ public:
     /// Population index type.
     using DirectionType = unsigned int;
 
+    /// Density type.
+    using DensityType = RealType;
+
+    /// Momentum type.
+    using MomentumType = Vector<RealType>;
+
+    /// Velocity type.
+    using VelocityType = Vector<RealType>;
+
+    /// Direction index type. @obsolete
+    using IndexType = DirectionType;
+
 
 // Public Constants
 public:
@@ -105,6 +117,14 @@ public:
     static constexpr StaticArray<DirectionType, SIZE> DIRECTION_OPPOSITES = {{
         0, 5, 6, 7, 8, 1, 2, 3, 4
     }};
+
+
+// Public Types
+public:
+
+
+    /// Type of stored data.
+    using DataType = StaticArray<DensityType, SIZE>;
 
 
 // Public Operations
