@@ -20,12 +20,12 @@
     <File Name="Module.cpp"/>
     <File Name="Lattice.cpp"/>
     <File Name="Plugin.cpp"/>
-    <File Name="LatticeCell.cpp"/>
+    <File Name="Node.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
     <File Name="Lattice.hpp"/>
-    <File Name="LatticeCell.hpp"/>
+    <File Name="Node.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

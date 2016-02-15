@@ -50,8 +50,8 @@ set(SRCS
     Module.cpp
     Lattice.hpp
     Lattice.cpp
-    LatticeCell.hpp
-    LatticeCell.cpp
+    Node.hpp
+    Node.cpp
 )
 
 # Build plugin

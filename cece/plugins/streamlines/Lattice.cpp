@@ -40,17 +40,17 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-void Lattice::collide(LatticeCell::ValueType omega)
+void Lattice::collide(Node::ValueType omega)
 {
 #if DEV_PLUGIN_streamlines_SWAP_TRICK
-    constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
+    constexpr Node::IndexType half = (Node::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
         auto& cell = get(c);
         cell.collide(omega);
 
-        for (LatticeCell::IndexType i = 1; i < half; ++i)
+        for (Node::IndexType i = 1; i < half; ++i)
         {
             using std::swap;
             swap(cell[i], cell[i + half]);
@@ -67,14 +67,14 @@ void Lattice::collide(LatticeCell::ValueType omega)
 void Lattice::stream()
 {
 #if DEV_PLUGIN_streamlines_SWAP_TRICK
-    constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
+    constexpr Node::IndexType half = (Node::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
-        for (LatticeCell::IndexType i = 1; i < half; ++i)
+        for (Node::IndexType i = 1; i < half; ++i)
         {
             // Calculate new coordinates
-            const Vector<LatticeCell::IndexType> newCoord = c + LatticeCell::DIRECTION_VELOCITIES[i];
+            const Vector<Node::IndexType> newCoord = c + Node::DIRECTION_VELOCITIES[i];
 
             // Swap
             if (inRange(newCoord))
@@ -87,10 +87,10 @@ void Lattice::stream()
 #else
     for (auto&& c : range(getSize()))
     {
-        for (LatticeCell::IndexType i = 0; i < LatticeCell::SIZE; ++i)
+        for (Node::IndexType i = 0; i < Node::SIZE; ++i)
         {
             // Calculate new coordinates
-            Vector<LatticeCell::IndexType> newCoord = c + LatticeCell::DIRECTION_VELOCITIES[i];
+            Vector<Node::IndexType> newCoord = c + Node::DIRECTION_VELOCITIES[i];
 
             if (inRange(newCoord))
             {
@@ -107,13 +107,13 @@ void Lattice::stream()
 
 /* ************************************************************************ */
 
-void Lattice::collideAndStream(LatticeCell::ValueType omega)
+void Lattice::collideAndStream(Node::ValueType omega)
 {
     collide(omega);
     stream();
     /*
     // FIXME: something's wrong
-    constexpr LatticeCell::IndexType half = (LatticeCell::SIZE - 1) / 2;
+    constexpr Node::IndexType half = (Node::SIZE - 1) / 2;
     const auto size = getSize();
 
     //for (auto&& c : range(getSize()))
@@ -125,10 +125,10 @@ void Lattice::collideAndStream(LatticeCell::ValueType omega)
         auto& cell = get(c);
         cell.collide(omega);
 
-        for (LatticeCell::IndexType i = 1; i < half; ++i)
+        for (Node::IndexType i = 1; i < half; ++i)
         {
             // Calculate new coordinates
-            const Vector<LatticeCell::IndexType> newCoord = c + LatticeCell::DIRECTION_VELOCITIES[i];
+            const Vector<Node::IndexType> newCoord = c + Node::DIRECTION_VELOCITIES[i];
 
             if (inRange(newCoord))
             {
@@ -146,7 +146,7 @@ void Lattice::collideAndStream(LatticeCell::ValueType omega)
 
 /* ************************************************************************ */
 
-void Lattice::setDynamics(LatticeCell::Dynamics dynamics)
+void Lattice::setDynamics(Node::Dynamics dynamics)
 {
     for (auto& cell : m_data)
         cell.setDynamics(dynamics);
@@ -154,21 +154,21 @@ void Lattice::setDynamics(LatticeCell::Dynamics dynamics)
 
 /* ************************************************************************ */
 
-void Lattice::fixupObstacles(LatticeCell::Dynamics dynamics) noexcept
+void Lattice::fixupObstacles(Node::Dynamics dynamics) noexcept
 {
-    using Offset = Vector<typename std::make_signed<LatticeCell::IndexType>::type>;
+    using Offset = Vector<typename std::make_signed<Node::IndexType>::type>;
 
     // Foreach all cells
     //for (auto&& c : range(Size{1, 1}, getSize() - Size{1, 1}))
-    for (LatticeCell::IndexType y = 1; y < getSize().getY() - 1; ++y)
-    for (LatticeCell::IndexType x = 1; x < getSize().getX() - 1; ++x)
+    for (Node::IndexType y = 1; y < getSize().getY() - 1; ++y)
+    for (Node::IndexType x = 1; x < getSize().getX() - 1; ++x)
     {
         CoordinateType c{x, y};
 
         if (get(c).getDynamics() != dynamics)
             continue;
 
-        const LatticeCell::Dynamics types[9] = {
+        const Node::Dynamics types[9] = {
             get(c).getDynamics(),
             get(c + Offset{ 1,  0}).getDynamics(),
             get(c + Offset{-1,  0}).getDynamics(),
@@ -182,18 +182,18 @@ void Lattice::fixupObstacles(LatticeCell::Dynamics dynamics) noexcept
 
         const bool test =
             (types[0] == dynamics) &&
-            (types[1] == dynamics || types[1] == LatticeCell::Dynamics::None) &&
-            (types[2] == dynamics || types[2] == LatticeCell::Dynamics::None) &&
-            (types[3] == dynamics || types[3] == LatticeCell::Dynamics::None) &&
-            (types[4] == dynamics || types[4] == LatticeCell::Dynamics::None) &&
-            (types[5] == dynamics || types[5] == LatticeCell::Dynamics::None) &&
-            (types[6] == dynamics || types[6] == LatticeCell::Dynamics::None) &&
-            (types[7] == dynamics || types[7] == LatticeCell::Dynamics::None) &&
-            (types[8] == dynamics || types[8] == LatticeCell::Dynamics::None)
+            (types[1] == dynamics || types[1] == Node::Dynamics::None) &&
+            (types[2] == dynamics || types[2] == Node::Dynamics::None) &&
+            (types[3] == dynamics || types[3] == Node::Dynamics::None) &&
+            (types[4] == dynamics || types[4] == Node::Dynamics::None) &&
+            (types[5] == dynamics || types[5] == Node::Dynamics::None) &&
+            (types[6] == dynamics || types[6] == Node::Dynamics::None) &&
+            (types[7] == dynamics || types[7] == Node::Dynamics::None) &&
+            (types[8] == dynamics || types[8] == Node::Dynamics::None)
         ;
 
         if (test)
-            get(c).setDynamics(LatticeCell::Dynamics::None);
+            get(c).setDynamics(Node::Dynamics::None);
     }
 }
 

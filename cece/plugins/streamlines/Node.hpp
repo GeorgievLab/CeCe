@@ -46,7 +46,7 @@ namespace streamlines {
  * Memory and speedup improvement taken from OpenLB TR1:
  * @link http://optilb.com/openlb/wp-content/uploads/2011/12/olb-tr1.pdf
  */
-class LatticeCell
+class Node
 {
 
 // Public Enums
@@ -156,7 +156,7 @@ public:
      * @param velocity Initial velocity vector.
      * @param rho      Initial density.
      */
-    LatticeCell(const VelocityType& velocity = Zero, DensityType rho = 1.0)
+    Node(const VelocityType& velocity = Zero, DensityType rho = 1.0)
     {
         initEquilibrium(velocity, rho);
     }
