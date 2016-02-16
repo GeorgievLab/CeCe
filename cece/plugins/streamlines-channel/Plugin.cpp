@@ -60,6 +60,8 @@ public:
      */
     void onLoad(plugin::Context& context) override
     {
+        // Unregister previous streamlines module
+        context.unregisterModule("streamlines");
         context.registerModule<plugin::streamlines_channel::Module>("streamlines");
     }
 
