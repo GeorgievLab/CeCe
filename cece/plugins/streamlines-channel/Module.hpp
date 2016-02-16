@@ -27,11 +27,6 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
 // CeCe
 #include "cece/core/Units.hpp"
 
@@ -48,6 +43,10 @@ namespace streamlines_channel {
 
 /**
  * @brief Module for channel streamlines.
+ *
+ * The main difference between standard streamlines module is support of
+ * channel height that affects velocity profiles. This is done by using
+ * modified D2Q9 model.
  */
 class Module : public streamlines::Module
 {
@@ -88,9 +87,9 @@ public:
 
 
     /**
-     * @brief Initialize lattice.
+     * @brief Initialize module.
      *
-     * @param simulation
+     * @param simulation Current simulation.
      */
     void init(simulator::Simulation& simulation);
 

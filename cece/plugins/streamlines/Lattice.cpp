@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -33,7 +33,7 @@
 #include "cece/core/VectorRange.hpp"
 
 // Plugin
-#include "cece/plugins/streamlines/Utils.hpp"
+#include "cece/plugins/streamlines/Descriptor.hpp"
 #include "cece/plugins/streamlines/NoDynamics.hpp"
 
 /* ************************************************************************ */
@@ -79,14 +79,14 @@ void Lattice::collide()
 void Lattice::stream()
 {
 #if DEV_PLUGIN_streamlines_SWAP_TRICK
-    constexpr Utils::IndexType half = (Utils::SIZE - 1) / 2;
+    constexpr Descriptor::IndexType half = (Descriptor::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
-        for (Utils::IndexType i = 1; i < half; ++i)
+        for (Descriptor::IndexType i = 1; i < half; ++i)
         {
             // Calculate new coordinates
-            const Vector<Utils::IndexType> newCoord = c + Utils::DIRECTION_VELOCITIES[i];
+            const Vector<Descriptor::IndexType> newCoord = c + Descriptor::DIRECTION_VELOCITIES[i];
 
             // Swap
             if (inRange(newCoord))
@@ -99,10 +99,10 @@ void Lattice::stream()
 #else
     for (auto&& c : range(getSize()))
     {
-        for (Utils::IndexType i = 0; i < Utils::SIZE; ++i)
+        for (Descriptor::IndexType i = 0; i < Descriptor::SIZE; ++i)
         {
             // Calculate new coordinates
-            Vector<Utils::IndexType> newCoord = c + Utils::DIRECTION_VELOCITIES[i];
+            Vector<Descriptor::IndexType> newCoord = c + Descriptor::DIRECTION_VELOCITIES[i];
 
             if (inRange(newCoord))
             {
@@ -171,12 +171,12 @@ void Lattice::fixupObstacles(ViewPtr<Dynamics> dynamics) noexcept
 {
     auto noDynamics = NoDynamics::getInstance();
 
-    using Offset = Vector<typename std::make_signed<Utils::IndexType>::type>;
+    using Offset = Vector<typename std::make_signed<Descriptor::IndexType>::type>;
 
     // Foreach all cells
     //for (auto&& c : range(Size{1, 1}, getSize() - Size{1, 1}))
-    for (Utils::IndexType y = 1; y < getSize().getY() - 1; ++y)
-    for (Utils::IndexType x = 1; x < getSize().getX() - 1; ++x)
+    for (Descriptor::IndexType y = 1; y < getSize().getY() - 1; ++y)
+    for (Descriptor::IndexType x = 1; x < getSize().getX() - 1; ++x)
     {
         CoordinateType c{x, y};
 

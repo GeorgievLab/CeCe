@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -33,7 +33,7 @@
 #include "cece/core/Zero.hpp"
 
 // CeCe Plugin
-#include "cece/plugins/streamlines/Utils.hpp"
+#include "cece/plugins/streamlines/Descriptor.hpp"
 
 /* ************************************************************************ */
 
@@ -71,9 +71,9 @@ BounceBackDynamics::DensityType
 BounceBackDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
     VelocityType velocity) const noexcept
 {
-    return Utils::calcEquilibrium(
-        Utils::DIRECTION_WEIGHTS[iPop],
-        Utils::DIRECTION_VELOCITIES[iPop],
+    return Descriptor::calcEquilibrium(
+        Descriptor::DIRECTION_WEIGHTS[iPop],
+        Descriptor::DIRECTION_VELOCITIES[iPop],
         density,
         velocity
     );
@@ -84,7 +84,7 @@ BounceBackDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
 void
 BounceBackDynamics::initEquilibrium(DataType& data, VelocityType velocity, DensityType density) const noexcept
 {
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
         data[iPop] = computeEquilibrium(iPop, density, velocity);
 }
 
@@ -113,8 +113,8 @@ BounceBackDynamics::collide(DataType& data) const noexcept
     DataType temp;
 
     // Move updated values into opposite directions
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
-        temp[iPop] = data[Utils::DIRECTION_OPPOSITES[iPop]];
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
+        temp[iPop] = data[Descriptor::DIRECTION_OPPOSITES[iPop]];
 
     // Copy updated values
     data = temp;

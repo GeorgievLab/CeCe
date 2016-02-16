@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -41,43 +41,43 @@ namespace {
 
 /* ************************************************************************ */
 
-const StaticArray<Utils::DirectionType, 3> TOP_LINE      = Utils::INDEX_MAP[0];
+const StaticArray<Descriptor::DirectionType, 3> TOP_LINE      = Descriptor::INDEX_MAP[0];
 
 /* ************************************************************************ */
 
-const StaticArray<Utils::DirectionType, 3> MIDDLE_LINE   = Utils::INDEX_MAP[1];
+const StaticArray<Descriptor::DirectionType, 3> MIDDLE_LINE   = Descriptor::INDEX_MAP[1];
 
 /* ************************************************************************ */
 
-const StaticArray<Utils::DirectionType, 3> BOTTOM_LINE   = Utils::INDEX_MAP[2];
+const StaticArray<Descriptor::DirectionType, 3> BOTTOM_LINE   = Descriptor::INDEX_MAP[2];
 
 /* ************************************************************************ */
 
-const StaticArray<Utils::DirectionType, 3> LEFT_COLUMN   = {{
-    Utils::INDEX_MAP[0][0],
-    Utils::INDEX_MAP[1][0],
-    Utils::INDEX_MAP[2][0]
+const StaticArray<Descriptor::DirectionType, 3> LEFT_COLUMN   = {{
+    Descriptor::INDEX_MAP[0][0],
+    Descriptor::INDEX_MAP[1][0],
+    Descriptor::INDEX_MAP[2][0]
 }};
 
 /* ************************************************************************ */
 
-const StaticArray<Utils::DirectionType, 3> MIDDLE_COLUMN {{
-    Utils::INDEX_MAP[0][1],
-    Utils::INDEX_MAP[1][1],
-    Utils::INDEX_MAP[2][1]
+const StaticArray<Descriptor::DirectionType, 3> MIDDLE_COLUMN {{
+    Descriptor::INDEX_MAP[0][1],
+    Descriptor::INDEX_MAP[1][1],
+    Descriptor::INDEX_MAP[2][1]
 }};
 
 /* ************************************************************************ */
 
-const StaticArray<Utils::DirectionType, 3> RIGHT_COLUMN  {{
-    Utils::INDEX_MAP[0][2],
-    Utils::INDEX_MAP[1][2],
-    Utils::INDEX_MAP[2][2]
+const StaticArray<Descriptor::DirectionType, 3> RIGHT_COLUMN  {{
+    Descriptor::INDEX_MAP[0][2],
+    Descriptor::INDEX_MAP[1][2],
+    Descriptor::INDEX_MAP[2][2]
 }};
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> CENTER_RHO{{
+const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> CENTER_RHO{{
     {ZouHeDynamics::Position::Right,    MIDDLE_COLUMN},
     {ZouHeDynamics::Position::Left,     MIDDLE_COLUMN},
     {ZouHeDynamics::Position::Top,      MIDDLE_LINE},
@@ -86,7 +86,7 @@ const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> CENTER_
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> KNOWN_RHO{{
+const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> KNOWN_RHO{{
     {ZouHeDynamics::Position::Right,    RIGHT_COLUMN},
     {ZouHeDynamics::Position::Left,     LEFT_COLUMN},
     {ZouHeDynamics::Position::Top,      TOP_LINE},
@@ -95,7 +95,7 @@ const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> KNOWN_R
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> UNKNOWN_RHO{{
+const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> UNKNOWN_RHO{{
     {ZouHeDynamics::Position::Right,    LEFT_COLUMN},
     {ZouHeDynamics::Position::Left,     RIGHT_COLUMN},
     {ZouHeDynamics::Position::Top,      BOTTOM_LINE},
@@ -113,29 +113,29 @@ const Map<ZouHeDynamics::Position, ZouHeDynamics::VelocityType> VELOCITIES{{
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, Utils::DirectionType> BC_CENTER{{
-    {ZouHeDynamics::Position::Right,    Utils::INDEX_MAP[1][0]},
-    {ZouHeDynamics::Position::Left,     Utils::INDEX_MAP[1][2]},
-    {ZouHeDynamics::Position::Top,      Utils::INDEX_MAP[2][1]},
-    {ZouHeDynamics::Position::Bottom,   Utils::INDEX_MAP[0][1]}
+const Map<ZouHeDynamics::Position, Descriptor::DirectionType> BC_CENTER{{
+    {ZouHeDynamics::Position::Right,    Descriptor::INDEX_MAP[1][0]},
+    {ZouHeDynamics::Position::Left,     Descriptor::INDEX_MAP[1][2]},
+    {ZouHeDynamics::Position::Top,      Descriptor::INDEX_MAP[2][1]},
+    {ZouHeDynamics::Position::Bottom,   Descriptor::INDEX_MAP[0][1]}
 }};
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> BC_SIDE1{{
-    {ZouHeDynamics::Position::Right,    {{Utils::INDEX_MAP[0][0], Utils::INDEX_MAP[2][1], Utils::INDEX_MAP[0][1]}}},
-    {ZouHeDynamics::Position::Left,     {{Utils::INDEX_MAP[0][2], Utils::INDEX_MAP[2][1], Utils::INDEX_MAP[0][1]}}},
-    {ZouHeDynamics::Position::Top,      {{Utils::INDEX_MAP[2][2], Utils::INDEX_MAP[1][0], Utils::INDEX_MAP[1][2]}}},
-    {ZouHeDynamics::Position::Bottom,   {{Utils::INDEX_MAP[0][2], Utils::INDEX_MAP[1][0], Utils::INDEX_MAP[1][2]}}}
+const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> BC_SIDE1{{
+    {ZouHeDynamics::Position::Right,    {{Descriptor::INDEX_MAP[0][0], Descriptor::INDEX_MAP[2][1], Descriptor::INDEX_MAP[0][1]}}},
+    {ZouHeDynamics::Position::Left,     {{Descriptor::INDEX_MAP[0][2], Descriptor::INDEX_MAP[2][1], Descriptor::INDEX_MAP[0][1]}}},
+    {ZouHeDynamics::Position::Top,      {{Descriptor::INDEX_MAP[2][2], Descriptor::INDEX_MAP[1][0], Descriptor::INDEX_MAP[1][2]}}},
+    {ZouHeDynamics::Position::Bottom,   {{Descriptor::INDEX_MAP[0][2], Descriptor::INDEX_MAP[1][0], Descriptor::INDEX_MAP[1][2]}}}
 }};
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> BC_SIDE2{{
-    {ZouHeDynamics::Position::Right,    {{Utils::INDEX_MAP[2][0], Utils::INDEX_MAP[0][1], Utils::INDEX_MAP[2][1]}}},
-    {ZouHeDynamics::Position::Left,     {{Utils::INDEX_MAP[2][2], Utils::INDEX_MAP[0][1], Utils::INDEX_MAP[2][1]}}},
-    {ZouHeDynamics::Position::Top,      {{Utils::INDEX_MAP[2][0], Utils::INDEX_MAP[1][2], Utils::INDEX_MAP[1][0]}}},
-    {ZouHeDynamics::Position::Bottom,   {{Utils::INDEX_MAP[0][0], Utils::INDEX_MAP[1][2], Utils::INDEX_MAP[1][0]}}}
+const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> BC_SIDE2{{
+    {ZouHeDynamics::Position::Right,    {{Descriptor::INDEX_MAP[2][0], Descriptor::INDEX_MAP[0][1], Descriptor::INDEX_MAP[2][1]}}},
+    {ZouHeDynamics::Position::Left,     {{Descriptor::INDEX_MAP[2][2], Descriptor::INDEX_MAP[0][1], Descriptor::INDEX_MAP[2][1]}}},
+    {ZouHeDynamics::Position::Top,      {{Descriptor::INDEX_MAP[2][0], Descriptor::INDEX_MAP[1][2], Descriptor::INDEX_MAP[1][0]}}},
+    {ZouHeDynamics::Position::Bottom,   {{Descriptor::INDEX_MAP[0][0], Descriptor::INDEX_MAP[1][2], Descriptor::INDEX_MAP[1][0]}}}
 }};
 
 /* ************************************************************************ */
@@ -151,7 +151,7 @@ const Map<ZouHeDynamics::Position, StaticArray<Utils::DirectionType, 3>> BC_SIDE
  */
 template<std::size_t N>
 ZouHeDynamics::DensityType
-sumValues(ZouHeDynamics::DataType& data, StaticArray<Utils::DirectionType, N> list) noexcept
+sumValues(ZouHeDynamics::DataType& data, StaticArray<Descriptor::DirectionType, N> list) noexcept
 {
     ZouHeDynamics::DensityType density{};
 
@@ -220,28 +220,28 @@ void ZouHeDynamics::init(DataType& data, VelocityType velocity, DensityType dens
 
     DataType eq;
 
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
     {
         eq[iPop] = computeEquilibrium(iPop, density, velocity);
         Assert(eq[iPop] > 0);
     }
 
-    auto eqDiff = [&eq] (Utils::DirectionType iPop) {
-        return eq[iPop] - eq[Utils::DIRECTION_OPPOSITES[iPop]];
+    auto eqDiff = [&eq] (Descriptor::DirectionType iPop) {
+        return eq[iPop] - eq[Descriptor::DIRECTION_OPPOSITES[iPop]];
     };
 
     // Center
-    data[center] = data[Utils::DIRECTION_OPPOSITES[center]] + eqDiff(center);
+    data[center] = data[Descriptor::DIRECTION_OPPOSITES[center]] + eqDiff(center);
     Assert(data[center] > 0);
 
     // Side 1
-    data[side1[0]] = data[Utils::DIRECTION_OPPOSITES[side1[0]]] + eqDiff(side1[0])
+    data[side1[0]] = data[Descriptor::DIRECTION_OPPOSITES[side1[0]]] + eqDiff(side1[0])
         + 0.5 * (data[side1[1]] - data[side1[2]])
         - 0.5 * eqDiff(side1[1]);
     Assert(data[side1[0]] > 0);
 
     // Side 2
-    data[side2[0]] = data[Utils::DIRECTION_OPPOSITES[side2[0]]] + eqDiff(side2[0])
+    data[side2[0]] = data[Descriptor::DIRECTION_OPPOSITES[side2[0]]] + eqDiff(side2[0])
         + 0.5 * (data[side2[1]] - data[side2[2]])
         - 0.5 * eqDiff(side2[1]);
     Assert(data[side2[0]] > 0);

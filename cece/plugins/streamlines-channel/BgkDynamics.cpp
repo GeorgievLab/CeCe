@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -30,7 +30,7 @@
 #include <algorithm>
 
 // Plugin
-#include "cece/plugins/streamlines-channel/Utils.hpp"
+#include "cece/plugins/streamlines-channel/Descriptor.hpp"
 
 /* ************************************************************************ */
 
@@ -47,7 +47,7 @@ BgkDynamics::computeDensity(const DataType& data) const noexcept
     using std::end;
 
     const auto fSum = std::accumulate(begin(data), end(data), DensityType(0.0));
-    const auto weights = Utils::getWeightHorizontalSum();
+    const auto weights = Descriptor::getWeightHorizontalSum();
 
     return fSum / weights;
 }
@@ -62,10 +62,10 @@ BgkDynamics::computeVelocity(const DataType& data) const noexcept
     RealType cs2Wall = 0.0;
 
     // c_s^2 wall is same in all coordinate axes - calculate only for x.
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
-        cs2Wall += Utils::getWeightVertical(iPop) * Utils::DIRECTION_VELOCITIES[iPop][0] * Utils::DIRECTION_VELOCITIES[iPop][0];
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
+        cs2Wall += Descriptor::getWeightVertical(iPop) * Descriptor::DIRECTION_VELOCITIES[iPop][0] * Descriptor::DIRECTION_VELOCITIES[iPop][0];
 
-    return computeMomentum(data) / (computeDensity(data) * (1.0 - 2.0 * omega / (2 - omega) * cs2Wall * Utils::SPEED_OF_SOUND_SQ_INV));
+    return computeMomentum(data) / (computeDensity(data) * (1.0 - 2.0 * omega / (2 - omega) * cs2Wall * Descriptor::SPEED_OF_SOUND_SQ_INV));
 }
 
 /* ************************************************************************ */
@@ -75,9 +75,9 @@ BgkDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
     VelocityType velocity) const noexcept
 {
     // Equilibrium uses modified weights
-    return Utils::calcEquilibrium(
-        Utils::getWeightHorizontal(iPop),
-        Utils::DIRECTION_VELOCITIES[iPop],
+    return Descriptor::calcEquilibrium(
+        Descriptor::getWeightHorizontal(iPop),
+        Descriptor::DIRECTION_VELOCITIES[iPop],
         density,
         velocity
     );

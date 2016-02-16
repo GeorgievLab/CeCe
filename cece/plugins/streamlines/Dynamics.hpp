@@ -33,7 +33,7 @@
 #include "cece/core/StaticArray.hpp"
 
 // CeCe Plugins
-#include "cece/plugins/streamlines/Utils.hpp"
+#include "cece/plugins/streamlines/Descriptor.hpp"
 
 /* ************************************************************************ */
 
@@ -54,19 +54,19 @@ public:
 
 
     /// Population index type.
-    using DirectionType = Utils::DirectionType;
+    using DirectionType = Descriptor::DirectionType;
 
     /// Density type.
-    using DensityType = Utils::DensityType;
+    using DensityType = Descriptor::DensityType;
 
     /// Momentum type.
-    using MomentumType = Utils::MomentumType;
+    using MomentumType = Descriptor::MomentumType;
 
     /// Velocity type.
-    using VelocityType = Utils::VelocityType;
+    using VelocityType = Descriptor::VelocityType;
 
     /// Type of stored data.
-    using DataType = Utils::DataType;
+    using DataType = Descriptor::DataType;
 
 
 // Public Ctors & Dtors

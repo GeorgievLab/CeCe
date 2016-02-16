@@ -28,10 +28,9 @@
 
 // CeCe
 #include "cece/core/Assert.hpp"
-#include "cece/simulator/Simulation.hpp"
 
 // Plugin
-#include "cece/plugins/streamlines-channel/Utils.hpp"
+#include "cece/plugins/streamlines-channel/Descriptor.hpp"
 #include "cece/plugins/streamlines-channel/BgkDynamics.hpp"
 #include "cece/plugins/streamlines-channel/ZouHeDynamics.hpp"
 
@@ -46,7 +45,7 @@ namespace streamlines_channel {
 void Module::init(simulator::Simulation& simulation)
 {
     // Initialize model
-    Utils::initModel(convertLength(getHeight()));
+    Descriptor::initModel(convertLength(getHeight()));
 
     // Initialize streamlines
     streamlines::Module::init(simulation);

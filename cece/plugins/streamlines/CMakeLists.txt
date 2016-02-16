@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2016                                                     #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -46,8 +46,8 @@ endif ()
 # Sources
 set(SRCS
     Plugin.cpp
-    Utils.hpp
-    Utils.cpp
+    Descriptor.hpp
+    Descriptor.cpp
     Module.hpp
     Module.cpp
     Lattice.hpp

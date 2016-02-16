@@ -43,7 +43,7 @@ namespace streamlines {
 /**
  * @brief Utility class.
  */
-class Utils
+class Descriptor
 {
 
 // Public Types

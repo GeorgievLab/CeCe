@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -60,8 +60,8 @@ BgkDynamics::computeMomentum(const DataType& data) const noexcept
 {
     MomentumType momentum = Zero;
 
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
-        momentum += Utils::DIRECTION_VELOCITIES[iPop] * data[iPop];
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
+        momentum += Descriptor::DIRECTION_VELOCITIES[iPop] * data[iPop];
 
     return momentum;
 }
@@ -72,9 +72,9 @@ BgkDynamics::DensityType
 BgkDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
     VelocityType velocity) const noexcept
 {
-    return Utils::calcEquilibrium(
-        Utils::DIRECTION_WEIGHTS[iPop],
-        Utils::DIRECTION_VELOCITIES[iPop],
+    return Descriptor::calcEquilibrium(
+        Descriptor::DIRECTION_WEIGHTS[iPop],
+        Descriptor::DIRECTION_VELOCITIES[iPop],
         density,
         velocity
     );
@@ -85,7 +85,7 @@ BgkDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
 void
 BgkDynamics::initEquilibrium(DataType& data, VelocityType velocity, DensityType density) const noexcept
 {
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
     {
         data[iPop] = computeEquilibrium(iPop, density, velocity);
         Assert(data[iPop] > 0);
@@ -119,7 +119,7 @@ BgkDynamics::collide(DataType& data) const noexcept
     const auto omega = getOmega();
 
     // Perform collision for all populations
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
     {
         // Calculate equilibrium distribution
         const auto feq = computeEquilibrium(iPop, density, velocity);

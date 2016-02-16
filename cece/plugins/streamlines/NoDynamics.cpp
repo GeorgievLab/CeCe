@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,7 +27,7 @@
 #include "cece/plugins/streamlines/NoDynamics.hpp"
 
 // Plugin
-#include "cece/plugins/streamlines/Utils.hpp"
+#include "cece/plugins/streamlines/Descriptor.hpp"
 
 /* ************************************************************************ */
 
@@ -41,9 +41,9 @@ NoDynamics::DensityType
 NoDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
     VelocityType velocity) const noexcept
 {
-    return Utils::calcEquilibrium(
-        Utils::DIRECTION_WEIGHTS[iPop],
-        Utils::DIRECTION_VELOCITIES[iPop],
+    return Descriptor::calcEquilibrium(
+        Descriptor::DIRECTION_WEIGHTS[iPop],
+        Descriptor::DIRECTION_VELOCITIES[iPop],
         density,
         velocity
     );
@@ -54,7 +54,7 @@ NoDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
 void
 NoDynamics::initEquilibrium(DataType& data, VelocityType velocity, DensityType density) const noexcept
 {
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
+    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
         data[iPop] = computeEquilibrium(iPop, density, velocity);
 }
 

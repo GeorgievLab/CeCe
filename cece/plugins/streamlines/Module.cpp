@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -409,7 +409,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
         m_drawableDebug.create(context, size);
 
     // Temporary for velocities
-    Grid<Utils::VelocityType> velocities(size);
+    Grid<Descriptor::VelocityType> velocities(size);
 
     // Calculate grid max velocity
     Assert(!m_inletVelocities.empty());

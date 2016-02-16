@@ -31,7 +31,7 @@
 #include "cece/core/Real.hpp"
 
 // Plugins
-#include "cece/plugins/streamlines/Utils.hpp"
+#include "cece/plugins/streamlines/Descriptor.hpp"
 
 /* ************************************************************************ */
 
@@ -44,7 +44,7 @@ namespace streamlines_channel {
 /**
  * @brief Utility class.
  */
-class Utils : public streamlines::Utils
+class Descriptor : public streamlines::Descriptor
 {
 
 // Public Accessors

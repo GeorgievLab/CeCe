@@ -25,7 +25,7 @@
     <File Name="Dynamics.cpp"/>
     <File Name="NoDynamics.cpp"/>
     <File Name="ZouHeDynamics.cpp"/>
-    <File Name="Utils.cpp"/>
+    <File Name="Descriptor.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
@@ -36,7 +36,7 @@
     <File Name="Dynamics.hpp"/>
     <File Name="NoDynamics.hpp"/>
     <File Name="ZouHeDynamics.hpp"/>
-    <File Name="Utils.hpp"/>
+    <File Name="Descriptor.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

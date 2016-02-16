@@ -28,8 +28,8 @@ set(SRCS
     Plugin.cpp
     Module.hpp
     Module.cpp
-    Utils.hpp
-    Utils.cpp
+    Descriptor.hpp
+    Descriptor.cpp
     BgkDynamics.hpp
     BgkDynamics.cpp
     ZouHeDynamics.hpp
