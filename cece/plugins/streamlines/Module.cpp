@@ -165,16 +165,13 @@ void Module::init(simulator::Simulation& simulation)
     // Print simulation info
     printInfo(simulation);
 
-    // Calculate values
-    const auto omega = calculateOmega();
-
     // Set fluid dynamics
-    setFluidDynamics(makeUnique<BgkDynamics>(omega));
+    setFluidDynamics(createFluidDynamics());
 
-    m_boundaries[LayoutPosTop] = makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Top);
-    m_boundaries[LayoutPosBottom] = makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Bottom);
-    m_boundaries[LayoutPosLeft] = makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Left);
-    m_boundaries[LayoutPosRight] = makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Right);
+    m_boundaries[LayoutPosTop]      = createBorderDynamics(LayoutPosTop);
+    m_boundaries[LayoutPosBottom]   = createBorderDynamics(LayoutPosBottom);
+    m_boundaries[LayoutPosLeft]     = createBorderDynamics(LayoutPosLeft);
+    m_boundaries[LayoutPosRight]    = createBorderDynamics(LayoutPosRight);
 
     initBarriers(simulation);
 
@@ -395,9 +392,6 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
             m_initFile = config.buildFilePath(file);
         }
     }
-
-    // Initialize lattice
-    init(simulation);
 }
 
 /* ************************************************************************ */
@@ -499,6 +493,41 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 #endif
 }
 #endif
+
+/* ************************************************************************ */
+
+UniquePtr<Dynamics> Module::createFluidDynamics() const
+{
+    return makeUnique<BgkDynamics>(calculateOmega());
+}
+
+/* ************************************************************************ */
+
+UniquePtr<Dynamics> Module::createBorderDynamics(LayoutPosition pos) const
+{
+    const auto omega = calculateOmega();
+
+    switch (pos)
+    {
+    case LayoutPosTop:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Top);
+
+    case LayoutPosBottom:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Bottom);
+
+    case LayoutPosLeft:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Left);
+
+    case LayoutPosRight:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Right);
+
+    default:
+        Assert(false && "No way!");
+        break;
+    }
+
+    return nullptr;
+}
 
 /* ************************************************************************ */
 

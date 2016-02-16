@@ -32,6 +32,8 @@
 
 // Plugin
 #include "cece/plugins/streamlines-channel/Utils.hpp"
+#include "cece/plugins/streamlines-channel/BgkDynamics.hpp"
+#include "cece/plugins/streamlines-channel/ZouHeDynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -43,8 +45,11 @@ namespace streamlines_channel {
 
 void Module::init(simulator::Simulation& simulation)
 {
-    //streamlines::Module::init(simulation);
+    // Initialize model
     Utils::initModel(convertLength(getHeight()));
+
+    // Initialize streamlines
+    streamlines::Module::init(simulation);
 }
 
 /* ************************************************************************ */
@@ -56,8 +61,41 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
     // Channel height
     setHeight(config.get("height", getHeight()));
+}
 
-    init(simulation);
+/* ************************************************************************ */
+
+UniquePtr<streamlines::Dynamics> Module::createFluidDynamics() const
+{
+    return makeUnique<BgkDynamics>(calculateOmega());
+}
+
+/* ************************************************************************ */
+
+UniquePtr<streamlines::Dynamics> Module::createBorderDynamics(LayoutPosition pos) const
+{
+    const auto omega = calculateOmega();
+
+    switch (pos)
+    {
+    case LayoutPosTop:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Top);
+
+    case LayoutPosBottom:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Bottom);
+
+    case LayoutPosLeft:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Left);
+
+    case LayoutPosRight:
+        return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Right);
+
+    default:
+        Assert(false && "No way!");
+        break;
+    }
+
+    return nullptr;
 }
 
 /* ************************************************************************ */

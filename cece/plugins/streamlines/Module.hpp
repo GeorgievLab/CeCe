@@ -650,6 +650,24 @@ protected:
 
 
     /**
+     * @brief Create fluid dynamics.
+     *
+     * @return
+     */
+    virtual UniquePtr<Dynamics> createFluidDynamics() const;
+
+
+    /**
+     * @brief Create border dynamics.
+     *
+     * @param pos
+     *
+     * @return
+     */
+    virtual UniquePtr<Dynamics> createBorderDynamics(LayoutPosition pos) const;
+
+
+    /**
      * @brief Update obstacle map from objects.
      *
      * @param simulation

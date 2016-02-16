@@ -109,6 +109,24 @@ protected:
 
 
     /**
+     * @brief Create fluid dynamics.
+     *
+     * @return
+     */
+    UniquePtr<streamlines::Dynamics> createFluidDynamics() const override;
+
+
+    /**
+     * @brief Create border dynamics.
+     *
+     * @param pos
+     *
+     * @return
+     */
+    UniquePtr<streamlines::Dynamics> createBorderDynamics(LayoutPosition pos) const override;
+
+
+    /**
      * @brief Print streamlines informations.
      *
      * @param simulation
