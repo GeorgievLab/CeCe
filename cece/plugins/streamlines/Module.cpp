@@ -372,7 +372,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
         storeDataHeader();
     }
 
-#if ENABLE_RENDER && DEV_PLUGIN_streamlines_RENDER
+#if ENABLE_RENDER
     setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
 #endif
 
@@ -399,7 +399,6 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 #ifdef CECE_ENABLE_RENDER
 void Module::draw(const simulator::Simulation& simulation, render::Context& context)
 {
-#if DEV_PLUGIN_streamlines_RENDER
     if (getDrawFlags() == 0)
         return;
 
@@ -490,7 +489,6 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
         m_drawableDirections->draw(context);
 
     context.matrixPop();
-#endif
 }
 #endif
 

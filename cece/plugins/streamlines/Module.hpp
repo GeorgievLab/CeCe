@@ -107,7 +107,7 @@ public:
 public:
 
 
-#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER)
 
     /// Flag for debug drawing.
     static constexpr DrawFlags DRAW_DEBUG_MAGNITUDE = 0x01;
@@ -258,7 +258,7 @@ public:
     }
 
 
-#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER)
 
     /**
      * @brief If debug flag is set.
@@ -434,7 +434,7 @@ public:
     }
 
 
-#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER)
 
     /**
      * @brief Set debug velocity magnitude scale.
@@ -845,7 +845,7 @@ private:
     /// Use dynamic objects as obstacles
     bool m_dynamicObjectsObstacles = false;
 
-#if defined(CECE_ENABLE_RENDER) && DEV_PLUGIN_streamlines_RENDER
+#if defined(CECE_ENABLE_RENDER)
     /// Render grid for velocities
     render::ObjectPtr<render::GridVector> m_drawableDirections;
 
