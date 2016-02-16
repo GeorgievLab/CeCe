@@ -267,13 +267,10 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 #endif
 
     // Collide and propagate
-    for (auto it = getInnerIterations(); it--; )
-    {
-        m_lattice.collideAndStream();
+    m_lattice.collideAndStream();
 
-        // Apply boundary conditions
-        applyBoundaryConditions(simulation);
-    }
+    // Apply boundary conditions
+    applyBoundaryConditions(simulation);
 
     // Apply streamlines to world objects
     applyToObjects(simulation, dt);
@@ -288,18 +285,6 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
     // Number of init iterations
     setInitIterations(config.get("init-iterations", getInitIterations()));
-
-    // Number of inner iterations
-    setInnerIterations(config.get("iterations", getInnerIterations()));
-
-    if (getInnerIterations() == 0)
-        throw InvalidArgumentException("Number of inner iterations cannot be zero");
-
-    // Convert relaxation time
-    setTau(config.get("tau", getTau()));
-
-    if (getTau() == 0)
-        throw InvalidArgumentException("Relaxation time cannot be zero");
 
     if (config.has("inlet-velocity"))
     {
@@ -327,7 +312,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
     setNumberNodes(config.get("number-nodes", 1));
     //setNumberSteps(getCharTime() / simulation.getTimeStep());
-    setNumberSteps(getNumberNodes() * getNumberNodes());
+    setNumberSteps(getNumberNodes() * getNumberNodes() * 20);
 
     // Obsolete grid
     auto gridSize = config.get<Lattice::Size>("grid", Lattice::Size{Zero});
@@ -838,6 +823,23 @@ VelocityVector Module::inletVelocityProfile(
 
 /* ************************************************************************ */
 
+RealType Module::calculateViscosity() const noexcept
+{
+    const auto charTime = m_charTime / getNumberSteps();
+    const auto charLength = m_charLength / getNumberNodes();
+
+    return charTime / (charLength * charLength) * getKinematicViscosity();
+}
+
+/* ************************************************************************ */
+
+RealType Module::calculateTau() const noexcept
+{
+    return Descriptor::SPEED_OF_SOUND_SQ_INV * calculateViscosity() + 0.5;
+}
+
+/* ************************************************************************ */
+
 void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition pos)
 {
     const auto& size = m_lattice.getSize();
@@ -1074,7 +1076,7 @@ void Module::printInfo(const simulator::Simulation& simulation)
     Log::info("[streamlines] Char. speed: ", getCharLength() / getCharTime(), " um/s");
     Log::info("[streamlines] Re: ", getCharLength() * getCharLength() / getCharTime() / getKinematicViscosity());
     Log::info("[streamlines] ## Lattice ##");
-    Log::info("[streamlines] Tau: ", getTau());
+    Log::info("[streamlines] Tau: ", calculateTau());
     Log::info("[streamlines] Omega: ", calculateOmega());
     Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
     Log::info("[streamlines] LB Viscosity: ", calculateViscosity());
@@ -1160,6 +1162,9 @@ void Module::storeDataHeader()
         *m_dataOut << ";d0;d1;d2;d3;d4;d5;d6;d7;d8";
 
     *m_dataOut << "\n";
+
+    // Set stored value precision
+    m_dataOut->precision(std::numeric_limits<Descriptor::DensityType>::digits10 + 1);
 }
 
 /* ************************************************************************ */

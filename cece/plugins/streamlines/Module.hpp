@@ -204,28 +204,6 @@ public:
 
 
     /**
-     * @brief Returns relaxation time.
-     *
-     * @return
-     */
-    RealType getTau() const noexcept
-    {
-        return m_tau;
-    }
-
-
-    /**
-     * @brief Returns inner iteration count.
-     *
-     * @return
-     */
-    simulator::IterationCount getInnerIterations() const noexcept
-    {
-        return m_innerIterations;
-    }
-
-
-    /**
      * @brief Returns init iteration count.
      *
      * @return
@@ -376,28 +354,6 @@ public:
     void setKinematicViscosity(units::KinematicViscosity viscosity) noexcept
     {
         m_kinematicViscosity = viscosity;
-    }
-
-
-    /**
-     * @brief Set relaxation time.
-     *
-     * @param tau
-     */
-    void setTau(RealType tau) noexcept
-    {
-        m_tau = tau;
-    }
-
-
-    /**
-     * @brief Set inner iteration count.
-     *
-     * @param iterations
-     */
-    void setInnerIterations(simulator::IterationCount iterations) noexcept
-    {
-        m_innerIterations = iterations;
     }
 
 
@@ -721,10 +677,15 @@ protected:
      *
      * @return
      */
-    RealType calculateViscosity() const noexcept
-    {
-        return (getTau() - 0.5) / 3.0;
-    }
+    RealType calculateViscosity() const noexcept;
+
+
+    /**
+     * @brief Calculate viscosity from relaxation time.
+     *
+     * @return
+     */
+    RealType calculateTau() const noexcept;
 
 
     /**
@@ -734,7 +695,7 @@ protected:
      */
     RealType calculateOmega() const noexcept
     {
-        return 1.0 / getTau();
+        return 1.0 / calculateTau();
     }
 
 
@@ -803,14 +764,8 @@ private:
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
 
-    /// Relaxation time.
-    RealType m_tau = 1.5;
-
-    /// Number of inner iterations.
-    simulator::IterationCount m_innerIterations = 5;
-
     /// Number of init iterations.
-    simulator::IterationCount m_initIterations = 100;
+    simulator::IterationCount m_initIterations = 0;
 
     /// Characteristic length.
     units::Length m_charLength = units::um(1);
