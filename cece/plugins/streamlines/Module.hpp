@@ -739,6 +739,14 @@ protected:
 
 
     /**
+     * @brief Print streamlines informations.
+     *
+     * @param simulation
+     */
+    virtual void printInfo(const simulator::Simulation& simulation);
+
+
+    /**
      * @brief Store streamlines data to file.
      *
      * @param filename
@@ -778,7 +786,7 @@ private:
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
 
     /// Relaxation time.
-    RealType m_tau = 1;
+    RealType m_tau = 1.5;
 
     /// Number of inner iterations.
     simulator::IterationCount m_innerIterations = 5;

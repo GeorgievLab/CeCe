@@ -162,21 +162,11 @@ Module::~Module()
 
 void Module::init(simulator::Simulation& simulation)
 {
+    // Print simulation info
+    printInfo(simulation);
+
     // Calculate values
     const auto omega = calculateOmega();
-    const auto size = m_lattice.getSize();
-
-    Log::info("[streamlines] Viscosity: ", getKinematicViscosity(), " um2/s");
-    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation(), " um/it");
-    Log::info("[streamlines] Char. length: ", getCharLength(), " um");
-    Log::info("[streamlines] Char. time: ", getCharTime(), " s");
-    Log::info("[streamlines] Char. speed: ", getCharLength() / getCharTime(), " um/s");
-    Log::info("[streamlines] Re: ", getCharLength() * getCharLength() / getCharTime() / getKinematicViscosity());
-    Log::info("[streamlines] ## Lattice ##");
-    Log::info("[streamlines] Tau: ", getTau());
-    Log::info("[streamlines] Omega: ", omega);
-    Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
-    Log::info("[streamlines] LB Viscosity: ", calculateViscosity());
 
     // Set fluid dynamics
     setFluidDynamics(makeUnique<BgkDynamics>(omega));
@@ -1041,6 +1031,26 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation, Layo
                 node.defineVelocity(convertVelocity(inletVelocityProfile({x, y}, pos, inlets)));
         }
     }
+}
+
+/* ************************************************************************ */
+
+void Module::printInfo(const simulator::Simulation& simulation)
+{
+    // Get values
+    const auto size = m_lattice.getSize();
+
+    Log::info("[streamlines] Viscosity: ", getKinematicViscosity(), " um2/s");
+    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation(), " um/it");
+    Log::info("[streamlines] Char. length: ", getCharLength(), " um");
+    Log::info("[streamlines] Char. time: ", getCharTime(), " s");
+    Log::info("[streamlines] Char. speed: ", getCharLength() / getCharTime(), " um/s");
+    Log::info("[streamlines] Re: ", getCharLength() * getCharLength() / getCharTime() / getKinematicViscosity());
+    Log::info("[streamlines] ## Lattice ##");
+    Log::info("[streamlines] Tau: ", getTau());
+    Log::info("[streamlines] Omega: ", calculateOmega());
+    Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
+    Log::info("[streamlines] LB Viscosity: ", calculateViscosity());
 }
 
 /* ************************************************************************ */

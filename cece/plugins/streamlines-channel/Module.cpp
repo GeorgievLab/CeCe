@@ -62,6 +62,15 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
 /* ************************************************************************ */
 
+void Module::printInfo(const simulator::Simulation& simulation)
+{
+    streamlines::Module::printInfo(simulation);
+
+    Log::info("[streamlines] Channel height: ", getHeight(), " um");
+}
+
+/* ************************************************************************ */
+
 }
 }
 }

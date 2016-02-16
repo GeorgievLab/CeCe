@@ -104,6 +104,18 @@ public:
     void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
 
 
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Print streamlines informations.
+     *
+     * @param simulation
+     */
+    void printInfo(const simulator::Simulation& simulation) override;
+
+
 // Private Data Members
 private:
 
