@@ -70,84 +70,17 @@ BgkDynamics::computeVelocity(const DataType& data) const noexcept
 
 /* ************************************************************************ */
 
-BgkDynamics::MomentumType
-BgkDynamics::computeMomentum(const DataType& data) const noexcept
-{
-    MomentumType momentum = Zero;
-
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
-        momentum += Utils::DIRECTION_VELOCITIES[iPop] * data[iPop];
-
-    return momentum;
-}
-
-/* ************************************************************************ */
-
 BgkDynamics::DensityType
 BgkDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
     VelocityType velocity) const noexcept
 {
+    // Equilibrium uses modified weights
     return Utils::calcEquilibrium(
         Utils::getWeightHorizontal(iPop),
         Utils::DIRECTION_VELOCITIES[iPop],
         density,
         velocity
     );
-}
-
-/* ************************************************************************ */
-
-void
-BgkDynamics::initEquilibrium(DataType& data, VelocityType velocity, DensityType density) const noexcept
-{
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
-    {
-        data[iPop] = computeEquilibrium(iPop, density, velocity);
-        Assert(data[iPop] > 0);
-    }
-}
-
-/* ************************************************************************ */
-
-void
-BgkDynamics::defineDensity(DataType& data, DensityType density) const noexcept
-{
-    initEquilibrium(data, computeVelocity(data), density);
-}
-
-/* ************************************************************************ */
-
-void
-BgkDynamics::defineVelocity(DataType& data, VelocityType velocity) const noexcept
-{
-    initEquilibrium(data, velocity, computeDensity(data));
-}
-
-/* ************************************************************************ */
-
-void
-BgkDynamics::collide(DataType& data) const noexcept
-{
-    const auto density = computeDensity(data);
-    Assert(density > 0);
-    const auto velocity = computeVelocity(data);
-    const auto omega = getOmega();
-
-    // Perform collision for all populations
-    for (Utils::DirectionType iPop = 0; iPop < Utils::SIZE; ++iPop)
-    {
-        // Calculate equilibrium distribution
-        const auto feq = computeEquilibrium(iPop, density, velocity);
-
-        Assert(feq > 0);
-        Assert(data[iPop] > 0);
-
-        // Collide
-        data[iPop] += -omega * (data[iPop] - feq);
-
-        // Result value must be positive
-        Assert(data[iPop] > 0);
-    }
 }
 
 /* ************************************************************************ */

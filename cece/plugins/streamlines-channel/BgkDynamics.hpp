@@ -27,12 +27,8 @@
 
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/core/Real.hpp"
-#include "cece/core/ViewPtr.hpp"
-
 // Plugin
-#include "cece/plugins/streamlines/Dynamics.hpp"
+#include "cece/plugins/streamlines/BgkDynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -43,9 +39,9 @@ namespace streamlines_channel {
 /* ************************************************************************ */
 
 /**
- * @brief BGK dynamics.
+ * @brief BGK dynamics for channel streamlines.
  */
-class BgkDynamics : public streamlines::Dynamics
+class BgkDynamics : public streamlines::BgkDynamics
 {
 
 // Public Ctors & Dtors
@@ -54,44 +50,8 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param omega Relaxation frequency.
      */
-    explicit BgkDynamics(RealType omega)
-        : m_omega(omega)
-    {
-        // Nothing to do
-    }
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Return relaxation frequency.
-     *
-     * @return
-     */
-    RealType getOmega() const noexcept
-    {
-        return m_omega;
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Set relaxation frequency.
-     *
-     * @param omega
-     */
-    void setOmega(RealType omega) noexcept
-    {
-        m_omega = omega;
-    }
+    using streamlines::BgkDynamics::BgkDynamics;
 
 
 // Public Operations
@@ -119,16 +79,6 @@ public:
 
 
     /**
-     * @brief Compute macroscopic momentum in node.
-     *
-     * @param data Lattice data.
-     *
-     * @return Macroscopic momentum.
-     */
-    MomentumType computeMomentum(const DataType& data) const noexcept;
-
-
-    /**
      * @brief Initialize node equilibrum.
      *
      * @param iPop     Direction index.
@@ -139,49 +89,6 @@ public:
      */
     DensityType computeEquilibrium(DirectionType iPop, DensityType density,
         VelocityType velocity) const noexcept;
-
-
-    /**
-     * @brief Initialize node equilibrum.
-     *
-     * @param data     Lattice data.
-     * @param velocity Macroscopic velocity.
-     * @param density  Macroscopic density.
-     */
-    void initEquilibrium(DataType& data, VelocityType velocity, DensityType density) const noexcept;
-
-
-    /**
-     * @brief Define node macroscopic density.
-     *
-     * @param data    Lattice data.
-     * @param density Required macroscopic density.
-     */
-    void defineDensity(DataType& data, DensityType density) const noexcept;
-
-
-    /**
-     * @brief Define node macroscopic velocity.
-     *
-     * @param data    Lattice data.
-     * @param velocity Required macroscopic velocity.
-     */
-    void defineVelocity(DataType& data, VelocityType velocity) const noexcept;
-
-
-    /**
-     * @brief Perform node collision.
-     *
-     * @param data Lattice data.
-     */
-    void collide(DataType& data) const noexcept;
-
-
-// Private Data Members
-private:
-
-    /// Relaxation frequency.
-    RealType m_omega;
 
 };
 
