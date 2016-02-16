@@ -480,6 +480,9 @@ public:
         // Set parameters
         m_simulator.getSimulation()->getParameters().merge(args.parameters);
 
+        // Initialize simulation
+        m_simulator.getSimulation()->initialize();
+
 #ifdef CECE_ENABLE_RENDER
         const auto simViz = m_simulator.getSimulation()->isVisualized();
 
