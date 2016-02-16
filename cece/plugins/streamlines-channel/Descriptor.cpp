@@ -65,11 +65,12 @@ RealType Descriptor::getWeightVerticalSum() noexcept
 
 /* ************************************************************************ */
 
-void Descriptor::initModel(RealType height)
+void Descriptor::initModel(RealType height, RealType a)
 {
-    auto fHeight = [] (RealType height) {
-        return (1.0 / height);
-        //return ((N - a) / (N - 1))
+    const auto hHeight = 0.5 * height;
+
+    auto fHeight = [&a] (RealType height) {
+        return (1.0 / std::pow(height, a));
     };
 
     // Get weights from D2Q9 model
@@ -78,8 +79,8 @@ void Descriptor::initModel(RealType height)
 
     for (int i = 0; i < 3; ++i)
     {
-        weights[i] = weights2d[i] / (1 + 0.5 * fHeight(height));
-        weights[i + 3] = 0.25 * fHeight(height) * weights[i];
+        weights[i] = weights2d[i] / (1 + 0.5 * fHeight(hHeight));
+        weights[i + 3] = 0.25 * fHeight(hHeight) * weights[i];
     }
 
     s_weightsHorizontal[0] = weights[0];

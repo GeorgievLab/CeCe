@@ -67,6 +67,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns weights relation function parameter.
+     *
+     * @return
+     */
+    RealType getWeightsParam() const noexcept
+    {
+        return m_weightsParam;
+    }
+
+
 // Public Mutators
 public:
 
@@ -79,6 +90,17 @@ public:
     void setHeight(units::Length height) noexcept
     {
         m_height = height;
+    }
+
+
+    /**
+     * @brief Set weights relation function parameter.
+     *
+     * @param param
+     */
+    void setWeightsParam(RealType param) noexcept
+    {
+        m_weightsParam = param;
     }
 
 
@@ -138,6 +160,9 @@ private:
 
     /// Channel height.
     units::Length m_height = units::um(1);
+
+    /// Relation function weights param.
+    RealType m_weightsParam = 1.0;
 
 };
 

@@ -52,6 +52,28 @@ public:
 
 
     /**
+     * @brief Returns horizontal weights.
+     *
+     * @return
+     */
+    static const StaticArray<RealType, SIZE>& getWeightsHorizontal() noexcept
+    {
+        return s_weightsHorizontal;
+    }
+
+
+    /**
+     * @brief Returns vertical weights.
+     *
+     * @return
+     */
+    static const StaticArray<RealType, SIZE>& getWeightsVertical() noexcept
+    {
+        return s_weightsVertical;
+    }
+
+
+    /**
      * @brief Returns horizontal weight.
      *
      * @param iPop Direction index.
@@ -139,8 +161,9 @@ public:
      * @brief Initialize model.
      *
      * @param height Channel height.
+     * @param a      Relation function constant.
      */
-    static void initModel(RealType height);
+    static void initModel(RealType height, RealType a = 1.0);
 
 
 // Private Data Members
