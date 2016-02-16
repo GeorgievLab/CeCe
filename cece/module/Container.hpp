@@ -126,12 +126,28 @@ public:
 
 
     /**
+     * @brief Initialize all modules.
+     *
+     * @param simulation Simulation object.
+     */
+    void init(simulator::Simulation& simulation);
+
+
+    /**
      * @brief Update all modules.
      *
      * @param simulation Simulation object.
      * @param dt         Time step.
      */
     void update(simulator::Simulation& simulation, units::Time dt);
+
+
+    /**
+     * @brief Terminate all modules.
+     *
+     * @param simulation Simulation object.
+     */
+    void terminate(simulator::Simulation& simulation);
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -145,6 +161,25 @@ public:
     void draw(const simulator::Simulation& simulation, render::Context& context);
 
 #endif
+
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Returns sorted list of modules by priority.
+     *
+     * @return
+     */
+    DynamicArray<ViewPtr<Module>> getSortedListAsc() const noexcept;
+
+
+    /**
+     * @brief Returns sorted list of modules by priority.
+     *
+     * @return
+     */
+    DynamicArray<ViewPtr<Module>> getSortedListDesc() const noexcept;
 
 
 // Private Data Members

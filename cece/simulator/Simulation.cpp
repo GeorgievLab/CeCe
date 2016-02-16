@@ -375,6 +375,9 @@ void Simulation::initialize()
     // Initialize simulation
     m_initializers.call(*this);
 
+    // Initialize modules
+    m_modules.init(*this);
+
     m_initialized = true;
 }
 

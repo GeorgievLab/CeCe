@@ -116,23 +116,29 @@ void Container::clear()
 
 /* ************************************************************************ */
 
+void Container::init(simulator::Simulation& simulation)
+{
+    // Update modules
+    for (auto& module : getSortedListAsc())
+        module->init(simulation);
+}
+
+/* ************************************************************************ */
+
 void Container::update(simulator::Simulation& simulation, units::Time dt)
 {
-    DynamicArray<ViewPtr<Module>> modules;
-
-    // Copy modules (view pointer)
-    for (const auto& module : m_modules)
-        modules.push_back(module.second);
-
-    // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
-    std::sort(modules.begin(), modules.end(),
-        [](const ViewPtr<Module>& lhs, const ViewPtr<Module>& rhs) {
-            return lhs->getPriority() > rhs->getPriority();
-    });
-
     // Update modules
-    for (auto& module : modules)
+    for (auto& module : getSortedListAsc())
         module->update(simulation, dt);
+}
+
+/* ************************************************************************ */
+
+void Container::terminate(simulator::Simulation& simulation)
+{
+    // Update modules
+    for (auto& module : getSortedListDesc())
+        module->terminate(simulation);
 }
 
 /* ************************************************************************ */
@@ -156,6 +162,46 @@ void Container::draw(const simulator::Simulation& simulation, render::Context& c
         module->draw(simulation, context);
 }
 #endif
+
+/* ************************************************************************ */
+
+DynamicArray<ViewPtr<Module>>
+Container::getSortedListAsc() const noexcept
+{
+    DynamicArray<ViewPtr<Module>> modules;
+
+    // Copy modules (view pointer)
+    for (const auto& module : m_modules)
+        modules.push_back(module.second);
+
+    // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
+    std::sort(modules.begin(), modules.end(),
+        [](const ViewPtr<Module>& lhs, const ViewPtr<Module>& rhs) {
+            return lhs->getPriority() > rhs->getPriority();
+    });
+
+    return modules;
+}
+
+/* ************************************************************************ */
+
+DynamicArray<ViewPtr<Module>>
+Container::getSortedListDesc() const noexcept
+{
+    DynamicArray<ViewPtr<Module>> modules;
+
+    // Copy modules (view pointer)
+    for (const auto& module : m_modules)
+        modules.push_back(module.second);
+
+    // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
+    std::sort(modules.begin(), modules.end(),
+        [](const ViewPtr<Module>& lhs, const ViewPtr<Module>& rhs) {
+            return lhs->getPriority() < rhs->getPriority();
+    });
+
+    return modules;
+}
 
 /* ************************************************************************ */
 
