@@ -37,6 +37,14 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
+StaticArray<RealType, Utils::SIZE> Utils::s_weightsHorizontal;
+
+/* ************************************************************************ */
+
+StaticArray<RealType, Utils::SIZE> Utils::s_weightsVertical;
+
+/* ************************************************************************ */
+
 RealType Utils::getWeightHorizontalSum() noexcept
 {
     using std::begin;
