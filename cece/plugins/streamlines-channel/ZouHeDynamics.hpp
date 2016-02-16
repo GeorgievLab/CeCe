@@ -23,15 +23,12 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/plugins/streamlines-channel/Module.hpp"
+#pragma once
 
-// CeCe
-#include "cece/core/Assert.hpp"
-#include "cece/simulator/Simulation.hpp"
+/* ************************************************************************ */
 
 // Plugin
-#include "cece/plugins/streamlines-channel/Utils.hpp"
+#include "cece/plugins/streamlines-channel/BgkDynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -41,24 +38,106 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation)
+/**
+ * @brief ZouHe boundary condition dynamics.
+ */
+class ZouHeDynamics : public BgkDynamics
 {
-    //streamlines::Module::init(simulation);
-    Utils::initModel(convertLength(getHeight()));
-}
 
-/* ************************************************************************ */
+// Public Enums
+public:
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
-{
-    // Configure parent
-    streamlines::Module::loadConfig(simulation, config);
 
-    // Channel height
-    setHeight(config.get("height", getHeight()));
+    /**
+     * @brief Boundary condition position.
+     */
+    enum class Position
+    {
+        Right  = 0,
+        Left   = 1,
+        Top    = 2,
+        Bottom = 3
+    };
 
-    init(simulation);
-}
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param omega    Relaxation frequency.
+     * @param position Boundary condition position.
+     */
+    explicit ZouHeDynamics(RealType omega, Position position)
+        : BgkDynamics(omega)
+        , m_position(position)
+    {
+        // Nothing to do
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Define node macroscopic density.
+     *
+     * @param data    Lattice data.
+     * @param density Required macroscopic density.
+     */
+    void defineDensity(DataType& data, DensityType density) const noexcept;
+
+
+    /**
+     * @brief Define node macroscopic velocity.
+     *
+     * @param data    Lattice data.
+     * @param velocity Required macroscopic velocity.
+     */
+    void defineVelocity(DataType& data, VelocityType velocity) const noexcept;
+
+
+    /**
+     * @brief Calculate density from velocity.
+     *
+     * @param data     Node data.
+     * @param velocity Fixed velocity.
+     *
+     * @return
+     */
+    DensityType calcDensity(DataType& data, const VelocityType& velocity) const noexcept;
+
+
+    /**
+     * @brief Calculate velocity from density.
+     *
+     * @param data    Node data.
+     * @param density Fixed density.
+     *
+     * @return
+     */
+    VelocityType calcVelocity(DataType& data, DensityType density) const noexcept;
+
+
+    /**
+     * @brief Initialize data.
+     *
+     * @param data     Node data.
+     * @param velocity Required velocity.
+     * @param density  Required density.
+     */
+    void init(DataType& data, VelocityType velocity, DensityType density) const noexcept;
+
+
+// Private Data Members
+private:
+
+    /// Boundary position.
+    Position m_position;
+};
 
 /* ************************************************************************ */
 

@@ -27,16 +27,12 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
 // CeCe
-#include "cece/core/Units.hpp"
+#include "cece/core/Real.hpp"
+#include "cece/core/ViewPtr.hpp"
 
 // Plugin
-#include "cece/plugins/streamlines/Module.hpp"
+#include "cece/plugins/streamlines/Dynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -47,10 +43,25 @@ namespace streamlines_channel {
 /* ************************************************************************ */
 
 /**
- * @brief Module for channel streamlines.
+ * @brief BGK dynamics.
  */
-class Module : public streamlines::Module
+class BgkDynamics : public streamlines::Dynamics
 {
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param omega Relaxation frequency.
+     */
+    explicit BgkDynamics(RealType omega)
+        : m_omega(omega)
+    {
+        // Nothing to do
+    }
 
 
 // Public Accessors
@@ -58,13 +69,13 @@ public:
 
 
     /**
-     * @brief Returns channel height.
+     * @brief Return relaxation frequency.
      *
      * @return
      */
-    units::Length getHeight() const noexcept
+    RealType getOmega() const noexcept
     {
-        return m_height;
+        return m_omega;
     }
 
 
@@ -73,13 +84,13 @@ public:
 
 
     /**
-     * @brief Set channel height.
+     * @brief Set relaxation frequency.
      *
-     * @param height
+     * @param omega
      */
-    void setHeight(units::Length height) noexcept
+    void setOmega(RealType omega) noexcept
     {
-        m_height = height;
+        m_omega = omega;
     }
 
 
@@ -88,27 +99,89 @@ public:
 
 
     /**
-     * @brief Initialize lattice.
+     * @brief Compute macroscopic density in node.
      *
-     * @param simulation
+     * @param data Lattice data.
+     *
+     * @return Macroscopic density.
      */
-    void init(simulator::Simulation& simulation);
+    DensityType computeDensity(const DataType& data) const noexcept;
 
 
     /**
-     * @brief Load module configuration.
+     * @brief Compute macroscopic velocity in node.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
+     * @param data Lattice data.
+     *
+     * @return Macroscopic velocity.
      */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
+    VelocityType computeVelocity(const DataType& data) const noexcept;
+
+
+    /**
+     * @brief Compute macroscopic momentum in node.
+     *
+     * @param data Lattice data.
+     *
+     * @return Macroscopic momentum.
+     */
+    MomentumType computeMomentum(const DataType& data) const noexcept;
+
+
+    /**
+     * @brief Initialize node equilibrum.
+     *
+     * @param iPop     Direction index.
+     * @param density  Macroscopic density.
+     * @param velocity Macroscopic velocity.
+     *
+     * @return Equilibrum distribution.
+     */
+    DensityType computeEquilibrium(DirectionType iPop, DensityType density,
+        VelocityType velocity) const noexcept;
+
+
+    /**
+     * @brief Initialize node equilibrum.
+     *
+     * @param data     Lattice data.
+     * @param velocity Macroscopic velocity.
+     * @param density  Macroscopic density.
+     */
+    void initEquilibrium(DataType& data, VelocityType velocity, DensityType density) const noexcept;
+
+
+    /**
+     * @brief Define node macroscopic density.
+     *
+     * @param data    Lattice data.
+     * @param density Required macroscopic density.
+     */
+    void defineDensity(DataType& data, DensityType density) const noexcept;
+
+
+    /**
+     * @brief Define node macroscopic velocity.
+     *
+     * @param data    Lattice data.
+     * @param velocity Required macroscopic velocity.
+     */
+    void defineVelocity(DataType& data, VelocityType velocity) const noexcept;
+
+
+    /**
+     * @brief Perform node collision.
+     *
+     * @param data Lattice data.
+     */
+    void collide(DataType& data) const noexcept;
 
 
 // Private Data Members
 private:
 
-    /// Channel height.
-    units::Length m_height = units::um(1);
+    /// Relaxation frequency.
+    RealType m_omega;
 
 };
 

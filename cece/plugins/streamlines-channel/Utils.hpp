@@ -23,15 +23,15 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/plugins/streamlines-channel/Module.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Assert.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/core/Real.hpp"
 
-// Plugin
-#include "cece/plugins/streamlines-channel/Utils.hpp"
+// Plugins
+#include "cece/plugins/streamlines/Utils.hpp"
 
 /* ************************************************************************ */
 
@@ -41,24 +41,118 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation)
+/**
+ * @brief Utility class.
+ */
+class Utils : public streamlines::Utils
 {
-    //streamlines::Module::init(simulation);
-    Utils::initModel(convertLength(getHeight()));
-}
 
-/* ************************************************************************ */
+// Public Accessors
+public:
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
-{
-    // Configure parent
-    streamlines::Module::loadConfig(simulation, config);
 
-    // Channel height
-    setHeight(config.get("height", getHeight()));
+    /**
+     * @brief Returns horizontal weight.
+     *
+     * @param iPop Direction index.
+     *
+     * @return
+     */
+    static RealType getWeightHorizontal(DirectionType iPop) noexcept
+    {
+        return s_weightsHorizontal[iPop];
+    }
 
-    init(simulation);
-}
+
+    /**
+     * @brief Returns vertical weight.
+     *
+     * @param iPop Direction index.
+     *
+     * @return
+     */
+    static RealType getWeightVertical(DirectionType iPop) noexcept
+    {
+        return s_weightsVertical[iPop];
+    }
+
+
+    /**
+     * @brief Returns summation of horizontal weights.
+     *
+     * @return
+     */
+    static RealType getWeightHorizontalSum() noexcept;
+
+
+    /**
+     * @brief Returns summation of vertical weights.
+     *
+     * @return
+     */
+    static RealType getWeightVerticalSum() noexcept;
+
+
+    /**
+     * @brief Returns summation of horizontal weights.
+     *
+     * @param indices A list of required weights.
+     *
+     * @return
+     */
+    template<std::size_t N>
+    static RealType getWeightHorizontalSum(StaticArray<DirectionType, N> indices) noexcept
+    {
+        RealType sum = 0.0;
+
+        for (auto i : indices)
+            sum += s_weightsHorizontal[i];
+
+        return sum;
+    }
+
+
+    /**
+     * @brief Returns summation of vertical weights.
+     *
+     * @param indices A list of required weights.
+     *
+     * @return
+     */
+    template<std::size_t N>
+    static RealType getWeightVerticalSum(StaticArray<DirectionType, N> indices) noexcept
+    {
+        RealType sum = 0.0;
+
+        for (auto i : indices)
+            sum += s_weightsVertical[i];
+
+        return sum;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Initialize model.
+     *
+     * @param height Channel height.
+     */
+    static void initModel(RealType height);
+
+
+// Private Data Members
+private:
+
+    /// Model horizontal weights.
+    static StaticArray<RealType, SIZE> s_weightsHorizontal;
+
+    /// Model vertical weights.
+    static StaticArray<RealType, SIZE> s_weightsVertical;
+
+};
 
 /* ************************************************************************ */
 

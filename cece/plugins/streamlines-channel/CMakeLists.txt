@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2016                                                     #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -28,6 +28,12 @@ set(SRCS
     Plugin.cpp
     Module.hpp
     Module.cpp
+    Utils.hpp
+    Utils.cpp
+    BgkDynamics.hpp
+    BgkDynamics.cpp
+    ZouHeDynamics.hpp
+    ZouHeDynamics.cpp
 )
 
 # Build plugin

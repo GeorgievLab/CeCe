@@ -20,10 +20,16 @@
     <File Name="Module.cpp"/>
     <File Name="Plugin.cpp"/>
     <File Name="LatticeCell.cpp"/>
+    <File Name="BgkDynamics.cpp"/>
+    <File Name="ZouHeDynamics.cpp"/>
+    <File Name="Utils.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
     <File Name="LatticeCell.hpp"/>
+    <File Name="BgkDynamics.hpp"/>
+    <File Name="ZouHeDynamics.hpp"/>
+    <File Name="Utils.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
