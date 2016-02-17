@@ -33,6 +33,8 @@
 #include "cece/core/String.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/Parameters.hpp"
 
 /* ************************************************************************ */
 
@@ -72,12 +74,14 @@ public:
     /**
      * @brief Create a new simulation from source file.
      *
-     * @param filename Path to source file.
+     * @param context    Plugin context.
+     * @param filename   Path to source file.
+     * @param parameters Initialization parameters.
      *
      * @return Pointer to created simulation.
      */
     virtual UniquePtr<simulator::Simulation> fromFile(plugin::Context& context,
-        const FilePath& filename) const;
+        const FilePath& filename, ViewPtr<const Parameters> parameters = nullptr) const;
 
 
     /**
@@ -89,7 +93,7 @@ public:
      * @return Pointer to created simulation.
      */
     virtual UniquePtr<simulator::Simulation> fromSource(plugin::Context& context,
-        const String& source, const FilePath& filename = "<source>") const;
+        const String& source, const FilePath& filename = "<source>", ViewPtr<const Parameters> parameters = nullptr) const;
 
 
     /**
@@ -116,13 +120,15 @@ public:
     /**
      * @brief Read simulation from input stream.
      *
-     * @param is       Source stream.
-     * @param filename Source file name.
+     * @param context    Plugin context.
+     * @param is         Source stream.
+     * @param filename   Source file name.
+     * @param parameters Initialization parameters.
      *
      * @return Created simulation.
      */
     virtual UniquePtr<simulator::Simulation> fromStream(plugin::Context& context,
-        InStream& is, const FilePath& filename = "<stream>") const = 0;
+        InStream& is, const FilePath& filename = "<stream>", ViewPtr<const Parameters> parameters = nullptr) const = 0;
 
 
     /**

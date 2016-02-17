@@ -32,9 +32,11 @@
 #include "cece/core/StringView.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/UniquePtr.hpp"
+#include "cece/core/ViewPtr.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/StringStream.hpp"
+#include "cece/core/Parameters.hpp"
 #include "cece/config/Exception.hpp"
 #include "cece/config/Implementation.hpp"
 
@@ -64,12 +66,14 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param impl Implementation.
-     * @param path Path to source file.
+     * @param impl       Implementation.
+     * @param path       Path to source file.
+     * @param parameters Optional parameters.
      */
-    Configuration(UniquePtr<Implementation> impl, FilePath path) noexcept
+    Configuration(UniquePtr<Implementation> impl, FilePath path, ViewPtr<Parameters> parameters = nullptr) noexcept
         : m_impl(std::move(impl))
         , m_filePath(std::move(path))
+        , m_parameters(parameters)
     {
         // Nothign to do
     }
@@ -78,12 +82,14 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param impl Implementation.
-     * @param path Path to source file.
+     * @param impl       Implementation.
+     * @param path       Path to source file.
+     * @param parameters Optional parameters.
      */
-    Configuration(Implementation* impl, FilePath path) noexcept
+    Configuration(Implementation* impl, FilePath path, ViewPtr<Parameters> parameters = nullptr) noexcept
         : m_impl(impl)
         , m_filePath(std::move(path))
+        , m_parameters(parameters)
     {
         // Nothign to do
     }
@@ -92,9 +98,10 @@ public:
     /**
      * @brief Constructor (memory version).
      *
-     * @param path Path to source file.
+     * @param path       Path to source file.
+     * @param parameters Optional parameters.
      */
-    explicit Configuration(FilePath path) noexcept;
+    explicit Configuration(FilePath path, ViewPtr<Parameters> parameters = nullptr) noexcept;
 
 
 // Public Accessors
@@ -139,7 +146,7 @@ public:
         if (!has(name))
             throw config::Exception("Missing value for '" + String(name) + "'");
 
-        return m_impl->get(name);
+        return replaceParameters(m_impl->get(name));
     }
 
 
@@ -153,7 +160,7 @@ public:
      */
     String get(StringView name, String def) const noexcept
     {
-        return has(name) ? m_impl->get(name) : std::move(def);
+        return has(name) ? replaceParameters(m_impl->get(name)) : std::move(def);
     }
 
 
@@ -188,7 +195,7 @@ public:
     template<typename T>
     T get(StringView name, T def) const
     {
-        return has(name) ? castFrom<T>(m_impl->get(name)) : std::move(def);
+        return has(name) ? castFrom<T>(replaceParameters(m_impl->get(name))) : std::move(def);
     }
 
 
@@ -402,6 +409,16 @@ private:
     }
 
 
+    /**
+     * @brief Replace parameters in given string.
+     *
+     * @param str Source string.
+     *
+     * @return Result string with replaced parameters.
+     */
+    String replaceParameters(String str) const;
+
+
 // Private Data Members
 private:
 
@@ -411,6 +428,8 @@ private:
     /// Path to source configuration.
     FilePath m_filePath;
 
+    /// Optional parameters.
+    ViewPtr<Parameters> m_parameters;
 };
 
 /* ************************************************************************ */

@@ -326,9 +326,9 @@ public:
     static PyObject* getParameter(SelfType* self, PyObject* args) noexcept
     {
         char* name;
-        float def = 0;
+        char* def = 0;
 
-        if (!PyArg_ParseTuple(args, "s|f", &name, &def))
+        if (!PyArg_ParseTuple(args, "s|s", &name, &def))
             return nullptr;
 
         try

@@ -117,7 +117,7 @@ public:
 
 
     /// Type of simulation parameter value.
-    using ParameterValueType = float;
+    using ParameterValueType = Parameters::ValueType;
 
     /// Data table container type.
     using DataTableContainer = Map<String, DataTable>;

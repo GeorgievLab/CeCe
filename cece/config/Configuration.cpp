@@ -26,6 +26,9 @@
 // Declaration
 #include "cece/config/Configuration.hpp"
 
+// C++
+#include <algorithm>
+
 // CeCe
 #include "cece/config/MemoryImplementation.hpp"
 
@@ -36,9 +39,10 @@ namespace config {
 
 /* ************************************************************************ */
 
-Configuration::Configuration(FilePath path) noexcept
+Configuration::Configuration(FilePath path, ViewPtr<Parameters> parameters) noexcept
     : m_impl(makeUnique<MemoryImplementation>())
     , m_filePath(std::move(path))
+    , m_parameters(parameters)
 {
     // Nothign to do
 }
@@ -53,7 +57,7 @@ DynamicArray<Configuration> Configuration::getConfigurations(StringView name) co
     DynamicArray<Configuration> res;
 
     for (auto&& ptr : m_impl->getSubs(name))
-        res.emplace_back(std::move(ptr), m_filePath);
+        res.emplace_back(std::move(ptr), m_filePath, m_parameters);
 
     return res;
 }
@@ -93,6 +97,48 @@ Configuration Configuration::toMemory() const
     Configuration config{getSourcePath()};
     config.copyFrom(*this);
     return config;
+}
+
+/* ************************************************************************ */
+
+String Configuration::replaceParameters(String str) const
+{
+    if (!m_parameters)
+        return str;
+
+    String::size_type start = 0;
+
+    // Find parameter begin part
+    while ((start = str.find("{$")) != String::npos)
+    {
+        // {$var}
+        // 012345
+
+        // Find ending character
+        const auto end = str.find('}', start + 2);
+
+        if (end == String::npos)
+            throw InvalidArgumentException("Missing closing parameter character '}' in '" + str + "'");
+
+        // Copy name
+        const String name = str.substr(start + 2, (end - start + 1) - 3);
+
+        // Check name characters
+        const auto valid = std::find_if(std::begin(name), std::end(name), [] (String::value_type c) {
+            return !isalnum(c);
+        }) == name.end();
+
+        if (!valid)
+            throw InvalidArgumentException("Parameter name '" + name + "' contains invalid characters");
+
+        // Try to find parameter
+        const auto value = m_parameters->get(name);
+
+        // Replace parameter with value
+        str.replace(start, end - start + 1, value);
+    }
+
+    return str;
 }
 
 /* ************************************************************************ */

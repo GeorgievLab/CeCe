@@ -438,7 +438,19 @@ void Simulation::configure(const config::Configuration& config)
     // Parse parameters
     for (auto&& parameterConfig : config.getConfigurations("parameter"))
     {
-        setParameter(parameterConfig.get("name"), units::parse(parameterConfig.get("value")));
+        // Get parameter name
+        const auto name = parameterConfig.get("name");
+
+        // Do not override previously defined parameters
+        if (hasParameters(name))
+            continue;
+
+        if (!parameterConfig.has("value"))
+            throw InvalidArgumentException("Missing parameter value. Define "
+                "it in simulation file or as application argument");
+
+        // Store new parameter
+        setParameter(name, parameterConfig.get("value"));
     }
 
     // Register user types

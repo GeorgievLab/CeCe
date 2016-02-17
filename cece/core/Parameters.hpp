@@ -69,7 +69,7 @@ public:
     using KeyType = String;
 
     /// Value type.
-    using ValueType = RealType;
+    using ValueType = String;
 
     /// Key view type.
     using KeyViewType = StringView;

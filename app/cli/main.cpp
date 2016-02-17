@@ -475,10 +475,7 @@ public:
         m_simulationFile = args.simulationFile;
 
         // Create simulation
-        m_simulator.setSimulation(plugin::Manager::s().getContext().createSimulation(m_simulationFile));
-
-        // Set parameters
-        m_simulator.getSimulation()->getParameters().merge(args.parameters);
+        m_simulator.setSimulation(plugin::Manager::s().getContext().createSimulation(m_simulationFile, &args.parameters));
 
         // Initialize simulation
         m_simulator.getSimulation()->initialize();

@@ -34,6 +34,7 @@
 // CeCe
 #include "cece/core/constants.hpp"
 #include "cece/core/Tokenizer.hpp"
+#include "cece/core/Units.hpp"
 
 /* ************************************************************************ */
 
@@ -418,7 +419,7 @@ private:
             return coeff * function(local);
         }
         skipWhitespace();
-        return coeff * parameters.get(local);
+        return coeff * units::parse(parameters.get(local));
     }
 
     float function(String local)

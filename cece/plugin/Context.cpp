@@ -37,7 +37,7 @@ namespace plugin {
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> Context::createSimulation(const FilePath& filepath)
+UniquePtr<simulator::Simulation> Context::createSimulation(const FilePath& filepath, ViewPtr<const Parameters> parameters)
 {
     // File extension
     auto ext = filepath.extension().string().substr(1);
@@ -49,7 +49,7 @@ UniquePtr<simulator::Simulation> Context::createSimulation(const FilePath& filep
         throw RuntimeException("Unable to load file with extension: '" + ext + "'");
 
     // Create simulation
-    return loader->fromFile(*this, filepath);
+    return loader->fromFile(*this, filepath, parameters);
 }
 
 /* ************************************************************************ */

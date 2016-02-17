@@ -30,6 +30,8 @@
 // CeCe
 #include "cece/core/FilePath.hpp"
 #include "cece/core/StringView.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/Parameters.hpp"
 #include "cece/loader/FactoryManager.hpp"
 #include "cece/init/FactoryManager.hpp"
 #include "cece/object/FactoryManager.hpp"
@@ -248,13 +250,14 @@ public:
     /**
      * @brief Create a simulation from file.
      *
-     * @param filepath Path to file.
+     * @param filepath   Path to file.
+     * @param parameters Optional initialization parameters.
      *
      * @return Pointer to simulation.
      *
      * @throw In case of missing file or error in simulation file.
      */
-    UniquePtr<simulator::Simulation> createSimulation(const FilePath& filepath);
+    UniquePtr<simulator::Simulation> createSimulation(const FilePath& filepath, ViewPtr<const Parameters> parameters = nullptr);
 
 
     /**

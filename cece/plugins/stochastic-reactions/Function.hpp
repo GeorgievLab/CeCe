@@ -29,6 +29,7 @@
 
 // CeCe
 #include "cece/core/UniquePtr.hpp"
+#include "cece/core/Units.hpp"
 #include "cece/plugins/cell/CellBase.hpp"
 
 #include "Diffusion.hpp"
@@ -277,7 +278,7 @@ public:
 
     RealType eval(const Context& pointers) const override
     {
-        return pointers.parameters.get(m_identifier);
+        return units::parse(pointers.parameters.get(m_identifier));
     }
 
 public:
