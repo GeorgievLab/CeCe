@@ -186,7 +186,7 @@ public:
      *
      * @return
      */
-    InletVelocities getInletVelocities() const noexcept
+    const InletVelocities& getInletVelocities() const noexcept
     {
         return m_inletVelocities;
     }

@@ -311,7 +311,6 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
     setCharTime(simulation.getTimeStep());
 
     setNumberNodes(config.get("number-nodes", 1));
-    setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
 
     // Obsolete grid
     auto gridSize = config.get<Lattice::Size>("grid", Lattice::Size{Zero});
@@ -337,6 +336,9 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
         // Grid size
         m_lattice.setSize(size);
     }
+
+    // Set number of time steps
+    setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
 
     // Layout
     setLayout(config.get("layout", getLayout()));
