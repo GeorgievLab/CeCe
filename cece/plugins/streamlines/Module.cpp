@@ -311,8 +311,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
     setCharTime(simulation.getTimeStep());
 
     setNumberNodes(config.get("number-nodes", 1));
-    //setNumberSteps(getCharTime() / simulation.getTimeStep());
-    setNumberSteps(getNumberNodes() * getNumberNodes() * 20);
+    setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
 
     // Obsolete grid
     auto gridSize = config.get<Lattice::Size>("grid", Lattice::Size{Zero});
