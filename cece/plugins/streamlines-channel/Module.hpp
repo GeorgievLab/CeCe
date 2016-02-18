@@ -162,7 +162,7 @@ private:
     units::Length m_height = units::um(1);
 
     /// Relation function weights param.
-    RealType m_weightsParam = 1.0;
+    RealType m_weightsParam = 0.2;
 
 };
 
