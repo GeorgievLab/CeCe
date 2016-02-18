@@ -347,7 +347,7 @@ Arguments parseArguments(int argc, char** argv)
                     throw InvalidArgumentException("Missing parameter value");
 
                 // Store parameter
-                args.parameters[argv[i + 1]] = units::parse(argv[i + 2]);
+                args.parameters[argv[i + 1]] = argv[i + 2];
                 i += 2;
             }
 #ifdef CECE_ENABLE_RENDER
