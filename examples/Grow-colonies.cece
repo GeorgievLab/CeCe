@@ -15,7 +15,7 @@
     </object>
 
     <!-- Prints information about simulation -->
-    <module name="python:printSimulation">
+    <module name="printSimulation" language="python">
 <![CDATA[
 def update(dt, simulation):
     print "Iteration:", simulation.iteration, "/", simulation.iterations

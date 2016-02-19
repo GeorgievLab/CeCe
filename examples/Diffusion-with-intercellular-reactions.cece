@@ -44,7 +44,7 @@
     </module>
 
     <!-- Enable streamlines with diffusion -->
-    <module name="streamlines" grid="160 90" inlet-velocity="500um/s" />
+    <module name="streamlines" grid="160 90" inlet-velocity="500um/s" number-steps="2000" />
     <module name="diffusion-streamlines" />
 
     <object class="cell.Yeast" type="static" position="0 30um" />

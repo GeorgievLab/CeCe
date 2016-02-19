@@ -13,7 +13,7 @@
     </module>
 
     <!-- Generate signal -->
-    <module name="python:generate">
+    <module name="generate" language="python">
 <![CDATA[
 import math
 
