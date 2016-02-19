@@ -39,6 +39,9 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="main.cpp"/>
+    <File Name="Simulator.cpp"/>
+    <File Name="Arguments.cpp"/>
+    <File Name="Image.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="version.rc"/>
@@ -49,7 +52,14 @@
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="version.hpp.in"/>
+    <File Name="Simulator.hpp"/>
+    <File Name="Arguments.hpp"/>
+    <File Name="Image.hpp"/>
+    <File Name="config.hpp.in"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="DebugCLI"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="-std=c++11" C_Options="" Assembler="">
@@ -195,7 +205,7 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="DebugCLI"/>
-  <Dependencies Name="Release"/>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
+  </VirtualDirectory>
 </CodeLite_Project>

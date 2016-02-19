@@ -224,6 +224,20 @@ public:
 
 
     /**
+     * @brief Store additional directories.
+     *
+     * @param directories List of directories.
+     *
+     * @see addDirectory
+     */
+    void addDirectories(DynamicArray<FilePath> directories)
+    {
+        for (auto&& directory : directories)
+            addDirectory(std::move(directory));
+    }
+
+
+    /**
      * @brief Add directory where the plugins are stored.
      *
      * @param path

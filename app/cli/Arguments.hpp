@@ -27,148 +27,83 @@
 
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/core/Units.hpp"
+// CeCe config
+#include "cece/config.hpp"
 
-// Plugin
-#include "cece/plugins/streamlines/Module.hpp"
+// CLI config
+#include "config.hpp"
+
+/* ************************************************************************ */
+
+// CeCe
+#include "cece/core/FilePath.hpp"
+#include "cece/core/Parameters.hpp"
+
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/core/TriBool.hpp"
+#endif
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace streamlines_channel {
+namespace cli {
 
 /* ************************************************************************ */
 
 /**
- * @brief Module for channel streamlines.
- *
- * The main difference between standard streamlines module is support of
- * channel height that affects velocity profiles. This is done by using
- * modified D2Q9 model.
+ * @brief Application parameters.
  */
-class Module : public streamlines::Module
+struct Arguments
 {
+    /// If a list of available plugins should be printed.
+    bool printPlugins = false;
 
+    /// Print help.
+    bool printHelp = false;
 
-// Public Accessors
-public:
+    /// A list of plugin directories.
+    DynamicArray<FilePath> pluginsDirectories;
 
+    /// Path to simulation file.
+    FilePath simulationFile;
 
-    /**
-     * @brief Returns channel height.
-     *
-     * @return
-     */
-    units::Length getHeight() const noexcept
-    {
-        return m_height;
-    }
+    /// Simulation parameters.
+    Parameters parameters;
 
+#ifdef CECE_ENABLE_RENDER
+    // If simulation should be rendered.
+    TriBool visualize = cece::Indeterminate;
 
-    /**
-     * @brief Returns weights relation function parameter.
-     *
-     * @return
-     */
-    RealType getWeightsParam() const noexcept
-    {
-        return m_weightsParam;
-    }
+    /// Window width.
+    unsigned int windowWidth = 0;
 
+    /// Window height.
+    unsigned int windowHeight = 0;
 
-// Public Mutators
-public:
+    // Visualization window in fullscreen mode.
+    bool fullscreen = false;
+#endif
 
-
-    /**
-     * @brief Set channel height.
-     *
-     * @param height
-     */
-    void setHeight(units::Length height) noexcept
-    {
-        m_height = height;
-    }
+#ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
+    /// Path to output video file.
+    FilePath videoFileName;
+#endif
 
 
     /**
-     * @brief Set weights relation function parameter.
+     * @brief Parse arguments.
      *
-     * @param param
+     * @param argc
+     * @param argv
+     *
+     * @return Arguments
      */
-    void setWeightsParam(RealType param) noexcept
-    {
-        m_weightsParam = param;
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Initialize module.
-     *
-     * @param simulation Current simulation.
-     */
-    void init(simulator::Simulation& simulation);
-
-
-    /**
-     * @brief Load module configuration.
-     *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
-     */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
-
-
-// Protected Operations
-protected:
-
-
-    /**
-     * @brief Create fluid dynamics.
-     *
-     * @return
-     */
-    UniquePtr<streamlines::Dynamics> createFluidDynamics() const override;
-
-
-    /**
-     * @brief Create border dynamics.
-     *
-     * @param pos
-     *
-     * @return
-     */
-    UniquePtr<streamlines::Dynamics> createBorderDynamics(LayoutPosition pos) const override;
-
-
-    /**
-     * @brief Print streamlines informations.
-     *
-     * @param simulation
-     */
-    void printInfo(const simulator::Simulation& simulation) override;
-
-
-// Private Data Members
-private:
-
-    /// Channel height.
-    units::Length m_height = units::um(1);
-
-    /// Relation function weights param.
-    RealType m_weightsParam = 1.0;
+    static Arguments parse(int argc, char** argv);
 
 };
 
 /* ************************************************************************ */
 
-}
 }
 }
 
