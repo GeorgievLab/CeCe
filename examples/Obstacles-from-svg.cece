@@ -16,7 +16,14 @@
         Streamlines module.
         Default layout is "barrier outlet barrier inlet".
     -->
-    <module name="streamlines" grid="385 150" inlet-velocity="200um/s" init-iterations="1000" />
+    <module name="streamlines"
+            init-iterations="10000"
+            inlet-velocity="200um/s"
+            char-length="40"
+            number-nodes="20"
+            number-steps="1000"
+            init-file="%temp%/Obstacles-from-svg.cece"
+    />
 
     <!-- Generate Yeast cells -->
     <module name="object-generator">

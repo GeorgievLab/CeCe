@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="400um 100um" dt="1ms" iterations="10000" background="black" length-coefficient="1e-1">
+<simulation world-size="400um 100um" dt="1ms" iterations="10000" background="black" length-coefficient="1">
 
     <plugin name="python" />
     <plugin name="cell-python" />
@@ -9,7 +9,12 @@
     <plugin name="object-generator" />
     <plugin name="agglutination" />
 
-    <module name="streamlines" grid="200 100" inlet-velocity="500um/s" />
+    <module name="streamlines"
+            inner-iterations="1"
+            inlet-velocity="500um/s"
+            char-length="40"
+            number-nodes="40"
+            number-steps="1000" />
 
     <module name="shake" language="python">
 <![CDATA[
@@ -49,11 +54,11 @@ def call(object, simulation, dt):
     </program>
 
     <module name="object-generator">
-        <object class="cell.Yeast" rate="30/s" programs="cell kill" position-min="0um -40um" position-max="0um 40um">
+        <object class="cell.Yeast" rate="50/s" programs="cell kill" distribution="uniform -20um 20um uniform -40um 40um">
             <molecule name="RFP" amount="1000" />
             <molecule name="B" amount="1000" />
         </object>
-        <object class="cell.Yeast" rate="30/s" programs="cell kill" position-min="0um -40um" position-max="0um 40um">
+        <object class="cell.Yeast" rate="50/s" programs="cell kill" distribution="uniform -20um 20um uniform -40um 40um">
             <molecule name="GFP" amount="1000" />
             <molecule name="C" amount="1000" />
         </object>
