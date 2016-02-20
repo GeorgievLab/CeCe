@@ -1099,6 +1099,9 @@ void Module::storeToFile(const FilePath& filename)
     // Write lattice size
     out.write(m_lattice.getSize());
 
+    // Write relaxation time
+    out.write(calculateTau());
+
     // Number of init iterations
     out.write(m_initIterations);
 
@@ -1135,6 +1138,12 @@ void Module::loadFromFile(const FilePath& filename)
 
     if (size != m_lattice.getSize())
         throw InvalidArgumentException("[streamlines] Cannot load from file: different lattice sizes");
+
+    RealType tau;
+    in.read(tau);
+
+    if (tau != calculateTau())
+        throw InvalidArgumentException("[streamlines] Cannot load from file: different relaxation times");
 
     decltype(m_initIterations) iterations;
     in.read(iterations);
