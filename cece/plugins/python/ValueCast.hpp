@@ -364,6 +364,22 @@ struct ValueCast<float> : public ValueCastScalar<double, float, 'f'> {};
 /* ************************************************************************ */
 
 /**
+ * @brief Double type convertor.
+ */
+template<>
+struct ValueCast<double> : public ValueCastScalar<double, double, 'f'> {};
+
+/* ************************************************************************ */
+
+/**
+ * @brief Double type convertor.
+ */
+template<>
+struct ValueCast<long double> : public ValueCastScalar<double, long double, 'f'> {};
+
+/* ************************************************************************ */
+
+/**
  * @brief Boolean type convertor.
  */
 template<>
