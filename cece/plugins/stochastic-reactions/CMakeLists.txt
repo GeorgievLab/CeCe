@@ -50,7 +50,6 @@ build_plugin(stochastic-reactions
 # Add tests
 build_test(stochastic-reactions
     SOURCES
-        test/test.cpp
         test/ReactionsParserTest.cpp
     LIBRARIES
         cece

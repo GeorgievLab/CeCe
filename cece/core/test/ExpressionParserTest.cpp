@@ -72,7 +72,7 @@ TEST(ExpressionParser, functions)
 TEST(ExpressionParser, variables)
 {
     EXPECT_FLOAT_EQ(7.f, parseExpression("v1 * v2 + v3", Parameters{{
-        {"v1", "5.f"}, {"v2", "2.f"}, {"v3", "-3.f"}
+        {"v1", "5.0"}, {"v2", "2"}, {"v3", "-3"}
     }}));
 }
 

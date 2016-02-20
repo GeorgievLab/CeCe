@@ -33,7 +33,6 @@
     <File Name="Functors.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="test">
-    <File Name="test/test.cpp"/>
     <File Name="test/ReactionsParserTest.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
