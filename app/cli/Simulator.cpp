@@ -247,12 +247,14 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
     case GLFW_KEY_I:
     {
         camera.setZoom(camera.getZoom() * 1.0 / ZOOM_COEFF);
+        forceRedraw();
         break;
     }
 
     case GLFW_KEY_O:
     {
         camera.setZoom(camera.getZoom() * ZOOM_COEFF);
+        forceRedraw();
         break;
     }
 
@@ -261,6 +263,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
         camera.setPosition(camera.getPosition() +
             MOVE_COEFF * PositionVector{units::Length(-1), Zero}
         );
+        forceRedraw();
         break;
     }
 
@@ -269,6 +272,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
         camera.setPosition(camera.getPosition() +
             MOVE_COEFF * PositionVector{units::Length(1), Zero}
         );
+        forceRedraw();
         break;
     }
 
@@ -277,6 +281,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
         camera.setPosition(camera.getPosition() +
             MOVE_COEFF * PositionVector{Zero, units::Length(-1)}
         );
+        forceRedraw();
         break;
     }
 
@@ -285,12 +290,14 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
         camera.setPosition(camera.getPosition() +
             MOVE_COEFF * PositionVector{Zero, units::Length(1)}
         );
+        forceRedraw();
         break;
     }
 
     case GLFW_KEY_R:
         // Reset camera
         setOptimalZoom();
+        forceRedraw();
         break;
 
     case GLFW_KEY_Q:
@@ -320,9 +327,8 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
     case GLFW_KEY_D:
-        //swapPhysicsDebug();
-        draw();
-        swap();
+        m_simulator.getSimulation()->setDrawPhysics(!m_simulator.getSimulation()->isDrawPhysics());
+        forceRedraw();
         break;
 #endif
 
@@ -337,8 +343,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
             else
                 streamlines->setDrawFlags(streamlines->getDrawFlags() | 0x1);
 
-            // Swap buffers
-            swap();
+            forceRedraw();
         }
 
         break;
@@ -355,8 +360,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
             else
                 streamlines->setDrawFlags(streamlines->getDrawFlags() | 0x2);
 
-            // Swap buffers
-            swap();
+            forceRedraw();
         }
 
         break;
@@ -373,8 +377,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
             else
                 streamlines->setDrawFlags(streamlines->getDrawFlags() | 0x4);
 
-            // Swap buffers
-            swap();
+            forceRedraw();
         }
 
         break;

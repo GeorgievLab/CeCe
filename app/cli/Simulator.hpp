@@ -368,7 +368,7 @@ private:
     BasicVector<double, 2> m_movePos;
 #endif
 
-#ifdef CONFIG_CLI_ENABLE_VIDEO_CAPTURE
+#ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
     /// Video writer.
     FILE* m_videoWriter = nullptr;
 #endif
