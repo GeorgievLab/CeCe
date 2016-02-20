@@ -266,11 +266,15 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     MutexGuard guard(m_mutex);
 #endif
 
-    // Collide and propagate
-    m_lattice.collideAndStream();
+    // Compute inner iterations
+    for (simulator::IterationNumber it = 0; it < getInnerIterations(); it++)
+    {
+        // Collide and propagate
+        m_lattice.collideAndStream();
 
-    // Apply boundary conditions
-    applyBoundaryConditions(simulation);
+        // Apply boundary conditions
+        applyBoundaryConditions(simulation);
+    }
 
     // Apply streamlines to world objects
     applyToObjects(simulation, dt);
@@ -285,6 +289,9 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
     // Number of init iterations
     setInitIterations(config.get("init-iterations", getInitIterations()));
+
+    // Number of inner iterations
+    setInnerIterations(config.get("inner-iterations", getInnerIterations()));
 
     if (config.has("inlet-velocity"))
     {
@@ -370,13 +377,9 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
         // In case of %temp%
         if (file.substr(0, 6) == "%temp%")
-        {
             m_initFile = tempDirectory() / file.substr(6);
-        }
         else
-        {
             m_initFile = config.buildFilePath(file);
-        }
     }
 }
 

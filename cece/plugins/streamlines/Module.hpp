@@ -215,6 +215,17 @@ public:
 
 
     /**
+     * @brief Returns init iteration count.
+     *
+     * @return
+     */
+    simulator::IterationCount getInnerIterations() const noexcept
+    {
+        return m_innerIterations;
+    }
+
+
+    /**
      * @brief Returns layout description.
      *
      * @return
@@ -365,6 +376,17 @@ public:
     void setInitIterations(simulator::IterationCount iterations) noexcept
     {
         m_initIterations = iterations;
+    }
+
+
+    /**
+     * @brief Set inner iteration count.
+     *
+     * @param iterations
+     */
+    void setInnerIterations(simulator::IterationCount iterations) noexcept
+    {
+        m_innerIterations = iterations;
     }
 
 
@@ -766,6 +788,9 @@ private:
 
     /// Number of init iterations.
     simulator::IterationCount m_initIterations = 0;
+
+    /// Number of inner iterations.
+    simulator::IterationCount m_innerIterations = 1;
 
     /// Characteristic length.
     units::Length m_charLength = units::um(1);
