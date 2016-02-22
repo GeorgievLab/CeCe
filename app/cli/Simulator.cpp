@@ -124,7 +124,7 @@ void Simulator::step()
 {
 #ifdef CECE_ENABLE_RENDER
     if (!isPaused())
-        update();
+        m_termination = !update();
 
     // Redraw scene
     if (!isPaused() || isForceRedraw())
@@ -137,7 +137,7 @@ void Simulator::step()
     /// Poll for and process events
     glfwPollEvents();
 #else
-    update();
+    m_termination = !update();
 #endif
 }
 
