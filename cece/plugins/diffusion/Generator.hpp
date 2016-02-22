@@ -34,7 +34,7 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/Pair.hpp"
 #include "cece/module/Module.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/IterationType.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"

@@ -28,6 +28,8 @@
 
 // CeCe
 #include "cece/core/Assert.hpp"
+#include "cece/core/Log.hpp"
+#include "cece/config/Configuration.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines-channel/Descriptor.hpp"

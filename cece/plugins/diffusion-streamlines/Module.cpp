@@ -32,6 +32,7 @@
 #include "cece/core/StaticMatrix.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/VectorRange.hpp"
+#include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugins
@@ -57,7 +58,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
 void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
-    auto _ = measure_time("diffusion-streamlines", simulator::TimeMeasurementIterationOutput(simulation));
+    auto _ = measure_time("diffusion-streamlines", simulator::TimeMeasurement(simulation));
 
     Assert(m_streamlines);
     Assert(m_diffusion);

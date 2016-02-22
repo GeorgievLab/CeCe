@@ -45,6 +45,7 @@
 #include "cece/plugin/Manager.hpp"
 #include "cece/config/Exception.hpp"
 #include "cece/module/FactoryManager.hpp"
+#include "cece/simulator/TimeMeasurement.hpp"
 
 #if CONFIG_RENDER_TEXT_ENABLE
 #include "cece/simulator/font.hpp"
@@ -357,7 +358,7 @@ bool Simulation::update(units::Duration dt)
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     {
-        auto _ = measure_time("sim.physics", TimeMeasurementIterationOutput(this));
+        auto _ = measure_time("sim.physics", TimeMeasurement(this));
 
         m_world.Step(getPhysicsEngineTimeStep().value(), 10, 10);
     }
@@ -722,7 +723,7 @@ ViewPtr<object::Object> Simulation::query(const PositionVector& position) const 
 
 void Simulation::updateModules(units::Time dt)
 {
-    auto _ = measure_time("sim.modules", TimeMeasurementIterationOutput(this));
+    auto _ = measure_time("sim.modules", TimeMeasurement(this));
 
     m_modules.update(*this, dt);
 }
@@ -731,7 +732,7 @@ void Simulation::updateModules(units::Time dt)
 
 void Simulation::updateObjects(units::Time dt)
 {
-    auto _ = measure_time("sim.objects", TimeMeasurementIterationOutput(this));
+    auto _ = measure_time("sim.objects", TimeMeasurement(this));
 
     // Update simulations objects
     // Can't use range-for because update can add a new object.
@@ -770,7 +771,7 @@ void Simulation::detectDeserters()
 
 void Simulation::deleteObjects()
 {
-    auto _ = measure_time("sim.delete", TimeMeasurementIterationOutput(this));
+    auto _ = measure_time("sim.delete", TimeMeasurement(this));
 
     // Remove deleted objects
     m_objects.removeDeleted();

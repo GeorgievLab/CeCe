@@ -38,6 +38,7 @@
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/TimeMeasurement.hpp"
 
 /* ************************************************************************ */
 
@@ -162,7 +163,7 @@ InStream& operator>>(InStream& is, ObjectDesc::Distributions& distr)
 
 void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
-    auto _ = measure_time("object-generator", simulator::TimeMeasurementIterationOutput(simulation));
+    auto _ = measure_time("object-generator", simulator::TimeMeasurement(simulation));
 
     // Get current iteration number
     const auto iteration = simulation.getIteration();

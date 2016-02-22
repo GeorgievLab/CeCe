@@ -26,6 +26,10 @@
 // Must be first
 #include "cece/plugins/python/Python.hpp"
 
+// CeCe
+#include "cece/core/StringStream.hpp"
+#include "cece/simulator/Simulation.hpp"
+
 // Diffusion
 #include "cece/plugins/streamlines/Module.hpp"
 

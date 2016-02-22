@@ -34,6 +34,7 @@
 #include "cece/core/Log.hpp"
 #include "cece/core/constants.hpp"
 #include "cece/core/TimeMeasurement.hpp"
+#include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -98,7 +99,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     // Store time step
     m_step = dt;
 
-    auto _ = measure_time("agglutination", simulator::TimeMeasurementIterationOutput(simulation));
+    auto _ = measure_time("agglutination", simulator::TimeMeasurement(simulation));
 
     // Get physics world
     auto& world = simulation.getWorld();

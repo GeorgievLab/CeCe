@@ -39,6 +39,7 @@
 #include "cece/core/VectorRange.hpp"
 #include "cece/core/FileStream.hpp"
 #include "cece/core/ShapeToGrid.hpp"
+#include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -111,7 +112,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     if (getGridSize() == Zero)
         throw RuntimeException("Diffusion grid size is not set!");
 
-    auto _ = measure_time("diffusion", simulator::TimeMeasurementIterationOutput(simulation));
+    auto _ = measure_time("diffusion", simulator::TimeMeasurement(simulation));
 
     // Precompute values
     const auto step = simulation.getWorldSize() / getGridSize();

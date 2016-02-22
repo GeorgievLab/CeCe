@@ -44,7 +44,7 @@
 #include "cece/core/FilePath.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/object/Object.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/IterationType.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"

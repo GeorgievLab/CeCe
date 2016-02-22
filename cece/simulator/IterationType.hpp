@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,69 +23,29 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/plugins/diffusion/StoreState.hpp"
-
-// CeCe
-#include "cece/core/TimeMeasurement.hpp"
-#include "cece/core/Range.hpp"
-#include "cece/core/VectorRange.hpp"
-#include "cece/core/Exception.hpp"
-#include "cece/simulator/TimeMeasurement.hpp"
-#include "cece/simulator/Simulation.hpp"
+#pragma once
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace diffusion {
+namespace simulator {
 
 /* ************************************************************************ */
 
-void StoreState::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
-{
-    m_diffusionModule = simulation.getModule("diffusion");
-
-    if (!m_diffusionModule)
-        throw RuntimeException("Diffusion module required!");
-}
+/**
+ * @brief Type for iteration number.
+ */
+using IterationNumber = unsigned long long;
 
 /* ************************************************************************ */
 
-void StoreState::update(simulator::Simulation& simulation, units::Time dt)
-{
-    auto _ = measure_time("diffusion.store-state", simulator::TimeMeasurement(simulation));
-
-    // Get data table
-    auto& table = simulation.getDataTable("diffusion");
-
-    // Foreach coordinates
-    for (auto&& c : range(m_diffusionModule->getGridSize()))
-    {
-        // Create new row
-        auto row = table.addRow(
-            makePair("iteration", simulation.getIteration()),
-            makePair("totalTime", simulation.getTotalTime().value()),
-            makePair("x", c.getX()),
-            makePair("y", c.getY())
-        );
-
-        // Foreach signals
-        for (auto signalId : m_diffusionModule->getSignalIds())
-        {
-            table.setData(row,
-                makePair(
-                    m_diffusionModule->getSignalName(signalId),
-                    m_diffusionModule->getSignal(signalId, c).value()
-                )
-            );
-        }
-    }
-}
+/**
+ * @brief Type for iteration count.
+ */
+using IterationCount = IterationNumber;
 
 /* ************************************************************************ */
 
-}
 }
 }
 

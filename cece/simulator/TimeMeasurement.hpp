@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,69 +23,73 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/plugins/diffusion/StoreState.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // CeCe
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/OutStream.hpp"
 #include "cece/core/TimeMeasurement.hpp"
-#include "cece/core/Range.hpp"
-#include "cece/core/VectorRange.hpp"
-#include "cece/core/Exception.hpp"
-#include "cece/simulator/TimeMeasurement.hpp"
-#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace diffusion {
+namespace simulator {
 
 /* ************************************************************************ */
 
-void StoreState::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
-{
-    m_diffusionModule = simulation.getModule("diffusion");
-
-    if (!m_diffusionModule)
-        throw RuntimeException("Diffusion module required!");
-}
+class Simulation;
 
 /* ************************************************************************ */
 
-void StoreState::update(simulator::Simulation& simulation, units::Time dt)
+/**
+ * @brief Time measurement functor with printing current iteration.
+ */
+struct TimeMeasurement
 {
-    auto _ = measure_time("diffusion.store-state", simulator::TimeMeasurement(simulation));
+    /// Simulation.
+    ViewPtr<const Simulation> m_simulation;
 
-    // Get data table
-    auto& table = simulation.getDataTable("diffusion");
 
-    // Foreach coordinates
-    for (auto&& c : range(m_diffusionModule->getGridSize()))
+    /**
+     * @brief Constructor.
+     *
+     * @param sim Simulation.
+     */
+    explicit TimeMeasurement(ViewPtr<const Simulation> sim)
+        : m_simulation(sim)
     {
-        // Create new row
-        auto row = table.addRow(
-            makePair("iteration", simulation.getIteration()),
-            makePair("totalTime", simulation.getTotalTime().value()),
-            makePair("x", c.getX()),
-            makePair("y", c.getY())
-        );
-
-        // Foreach signals
-        for (auto signalId : m_diffusionModule->getSignalIds())
-        {
-            table.setData(row,
-                makePair(
-                    m_diffusionModule->getSignalName(signalId),
-                    m_diffusionModule->getSignal(signalId, c).value()
-                )
-            );
-        }
+        // Nothing to do
     }
-}
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param sim Simulation
+     */
+    explicit TimeMeasurement(const Simulation& sim)
+        : m_simulation(&sim)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Functor function.
+     *
+     * @param out  Output stream.
+     * @param name Measurement name.
+     * @param dt   Measured time.
+     */
+    void operator()(OutStream& out, StringView name, Clock::duration dt) const noexcept;
+
+};
 
 /* ************************************************************************ */
 
-}
 }
 }
 

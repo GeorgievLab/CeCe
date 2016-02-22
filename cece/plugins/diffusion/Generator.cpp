@@ -31,6 +31,9 @@
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/Shape.hpp"
 #include "cece/core/ShapeToGrid.hpp"
+#include "cece/core/StringStream.hpp"
+#include "cece/simulator/TimeMeasurement.hpp"
+#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -115,7 +118,7 @@ bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::Iter
 
 void Generator::update(simulator::Simulation& simulation, units::Time dt)
 {
-    auto _ = measure_time("diffusion.generator", simulator::TimeMeasurementIterationOutput(simulation));
+    auto _ = measure_time("diffusion.generator", simulator::TimeMeasurement(simulation));
 
     // Get current iteration number
     const auto iteration = simulation.getIteration();

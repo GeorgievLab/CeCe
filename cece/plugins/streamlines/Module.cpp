@@ -43,6 +43,7 @@
 #include "cece/core/BinaryOutput.hpp"
 #include "cece/core/ShapeToGrid.hpp"
 #include "cece/object/Object.hpp"
+#include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
@@ -258,7 +259,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 {
     Assert(m_lattice.getSize() != Zero);
 
-    auto _ = measure_time("streamlines", simulator::TimeMeasurementIterationOutput(simulation));
+    auto _ = measure_time("streamlines", simulator::TimeMeasurement(simulation));
 
     // Obstacles
     updateObstacleMap(simulation);

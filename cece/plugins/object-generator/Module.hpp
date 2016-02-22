@@ -40,7 +40,7 @@
 #include "cece/core/DynamicArray.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/config/Configuration.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/IterationType.hpp"
 
 /* ************************************************************************ */
 

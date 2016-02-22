@@ -34,6 +34,9 @@ set(SRCS
     Simulation.cpp
     Simulator.hpp
     Simulator.cpp
+    IterationType.hpp
+    TimeMeasurement.hpp
+    TimeMeasurement.cpp
 )
 
 if (CONFIG_PHYSICS_BUILTIN)

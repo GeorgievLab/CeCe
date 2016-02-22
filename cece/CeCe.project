@@ -277,6 +277,9 @@
     <File Name="simulator/Simulation.hpp"/>
     <File Name="simulator/ConverterBox2D.cpp"/>
     <File Name="simulator/ConverterBox2D.hpp"/>
+    <File Name="simulator/IterationType.hpp"/>
+    <File Name="simulator/TimeMeasurement.hpp"/>
+    <File Name="simulator/TimeMeasurement.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>

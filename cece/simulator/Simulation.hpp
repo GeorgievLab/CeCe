@@ -63,6 +63,7 @@
 #include "cece/program/Program.hpp"
 #include "cece/program/NamedContainer.hpp"
 #include "cece/plugin/Library.hpp"
+#include "cece/simulator/IterationType.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #include "cece/render/Context.hpp"
@@ -88,20 +89,6 @@ namespace cece { namespace config { class Configuration; } }
 
 namespace cece {
 namespace simulator {
-
-/* ************************************************************************ */
-
-/**
- * @brief Type for iteration number.
- */
-using IterationNumber = unsigned long long;
-
-/* ************************************************************************ */
-
-/**
- * @brief Type for iteration count.
- */
-using IterationCount = IterationNumber;
 
 /* ************************************************************************ */
 
@@ -1285,56 +1272,6 @@ private:
 
     /// Outstream for simulation objects data.
     UniquePtr<OutStream> m_dataOutObjects;
-
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Time measurement functor with printing current iteration.
- */
-struct TimeMeasurementIterationOutput
-{
-    /// Simulation.
-    ViewPtr<const Simulation> m_simulation;
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param sim Simulation.
-     */
-    explicit TimeMeasurementIterationOutput(ViewPtr<const Simulation> sim)
-        : m_simulation(sim)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Constructor.
-     *
-     * @param sim Simulation
-     */
-    explicit TimeMeasurementIterationOutput(const Simulation& sim)
-        : m_simulation(&sim)
-    {
-        // Nothing to do
-    }
-
-
-    /**
-     * @brief Functor function.
-     *
-     * @param out  Output stream.
-     * @param name Measurement name.
-     * @param dt   Measured time.
-     */
-    void operator()(OutStream& out, const String& name, Clock::duration dt) const noexcept
-    {
-        using namespace std::chrono;
-        out << name << ";" << m_simulation->getIteration() << ";" << duration_cast<microseconds>(dt).count() << "\n";
-    }
 
 };
 
