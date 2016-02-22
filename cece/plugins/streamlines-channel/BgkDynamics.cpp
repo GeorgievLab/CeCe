@@ -27,7 +27,8 @@
 #include "cece/plugins/streamlines-channel/BgkDynamics.hpp"
 
 // C++
-#include <algorithm>
+#include <iterator>
+#include <numeric>
 
 // Plugin
 #include "cece/plugins/streamlines-channel/Descriptor.hpp"
