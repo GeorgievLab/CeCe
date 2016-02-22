@@ -34,6 +34,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/core/Atomic.hpp"
 
 /* ************************************************************************ */
 
@@ -213,6 +214,20 @@ public:
      * @param config     Output configuration.
      */
     virtual void storeConfig(simulator::Simulation& simulation, config::Configuration& config);
+
+
+    /**
+     * @brief Initialize module.
+     *
+     * This function is called before the simulation is started. Allows to module
+     * prepare internal data that is dependent on current simulation. For data
+     * independent on current simulation, use constructor instead.
+     *
+     * @param simulation Current simulation.
+     * @param termFlag   Termination flag. If initialization is expensive it should
+     *                   test this variable in case a termination request is sent.
+     */
+    virtual void init(simulator::Simulation& simulation, AtomicBool& termFlag);
 
 
     /**

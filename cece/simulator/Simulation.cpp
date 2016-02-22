@@ -304,7 +304,7 @@ bool Simulation::update(units::Duration dt)
 {
     // Initialize simulation
     if (!isInitialized())
-        initialize();
+        throw RuntimeException("Simulation is not initialized");
 
     // Increase step number
     m_iteration++;
@@ -368,7 +368,7 @@ bool Simulation::update(units::Duration dt)
 
 /* ************************************************************************ */
 
-void Simulation::initialize()
+void Simulation::initialize(AtomicBool& termFlag)
 {
     Assert(!isInitialized());
 
@@ -376,7 +376,7 @@ void Simulation::initialize()
     m_initializers.call(*this);
 
     // Initialize modules
-    m_modules.init(*this);
+    m_modules.init(*this, termFlag);
 
     m_initialized = true;
 }

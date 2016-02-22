@@ -116,11 +116,16 @@ void Container::clear()
 
 /* ************************************************************************ */
 
-void Container::init(simulator::Simulation& simulation)
+void Container::init(simulator::Simulation& simulation, AtomicBool& termFlag)
 {
     // Update modules
     for (auto& module : getSortedListAsc())
-        module->init(simulation);
+    {
+        if (termFlag)
+            break;
+
+        module->init(simulation, termFlag);
+    }
 }
 
 /* ************************************************************************ */

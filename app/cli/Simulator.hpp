@@ -135,8 +135,10 @@ public:
 
     /**
      * @brief Initialize simulation.
+     *
+     * @param termFlag Termination flag.
      */
-    void init();
+    void init(AtomicBool& termFlag);
 
 
     /**
@@ -147,8 +149,10 @@ public:
 
     /**
      * @brief Start simulation.
+     *
+     * @param termFlag Termination flag.
      */
-    void start();
+    void start(AtomicBool& termFlag);
 
 
     /**
@@ -263,10 +267,8 @@ private:
 
     /**
      * @brief Init visualization.
-     *
-     * @param args Arguments.
      */
-    void initVisualization(const Arguments& args);
+    void initVisualization();
 
 
     /**
@@ -347,7 +349,10 @@ private:
 
 #ifdef CECE_ENABLE_RENDER
     // If simulation should be rendered.
-    bool m_visualize;
+    bool m_visualize = true;
+
+    /// Window fullscreen.
+    bool m_fullscreen = false;
 
     /// Window width.
     unsigned int m_windowWidth = 800;

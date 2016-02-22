@@ -160,7 +160,7 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation)
+void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
 {
     // Print simulation info
     printInfo(simulation);
@@ -206,6 +206,12 @@ void Module::init(simulator::Simulation& simulation)
         {
             if ((it % 100) == 0)
                 Log::info("[streamlines] Initialization ", it, "/", getInitIterations());
+
+            if (termFlag)
+            {
+                Log::info("[streamlines] Initialization interrupted.");
+                return;
+            }
 
             m_lattice.collideAndStream();
 

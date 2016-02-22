@@ -40,6 +40,7 @@
 #include "cece/core/Pair.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/Units.hpp"
+#include "cece/core/Atomic.hpp"
 
 /* ************************************************************************ */
 
@@ -129,8 +130,9 @@ public:
      * @brief Initialize all modules.
      *
      * @param simulation Simulation object.
+     * @param termFlag   Termination flag.
      */
-    void init(simulator::Simulation& simulation);
+    void init(simulator::Simulation& simulation, AtomicBool& termFlag);
 
 
     /**

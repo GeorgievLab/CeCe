@@ -112,8 +112,9 @@ public:
      * @brief Initialize module.
      *
      * @param simulation Current simulation.
+     * @param termFlag   Termination flag.
      */
-    void init(simulator::Simulation& simulation);
+    void init(simulator::Simulation& simulation, AtomicBool& termFlag);
 
 
     /**

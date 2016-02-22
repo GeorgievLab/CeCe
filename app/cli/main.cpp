@@ -31,11 +31,11 @@
 // C++
 #include <iostream>
 #include <csignal>
-#include <atomic>
 #include <fstream>
 
 // CeCe
 #include "cece/core/Log.hpp"
+#include "cece/core/Atomic.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/FilePath.hpp"
@@ -57,7 +57,7 @@ namespace {
 /* ************************************************************************ */
 
 /// Global termination flag
-std::atomic_bool g_terminated{false};
+AtomicBool g_terminated{false};
 
 /* ************************************************************************ */
 
@@ -164,6 +164,7 @@ void terminate_simulation(int param)
 
 /* ************************************************************************ */
 
+#ifndef DIR_PLUGINS
 /**
  * @brief Returns plugins directory.
  *
@@ -176,6 +177,7 @@ String getPluginsDirectory(FilePath app, FilePath dir) noexcept
 {
     return (app.remove_filename() / dir).string();
 }
+#endif
 
 /* ************************************************************************ */
 
@@ -242,15 +244,8 @@ int main(int argc, char** argv)
         // Process arguments
         auto args = processArguments(argc, argv);
 
-        // Create simulator
-        cece::cli::Simulator simulator(args);
-
-        // Initialize simulator
-        simulator.init();
-
-        // Create simulator and start it
-        while (!g_terminated && !simulator.isTerminationRequest())
-            simulator.step();
+        // Create and run simulator
+        cece::cli::Simulator(args).start(g_terminated);
     }
     catch (const Exception& e)
     {

@@ -492,8 +492,9 @@ public:
      * @brief Initialize lattice.
      *
      * @param simulation
+     * @param termFlag
      */
-    void init(simulator::Simulation& simulation);
+    void init(simulator::Simulation& simulation, AtomicBool& termFlag);
 
 
     /**

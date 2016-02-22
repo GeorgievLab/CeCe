@@ -23,82 +23,32 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/module/Module.hpp"
+#pragma once
 
-// CeCe
-#include "cece/config/Configuration.hpp"
+/* ************************************************************************ */
+
+// C++
+#include <atomic>
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace module {
+inline namespace core {
 
 /* ************************************************************************ */
 
-Module::~Module() = default;
+/**
+ * @brief Atomic type.
+ */
+template<typename T>
+using Atomic = std::atomic<T>;
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
-{
-    // Get module priority
-    setPriority(config.get("priority", getPriority()));
-
-#ifdef CECE_ENABLE_RENDER
-    setZOrder(config.get("z-order", getZOrder()));
-#endif
-}
-
-/* ************************************************************************ */
-
-void Module::storeConfig(simulator::Simulation& simulation, config::Configuration& config)
-{
-    // Store module priority
-    config.set("priority", getPriority());
-
-#ifdef CECE_ENABLE_RENDER
-    config.set("z-order", getZOrder());
-#endif
-}
-
-/* ************************************************************************ */
-
-void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
-{
-    // Forward without termFlag
-    init(simulation);
-}
-
-/* ************************************************************************ */
-
-void Module::init(simulator::Simulation& simulation)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-void Module::update(simulator::Simulation& simulation, units::Time dt)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-void Module::terminate(simulator::Simulation& simulation)
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-#ifdef CECE_ENABLE_RENDER
-void Module::draw(const simulator::Simulation& simulation, render::Context& context)
-{
-    // Nothing to do
-}
-#endif
+/**
+ * @brief Atomic boolean type.
+ */
+using AtomicBool = std::atomic_bool;
 
 /* ************************************************************************ */
 

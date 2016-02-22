@@ -42,13 +42,13 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation)
+void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
 {
     // Initialize model
     Descriptor::initModel(convertLength(getHeight()), getWeightsParam());
 
     // Initialize streamlines
-    streamlines::Module::init(simulation);
+    streamlines::Module::init(simulation, termFlag);
 }
 
 /* ************************************************************************ */

@@ -180,6 +180,7 @@
     </VirtualDirectory>
     <VirtualDirectory Name="concurrency">
       <File Name="core/Mutex.hpp"/>
+      <File Name="core/Atomic.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="pointer">
       <File Name="core/SharedPtr.hpp"/>

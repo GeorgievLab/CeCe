@@ -50,6 +50,9 @@ namespace cli {
 
 Simulator::Simulator(const Arguments& args)
     : m_simulationFile(args.simulationFile)
+#ifdef CECE_ENABLE_RENDER
+    , m_fullscreen(args.fullscreen)
+#endif
 {
     auto& manager = plugin::Manager::s();
     manager.addDirectories(args.pluginsDirectories);
@@ -60,10 +63,13 @@ Simulator::Simulator(const Arguments& args)
     // Create simulation
     m_simulator.setSimulation(manager.getContext().createSimulation(m_simulationFile, &args.parameters));
 
-    // Initialize simulation
-    m_simulator.getSimulation()->initialize();
-
 #ifdef CECE_ENABLE_RENDER
+    if (args.windowWidth)
+        m_windowWidth = args.windowWidth;
+
+    if (args.windowHeight)
+        m_windowHeight = args.windowHeight;
+
     const auto simViz = m_simulator.getSimulation()->isVisualized();
 
     // Decide if simulation should be visualized
@@ -74,8 +80,10 @@ Simulator::Simulator(const Arguments& args)
     else
         m_visualize = simViz;
 
-    if (m_visualize)
-        initVisualization(args);
+#  ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
+    if (!args.videoFileName.empty())
+        initVideoCapture(args.videoFileName);
+#  endif
 #endif
 }
 
@@ -101,11 +109,16 @@ ViewPtr<simulator::Simulation> Simulator::getSimulation() const noexcept
 
 /* ************************************************************************ */
 
-void Simulator::init()
+void Simulator::init(AtomicBool& termFlag)
 {
+    // Initialize simulation
+    m_simulator.getSimulation()->initialize(termFlag);
+
 #ifdef CECE_ENABLE_RENDER
     if (m_visualize)
     {
+        initVisualization();
+
         // Make the window's context current
         glfwMakeContextCurrent(m_window);
 
@@ -143,12 +156,12 @@ void Simulator::step()
 
 /* ************************************************************************ */
 
-void Simulator::start()
+void Simulator::start(AtomicBool& termFlag)
 {
-    init();
+    init(termFlag);
 
     // Update simulation
-    while (!isTerminationRequest())
+    while (!termFlag && !isTerminationRequest())
         step();
 }
 
@@ -467,7 +480,7 @@ void Simulator::onMouseMove(double xpos, double ypos) noexcept
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Simulator::initVisualization(const Arguments& args)
+void Simulator::initVisualization()
 {
     if (!m_visualize)
         return;
@@ -488,49 +501,48 @@ void Simulator::initVisualization(const Arguments& args)
     const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
 
     // Fullscreen mode
-    if (args.fullscreen)
+    if (m_fullscreen)
     {
-        m_windowWidth  = args.windowWidth  ? args.windowWidth  : vidmode->width;
-        m_windowHeight = args.windowHeight ? args.windowHeight : vidmode->height;
-
         // Borderless fullscreen mode
-        if (!args.windowWidth && !args.windowHeight)
+        if (!m_windowWidth && !m_windowHeight)
         {
             glfwWindowHint(GLFW_RED_BITS, vidmode->redBits);
             glfwWindowHint(GLFW_GREEN_BITS, vidmode->greenBits);
             glfwWindowHint(GLFW_BLUE_BITS, vidmode->blueBits);
             glfwWindowHint(GLFW_REFRESH_RATE, vidmode->refreshRate);
         }
-    }
-    else
-    {
-        if (args.windowWidth)
-            m_windowWidth = args.windowWidth;
 
-        if (args.windowHeight)
-            m_windowHeight = args.windowHeight;
+        if (!m_windowWidth)
+            m_windowWidth = vidmode->width;
+
+        if (!m_windowHeight)
+            m_windowHeight = vidmode->height;
     }
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
-    if (!args.videoFileName.empty())
-        initVideoCapture(args.videoFileName);
+    // Disable window resizing
+    if (m_videoWriter)
+        glfwWindowHint(GLFW_RESIZABLE, false);
 #endif
 
-    const String title = APP_NAME " simulator [" + args.simulationFile.filename().string() + "]";
+    const String title = APP_NAME " simulator [" + m_simulationFile.filename().string() + "]";
+
+    Assert(m_windowWidth);
+    Assert(m_windowHeight);
 
     // Create a windowed mode window and its OpenGL context
     m_window = glfwCreateWindow(
         m_windowWidth,
         m_windowHeight,
         title.c_str(),
-        args.fullscreen ? monitor : nullptr,
+        m_fullscreen ? monitor : nullptr,
         nullptr
     );
 
     if (!m_window)
         throw RuntimeException("Unable to create rendering window");
 
-    if (!args.fullscreen)
+    if (!m_fullscreen)
     {
         // Get monitor position
         int xpos;
@@ -694,9 +706,7 @@ void Simulator::initVideoCapture(const FilePath& fileName)
     }
 
     // Disable window resizing
-    if (m_videoWriter)
-        glfwWindowHint(GLFW_RESIZABLE, false);
-    else
+    if (!m_videoWriter)
         Log::warning("Unable to capture video");
 }
 #endif
