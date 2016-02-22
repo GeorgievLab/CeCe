@@ -27,5 +27,5 @@ $ make
 
 For some functionality and plugins additional libraries are required.
 
-* OpenCV library - image and video capturing; `picture` and `obstacles-image` plugins
+* Libpng library - image capturing; `obstacles-image` plugins
 * GLFW3 - Simulation visualization
