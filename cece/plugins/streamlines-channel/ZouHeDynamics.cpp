@@ -216,7 +216,7 @@ ZouHeDynamics::calcVelocity(DataType& data, DensityType rho) const noexcept
     const auto wKWall = Descriptor::getWeightVerticalSum(KNOWN_RHO.at(m_position));
     const auto omega = getOmega();
 
-    const auto speed =
+    const RealType speed =
         (1.0 - (1.0 / rho * (center + 2.0 * known) + 2.0 * wWall))
         /
         (1.0 + 4.0 * omega / (2.0 - omega) * Descriptor::SPEED_OF_SOUND_SQ_INV * wKWall)

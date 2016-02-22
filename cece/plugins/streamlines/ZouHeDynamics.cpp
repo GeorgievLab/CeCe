@@ -204,7 +204,7 @@ ZouHeDynamics::calcVelocity(DataType& data, DensityType rho) const noexcept
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
 
     // Speed
-    const auto speed = (1.0 - 1.0 / rho * (center + 2 * known));
+    const RealType speed = (1.0 - 1.0 / rho * (center + 2 * known));
 
     // Velocity vector
     return speed * VELOCITIES.at(m_position);
