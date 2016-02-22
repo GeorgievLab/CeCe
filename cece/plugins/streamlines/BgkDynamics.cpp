@@ -27,7 +27,8 @@
 #include "cece/plugins/streamlines/BgkDynamics.hpp"
 
 // C++
-#include <algorithm>
+#include <iterator>
+#include <numeric>
 
 /* ************************************************************************ */
 
