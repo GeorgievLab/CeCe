@@ -34,6 +34,10 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
+constexpr StaticArray<StaticArray<Descriptor::DirectionType, 3>, 3> Descriptor::INDEX_MAP;
+
+/* ************************************************************************ */
+
 constexpr StaticArray<RealType, Descriptor::SIZE> Descriptor::DIRECTION_WEIGHTS;
 
 /* ************************************************************************ */
