@@ -494,7 +494,7 @@ public:
      * @param simulation
      * @param termFlag
      */
-    void init(simulator::Simulation& simulation, AtomicBool& termFlag);
+    void init(simulator::Simulation& simulation, AtomicBool& termFlag) override;
 
 
     /**

@@ -27,7 +27,8 @@
 #include "cece/plugins/streamlines-channel/Descriptor.hpp"
 
 // C++
-#include <algorithm>
+#include <iterator>
+#include <numeric>
 
 /* ************************************************************************ */
 
@@ -74,7 +75,7 @@ void Descriptor::initModel(RealType height, RealType a)
     };
 
     // Get weights from D2Q9 model
-    constexpr StaticArray<RealType, 3> weights2d = {WEIGHT_CENTER, WEIGHT_LINEAR, WEIGHT_DIAGONAL};
+    constexpr StaticArray<RealType, 3> weights2d = {{WEIGHT_CENTER, WEIGHT_LINEAR, WEIGHT_DIAGONAL}};
     StaticArray<RealType, 6> weights;
 
     for (int i = 0; i < 3; ++i)

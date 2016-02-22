@@ -114,7 +114,7 @@ public:
      * @param simulation Current simulation.
      * @param termFlag   Termination flag.
      */
-    void init(simulator::Simulation& simulation, AtomicBool& termFlag);
+    void init(simulator::Simulation& simulation, AtomicBool& termFlag) override;
 
 
     /**
