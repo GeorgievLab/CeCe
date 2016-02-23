@@ -65,7 +65,7 @@ void ReactionsParser::parseReaction()
 
     do
     {
-        if match(TokenCode::If)
+        if (match(TokenCode::If))
             throw ConditionInsideBlockException();
 
         // parse LS
