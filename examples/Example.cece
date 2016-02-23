@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<simulation world-size="160um 90um" dt="0.5ms" iterations="1000" background="black" visualized="false">
+
+<plugin name="stochastic-reactions" />
+<plugin name="diffusion" />
+<plugin name="cell" />
+
+<parameter name="K1" value="20" />
+<program name="example" language="stochastic-reactions"><![CDATA[
+  # expression of Z
+  null > 0.1 > Z;
+  # block condition
+  if Z > 20:
+  {
+    # expression and degradation of A - reversible reaction
+    null < 0.1, 0.2 > A;
+    # expression of C directly to environment
+    null > 0.6 > env C;
+  }
+  # expression of B - conditional reaction with parameter, rate as expression
+  if A > par K1: null > - ln( 0.5 ) / 3.69 > B;
+  # degradation of B - conditional reaction comparing 2 molecules
+  if B > A: B > 1 > null;
+  # expression of GFP - condition with diffusion, rate as function of molecule
+  if env C > 50uM: null > B > GFP;
+]]></program>
+
+<module name="diffusion" grid="320 180">
+    <signal name="C" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="green" saturation="10nM" />
+</module>
+
+<object class="cell.Yeast" type="static" position="0 0" programs="example cell.store-molecules"/>
+
+</simulation>
+
