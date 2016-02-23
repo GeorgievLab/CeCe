@@ -63,6 +63,8 @@ DEFINE_PARSER_EXCEPTION_BASE(MissingParenthesisException, ReactionParserExceptio
 DEFINE_PARSER_EXCEPTION_BASE(UnknownOperatorException, ReactionParserException, "Unknown operator.");
 DEFINE_PARSER_EXCEPTION_BASE(UnknownFunctionException, ReactionParserException, "Unknown function name.");
 DEFINE_PARSER_EXCEPTION_BASE(IncorrectNumberFormatException, ReactionParserException, "Incorrect number format.");
+DEFINE_PARSER_EXCEPTION_BASE(ConditionInsideBlockException, ReactionParserException, "You cannot have multiple conditions.");
+
 
 /* ************************************************************************ */
 
@@ -265,8 +267,7 @@ public:
         while (is('#'))
         {
             find('\n', '\r');
-            while (isRange('\1', ' '))
-                next();
+            skipWhitespace();
         }
 
         // Number
