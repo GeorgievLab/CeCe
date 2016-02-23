@@ -35,12 +35,22 @@
     <File Name="MainWindow.cpp"/>
     <File Name="MainWindow.hpp"/>
     <File Name="version.hpp.in"/>
+    <File Name="Simulator.cpp"/>
+    <File Name="Simulator.hpp"/>
+    <File Name="VisualizationWidget.cpp"/>
+    <File Name="VisualizationWidget.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="win_resources.rc"/>
     <File Name="version.rc"/>
     <File Name="app.desktop"/>
     <File Name="icons.qrc"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <VirtualDirectory Name="ui">
+    <File Name="MainWindow.ui"/>
+    <File Name="AboutDialog.ui"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -73,7 +83,7 @@
         <LibraryPath Value="../simulator/Debug"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)/cell-sim-$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug" Command="./simulator-$(ProjectName)" CommandArguments="../../examples/colony.xml" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/app/$(ProjectName)/cece-$(ProjectName)" IntermediateDirectory="$(WorkspacePath)/build-debug-gui" Command="./cece-$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(WorkspacePath)/build-debug-gui/app/$(ProjectName)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -145,10 +155,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
-  <VirtualDirectory Name="ui">
-    <File Name="MainWindow.ui"/>
-    <File Name="AboutDialog.ui"/>
-  </VirtualDirectory>
 </CodeLite_Project>

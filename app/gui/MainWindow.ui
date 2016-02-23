@@ -99,20 +99,7 @@
          <number>5</number>
         </property>
         <item>
-         <widget class="VisualizationWidget" name="openGLWidget"/>
-        </item>
-        <item>
-         <widget class="QProgressBar" name="progressBar">
-          <property name="maximum">
-           <number>1</number>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="format">
-           <string>%v / %m</string>
-          </property>
-         </widget>
+         <widget class="cece::gui::VisualizationWidget" name="openGLWidget" native="true"/>
         </item>
        </layout>
       </widget>
@@ -147,6 +134,19 @@
       </widget>
      </widget>
     </item>
+    <item>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="maximum">
+       <number>1</number>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="format">
+       <string>%v / %m</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -155,7 +155,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -241,7 +241,8 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset theme="document-new">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -253,7 +254,8 @@
   <action name="actionSave">
    <property name="icon">
     <iconset theme="document-save">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
@@ -265,7 +267,8 @@
   <action name="actionSaveAs">
    <property name="icon">
     <iconset theme="document-save-as">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Save &amp;As...</string>
@@ -277,7 +280,8 @@
   <action name="actionRecentFile1">
    <property name="icon">
     <iconset>
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>&amp;1 recent 1</string>
@@ -286,7 +290,8 @@
   <action name="actionExit">
    <property name="icon">
     <iconset theme="application-exit">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>&amp;Exit</string>
@@ -351,7 +356,8 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset theme="help-about">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -402,8 +408,8 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>VisualizationWidget</class>
-   <extends>QOpenGLWidget</extends>
+   <class>cece::gui::VisualizationWidget</class>
+   <extends>QWidget</extends>
    <header>VisualizationWidget.hpp</header>
   </customwidget>
  </customwidgets>

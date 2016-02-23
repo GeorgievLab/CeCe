@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
     app.setApplicationVersion("0.4.3");
     app.setApplicationDisplayName("CeCe");
 
-    MainWindow w;
+    cece::gui::MainWindow w;
     w.show();
 
     return app.exec();

@@ -28,11 +28,18 @@
 /* ************************************************************************ */
 
 // Qt
-#include <QObject>
 #include <QScopedPointer>
+#include <QObject>
+#include <QMutex>
 
 // CeCe
+#include "cece/core/ViewPtr.hpp"
 #include "cece/simulator/Simulation.hpp"
+
+/* ************************************************************************ */
+
+namespace cece {
+namespace gui {
 
 /* ************************************************************************ */
 
@@ -44,15 +51,21 @@ class Simulator : public QObject
     Q_OBJECT
 
 public:
+
+
     /**
      * @brief Constructor.
      * @param parent
      */
     explicit Simulator(QObject* parent = nullptr);
 
+
 public:
+
+
     /**
      * @brief Returns if simulation is running.
+     *
      * @return
      */
     bool isRunning() const noexcept
@@ -60,52 +73,109 @@ public:
         return m_running;
     }
 
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Return currently visualized simulation.
+     *
+     * @return
+     */
+    ViewPtr<simulator::Simulation> getSimulation() const noexcept
+    {
+        return m_simulation.data();
+    }
+
+
+    /**
+     * @brief Return syncronization mutex.
+     *
+     * @return
+     */
+    QMutex* getMutex() noexcept
+    {
+        return &m_mutex;
+    }
+
+
 signals:
+
+
+    /**
+     * @brief Simulation started.
+     */
+    void simulationStarted();
+
+
+    /**
+     * @brief Simulation finished.
+     */
+    void simulationFinished();
+
+
     /**
      * @brief Simulation has been loaded.
+     *
      * @param flag
      */
     void loaded(bool flag);
 
+
     /**
      * @brief Load error.
+     *
      * @param message
      */
     void loadError(QString message);
 
+
     /**
      * @brief Report if simulation is running.
+     *
      * @param flag
      */
     void running(bool flag);
 
+
     /**
      * @brief A step has been performed.
+     *
      * @param iteration
      * @param iterations
      */
     void stepped(int iteration, int iterations);
 
-public slots:
+
+public:
+
+
     /**
      * @brief Start simulation.
      */
     void start();
 
+
     /**
      * @brief Do a simulation step.
+     *
+     * @return
      */
-    void step();
+    bool step();
+
 
     /**
      * @brief Pause simulation.
      */
     void pause();
 
+
     /**
      * @brief Reset simulation.
      */
     void reset();
+
 
     /**
      * @brief Create a simulation from source.
@@ -113,9 +183,21 @@ public slots:
      */
     void createSimulation(QString source, QString type);
 
+
+    /**
+     * @brief Simulate simulation.
+     */
+    void simulate();
+
+
+// Private Data Members
 private:
+
     /// Current simulation.
     QScopedPointer<cece::simulator::Simulation> m_simulation;
+
+    /// Mutex.
+    QMutex m_mutex;
 
     /// If simulation is running.
     bool m_running = false;
@@ -126,5 +208,10 @@ private:
     /// Source type.
     QString m_type;
 };
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */

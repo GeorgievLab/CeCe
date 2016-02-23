@@ -31,6 +31,7 @@
 #include <QMainWindow>
 #include <QThread>
 #include <QTreeWidget>
+#include <QTimer>
 
 // GUI
 #include "Simulator.hpp"
@@ -44,6 +45,11 @@ class MainWindow;
 
 /* ************************************************************************ */
 
+namespace cece {
+namespace gui {
+
+/* ************************************************************************ */
+
 /**
  * @brief Main GUI window.
  */
@@ -51,91 +57,119 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+
+// Public Constants
 public:
+
+
     /**
      * @brief Maximum recent files.
      */
     static constexpr int MAX_RECENT_FILES = 5;
 
+
+// Public Ctors & Dtors
 public:
+
+
     /**
      * @brief Constructor.
      * @param parent
      */
     explicit MainWindow(QWidget* parent = nullptr);
 
+
     /**
      * @brief Destructor.
      */
     ~MainWindow();
 
+
+// Public Events
 public:
+
+
     /**
      * @brief Close event.
      * @param event
      */
     void closeEvent(QCloseEvent* event);
 
+
 public slots:
+
+
     /**
      * @brief Create a new simulation file.
      */
     void fileNew();
+
 
     /**
      * @brief Open an existing simulation file.
      */
     void fileOpen();
 
+
     /**
      * @brief Save current simulation file.
      */
     void fileSave();
+
 
     /**
      * @brief Save current simulation file as.
      */
     void fileSaveAs();
 
+
     /**
      * @brief Open recent file.
      */
     void fileRecentOpen();
+
 
     /**
      * @brief Toggle toolbar visibility.
      */
     void viewToolbar(bool);
 
+
     /**
      * @brief Toggle fullscreen mode.
      */
     void viewFullscreen(bool);
+
 
     /**
      * @brief Start simulation.
      */
     void simulationStart();
 
+
     /**
      * @brief Pause simulation.
      */
     void simulationPause();
+
 
     /**
      * @brief Step simulation.
      */
     void simulationStep();
 
+
     /**
      * @brief Reset simulace.
      */
     void simulationReset();
 
+
     /**
      * @brief Show about dialog.
      */
     void helpAbout();
+
 
     /**
      * @brief If simulator is running.
@@ -143,17 +177,20 @@ public slots:
      */
     void simulatorRunning(bool flag);
 
+
     /**
      * @brief If simulator contains valid simulation.
      * @param flag
      */
     void simulatorLoaded(bool flag);
 
+
     /**
      * @brief On simulator error.
      * @param message
      */
     void simulatorError(QString message);
+
 
     /**
      * @brief A simulator step is performed.
@@ -162,6 +199,13 @@ public slots:
      */
     void simulatorStepped(int iteration, int iterations);
 
+
+    /**
+     * @brief Simulator finished simulation.
+     */
+    void simulatorFinished();
+
+
     /**
      * @brief Selected item from tree.
      * @param item
@@ -169,40 +213,17 @@ public slots:
      */
     void editTreeItemSelected(QTreeWidgetItem* item, int column);
 
-signals:
-    /**
-     * @brief Start simulator.
-     */
-    void simulatorStart();
 
-    /**
-     * @brief Pause simulator.
-     */
-    void simulatorPause();
-
-    /**
-     * @brief Simulator step.
-     */
-    void simulatorStep();
-
-    /**
-     * @brief Reset simulation.
-     */
-    void simulatorReset();
-
-    /**
-     * @brief Load new source to simulator.
-     * @param source
-     * @param type
-     */
-    void simulatorSource(QString source, QString type);
-
+// Protected Operations
 protected:
+
+
     /**
      * @brief Set current file name.
      * @param filename
      */
     void setCurrentFile(QString filename);
+
 
     /**
      * @brief Open a file.
@@ -210,39 +231,51 @@ protected:
      */
     void fileOpen(QString filename);
 
+
     /**
      * @brief Save current simulation file.
      * @param filename
      */
     void fileSave(QString filename);
 
+
+// Private Operations
 private:
+
+
     /**
      * @brief Store window settings.
      */
     void storeSettings() const;
+
 
     /**
      * @brief Restore window settings.
      */
     void restoreSettings();
 
+
     /**
      * @brief Initialize recent files actions.
      */
     void initRecentFiles();
+
 
     /**
      * @brief Update recent file actions.
      */
     void updateRecentFileActions();
 
+
     /**
      * @brief Initialize simulator.
      */
     void initSimulator();
 
+
+// Private Data Members
 private:
+
     /// UI members.
     Ui::MainWindow* ui;
 
@@ -261,8 +294,16 @@ private:
     /// Simulator.
     Simulator m_simulator;
 
+    /// Draw timer.
+    QTimer m_simulatorDrawTimer;
+
     /// Plugins tree item.
     QTreeWidgetItem* m_pluginsItem;
 };
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */

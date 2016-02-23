@@ -26,13 +26,22 @@
 // Declaration
 #include "Simulator.hpp"
 
+// Qt
+#include <QMutexLocker>
+
 // CeCe
 #include "cece/core/Exception.hpp"
 #include "cece/plugin/Manager.hpp"
 
 /* ************************************************************************ */
 
-Simulator::Simulator(QObject* parent) : QObject(parent)
+namespace cece {
+namespace gui {
+
+/* ************************************************************************ */
+
+Simulator::Simulator(QObject* parent)
+    : QObject(parent)
 {
     // Nothing to do
 }
@@ -41,34 +50,41 @@ Simulator::Simulator(QObject* parent) : QObject(parent)
 
 void Simulator::start()
 {
-    m_running = true;
+    if (!m_simulation)
+        return;
 
-    while (m_running)
-    {
-        step();
-    }
+    emit running(m_running = true);
+    emit simulationStarted();
 }
 
 /* ************************************************************************ */
 
-void Simulator::step()
+bool Simulator::step()
 {
     Q_ASSERT(m_simulation);
+    bool res;
 
-    // Do a step
-    m_simulation->update();
+    {
+        QMutexLocker _(&m_mutex);
+        // Do a step
+        res = m_simulation->update();
+    }
 
     emit stepped(static_cast<int>(m_simulation->getIteration()),
         static_cast<int>(m_simulation->getIterations()));
-    emit running(true);
+
+    // Simulation finished
+    if (!res)
+        emit simulationFinished();
+
+    return res;
 }
 
 /* ************************************************************************ */
 
 void Simulator::pause()
 {
-    m_running = false;
-    emit running(false);
+    emit running(m_running = false);
 }
 
 /* ************************************************************************ */
@@ -82,11 +98,19 @@ void Simulator::reset()
 
 void Simulator::createSimulation(QString source, QString type)
 {
+    if (m_running)
+    {
+        emit loadError("Simulation is running");
+        return;
+    }
+
     m_source = source;
     m_type = type;
 
     try
     {
+        QMutexLocker _(&m_mutex);
+
         // Create a simulation
         auto simulation =
             cece::plugin::Manager::s().getContext().createSimulation(
@@ -102,6 +126,21 @@ void Simulator::createSimulation(QString source, QString type)
         emit loadError(e.what());
         emit loaded(false);
     }
+}
+
+/* ************************************************************************ */
+
+void Simulator::simulate()
+{
+    while (m_running && step())
+        continue;
+
+    m_running = false;
+}
+
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */

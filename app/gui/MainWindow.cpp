@@ -34,6 +34,7 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QStringList>
+#include <QMutexLocker>
 
 // CeCe
 #include "cece/plugin/Manager.hpp"
@@ -43,6 +44,11 @@
 
 // GUI
 #include "AboutDialog.hpp"
+
+/* ************************************************************************ */
+
+namespace cece {
+namespace gui {
 
 /* ************************************************************************ */
 
@@ -88,6 +94,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 MainWindow::~MainWindow()
 {
+    m_simulator.pause();
     m_simulatorThread.quit();
     m_simulatorThread.wait();
     delete ui;
@@ -178,28 +185,32 @@ void MainWindow::viewFullscreen(bool flag)
 
 void MainWindow::simulationStart()
 {
-    emit simulatorStart();
+    Q_ASSERT(!m_simulator.isRunning());
+    m_simulator.start();
 }
 
 /* ************************************************************************ */
 
 void MainWindow::simulationPause()
 {
-    emit simulatorPause();
+    Q_ASSERT(m_simulator.isRunning());
+    m_simulator.pause();
 }
 
 /* ************************************************************************ */
 
 void MainWindow::simulationStep()
 {
-    emit simulatorStep();
+    Q_ASSERT(!m_simulator.isRunning());
+    m_simulator.step();
 }
 
 /* ************************************************************************ */
 
 void MainWindow::simulationReset()
 {
-    emit simulatorReset();
+    Q_ASSERT(!m_simulator.isRunning());
+    m_simulator.reset();
 }
 
 /* ************************************************************************ */
@@ -240,6 +251,16 @@ void MainWindow::simulatorStepped(int iteration, int iterations)
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(iterations);
     ui->progressBar->setValue(iteration);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::simulatorFinished()
+{
+    ui->actionStart->setEnabled(false);
+    ui->actionStep->setEnabled(false);
+    ui->actionPause->setEnabled(false);
+    ui->actionReset->setEnabled(true);
 }
 
 /* ************************************************************************ */
@@ -292,7 +313,8 @@ void MainWindow::fileOpen(QString filename)
     ui->plainTextEdit->setPlainText(in.readAll());
     setCurrentFile(filename);
 
-    emit simulatorSource(ui->plainTextEdit->toPlainText(), "cece");
+    m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
+    ui->openGLWidget->setSimulation(m_simulator.getSimulation());
 }
 
 /* ************************************************************************ */
@@ -312,7 +334,8 @@ void MainWindow::fileSave(QString filename)
     out << ui->plainTextEdit->toPlainText();
     setCurrentFile(filename);
 
-    emit simulatorSource(ui->plainTextEdit->toPlainText(), "cece");
+    m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
+    ui->openGLWidget->setSimulation(m_simulator.getSimulation());
 }
 
 /* ************************************************************************ */
@@ -375,31 +398,32 @@ void MainWindow::updateRecentFileActions()
 
 void MainWindow::initSimulator()
 {
-    // Connect thread events
-    connect(this, &MainWindow::simulatorStart, &m_simulator, &Simulator::start);
-    connect(this, &MainWindow::simulatorStep, &m_simulator, &Simulator::step);
-    connect(this, &MainWindow::simulatorPause, &m_simulator, &Simulator::pause);
-    connect(this, &MainWindow::simulatorReset, &m_simulator, &Simulator::reset);
-    connect(this, &MainWindow::simulatorSource, &m_simulator,
-        &Simulator::createSimulation);
-    connect(
-        &m_simulator, &Simulator::loaded, this, &MainWindow::simulatorLoaded);
-    connect(
-        &m_simulator, &Simulator::loadError, this, &MainWindow::simulatorError);
-    connect(
-        &m_simulator, &Simulator::running, this, &MainWindow::simulatorRunning);
-    connect(
-        &m_simulator, &Simulator::stepped, this, &MainWindow::simulatorStepped);
-
-    // Stop simulation
-    connect(&m_simulatorThread, &QThread::finished, &m_simulator,
-        &Simulator::pause);
-
     // Move simulator into the simulator thread
     m_simulator.moveToThread(&m_simulatorThread);
 
-    // Start the simulator thread
-    m_simulatorThread.start();
+    connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::simulate);
+    connect(&m_simulator, SIGNAL(simulationStarted()), &m_simulatorThread, SLOT(start()));
+    connect(&m_simulator, &Simulator::simulationFinished, &m_simulatorThread, &QThread::quit, Qt::DirectConnection);
+
+    // Connect thread events
+    connect(&m_simulator, &Simulator::loaded, this, &MainWindow::simulatorLoaded);
+    connect(&m_simulator, &Simulator::loadError, this, &MainWindow::simulatorError);
+    connect(&m_simulator, &Simulator::running, this, &MainWindow::simulatorRunning);
+    connect(&m_simulator, &Simulator::stepped, this, &MainWindow::simulatorStepped);
+    connect(&m_simulator, &Simulator::simulationFinished, this, &MainWindow::simulatorFinished);
+
+    connect(&m_simulatorDrawTimer, &QTimer::timeout, [this]() {
+        QMutexLocker _(m_simulator.getMutex());
+        ui->openGLWidget->update();
+    });
+
+    // Start draw timer
+    m_simulatorDrawTimer.start(1000 / 30);
+}
+
+/* ************************************************************************ */
+
+}
 }
 
 /* ************************************************************************ */
