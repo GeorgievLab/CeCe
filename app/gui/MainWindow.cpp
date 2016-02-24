@@ -34,7 +34,6 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QStringList>
-#include <QMutexLocker>
 
 // CeCe
 #include "cece/plugin/Manager.hpp"
@@ -186,6 +185,7 @@ void MainWindow::viewFullscreen(bool flag)
 void MainWindow::simulationStart()
 {
     Q_ASSERT(!m_simulator.isRunning());
+    Q_ASSERT(!m_simulatorThread.isRunning());
     m_simulator.start();
 }
 
@@ -194,6 +194,7 @@ void MainWindow::simulationStart()
 void MainWindow::simulationPause()
 {
     Q_ASSERT(m_simulator.isRunning());
+    Q_ASSERT(m_simulatorThread.isRunning());
     m_simulator.pause();
 }
 
@@ -202,6 +203,7 @@ void MainWindow::simulationPause()
 void MainWindow::simulationStep()
 {
     Q_ASSERT(!m_simulator.isRunning());
+    Q_ASSERT(!m_simulatorThread.isRunning());
     m_simulator.step();
 }
 
@@ -210,6 +212,7 @@ void MainWindow::simulationStep()
 void MainWindow::simulationReset()
 {
     Q_ASSERT(!m_simulator.isRunning());
+    Q_ASSERT(!m_simulatorThread.isRunning());
     m_simulator.reset();
 }
 
@@ -235,6 +238,7 @@ void MainWindow::simulatorLoaded(bool flag)
 {
     ui->actionStart->setEnabled(flag);
     ui->actionStep->setEnabled(flag);
+    ui->actionReset->setEnabled(flag);
 }
 
 /* ************************************************************************ */
@@ -255,11 +259,11 @@ void MainWindow::simulatorStepped(int iteration, int iterations)
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorFinished()
+void MainWindow::simulatorFinished(bool end)
 {
-    ui->actionStart->setEnabled(false);
-    ui->actionStep->setEnabled(false);
-    ui->actionPause->setEnabled(false);
+    ui->actionStart->setEnabled(!end);
+    ui->actionStep->setEnabled(!end);
+    ui->actionPause->setEnabled(end);
     ui->actionReset->setEnabled(true);
 }
 
@@ -314,7 +318,6 @@ void MainWindow::fileOpen(QString filename)
     setCurrentFile(filename);
 
     m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
-    ui->openGLWidget->setSimulation(m_simulator.getSimulation());
 }
 
 /* ************************************************************************ */
@@ -335,7 +338,6 @@ void MainWindow::fileSave(QString filename)
     setCurrentFile(filename);
 
     m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
-    ui->openGLWidget->setSimulation(m_simulator.getSimulation());
 }
 
 /* ************************************************************************ */
@@ -398,11 +400,14 @@ void MainWindow::updateRecentFileActions()
 
 void MainWindow::initSimulator()
 {
+    // Set simulator
+    ui->openGLWidget->setSimulator(&m_simulator);
+
     // Move simulator into the simulator thread
     m_simulator.moveToThread(&m_simulatorThread);
 
-    connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::simulate);
     connect(&m_simulator, SIGNAL(simulationStarted()), &m_simulatorThread, SLOT(start()));
+    connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::simulate);
     connect(&m_simulator, &Simulator::simulationFinished, &m_simulatorThread, &QThread::quit, Qt::DirectConnection);
 
     // Connect thread events
@@ -413,7 +418,6 @@ void MainWindow::initSimulator()
     connect(&m_simulator, &Simulator::simulationFinished, this, &MainWindow::simulatorFinished);
 
     connect(&m_simulatorDrawTimer, &QTimer::timeout, [this]() {
-        QMutexLocker _(m_simulator.getMutex());
         ui->openGLWidget->update();
     });
 

@@ -111,8 +111,10 @@ signals:
 
     /**
      * @brief Simulation finished.
+     *
+     * @param end
      */
-    void simulationFinished();
+    void simulationFinished(bool end);
 
 
     /**

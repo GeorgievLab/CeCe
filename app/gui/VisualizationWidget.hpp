@@ -30,11 +30,15 @@
 // Qt
 #include <QGLWidget>
 #include <QScopedPointer>
+#include <QPoint>
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
 #include "cece/render/Context.hpp"
 #include "cece/simulator/Simulation.hpp"
+
+// GUI
+#include "Simulator.hpp"
 
 /* ************************************************************************ */
 
@@ -67,13 +71,13 @@ public:
 
 
     /**
-     * @brief Return currently visualized simulation.
+     * @brief Return simulator.
      *
      * @return
      */
-    ViewPtr<simulator::Simulation> getSimulation() const noexcept
+    ViewPtr<Simulator> getSimulator() const noexcept
     {
-        return m_simulation;
+        return m_simulator;
     }
 
 
@@ -82,13 +86,13 @@ public:
 
 
     /**
-     * @brief Change currently visualized simulation.
+     * @brief Change simulator.
      *
      * @return
      */
-    void setSimulation(ViewPtr<simulator::Simulation> simulation) noexcept
+    void setSimulator(ViewPtr<Simulator> simulator) noexcept
     {
-        m_simulation = simulation;
+        m_simulator = simulator;
     }
 
 
@@ -102,6 +106,30 @@ protected:
      * @param event
      */
     void wheelEvent(QWheelEvent* event) override;
+
+
+    /**
+     * @brief Mouse press event.
+     *
+     * @param event
+     */
+    void mousePressEvent(QMouseEvent* event) override;
+
+
+    /**
+     * @brief Mouse release event.
+     *
+     * @param event
+     */
+    void mouseReleaseEvent(QMouseEvent* event) override;
+
+
+    /**
+     * @brief Mouse move event.
+     *
+     * @param event
+     */
+    void mouseMoveEvent(QMouseEvent* event) override;
 
 
     /**
@@ -128,14 +156,17 @@ protected:
 // Private Data Members
 private:
 
-    /// Drawn simulation.
-    ViewPtr<simulator::Simulation> m_simulation;
+    /// Simulator.
+    ViewPtr<Simulator> m_simulator;
 
     /// OpenGL context.
     ViewPtr<QOpenGLContext> m_context;
 
     /// Rendering context.
     render::Context m_renderContext;
+
+    /// Mouse position.
+    QPoint m_mousePos;
 };
 
 /* ************************************************************************ */

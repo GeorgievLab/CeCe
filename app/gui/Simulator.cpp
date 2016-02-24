@@ -75,7 +75,7 @@ bool Simulator::step()
 
     // Simulation finished
     if (!res)
-        emit simulationFinished();
+        emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
 
     return res;
 }
@@ -104,9 +104,6 @@ void Simulator::createSimulation(QString source, QString type)
         return;
     }
 
-    m_source = source;
-    m_type = type;
-
     try
     {
         QMutexLocker _(&m_mutex);
@@ -119,7 +116,13 @@ void Simulator::createSimulation(QString source, QString type)
         // Create simulation
         m_simulation.reset(simulation.release());
 
+        // Store after initialization
+        m_source = source;
+        m_type = type;
+
         emit loaded(true);
+        emit stepped(static_cast<int>(m_simulation->getIteration()),
+            static_cast<int>(m_simulation->getIterations()));
     }
     catch (const cece::Exception& e)
     {
@@ -136,6 +139,7 @@ void Simulator::simulate()
         continue;
 
     m_running = false;
+    emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
 }
 
 /* ************************************************************************ */

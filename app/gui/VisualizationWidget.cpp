@@ -27,7 +27,12 @@
 #include "VisualizationWidget.hpp"
 
 // Qt
+#include <QMouseEvent>
 #include <QWheelEvent>
+#include <QMutexLocker>
+
+// CeCe
+#include "cece/core/Units.hpp"
 
 /* ************************************************************************ */
 
@@ -46,6 +51,8 @@ VisualizationWidget::VisualizationWidget(QWidget* parent)
 
 void VisualizationWidget::wheelEvent(QWheelEvent* event)
 {
+    Q_ASSERT(event);
+
     constexpr float ZOOM_COEFF = 1.1;
 
     // Get change
@@ -61,6 +68,54 @@ void VisualizationWidget::wheelEvent(QWheelEvent* event)
 
     // Update widget
     update();
+}
+
+/* ************************************************************************ */
+
+void VisualizationWidget::mousePressEvent(QMouseEvent* event)
+{
+    Q_ASSERT(event);
+
+    // Store position
+    if (event->button() == Qt::LeftButton)
+        m_mousePos = event->pos();
+
+    QGLWidget::mousePressEvent(event);
+}
+
+/* ************************************************************************ */
+
+void VisualizationWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    QGLWidget::mouseReleaseEvent(event);
+}
+
+/* ************************************************************************ */
+
+void VisualizationWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    Q_ASSERT(event);
+
+    // Get camera
+    auto& camera = m_renderContext.getCamera();
+
+    // Get position
+    auto pos = camera.getPosition();
+
+    // Change vector
+    const auto change = event->pos() - m_mousePos;
+
+    pos += camera.getZoom() * PositionVector{
+        units::Length(change.x()),
+        units::Length(-change.y())
+    };
+
+    camera.setPosition(pos);
+
+    // Update mouse position
+    m_mousePos = event->pos();
+
+    QGLWidget::mouseMoveEvent(event);
 }
 
 /* ************************************************************************ */
@@ -87,8 +142,20 @@ void VisualizationWidget::paintGL()
     // Start frame
     m_renderContext.frameBegin(width(), height());
 
-    if (m_simulation)
-        m_simulation->draw(m_renderContext);
+    if (m_simulator && m_simulator->getSimulation())
+    {
+        QMutexLocker _(m_simulator->getMutex());
+        m_simulator->getSimulation()->draw(m_renderContext);
+    }
+    else
+    {
+        // There is a weird bug (Intel GPU?) which doesn't clear widget content
+        // So something must be drawn to fix it
+        glBegin(GL_LINES);
+        glVertex2f(0, 0);
+        glVertex2f(0, 0);
+        glEnd();
+    }
 
     m_renderContext.frameEnd();
 }

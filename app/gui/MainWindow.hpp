@@ -202,8 +202,10 @@ public slots:
 
     /**
      * @brief Simulator finished simulation.
+     *
+     * @param end
      */
-    void simulatorFinished();
+    void simulatorFinished(bool end);
 
 
     /**
