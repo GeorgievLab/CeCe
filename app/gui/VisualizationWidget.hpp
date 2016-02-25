@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,43 +27,32 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <streambuf>
-#include <array>
-#include <ostream>
+// Qt
+#include <QGLWidget>
+#include <QScopedPointer>
+#include <QPoint>
 
-// wxWidgets
-#include <wx/event.h>
+// CeCe
+#include "cece/core/ViewPtr.hpp"
+#include "cece/render/Context.hpp"
+#include "cece/simulator/Simulation.hpp"
+
+// GUI
+#include "Simulator.hpp"
 
 /* ************************************************************************ */
 
-wxDECLARE_EVENT(EVT_LOG, wxCommandEvent);
+namespace cece {
+namespace gui {
 
 /* ************************************************************************ */
 
 /**
- * @brief Stream buffer logger.
+ * @brief OpenGL visualization widget.
  */
-class Logger : public std::ostream
+class VisualizationWidget : public QGLWidget
 {
-
-// Public Structures
-public:
-
-
-    struct Buffer : public std::streambuf
-    {
-        explicit Buffer(wxEvtHandler* handler);
-        int flushBuffer();
-        int overflow(int c = EOF) override;
-        int sync() override;
-
-    private:
-
-        std::array<char, 1024> m_buffer;
-        wxEvtHandler* m_handler;
-    };
-
+    Q_OBJECT
 
 // Public Ctors & Dtors
 public:
@@ -72,35 +61,117 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param handler
+     * @param parent
      */
-    explicit Logger(wxEvtHandler* handler)
-        : std::ostream(&m_buffer)
-        , m_buffer(handler)
-    {
-        // Nothing to do
-    }
+    VisualizationWidget(QWidget* parent = nullptr);
+
+
+// Public Accessors
+public:
 
 
     /**
-     * @brief Returns output buffer.
+     * @brief Return simulator.
      *
      * @return
      */
-    Buffer& GetBuffer() noexcept
+    ViewPtr<Simulator> getSimulator() const noexcept
     {
-        return m_buffer;
+        return m_simulator;
     }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Change simulator.
+     *
+     * @return
+     */
+    void setSimulator(ViewPtr<Simulator> simulator) noexcept
+    {
+        m_simulator = simulator;
+    }
+
+
+// Protected Events
+protected:
+
+
+    /**
+     * @brief Mouse scroll event.
+     *
+     * @param event
+     */
+    void wheelEvent(QWheelEvent* event) override;
+
+
+    /**
+     * @brief Mouse press event.
+     *
+     * @param event
+     */
+    void mousePressEvent(QMouseEvent* event) override;
+
+
+    /**
+     * @brief Mouse release event.
+     *
+     * @param event
+     */
+    void mouseReleaseEvent(QMouseEvent* event) override;
+
+
+    /**
+     * @brief Mouse move event.
+     *
+     * @param event
+     */
+    void mouseMoveEvent(QMouseEvent* event) override;
+
+
+    /**
+     * @brief Initialize OpenGL.
+     */
+    void initializeGL() override;
+
+
+    /**
+     * @brief Resize OpenGL view.
+     *
+     * @param width
+     * @param height
+     */
+    void resizeGL(int width, int height) override;
+
+
+    /**
+     * @brief Paint OpenGL.
+     */
+    void paintGL() override;
 
 
 // Private Data Members
 private:
 
+    /// Simulator.
+    ViewPtr<Simulator> m_simulator;
 
-    /// Output buffer.
-    Buffer m_buffer;
+    /// OpenGL context.
+    ViewPtr<QOpenGLContext> m_context;
 
+    /// Rendering context.
+    render::Context m_renderContext;
+
+    /// Mouse position.
+    QPoint m_mousePos;
 };
 
 /* ************************************************************************ */
 
+}
+}
+
+/* ************************************************************************ */

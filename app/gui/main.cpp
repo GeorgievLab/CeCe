@@ -23,147 +23,66 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// wxWidgets
-#include <wx/app.h>
-#include <wx/event.h>
-#include <wx/image.h>
-#include <wx/cmdline.h>
-#include <wx/scopedptr.h>
-#include <wx/filename.h>
+// Qt
+#include <QApplication>
+
+// CeCe
+#include "cece/core/String.hpp"
+#include "cece/core/FilePath.hpp"
+#include "cece/plugin/Manager.hpp"
 
 // GUI
-#include "MainFrame.h"
-
-// Simulator
-#include "core/String.hpp"
-#include "simulator/PluginManager.hpp"
-
-/* ************************************************************************ */
-
-namespace {
+#include "MainWindow.hpp"
 
 /* ************************************************************************ */
 
 /**
  * @brief Returns plugins directory.
  *
+ * @param app Executable path.
+ * @param dir Directory to plugins.
+ *
  * @return
  */
-String getPluginsDirectory() noexcept
+cece::String getPluginsDirectory(cece::FilePath app, cece::FilePath dir) noexcept
 {
-#if _WIN32
-    const wxFileName path = wxStandardPaths::GetExecutablePath();
-    path.SetFullName("");
-    path.AppendDir(DIR_PLUGINS);
-    return path.GetFullPath().ToStdString();
-#else
-    // Absolute path to plugins directory on Linux
-    return DIR_PLUGINS;
+    return (app.remove_filename() / dir).string();
+}
+
+/* ************************************************************************ */
+
+int main(int argc, char* argv[])
+{
+    QApplication app(argc, argv);
+
+    auto& pluginManager = cece::plugin::Manager::s();
+
+    if (pluginManager.getDirectories().empty())
+    {
+#ifdef DIR_PLUGINS
+        pluginManager.addDirectory(DIR_PLUGINS);
+#elif __linux__
+        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
+#elif __APPLE__ && __MACH__
+        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../plugins"));
+#elif _WIN32
+        pluginManager.addDirectory(getPluginsDirectory(argv[0], "."));
 #endif
+    }
+
+    // Preload XML plugin
+    pluginManager.load("xml");
+
+    app.setOrganizationName("GeorgievLab");
+    app.setOrganizationDomain("ccy.zcu.cz");
+    app.setApplicationName("cece");
+    app.setApplicationVersion("0.4.3");
+    app.setApplicationDisplayName("CeCe");
+
+    cece::gui::MainWindow w;
+    w.show();
+
+    return app.exec();
 }
-
-/* ************************************************************************ */
-
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief GUI main application.
- */
-class MainApp : public wxApp
-{
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Initialize application.
-     *
-     * @return
-     */
-    bool OnInit() override
-    {
-        if (!wxApp::OnInit())
-            return false;
-
-        // Register plugins directory
-        simulator::PluginManager::addDirectory(getPluginsDirectory());
-        simulator::PluginManager::rescanDirectories();
-
-        // Add the common image handlers
-        wxImage::AddHandler(new wxPNGHandler);
-        wxImage::AddHandler(new wxJPEGHandler);
-
-        SetAppName("cell-sim");
-        SetAppDisplayName("Cell simulator");
-
-        wxScopedPtr<MainFrame> frame(new MainFrame());
-
-        // Load init file
-        if (m_initFileName.IsOk())
-            frame->LoadFile(m_initFileName);
-
-        SetTopWindow(frame.release());
-        return GetTopWindow()->Show();
-    }
-
-
-    /**
-     * @brief On exit handler.
-     *
-     * @return
-     */
-    int OnExit() override
-    {
-        simulator::PluginManager::releasePlugins();
-        return OnExit();
-    }
-
-
-    /**
-     * @brief Initialize command line parser.
-     *
-     * @param parser
-     */
-    void OnInitCmdLine(wxCmdLineParser& parser) override
-    {
-        parser.AddParam("Simulation file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
-    }
-
-
-    /**
-     * @brief Process parsed command line.
-     *
-     * @param parser
-     *
-     * @return
-     */
-    bool OnCmdLineParsed(wxCmdLineParser& parser) override
-    {
-        if (parser.GetParamCount() > 0)
-        {
-            m_initFileName = wxFileName::FileName(parser.GetParam(0));
-            m_initFileName.MakeAbsolute();
-        }
-
-        return true;
-    }
-
-
-// Private Data Members
-private:
-
-
-    /// Startup file name.
-    wxFileName m_initFileName;
-
-};
-
-/* ************************************************************************ */
-
-DECLARE_APP(MainApp)
-IMPLEMENT_APP(MainApp)
 
 /* ************************************************************************ */

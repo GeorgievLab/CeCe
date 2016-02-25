@@ -28,52 +28,47 @@ project(gui CXX)
 
 # ######################################################################### #
 
-# Set some definitions
-add_definitions(
-    -DAPP_NAME="${APP_NAME}"
-    -DDIR_PLUGINS="${PLUGINS_DIRECTORY}"
-)
+set(CMAKE_INCLUDE_CURRENT_DIR On)
+set(CMAKE_AUTOMOC On)
+set(CMAKE_AUTOUIC On)
+set(CMAKE_AUTORCC On)
 
-if (APPLE)
-    # Static version on MacOSX
-    set(wxWidgets_USE_STATIC On)
+# Find the QtWidgets library
+find_package(Qt5Widgets)
+find_package(Qt5OpenGL)
+
+# ######################################################################### #
+
+if (DEV_PLUGINS)
+    # Directory is in build directory
+    add_definitions(
+        -DDIR_PLUGINS="${CMAKE_BINARY_DIR}/${DIR_PLUGINS}"
+    )
 endif ()
 
-# wxWidgets
-if (WIN32)
-    # On Windows the scintilla library is required
-    find_package(wxWidgets REQUIRED xrc xml adv gl stc scintilla core base)
-else ()
-    find_package(wxWidgets REQUIRED xrc xml adv gl stc core base)
-endif ()
-
-include(${wxWidgets_USE_FILE})
+# Configure version file
+configure_file(version.hpp.in version.hpp @ONLY)
+include_directories(${PROJECT_BINARY_DIR})
 
 # ######################################################################### #
 
 # Sources
 set(SRCS
     main.cpp
-    MainFrame.h
-    MainFrame.cpp
-    AboutDialog.h
+    MainWindow.hpp
+    MainWindow.cpp
+    MainWindow.ui
+    AboutDialog.hpp
     AboutDialog.cpp
-    PluginsDialog.h
-    PluginsDialog.cpp
-    wxcrafter.h
-    wxcrafter.cpp
-    wxcrafter_bitmaps.cpp
-    CanvasWidget.hpp
-    CanvasWidget.cpp
-    SimulatorThread.hpp
-    SimulatorThread.cpp
-    Logger.hpp
-    Logger.cpp
+    AboutDialog.ui
+    Simulator.hpp
+    Simulator.cpp
+    VisualizationWidget.hpp
+    VisualizationWidget.cpp
+    LogStream.hpp
+    LogStream.cpp
+    icons.qrc
 )
-
-# Configure version file
-configure_file(version.hpp.in version.hpp @ONLY)
-include_directories(${PROJECT_BINARY_DIR})
 
 if (APPLE)
     set(SRCS ${SRCS} icons/${APP_NAME}.icns)
@@ -117,11 +112,11 @@ endif ()
 
 # ######################################################################### #
 
-# Link libraries
+# Use the Widgets module from Qt 5.
 target_link_libraries(${PROJECT_NAME}
-    loader-xml
-    simulator
-    ${wxWidgets_LIBRARIES}
+    cece
+    Qt5::Widgets
+    Qt5::OpenGL
 )
 
 if (UNIX AND NOT APPLE)

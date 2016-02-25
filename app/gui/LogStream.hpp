@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,62 +23,59 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "gui/Logger.hpp"
-
-// wxWidgets
-#include <wx/scopedptr.h>
+#pragma once
 
 /* ************************************************************************ */
 
-wxDEFINE_EVENT(EVT_LOG, wxCommandEvent);
+// Qt
+#include <QObject>
+
+// CeCe
+#include "cece/core/Log.hpp"
 
 /* ************************************************************************ */
 
-Logger::Buffer::Buffer(wxEvtHandler* handler)
-    : m_handler(handler)
+namespace cece {
+namespace gui {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Log output stream.
+ */
+class LogStream : public QObject, public Log::Output
 {
-    setp(m_buffer.data(), m_buffer.data() + m_buffer.size() - 1);
+    Q_OBJECT
+
+
+// Public Signals
+signals:
+
+
+    /**
+     * @brief A new message logged.
+     *
+     * @param message
+     */
+    void append(QString message);
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Write a message to output.
+     *
+     * @param msg
+     */
+    void write(const String& msg) override;
+
+};
+
+/* ************************************************************************ */
+
 }
-
-/* ************************************************************************ */
-
-int Logger::Buffer::flushBuffer()
-{
-    int num = pptr() - pbase();
-
-    wxScopedPtr<wxCommandEvent> event(new wxCommandEvent(EVT_LOG));
-    event->SetString(wxString(m_buffer.data(), num));
-    wxQueueEvent(m_handler, event.release());
-
-    pbump(-num);
-    return num;
-}
-
-/* ************************************************************************ */
-
-int Logger::Buffer::overflow(int c)
-{
-    if (c != EOF)
-    {
-        *pptr() = c;
-        pbump(1);
-    }
-
-    if (flushBuffer() == EOF)
-        return EOF;
-
-    return c;
-}
-
-/* ************************************************************************ */
-
-int Logger::Buffer::sync()
-{
-    if (flushBuffer() == EOF)
-        return -1;
-
-    return 0;
 }
 
 /* ************************************************************************ */

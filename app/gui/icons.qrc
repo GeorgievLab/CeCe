@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/cece">
+        <file>icons/play-24.png</file>
+        <file>icons/restart-24.png</file>
+        <file>icons/step-24.png</file>
+        <file>icons/stop-24.png</file>
+        <file>images/logo.png</file>
+    </qresource>
+</RCC>

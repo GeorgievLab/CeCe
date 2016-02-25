@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -24,74 +24,122 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/plugin/Context.hpp"
+#include "Simulator.hpp"
+
+// Qt
+#include <QMutexLocker>
 
 // CeCe
-#include "cece/loader/Loader.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/core/Exception.hpp"
+#include "cece/plugin/Manager.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
+namespace gui {
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> Context::createSimulation(const FilePath& filepath, ViewPtr<const Parameters> parameters)
+Simulator::Simulator(QObject* parent)
+    : QObject(parent)
 {
-    // File extension
-    auto ext = filepath.extension().string().substr(1);
-
-    // Find loader by extension
-    auto loader = getLoaderFactoryManager().create(ext);
-
-    if (!loader)
-        throw RuntimeException("Unable to load file with extension: '" + ext + "'");
-
-    // Create a simulation
-    return loader->fromFile(*this, filepath, parameters);
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
-UniquePtr<simulator::Simulation> Context::createSimulation(StringView type, StringView source)
+void Simulator::start()
 {
-    // Create a loader from type
-    auto loader = getLoaderFactoryManager().create(type);
+    if (!m_simulation)
+        return;
 
-    if (!loader)
-        throw RuntimeException("Unable to find loader '" + String(type) + "'");
-
-    // Create a simulation
-    return loader->fromSource(*this, String(source));
+    emit running(m_running = true);
+    emit simulationStarted();
 }
 
 /* ************************************************************************ */
 
-UniquePtr<init::Initializer> Context::createInitializer(StringView typeName)
+bool Simulator::step()
 {
-    return getInitFactoryManager().createInitializer(typeName);
+    Q_ASSERT(m_simulation);
+    bool res;
+
+    {
+        QMutexLocker _(&m_mutex);
+        // Do a step
+        res = m_simulation->update();
+    }
+
+    emit stepped(static_cast<int>(m_simulation->getIteration()),
+        static_cast<int>(m_simulation->getIterations()));
+
+    // Simulation finished
+    if (!res)
+        emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
+
+    return res;
 }
 
 /* ************************************************************************ */
 
-UniquePtr<module::Module> Context::createModule(StringView typeName, simulator::Simulation& simulation)
+void Simulator::pause()
 {
-    return getModuleFactoryManager().createModule(typeName, simulation);
+    emit running(m_running = false);
 }
 
 /* ************************************************************************ */
 
-UniquePtr<object::Object> Context::createObject(StringView typeName, simulator::Simulation& simulation, object::Object::Type type)
+void Simulator::reset()
 {
-    return getObjectFactoryManager().createObject(typeName, simulation, type);
+    createSimulation(m_source, m_type);
 }
 
 /* ************************************************************************ */
 
-UniquePtr<program::Program> Context::createProgram(StringView typeName)
+void Simulator::createSimulation(QString source, QString type)
 {
-    return getProgramFactoryManager().createProgram(typeName);
+    if (m_running)
+    {
+        emit loadError("Simulation is running");
+        return;
+    }
+
+    try
+    {
+        QMutexLocker _(&m_mutex);
+
+        // Create a simulation
+        auto simulation =
+            cece::plugin::Manager::s().getContext().createSimulation(
+                type.toLocal8Bit().data(), source.toLocal8Bit().data());
+
+        // Create simulation
+        m_simulation.reset(simulation.release());
+
+        // Store after initialization
+        m_source = source;
+        m_type = type;
+
+        emit loaded(true);
+        emit stepped(static_cast<int>(m_simulation->getIteration()),
+            static_cast<int>(m_simulation->getIterations()));
+    }
+    catch (const cece::Exception& e)
+    {
+        emit loadError(e.what());
+        emit loaded(false);
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulator::simulate()
+{
+    while (m_running && step())
+        continue;
+
+    m_running = false;
+    emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
 }
 
 /* ************************************************************************ */

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,29 +27,50 @@
 
 /* ************************************************************************ */
 
-// GUI
-#include "wxcrafter.h"
+// Qt
+#include <QDialog>
+
+/* ************************************************************************ */
+
+namespace Ui
+{
+class AboutDialog;
+}
+
+/* ************************************************************************ */
+
+namespace cece {
+namespace gui {
 
 /* ************************************************************************ */
 
 /**
- * @brief Application about dialog.
+ * @brief GUI about dialog.
  */
-class AboutDialog : public AboutDialogBaseClass
+class AboutDialog : public QDialog
 {
+    Q_OBJECT
 
-// Public Ctors & Dtors
 public:
-
-
     /**
      * @brief Constructor.
-     *
-     * @param parent Parent window.
+     * @param parent
      */
-    explicit AboutDialog(wxWindow* parent);
+    explicit AboutDialog(QWidget* parent = nullptr);
 
+    /**
+     * @brief Destructor.
+     */
+    ~AboutDialog();
+
+private:
+    /// UI members.
+    Ui::AboutDialog* ui;
 };
 
 /* ************************************************************************ */
 
+}
+}
+
+/* ************************************************************************ */

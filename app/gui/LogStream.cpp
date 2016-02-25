@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -24,32 +24,23 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "PluginsDialog.h"
-
-// Simulator
-#include "simulator/PluginManager.hpp"
+#include "LogStream.hpp"
 
 /* ************************************************************************ */
 
-PluginsDialog::PluginsDialog(wxWindow* parent)
-    : PluginsDialogBase(parent)
+namespace cece {
+namespace gui {
+
+/* ************************************************************************ */
+
+void LogStream::write(const String& msg)
 {
-    // Nothing to do
+    emit append(QString::fromStdString(msg));
 }
 
 /* ************************************************************************ */
 
-void PluginsDialog::OnInitDialog(wxInitDialogEvent& event)
-{
-    for (auto&& name : simulator::PluginManager::getNames())
-    {
-        m_listBoxPlugins->Append(wxString(name));
-    }
-
-    const auto& directories = simulator::PluginManager::getDirectories();
-
-    if (!directories.empty())
-        m_staticTextPath->SetLabel(directories[0]);
+}
 }
 
 /* ************************************************************************ */
