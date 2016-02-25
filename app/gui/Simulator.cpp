@@ -65,7 +65,12 @@ bool Simulator::step()
     bool res;
 
     {
+        AtomicBool flag{false};
         QMutexLocker _(&m_mutex);
+
+        if (!m_simulation->isInitialized())
+            m_simulation->initialize(flag);
+
         // Do a step
         res = m_simulation->update();
     }
