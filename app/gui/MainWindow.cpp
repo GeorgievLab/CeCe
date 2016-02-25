@@ -438,6 +438,7 @@ void MainWindow::initSimulator()
     connect(&m_simulator, &Simulator::running, this, &MainWindow::simulatorRunning);
     connect(&m_simulator, &Simulator::stepped, this, &MainWindow::simulatorStepped);
     connect(&m_simulator, &Simulator::simulationFinished, this, &MainWindow::simulatorFinished);
+    connect(&m_simulator, &Simulator::simulationError, this, &MainWindow::simulatorError);
 
     connect(&m_simulatorDrawTimer, &QTimer::timeout, [this]() {
         ui->openGLWidget->update();

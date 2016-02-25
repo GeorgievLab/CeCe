@@ -118,6 +118,14 @@ signals:
 
 
     /**
+     * @brief Simulation error.
+     *
+     * @param message
+     */
+    void simulationError(QString message);
+
+
+    /**
      * @brief Simulation has been loaded.
      *
      * @param flag

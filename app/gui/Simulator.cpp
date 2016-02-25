@@ -64,6 +64,7 @@ bool Simulator::step()
     Q_ASSERT(m_simulation);
     bool res;
 
+    try
     {
         AtomicBool flag{false};
         QMutexLocker _(&m_mutex);
@@ -73,6 +74,11 @@ bool Simulator::step()
 
         // Do a step
         res = m_simulation->update();
+    }
+    catch (const Exception& e)
+    {
+        emit simulationError(e.what());
+        return false;
     }
 
     emit stepped(static_cast<int>(m_simulation->getIteration()),
