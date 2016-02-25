@@ -67,6 +67,8 @@ set(SRCS
     VisualizationWidget.cpp
     LogStream.hpp
     LogStream.cpp
+    XmlHighlighter.hpp
+    XmlHighlighter.cpp
     icons.qrc
 )
 

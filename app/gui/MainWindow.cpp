@@ -47,6 +47,7 @@
 
 // GUI
 #include "AboutDialog.hpp"
+#include "XmlHighlighter.hpp"
 
 /* ************************************************************************ */
 
@@ -65,6 +66,8 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
     ui->reloadButton->hide();
+
+    new XmlHighlighter(ui->plainTextEdit->document());
 
     // Set log stream
     Log::setOutput(&m_logStream);

@@ -41,6 +41,8 @@
     <File Name="VisualizationWidget.hpp"/>
     <File Name="LogStream.hpp"/>
     <File Name="LogStream.cpp"/>
+    <File Name="XmlHighlighter.hpp"/>
+    <File Name="XmlHighlighter.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="win_resources.rc"/>
@@ -157,4 +159,7 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
+  </VirtualDirectory>
 </CodeLite_Project>

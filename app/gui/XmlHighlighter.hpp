@@ -23,66 +23,75 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+#pragma once
+
+/* ************************************************************************ */
+
 // Qt
-#include <QApplication>
+#include <QSyntaxHighlighter>
+#include <QTextDocument>
+#include <QString>
+#include <QTextCharFormat>
+#include <QRegExp>
 
-// CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/FilePath.hpp"
-#include "cece/plugin/Manager.hpp"
+/* ************************************************************************ */
 
-// GUI
-#include "MainWindow.hpp"
+namespace cece {
+namespace gui {
 
 /* ************************************************************************ */
 
 /**
- * @brief Returns plugins directory.
+ * @brief XML highlighter
  *
- * @param app Executable path.
- * @param dir Directory to plugins.
- *
- * @return
+ * @see Based on https://github.com/d1vanov/basic-xml-syntax-highlighter
  */
-cece::String getPluginsDirectory(cece::FilePath app, cece::FilePath dir) noexcept
+class XmlHighlighter : public QSyntaxHighlighter
 {
-    return (app.remove_filename() / dir).string();
-}
+    Q_OBJECT
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param parent
+     */
+    explicit XmlHighlighter(QTextDocument* parent);
+
+
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Highlight block.
+     *
+     * @param text
+     */
+    void highlightBlock(const QString& text) override;
+
+
+// Private Data Members
+private:
+
+
+    /// Highlight Rule
+    struct HighlightRule
+    {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+
+    /// Highlight rules.
+    QVector<HighlightRule> m_highlightRules;
+};
 
 /* ************************************************************************ */
 
-int main(int argc, char* argv[])
-{
-    QApplication app(argc, argv);
-
-    auto& pluginManager = cece::plugin::Manager::s();
-
-    if (pluginManager.getDirectories().empty())
-    {
-#ifdef DIR_PLUGINS
-        pluginManager.addDirectory(DIR_PLUGINS);
-#elif __linux__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
-#elif __APPLE__ && __MACH__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../plugins"));
-#elif _WIN32
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "."));
-#endif
-    }
-
-    // Preload XML plugin
-    pluginManager.load("xml");
-
-    app.setOrganizationName("GeorgievLab");
-    app.setOrganizationDomain("ccy.zcu.cz");
-    app.setApplicationName("cece");
-    app.setApplicationVersion("0.4.3");
-    app.setApplicationDisplayName("CeCe");
-
-    cece::gui::MainWindow w;
-    w.show();
-
-    return app.exec();
+}
 }
 
 /* ************************************************************************ */

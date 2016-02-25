@@ -23,66 +23,85 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Qt
-#include <QApplication>
-
-// CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/FilePath.hpp"
-#include "cece/plugin/Manager.hpp"
-
-// GUI
-#include "MainWindow.hpp"
+// Declaration
+#include "XmlHighlighter.hpp"
 
 /* ************************************************************************ */
 
-/**
- * @brief Returns plugins directory.
- *
- * @param app Executable path.
- * @param dir Directory to plugins.
- *
- * @return
- */
-cece::String getPluginsDirectory(cece::FilePath app, cece::FilePath dir) noexcept
+namespace cece {
+namespace gui {
+
+/* ************************************************************************ */
+
+XmlHighlighter::XmlHighlighter(QTextDocument* parent)
+    : QSyntaxHighlighter(parent)
 {
-    return (app.remove_filename() / dir).string();
+    // Element
+    {
+        QRegExp regexStart("(<[\\w|-]+)|(</[\\w|-]+>)");
+        QRegExp regexEnd("/?>");
+        QTextCharFormat format;
+        format.setForeground(Qt::darkMagenta);
+        format.setFontWeight(QFont::Bold);
+        m_highlightRules.append({regexStart, format});
+        m_highlightRules.append({regexEnd, format});
+    }
+
+    // Attribute
+    {
+        QRegExp regex("[\\w|-]+=");
+        QTextCharFormat format;
+        format.setForeground(Qt::darkGreen);
+        format.setFontWeight(QFont::Bold);
+        format.setFontItalic(true);
+        m_highlightRules.append({regex, format});
+    }
+
+    // Value
+    {
+        QRegExp regex("\"[^\\n\"]*\"");
+        QTextCharFormat format;
+        format.setForeground(Qt::darkRed);
+        m_highlightRules.append({regex, format});
+    }
+
+    // Comment
+    {
+        QRegExp regex("<!--.*-->");
+        QTextCharFormat format;
+        format.setForeground(Qt::gray);
+        m_highlightRules.append({regex, format});
+    }
+
+    // Declaration
+    {
+        QRegExp regex("<\\?xml.+\\?>");
+        QTextCharFormat format;
+        format.setForeground(Qt::gray);
+        m_highlightRules.append({regex, format});
+    }
 }
 
 /* ************************************************************************ */
 
-int main(int argc, char* argv[])
+void XmlHighlighter::highlightBlock(const QString& text)
 {
-    QApplication app(argc, argv);
-
-    auto& pluginManager = cece::plugin::Manager::s();
-
-    if (pluginManager.getDirectories().empty())
+    for (const HighlightRule& rule : m_highlightRules)
     {
-#ifdef DIR_PLUGINS
-        pluginManager.addDirectory(DIR_PLUGINS);
-#elif __linux__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
-#elif __APPLE__ && __MACH__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../plugins"));
-#elif _WIN32
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "."));
-#endif
+        QRegExp expression(rule.pattern);
+        int index = expression.indexIn(text);
+        while (index >= 0)
+        {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expression.indexIn(text, index + length);
+        }
     }
+}
 
-    // Preload XML plugin
-    pluginManager.load("xml");
+/* ************************************************************************ */
 
-    app.setOrganizationName("GeorgievLab");
-    app.setOrganizationDomain("ccy.zcu.cz");
-    app.setApplicationName("cece");
-    app.setApplicationVersion("0.4.3");
-    app.setApplicationDisplayName("CeCe");
-
-    cece::gui::MainWindow w;
-    w.show();
-
-    return app.exec();
+}
 }
 
 /* ************************************************************************ */
