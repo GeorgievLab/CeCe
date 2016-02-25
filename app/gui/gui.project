@@ -39,6 +39,8 @@
     <File Name="Simulator.hpp"/>
     <File Name="VisualizationWidget.cpp"/>
     <File Name="VisualizationWidget.hpp"/>
+    <File Name="LogStream.hpp"/>
+    <File Name="LogStream.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="win_resources.rc"/>

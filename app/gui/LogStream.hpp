@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,34 +23,55 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/core/TimeMeasurement.hpp"
+#pragma once
 
-// C++
-#include <iostream>
+/* ************************************************************************ */
+
+// Qt
+#include <QObject>
+
+// CeCe
+#include "cece/core/Log.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-inline namespace core {
+namespace gui {
 
 /* ************************************************************************ */
 
-static OutStream* g_output = &std::cout;
-
-/* ************************************************************************ */
-
-OutStream* getMeasureTimeOutput() noexcept
+/**
+ * @brief Log output stream.
+ */
+class LogStream : public QObject, public Log::Output
 {
-    return g_output;
-}
+    Q_OBJECT
 
-/* ************************************************************************ */
 
-void setMeasureTimeOutput(OutStream* output) noexcept
-{
-    g_output = output;
-}
+// Public Signals
+signals:
+
+
+    /**
+     * @brief A new message logged.
+     *
+     * @param message
+     */
+    void append(QString message);
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Write a message to output.
+     *
+     * @param msg
+     */
+    void write(const String& msg) override;
+
+};
 
 /* ************************************************************************ */
 

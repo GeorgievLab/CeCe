@@ -26,6 +26,9 @@
 // Declaration
 #include "MainWindow.hpp"
 
+// C++
+#include <iostream>
+
 // Qt
 #include <QFileDialog>
 #include <QFile>
@@ -36,6 +39,7 @@
 #include <QStringList>
 
 // CeCe
+#include "cece/core/Log.hpp"
 #include "cece/plugin/Manager.hpp"
 
 // UI
@@ -56,9 +60,15 @@ constexpr int MainWindow::MAX_RECENT_FILES;
 /* ************************************************************************ */
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->reloadButton->hide();
+
+    // Set log stream
+    Log::setOutput(&m_logStream);
+    connect(&m_logStream, &LogStream::append, ui->textEditLog, &QTextEdit::append);
 
     ui->actionStart->setEnabled(false);
     ui->actionStep->setEnabled(false);
@@ -97,6 +107,9 @@ MainWindow::~MainWindow()
     m_simulatorThread.quit();
     m_simulatorThread.wait();
     delete ui;
+
+    // Disable output
+    Log::setOutput(nullptr);
 }
 
 /* ************************************************************************ */
@@ -214,6 +227,7 @@ void MainWindow::simulationReset()
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
     m_simulator.reset();
+    ui->reloadButton->hide();
 }
 
 /* ************************************************************************ */
@@ -288,8 +302,12 @@ void MainWindow::setCurrentFile(QString filename)
     // Get stored list of recent files
     QSettings settings;
     QStringList files = settings.value("recentFileList").toStringList();
-    files.removeAll(m_filename);
-    files.prepend(m_filename);
+
+    if (!m_filename.isEmpty())
+    {
+        files.removeAll(m_filename);
+        files.prepend(m_filename);
+    }
 
     while (files.size() > MAX_RECENT_FILES)
         files.removeLast();
@@ -318,6 +336,7 @@ void MainWindow::fileOpen(QString filename)
     setCurrentFile(filename);
 
     m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
+    ui->reloadButton->hide();
 }
 
 /* ************************************************************************ */

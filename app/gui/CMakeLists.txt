@@ -65,6 +65,8 @@ set(SRCS
     Simulator.cpp
     VisualizationWidget.hpp
     VisualizationWidget.cpp
+    LogStream.hpp
+    LogStream.cpp
     icons.qrc
 )
 

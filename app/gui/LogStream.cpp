@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2016                                                    */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -24,32 +24,18 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/core/TimeMeasurement.hpp"
-
-// C++
-#include <iostream>
+#include "LogStream.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-inline namespace core {
+namespace gui {
 
 /* ************************************************************************ */
 
-static OutStream* g_output = &std::cout;
-
-/* ************************************************************************ */
-
-OutStream* getMeasureTimeOutput() noexcept
+void LogStream::write(const String& msg)
 {
-    return g_output;
-}
-
-/* ************************************************************************ */
-
-void setMeasureTimeOutput(OutStream* output) noexcept
-{
-    g_output = output;
+    emit append(QString::fromStdString(msg));
 }
 
 /* ************************************************************************ */

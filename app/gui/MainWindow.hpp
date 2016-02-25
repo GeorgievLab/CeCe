@@ -34,6 +34,7 @@
 #include <QTimer>
 
 // GUI
+#include "LogStream.hpp"
 #include "Simulator.hpp"
 
 /* ************************************************************************ */
@@ -280,6 +281,9 @@ private:
 
     /// UI members.
     Ui::MainWindow* ui;
+
+    /// Output log stream.
+    LogStream m_logStream;
 
     /// Recent files action.
     QAction* m_recentFiles[MAX_RECENT_FILES];

@@ -28,7 +28,9 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/String.hpp"
 #include "cece/core/OutStream.hpp"
+#include "cece/core/StringStream.hpp"
 
 /* ************************************************************************ */
 
@@ -43,14 +45,72 @@ inline namespace core {
 class Log
 {
 
-// Private Types
-private:
+// Public Classes
+public:
 
 
     /**
-     * @brief End of Line marker.
+     * @brief Output class that handles log output.
      */
-    struct eol_t {};
+    class Output
+    {
+    // Public Ctors & Dtors
+    public:
+
+        /**
+         * @brief Destructor.
+         */
+        virtual ~Output();
+
+    // Public Operations
+    public:
+
+        /**
+         * @brief Write a message to output.
+         *
+         * @param msg
+         */
+        virtual void write(const String& msg) = 0;
+    };
+
+
+    /**
+     * @brief Output for output streams.
+     */
+    class StreamOutput : public Output
+    {
+    // Public Ctors & Dtors
+    public:
+
+        /**
+         * @brief Constructor.
+         *
+         * @param os
+         */
+        explicit StreamOutput(OutStream* os) : m_os(os) {}
+
+
+        /**
+         * @brief Destructor.
+         */
+        ~StreamOutput();
+
+    // Public Operations
+    public:
+
+        /**
+         * @brief Write a message to output.
+         *
+         * @param msg
+         */
+        void write(const String& msg) override;
+
+    // Private Data Members
+    private:
+
+        /// Output stream.
+        OutStream* m_os;
+    };
 
 
 // Public Mutators
@@ -62,9 +122,9 @@ public:
      *
      * @param os
      */
-    static void setOutput(OutStream* os) noexcept
+    static void setOutput(Output* os) noexcept
     {
-        m_output = os;
+        s_output = os;
     }
 
 
@@ -73,9 +133,9 @@ public:
      *
      * @param os
      */
-    static void setError(OutStream* os) noexcept
+    static void setError(Output* os) noexcept
     {
-        m_error = os;
+        s_error = os;
     }
 
 
@@ -91,7 +151,12 @@ public:
     template<typename... Args>
     static void info(Args&&... args)
     {
-        message(m_output, std::forward<Args>(args)..., eol_t{});
+        if (s_output)
+        {
+            OutStringStream oss;
+            message(oss, std::forward<Args>(args)...);
+            s_output->write(oss.str());
+        }
     }
 
 
@@ -104,7 +169,12 @@ public:
     static void debug(Args&&... args)
     {
 #ifndef NDEBUG
-        message(m_output, "DEBUG: ", std::forward<Args>(args)..., eol_t{});
+        if (s_output)
+        {
+            OutStringStream oss;
+            message(oss, "DEBUG: ", std::forward<Args>(args)...);
+            s_output->write(oss.str());
+        }
 #endif
     }
 
@@ -117,7 +187,12 @@ public:
     template<typename... Args>
     static void warning(Args&&... args)
     {
-        message(m_output, "WARNING: ", std::forward<Args>(args)..., eol_t{});
+        if (s_output)
+        {
+            OutStringStream oss;
+            message(oss, "WARNING: ", std::forward<Args>(args)...);
+            s_output->write(oss.str());
+        }
     }
 
 
@@ -129,7 +204,12 @@ public:
     template<typename... Args>
     static void error(Args&&... args)
     {
-        message(m_error, "ERROR: ", std::forward<Args>(args)..., eol_t{});
+        if (s_error)
+        {
+            OutStringStream oss;
+            message(oss, "ERROR: ", std::forward<Args>(args)...);
+            s_error->write(oss.str());
+        }
     }
 
 
@@ -140,19 +220,9 @@ private:
     /**
      * @brief Log message.
      */
-    static void message(OutStream* os)
+    static void message(OutStream& os)
     {
         // Nothing to do
-    }
-
-
-    /**
-     * @brief Log message - EOL.
-     */
-    static void message(OutStream* os, eol_t)
-    {
-        if (os)
-            *os << std::endl;
     }
 
 
@@ -162,13 +232,10 @@ private:
      * @param args
      */
     template<typename Arg, typename... Args>
-    static void message(OutStream* os, Arg&& arg, Args&&... args)
+    static void message(OutStream& os, Arg&& arg, Args&&... args)
     {
-        if (os)
-        {
-            *os << arg;
-            message(os, std::forward<Args>(args)...);
-        }
+        os << arg;
+        message(os, std::forward<Args>(args)...);
     }
 
 
@@ -176,10 +243,10 @@ private:
 private:
 
     /// Standard output.
-    static OutStream* m_output;
+    static Output* s_output;
 
     /// Error output.
-    static OutStream* m_error;
+    static Output* s_error;
 
 };
 
