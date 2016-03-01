@@ -30,6 +30,10 @@
 #include <iterator>
 #include <numeric>
 
+// CeCe
+#include "cece/core/Assert.hpp"
+#include "cece/core/Exception.hpp"
+
 /* ************************************************************************ */
 
 namespace cece {
@@ -66,13 +70,13 @@ RealType Descriptor::getWeightVerticalSum() noexcept
 
 /* ************************************************************************ */
 
-void Descriptor::initModel(RealType height, RealType a)
+void Descriptor::initModel(RealType height)
 {
     const auto hHeight = 0.5 * height;
+    const auto hHeightSq = hHeight * hHeight;
 
-    auto fHeight = [&a] (RealType height) {
-        return (1.0 / std::pow(height, a));
-    };
+    if (hHeightSq <= SPEED_OF_SOUND_SQ)
+        throw InvalidArgumentException("Channel height is too small");
 
     // Get weights from D2Q9 model
     constexpr StaticArray<RealType, 3> weights2d = {{WEIGHT_CENTER, WEIGHT_LINEAR, WEIGHT_DIAGONAL}};
@@ -80,8 +84,11 @@ void Descriptor::initModel(RealType height, RealType a)
 
     for (int i = 0; i < 3; ++i)
     {
-        weights[i] = weights2d[i] / (1 + 0.5 * fHeight(hHeight));
-        weights[i + 3] = 0.25 * fHeight(hHeight) * weights[i];
+        weights[i]     = weights2d[i] * (1.0 - SPEED_OF_SOUND_SQ / hHeightSq);
+        weights[i + 3] = weights2d[i] * (0.5 * SPEED_OF_SOUND_SQ / hHeightSq);
+
+        Assert(weights[i] > 0);
+        Assert(weights[i + 1] > 0);
     }
 
     s_weightsHorizontal[0] = weights[0];

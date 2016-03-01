@@ -161,9 +161,8 @@ public:
      * @brief Initialize model.
      *
      * @param height Channel height.
-     * @param a      Relation function constant.
      */
-    static void initModel(RealType height, RealType a = 1.0);
+    static void initModel(RealType height);
 
 
 // Private Data Members

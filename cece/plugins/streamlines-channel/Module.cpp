@@ -47,7 +47,7 @@ namespace streamlines_channel {
 void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
 {
     // Initialize model
-    Descriptor::initModel(convertLength(getHeight()), getWeightsParam());
+    Descriptor::initModel(convertLength(getHeight()));
 
     // Initialize streamlines
     streamlines::Module::init(simulation, termFlag);
@@ -62,9 +62,6 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
     // Channel height
     setHeight(config.get("height", getHeight()));
-
-    // Weights relation function parameter
-    setWeightsParam(config.get("weights-param", getWeightsParam()));
 }
 
 /* ************************************************************************ */
