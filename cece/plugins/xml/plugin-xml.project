@@ -28,15 +28,11 @@
   <VirtualDirectory Name="src">
     <VirtualDirectory Name="pugixml">
       <File Name="pugixml/pugixml.cpp"/>
-    </VirtualDirectory>
-    <File Name="Plugin.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
-    <File Name="Configuration.hpp"/>
-    <VirtualDirectory Name="pugixml">
       <File Name="pugixml/pugiconfig.hpp"/>
       <File Name="pugixml/pugixml.hpp"/>
     </VirtualDirectory>
+    <File Name="Plugin.cpp"/>
+    <File Name="Configuration.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -125,4 +121,7 @@
   </Settings>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
+  </VirtualDirectory>
 </CodeLite_Project>

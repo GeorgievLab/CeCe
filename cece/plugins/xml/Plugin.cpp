@@ -87,15 +87,33 @@ class XmlLoader : public loader::Loader
         );
 
         // Configure simulation
-        simulation->configure(config);
+        simulation->loadConfig(config);
 
         return simulation;
     }
 
 
+    /**
+     * @brief Write simulation into output stream.
+     *
+     * @param os         Output stream.
+     * @param simulation Source simulation.
+     */
     void toStream(OutStream& os, const Simulation& simulation, const FilePath& filename) const override
     {
-        // TODO: implement
+        pugi::xml_document doc;
+
+        // Create output configuration
+        config::Configuration config(
+            makeUnique<plugin::xml::ConfigImplementation>(doc.document_element()),
+            filename
+        );
+
+        // Store configuration
+        simulation.storeConfig(config);
+
+        // Save configuration
+        doc.save(os);
     }
 
 };

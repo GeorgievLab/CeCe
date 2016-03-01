@@ -136,8 +136,6 @@ public:
      *
      * @param os         Output stream.
      * @param simulation Source simulation.
-     *
-     * @return Source code.
      */
     virtual void toStream(OutStream& os, const simulator::Simulation& simulation,
         const FilePath& filename = "<stream>") const = 0;

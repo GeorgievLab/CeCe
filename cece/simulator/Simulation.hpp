@@ -1057,7 +1057,15 @@ public:
      *
      * @param config
      */
-    void configure(const config::Configuration& config);
+    void loadConfig(const config::Configuration& config);
+
+
+    /**
+     * @brief Store simulation configuration.
+     *
+     * @param config
+     */
+    void storeConfig(config::Configuration& config) const;
 
 
     /**

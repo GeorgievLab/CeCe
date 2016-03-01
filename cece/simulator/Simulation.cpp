@@ -384,33 +384,16 @@ void Simulation::initialize(AtomicBool& termFlag)
 
 /* ************************************************************************ */
 
-void Simulation::configure(const config::Configuration& config)
+void Simulation::loadConfig(const config::Configuration& config)
 {
-    // Resize world
-    {
-        auto size = config.get<SizeVector>("world-size");
-
-        if (size.getWidth() == Zero || size.getHeight() == Zero)
-            throw config::Exception("Width or height is zero!");
-
-        setWorldSize(size);
-    }
-
-    // Time step
+    setWorldSize(config.get<SizeVector>("world-size"));
     setTimeStep(config.get<units::Time>("dt"));
 
     if (config.has("length-coefficient"))
-    {
         m_converter.setLengthCoefficient(config.get<RealType>("length-coefficient"));
-    }
 
-    // Set gravity
     setGravity(config.get("gravity", getGravity()));
-
-    // Number of iterations
     setIterations(config.get("iterations", getIterations()));
-
-    // Background color
     setBackgroundColor(config.get("background", getBackgroundColor()));
 
 #if CONFIG_RENDER_TEXT_ENABLE
@@ -546,6 +529,23 @@ void Simulation::configure(const config::Configuration& config)
         m_dataOutObjects = makeUnique<OutFileStream>(config.get("data-out-objects-filename"));
         *m_dataOutObjects << "iteration;totalTime;id;typeName;posX;posY;velX;velY\n";
     }
+}
+
+/* ************************************************************************ */
+
+void Simulation::storeConfig(config::Configuration& config) const
+{
+    config.set("world-size", getWorldSize());
+    config.set("dt", getTimeStep());
+    config.set("length-coefficient", m_converter.getLengthCoefficient());
+    config.set("gravity", getGravity());
+    config.set("iterations", getIterations());
+    config.set("background", getBackgroundColor());
+
+#ifdef CECE_ENABLE_RENDER
+    config.set("visualized", isVisualized());
+#endif
+
 }
 
 /* ************************************************************************ */
