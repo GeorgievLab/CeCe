@@ -28,6 +28,7 @@
 
 // Qt
 #include <QMutexLocker>
+#include <QThread>
 
 // CeCe
 #include "cece/core/Exception.hpp"
@@ -147,7 +148,7 @@ void Simulator::createSimulation(QString source, QString type)
 void Simulator::simulate()
 {
     while (m_running && step())
-        continue;
+        QThread::msleep(1000 / 30);
 
     m_running = false;
     emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
