@@ -94,15 +94,15 @@ RealType getDisassociationPropensity(
 
 /* ************************************************************************ */
 
-void Module::update(simulator::Simulation& simulation, units::Time dt)
+void Module::update()
 {
     // Store time step
-    m_step = dt;
+    m_step = getSimulation().getTimeStep();
 
-    auto _ = measure_time("agglutination", simulator::TimeMeasurement(simulation));
+    auto _ = measure_time("agglutination", simulator::TimeMeasurement(getSimulation()));
 
     // Get physics world
-    auto& world = simulation.getWorld();
+    auto& world = getSimulation().getWorld();
 
     // Foreach pending bodies
     for (const auto& p : m_toJoin)
@@ -153,12 +153,12 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
-    module::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(config);
 
-    simulation.getWorld().SetContactListener(this);
+    getSimulation().getWorld().SetContactListener(this);
 
     for (auto&& c_bond : config.getConfigurations("bond"))
     {

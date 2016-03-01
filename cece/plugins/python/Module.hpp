@@ -57,6 +57,13 @@ namespace python {
 class Module : public module::Module
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    using module::Module::Module;
+
+
 // Public Operations
 public:
 
@@ -64,19 +71,15 @@ public:
     /**
      * @brief Load module configuration.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
+     * @param config Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
+    void loadConfig(const config::Configuration& config) override;
 
 
     /**
      * @brief Update module state.
-     *
-     * @param simulation Simulation object.
-     * @param dt         Simulation time step.
      */
-    void update(simulator::Simulation& simulation, units::Time dt) override;
+    void update() override;
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -84,10 +87,9 @@ public:
     /**
      * @brief Render module.
      *
-     * @param simulation Current simulation.
-     * @param context    Rendering context.
+     * @param context Rendering context.
      */
-    void draw(const simulator::Simulation& simulation, render::Context& context) override;
+    void draw(render::Context& context) override;
 
 #endif
 

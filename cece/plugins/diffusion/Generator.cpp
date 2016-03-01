@@ -116,19 +116,19 @@ bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::Iter
 
 /* ************************************************************************ */
 
-void Generator::update(simulator::Simulation& simulation, units::Time dt)
+void Generator::update()
 {
-    auto _ = measure_time("diffusion.generator", simulator::TimeMeasurement(simulation));
+    auto _ = measure_time("diffusion.generator", simulator::TimeMeasurement(getSimulation()));
 
     // Get current iteration number
-    const auto iteration = simulation.getIteration();
+    const auto iteration = getSimulation().getIteration();
 
     Assert(m_diffusionModule);
     const auto gridSize = m_diffusionModule->getGridSize();
 
     // Step size
-    const PositionVector start = simulation.getWorldSize() * -0.5f;
-    const auto step = simulation.getWorldSize() / gridSize;
+    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const auto step = getSimulation().getWorldSize() / gridSize;
 
     // Foreach sources
     for (const auto& source : m_sources)
@@ -143,7 +143,7 @@ void Generator::update(simulator::Simulation& simulation, units::Time dt)
         const auto pos = source.position - start;
 
         // Check if position is in range
-        if (!pos.inRange(Zero, simulation.getWorldSize()))
+        if (!pos.inRange(Zero, getSimulation().getWorldSize()))
             continue;
 
         // Source shape
@@ -160,6 +160,7 @@ void Generator::update(simulator::Simulation& simulation, units::Time dt)
         if (coords.empty())
             coords.push_back(coord);
 
+        const auto dt = getSimulation().getTimeStep();
         const auto add = (source.production * dt) / coords.size();
 
         // Add signal
@@ -170,9 +171,9 @@ void Generator::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Generator::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Generator::loadConfig(const config::Configuration& config)
 {
-    m_diffusionModule = simulation.getModule("diffusion");
+    m_diffusionModule = getSimulation().getModule("diffusion");
 
     if (!m_diffusionModule)
         throw RuntimeException("Diffusion module required!");

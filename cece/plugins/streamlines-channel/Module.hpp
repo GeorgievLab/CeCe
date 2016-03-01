@@ -51,6 +51,12 @@ namespace streamlines_channel {
 class Module : public streamlines::Module
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    using streamlines::Module::Module;
+
 
 // Public Accessors
 public:
@@ -89,19 +95,25 @@ public:
     /**
      * @brief Initialize module.
      *
-     * @param simulation Current simulation.
-     * @param termFlag   Termination flag.
+     * @param termFlag Termination flag.
      */
-    void init(simulator::Simulation& simulation, AtomicBool& termFlag) override;
+    void init(AtomicBool& termFlag) override;
 
 
     /**
      * @brief Load module configuration.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
+     * @param config Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
+    void loadConfig(const config::Configuration& config) override;
+
+
+    /**
+     * @brief Store module configuration.
+     *
+     * @param config Output configuration.
+     */
+    void storeConfig(config::Configuration& config) override;
 
 
 // Protected Operations
@@ -128,10 +140,8 @@ protected:
 
     /**
      * @brief Print streamlines informations.
-     *
-     * @param simulation
      */
-    void printInfo(const simulator::Simulation& simulation) override;
+    void printInfo() override;
 
 
 // Private Data Members

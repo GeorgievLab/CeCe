@@ -301,7 +301,7 @@ void Simulation::reset()
 
 /* ************************************************************************ */
 
-bool Simulation::update(units::Duration dt)
+bool Simulation::update()
 {
     // Initialize simulation
     if (!isInitialized())
@@ -309,17 +309,17 @@ bool Simulation::update(units::Duration dt)
 
     // Increase step number
     m_iteration++;
-    m_totalTime += dt;
+    m_totalTime += getTimeStep();
 
     // Clear all stored forces
     for (auto& obj : m_objects)
         obj->setForce(Zero);
 
     // Update modules
-    updateModules(dt);
+    updateModules();
 
     // Update objects
-    updateObjects(dt);
+    updateObjects();
 
     // Detect object that leaved the scene
     detectDeserters();
@@ -377,7 +377,7 @@ void Simulation::initialize(AtomicBool& termFlag)
     m_initializers.call(*this);
 
     // Initialize modules
-    m_modules.init(*this, termFlag);
+    m_modules.init(termFlag);
 
     m_initialized = true;
 }
@@ -503,7 +503,7 @@ void Simulation::configure(const config::Configuration& config)
 
         if (module)
         {
-            module->loadConfig(*this, moduleConfig);
+            module->loadConfig(moduleConfig);
 
             addModule(std::move(name), std::move(module));
         }
@@ -556,7 +556,7 @@ void Simulation::draw(render::Context& context)
     context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
 
     // Render modules
-    m_modules.draw(*this, context);
+    m_modules.draw(context);
 
     // Draw objects
     for (auto& obj : m_objects)
@@ -721,16 +721,15 @@ ViewPtr<object::Object> Simulation::query(const PositionVector& position) const 
 
 /* ************************************************************************ */
 
-void Simulation::updateModules(units::Time dt)
+void Simulation::updateModules()
 {
     auto _ = measure_time("sim.modules", TimeMeasurement(this));
-
-    m_modules.update(*this, dt);
+    m_modules.update();
 }
 
 /* ************************************************************************ */
 
-void Simulation::updateObjects(units::Time dt)
+void Simulation::updateObjects()
 {
     auto _ = measure_time("sim.objects", TimeMeasurement(this));
 
@@ -741,7 +740,7 @@ void Simulation::updateObjects(units::Time dt)
         auto obj = m_objects[i];
 
         Assert(obj);
-        obj->update(dt);
+        obj->update(getTimeStep());
     }
 }
 

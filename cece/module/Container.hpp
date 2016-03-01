@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -39,12 +39,9 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/Pair.hpp"
 #include "cece/core/DynamicArray.hpp"
-#include "cece/core/Units.hpp"
 #include "cece/core/Atomic.hpp"
 
 /* ************************************************************************ */
-
-namespace cece { namespace simulator { class Simulation; } }
 
 #ifdef CECE_ENABLE_RENDER
 namespace cece { namespace render { class Context; } }
@@ -129,27 +126,21 @@ public:
     /**
      * @brief Initialize all modules.
      *
-     * @param simulation Simulation object.
-     * @param termFlag   Termination flag.
+     * @param termFlag Termination flag.
      */
-    void init(simulator::Simulation& simulation, AtomicBool& termFlag);
+    void init(AtomicBool& termFlag);
 
 
     /**
      * @brief Update all modules.
-     *
-     * @param simulation Simulation object.
-     * @param dt         Time step.
      */
-    void update(simulator::Simulation& simulation, units::Time dt);
+    void update();
 
 
     /**
      * @brief Terminate all modules.
-     *
-     * @param simulation Simulation object.
      */
-    void terminate(simulator::Simulation& simulation);
+    void terminate();
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -157,10 +148,9 @@ public:
     /**
      * @brief Render modules sorted by z-order.
      *
-     * @param simulation Current simulation.
-     * @param context    Rendering context.
+     * @param context Rendering context.
      */
-    void draw(const simulator::Simulation& simulation, render::Context& context);
+    void draw(render::Context& context);
 
 #endif
 

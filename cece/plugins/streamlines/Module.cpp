@@ -144,7 +144,8 @@ units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
 
 /* ************************************************************************ */
 
-Module::Module()
+Module::Module(simulator::Simulation& simulation)
+    : module::Module(simulation)
 {
     m_layout[LayoutPosTop]    = LayoutType::Barrier;
     m_layout[LayoutPosBottom] = LayoutType::Barrier;
@@ -161,10 +162,10 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
+void Module::init(AtomicBool& termFlag)
 {
     // Print simulation info
-    printInfo(simulation);
+    printInfo();
 
     // Set fluid dynamics
     setFluidDynamics(createFluidDynamics());
@@ -174,10 +175,10 @@ void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
     m_boundaries[LayoutPosLeft]     = createBorderDynamics(LayoutPosLeft);
     m_boundaries[LayoutPosRight]    = createBorderDynamics(LayoutPosRight);
 
-    initBarriers(simulation);
+    initBarriers();
 
     // Obstacles
-    updateObstacleMap(simulation);
+    updateObstacleMap();
 
     Log::info("[streamlines] Initialization...");
 
@@ -217,7 +218,7 @@ void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
             m_lattice.collideAndStream();
 
             // Apply boundary conditions
-            applyBoundaryConditions(simulation);
+            applyBoundaryConditions();
         }
 
         // Store initialization
@@ -232,7 +233,7 @@ void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
 
 /* ************************************************************************ */
 
-void Module::initBarriers(simulator::Simulation& simulation)
+void Module::initBarriers()
 {
     // Create barriers
     for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
@@ -243,30 +244,30 @@ void Module::initBarriers(simulator::Simulation& simulation)
             if (m_layout[pos] == LayoutType::Barrier)
                 continue;
 
-            simulation.deleteObject(m_layoutBarriers[pos].get());
+            getSimulation().deleteObject(m_layoutBarriers[pos].get());
             m_layoutBarriers[pos] = nullptr;
         }
         else if (m_layout[pos] == LayoutType::Barrier)
         {
-            initBorderBarrier(simulation, static_cast<LayoutPosition>(pos));
+            initBorderBarrier(static_cast<LayoutPosition>(pos));
         }
     }
 }
 
 /* ************************************************************************ */
 
-void Module::update(simulator::Simulation& simulation, units::Time dt)
+void Module::update()
 {
     Assert(m_lattice.getSize() != Zero);
 
-    auto _ = measure_time("streamlines", simulator::TimeMeasurement(simulation));
+    auto _ = measure_time("streamlines", simulator::TimeMeasurement(getSimulation()));
 
     // Obstacles
-    updateObstacleMap(simulation);
+    updateObstacleMap();
 
     // Store streamlines data
     if (m_dataOut)
-        storeData(simulation);
+        storeData();
 
 #ifdef CECE_THREAD_SAFE
     // Lock access
@@ -280,19 +281,19 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         m_lattice.collideAndStream();
 
         // Apply boundary conditions
-        applyBoundaryConditions(simulation);
+        applyBoundaryConditions();
     }
 
     // Apply streamlines to world objects
-    applyToObjects(simulation, dt);
+    applyToObjects();
 }
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
-    module::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(config);
 
     // Number of init iterations
     setInitIterations(config.get("init-iterations", getInitIterations()));
@@ -322,7 +323,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
     // Characteristic length & time
     setCharLength(config.get("char-length", getCharLength()));
-    setCharTime(simulation.getTimeStep());
+    setCharTime(getSimulation().getTimeStep());
 
     setNumberNodes(config.get("number-nodes", 1));
 
@@ -337,12 +338,12 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
         m_lattice.setSize(gridSize);
 
         // Compute characteristic length
-        setNumberNodes(gridSize.getWidth() / simulation.getWorldSize().getWidth() * getCharLength());
+        setNumberNodes(gridSize.getWidth() / getSimulation().getWorldSize().getWidth() * getCharLength());
     }
     else
     {
         // Calculate lattice size
-        const auto size = Lattice::Size(simulation.getWorldSize() / getCharLength() * getNumberNodes());
+        const auto size = Lattice::Size(getSimulation().getWorldSize() / getCharLength() * getNumberNodes());
 
         if (size == Zero)
             throw InvalidArgumentException("Lattice size cannot be zero");
@@ -393,7 +394,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::draw(const simulator::Simulation& simulation, render::Context& context)
+void Module::draw(render::Context& context)
 {
     if (getDrawFlags() == 0)
         return;
@@ -476,7 +477,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
     // Draw color grid
     context.matrixPush();
-    context.matrixScale(simulation.getWorldSize() / units::Length(1));
+    context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
 
     if (checkDebugDraw(DRAW_DEBUG_MAGNITUDE) || checkDebugDraw(DRAW_DEBUG_OBSTACLES))
         m_drawableDebug->draw(context);
@@ -525,16 +526,16 @@ UniquePtr<Dynamics> Module::createBorderDynamics(LayoutPosition pos) const
 
 /* ************************************************************************ */
 
-void Module::updateObstacleMap(const simulator::Simulation& simulation)
+void Module::updateObstacleMap()
 {
     // Clear previous flag
     m_lattice.setDynamics(getFluidDynamics());
 
-    const PositionVector start = simulation.getWorldSize() * -0.5f;
-    const auto step = simulation.getWorldSize() / m_lattice.getSize();
+    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const auto step = getSimulation().getWorldSize() / m_lattice.getSize();
 
     // Foreach all cells
-    for (auto& obj : simulation.getObjects())
+    for (auto& obj : getSimulation().getObjects())
     {
         const bool isDynamic = obj->getType() == object::Object::Type::Dynamic;
 
@@ -546,7 +547,7 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation)
         const auto pos = obj->getPosition() - start;
 
         // Check if position is in range
-        if (!pos.inRange(Zero, simulation.getWorldSize()))
+        if (!pos.inRange(Zero, getSimulation().getWorldSize()))
             continue;
 
         // Get grid position
@@ -581,29 +582,27 @@ void Module::updateObstacleMap(const simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-void Module::applyToObjects(const simulator::Simulation& simulation, units::Time dt)
+void Module::applyToObjects()
 {
     // Foreach objects
-    for (auto& obj : simulation.getObjects())
-    {
-        applyToObject(*obj, simulation, dt);
-    }
+    for (auto& obj : getSimulation().getObjects())
+        applyToObject(*obj);
 }
 
 /* ************************************************************************ */
 
-void Module::applyToObject(object::Object& object, const simulator::Simulation& simulation, units::Time dt)
+void Module::applyToObject(object::Object& object)
 {
     // Ignore static objects
     if (object.getType() != object::Object::Type::Dynamic)
         return;
 
     // Maximum object speed that is allowed by physical engine
-    const auto maxSpeed = simulation.getMaxObjectTranslation() / dt;
+    const auto maxSpeed = getSimulation().getMaxObjectTranslation() / getSimulation().getTimeStep();
     const auto maxSpeedSq = maxSpeed * maxSpeed;
 
-    const PositionVector start = simulation.getWorldSize() * -0.5f;
-    const auto step = simulation.getWorldSize() / m_lattice.getSize();
+    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const auto step = getSimulation().getWorldSize() / m_lattice.getSize();
 
     // Get mass local center
     const auto center = object.getMassCenterOffset();
@@ -628,7 +627,7 @@ void Module::applyToObject(object::Object& object, const simulator::Simulation& 
         const auto pos = object.getWorldPosition(circle.center) - start;
 
         // Check if position is in range
-        if (!pos.inRange(Zero, simulation.getWorldSize()))
+        if (!pos.inRange(Zero, getSimulation().getWorldSize()))
             continue;
 
         // Get coordinate to lattice
@@ -706,7 +705,7 @@ void Module::applyToObject(object::Object& object, const simulator::Simulation& 
     const auto impulseMax = object.getMass() * dv;
 
     // Calculate linear impulse from shapes
-    auto impulse = force * dt;
+    auto impulse = force * getSimulation().getTimeStep();
 
     // Impulse is to big
     if (impulse.getLengthSquared() > impulseMax.getLengthSquared())
@@ -721,11 +720,11 @@ void Module::applyToObject(object::Object& object, const simulator::Simulation& 
 
 /* ************************************************************************ */
 
-void Module::applyBoundaryConditions(const simulator::Simulation& simulation)
+void Module::applyBoundaryConditions()
 {
     // Init boundaries
     for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
-        initBorderInletOutlet(simulation, static_cast<LayoutPosition>(pos));
+        initBorderInletOutlet(static_cast<LayoutPosition>(pos));
 }
 
 /* ************************************************************************ */
@@ -851,16 +850,16 @@ RealType Module::calculateTau() const noexcept
 
 /* ************************************************************************ */
 
-void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition pos)
+void Module::initBorderBarrier(LayoutPosition pos)
 {
     const auto& size = m_lattice.getSize();
-    const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
+    const auto worldSizeHalf = getSimulation().getWorldSize() * 0.5;
 
     // Physical size of one lattice cell
-    const auto dl = simulation.getWorldSize() / size;
+    const auto dl = getSimulation().getWorldSize() / size;
 
     // Create barrier
-    auto obstacle = simulation.buildObject("obstacle.Polygon");
+    auto obstacle = getSimulation().buildObject("obstacle.Polygon");
     auto& shapes = obstacle->getMutableShapes();
     shapes.resize(1);
 
@@ -913,7 +912,7 @@ void Module::initBorderBarrier(simulator::Simulation& simulation, LayoutPosition
 
 /* ************************************************************************ */
 
-void Module::initBorderInletOutlet(const simulator::Simulation& simulation, LayoutPosition pos)
+void Module::initBorderInletOutlet(LayoutPosition pos)
 {
     const auto& size = m_lattice.getSize();
 
@@ -1075,13 +1074,13 @@ void Module::initBorderInletOutlet(const simulator::Simulation& simulation, Layo
 
 /* ************************************************************************ */
 
-void Module::printInfo(const simulator::Simulation& simulation)
+void Module::printInfo()
 {
     // Get values
     const auto size = m_lattice.getSize();
 
     Log::info("[streamlines] Viscosity: ", getKinematicViscosity(), " um2/s");
-    Log::info("[streamlines] Max object speed: ", simulation.getMaxObjectTranslation(), " um/it");
+    Log::info("[streamlines] Max object speed: ", getSimulation().getMaxObjectTranslation(), " um/it");
     Log::info("[streamlines] Char. length: ", getCharLength(), " um");
     Log::info("[streamlines] Char. time: ", getCharTime(), " s");
     Log::info("[streamlines] Char. speed: ", getCharLength() / getCharTime(), " um/s");
@@ -1189,7 +1188,7 @@ void Module::storeDataHeader()
 
 /* ************************************************************************ */
 
-void Module::storeData(simulator::Simulation& simulation)
+void Module::storeData()
 {
     Assert(m_dataOut);
 
@@ -1200,9 +1199,9 @@ void Module::storeData(simulator::Simulation& simulation)
 
         *m_dataOut <<
             // iteration
-            simulation.getIteration() - 1 << ";" <<
+            getSimulation().getIteration() - 1 << ";" <<
             // totalTime
-            simulation.getTotalTime().value() << ";" <<
+            getSimulation().getTotalTime().value() << ";" <<
             // x
             c.getX() << ";" <<
             // y

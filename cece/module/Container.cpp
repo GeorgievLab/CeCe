@@ -116,7 +116,7 @@ void Container::clear()
 
 /* ************************************************************************ */
 
-void Container::init(simulator::Simulation& simulation, AtomicBool& termFlag)
+void Container::init(AtomicBool& termFlag)
 {
     // Update modules
     for (auto& module : getSortedListAsc())
@@ -124,32 +124,32 @@ void Container::init(simulator::Simulation& simulation, AtomicBool& termFlag)
         if (termFlag)
             break;
 
-        module->init(simulation, termFlag);
+        module->init(termFlag);
     }
 }
 
 /* ************************************************************************ */
 
-void Container::update(simulator::Simulation& simulation, units::Time dt)
+void Container::update()
 {
     // Update modules
     for (auto& module : getSortedListAsc())
-        module->update(simulation, dt);
+        module->update();
 }
 
 /* ************************************************************************ */
 
-void Container::terminate(simulator::Simulation& simulation)
+void Container::terminate()
 {
     // Update modules
     for (auto& module : getSortedListDesc())
-        module->terminate(simulation);
+        module->terminate();
 }
 
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Container::draw(const simulator::Simulation& simulation, render::Context& context)
+void Container::draw(render::Context& context)
 {
     DynamicArray<ViewPtr<Module>> modules;
 
@@ -164,7 +164,7 @@ void Container::draw(const simulator::Simulation& simulation, render::Context& c
 
     // Render modules
     for (auto& module : modules)
-        module->draw(simulation, context);
+        module->draw(context);
 }
 #endif
 

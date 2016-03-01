@@ -107,6 +107,14 @@ public:
 
 
     /**
+     * @brief Constructor.
+     *
+     * @param simulation
+     */
+    explicit Module(simulator::Simulation& simulation);
+
+
+    /**
      * @brief Destructor.
      */
     virtual ~Module();
@@ -114,6 +122,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Return simulation.
+     *
+     * @return
+     */
+    simulator::Simulation& getSimulation() const noexcept
+    {
+        return m_simulation;
+    }
 
 
     /**
@@ -201,66 +220,44 @@ public:
     /**
      * @brief Load module configuration.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
+     * @param config Source configuration.
      */
-    virtual void loadConfig(simulator::Simulation& simulation, const config::Configuration& config);
+    virtual void loadConfig(const config::Configuration& config);
 
 
     /**
      * @brief Store module configuration.
      *
-     * @param simulation Current simulation.
-     * @param config     Output configuration.
+     * @param config Output configuration.
      */
-    virtual void storeConfig(simulator::Simulation& simulation, config::Configuration& config);
+    virtual void storeConfig(config::Configuration& config);
 
 
     /**
      * @brief Initialize module.
      *
-     * This function is called before the simulation is started. Allows to module
-     * prepare internal data that is dependent on current simulation. For data
-     * independent on current simulation, use constructor instead.
-     *
-     * @param simulation Current simulation.
-     * @param termFlag   Termination flag. If initialization is expensive it should
-     *                   test this variable in case a termination request is sent.
+     * @param termFlag Termination flag. If initialization is expensive it should
+     *                 test this variable in case a termination request is sent.
      */
-    virtual void init(simulator::Simulation& simulation, AtomicBool& termFlag);
+    virtual void init(AtomicBool& termFlag);
 
 
     /**
      * @brief Initialize module.
-     *
-     * This function is called before the simulation is started. Allows to module
-     * prepare internal data that is dependent on current simulation. For data
-     * independent on current simulation, use constructor instead.
-     *
-     * @param simulation Current simulation.
      */
-    virtual void init(simulator::Simulation& simulation);
+    virtual void init();
 
 
     /**
      * @brief Update module state.
-     *
-     * @param simulation Simulation object.
-     * @param dt         Simulation time step.
      */
-    virtual void update(simulator::Simulation& simulation, units::Time dt);
+    virtual void update();
 
 
     /**
      * @brief Terminate module.
-     *
-     * This function is called after the simulation is finished. Allows to module
-     * cleanup internal data that is dependent on current simulation. For data
-     * independent on current simulation, use destructor instead.
-     *
-     * @param simulation Current simulation.
      */
-    virtual void terminate(simulator::Simulation& simulation);
+    virtual void terminate();
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -268,16 +265,18 @@ public:
     /**
      * @brief Render module.
      *
-     * @param simulation Current simulation.
-     * @param context    Rendering context.
+     * @param context Rendering context.
      */
-    virtual void draw(const simulator::Simulation& simulation, render::Context& context);
+    virtual void draw(render::Context& context);
 
 #endif
 
 
 // Private Data Members
 private:
+
+    /// Simulation reference.
+    simulator::Simulation& m_simulation;
 
     /// Module update priority.
     PriorityType m_priority = 0;

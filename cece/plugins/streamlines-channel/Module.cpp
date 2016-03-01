@@ -44,24 +44,34 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
+void Module::init(AtomicBool& termFlag)
 {
     // Initialize model
     Descriptor::initModel(convertLength(getHeight()));
 
     // Initialize streamlines
-    streamlines::Module::init(simulation, termFlag);
+    streamlines::Module::init(termFlag);
 }
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
-    streamlines::Module::loadConfig(simulation, config);
+    streamlines::Module::loadConfig(config);
 
     // Channel height
     setHeight(config.get("height", getHeight()));
+}
+
+/* ************************************************************************ */
+
+void Module::storeConfig(config::Configuration& config)
+{
+    streamlines::Module::storeConfig(config);
+
+    // Store channel height
+    config.set("height", getHeight());
 }
 
 /* ************************************************************************ */
@@ -101,9 +111,9 @@ UniquePtr<streamlines::Dynamics> Module::createBorderDynamics(LayoutPosition pos
 
 /* ************************************************************************ */
 
-void Module::printInfo(const simulator::Simulation& simulation)
+void Module::printInfo()
 {
-    streamlines::Module::printInfo(simulation);
+    streamlines::Module::printInfo();
 
     Log::info("[streamlines] Channel height: ", getHeight(), " um");
     Log::info("[streamlines] Horizontal weights: ",

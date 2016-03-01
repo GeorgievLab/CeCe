@@ -49,6 +49,13 @@ namespace diffusion_streamlines {
 class Module : public module::Module
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    using module::Module::Module;
+
+
 
 // Public Operations
 public:
@@ -57,19 +64,15 @@ public:
     /**
      * @brief Load module configuration.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
+     * @param config Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
+    void loadConfig(const config::Configuration& config) override;
 
 
     /**
      * @brief Update module state.
-     *
-     * @param simulation Current simulation.
-     * @param dt         Simulation time step.
      */
-    void update(simulator::Simulation& simulation, units::Time dt) override;
+    void update() override;
 
 
 // Private Data Members

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -36,11 +36,19 @@ namespace module {
 
 /* ************************************************************************ */
 
+Module::Module(simulator::Simulation& simulation)
+    : m_simulation(simulation)
+{
+    // Nothing to do
+}
+
+/* ************************************************************************ */
+
 Module::~Module() = default;
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Get module priority
     setPriority(config.get("priority", getPriority()));
@@ -52,7 +60,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
 /* ************************************************************************ */
 
-void Module::storeConfig(simulator::Simulation& simulation, config::Configuration& config)
+void Module::storeConfig(config::Configuration& config)
 {
     // Store module priority
     config.set("priority", getPriority());
@@ -64,29 +72,29 @@ void Module::storeConfig(simulator::Simulation& simulation, config::Configuratio
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation, AtomicBool& termFlag)
+void Module::init(AtomicBool& termFlag)
 {
     // Forward without termFlag
-    init(simulation);
+    init();
 }
 
 /* ************************************************************************ */
 
-void Module::init(simulator::Simulation& simulation)
+void Module::init()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-void Module::update(simulator::Simulation& simulation, units::Time dt)
+void Module::update()
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
-void Module::terminate(simulator::Simulation& simulation)
+void Module::terminate()
 {
     // Nothing to do
 }
@@ -94,7 +102,7 @@ void Module::terminate(simulator::Simulation& simulation)
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::draw(const simulator::Simulation& simulation, render::Context& context)
+void Module::draw(render::Context& context)
 {
     // Nothing to do
 }

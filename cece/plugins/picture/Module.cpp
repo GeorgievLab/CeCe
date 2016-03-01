@@ -48,10 +48,10 @@ namespace picture {
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
-    module::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(config);
 
     // File name pattern
     setFilePattern(config.get("pattern", getFilePattern()));
@@ -65,12 +65,12 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
 /* ************************************************************************ */
 
-void Module::update(simulator::Simulation& simulation, units::Time dt)
+void Module::update()
 {
     if (m_size == Zero)
         return;
 
-    const auto stepNumber = simulation.getIteration();
+    const auto stepNumber = getSimulation().getIteration();
 
     // Skip steps
     if (stepNumber % getSaveIteration() != 0)
@@ -105,10 +105,10 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Module::draw(const simulator::Simulation& simulation, render::Context& context)
+void Module::draw(render::Context& context)
 {
     // Skip first image, because it's not rendered yet
-    if (simulation.getIteration() <= 1)
+    if (getSimulation().getIteration() <= 1)
         return;
 
 #ifdef CECE_THREAD_SAFE

@@ -32,6 +32,10 @@
 
 /* ************************************************************************ */
 
+namespace cece { namespace simulator { class Simulation; } }
+
+/* ************************************************************************ */
+
 namespace cece {
 namespace module {
 
@@ -44,7 +48,7 @@ class Module;
 /**
  * @brief Module factory interface.
  */
-using Factory = Factory<Module>;
+using Factory = Factory<Module, simulator::Simulation&>;
 
 /* ************************************************************************ */
 
@@ -54,7 +58,7 @@ using Factory = Factory<Module>;
  * @tparam ModuleType
  */
 template<typename ModuleType>
-using FactoryTyped = FactoryTyped<core::Factory, ModuleType, Module>;
+using FactoryTyped = FactoryTyped<core::Factory, ModuleType, Module, simulator::Simulation&>;
 
 /* ************************************************************************ */
 
@@ -64,7 +68,7 @@ using FactoryTyped = FactoryTyped<core::Factory, ModuleType, Module>;
  * @tparam Callable
  */
 template<typename Callable>
-using FactoryCallable = FactoryCallable<core::Factory, Callable, Module>;
+using FactoryCallable = FactoryCallable<core::Factory, Callable, Module, simulator::Simulation&>;
 
 /* ************************************************************************ */
 

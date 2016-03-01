@@ -158,10 +158,8 @@ public:
             return nullptr;
         }
 
-        auto sim = reinterpret_cast<ObjectWrapper<simulator::Simulation*>*>(simulation);
-
         // Init barriers
-        self->value->initBarriers(*sim->value);
+        self->value->initBarriers();
 
         // Return None
         return none().release();

@@ -51,7 +51,7 @@ UniquePtr<Module> FactoryManager::createModule(StringView name, simulator::Simul
     auto factory = get(name);
 
     if (factory)
-        return factory->create();
+        return factory->create(simulation);
 
     throw FactoryNotFoundException("Module factory not found: " + String(name));
 }

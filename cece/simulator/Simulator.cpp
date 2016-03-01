@@ -50,31 +50,7 @@ void Simulator::start()
     m_isRunning = true;
 
     while (m_isRunning)
-    {
-        step();
-    }
-}
-
-/* ************************************************************************ */
-
-void Simulator::step()
-{
-    // When to wake-up
-    auto sleep = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(16);
-
-    // Update simulation
-    update(units::ms(16));
-
-    // Sleep
-    std::this_thread::sleep_until(sleep);
-}
-
-/* ************************************************************************ */
-
-bool Simulator::update(units::Time dt)
-{
-    assert(m_simulation);
-    return m_simulation->update(dt);
+        update();
 }
 
 /* ************************************************************************ */

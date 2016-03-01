@@ -47,10 +47,10 @@ constexpr png_size_t PNGSIGSIZE = 8;
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
-    module::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(config);
 
     // Get image file path
     const auto imagePath = config.buildFilePath(config.get("image"));
@@ -146,7 +146,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
 /* ************************************************************************ */
 
-void Module::draw(const simulator::Simulation& simulation, render::Context& context)
+void Module::draw(render::Context& context)
 {
     if (!m_drawable)
     {
@@ -185,7 +185,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
 
     // Draw color grid
     context.matrixPush();
-    context.matrixScale(simulation.getWorldSize() / units::Length(1));
+    context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
     context.colorPush();
     context.enableAlpha();
     m_drawable->draw(context);

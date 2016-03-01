@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -39,11 +39,8 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/Grid.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/render/Object.hpp"
-#include "cece/render/Color.hpp"
 #include "cece/render/GridColor.hpp"
 
 /* ************************************************************************ */
@@ -60,6 +57,12 @@ namespace background {
 class Module : public module::Module
 {
 
+// Public Ctors & Dtors
+public:
+
+
+    using module::Module::Module;
+
 
 // Public Operations
 public:
@@ -68,19 +71,17 @@ public:
     /**
      * @brief Load module configuration.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
+     * @param config Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
+    void loadConfig(const config::Configuration& config) override;
 
 
     /**
      * @brief Render module.
      *
-     * @param simulation Current simulation.
-     * @param context    Rendering context.
+     * @param context Rendering context.
      */
-    void draw(const simulator::Simulation& simulation, render::Context& context) override;
+    void draw(render::Context& context) override;
 
 
 // Private Data Members

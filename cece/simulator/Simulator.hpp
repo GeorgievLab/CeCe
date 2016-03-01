@@ -172,22 +172,6 @@ public:
 
 
     /**
-     * @brief Perform one simulation step.
-     */
-    void step();
-
-
-    /**
-     * @brief Update simulation by time step.
-     *
-     * @param dt Time step.
-     *
-     * @return If next step can be calculated.
-     */
-    bool update(units::Time dt);
-
-
-    /**
      * @brief Update simulation by time step.
      *
      * @return If next step can be calculated.

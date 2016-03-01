@@ -145,8 +145,10 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param simulation
      */
-    Module();
+    Module(simulator::Simulation& simulation);
 
 
     /**
@@ -491,36 +493,29 @@ public:
     /**
      * @brief Initialize lattice.
      *
-     * @param simulation
      * @param termFlag
      */
-    void init(simulator::Simulation& simulation, AtomicBool& termFlag) override;
+    void init(AtomicBool& termFlag) override;
 
 
     /**
      * @brief Initialize barriers.
-     *
-     * @param simulation
      */
-    void initBarriers(simulator::Simulation& simulation);
+    void initBarriers();
 
 
     /**
      * @brief Load module configuration.
      *
-     * @param simulation Current simulation.
-     * @param config     Source configuration.
+     * @param config Source configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override;
+    void loadConfig(const config::Configuration& config) override;
 
 
     /**
      * @brief Update module state.
-     *
-     * @param simulation Simulation object.
-     * @param dt         Simulation time step.
      */
-    void update(simulator::Simulation& simulation, units::Time dt) override;
+    void update() override;
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -528,10 +523,9 @@ public:
     /**
      * @brief Render module.
      *
-     * @param simulation Current simulation.
-     * @param context    Rendering context.
+     * @param context Rendering context.
      */
-    void draw(const simulator::Simulation& simulation, render::Context& context) override;
+    void draw(render::Context& context) override;
 
 #endif
 
@@ -648,36 +642,27 @@ protected:
 
     /**
      * @brief Update obstacle map from objects.
-     *
-     * @param simulation
      */
-    void updateObstacleMap(const simulator::Simulation& simulation);
+    void updateObstacleMap();
 
 
     /**
      * @brief Apply streamlines to objects.
-     *
-     * @param simulation
-     * @param dt
      */
-    void applyToObjects(const simulator::Simulation& simulation, units::Time dt);
+    void applyToObjects();
 
     /**
      * @brief Apply streamlines to object.
      *
      * @param object
-     * @param simulation
-     * @param dt
      */
-    void applyToObject(object::Object& object, const simulator::Simulation& simulation, units::Time dt);
+    void applyToObject(object::Object& object);
 
 
     /**
      * @brief Apply boundary conditions.
-     *
-     * @param simulation
      */
-    void applyBoundaryConditions(const simulator::Simulation& simulation);
+    void applyBoundaryConditions();
 
 
     /**
@@ -725,19 +710,17 @@ protected:
     /**
      * @brief Init border barrier.
      *
-     * @param simulation
      * @param pos
      */
-    void initBorderBarrier(simulator::Simulation& simulation, LayoutPosition pos);
+    void initBorderBarrier(LayoutPosition pos);
 
 
     /**
      * @brief Init border inlet/outlet.
      *
-     * @param simulation
      * @param pos
      */
-    void initBorderInletOutlet(const simulator::Simulation& simulation, LayoutPosition pos);
+    void initBorderInletOutlet(LayoutPosition pos);
 
 
     /**
@@ -745,7 +728,7 @@ protected:
      *
      * @param simulation
      */
-    virtual void printInfo(const simulator::Simulation& simulation);
+    virtual void printInfo();
 
 
     /**
@@ -772,10 +755,8 @@ protected:
 
     /**
      * @brief Write data file.
-     *
-     * @param simulation
      */
-    void storeData(simulator::Simulation& simulation);
+    void storeData();
 
 
 // Private Data Members

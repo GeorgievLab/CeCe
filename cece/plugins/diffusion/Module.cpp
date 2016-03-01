@@ -107,18 +107,18 @@ Module::SignalId Module::registerSignal(String name, DiffusionRate rate, Degrada
 
 /* ************************************************************************ */
 
-void Module::update(simulator::Simulation& simulation, units::Time dt)
+void Module::update()
 {
     if (getGridSize() == Zero)
         throw RuntimeException("Diffusion grid size is not set!");
 
-    auto _ = measure_time("diffusion", simulator::TimeMeasurement(simulation));
+    auto _ = measure_time("diffusion", simulator::TimeMeasurement(getSimulation()));
 
     // Precompute values
-    const auto step = simulation.getWorldSize() / getGridSize();
+    const auto step = getSimulation().getWorldSize() / getGridSize();
 
     // Update obstacle map from scene
-    updateObstacles(simulation);
+    updateObstacles();
 
     // For thread safety it is divided to two parts
     // The first part update diffusion to back buffer that is not used elsewhere,
@@ -128,7 +128,7 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
     // Update all signals
     // TODO: use OpenMP
     for (auto id : getSignalIds())
-        updateSignal(step, dt, id);
+        updateSignal(step, id);
 
     {
 #ifdef CECE_THREAD_SAFE
@@ -146,9 +146,9 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
         {
             *m_dataOut <<
                 // iteration
-                simulation.getIteration() << ";" <<
+                getSimulation().getIteration() << ";" <<
                 // totalTime
-                simulation.getTotalTime().value() << ";" <<
+                getSimulation().getTotalTime().value() << ";" <<
                 // x
                 c.getX() << ";" <<
                 // y
@@ -168,10 +168,10 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
-    module::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(config);
 
     // Grid size
     setGridSize(config.get<Vector<GridType::SizeType>>("grid"));
@@ -214,7 +214,7 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::draw(const simulator::Simulation& simulation, render::Context& context)
+void Module::draw(render::Context& context)
 {
     if (getGridSize() == Zero)
         throw RuntimeException("Diffusion grid size is not set!");
@@ -226,7 +226,7 @@ void Module::draw(const simulator::Simulation& simulation, render::Context& cont
     updateDrawable();
 
     context.matrixPush();
-    context.matrixScale(simulation.getWorldSize() / units::Length(1));
+    context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
     context.colorPush();
     context.enableAlpha();
     m_drawable->draw(context);
@@ -301,10 +301,13 @@ void Module::updateDrawable() const
 
 /* ************************************************************************ */
 
-void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId id)
+void Module::updateSignal(const PositionVector& step, SignalId id)
 {
     // Size of mapping matrix
     constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
+
+    // Time step
+    const auto dt = getSimulation().getTimeStep();
 
     // Clear back grid
     clearBack(id);
@@ -381,16 +384,16 @@ void Module::updateSignal(const PositionVector& step, units::Time dt, SignalId i
 
 /* ************************************************************************ */
 
-void Module::updateObstacles(simulator::Simulation& simulation)
+void Module::updateObstacles()
 {
     // Clear previous flag
     std::fill(m_obstacles.begin(), m_obstacles.end(), false);
 
-    const PositionVector start = simulation.getWorldSize() * -0.5f;
-    const auto step = simulation.getWorldSize() / getGridSize();
+    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const auto step = getSimulation().getWorldSize() / getGridSize();
 
     // Foreach all cells
-    for (auto& obj : simulation.getObjects())
+    for (auto& obj : getSimulation().getObjects())
     {
         // Ignore non-static objects
         if (obj->getType() == object::Object::Type::Dynamic)
@@ -400,7 +403,7 @@ void Module::updateObstacles(simulator::Simulation& simulation)
         const auto pos = obj->getPosition() - start;
 
         // Check if position is in range
-        if (!pos.inRange(Zero, simulation.getWorldSize()))
+        if (!pos.inRange(Zero, getSimulation().getWorldSize()))
             continue;
 
         // Get grid position

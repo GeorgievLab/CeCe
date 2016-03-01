@@ -44,10 +44,10 @@ namespace python {
 
 /* ************************************************************************ */
 
-void Module::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
-    module::Module::loadConfig(simulation, config);
+    module::Module::loadConfig(config);
 
     // Check if configuration contains code
     if (config.hasContent())
@@ -77,10 +77,13 @@ void Module::loadConfig(simulator::Simulation& simulation, const config::Configu
 
 /* ************************************************************************ */
 
-void Module::update(simulator::Simulation& simulation, units::Time dt)
+void Module::update()
 {
     if (!m_updateFn)
         return;
+
+    simulator::Simulation& simulation = getSimulation();
+    units::Time dt = simulation.getTimeStep();
 
     // Call update
     if (!call(m_updateFn, dt.value(), &simulation))
@@ -90,10 +93,12 @@ void Module::update(simulator::Simulation& simulation, units::Time dt)
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::draw(const simulator::Simulation& simulation, render::Context& context)
+void Module::draw(render::Context& context)
 {
     if (!m_drawFn)
         return;
+
+    simulator::Simulation& simulation = getSimulation();
 
     // Call draw
     if (!call(m_drawFn, &context, &simulation))

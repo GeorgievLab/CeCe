@@ -1063,22 +1063,9 @@ public:
     /**
      * @brief Update simulation.
      *
-     * @param dt
-     *
      * @return If next step can be calculated.
      */
-    bool update(units::Duration dt);
-
-
-    /**
-     * @brief Update simulation by time step.
-     *
-     * @return If next step can be calculated.
-     */
-    bool update()
-    {
-        return update(getTimeStep());
-    }
+    bool update();
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -1153,18 +1140,14 @@ protected:
 
     /**
      * @brief Update modules.
-     *
-     * @param dt Time step.
      */
-    void updateModules(units::Time dt);
+    void updateModules();
 
 
     /**
      * @brief Update objects.
-     *
-     * @param dt Time step.
      */
-    void updateObjects(units::Time dt);
+    void updateObjects();
 
 
     /**

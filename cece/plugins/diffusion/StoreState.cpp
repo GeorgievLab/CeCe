@@ -42,9 +42,9 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-void StoreState::loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+void StoreState::loadConfig(const config::Configuration& config)
 {
-    m_diffusionModule = simulation.getModule("diffusion");
+    m_diffusionModule = getSimulation().getModule("diffusion");
 
     if (!m_diffusionModule)
         throw RuntimeException("Diffusion module required!");
@@ -52,20 +52,20 @@ void StoreState::loadConfig(simulator::Simulation& simulation, const config::Con
 
 /* ************************************************************************ */
 
-void StoreState::update(simulator::Simulation& simulation, units::Time dt)
+void StoreState::update()
 {
-    auto _ = measure_time("diffusion.store-state", simulator::TimeMeasurement(simulation));
+    auto _ = measure_time("diffusion.store-state", simulator::TimeMeasurement(getSimulation()));
 
     // Get data table
-    auto& table = simulation.getDataTable("diffusion");
+    auto& table = getSimulation().getDataTable("diffusion");
 
     // Foreach coordinates
     for (auto&& c : range(m_diffusionModule->getGridSize()))
     {
         // Create new row
         auto row = table.addRow(
-            makePair("iteration", simulation.getIteration()),
-            makePair("totalTime", simulation.getTotalTime().value()),
+            makePair("iteration", getSimulation().getIteration()),
+            makePair("totalTime", getSimulation().getTotalTime().value()),
             makePair("x", c.getX()),
             makePair("y", c.getY())
         );
