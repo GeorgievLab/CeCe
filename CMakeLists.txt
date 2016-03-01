@@ -269,6 +269,7 @@ endif ()
 # Build additional tools
 if (DEV_BUILD_TOOLS)
     add_subdirectory(tools/shader-convert)
+    add_subdirectory(tools/format)
 endif()
 
 # ######################################################################### #

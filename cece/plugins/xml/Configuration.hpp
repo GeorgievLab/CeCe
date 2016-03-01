@@ -214,7 +214,12 @@ public:
      */
     void set(StringView name, StringView value) noexcept override
     {
-        m_node.attribute(name.getData()).set_value(value.getData());
+        auto attr = m_node.attribute(name.getData());
+
+        if (attr.empty())
+            attr = m_node.append_attribute(name.getData());
+
+        attr.set_value(value.getData());
     }
 
 

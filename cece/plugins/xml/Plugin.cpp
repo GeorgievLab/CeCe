@@ -102,6 +102,7 @@ class XmlLoader : public loader::Loader
     void toStream(OutStream& os, const Simulation& simulation, const FilePath& filename) const override
     {
         pugi::xml_document doc;
+        doc.append_child("simulation");
 
         // Create output configuration
         config::Configuration config(
