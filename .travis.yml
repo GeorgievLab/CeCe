@@ -32,7 +32,6 @@ addons:
             - libboost-filesystem1.55-dev
             - xorg-dev
             - libgl1-mesa-dev
-            - libfreetype6-dev
             - libpython2.7-dev
 
 before_install:

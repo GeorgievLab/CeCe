@@ -144,10 +144,6 @@ if (CONFIG_PHYSICS_BUILTIN)
     target_link_libraries(${PROJECT_NAME} ${BOX2D_LIBRARIES})
 endif ()
 
-if (CONFIG_RENDER_TEXT_ENABLE)
-    target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
-endif ()
-
 if (MINGW)
     target_link_libraries(${PROJECT_NAME} Ws2_32)
 endif ()

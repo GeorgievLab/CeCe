@@ -223,8 +223,6 @@
     <File Name="render/datatype.hpp"/>
     <File Name="render/errors.cpp"/>
     <File Name="render/errors.hpp"/>
-    <File Name="render/Font.cpp"/>
-    <File Name="render/Font.hpp"/>
     <File Name="render/glext.h"/>
     <File Name="render/Grid.cpp"/>
     <File Name="render/Grid.hpp"/>

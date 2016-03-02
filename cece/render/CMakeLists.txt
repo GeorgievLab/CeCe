@@ -44,10 +44,6 @@ if (DEV_RENDER_GL_ERRORS)
     add_definitions(-DDEV_RENDER_GL_ERRORS=1)
 endif ()
 
-if (CONFIG_RENDER_TEXT_ENABLE)
-    include_directories(${FREETYPE_INCLUDE_DIRS})
-endif ()
-
 # ######################################################################### #
 
 # Sources
@@ -93,13 +89,6 @@ set(SRCS
     Lines.cpp
     glext.h
 )
-
-if (CONFIG_RENDER_TEXT_ENABLE)
-    set(SRCS ${SRCS}
-        Font.hpp
-        Font.cpp
-    )
-endif ()
 
 if (DEV_PHYSICS_BUILTIN_DEBUG)
     set(SRCS ${SRCS}
