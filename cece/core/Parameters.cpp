@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -48,15 +48,15 @@ namespace {
  * @return
  */
 template<typename Container>
-auto find(Container& data, const Parameters::KeyViewType& name) noexcept -> decltype(&(data.begin()->second))
+auto find(Container& data, const Parameters::KeyViewType& name) noexcept -> decltype(&(data.begin()->value))
 {
     auto it = std::find_if(data.begin(), data.end(),
-        [&name](const Pair<Parameters::KeyType, Parameters::ValueType>& p) {
-            return p.first == name;
+        [&name](const Parameters::Record& p) {
+            return p.name == name;
         }
     );
 
-    return it != data.end() ? &(it->second) : nullptr;
+    return it != data.end() ? &(it->value) : nullptr;
 }
 
 /* ************************************************************************ */
@@ -92,9 +92,9 @@ Parameters::ValueType& Parameters::get(const KeyViewType& name)
         return *ptr;
 
     // Insert
-    m_data.emplace_back(KeyType(name), ValueType{});
+    m_data.emplace_back(Record{KeyType(name), ValueType{}});
 
-    return m_data.back().second;
+    return m_data.back().value;
 }
 
 /* ************************************************************************ */
@@ -118,7 +118,7 @@ void Parameters::set(KeyType name, ValueType value)
     if (ptr)
         *ptr = value;
     else
-        m_data.push_back(makePair(name, value));
+        m_data.emplace_back(Record{name, value});
 }
 
 /* ************************************************************************ */
@@ -126,7 +126,7 @@ void Parameters::set(KeyType name, ValueType value)
 void Parameters::merge(const Parameters& parameters)
 {
     for (const auto& param : parameters.m_data)
-        set(param.first, param.second);
+        set(param.name, param.value);
 }
 
 /* ************************************************************************ */

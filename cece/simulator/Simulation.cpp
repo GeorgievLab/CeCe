@@ -546,6 +546,13 @@ void Simulation::storeConfig(config::Configuration& config) const
     config.set("visualized", isVisualized());
 #endif
 
+    // Store parameters
+    for (const auto& parameter : getParameters())
+    {
+        auto parameterConfig = config.addConfiguration("parameter");
+        parameterConfig.set("name", parameter.name);
+        parameterConfig.set("value", parameter.value);
+    }
 }
 
 /* ************************************************************************ */

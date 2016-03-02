@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -75,6 +75,23 @@ public:
     using KeyViewType = StringView;
 
 
+// Public Structures
+public:
+
+
+    /**
+     * @brief Parameter record.
+     */
+    struct Record
+    {
+        /// Parameter name.
+        KeyType name;
+
+        /// Parameter value.
+        ValueType value;
+    };
+
+
 // Public Ctors & Dtors
 public:
 
@@ -90,7 +107,7 @@ public:
      *
      * @param data Initial data.
      */
-    explicit Parameters(std::initializer_list<Pair<KeyType, ValueType>> data)
+    explicit Parameters(std::initializer_list<Record> data)
         : m_data(data)
     {
         // Nothing to do
@@ -180,6 +197,50 @@ public:
     ValueType get(const KeyViewType& name, ValueType def) const noexcept;
 
 
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator begin() const noexcept
+    {
+        return m_data.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator cbegin() const noexcept
+    {
+        return m_data.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator end() const noexcept
+    {
+        return m_data.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator cend() const noexcept
+    {
+        return m_data.cend();
+    }
+
+
 // Public Mutators
 public:
 
@@ -209,7 +270,7 @@ public:
 private:
 
     /// Stored data
-    DynamicArray<Pair<KeyType, ValueType>> m_data;
+    DynamicArray<Record> m_data;
 
 };
 
