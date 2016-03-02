@@ -128,12 +128,24 @@ public:
 
 
     /**
-     * @brief Configure plugin.
+     * @brief Load plugin configuration.
      *
      * @param simulation Current simulation.
      * @param config     Plugin configuration.
      */
-    virtual void configure(simulator::Simulation& simulation, const config::Configuration& config)
+    virtual void loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Store plugin configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Plugin configuration.
+     */
+    virtual void storeConfig(const simulator::Simulation& simulation, config::Configuration& config) const
     {
         // Nothing to do
     }

@@ -64,6 +64,23 @@ class Module;
 class Container
 {
 
+// Public Structures
+public:
+
+
+    /**
+     * @brief Container record.
+     */
+    struct Record
+    {
+        /// Module name.
+        String name;
+
+        /// Pointer to module.
+        UniquePtr<Module> module;
+    };
+
+
 // Public Ctors & Dtors
 public:
 
@@ -96,6 +113,50 @@ public:
      * @return Pointer to module. Can be nullptr.
      */
     ViewPtr<Module> get(StringView name) const noexcept;
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator begin() const noexcept
+    {
+        return m_modules.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator cbegin() const noexcept
+    {
+        return m_modules.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator end() const noexcept
+    {
+        return m_modules.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator cend() const noexcept
+    {
+        return m_modules.cend();
+    }
 
 
 // Public Mutators
@@ -178,7 +239,7 @@ protected:
 private:
 
     /// Stored modules.
-    DynamicArray<Pair<String, UniquePtr<Module>>> m_modules;
+    DynamicArray<Record> m_modules;
 
 };
 

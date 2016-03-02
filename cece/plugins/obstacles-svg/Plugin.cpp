@@ -170,7 +170,13 @@ class ObstaclesSvgApi : public plugin::Api
     }
 
 
-    void configure(simulator::Simulation& simulation, const config::Configuration& config) override
+    /**
+     * @brief Load plugin configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Plugin configuration.
+     */
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override
     {
         const float px = 0.3;
         const auto filepath = config.buildFilePath(config.get("filename"));
@@ -213,6 +219,18 @@ class ObstaclesSvgApi : public plugin::Api
         }
 
         obstacle->initShapes();
+    }
+
+
+    /**
+     * @brief Store plugin configuration.
+     *
+     * @param simulation Current simulation.
+     * @param config     Plugin configuration.
+     */
+    void storeConfig(const simulator::Simulation& simulation, config::Configuration& config) const override
+    {
+        // TODO: implement
     }
 };
 

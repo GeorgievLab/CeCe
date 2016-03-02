@@ -53,7 +53,7 @@ class ChemostatApi : public plugin::Api
     }
 
 
-    void configure(simulator::Simulation& simulation, const config::Configuration& config) override
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override
     {
         constexpr auto SLOPE = units::um(5);
 

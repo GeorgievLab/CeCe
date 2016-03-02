@@ -95,7 +95,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Output configuration.
      */
-    virtual void storeConfig(simulator::Simulation& simulation, config::Configuration& config)
+    virtual void storeConfig(const simulator::Simulation& simulation, config::Configuration& config) const
     {
         // Nothing to do
     }

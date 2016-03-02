@@ -50,16 +50,16 @@ namespace {
  *
  * @return
  */
-template<typename Container>
-auto find(Container& data, StringView name) noexcept -> decltype(&(data.begin()->second))
+template<typename ContainerT>
+auto find(ContainerT& data, StringView name) noexcept -> decltype(&(data.begin()->module))
 {
     auto it = std::find_if(data.begin(), data.end(),
-        [name](const Pair<String, UniquePtr<Module>>& p) {
-            return p.first == name;
+        [name](const Container::Record& p) {
+            return p.name == name;
         }
     );
 
-    return it != data.end() ? &(it->second) : nullptr;
+    return it != data.end() ? &(it->module) : nullptr;
 }
 
 /* ************************************************************************ */
@@ -102,8 +102,8 @@ ViewPtr<Module> Container::add(String name, UniquePtr<Module> module)
     }
     else
     {
-        m_modules.emplace_back(std::move(name), std::move(module));
-        return m_modules.back().second;
+        m_modules.emplace_back(Record{std::move(name), std::move(module)});
+        return m_modules.back().module;
     }
 }
 
@@ -155,7 +155,7 @@ void Container::draw(render::Context& context)
 
     // Copy modules (view pointer)
     for (const auto& module : m_modules)
-        modules.push_back(module.second);
+        modules.push_back(module.module);
 
     // Sort modules by rendering order
     std::sort(modules.begin(), modules.end(), [](const ViewPtr<Module>& lhs, const ViewPtr<Module>& rhs) {
@@ -177,7 +177,7 @@ Container::getSortedListAsc() const noexcept
 
     // Copy modules (view pointer)
     for (const auto& module : m_modules)
-        modules.push_back(module.second);
+        modules.push_back(module.module);
 
     // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
     std::sort(modules.begin(), modules.end(),
@@ -197,7 +197,7 @@ Container::getSortedListDesc() const noexcept
 
     // Copy modules (view pointer)
     for (const auto& module : m_modules)
-        modules.push_back(module.second);
+        modules.push_back(module.module);
 
     // Sort modules by priority. Cannot be precomputed, because priority can change in previous iteration
     std::sort(modules.begin(), modules.end(),

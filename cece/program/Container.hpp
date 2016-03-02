@@ -152,6 +152,50 @@ public:
     }
 
 
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<UniquePtr<Program>>::const_iterator begin() const noexcept
+    {
+        return m_programs.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<UniquePtr<Program>>::const_iterator cbegin() const noexcept
+    {
+        return m_programs.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<UniquePtr<Program>>::const_iterator end() const noexcept
+    {
+        return m_programs.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<UniquePtr<Program>>::const_iterator cend() const noexcept
+    {
+        return m_programs.cend();
+    }
+
+
 // Public Mutators
 public:
 

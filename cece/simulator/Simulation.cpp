@@ -416,7 +416,7 @@ void Simulation::loadConfig(const config::Configuration& config)
     for (auto&& pluginConfig : config.getConfigurations("plugin"))
     {
         // Returns valid pointer or throws an exception
-        requirePlugin(pluginConfig.get("name"))->configure(*this, pluginConfig);
+        requirePlugin(pluginConfig.get("name"))->loadConfig(*this, pluginConfig);
     }
 
     // Parse parameters
@@ -553,6 +553,49 @@ void Simulation::storeConfig(config::Configuration& config) const
         parameterConfig.set("name", parameter.name);
         parameterConfig.set("value", parameter.value);
     }
+
+    // Store plugins
+    for (const auto& plugin : m_plugins)
+    {
+        auto pluginConfig = config.addConfiguration("plugin");
+        pluginConfig.set("name", plugin.first);
+        plugin.second->storeConfig(*this, pluginConfig);
+    }
+
+    // Store object types
+    for (const auto& type : m_objectClasses)
+    {
+        auto typeConfig = config.addConfiguration("type");
+        typeConfig.set("name", type.name);
+        typeConfig.set("base", type.baseName);
+        // TODO: rest ot configuration
+    }
+
+    // Store initializers
+    for (const auto& init : m_initializers)
+    {
+        // TODO: improve
+        auto initConfig = config.addConfiguration("init");
+        init->storeConfig(*this, initConfig);
+    }
+
+    // Store modules
+    for (const auto& module : m_modules)
+    {
+        auto moduleConfig = config.addConfiguration("module");
+        // TODO: improve
+        module.module->storeConfig(moduleConfig);
+    }
+
+    // Store programs
+    for (const auto& program : m_programs)
+    {
+        auto programConfig = config.addConfiguration("program");
+        // TODO: improve
+        program.program->storeConfig(*this, programConfig);
+    }
+
+    // TODO: store objects
 }
 
 /* ************************************************************************ */

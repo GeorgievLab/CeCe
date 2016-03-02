@@ -74,6 +74,50 @@ public:
     ViewPtr<const Type> get(StringView name) const noexcept;
 
 
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Type>::const_iterator begin() const noexcept
+    {
+        return m_types.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Type>::const_iterator cbegin() const noexcept
+    {
+        return m_types.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Type>::const_iterator end() const noexcept
+    {
+        return m_types.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Type>::const_iterator cend() const noexcept
+    {
+        return m_types.cend();
+    }
+
+
 // Public Mutators
 public:
 

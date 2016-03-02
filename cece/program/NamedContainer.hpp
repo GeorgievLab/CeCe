@@ -52,6 +52,23 @@ class Program;
 class NamedContainer
 {
 
+// Public Structures
+public:
+
+
+    /**
+     * @brief Container record.
+     */
+    struct Record
+    {
+        /// Module name.
+        String name;
+
+        /// Pointer to program.
+        UniquePtr<Program> program;
+    };
+
+
 // Public Ctors & Dtors
 public:
 
@@ -86,6 +103,50 @@ public:
     ViewPtr<Program> get(StringView name) const noexcept;
 
 
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator begin() const noexcept
+    {
+        return m_programs.begin();
+    }
+
+
+    /**
+     * @brief Returns begin iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator cbegin() const noexcept
+    {
+        return m_programs.cbegin();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator end() const noexcept
+    {
+        return m_programs.end();
+    }
+
+
+    /**
+     * @brief Returns end iterator.
+     *
+     * @return
+     */
+    DynamicArray<Record>::const_iterator cend() const noexcept
+    {
+        return m_programs.cend();
+    }
+
+
 // Public Mutators
 public:
 
@@ -103,7 +164,7 @@ public:
 private:
 
     /// Stored programs.
-    DynamicArray<Pair<String, UniquePtr<Program>>> m_programs;
+    DynamicArray<Record> m_programs;
 
 };
 

@@ -50,16 +50,16 @@ namespace {
  *
  * @return
  */
-template<typename Container>
-auto find(Container& data, StringView name) noexcept -> decltype(&(data.begin()->second))
+template<typename ContainerT>
+auto find(ContainerT& data, StringView name) noexcept -> decltype(&(data.begin()->program))
 {
     auto it = std::find_if(data.begin(), data.end(),
-        [&name](const Pair<String, UniquePtr<Program>>& p) {
-            return p.first == name;
+        [&name](const NamedContainer::Record& p) {
+            return p.name == name;
         }
     );
 
-    return it != data.end() ? &(it->second) : nullptr;
+    return it != data.end() ? &(it->program) : nullptr;
 }
 
 /* ************************************************************************ */
@@ -104,7 +104,7 @@ void NamedContainer::add(String name, UniquePtr<Program> program)
     }
     else
     {
-        m_programs.emplace_back(std::move(name), std::move(program));
+        m_programs.emplace_back(Record{std::move(name), std::move(program)});
     }
 }
 
