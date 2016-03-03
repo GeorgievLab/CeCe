@@ -34,6 +34,7 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Map.hpp"
 #include "cece/core/Exception.hpp"
+#include "cece/core/DynamicArray.hpp"
 #include "cece/program/Program.hpp"
 #include "cece/program/Factory.hpp"
 
@@ -72,6 +73,14 @@ public:
      * @return
      */
     ViewPtr<Factory> get(StringView name) const noexcept;
+
+
+    /**
+     * @brief Returns available object names.
+     *
+     * @return
+     */
+    DynamicArray<String> getNames() const noexcept;
 
 
 // Public Mutators

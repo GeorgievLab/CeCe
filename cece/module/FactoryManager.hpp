@@ -34,6 +34,7 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Map.hpp"
 #include "cece/core/Exception.hpp"
+#include "cece/core/DynamicArray.hpp"
 #include "cece/module/Factory.hpp"
 
 /* ************************************************************************ */
@@ -79,6 +80,14 @@ public:
      * @return Factory registered under given name or nullptr.
      */
     ViewPtr<Factory> get(StringView name) const noexcept;
+
+
+    /**
+     * @brief Returns available module names.
+     *
+     * @return
+     */
+    DynamicArray<String> getNames() const noexcept;
 
 
 // Public Mutators

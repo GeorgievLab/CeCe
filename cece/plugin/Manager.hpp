@@ -250,6 +250,12 @@ public:
 
 
     /**
+     * @brief Load all plugins.
+     */
+    void loadAll();
+
+
+    /**
      * @brief Load plugin.
      *
      * @param name Plugin name.

@@ -116,6 +116,14 @@ void Manager::addDirectory(FilePath path)
 
 /* ************************************************************************ */
 
+void Manager::loadAll()
+{
+    for (const auto& name : getNames())
+        load(name);
+}
+
+/* ************************************************************************ */
+
 ViewPtr<Api> Manager::load(StringView name)
 {
     // Plugin is already loaded

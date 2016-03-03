@@ -46,6 +46,18 @@ ViewPtr<Factory> FactoryManager::get(StringView name) const noexcept
 
 /* ************************************************************************ */
 
+DynamicArray<String> FactoryManager::getNames() const noexcept
+{
+    DynamicArray<String> names;
+
+    for (const auto& pair : m_factories)
+        names.push_back(pair.first);
+
+    return names;
+}
+
+/* ************************************************************************ */
+
 UniquePtr<Program> FactoryManager::createProgram(StringView name) const
 {
     auto factory = get(name);
