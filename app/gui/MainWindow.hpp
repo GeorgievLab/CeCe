@@ -276,6 +276,12 @@ private:
     void initSimulator();
 
 
+    /**
+     * @brief Initialize features supported by plugins.
+     */
+    void initPlugins();
+
+
 // Private Data Members
 private:
 
@@ -305,6 +311,15 @@ private:
 
     /// Plugins tree item.
     QTreeWidgetItem* m_pluginsItem;
+
+    /// Modules tree item.
+    QTreeWidgetItem* m_modulesItem;
+
+    /// Objects tree item.
+    QTreeWidgetItem* m_objectsItem;
+
+    /// Programs tree item.
+    QTreeWidgetItem* m_programsItem;
 };
 
 /* ************************************************************************ */
