@@ -84,7 +84,7 @@ before_script:
 
 script:
     - make VERBOSE=1
-    - ctest --verbose
+    #- ctest --verbose
     - cpack -G TGZ
 
 after_success:
