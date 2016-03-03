@@ -37,7 +37,9 @@
 
 // CeCe
 #include "cece/module/Module.hpp"
-#include "cece/render/Context.hpp"
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Context.hpp"
+#endif
 
 // Plugin
 #include "cece/plugins/python/Handle.hpp"

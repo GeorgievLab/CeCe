@@ -146,6 +146,8 @@ endif ()
 
 if (MINGW)
     target_link_libraries(${PROJECT_NAME} Ws2_32)
+elseif (UNIX AND NOT APPLE)
+    target_link_libraries(${PROJECT_NAME} dl)
 endif ()
 
 # ######################################################################### #

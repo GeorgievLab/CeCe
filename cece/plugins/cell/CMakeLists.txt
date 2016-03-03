@@ -42,19 +42,26 @@ set(SRCS
     Cell.cpp
     Yeast.hpp
     Yeast.cpp
-    DrawableCell.hpp
-    DrawableCell.cpp
-    DrawableYeast.hpp
-    DrawableYeast.cpp
     StoreMolecules.hpp
     StoreMolecules.cpp
-
-    # Shaders
-    vs.cell.hpp
-    fs.cell.hpp
-    vs.yeast.hpp
-    fs.yeast.hpp
 )
+
+if (CONFIG_RENDER_ENABLE)
+    set(SRCS ${SRCS}
+        DrawableCell.hpp
+        DrawableCell.cpp
+        DrawableYeast.hpp
+        DrawableYeast.cpp
+
+        # Shaders
+        vs.cell.hpp
+        fs.cell.hpp
+        vs.yeast.hpp
+        fs.yeast.hpp
+    )
+endif ()
+
+# ######################################################################### #
 
 # Build plugin
 build_plugin(cell

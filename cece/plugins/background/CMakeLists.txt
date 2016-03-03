@@ -23,6 +23,10 @@
 #                                                                           #
 # ######################################################################### #
 
+if (CONFIG_RENDER_ENABLE)
+
+# ######################################################################### #
+
 # LibPNG is required
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIRS})
@@ -49,6 +53,12 @@ if (WIN32)
     install(FILES ${PNG_LIBRARIES}
         DESTINATION ${INSTALL_DIR_LIBRARY}
     )
+endif ()
+
+# ######################################################################### #
+
+else ()
+    message(WARNING "'background' plugin is not built")
 endif ()
 
 # ######################################################################### #

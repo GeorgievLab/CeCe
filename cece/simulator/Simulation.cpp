@@ -390,7 +390,11 @@ void Simulation::loadConfig(const config::Configuration& config)
 
     setGravity(config.get("gravity", getGravity()));
     setIterations(config.get("iterations", getIterations()));
+
+#ifdef CECE_ENABLE_RENDER
+    setVisualized(config.get("visualized", isVisualized()));
     setBackgroundColor(config.get("background", getBackgroundColor()));
+#endif
 
     // Parse plugins
     for (auto&& pluginConfig : config.getConfigurations("plugin"))
@@ -520,9 +524,9 @@ void Simulation::storeConfig(config::Configuration& config) const
     config.set("length-coefficient", m_converter.getLengthCoefficient());
     config.set("gravity", getGravity());
     config.set("iterations", getIterations());
-    config.set("background", getBackgroundColor());
 
 #ifdef CECE_ENABLE_RENDER
+    config.set("background", getBackgroundColor());
     config.set("visualized", isVisualized());
 #endif
 

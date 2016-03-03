@@ -90,7 +90,9 @@ class ChemostatApi : public plugin::Api
             shapes[0] = Shape::makeEdges(vertices);
 
             obstacle->initShapes();
+#ifdef CECE_ENABLE_RENDER
             obstacle->setVisible(visible);
+#endif
         }
 
         // Bottom part
@@ -137,7 +139,9 @@ class ChemostatApi : public plugin::Api
             shapes[0] = Shape::makeEdges(vertices);
 
             obstacle->initShapes();
+#ifdef CECE_ENABLE_RENDER
             obstacle->setVisible(visible);
+#endif
         }
     }
 };

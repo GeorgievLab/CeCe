@@ -182,11 +182,13 @@ void Simulator::draw()
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
 void Simulator::swap()
 {
     // Swap buffers
     glfwSwapBuffers(m_window);
 }
+#endif
 
 /* ************************************************************************ */
 
@@ -227,6 +229,7 @@ void Simulator::saveImage()
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
 void Simulator::onResize(int width, int height) noexcept
 {
     // Store new window size.
@@ -236,6 +239,7 @@ void Simulator::onResize(int width, int height) noexcept
     // Update visualization
     forceRedraw();
 }
+#endif
 
 /* ************************************************************************ */
 
@@ -649,10 +653,12 @@ void Simulator::setOptimalZoom()
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
 void Simulator::forceRedraw()
 {
     m_forceRedraw = true;
 }
+#endif
 
 /* ************************************************************************ */
 

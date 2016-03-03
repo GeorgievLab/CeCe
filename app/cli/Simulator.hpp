@@ -125,7 +125,11 @@ public:
      */
     bool isTerminationRequest() const noexcept
     {
+#ifdef CECE_ENABLE_RENDER
         return m_termination || glfwWindowShouldClose(m_window);
+#else
+        return m_termination;
+#endif
     }
 
 
@@ -333,13 +337,16 @@ private:
 // Private Data Members
 private:
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
     // Physics engine debug draw.
     render::PhysicsDebugger m_physicsDebugger;
 #endif
 
     /// Termination request flag.
     bool m_termination = false;
+
+    /// If simulation is paused.
+    bool m_paused = false;
 
     /// Path to simulation file.
     FilePath m_simulationFile;
@@ -362,9 +369,6 @@ private:
 
     /// Render window.
     ViewPtr<GLFWwindow> m_window;
-
-    /// If simulation is paused.
-    bool m_paused = false;
 
     /// Force redraw flag.
     bool m_forceRedraw = false;

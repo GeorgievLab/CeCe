@@ -33,6 +33,7 @@
 #include "cece/core/Units.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/Pair.hpp"
+#include "cece/core/VectorUnits.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/simulator/IterationType.hpp"
 

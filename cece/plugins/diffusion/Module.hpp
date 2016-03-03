@@ -41,7 +41,9 @@
 #include "cece/core/Units.hpp"
 #include "cece/core/Grid.hpp"
 #include "cece/core/Range.hpp"
+#include "cece/core/UniquePtr.hpp"
 #include "cece/core/InStream.hpp"
+#include "cece/core/VectorUnits.hpp"
 #include "cece/module/Module.hpp"
 
 #ifdef CECE_ENABLE_RENDER
@@ -118,8 +120,6 @@ public:
 public:
 
 
-#ifdef CECE_ENABLE_RENDER
-
     /**
      * @brief Constructor.
      *
@@ -128,10 +128,10 @@ public:
     explicit Module(simulator::Simulation& simulation) noexcept
         : module::Module(simulation)
     {
+#ifdef CECE_ENABLE_RENDER
         setZOrder(100);
-    }
-
 #endif
+    }
 
 
 // Public Accessors

@@ -23,9 +23,9 @@
 #                                                                           #
 # ######################################################################### #
 
-if (!CONFIG_RENDER_ENABLE)
-    message(FATAL_ERROR "Cannot build module without CONFIG_RENDER_ENABLE")
-endif ()
+if (CONFIG_RENDER_ENABLE)
+
+# ######################################################################### #
 
 # LibPNG is required
 find_package(PNG REQUIRED)
@@ -53,6 +53,12 @@ if (WIN32)
     install(FILES ${PNG_LIBRARIES}
         DESTINATION ${INSTALL_DIR_LIBRARY}
     )
+endif ()
+
+# ######################################################################### #
+
+else ()
+    message(WARNING "'picture' plugin is not built")
 endif ()
 
 # ######################################################################### #

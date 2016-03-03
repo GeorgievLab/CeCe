@@ -33,8 +33,10 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/render/Context.hpp"
-#include "cece/render/Object.hpp"
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Context.hpp"
+#  include "cece/render/Object.hpp"
+#endif
 
 #ifdef CECE_THREAD_SAFE
 #  include "cece/core/Mutex.hpp"
