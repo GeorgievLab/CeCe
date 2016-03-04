@@ -8,12 +8,12 @@
       <![CDATA[[{
   "name": "Debug",
   "enabled": true,
-  "buildDirectory": "build-debug",
+  "buildDirectory": "build-debug-gui",
   "sourceDirectory": "$(WorkspacePath)",
   "generator": "",
   "buildType": "Debug",
   "arguments": [],
-  "parentProject": "cli"
+  "parentProject": ""
  }, {
   "name": "Release",
   "enabled": true,
@@ -55,6 +55,9 @@
   <VirtualDirectory Name="ui">
     <File Name="MainWindow.ui"/>
     <File Name="AboutDialog.ui"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -159,7 +162,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="CMake">
-    <File Name="CMakeLists.txt"/>
-  </VirtualDirectory>
 </CodeLite_Project>

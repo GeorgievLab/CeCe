@@ -80,7 +80,6 @@ MainWindow::MainWindow(QWidget* parent)
 
     restoreSettings();
     initRecentFiles();
-    initPlugins();
     initSimulator();
 }
 
@@ -162,13 +161,6 @@ void MainWindow::fileRecentOpen()
     QAction* action = qobject_cast<QAction*>(sender());
     if (action)
         fileOpen(action->data().toString());
-}
-
-/* ************************************************************************ */
-
-void MainWindow::viewToolbar(bool flag)
-{
-    ui->toolBar->setVisible(flag);
 }
 
 /* ************************************************************************ */
@@ -278,34 +270,7 @@ void MainWindow::simulatorFinished(bool end)
 
 void MainWindow::editTreeItemSelected(QTreeWidgetItem* item, int)
 {
-    if (item->parent() == m_pluginsItem)
-    {
-        ui->plainTextEdit->insertPlainText(QString(
-            "<plugin name=\"%1\" />\n"
-        ).arg(item->text(0)));
-    }
-    else if (item->parent() == m_modulesItem)
-    {
-        ui->plainTextEdit->insertPlainText(QString(
-            "<module name=\"%1\" />\n"
-        ).arg(item->text(0)));
-    }
-    else if (item->parent() == m_objectsItem)
-    {
-        ui->plainTextEdit->insertPlainText(QString(
-            "<object class=\"%1\" />\n"
-        ).arg(item->text(0)));
-    }
-    else if (item->parent() == m_programsItem)
-    {
-        ui->plainTextEdit->insertPlainText(QString(
-            "<program language=\"%1\">\n"
-            "<![CDATA[\n"
-            "\n"
-            "]]>\n"
-            "</program>\n"
-        ).arg(item->text(0)));
-    }
+    // TODO: implement
 }
 
 /* ************************************************************************ */
@@ -352,6 +317,7 @@ void MainWindow::fileOpen(QString filename)
     setCurrentFile(filename);
 
     m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
+    initSimulation();
     ui->reloadButton->hide();
 }
 
@@ -373,6 +339,7 @@ void MainWindow::fileSave(QString filename)
     setCurrentFile(filename);
 
     m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
+    initSimulation();
 }
 
 /* ************************************************************************ */
@@ -420,8 +387,7 @@ void MainWindow::updateRecentFileActions()
 
     for (int i = 0; i < numRecentFiles; ++i)
     {
-        QString text =
-            tr("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+        QString text = QString("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
         m_recentFiles[i]->setText(text);
         m_recentFiles[i]->setData(files[i]);
         m_recentFiles[i]->setVisible(true);
@@ -463,51 +429,50 @@ void MainWindow::initSimulator()
 
 /* ************************************************************************ */
 
-void MainWindow::initPlugins()
+void MainWindow::initSimulation()
 {
-    auto& manager = cece::plugin::Manager::s();
-    auto& context = manager.getContext();
+    auto simulation = m_simulator.getSimulation();
 
-    manager.loadAll();
+    ui->treeWidgetStructure->clear();
 
-    m_pluginsItem = new QTreeWidgetItem(ui->treeWidget);
+    m_pluginsItem = new QTreeWidgetItem(ui->treeWidgetStructure);
     m_pluginsItem->setText(0, tr("Plugins"));
 
     // Foreach available plugins
-    for (const auto& plugin : manager.getNames())
+    for (const auto& plugin : simulation->getPlugins())
     {
         auto item = new QTreeWidgetItem(m_pluginsItem);
-        item->setText(0, QString::fromStdString(plugin));
+        item->setText(0, QString::fromStdString(plugin.first));
     }
 
-    m_modulesItem = new QTreeWidgetItem(ui->treeWidget);
+    m_modulesItem = new QTreeWidgetItem(ui->treeWidgetStructure);
     m_modulesItem->setText(0, tr("Modules"));
 
     // Foreach available modules
-    for (const auto& module : context.getModuleFactoryManager().getNames())
+    for (const auto& module : simulation->getModules())
     {
         auto item = new QTreeWidgetItem(m_modulesItem);
-        item->setText(0, QString::fromStdString(module));
+        item->setText(0, QString::fromStdString(module.name));
     }
 
-    m_objectsItem = new QTreeWidgetItem(ui->treeWidget);
+    m_objectsItem = new QTreeWidgetItem(ui->treeWidgetStructure);
     m_objectsItem->setText(0, tr("Objects"));
 
-    // Foreach available objects
-    for (const auto& object : context.getObjectFactoryManager().getNames())
+    // Foreach objects
+    for (const auto& object : simulation->getObjects())
     {
         auto item = new QTreeWidgetItem(m_objectsItem);
-        item->setText(0, QString::fromStdString(object));
+        item->setText(0, QString::fromStdString(String(object->getTypeName())));
     }
 
-    m_programsItem = new QTreeWidgetItem(ui->treeWidget);
+    m_programsItem = new QTreeWidgetItem(ui->treeWidgetStructure);
     m_programsItem->setText(0, tr("Programs"));
 
     // Foreach available programs
-    for (const auto& program : context.getProgramFactoryManager().getNames())
+    for (const auto& program : simulation->getPrograms())
     {
         auto item = new QTreeWidgetItem(m_programsItem);
-        item->setText(0, QString::fromStdString(program));
+        item->setText(0, QString::fromStdString(program.name));
     }
 }
 

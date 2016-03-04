@@ -199,6 +199,17 @@ public:
      *
      * @return
      */
+    const Map<String, ViewPtr<plugin::Api>>& getPlugins() const noexcept
+    {
+        return m_plugins;
+    }
+
+
+    /**
+     * @brief Return a list of modules.
+     *
+     * @return
+     */
     const module::Container& getModules() const noexcept
     {
         return m_modules;

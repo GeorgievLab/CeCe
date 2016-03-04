@@ -131,12 +131,6 @@ public slots:
 
 
     /**
-     * @brief Toggle toolbar visibility.
-     */
-    void viewToolbar(bool);
-
-
-    /**
      * @brief Toggle fullscreen mode.
      */
     void viewFullscreen(bool);
@@ -277,9 +271,9 @@ private:
 
 
     /**
-     * @brief Initialize features supported by plugins.
+     * @brief Initialize simulation tree.
      */
-    void initPlugins();
+    void initSimulation();
 
 
 // Private Data Members
