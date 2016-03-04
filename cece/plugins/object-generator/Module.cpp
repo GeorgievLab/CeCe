@@ -161,6 +161,38 @@ InStream& operator>>(InStream& is, ObjectDesc::Distributions& distr)
 
 /* ************************************************************************ */
 
+/**
+ * @brief Write distribution description.
+ *
+ * @param os
+ * @param distr
+ *
+ * @return
+ */
+OutStream& operator<<(OutStream& os, const ObjectDesc::Distributions& distr)
+{
+    for (unsigned int i = 0; i < distr.size(); ++i)
+    {
+        switch (distr[i].type)
+        {
+        case Distribution::Type::Uniform:
+            os << "uniform"; break;
+        case Distribution::Type::Normal:
+            os << "normal"; break;
+        default:
+            throw InvalidArgumentException("Unknown distribution");
+        }
+
+        os << " " << distr[i].parameters[0];
+        os << " " << distr[i].parameters[1];
+        os << " ";
+    }
+
+    return os;
+}
+
+/* ************************************************************************ */
+
 void Module::update()
 {
     auto& simulation = getSimulation();
@@ -281,6 +313,26 @@ void Module::loadConfig(const config::Configuration& config)
         desc.config = cfg.toMemory();
 
         add(std::move(desc));
+    }
+}
+
+/* ************************************************************************ */
+
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    for (const auto& object : m_objects)
+    {
+        auto objectConfig = config.addConfiguration("object");
+
+        objectConfig.set("class", object.className);
+        objectConfig.set("rate", object.rate);
+        objectConfig.set("distribution", object.distributions);
+        //objectConfig.set("active", object.active);
+
+        // TODO: store remaining config
+        // desc.config
     }
 }
 

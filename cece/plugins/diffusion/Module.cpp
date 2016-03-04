@@ -180,7 +180,10 @@ void Module::loadConfig(const config::Configuration& config)
     for (auto&& signal : config.getConfigurations("signal"))
     {
         // Register signal
-        auto id = registerSignal(
+#ifdef CECE_ENABLE_RENDER
+        auto id =
+#endif
+        registerSignal(
             signal.get("name"),
             signal.get<DiffusionRate>("diffusion-rate"),
             signal.get<DegradationRate>("degradation-rate", Zero)
@@ -209,6 +212,34 @@ void Module::loadConfig(const config::Configuration& config)
 
         *m_dataOut << "\n";
     }
+}
+
+/* ************************************************************************ */
+
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    config.set("grid", getGridSize());
+
+    // Foreach signal configurations
+    for (std::size_t i = 0; i < getSignalCount(); ++i)
+    {
+        auto signalConfig = config.addConfiguration("signal");
+        signalConfig.set("name", m_names[i]);
+        signalConfig.set("diffusion-rate", m_diffusionRates[i]);
+        signalConfig.set("degradation-rate", m_degradationRates[i]);
+
+#ifdef CECE_ENABLE_RENDER
+        signalConfig.set("color", m_colors[i]);
+        signalConfig.set("saturation", m_signalSaturation[i]);
+#endif
+    }
+
+#ifdef CECE_ENABLE_RENDER
+    // Set background color
+    config.set("background", m_background);
+#endif
 }
 
 /* ************************************************************************ */

@@ -173,6 +173,23 @@ void Module::loadConfig(const config::Configuration& config)
 
 /* ************************************************************************ */
 
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    // Foreach bonds
+    for (const auto& bond : m_bonds)
+    {
+        auto bondConfig = config.addConfiguration("bond");
+        bondConfig.set("association-constant", bond.aConst);
+        bondConfig.set("disassociation-constant", bond.dConst);
+        bondConfig.set("ligand", bond.ligand);
+        bondConfig.set("receptor", bond.receptor);
+    }
+}
+
+/* ************************************************************************ */
+
 void Module::BeginContact(b2Contact* contact)
 {
     auto ba = contact->GetFixtureA()->GetBody();

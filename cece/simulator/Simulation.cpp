@@ -567,7 +567,7 @@ void Simulation::storeConfig(config::Configuration& config) const
     for (const auto& module : m_modules)
     {
         auto moduleConfig = config.addConfiguration("module");
-        // TODO: improve
+        moduleConfig.set("name", module.name);
         module.module->storeConfig(moduleConfig);
     }
 
@@ -575,7 +575,7 @@ void Simulation::storeConfig(config::Configuration& config) const
     for (const auto& program : m_programs)
     {
         auto programConfig = config.addConfiguration("program");
-        // TODO: improve
+        programConfig.set("name", program.name);
         program.program->storeConfig(*this, programConfig);
     }
 

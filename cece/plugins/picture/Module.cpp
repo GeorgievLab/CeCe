@@ -65,6 +65,17 @@ void Module::loadConfig(const config::Configuration& config)
 
 /* ************************************************************************ */
 
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    config.set("pattern", getFilePattern());
+    config.set("iteration", getSaveIteration());
+    config.set("alpha", m_alpha);
+}
+
+/* ************************************************************************ */
+
 void Module::update()
 {
     if (m_size == Zero)

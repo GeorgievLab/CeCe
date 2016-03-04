@@ -513,6 +513,14 @@ public:
 
 
     /**
+     * @brief Store module configuration.
+     *
+     * @param config Output configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
      * @brief Update module state.
      */
     void update() override;
@@ -845,6 +853,18 @@ private:
  * @return is.
  */
 InStream& operator>>(InStream& is, Module::LayoutType& type);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Write layout type from stream.
+ *
+ * @param os   Output stream.
+ * @param type Input type.
+ *
+ * @return os.
+ */
+OutStream& operator<<(OutStream& os, const Module::LayoutType& type);
 
 /* ************************************************************************ */
 

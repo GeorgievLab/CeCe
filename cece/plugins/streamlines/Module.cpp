@@ -81,6 +81,26 @@ InStream& operator>>(InStream& is, Module::Layout& layout)
 /* ************************************************************************ */
 
 /**
+ * @brief Write layout description.
+ *
+ * @param os     Output stream.
+ * @param layout Output layout.
+ *
+ * @return is.
+ */
+OutStream& operator<<(OutStream& os, const Module::Layout& layout)
+{
+    return os <<
+        layout[Module::LayoutPosTop] << " " <<
+        layout[Module::LayoutPosRight] << " " <<
+        layout[Module::LayoutPosBottom] << " " <<
+        layout[Module::LayoutPosLeft]
+    ;
+}
+
+/* ************************************************************************ */
+
+/**
  * @brief Read inlet velocities.
  *
  * @param is         Input stream.
@@ -94,6 +114,26 @@ InStream& operator>>(InStream& is, Module::InletVelocities& velocities)
         velocities[Module::LayoutPosTop] >>
         velocities[Module::LayoutPosRight] >>
         velocities[Module::LayoutPosBottom] >>
+        velocities[Module::LayoutPosLeft]
+    ;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Write inlet velocities.
+ *
+ * @param os         Output stream.
+ * @param velocities
+ *
+ * @return is.
+ */
+OutStream& operator<<(OutStream& os, const Module::InletVelocities& velocities)
+{
+    return os <<
+        velocities[Module::LayoutPosTop] << " " <<
+        velocities[Module::LayoutPosRight] << " " <<
+        velocities[Module::LayoutPosBottom] << " " <<
         velocities[Module::LayoutPosLeft]
     ;
 }
@@ -373,7 +413,7 @@ void Module::loadConfig(const config::Configuration& config)
         storeDataHeader();
     }
 
-#if ENABLE_RENDER
+#ifdef CECE_ENABLE_RENDER
     setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
 #endif
 
@@ -389,6 +429,29 @@ void Module::loadConfig(const config::Configuration& config)
         else
             m_initFile = config.buildFilePath(file);
     }
+}
+
+/* ************************************************************************ */
+
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    config.set("init-iterations", getInitIterations());
+    config.set("inner-iterations", getInnerIterations());
+    config.set("inlet-velocities", getInletVelocities());
+    config.set("kinematic-viscosity", getKinematicViscosity());
+    config.set("char-length", getCharLength());
+    config.set("number-nodes", getNumberNodes());
+    config.set("number-steps", getNumberSteps());
+
+    config.set("layout", getLayout());
+
+#ifdef CECE_ENABLE_RENDER
+    config.set("debug-magnitude-scale", getDebugMagnitudeScale());
+#endif
+
+    // TODO: init file
 }
 
 /* ************************************************************************ */
@@ -1269,6 +1332,26 @@ InStream& operator>>(InStream& is, Module::LayoutType& type)
         throw InvalidArgumentException("Unknown layout type");
 
     return is;
+}
+
+/* ************************************************************************ */
+
+OutStream& operator<<(OutStream& os, const Module::LayoutType& type)
+{
+    switch (type)
+    {
+    case Module::LayoutType::None:
+        os << "none"; break;
+    case Module::LayoutType::Barrier:
+        os << "barrier"; break;
+    case Module::LayoutType::Inlet:
+        os << "inlet"; break;
+    case Module::LayoutType::Outlet:
+        os << "outlet"; break;
+    default:
+        throw InvalidArgumentException("Unknown layout type");
+    }
+    return os;
 }
 
 /* ************************************************************************ */

@@ -53,7 +53,8 @@ void Module::loadConfig(const config::Configuration& config)
     module::Module::loadConfig(config);
 
     // Get image file path
-    const auto imagePath = config.buildFilePath(config.get("image"));
+    m_filePath = config.get("image");
+    const auto imagePath = config.buildFilePath(m_filePath);
 
     // Open file
     InFileStream file(imagePath.string(), InFileStream::binary);
@@ -142,6 +143,15 @@ void Module::loadConfig(const config::Configuration& config)
 
     // Read image data
     png_read_image(png, rowPtrs.data());
+}
+
+/* ************************************************************************ */
+
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    config.set("image", m_filePath);
 }
 
 /* ************************************************************************ */

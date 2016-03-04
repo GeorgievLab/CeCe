@@ -88,6 +88,14 @@ public:
 
 
     /**
+     * @brief Store module configuration.
+     *
+     * @param config Output configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
      * @brief Update module state.
      */
     void update() override;

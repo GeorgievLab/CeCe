@@ -154,7 +154,7 @@ public:
      *
      * @return Number of signals.
      */
-    size_t getSignalCount() const noexcept
+    std::size_t getSignalCount() const noexcept
     {
         return m_gridsFront.size();
     }
@@ -828,6 +828,14 @@ public:
      * @param config Source configuration.
      */
     void loadConfig(const config::Configuration& config) override;
+
+
+    /**
+     * @brief Store module configuration.
+     *
+     * @param config Output configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
 
 
     /**

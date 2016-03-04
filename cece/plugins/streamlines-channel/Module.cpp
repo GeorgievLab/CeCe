@@ -66,7 +66,7 @@ void Module::loadConfig(const config::Configuration& config)
 
 /* ************************************************************************ */
 
-void Module::storeConfig(config::Configuration& config)
+void Module::storeConfig(config::Configuration& config) const
 {
     streamlines::Module::storeConfig(config);
 

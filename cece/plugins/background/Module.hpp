@@ -39,6 +39,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/FilePath.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/render/Object.hpp"
 #include "cece/render/GridColor.hpp"
@@ -77,6 +78,14 @@ public:
 
 
     /**
+     * @brief Store module configuration.
+     *
+     * @param config Output configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
      * @brief Render module.
      *
      * @param context Rendering context.
@@ -86,6 +95,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Path to source file.
+    FilePath m_filePath;
 
     /// Image data.
     DynamicArray<unsigned char> m_data;

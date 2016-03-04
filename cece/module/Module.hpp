@@ -230,7 +230,7 @@ public:
      *
      * @param config Output configuration.
      */
-    virtual void storeConfig(config::Configuration& config);
+    virtual void storeConfig(config::Configuration& config) const;
 
 
     /**

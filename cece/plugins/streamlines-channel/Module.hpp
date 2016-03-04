@@ -113,7 +113,7 @@ public:
      *
      * @param config Output configuration.
      */
-    void storeConfig(config::Configuration& config) override;
+    void storeConfig(config::Configuration& config) const override;
 
 
 // Protected Operations

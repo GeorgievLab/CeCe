@@ -60,7 +60,7 @@ void Module::loadConfig(const config::Configuration& config)
 
 /* ************************************************************************ */
 
-void Module::storeConfig(config::Configuration& config)
+void Module::storeConfig(config::Configuration& config) const
 {
     // Store module priority
     config.set("priority", getPriority());
