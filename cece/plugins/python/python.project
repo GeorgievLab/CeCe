@@ -40,28 +40,27 @@
       <File Name="wrappers/core_VectorVelocity.cpp"/>
       <File Name="wrappers/core_VectorAcceleration.cpp"/>
       <File Name="wrappers/core_functions.cpp"/>
+      <File Name="wrappers/core_Vector.hpp"/>
     </VirtualDirectory>
     <File Name="View.cpp"/>
     <File Name="Type.cpp"/>
     <File Name="Plugin.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
-    <File Name="Module.hpp"/>
-    <File Name="Program.hpp"/>
-    <File Name="Source.hpp"/>
-    <File Name="Handle.hpp"/>
     <File Name="Exception.hpp"/>
-    <File Name="Object.hpp"/>
-    <File Name="Utils.hpp"/>
-    <File Name="Python.hpp"/>
-    <File Name="View.hpp"/>
-    <File Name="ValueCast.hpp"/>
+    <File Name="Handle.hpp"/>
     <File Name="Initializer.hpp"/>
+    <File Name="Module.hpp"/>
+    <File Name="Object.hpp"/>
     <File Name="ObjectWrapper.hpp"/>
+    <File Name="Program.hpp"/>
+    <File Name="Python.hpp"/>
+    <File Name="Source.hpp"/>
     <File Name="Type.hpp"/>
-    <VirtualDirectory Name="wrappers">
-      <File Name="wrappers/core_Vector.hpp"/>
-    </VirtualDirectory>
+    <File Name="Utils.hpp"/>
+    <File Name="ValueCast.hpp"/>
+    <File Name="View.hpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

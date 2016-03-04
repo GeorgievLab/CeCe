@@ -19,9 +19,10 @@
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
     <File Name="Library.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
     <File Name="Module.hpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

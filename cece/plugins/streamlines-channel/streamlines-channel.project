@@ -22,12 +22,10 @@
     <File Name="BgkDynamics.cpp"/>
     <File Name="ZouHeDynamics.cpp"/>
     <File Name="Descriptor.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
-    <File Name="Module.hpp"/>
     <File Name="BgkDynamics.hpp"/>
-    <File Name="ZouHeDynamics.hpp"/>
     <File Name="Descriptor.hpp"/>
+    <File Name="Module.hpp"/>
+    <File Name="ZouHeDynamics.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -23,7 +23,9 @@
     </VirtualDirectory>
     <File Name="Plugin.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="include"/>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
+  </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="-pedantic-errors;-pedantic;-std=c++11;-Wall" C_Options="" Assembler="">

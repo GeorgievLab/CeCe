@@ -24,18 +24,21 @@
     <File Name="CellBase.cpp"/>
     <File Name="DrawableYeast.cpp"/>
     <File Name="StoreMolecules.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
     <File Name="Cell.hpp"/>
-    <File Name="Yeast.hpp"/>
-    <File Name="DrawableCell.hpp"/>
     <File Name="CellBase.hpp"/>
+    <File Name="DrawableCell.hpp"/>
     <File Name="DrawableYeast.hpp"/>
-    <File Name="fs.cell.hpp"/>
-    <File Name="vs.cell.hpp"/>
-    <File Name="fs.yeast.hpp"/>
-    <File Name="vs.yeast.hpp"/>
     <File Name="StoreMolecules.hpp"/>
+    <File Name="Yeast.hpp"/>
+    <VirtualDirectory Name="resources">
+      <File Name="fs.cell.hpp"/>
+      <File Name="fs.yeast.hpp"/>
+      <File Name="vs.cell.hpp"/>
+      <File Name="vs.yeast.hpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

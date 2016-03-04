@@ -21,11 +21,12 @@
     <File Name="Library.cpp"/>
     <File Name="StoreState.cpp"/>
     <File Name="Generator.cpp"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name="include">
-    <File Name="StoreState.hpp"/>
     <File Name="Generator.hpp"/>
     <File Name="Module.hpp"/>
+    <File Name="StoreState.hpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
