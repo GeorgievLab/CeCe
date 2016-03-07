@@ -39,9 +39,8 @@ namespace config {
 
 /* ************************************************************************ */
 
-Configuration::Configuration(FilePath path, ViewPtr<Parameters> parameters) noexcept
+Configuration::Configuration(ViewPtr<Parameters> parameters) noexcept
     : m_impl(makeUnique<MemoryImplementation>())
-    , m_filePath(std::move(path))
     , m_parameters(parameters)
 {
     // Nothign to do
@@ -57,20 +56,9 @@ DynamicArray<Configuration> Configuration::getConfigurations(StringView name) co
     DynamicArray<Configuration> res;
 
     for (auto&& ptr : m_impl->getSubs(name))
-        res.emplace_back(std::move(ptr), m_filePath, m_parameters);
+        res.emplace_back(std::move(ptr), m_parameters);
 
     return res;
-}
-
-/* ************************************************************************ */
-
-FilePath Configuration::buildFilePath(const FilePath& filename) const noexcept
-{
-    // Remove filename
-    auto sourceFile = getSourcePath();
-
-    // Return file path
-    return sourceFile.parent_path() / filename;
 }
 
 /* ************************************************************************ */
@@ -94,7 +82,7 @@ void Configuration::copyFrom(const Configuration& config)
 
 Configuration Configuration::toMemory() const
 {
-    Configuration config{getSourcePath()};
+    Configuration config;
     config.copyFrom(*this);
     return config;
 }

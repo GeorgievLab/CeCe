@@ -31,7 +31,7 @@
 
 // CeCe
 #include "cece/core/VectorRange.hpp"
-#include "cece/core/FileStream.hpp"
+#include "cece/core/InStream.hpp"
 #include "cece/render/Color.hpp"
 #include "cece/simulator/Simulation.hpp"
 
@@ -52,16 +52,32 @@ void Module::loadConfig(const config::Configuration& config)
     // Configure parent
     module::Module::loadConfig(config);
 
-    // Get image file path
-    m_filePath = config.get("image");
-    const auto imagePath = config.buildFilePath(m_filePath);
+    // Get image name
+    setImageName(config.get("image"));
+}
 
-    // Open file
-    InFileStream file(imagePath.string(), InFileStream::binary);
+/* ************************************************************************ */
+
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    config.set("image", getImageName());
+}
+
+/* ************************************************************************ */
+
+void Module::init()
+{
+    // Get image resource
+    auto file = getSimulation().getResource(getImageName());
+
+    if (!file)
+        throw RuntimeException("Image '" + getImageName() + "' not found");
 
     // Read and check header
     png_byte header[PNGSIGSIZE];
-    file.read(reinterpret_cast<char*>(header), sizeof(header));
+    file->read(reinterpret_cast<char*>(header), sizeof(header));
     if (png_sig_cmp(header, 0, PNGSIGSIZE))
         throw RuntimeException("Asset is not a PNG file");
 
@@ -88,8 +104,8 @@ void Module::loadConfig(const config::Configuration& config)
     }
 
     // Set read function
-    png_set_read_fn(png, &file, [](png_structp png, png_bytep buf, png_size_t size) noexcept {
-        InFileStream* file = reinterpret_cast<InFileStream*>(png_get_io_ptr(png));
+    png_set_read_fn(png, file.get(), [](png_structp png, png_bytep buf, png_size_t size) noexcept {
+        InStream* file = reinterpret_cast<InStream*>(png_get_io_ptr(png));
         file->read(reinterpret_cast<char*>(buf), size);
     });
 
@@ -143,15 +159,6 @@ void Module::loadConfig(const config::Configuration& config)
 
     // Read image data
     png_read_image(png, rowPtrs.data());
-}
-
-/* ************************************************************************ */
-
-void Module::storeConfig(config::Configuration& config) const
-{
-    module::Module::storeConfig(config);
-
-    config.set("image", m_filePath);
 }
 
 /* ************************************************************************ */

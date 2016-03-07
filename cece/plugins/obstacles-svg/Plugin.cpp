@@ -23,6 +23,10 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// C++
+#include <iterator>
+#include <algorithm>
+
 // CeCe
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/StaticArray.hpp"
@@ -179,10 +183,20 @@ class ObstaclesSvgApi : public plugin::Api
     void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override
     {
         const float px = 0.3;
-        const auto filepath = config.buildFilePath(config.get("filename"));
+        const auto file = simulation.getResource(config.get("filename"));
+
+        if (!file)
+            throw RuntimeException("SVG file not found");
+
+        DynamicArray<char> content;
+        content.reserve(2048);
+
+        *file >> std::noskipws;
+        std::copy(std::istream_iterator<char>(*file), std::istream_iterator<char>(),
+            std::back_inserter(content));
 
         // SVG image
-        NSVGimage* image = nsvgParseFromFile(filepath.string().c_str(), "px", 96);
+        NSVGimage* image = nsvgParse(content.data(), "px", 96);
 
         if (!image)
             throw RuntimeException("Cannot parse SVG");

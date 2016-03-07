@@ -427,7 +427,7 @@ void Module::loadConfig(const config::Configuration& config)
         if (file.substr(0, 6) == "%temp%")
             m_initFile = tempDirectory() / file.substr(6);
         else
-            m_initFile = config.buildFilePath(file);
+            m_initFile = file;
     }
 }
 

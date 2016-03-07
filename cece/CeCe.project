@@ -160,6 +160,7 @@
       <File Name="core/InStream.hpp"/>
       <File Name="core/OutStream.hpp"/>
       <File Name="core/StringStream.hpp"/>
+      <File Name="core/InOutStream.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="unit">
       <File Name="core/Units.cpp"/>

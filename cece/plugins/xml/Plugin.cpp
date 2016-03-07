@@ -68,7 +68,7 @@ class XmlLoader : public loader::Loader
     UniquePtr<Simulation> fromStream(plugin::Context& context, InStream& source,
         const FilePath& filename, ViewPtr<const Parameters> parameters) const override
     {
-        auto simulation = makeUnique<Simulation>(context);
+        auto simulation = makeUnique<Simulation>(context, filename);
 
         if (parameters)
             simulation->getParameters().merge(*parameters);
@@ -82,7 +82,6 @@ class XmlLoader : public loader::Loader
         // Create configuration
         const config::Configuration config(
             makeUnique<plugin::xml::ConfigImplementation>(doc.document_element()),
-            filename,
             &simulation->getParameters()
         );
 
@@ -107,7 +106,7 @@ class XmlLoader : public loader::Loader
         // Create output configuration
         config::Configuration config(
             makeUnique<plugin::xml::ConfigImplementation>(doc.document_element()),
-            filename
+            nullptr
         );
 
         // Store configuration

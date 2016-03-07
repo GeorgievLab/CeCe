@@ -27,131 +27,23 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
-#ifndef CECE_ENABLE_RENDER
-#error Background plugin requires enabled rendering.
-#endif
-
-/* ************************************************************************ */
-
-// CeCe
-#include "cece/core/String.hpp"
-#include "cece/module/Module.hpp"
-#include "cece/render/Object.hpp"
-#include "cece/render/GridColor.hpp"
+// C++
+#include <iostream>
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace background {
+inline namespace core {
 
 /* ************************************************************************ */
 
 /**
- * @brief Module for rendering background image.
+ * @brief Input & output stream type.
  */
-class Module : public module::Module
-{
-
-// Public Ctors & Dtors
-public:
-
-
-    using module::Module::Module;
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns background image name.
-     *
-     * @return
-     */
-    const String& getImageName() const noexcept
-    {
-        return m_imageName;
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Set background image name.
-     *
-     * @param name
-     */
-    void setImageName(String name) noexcept
-    {
-        m_imageName = std::move(name);
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Load module configuration.
-     *
-     * @param config Source configuration.
-     */
-    void loadConfig(const config::Configuration& config) override;
-
-
-    /**
-     * @brief Store module configuration.
-     *
-     * @param config Output configuration.
-     */
-    void storeConfig(config::Configuration& config) const override;
-
-
-    /**
-     * @brief Initialize module.
-     */
-    void init() override;
-
-
-    /**
-     * @brief Render module.
-     *
-     * @param context Rendering context.
-     */
-    void draw(render::Context& context) override;
-
-
-// Private Data Members
-private:
-
-    /// Image name.
-    String m_imageName;
-
-    /// Image data.
-    DynamicArray<unsigned char> m_data;
-
-    /// Image size.
-    Vector<unsigned int> m_size = Zero;
-
-    // Number of channels.
-    int m_channels;
-
-    /// Drawable object.
-    render::ObjectPtr<render::GridColor> m_drawable;
-
-};
+using InOutStream = std::iostream;
 
 /* ************************************************************************ */
 
-}
 }
 }
 

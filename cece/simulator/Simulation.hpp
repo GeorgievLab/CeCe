@@ -47,11 +47,13 @@
 #include "cece/core/Pair.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
+#include "cece/core/FilePath.hpp"
+#include "cece/core/InStream.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/DataTable.hpp"
 #include "cece/core/Parameters.hpp"
-#include "cece/core/OutStream.hpp"
+#include "cece/core/InOutStream.hpp"
 #include "cece/init/Initializer.hpp"
 #include "cece/init/Container.hpp"
 #include "cece/module/Module.hpp"
@@ -114,8 +116,9 @@ public:
      * @brief Constructor.
      *
      * @param context Plugin context.
+     * @param path    Path to simulation file.
      */
-    explicit Simulation(plugin::Context& context) noexcept;
+    explicit Simulation(plugin::Context& context, FilePath path = "<memory>") noexcept;
 
 
     /**
@@ -147,6 +150,17 @@ public:
     const plugin::Context& getPluginContext() const noexcept
     {
         return m_pluginContext;
+    }
+
+
+    /**
+     * @brief Returns simulation file name.
+     *
+     * @return
+     */
+    const FilePath& getFileName() const noexcept
+    {
+        return m_fileName;
     }
 
 
@@ -649,6 +663,16 @@ public:
 #endif
 
 
+    /**
+     * @brief Returns simulation resource.
+     *
+     * @param name Resource name.
+     *
+     * @return Pointer to resource stream or nullptr.
+     */
+    UniquePtr<InOutStream> getResource(const String& name) noexcept;
+
+
 // Public Mutators
 public:
 
@@ -1105,6 +1129,9 @@ private:
 
     /// Simulation plugin context.
     plugin::Context& m_pluginContext;
+
+    /// Path of simulation file.
+    FilePath m_fileName;
 
     /// If simulation is initialized.
     bool m_initialized = false;

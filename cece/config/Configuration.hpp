@@ -30,7 +30,6 @@
 // CeCe
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
-#include "cece/core/FilePath.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/Exception.hpp"
@@ -58,21 +57,13 @@ public:
 
 
     /**
-     * @brief Default constructor.
-     */
-    Configuration() = default;
-
-
-    /**
      * @brief Constructor.
      *
      * @param impl       Implementation.
-     * @param path       Path to source file.
      * @param parameters Optional parameters.
      */
-    Configuration(UniquePtr<Implementation> impl, FilePath path, ViewPtr<Parameters> parameters = nullptr) noexcept
+    Configuration(UniquePtr<Implementation> impl, ViewPtr<Parameters> parameters = nullptr) noexcept
         : m_impl(std::move(impl))
-        , m_filePath(std::move(path))
         , m_parameters(parameters)
     {
         // Nothign to do
@@ -83,12 +74,10 @@ public:
      * @brief Constructor.
      *
      * @param impl       Implementation.
-     * @param path       Path to source file.
      * @param parameters Optional parameters.
      */
-    Configuration(Implementation* impl, FilePath path, ViewPtr<Parameters> parameters = nullptr) noexcept
+    Configuration(Implementation* impl, ViewPtr<Parameters> parameters = nullptr) noexcept
         : m_impl(impl)
-        , m_filePath(std::move(path))
         , m_parameters(parameters)
     {
         // Nothign to do
@@ -98,25 +87,13 @@ public:
     /**
      * @brief Constructor (memory version).
      *
-     * @param path       Path to source file.
      * @param parameters Optional parameters.
      */
-    explicit Configuration(FilePath path, ViewPtr<Parameters> parameters = nullptr) noexcept;
+    explicit Configuration(ViewPtr<Parameters> parameters = nullptr) noexcept;
 
 
 // Public Accessors
 public:
-
-
-    /**
-     * @brief Returns of the source file.
-     *
-     * @return
-     */
-    const FilePath& getSourcePath() const noexcept
-    {
-        return m_filePath;
-    }
 
 
     /**
@@ -296,7 +273,7 @@ public:
      * @param name  Value name.
      * @param value Value to store.
      */
-    void set(const StringView& name, const StringView& value) noexcept
+    void set(StringView name, StringView value) noexcept
     {
         m_impl->set(name, value);
     }
@@ -311,7 +288,7 @@ public:
      * @param value Value to store.
      */
     template<typename T>
-    void set(const String& name, T value) noexcept
+    void set(StringView name, T value) noexcept
     {
         m_impl->set(name, castTo(value));
     }
@@ -322,7 +299,7 @@ public:
      *
      * @param content Content text.
      */
-    void setContent(const StringView& content) noexcept
+    void setContent(StringView content) noexcept
     {
         m_impl->setContent(content);
     }
@@ -335,25 +312,14 @@ public:
      *
      * @return New configuration.
      */
-    Configuration addConfiguration(const StringView& name) noexcept
+    Configuration addConfiguration(StringView name) noexcept
     {
-        return {m_impl->addSub(name), m_filePath};
+        return {m_impl->addSub(name)};
     }
 
 
 // Public Operations
 public:
-
-
-    /**
-     * @brief Create usable path for filename in directory where the source
-     * come from.
-     *
-     * @param filename
-     *
-     * @return
-     */
-    FilePath buildFilePath(const FilePath& filename) const noexcept;
 
 
     /**
@@ -424,9 +390,6 @@ private:
 
     /// Configuration implementation.
     UniquePtr<Implementation> m_impl;
-
-    /// Path to source configuration.
-    FilePath m_filePath;
 
     /// Optional parameters.
     ViewPtr<Parameters> m_parameters;

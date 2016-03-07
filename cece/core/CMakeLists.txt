@@ -59,6 +59,7 @@ add_library(${PROJECT_NAME} OBJECT
     Exception.hpp
     OutStream.hpp
     InStream.hpp
+    InOutStream.hpp
     FileStream.hpp
     ValueIterator.hpp
     Range.hpp

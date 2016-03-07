@@ -134,8 +134,9 @@ void writeCsvLine(OutStream& os, const Container& container)
 
 /* ************************************************************************ */
 
-Simulation::Simulation(plugin::Context& context) noexcept
+Simulation::Simulation(plugin::Context& context, FilePath path) noexcept
     : m_pluginContext(context)
+    , m_fileName(std::move(path))
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     , m_world{b2Vec2{0.0f, 0.0f}}
 #endif
@@ -167,6 +168,24 @@ AccelerationVector Simulation::getGravity() const noexcept
 #else
     return AccelerationVector{Zero};
 #endif
+}
+
+/* ************************************************************************ */
+
+UniquePtr<InOutStream> Simulation::getResource(const String& name) noexcept
+{
+    // Path to resource
+    const auto path = getFileName().parent_path() / name;
+
+    if (!fileExists(path))
+        return nullptr;
+
+    auto file = makeUnique<FileStream>(path.string(), std::ios::in | std::ios::out | std::ios::binary);
+
+    if (!file->is_open())
+        return nullptr;
+
+    return UniquePtr<InOutStream>{file.release()};
 }
 
 /* ************************************************************************ */
