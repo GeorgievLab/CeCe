@@ -81,6 +81,6 @@ public:
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(stochastic_reactions, StochasticReactionsApi)
+CECE_DEFINE_PLUGIN(stochastic_reactions, StochasticReactionsApi)
 
 /* ************************************************************************ */

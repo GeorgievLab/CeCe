@@ -81,6 +81,6 @@ class DiffusionPythonApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(diffusion_python, DiffusionPythonApi)
+CECE_DEFINE_PLUGIN(diffusion_python, DiffusionPythonApi)
 
 /* ************************************************************************ */

@@ -65,6 +65,6 @@ class BackgroundApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(background, BackgroundApi)
+CECE_DEFINE_PLUGIN(background, BackgroundApi)
 
 /* ************************************************************************ */

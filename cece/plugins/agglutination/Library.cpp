@@ -65,6 +65,6 @@ class AgglutinationApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(agglutination, AgglutinationApi)
+CECE_DEFINE_PLUGIN(agglutination, AgglutinationApi)
 
 /* ************************************************************************ */

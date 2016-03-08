@@ -250,6 +250,6 @@ class ObstaclesSvgApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(obstacles_svg, ObstaclesSvgApi)
+CECE_DEFINE_PLUGIN(obstacles_svg, ObstaclesSvgApi)
 
 /* ************************************************************************ */

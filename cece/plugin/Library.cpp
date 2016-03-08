@@ -23,6 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// CeCe Config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // Declaration
 #include "cece/plugin/Library.hpp"
 
@@ -206,30 +211,22 @@ Library::Library(String name, FilePath path)
     m_impl.reset(new Impl{std::move(path)});
 
     if (!m_impl->isLoaded())
-        throw RuntimeException("Library '" + name + "' cannot be loaded: " + m_impl->getError());
+        throw RuntimeException("Library '" + getName() + "' cannot be loaded: " + m_impl->getError());
 
-    // Check API version
-    auto apiVerFn = m_impl->getAddr<ApiVersionFn>("api_version");
+    // Get configuration
+    auto getConfigFn = m_impl->getAddr<GetConfigFn>("get_config");
 
-    if (!apiVerFn)
-        throw RuntimeException("Library '" + name + "' doesn't contains 'api_version' function");
+    if (!getConfigFn)
+        throw RuntimeException("Library '" + getName() + "' doesn't contains 'get_config' function");
 
-    if (apiVerFn() != PLUGIN_API_VERSION)
-        throw RuntimeException("Library '" + name + "' API version is different from the simulator");
+    // Check configuration
+    checkConfig(getConfigFn());
 
-    // Check real type size
-    auto realSizeFn = m_impl->getAddr<RealSizeFn>("real_size");
-
-    if (!realSizeFn)
-        throw RuntimeException("Library '" + name + "' doesn't contains 'real_size' function");
-
-    if (realSizeFn() != sizeof(RealType))
-        throw RuntimeException("Library '" + name + "' real type size is different from the simulator");
-
+    // Get create API function
     auto fn = m_impl->getAddr<CreateFn>("create");
 
     if (!fn)
-        throw RuntimeException("Library '" + name + "' doesn't contains 'create' function");
+        throw RuntimeException("Library '" + getName() + "' doesn't contains 'create' function");
 
     Log::debug("Library loaded `", getName(), "`.");
 
@@ -242,6 +239,47 @@ Library::Library(String name, FilePath path)
 Library::~Library()
 {
     Log::debug("Library released `", getName(), "`.");
+}
+
+/* ************************************************************************ */
+
+void Library::checkConfig(Config* config)
+{
+    if (!config)
+        throw RuntimeException("Library '" + getName() + "' returns no config");
+
+    if (config->apiVersion != config::PLUGIN_API_VERSION)
+        throw RuntimeException("Library '" + getName() + "' is built against different API version than CeCe");
+
+    if (config->dimension != config::DIMENSION)
+        throw RuntimeException("Library '" + getName() + "' returns nullptr config");
+
+    if (config->realSize != sizeof(config::RealType))
+        throw RuntimeException("Library '" + getName() + "' is built with different real type than CeCe");
+
+#ifdef CECE_ENABLE_RENDER
+    if (!config->renderEnabled)
+        throw RuntimeException("Library '" + getName() + "' is built without render support, but CeCe did");
+#else
+    if (config->renderEnabled)
+        throw RuntimeException("Library '" + getName() + "' is built with render support, but CeCe didn't");
+#endif
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+    if (!config->builtinPhysics)
+        throw RuntimeException("Library '" + getName() + "' is built without builtin physics, but CeCe did");
+#else
+    if (config->builtinPhysics)
+        throw RuntimeException("Library '" + getName() + "' is built with builtin physics, but CeCe didn't");
+#endif
+
+#ifdef CECE_THREAD_SAFE
+    if (!config->threadSafe)
+        throw RuntimeException("Library '" + getName() + "' is built without thread safety, but CeCe did");
+#else
+    if (config->threadSafe)
+        throw RuntimeException("Library '" + getName() + "' is built with thread safety, but CeCe didn't");
+#endif
 }
 
 /* ************************************************************************ */

@@ -114,6 +114,6 @@ class PythonApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(python, PythonApi)
+CECE_DEFINE_PLUGIN(python, PythonApi)
 
 /* ************************************************************************ */

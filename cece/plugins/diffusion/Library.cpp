@@ -71,6 +71,6 @@ class DiffusionApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(diffusion, DiffusionApi)
+CECE_DEFINE_PLUGIN(diffusion, DiffusionApi)
 
 /* ************************************************************************ */

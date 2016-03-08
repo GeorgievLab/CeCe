@@ -65,6 +65,6 @@ class PictureApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(picture, PictureApi)
+CECE_DEFINE_PLUGIN(picture, PictureApi)
 
 /* ************************************************************************ */

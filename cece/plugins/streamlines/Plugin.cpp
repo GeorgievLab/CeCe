@@ -78,6 +78,6 @@ public:
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(streamlines, StreamlinesApi)
+CECE_DEFINE_PLUGIN(streamlines, StreamlinesApi)
 
 /* ************************************************************************ */

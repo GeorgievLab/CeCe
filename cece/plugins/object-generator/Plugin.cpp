@@ -65,6 +65,6 @@ class ObjectGeneratorApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(object_generator, ObjectGeneratorApi)
+CECE_DEFINE_PLUGIN(object_generator, ObjectGeneratorApi)
 
 /* ************************************************************************ */

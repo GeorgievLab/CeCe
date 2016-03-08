@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,64 +23,32 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Must be first
-#include "cece/plugins/python/Python.hpp"
-
-// CeCe
-#include "cece/plugin/definition.hpp"
-#include "cece/plugin/Api.hpp"
-#include "cece/simulator/Simulation.hpp"
+#pragma once
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace plugin {
-namespace streamlines_python {
 
 /* ************************************************************************ */
 
-void init_Module(PyObject* module);
-
-/* ************************************************************************ */
-
-void init()
+/**
+ * @brief Library configuration. Plugin with different configuration
+ * cannot be used in simulation.
+ */
+struct Config
 {
-    PyObject* module = Py_InitModule("streamlines", nullptr);
-
-    init_Module(module);
-}
-
-/* ************************************************************************ */
-
-}
-}
-}
-
-/* ************************************************************************ */
-
-using namespace cece;
-using namespace cece::simulator;
-
-/* ************************************************************************ */
-
-class StreamlinesPythonApi : public plugin::Api
-{
-
-    DynamicArray<String> requiredPlugins() const override
-    {
-        return {"python", "streamlines"};
-    }
-
-
-    void initSimulation(Simulation& simulation) override
-    {
-        simulation.requirePlugin("python");
-        plugin::streamlines_python::init();
-    }
+    int apiVersion;
+    int realSize;
+    int renderEnabled;
+    int builtinPhysics;
+    int threadSafe;
+    int dimension;
 };
 
 /* ************************************************************************ */
 
-CECE_DEFINE_PLUGIN(streamlines_python, StreamlinesPythonApi)
+}
+}
 
 /* ************************************************************************ */

@@ -84,6 +84,6 @@ class CellPythonApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(cell_python, CellPythonApi)
+CECE_DEFINE_PLUGIN(cell_python, CellPythonApi)
 
 /* ************************************************************************ */

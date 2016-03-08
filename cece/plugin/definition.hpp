@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,10 +27,37 @@
 
 /* ************************************************************************ */
 
-/**
- * @brief Plugin API version.
- */
-#define PLUGIN_API_VERSION 2
+// CeCe Config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
+// CeCe
+#include "cece/plugin/Config.hpp"
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+#  define CECE_ENABLE_RENDER_VALUE 1
+#else
+#  define CECE_ENABLE_RENDER_VALUE 0
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+#  define CECE_ENABLE_BOX2D_PHYSICS_VALUE 1
+#else
+#  define CECE_ENABLE_BOX2D_PHYSICS_VALUE 0
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_THREAD_SAFE
+#  define CECE_THREAD_SAFE_VALUE 1
+#else
+#  define CECE_THREAD_SAFE_VALUE 0
+#endif
 
 /* ************************************************************************ */
 
@@ -40,7 +67,7 @@
  * @param prefix Function prefix.
  * @param name   Plugin name.
  */
-#define PLUGIN_PROTOTYPE_NAME_EXTERN(prefix, name) prefix
+#define CECE_PLUGIN_PROTOTYPE_NAME_EXTERN(prefix, name) prefix
 
 /* ************************************************************************ */
 
@@ -50,7 +77,7 @@
  * @param prefix Function prefix.
  * @param name   Plugin name.
  */
-#define PLUGIN_PROTOTYPE_NAME_BUILTIN(prefix, name) prefix ## _ ## name
+#define CECE_PLUGIN_PROTOTYPE_NAME_BUILTIN(prefix, name) prefix ## _ ## name
 
 /* ************************************************************************ */
 
@@ -59,10 +86,10 @@
  *
  * @param name Plugin name.
  */
-#if PLUGIN_BUILTIN
-#define PLUGIN_PROTOTYPE_NAME(prefix, name) PLUGIN_PROTOTYPE_NAME_BUILTIN(prefix, name)
+#if CECE_PLUGIN_BUILTIN
+#define CECE_PLUGIN_PROTOTYPE_NAME(prefix, name) CECE_PLUGIN_PROTOTYPE_NAME_BUILTIN(prefix, name)
 #else
-#define PLUGIN_PROTOTYPE_NAME(prefix, name) PLUGIN_PROTOTYPE_NAME_EXTERN(prefix, name)
+#define CECE_PLUGIN_PROTOTYPE_NAME(prefix, name) CECE_PLUGIN_PROTOTYPE_NAME_EXTERN(prefix, name)
 #endif
 
 /* ************************************************************************ */
@@ -72,8 +99,8 @@
  *
  * @param name Plugin name.
  */
-#define PLUGIN_CREATE_PROTOTYPE(name) \
-    extern "C" cece::plugin::Api* PLUGIN_PROTOTYPE_NAME(create, name)()
+#define CECE_PLUGIN_CREATE_PROTOTYPE(name) \
+    extern "C" cece::plugin::Api* CECE_PLUGIN_PROTOTYPE_NAME(create, name)()
 
 /* ************************************************************************ */
 
@@ -82,7 +109,7 @@
  *
  * @param name Plugin name.
  */
-#define DECLARE_PLUGIN_CREATE(name) PLUGIN_CREATE_PROTOTYPE(name)
+#define CECE_DECLARE_PLUGIN_CREATE(name) CECE_PLUGIN_CREATE_PROTOTYPE(name)
 
 /* ************************************************************************ */
 
@@ -92,8 +119,8 @@
  * @param name      Plugin name.
  * @param className Plugin API class name.
  */
-#define DEFINE_PLUGIN_CREATE(name, className) \
-    PLUGIN_CREATE_PROTOTYPE(name) \
+#define CECE_DEFINE_PLUGIN_CREATE(name, className) \
+    CECE_PLUGIN_CREATE_PROTOTYPE(name) \
     { \
         return new className{}; \
     }
@@ -101,65 +128,41 @@
 /* ************************************************************************ */
 
 /**
- * @brief Prototype of function for returning plugin API version.
+ * @brief Prototype of function for returning plugin configuration.
  *
  * @param name Plugin name.
  */
-#define PLUGIN_API_VERSION_PROTOTYPE(name) \
-    extern "C" int PLUGIN_PROTOTYPE_NAME(api_version, name)()
+#define CECE_PLUGIN_GET_CONFIG_PROTOTYPE(name) \
+    extern "C" cece::plugin::Config* CECE_PLUGIN_PROTOTYPE_NAME(get_config, name)()
 
 /* ************************************************************************ */
 
 /**
- * @brief Declare function for returning plugin API version.
+ * @brief Declare function for returning plugin configuration.
  *
  * @param name Plugin name.
  */
-#define DECLARE_PLUGIN_API_VERSION(name) PLUGIN_API_VERSION_PROTOTYPE(name)
+#define CECE_DECLARE_GET_CONFIG_VERSION(name) CECE_PLUGIN_GET_CONFIG_PROTOTYPE(name)
 
 /* ************************************************************************ */
 
 /**
- * @brief Define function for returning plugin API version.
+ * @brief Define function for returning plugin configuration.
  *
  * @param name Plugin name.
  */
-#define DEFINE_PLUGIN_API_VERSION(name) \
-    PLUGIN_API_VERSION_PROTOTYPE(name) \
+#define CECE_DEFINE_GET_CONFIG_VERSION(name) \
+    CECE_PLUGIN_GET_CONFIG_PROTOTYPE(name) \
     { \
-        return PLUGIN_API_VERSION; \
-    }
-
-/* ************************************************************************ */
-
-/**
- * @brief Prototype of function for returning plugin real type size.
- *
- * @param name Plugin name.
- */
-#define PLUGIN_REAL_SIZE_PROTOTYPE(name) \
-    extern "C" unsigned int PLUGIN_PROTOTYPE_NAME(real_size, name)()
-
-/* ************************************************************************ */
-
-/**
- * @brief Declare function for returning plugin real type size.
- *
- * @param name Plugin name.
- */
-#define DECLARE_PLUGIN_REAL_SIZE(name) PLUGIN_REAL_SIZE_PROTOTYPE(name)
-
-/* ************************************************************************ */
-
-/**
- * @brief Define function for returning plugin real type size.
- *
- * @param name Plugin name.
- */
-#define DEFINE_PLUGIN_REAL_SIZE(name) \
-    PLUGIN_REAL_SIZE_PROTOTYPE(name) \
-    { \
-        return sizeof(RealType); \
+        static cece::plugin::Config config = { \
+            cece::config::PLUGIN_API_VERSION,   /* apiVersion */ \
+            sizeof(cece::config::RealType),     /* realSize */ \
+            CECE_ENABLE_RENDER_VALUE,           /* renderEnabled */ \
+            CECE_ENABLE_BOX2D_PHYSICS_VALUE,    /* builtinPhysics */ \
+            CECE_THREAD_SAFE_VALUE,             /* threadSafe */ \
+            cece::config::DIMENSION             /* dimension */ \
+        }; \
+        return &config; \
     }
 
 /* ************************************************************************ */
@@ -169,10 +172,9 @@
  *
  * @param name Plugin name.
  */
-#define DECLARE_PLUGIN(name) \
-    DECLARE_PLUGIN_CREATE(name); \
-    DECLARE_PLUGIN_API_VERSION(name); \
-    DECLARE_PLUGIN_REAL_SIZE(name)
+#define CECE_DECLARE_PLUGIN(name) \
+    CECE_DECLARE_PLUGIN_CREATE(name); \
+    CECE_DECLARE_GET_CONFIG_VERSION(name)
 
 /* ************************************************************************ */
 
@@ -182,9 +184,8 @@
  * @param name      Plugin name.
  * @param className Plugin API class name.
  */
-#define DEFINE_PLUGIN(name, className) \
-    DEFINE_PLUGIN_CREATE(name, className) \
-    DEFINE_PLUGIN_API_VERSION(name) \
-    DEFINE_PLUGIN_REAL_SIZE(name)
+#define CECE_DEFINE_PLUGIN(name, className) \
+    CECE_DEFINE_PLUGIN_CREATE(name, className) \
+    CECE_DEFINE_GET_CONFIG_VERSION(name)
 
 /* ************************************************************************ */

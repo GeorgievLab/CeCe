@@ -71,6 +71,6 @@ class DiffusionStreamlinesApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(diffusion_streamlines, DiffusionStreamlinesApi)
+CECE_DEFINE_PLUGIN(diffusion_streamlines, DiffusionStreamlinesApi)
 
 /* ************************************************************************ */

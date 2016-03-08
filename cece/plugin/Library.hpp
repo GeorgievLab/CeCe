@@ -28,13 +28,11 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Real.hpp"
 #include "cece/core/String.hpp"
-#include "cece/core/DynamicArray.hpp"
-#include "cece/core/Map.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/FilePath.hpp"
+#include "cece/plugin/Config.hpp"
 
 /* ************************************************************************ */
 
@@ -72,11 +70,8 @@ public:
     /// Create API function pointer type.
     using CreateFn = Api* (*)();
 
-    /// API version function pointer type.
-    using ApiVersionFn = int (*)();
-
-    /// Size of real type.
-    using RealSizeFn = unsigned int (*)();
+    /// Returns plugin configuration.
+    using GetConfigFn = Config* (*)();
 
 
 // Public Ctors & Dtors
@@ -131,6 +126,20 @@ public:
     {
         return m_api;
     }
+
+
+// Private Operations
+private:
+
+
+    /**
+     * @brief Check configuration file.
+     *
+     * @param config
+     *
+     * @throw
+     */
+    void checkConfig(Config* config);
 
 
 // Private Data Members

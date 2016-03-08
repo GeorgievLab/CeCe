@@ -80,6 +80,6 @@ public:
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(streamlines_channel, StreamlinesChannelApi)
+CECE_DEFINE_PLUGIN(streamlines_channel, StreamlinesChannelApi)
 
 /* ************************************************************************ */

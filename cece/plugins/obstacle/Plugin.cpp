@@ -75,6 +75,6 @@ class ObstacleApi : public plugin::Api
 
 /* ************************************************************************ */
 
-DEFINE_PLUGIN(obstacle, ObstacleApi)
+CECE_DEFINE_PLUGIN(obstacle, ObstacleApi)
 
 /* ************************************************************************ */
