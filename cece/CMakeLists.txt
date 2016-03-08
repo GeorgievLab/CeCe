@@ -159,6 +159,12 @@ install(TARGETS ${PROJECT_NAME}
     COMPONENT Library
 )
 
+# Install configuration file
+install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/config.hpp
+    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}
+    COMPONENT Headers
+)
+
 if (APPLE)
     # Fix library paths
     install(

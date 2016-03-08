@@ -30,6 +30,8 @@ project(plugin CXX)
 
 # Sources
 set(SRCS
+    Config.hpp
+    definition.hpp
     Library.hpp
     Library.cpp
     Api.hpp
@@ -53,5 +55,14 @@ add_library(${PROJECT_NAME} OBJECT ${SRCS})
 # ######################################################################### #
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
+
+# ######################################################################### #
+
+# Install header files
+install(DIRECTORY .
+    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
+    COMPONENT Headers
+    FILES_MATCHING PATTERN "*.hpp"
+)
 
 # ######################################################################### #
