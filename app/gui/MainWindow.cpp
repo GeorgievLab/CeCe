@@ -78,6 +78,11 @@ MainWindow::MainWindow(QWidget* parent)
     ui->actionPause->setEnabled(false);
     ui->actionReset->setEnabled(false);
 
+    ui->menuView->addAction(ui->toolBar->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetStructure->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetProperties->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetLog->toggleViewAction());
+
     restoreSettings();
     initRecentFiles();
     initSimulator();

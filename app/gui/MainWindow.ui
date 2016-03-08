@@ -199,12 +199,8 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionViewToolbar"/>
-    <addaction name="actionViewStructure"/>
-    <addaction name="actionViewProperties"/>
-    <addaction name="actionViewLog"/>
-    <addaction name="separator"/>
     <addaction name="actionFullscreen"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -236,7 +232,7 @@
    <addaction name="actionStep"/>
    <addaction name="actionReset"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidgetTree">
+  <widget class="QDockWidget" name="dockWidgetStructure">
    <property name="windowTitle">
     <string>Structure</string>
    </property>
@@ -368,8 +364,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset theme="document-new">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -381,8 +376,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset theme="document-save">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
@@ -394,8 +388,7 @@
   <action name="actionSaveAs">
    <property name="icon">
     <iconset theme="document-save-as">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Save &amp;As...</string>
@@ -407,8 +400,7 @@
   <action name="actionRecentFile1">
    <property name="icon">
     <iconset>
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;1 recent 1</string>
@@ -417,8 +409,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset theme="application-exit">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Exit</string>
@@ -483,22 +474,10 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset theme="help-about">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>About</string>
-   </property>
-  </action>
-  <action name="actionViewToolbar">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Toolbar</string>
    </property>
   </action>
   <action name="actionFullscreen">
@@ -540,39 +519,6 @@
   <action name="actionModules">
    <property name="text">
     <string>Modules ...</string>
-   </property>
-  </action>
-  <action name="actionViewStructure">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Structure</string>
-   </property>
-  </action>
-  <action name="actionViewProperties">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Properties</string>
-   </property>
-  </action>
-  <action name="actionViewLog">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Log</string>
    </property>
   </action>
  </widget>
@@ -748,22 +694,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionViewToolbar</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>toolBar</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>56</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionFullscreen</sender>
    <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>
@@ -904,102 +834,6 @@
     <hint type="destinationlabel">
      <x>429</x>
      <y>88</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dockWidgetLog</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionViewLog</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>399</x>
-     <y>510</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionViewLog</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>dockWidgetLog</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>510</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionViewProperties</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>dockWidgetProperties</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>661</x>
-     <y>362</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionViewStructure</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>dockWidgetTree</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>661</x>
-     <y>184</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dockWidgetProperties</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionViewProperties</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>661</x>
-     <y>362</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>661</x>
-     <y>362</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dockWidgetTree</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionViewStructure</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>661</x>
-     <y>184</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
     </hint>
    </hints>
   </connection>
