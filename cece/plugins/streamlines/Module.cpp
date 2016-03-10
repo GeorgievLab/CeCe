@@ -392,14 +392,18 @@ void Module::loadConfig(const config::Configuration& config)
         m_lattice.setSize(size);
     }
 
-    // Set number of time steps
-    setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
+    if (config.has("tau"))
+    {
+        setNumberSteps(calculateNumberSteps(config.get<RealType>("tau")));
+    }
+    else
+    {
+        // Set number of time steps
+        setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
+    }
 
     // Layout
     setLayout(config.get("layout", getLayout()));
-
-    // Get layout type
-    m_layoutType = config.get("layout-type", String{});
 
     // Enable dynamic object obstacles
     setDynamicObjectsObstacles(config.get("dynamic-object-obstacles", isDynamicObjectsObstacles()));
@@ -898,8 +902,8 @@ VelocityVector Module::inletVelocityProfile(
 
 RealType Module::calculateViscosity() const noexcept
 {
-    const auto charTime = m_charTime / getNumberSteps();
-    const auto charLength = m_charLength / getNumberNodes();
+    const auto charTime = getCharTime() / getNumberSteps();
+    const auto charLength = getCharLength() / getNumberNodes();
 
     return charTime / (charLength * charLength) * getKinematicViscosity();
 }
@@ -909,6 +913,17 @@ RealType Module::calculateViscosity() const noexcept
 RealType Module::calculateTau() const noexcept
 {
     return Descriptor::SPEED_OF_SOUND_SQ_INV * calculateViscosity() + 0.5;
+}
+
+/* ************************************************************************ */
+
+unsigned int Module::calculateNumberSteps(RealType tau) const noexcept
+{
+    return Descriptor::SPEED_OF_SOUND_SQ_INV *
+        (getCharTime() * getNumberNodes() * getNumberNodes() * getKinematicViscosity())
+        /
+        ((tau - 0.5) * getCharLength() * getCharLength())
+    ;
 }
 
 /* ************************************************************************ */
