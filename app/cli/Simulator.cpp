@@ -115,7 +115,7 @@ void Simulator::init(AtomicBool& termFlag)
     m_simulator.getSimulation()->initialize(termFlag);
 
 #ifdef CECE_ENABLE_RENDER
-    if (m_visualize)
+    if (isVisualized())
     {
         initVisualization();
 
@@ -139,16 +139,19 @@ void Simulator::step()
     if (!isPaused())
         m_termination = !update();
 
-    // Redraw scene
-    if (!isPaused() || isForceRedraw())
+    if (isVisualized())
     {
-        // Draw scene
-        draw();
-        swap();
-    }
+        // Redraw scene
+        if (!isPaused() || isForceRedraw())
+        {
+            // Draw scene
+            draw();
+            swap();
+        }
 
-    /// Poll for and process events
-    glfwPollEvents();
+        /// Poll for and process events
+        glfwPollEvents();
+    }
 #else
     m_termination = !update();
 #endif
@@ -170,6 +173,8 @@ void Simulator::start(AtomicBool& termFlag)
 #ifdef CECE_ENABLE_RENDER
 void Simulator::draw()
 {
+    Assert(isVisualized());
+
     m_simulator.draw(m_windowWidth, m_windowHeight);
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
@@ -185,6 +190,8 @@ void Simulator::draw()
 #ifdef CECE_ENABLE_RENDER
 void Simulator::swap()
 {
+    Assert(isVisualized());
+
     // Swap buffers
     glfwSwapBuffers(m_window);
 }

@@ -108,6 +108,17 @@ public:
 
 
     /**
+     * @brief Returns if simulation is visualized.
+     *
+     * @return
+     */
+    bool isVisualized() const noexcept
+    {
+        return m_visualize;
+    }
+
+
+    /**
      * @brief Returns if simulation is paused.
      *
      * @return
