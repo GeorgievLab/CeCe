@@ -88,7 +88,7 @@ void Descriptor::initModel(RealType height)
         weights[i + 3] = weights2d[i] * (0.5 * SPEED_OF_SOUND_SQ / hHeightSq);
 
         Assert(weights[i] > 0);
-        Assert(weights[i + 1] > 0);
+        Assert(weights[i + 3] > 0);
     }
 
     s_weightsHorizontal[0] = weights[0];
