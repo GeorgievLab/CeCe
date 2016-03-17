@@ -851,8 +851,8 @@ VelocityVector Module::inletVelocityProfile(
             Zero,
             -calcPoiseuilleFlow(
                 getInletVelocities()[pos],
-                coord.getX() - inletRange[0].getX(),
-                (inletRange[1] - inletRange[0]).getWidth() + 1
+                coord.getX() - inletRange[0].getX() + 1,
+                (inletRange[1] - inletRange[0]).getWidth() + 2
             )
         };
         break;
@@ -862,8 +862,8 @@ VelocityVector Module::inletVelocityProfile(
             Zero,
             calcPoiseuilleFlow(
                 getInletVelocities()[pos],
-                coord.getX() - inletRange[0].getX(),
-                (inletRange[1] - inletRange[0]).getWidth() + 1
+                coord.getX() - inletRange[0].getX() + 1,
+                (inletRange[1] - inletRange[0]).getWidth() + 2
             )
         };
         break;
@@ -872,8 +872,8 @@ VelocityVector Module::inletVelocityProfile(
         return {
             -calcPoiseuilleFlow(
                 getInletVelocities()[pos],
-                coord.getY() - inletRange[0].getY(),
-                (inletRange[1] - inletRange[0]).getHeight() + 1
+                coord.getY() - inletRange[0].getY() + 1,
+                (inletRange[1] - inletRange[0]).getHeight() + 2
             ),
             Zero
         };
@@ -883,8 +883,8 @@ VelocityVector Module::inletVelocityProfile(
         return {
             calcPoiseuilleFlow(
                 getInletVelocities()[pos],
-                coord.getY() - inletRange[0].getY(),
-                (inletRange[1] - inletRange[0]).getHeight() + 1
+                coord.getY() - inletRange[0].getY() + 1,
+                (inletRange[1] - inletRange[0]).getHeight() + 2
             ),
             Zero
         };
