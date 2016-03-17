@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -296,6 +296,17 @@ public:
     units::Time getCharTime() const noexcept
     {
         return m_charTime;
+    }
+
+
+    /**
+     * @brief Returns characteristic velocity.
+     *
+     * @return
+     */
+    units::Velocity getCharVelocity() const noexcept
+    {
+        return getCharLength() / getCharTime();
     }
 
 
@@ -726,6 +737,17 @@ protected:
 
 
     /**
+     * @brief Calculate Reynolds number.
+     *
+     * @return
+     */
+    RealType calculateRe() const noexcept
+    {
+        return getCharLength() * getCharLength() / getCharTime() / getKinematicViscosity();
+    }
+
+
+    /**
      * @brief Init border barrier.
      *
      * @param pos
@@ -743,8 +765,6 @@ protected:
 
     /**
      * @brief Print streamlines informations.
-     *
-     * @param simulation
      */
     virtual void printInfo();
 

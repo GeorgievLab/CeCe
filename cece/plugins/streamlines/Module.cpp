@@ -1161,13 +1161,15 @@ void Module::printInfo()
     Log::info("[streamlines] Max object speed: ", getSimulation().getMaxObjectTranslation(), " um/it");
     Log::info("[streamlines] Char. length: ", getCharLength(), " um");
     Log::info("[streamlines] Char. time: ", getCharTime(), " s");
-    Log::info("[streamlines] Char. speed: ", getCharLength() / getCharTime(), " um/s");
-    Log::info("[streamlines] Re: ", getCharLength() * getCharLength() / getCharTime() / getKinematicViscosity());
+    Log::info("[streamlines] Char. speed: ", getCharVelocity(), " um/s");
+    Log::info("[streamlines] Number of nodes: ", getNumberNodes());
+    Log::info("[streamlines] Number of time steps: ", getNumberSteps());
+    Log::info("[streamlines] Re: ", calculateRe());
     Log::info("[streamlines] ## Lattice ##");
     Log::info("[streamlines] Tau: ", calculateTau());
     Log::info("[streamlines] Omega: ", calculateOmega());
     Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
-    Log::info("[streamlines] LB Viscosity: ", calculateViscosity());
+    Log::info("[streamlines] Viscosity: ", calculateViscosity());
 }
 
 /* ************************************************************************ */
