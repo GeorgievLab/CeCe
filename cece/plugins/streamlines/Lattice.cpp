@@ -54,15 +54,15 @@ void Lattice::initEquilibrium()
 
 void Lattice::collide()
 {
-#if DEV_PLUGIN_streamlines_SWAP_TRICK
-    constexpr Node::IndexType half = (Node::SIZE - 1) / 2;
+#ifdef DEV_PLUGIN_streamlines_SWAP_TRICK
+    constexpr Descriptor::DirectionType half = (Descriptor::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
         auto& cell = get(c);
         cell.collide();
 
-        for (Node::IndexType i = 1; i < half; ++i)
+        for (Descriptor::DirectionType i = 1; i < half; ++i)
         {
             using std::swap;
             swap(cell[i], cell[i + half]);
@@ -78,15 +78,15 @@ void Lattice::collide()
 
 void Lattice::stream()
 {
-#if DEV_PLUGIN_streamlines_SWAP_TRICK
-    constexpr Descriptor::IndexType half = (Descriptor::SIZE - 1) / 2;
+#ifdef DEV_PLUGIN_streamlines_SWAP_TRICK
+    constexpr Descriptor::DirectionType half = (Descriptor::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
     {
-        for (Descriptor::IndexType i = 1; i < half; ++i)
+        for (Descriptor::DirectionType i = 1; i < half; ++i)
         {
             // Calculate new coordinates
-            const Vector<Descriptor::IndexType> newCoord = c + Descriptor::DIRECTION_VELOCITIES[i];
+            const Vector<Descriptor::DirectionType> newCoord = c + Descriptor::DIRECTION_VELOCITIES[i];
 
             // Swap
             if (inRange(newCoord))

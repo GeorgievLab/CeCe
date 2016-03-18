@@ -23,17 +23,6 @@
 #                                                                           #
 # ######################################################################### #
 
-# Options
-option(DEV_PLUGIN_streamlines_SWAP_TRICK "Enable or disable streamlines swap-trick for computation speedup" Off)
-
-# ######################################################################### #
-
-if (DEV_PLUGIN_streamlines_SWAP_TRICK)
-    add_definitions(-DDEV_PLUGIN_streamlines_SWAP_TRICK=1)
-endif ()
-
-# ######################################################################### #
-
 # Sources
 set(SRCS
     Plugin.cpp
