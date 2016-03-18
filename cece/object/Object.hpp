@@ -50,6 +50,7 @@
 #include "cece/program/Container.hpp"
 
 #ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Color.hpp"
 #  include "cece/render/Context.hpp"
 #endif
 
@@ -269,6 +270,17 @@ public:
         return m_visible;
     }
 
+
+    /**
+     * @brief Returns object color.
+     *
+     * @return
+     */
+    const render::Color& getColor() const noexcept
+    {
+        return m_color;
+    }
+
 #endif
 
 
@@ -473,6 +485,17 @@ public:
     void setVisible(bool flag) noexcept
     {
         m_visible = flag;
+    }
+
+
+    /**
+     * @brief Set object color.
+     *
+     * @param color
+     */
+    void setColor(const render::Color& color) noexcept
+    {
+        m_color = color;
     }
 
 #endif
@@ -787,6 +810,9 @@ private:
 
     // If object is visible.
     bool m_visible = true;
+
+    /// Object color.
+    render::Color m_color = render::colors::GREEN;
 
 #endif
 
