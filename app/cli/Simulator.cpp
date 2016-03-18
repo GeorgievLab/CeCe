@@ -536,6 +536,9 @@ void Simulator::initVisualization()
         glfwWindowHint(GLFW_RESIZABLE, false);
 #endif
 
+    // Antialiasing
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     const String title = APP_NAME " simulator [" + m_simulationFile.filename().string() + "]";
 
     Assert(m_windowWidth);
