@@ -475,24 +475,29 @@ void Simulation::loadConfig(const config::Configuration& config)
         // Get name
         auto name = moduleConfig.get("name");
 
-        if (hasModule(name))
-            continue;
+        ViewPtr<module::Module> module;
 
-        const String typeName = moduleConfig.has("language")
-            ? moduleConfig.get("language")
-            : moduleConfig.has("type")
-                ? moduleConfig.get("type")
-                : name
-        ;
-
-        auto module = getPluginContext().createModule(typeName, *this);
-
-        if (module)
+        if (!hasModule(name))
         {
-            module->loadConfig(moduleConfig);
+            const String typeName = moduleConfig.has("language")
+                ? moduleConfig.get("language")
+                : moduleConfig.has("type")
+                    ? moduleConfig.get("type")
+                    : name
+            ;
 
-            addModule(std::move(name), std::move(module));
+            auto mod = getPluginContext().createModule(typeName, *this);
+
+            module = addModule(std::move(name), std::move(mod));
         }
+        else
+        {
+            module = getModule(name);
+        }
+
+        // Configure module
+        if (module)
+            module->loadConfig(moduleConfig);
     }
 
     // Parse programs
