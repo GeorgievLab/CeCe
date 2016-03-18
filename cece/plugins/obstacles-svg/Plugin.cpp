@@ -23,6 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+// CeCe config
+#include "cece/config.hpp"
+
+/* ************************************************************************ */
+
 // C++
 #include <iterator>
 #include <algorithm>
@@ -34,6 +39,10 @@
 #include "cece/plugin/Api.hpp"
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
+
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Color.hpp"
+#endif
 
 // NanoSVG
 #define NANOSVG_IMPLEMENTATION  // Expands implementation
@@ -203,6 +212,10 @@ class ObstaclesSvgApi : public plugin::Api
 
         auto obstacle = simulation.buildObject("obstacle.Polygon");
         auto& shapes = obstacle->getMutableShapes();
+
+#ifdef CECE_ENABLE_RENDER
+        obstacle->setColor(config.get("color", obstacle->getColor()));
+#endif
 
         const auto size = Vector<float>(image->width, image->height);
 
