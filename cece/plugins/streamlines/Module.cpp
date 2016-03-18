@@ -302,26 +302,30 @@ void Module::update()
 
     auto _ = measure_time("streamlines", simulator::TimeMeasurement(getSimulation()));
 
-    // Obstacles
-    updateObstacleMap();
-
     // Store streamlines data
     if (m_dataOut)
         storeData();
 
+    // No recalculation
+    if (isDynamic())
+    {
+        // Obstacles
+        updateObstacleMap();
+
 #ifdef CECE_THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
+        // Lock access
+        MutexGuard guard(m_mutex);
 #endif
 
-    // Compute inner iterations
-    for (simulator::IterationNumber it = 0; it < getInnerIterations(); it++)
-    {
-        // Collide and propagate
-        m_lattice.collideAndStream();
+        // Compute inner iterations
+        for (simulator::IterationNumber it = 0; it < getInnerIterations(); it++)
+        {
+            // Collide and propagate
+            m_lattice.collideAndStream();
 
-        // Apply boundary conditions
-        applyBoundaryConditions();
+            // Apply boundary conditions
+            applyBoundaryConditions();
+        }
     }
 
     // Apply streamlines to world objects
@@ -334,6 +338,9 @@ void Module::loadConfig(const config::Configuration& config)
 {
     // Configure parent
     module::Module::loadConfig(config);
+
+    // Set streamlines dynamicity
+    setDynamic(config.get("dynamic", isDynamic()));
 
     // Number of init iterations
     setInitIterations(config.get("init-iterations", getInitIterations()));

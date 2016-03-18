@@ -333,6 +333,17 @@ public:
 
 
     /**
+     * @brief Returns if streamlines are dynamic during simulation.
+     *
+     * @return
+     */
+    bool isDynamic() const noexcept
+    {
+        return m_dynamic;
+    }
+
+
+    /**
      * @brief Returns fluid dynamics.
      *
      * @return
@@ -483,6 +494,17 @@ public:
     {
         Assert(steps > 0);
         m_numberSteps = steps;
+    }
+
+
+    /**
+     * @brief Set if streamlines should be dynamic.
+     *
+     * @param dynamic
+     */
+    void setDynamic(bool dynamic)
+    {
+        m_dynamic = dynamic;
     }
 
 
@@ -823,6 +845,9 @@ private:
 
     /// Number of LB time steps for units conversions
     unsigned int m_numberSteps = 1;
+
+    /// If streamlines is updated during simulation iterations.
+    bool m_dynamic = true;
 
     /// Path to initialization file.
     FilePath m_initFile;
