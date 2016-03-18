@@ -31,6 +31,7 @@
 
 // CeCe
 #include "cece/core/constants.hpp"
+#include "cece/render/Color.hpp"
 #include "cece/render/Context.hpp"
 #include "cece/render/VertexFormat.hpp"
 
@@ -54,7 +55,6 @@ constexpr unsigned VERTEX_COUNT = PARTS + 2;
 struct Vertex
 {
     float x, y;
-    float r, g, b;
 };
 
 /* ************************************************************************ */
@@ -68,12 +68,12 @@ StaticArray<Vertex, VERTEX_COUNT> generateVertices()
 
     constexpr float step = 2 * constants::PI / PARTS;
 
-    res[0] = Vertex{0.f, 0.f, 0.8f, 0.8f, 0.8f};
+    res[0] = Vertex{0.f, 0.f};
 
     for (unsigned i = 1; i < VERTEX_COUNT; ++i)
     {
         const float angle = step * i;
-        res[i] = Vertex{std::cos(angle), std::sin(angle), 0.8f, 0.8f, 0.8f};
+        res[i] = Vertex{std::cos(angle), std::sin(angle)};
     }
 
     return res;
@@ -86,8 +86,7 @@ const StaticArray<Vertex, VERTEX_COUNT> g_vertices = generateVertices();
 /* ************************************************************************ */
 
 const render::VertexFormat g_vformat{
-    render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
-    render::VertexElement(render::VertexElementType::Color, render::DataType::Float, 3)
+    render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2)
 };
 
 /* ************************************************************************ */
@@ -104,9 +103,10 @@ Circle::Circle(Context& context)
 
 /* ************************************************************************ */
 
-void Circle::draw(Context& context) noexcept
+void Circle::draw(Context& context, const Color& color) noexcept
 {
     // Set parameters
+    context.setColor(color);
     context.setVertexBuffer(&m_buffer);
     context.setVertexFormat(&g_vformat);
 

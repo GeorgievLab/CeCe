@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -32,16 +32,9 @@
 
 // CeCe
 #include "cece/core/DynamicArray.hpp"
+#include "cece/render/Color.hpp"
 #include "cece/render/Context.hpp"
 #include "cece/render/VertexFormat.hpp"
-
-/* ************************************************************************ */
-
-struct Vertex
-{
-    float x, y;
-    float red, green, blue;
-};
 
 /* ************************************************************************ */
 
@@ -50,15 +43,32 @@ namespace render {
 
 /* ************************************************************************ */
 
-void Lines::draw(Context& context) noexcept
-{
-    static render::VertexFormat vformat{
-        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
-        render::VertexElement(render::VertexElementType::Color, render::DataType::Float, 3)
-    };
+namespace {
 
+/* ************************************************************************ */
+
+struct Vertex
+{
+    float x, y;
+};
+
+/* ************************************************************************ */
+
+const render::VertexFormat g_vformat{
+    render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2)
+};
+
+/* ************************************************************************ */
+
+}
+
+/* ************************************************************************ */
+
+void Lines::draw(Context& context, const Color& color) noexcept
+{
+    context.setColor(color);
     context.setVertexBuffer(&m_buffer);
-    context.setVertexFormat(&vformat);
+    context.setVertexFormat(&g_vformat);
 
     // Draw lines
     context.draw(render::PrimitiveType::Lines, m_count);
@@ -79,8 +89,8 @@ void Lines::add(const DynamicArray<Pair<PointType, PointType>>& lines)
         const auto& p1 = line.first;
         const auto& p2 = line.second;
 
-        vertices.push_back(Vertex{p1.getX(), p1.getY(), 0.8f, 0.8f, 0.8f});
-        vertices.push_back(Vertex{p2.getX(), p2.getY(), 0.8f, 0.8f, 0.8f});
+        vertices.push_back(Vertex{p1.getX(), p1.getY()});
+        vertices.push_back(Vertex{p2.getX(), p2.getY()});
     }
 
     m_buffer.resize(

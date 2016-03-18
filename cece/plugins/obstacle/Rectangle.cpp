@@ -66,7 +66,7 @@ void Rectangle::draw(render::Context& context)
     context.matrixPush();
     context.matrixTranslate(getPosition());
     context.matrixScale(shape.getRectangle().size / units::Length(1));
-    m_drawRectangle->draw(context);
+    m_drawRectangle->draw(context, getColor());
     context.matrixPop();
 }
 #endif

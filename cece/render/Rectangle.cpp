@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,6 +27,7 @@
 #include "cece/render/Rectangle.hpp"
 
 // CeCe
+#include "cece/render/Color.hpp"
 #include "cece/render/Context.hpp"
 #include "cece/render/VertexFormat.hpp"
 
@@ -45,23 +46,21 @@ namespace {
 struct Vertex
 {
     float x, y;
-    float r, g, b;
 };
 
 /* ************************************************************************ */
 
 const StaticArray<Vertex, 4> g_vertices = {{
-    {-0.5, -0.5, 0.8f, 0.8f, 0.8f},
-    {-0.5,  0.5, 0.8f, 0.8f, 0.8f},
-    { 0.5,  0.5, 0.8f, 0.8f, 0.8f},
-    { 0.5, -0.5, 0.8f, 0.8f, 0.8f}
+    {-0.5, -0.5},
+    {-0.5,  0.5},
+    { 0.5,  0.5},
+    { 0.5, -0.5}
 }};
 
 /* ************************************************************************ */
 
 const render::VertexFormat g_vformat{
-    render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
-    render::VertexElement(render::VertexElementType::Color, render::DataType::Float, 3)
+    render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2)
 };
 
 /* ************************************************************************ */
@@ -78,9 +77,10 @@ Rectangle::Rectangle(Context& context)
 
 /* ************************************************************************ */
 
-void Rectangle::draw(Context& context) noexcept
+void Rectangle::draw(Context& context, const Color& color) noexcept
 {
     // Set parameters
+    context.setColor(color);
     context.setVertexBuffer(&m_buffer);
     context.setVertexFormat(&g_vformat);
 

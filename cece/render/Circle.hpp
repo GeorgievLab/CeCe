@@ -38,6 +38,7 @@ namespace render {
 /* ************************************************************************ */
 
 class Context;
+class Color;
 
 /* ************************************************************************ */
 
@@ -82,8 +83,9 @@ public:
      * @brief Render at current position.
      *
      * @param context Rendering context.
+     * @param color
      */
-    void draw(Context& context) noexcept;
+    void draw(Context& context, const Color& color) noexcept;
 
 
 // Private Data Members

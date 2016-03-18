@@ -66,7 +66,7 @@ void Circle::draw(render::Context& context)
     context.matrixPush();
     context.matrixTranslate(getPosition());
     context.matrixScale(shape.getCircle().radius / units::Length(1));
-    m_drawCircle->draw(context);
+    m_drawCircle->draw(context, getColor());
     context.matrixPop();
 }
 #endif

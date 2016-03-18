@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -41,6 +41,7 @@ namespace render {
 /* ************************************************************************ */
 
 class Context;
+class Color;
 
 /* ************************************************************************ */
 
@@ -120,8 +121,9 @@ public:
      * @brief Render at current position.
      *
      * @param context
+     * @param color
      */
-    void draw(Context& context) noexcept;
+    void draw(Context& context, const Color& color) noexcept;
 
 
 // Private Data Members

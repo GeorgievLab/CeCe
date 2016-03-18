@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -38,6 +38,7 @@ namespace render {
 /* ************************************************************************ */
 
 class Context;
+class Color;
 
 /* ************************************************************************ */
 
@@ -70,7 +71,7 @@ public:
      */
     bool isInitialized() const noexcept
     {
-        return m_buffer.isInitialized()/* && m_texture.isInitialized() */;
+        return m_buffer.isInitialized();
     }
 
 
@@ -82,8 +83,9 @@ public:
      * @brief Render at current position.
      *
      * @param context Rendering context.
+     * @param color   Rectangle color.
      */
-    void draw(Context& context) noexcept;
+    void draw(Context& context, const Color& color) noexcept;
 
 
 // Private Data Members

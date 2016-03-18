@@ -98,7 +98,7 @@ void Polygon::draw(render::Context& context)
 
     context.matrixPush();
     context.matrixTranslate(getPosition());
-    m_drawPolygon->draw(context);
+    m_drawPolygon->draw(context, getColor());
     context.matrixPop();
 }
 #endif
