@@ -812,7 +812,7 @@ private:
     bool m_visible = true;
 
     /// Object color.
-    render::Color m_color = render::colors::GREEN;
+    render::Color m_color = render::colors::BLACK;
 
 #endif
 
