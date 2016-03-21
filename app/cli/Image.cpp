@@ -96,9 +96,8 @@ void storeImage(const FilePath& filename, DynamicArray<unsigned char> data,
     // Row size
     const auto rowSize = png_get_rowbytes(png, info);
 
-    for (png_int_32 y = height; y >= 0; y--)
-    //for (png_int_32 y = 0; y < size.getHeight(); y++)
-        rowPtrs[y] = data.data() + y * rowSize;
+    for (png_int_32 y = 0; y < height; y++)
+        rowPtrs[height - y - 1] = data.data() + y * rowSize;
 
     // Write data
     png_write_image(png, rowPtrs.data());
