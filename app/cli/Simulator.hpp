@@ -389,6 +389,10 @@ private:
 #endif
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
+
+    /// Path to output video file.
+    FilePath m_videoFileName;
+
     /// Video writer.
     FILE* m_videoWriter = nullptr;
 #endif

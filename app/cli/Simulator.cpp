@@ -81,8 +81,7 @@ Simulator::Simulator(const Arguments& args)
         m_visualize = simViz;
 
 #  ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
-    if (!args.videoFileName.empty())
-        initVideoCapture(args.videoFileName);
+    m_videoFileName = args.videoFileName;
 #  endif
 #endif
 }
@@ -184,7 +183,7 @@ void Simulator::draw()
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
     // Capture image
-    if (isVideoCaptured() && m_simulator.getSimulation()->getIteration() > 2)
+    if (isVideoCaptured() && m_simulator.getSimulation()->getIteration() > 3)
         captureVideoFrame();
 #endif
 }
@@ -537,7 +536,7 @@ void Simulator::initVisualization()
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
     // Disable window resizing
-    if (m_videoWriter)
+    if (!m_videoFileName.empty())
         glfwWindowHint(GLFW_RESIZABLE, false);
 #endif
 
@@ -574,6 +573,9 @@ void Simulator::initVisualization()
             xpos + (vidmode->width - m_windowWidth) / 2,
             ypos + (vidmode->height - m_windowHeight) / 2
         );
+
+        // Resize window
+        glfwSetWindowSize(m_window, m_windowWidth, m_windowHeight);
     }
 
     // Store this pointer
@@ -602,6 +604,11 @@ void Simulator::initVisualization()
     glfwSetCursorPosCallback(m_window, +[](GLFWwindow* win, double xpos, double ypos) {
         reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win))->onMouseMove(xpos, ypos);
     });
+
+#ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
+    if (!m_videoFileName.empty())
+        initVideoCapture(m_videoFileName);
+#endif
 }
 #endif
 
@@ -710,8 +717,8 @@ void Simulator::initVideoCapture(const FilePath& fileName)
         OutStringStream oss;
         oss <<
             "ffmpeg -r 60 -f rawvideo -pix_fmt rgba "
-            "-i - -threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip "
             "-s " << width << "x" << height << " "
+            "-i - -threads 0 -vf vflip -y "
             "" << filename
         ;
 
@@ -725,8 +732,8 @@ void Simulator::initVideoCapture(const FilePath& fileName)
         OutStringStream oss;
         oss <<
             "avconv -r 60 -f rawvideo -pix_fmt rgba "
-            "-i - -threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip "
             "-s " << width << "x" << height << " "
+            "-i - -threads 0 -vf vflip -y "
             "" << filename
         ;
 
