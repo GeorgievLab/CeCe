@@ -175,7 +175,12 @@ void Simulator::draw()
 {
     Assert(isVisualized());
 
-    m_simulator.draw(m_windowWidth, m_windowHeight);
+    // Get frame buffer size
+    int width;
+    int height;
+    glfwGetFramebufferSize(m_window.get(), &width, &height);
+
+    m_simulator.draw(width, height);
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
     // Capture image
@@ -652,11 +657,16 @@ void Simulator::initScene()
 #ifdef CECE_ENABLE_RENDER
 void Simulator::setOptimalZoom()
 {
+    // Get frame buffer size
+    int width;
+    int height;
+    glfwGetFramebufferSize(m_window.get(), &width, &height);
+
     auto size = m_simulator.getSimulation()->getWorldSize();
     auto& camera = m_simulator.getRenderContext().getCamera();
     camera.setPosition(Zero);
     camera.setZoom(
-        std::max(size.getWidth() / m_windowWidth, size.getHeight() / m_windowHeight).value()
+        std::max(size.getWidth() / width, size.getHeight() / height).value()
     );
 }
 #endif
@@ -690,13 +700,18 @@ void Simulator::initVideoCapture(const FilePath& fileName)
 
     Log::info("Video output '", filename, "'");
 
+    // Get frame buffer size
+    int width;
+    int height;
+    glfwGetFramebufferSize(m_window.get(), &width, &height);
+
     if (system("which ffmpeg") == 0)
     {
         OutStringStream oss;
         oss <<
             "ffmpeg -r 60 -f rawvideo -pix_fmt rgba "
-            "-s " << m_windowWidth << "x" << m_windowHeight << " "
             "-i - -threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip "
+            "-s " << width << "x" << height << " "
             "" << filename
         ;
 
@@ -710,8 +725,8 @@ void Simulator::initVideoCapture(const FilePath& fileName)
         OutStringStream oss;
         oss <<
             "avconv -r 60 -f rawvideo -pix_fmt rgba "
-            "-s " << m_windowWidth << "x" << m_windowHeight << " "
             "-i - -threads 0 -preset fast -y -pix_fmt yuv420p -crf 21 -vf vflip "
+            "-s " << width << "x" << height << " "
             "" << filename
         ;
 
