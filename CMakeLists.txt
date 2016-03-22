@@ -61,7 +61,7 @@ option(CONFIG_RENDER_ENABLE         "Enable simulation rendering (vizualization 
 option(CONFIG_PHYSICS_BUILTIN       "Enable builtin physics engine (Box2D)" On)
 
 # Real type
-set(CONFIG_REAL_TYPE "float" CACHE STRING "Type used for real values")
+set(CONFIG_REAL_TYPE "double" CACHE STRING "Type used for real values")
 set_property(CACHE CONFIG_REAL_TYPE PROPERTY STRINGS "float" "double" "long double")
 
 # Dev options
