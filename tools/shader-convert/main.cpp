@@ -34,6 +34,7 @@
 #include <locale>
 
 // CeCe
+#include "cece/core/Log.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
@@ -99,13 +100,13 @@ static void convert(OutStream& out, const String& symbol, InStream& src)
     String code;
     std::copy(std::istreambuf_iterator<char>(src), std::istreambuf_iterator<char>(), std::back_inserter(code));
 
-    out << "#include <array>\n";
+    out << "#include \"cece/core/StaticArray.hpp\"\n";
     out << "\n";
     out << "// ";
     put_time(out, &tm, "%F %T %Z");
     out << "\n";
     out << "// #" << hasher(code) << "\n";
-    out << "static const std::array<unsigned char, " << code.length() + 1 << "> " << symbol << " = {{\n  ";
+    out << "static const cece::StaticArray<unsigned char, " << code.length() + 1 << "> " << symbol << " = {{\n  ";
 
     for (auto c : code)
     {
@@ -180,56 +181,30 @@ int main(int argc, char** argv)
     try
     {
         // Parse parameters
-        if (argc < 5)
+        if (argc < 4)
+            error("not enough arguments: <shader-file> <out-dir> <name>");
+
+        const String inFilename = argv[1];
+        const String outDir = argv[2];
+        const String name = argv[3];
+
+        std::ifstream inFile(inFilename, std::ios::in | std::ios::binary);
+        auto sources = splitShaders(inFile);
+
         {
-            error("not enough arguments: <mode>{default|shaders} <symbol> [<symbol2>] <file> <outfile> [<outfile2>]");
-        }
-
-        const std::string mode = argv[1];
-
-        if (mode == "shaders")
-        {
-            if (argc < 7)
-            {
-                error("not enough arguments: shaders <symbol1> <symbol2> <file> <outfile1> <outfile2>");
-            }
-
-            const String symbol1 = argv[2];
-            const String symbol2 = argv[3];
-            const String filename = argv[4];
-            const String outFilename1 = argv[5];
-            const String outFilename2 = argv[6];
-
-            std::ifstream file(filename, std::ios::in | std::ios::binary);
-            auto sources = splitShaders(file);
-
-            {
-                std::istringstream is(sources[0]);
-                std::ofstream outFile(outFilename1, std::ios::out | std::ios::binary);
-                convert(outFile, symbol1, is);
-            }
-
-            {
-                std::istringstream is(sources[1]);
-                std::ofstream outFile(outFilename2, std::ios::out | std::ios::binary);
-                convert(outFile, symbol2, is);
-            }
-        }
-        else if (mode == "default")
-        {
-            const String symbol = argv[2];
-            const String filename = argv[3];
-            const String outFilename = argv[4];
-
-            std::ifstream file(filename, std::ios::in | std::ios::binary);
+            String outFilename = outDir + "/vs." + name + ".hpp";
+            std::istringstream is(sources[0]);
             std::ofstream outFile(outFilename, std::ios::out | std::ios::binary);
-
-            // Convert file
-            convert(outFile, symbol, file);
+            std::cout << "Vertex shader: " << outFilename << std::endl;
+            convert(outFile, "g_vertexShader", is);
         }
-        else
+
         {
-            throw RuntimeException("Unknown mode: " + mode);
+            String outFilename = outDir + "/fs." + name + ".hpp";
+            std::istringstream is(sources[1]);
+            std::ofstream outFile(outFilename, std::ios::out | std::ios::binary);
+            std::cout << "Fragment shader: " << outFilename << std::endl;
+            convert(outFile, "g_fragmentShader", is);
         }
     }
     catch (const Exception& e)
