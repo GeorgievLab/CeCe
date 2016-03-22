@@ -25,6 +25,7 @@
   <Project Name="obstacle" Path="cece/plugins/obstacle/obstacle.project" Active="No"/>
   <Project Name="streamlines-channel" Path="cece/plugins/streamlines-channel/streamlines-channel.project" Active="No"/>
   <Project Name="format" Path="tools/format/format.project"/>
+  <Project Name="tool-shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
@@ -54,6 +55,7 @@
       <Project Name="plugin_obstacle" ConfigName="Debug"/>
       <Project Name="plugin_streamlines-channel" ConfigName="Debug"/>
       <Project Name="format" ConfigName="Debug"/>
+      <Project Name="tool_shader-convert" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
@@ -83,6 +85,7 @@
       <Project Name="plugin_obstacle" ConfigName="Release"/>
       <Project Name="plugin_streamlines-channel" ConfigName="Release"/>
       <Project Name="format" ConfigName="Release"/>
+      <Project Name="tool_shader-convert" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

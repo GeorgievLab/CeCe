@@ -201,6 +201,20 @@ void Module::loadConfig(const config::Configuration& config)
     m_background = config.get("background", m_background);
 #endif
 
+    Log::info("[diffusion] Grid size: ", getGridSize().getWidth(), "x", getGridSize().getHeight());
+
+    for (auto id : getSignalIds())
+    {
+        Log::info("[diffusion] Signal '", getSignalName(id), "':");
+        Log::info("[diffusion]   Diffusion rate: ", getDiffusionRate(id), " um2/s");
+        Log::info("[diffusion]   Degradation rate: ", getDegradationRate(id), " /s");
+
+#ifdef CECE_ENABLE_RENDER
+        Log::info("[diffusion]   Color: ", getSignalColor(id));
+        Log::info("[diffusion]   Saturation: ", getSignalSaturation(id), " umol/um3");
+#endif
+    }
+
     if (config.has("data-out"))
     {
         m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));

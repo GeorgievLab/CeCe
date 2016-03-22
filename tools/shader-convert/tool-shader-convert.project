@@ -191,10 +191,7 @@
       </Completion>
     </Configuration>
   </Settings>
-<<<<<<< HEAD
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="DebugCLI"/>
-  <Dependencies Name="Release"/>
-=======
->>>>>>> reactions-rework
+  <VirtualDirectory Name="CMake">
+    <File Name="CMakeLists.txt"/>
+  </VirtualDirectory>
 </CodeLite_Project>
