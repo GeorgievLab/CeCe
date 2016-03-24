@@ -26,10 +26,6 @@
 // Declaration
 #include "cece/plugins/obstacle/Rectangle.hpp"
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-#  include <Box2D/Box2D.h>
-#endif
-
 // CeCe
 #include "cece/core/Units.hpp"
 #include "cece/core/Shape.hpp"
@@ -70,19 +66,6 @@ void Rectangle::draw(render::Context& context)
     context.matrixPop();
 }
 #endif
-
-/* ************************************************************************ */
-
-void Rectangle::initShapes()
-{
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    const auto& shape = getShapes().back();
-    const auto sh = shape.getRectangle().size / 2.f;
-    b2Vec2 box = getConverter().convertPosition(sh);
-    m_bodyShape.SetAsBox(box.x, box.y);
-    getBody()->CreateFixture(&m_bodyShape, 1);
-#endif
-}
 
 /* ************************************************************************ */
 

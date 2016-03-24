@@ -26,10 +26,6 @@
 // Declaration
 #include "cece/plugins/obstacle/Polygon.hpp"
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-#  include <Box2D/Box2D.h>
-#endif
-
 // CeCe
 #include "cece/core/VectorUnits.hpp"
 #include "cece/core/Shape.hpp"
@@ -102,35 +98,6 @@ void Polygon::draw(render::Context& context)
     context.matrixPop();
 }
 #endif
-
-/* ************************************************************************ */
-
-void Polygon::initShapes()
-{
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-
-    for (const auto& shape : getShapes())
-    {
-        DynamicArray<b2Vec2> vertices;
-
-        for (const auto& v : shape.getEdges().edges)
-            vertices.push_back(getConverter().convertPosition(v));
-
-        auto s = makeUnique<b2ChainShape>();
-
-        // Create edges loop
-        if (vertices.size() < 3)
-            s->CreateChain(vertices.data(), vertices.size());
-        else
-            s->CreateLoop(vertices.data(), vertices.size());
-
-        getBody()->CreateFixture(s.get(), 1);
-
-        // Create new shape
-        m_bodyShapes.push_back(std::move(s));
-    }
-#endif
-}
 
 /* ************************************************************************ */
 

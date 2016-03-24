@@ -26,10 +26,6 @@
 // Declaration
 #include "cece/plugins/obstacle/Circle.hpp"
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-#  include <Box2D/Box2D.h>
-#endif
-
 // CeCe
 #include "cece/core/Units.hpp"
 #include "cece/core/Shape.hpp"
@@ -70,17 +66,6 @@ void Circle::draw(render::Context& context)
     context.matrixPop();
 }
 #endif
-
-/* ************************************************************************ */
-
-void Circle::initShapes()
-{
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    const auto& shape = getShapes().back();
-    m_bodyShape.m_radius = getConverter().convertLength(shape.getCircle().radius);
-    getBody()->CreateFixture(&m_bodyShape, 1);
-#endif
-}
 
 /* ************************************************************************ */
 

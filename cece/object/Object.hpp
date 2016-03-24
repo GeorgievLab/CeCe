@@ -758,10 +758,7 @@ public:
     /**
      * @brief Initialize shapes for physics engine.
      */
-    virtual void initShapes()
-    {
-        // Nothing to do
-    }
+    virtual void initShapes();
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -826,6 +823,9 @@ private:
 
     /// Joint for pinned body.
     b2Joint* m_pinJoint = nullptr;
+
+    /// Body shapes.
+    DynamicArray<UniquePtr<b2Shape>> m_bodyShapes;
 
 #else
 

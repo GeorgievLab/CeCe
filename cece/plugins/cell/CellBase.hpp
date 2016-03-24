@@ -232,7 +232,6 @@ public:
         return m_cfpSaturation;
     }
 
-#  if CONFIG_PLUGIN_cell_BFP_COLOR
 
     /**
      * @brief Returns BFP saturation.
@@ -244,7 +243,6 @@ public:
         return m_bfpSaturation;
     }
 
-#  endif
 #endif
 
 
@@ -398,8 +396,6 @@ public:
     }
 
 
-#  if CONFIG_PLUGIN_cell_BFP_COLOR
-
     /**
      * @brief Set BFP saturation.
      *
@@ -410,7 +406,6 @@ public:
         m_bfpSaturation = saturation;
     }
 
-#  endif
 #endif
 
 
@@ -513,10 +508,8 @@ private:
     /// CFP saturation.
     FluorescentSaturation m_cfpSaturation{20};
 
-#  if CONFIG_PLUGIN_cell_BFP_COLOR
     /// BFP saturation.
     FluorescentSaturation m_bfpSaturation{20};
-#  endif
 
     /// Cell identification color.
     render::Color m_identificationColor = render::colors::TRANSPARENT;

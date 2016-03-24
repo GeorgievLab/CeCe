@@ -97,21 +97,8 @@ public:
 #endif
 
 
-    /**
-     * @brief Initialize shapes for physics engine.
-     */
-    void initShapes() override;
-
-
 // Private Data Members
 private:
-
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-
-    /// Physical body shape.
-    b2PolygonShape m_bodyShape;
-
-#endif
 
 #ifdef CECE_ENABLE_RENDER
 

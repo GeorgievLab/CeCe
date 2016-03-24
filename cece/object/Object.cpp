@@ -465,8 +465,8 @@ void Object::update(units::Duration dt)
 void Object::configure(const config::Configuration& config, simulator::Simulation& simulation)
 {
 #ifdef CECE_ENABLE_RENDER
-    // Set object position
     setVisible(config.get("visible", isVisible()));
+    setColor(config.get("color", getColor()));
 #endif
 
     // Set object position
@@ -497,6 +497,88 @@ void Object::configure(const config::Configuration& config, simulator::Simulatio
         m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
         *m_dataOut << "iteration;totalTime;id;x;y;massX;massY;velX;velY;forceX;forceY;angle;omega\n";
     }
+}
+
+/* ************************************************************************ */
+
+void Object::initShapes()
+{
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
+    // Delete old fixtures
+    for (b2Fixture* fixture = getBody()->GetFixtureList();
+         fixture != nullptr;
+         fixture = getBody()->GetFixtureList())
+    {
+        getBody()->DestroyFixture(fixture);
+    }
+
+    Assert(getBody()->GetFixtureList() == nullptr);
+
+    // Delete shapes
+    m_bodyShapes.clear();
+
+    for (const auto& shape : getShapes())
+    {
+        // Get shape type
+        const auto type = variantApplyVisitor(Shape::GetType(), shape);
+
+        UniquePtr<b2Shape> bodyShape;
+
+        switch (type)
+        {
+        case ShapeType::Undefined:
+            Log::warning("[object] Undefined shape");
+            break;
+
+        case ShapeType::Circle:
+        {
+            // Create body shape
+            auto ptr = makeUnique<b2CircleShape>();
+            ptr->m_radius = getConverter().convertLength(shape.getCircle().radius);
+            bodyShape = std::move(ptr);
+            break;
+        }
+
+        case ShapeType::Rectangle:
+        {
+            // Create body shape
+            auto ptr = makeUnique<b2PolygonShape>();
+            const auto sh = 0.5 * shape.getRectangle().size;
+            b2Vec2 box = getConverter().convertPosition(sh);
+            ptr->SetAsBox(box.x, box.y);
+            bodyShape = std::move(ptr);
+            break;
+        }
+
+        case ShapeType::Edges:
+        {
+            DynamicArray<b2Vec2> vertices;
+
+            for (const auto& v : shape.getEdges().edges)
+                vertices.push_back(getConverter().convertPosition(v));
+
+            auto ptr = makeUnique<b2ChainShape>();
+
+            // Create edges loop
+            if (vertices.size() < 3)
+                ptr->CreateChain(vertices.data(), vertices.size());
+            else
+                ptr->CreateLoop(vertices.data(), vertices.size());
+
+            bodyShape = std::move(ptr);
+            break;
+        }
+        }
+
+        // Store body shape
+        if (bodyShape)
+        {
+            getBody()->CreateFixture(bodyShape.get(), getConverter().convertDensity(getDensity()));
+            m_bodyShapes.push_back(std::move(bodyShape));
+        }
+    }
+#endif
 }
 
 /* ************************************************************************ */

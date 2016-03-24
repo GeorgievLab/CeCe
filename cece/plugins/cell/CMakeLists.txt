@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,19 +23,9 @@
 #                                                                           #
 # ######################################################################### #
 
-option(CONFIG_PLUGIN_cell_BFP_COLOR "Enable coloring cell by BFP protein" On)
-
-# ######################################################################### #
-
-if (CONFIG_PLUGIN_cell_BFP_COLOR)
-    add_definitions(-DCONFIG_PLUGIN_cell_BFP_COLOR=1)
-endif ()
-
-# ######################################################################### #
-
 # Sources
 set(SRCS
-    Library.cpp
+    Plugin.cpp
     CellBase.hpp
     CellBase.cpp
     Cell.hpp

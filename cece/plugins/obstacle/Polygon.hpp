@@ -99,21 +99,8 @@ public:
 #endif
 
 
-    /**
-     * @brief Initialize shapes for physics engine.
-     */
-    void initShapes() override;
-
-
 // Private Data Members
 private:
-
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-
-    /// Physical body shapes.
-    DynamicArray<UniquePtr<b2ChainShape>> m_bodyShapes;
-
-#endif
 
 #ifdef CECE_ENABLE_RENDER
 
