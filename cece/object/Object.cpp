@@ -39,6 +39,11 @@
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
+// Box2D
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+#  include <Box2D/Box2D.h>
+#endif
+
 /* ************************************************************************ */
 
 namespace cece {

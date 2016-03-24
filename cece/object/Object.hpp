@@ -56,11 +56,16 @@
 
 // Box2D
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
-#  include <Box2D/Box2D.h>
 #  include "cece/simulator/ConverterBox2D.hpp"
 #endif
 
 /* ************************************************************************ */
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+class b2Body;
+class b2Shape;
+class b2Joint;
+#endif
 
 namespace cece { namespace simulator { class Simulation; } }
 namespace cece { namespace config { class Configuration; } }
