@@ -536,6 +536,7 @@ void Object::initShapes()
             // Create body shape
             auto ptr = makeUnique<b2CircleShape>();
             ptr->m_radius = getConverter().convertLength(shape.getCircle().radius);
+            ptr->m_p = getConverter().convertPosition(shape.getCircle().center);
             bodyShape = std::move(ptr);
             break;
         }

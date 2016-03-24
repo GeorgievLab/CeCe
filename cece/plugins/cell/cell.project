@@ -19,7 +19,6 @@
   <VirtualDirectory Name="src">
     <File Name="Cell.cpp"/>
     <File Name="Yeast.cpp"/>
-    <File Name="Library.cpp"/>
     <File Name="DrawableCell.cpp"/>
     <File Name="CellBase.cpp"/>
     <File Name="DrawableYeast.cpp"/>
@@ -36,6 +35,7 @@
       <File Name="vs.cell.hpp"/>
       <File Name="vs.yeast.hpp"/>
     </VirtualDirectory>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>

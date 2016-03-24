@@ -29,10 +29,6 @@
 // CeCe
 #include "cece/core/Assert.hpp"
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-#  include <Box2D/Box2D.h>
-#endif
-
 /* ************************************************************************ */
 
 namespace cece {
@@ -46,16 +42,10 @@ Cell::Cell(simulator::Simulation& simulation, String typeName, object::Object::T
 {
     setDensity(units::kg(1200) / units::m3(1));
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    b2CircleShape shape;
-    shape.m_radius = getConverter().convertLength(getRadius());
-
-    getBody()->CreateFixture(&shape, getConverter().convertDensity(getDensity()));
-#endif
-
     // Create initial shape
-    auto& shapes = getMutableShapes();
-    shapes.push_back(Shape::makeCircle(getRadius()));
+    getMutableShapes().push_back(Shape::makeCircle(getRadius()));
+
+    initShapes();
 }
 
 /* ************************************************************************ */
@@ -69,22 +59,13 @@ void Cell::update(units::Duration dt)
 
     CellBase::update(dt);
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    // Update cell shape
-    b2CircleShape shape;
-    shape.m_radius = getConverter().convertLength(getRadius());
-
-    // Update fixture
-    b2Fixture* fixture = getBody()->GetFixtureList();
-    Assert(fixture);
-    getBody()->DestroyFixture(fixture);
-    getBody()->CreateFixture(&shape, getConverter().convertDensity(getDensity()));
-#endif
-
-    // Update shape
+    // Update shape radius
     auto& shapes = getMutableShapes();
     Assert(shapes.size() == 1);
     shapes[0].getCircle().radius = getRadius();
+
+    // Recreate shapes
+    initShapes();
 }
 
 /* ************************************************************************ */

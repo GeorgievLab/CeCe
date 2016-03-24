@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,10 +27,10 @@
 #include "cece/plugins/cell/Yeast.hpp"
 
 // C++
-#include <cmath>
 #include <random>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/constants.hpp"
 #include "cece/core/Shape.hpp"
 #include "cece/simulator/Simulation.hpp"
@@ -90,10 +90,10 @@ void Yeast::update(units::Duration dt)
 
     if (hasBud())
     {
-        m_bud->volume += volumeDiff;
+        m_bud.volume += volumeDiff;
         setVolume(getVolume() - volumeDiff);
 
-        if (m_bud->volume >= getVolumeBudRelease())
+        if (m_bud.volume >= getVolumeBudRelease())
         {
             budRelease();
         }
@@ -103,11 +103,8 @@ void Yeast::update(units::Duration dt)
         budCreate();
     }
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
     // Update cell shape
     updateShape();
-#endif
-
 }
 
 /* ************************************************************************ */
@@ -121,44 +118,35 @@ void Yeast::configure(const config::Configuration& config, simulator::Simulation
     setVolumeBudCreate(config.get("volume-bud-create", getVolumeBudCreate()));
     setVolumeBudRelease(config.get("volume-bud-release", getVolumeBudRelease()));
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
     // Update cell shape
     updateShape();
-#endif
-
 }
 
 /* ************************************************************************ */
 
 void Yeast::budCreate()
 {
-    assert(!hasBud());
+    Assert(!hasBud());
 
     std::random_device rd;
     std::default_random_engine eng(g_rd());
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 
-    m_bud = Bud{};
-    m_bud->angle = units::Angle(2 * constants::PI * dist(eng));
+    m_hasBud = true;
+    m_bud.angle = units::Angle(2 * constants::PI * dist(eng));
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
     m_shapeForceUpdate = true;
-#endif
 }
 
 /* ************************************************************************ */
 
 void Yeast::budRelease()
 {
-    assert(hasBud());
+    Assert(hasBud());
 
     // Calculate bud position
     const auto angle = getRotation();
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    const auto offset = getConverter().convertPosition(m_bud->shape.m_p);
-#else
-    const auto offset = m_bud->offset;
-#endif
+    const auto offset = PositionVector(Zero, calcRadius(getVolume()) + calcRadius(getVolumeBud())).rotated(-getAngleBud());
 
     const auto omega = getAngularVelocity();
     const auto center = getMassCenterPosition();
@@ -176,18 +164,19 @@ void Yeast::budRelease()
 
     // Release bud into the world
     auto bud = getSimulation().createObject<Yeast>();
-    bud->setVolume(m_bud->volume);
+    bud->setVolume(m_bud.volume);
     bud->setPosition(posBud);
     bud->setVelocity(velocityBud);
     bud->setAngularVelocity(omega);
     bud->setPrograms(getPrograms());
     bud->setDensity(getDensity());
     bud->setGrowthRate(getGrowthRate());
+    bud->updateShape();
 
     // Split molecules between yeast and bud
 
     // Total volume
-    const auto totalVolume = getVolume() + m_bud->volume;
+    const auto totalVolume = getVolume() + m_bud.volume;
 
     // Copy old state
     const auto molecules = getMolecules();
@@ -204,11 +193,9 @@ void Yeast::budRelease()
     }
 
     // Release bud
-    m_bud.reset();
-
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
+    m_hasBud = false;
+    m_bud.volume = Zero;
     m_shapeForceUpdate = true;
-#endif
 }
 
 /* ************************************************************************ */
@@ -234,11 +221,11 @@ void Yeast::draw(render::Context& context)
         pos = getPosition();
         radius = calcRadius(getVolume());
 
-        if (m_bud)
+        if (hasBud())
         {
-            angle = getRotation() - m_bud->angle;
-            budRadius = calcRadius(m_bud->volume);
-            color = calcFluorescentColor(getVolume() + m_bud->volume);
+            angle = getRotation() - m_bud.angle;
+            budRadius = calcRadius(m_bud.volume);
+            color = calcFluorescentColor(getVolume() + m_bud.volume);
         }
         else
         {
@@ -255,7 +242,7 @@ void Yeast::draw(render::Context& context)
     context.matrixScale(2 * radius.value());
     context.colorPush();
     context.enableAlpha();
-    m_renderObject->draw(context, 0.5f, 0.5f * (budRadius / radius), color, getIdentificationColor());
+    m_renderObject->draw(context, 0.5, 0.5 * (budRadius / radius), color, getIdentificationColor());
     context.disableAlpha();
     context.colorPop();
     context.matrixPop();
@@ -264,32 +251,22 @@ void Yeast::draw(render::Context& context)
 
 /* ************************************************************************ */
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
 void Yeast::updateShape()
 {
-    static constexpr auto MIN_CHANGE = units::Length(0.1f);
+    static constexpr auto MIN_CHANGE = units::Length(0.10);
 
     // Alias for yeast shapes
     auto& shapes = getMutableShapes();
 
-    // Calculate new radius
-    const auto newRadius = calcRadius(getVolume());
-    const auto oldRadius = units::Length(m_shape.m_radius);
-    const auto newBudRadius = m_bud ? calcRadius(m_bud->volume) : Zero;
-    const auto oldBudRadius = m_bud ? units::Length(m_bud->shape.m_radius) : Zero;
+    bool needs_update = m_shapeForceUpdate;
 
-    const bool needs_update = m_shapeForceUpdate ||
-        ((newRadius - oldRadius) > MIN_CHANGE) ||
-        ((newBudRadius - oldBudRadius) > MIN_CHANGE)
-    ;
-
-    // Update main shape
-    assert(shapes.size() >= 1);
-    shapes[0].getCircle().radius = newRadius;
-
-    // If bud shape is missing, create one.
     if (hasBud())
     {
+        const auto newRadius = calcRadius(getVolume());
+        const auto newBudRadius = calcRadius(getVolumeBud());
+        const auto oldBudRadius = m_bud.lastRadius;
+        needs_update = needs_update || ((newBudRadius - oldBudRadius) > MIN_CHANGE);
+
         const auto radiusMin = MIN_CHANGE;
         const auto radiusRelease = calcRadius(getVolumeBudRelease());
 
@@ -297,7 +274,7 @@ void Yeast::updateShape()
         const auto c2 = newRadius - 2 * radiusMin * (1 + radiusMin / (radiusRelease - radiusMin));
         const auto c = c1 * newBudRadius + c2;
 
-        const auto center = PositionVector(Zero, c).rotated(-m_bud->angle);
+        const auto center = 0.9 * PositionVector(Zero, c).rotated(-m_bud.angle);
 
         if (shapes.size() != 2)
         {
@@ -311,47 +288,23 @@ void Yeast::updateShape()
     }
     else
     {
+        const auto newRadius = calcRadius(getVolume());
+        const auto oldRadius = m_lastRadius;
+        needs_update = needs_update || ((newRadius - oldRadius) > MIN_CHANGE);
+
+        // Update main shape
         shapes.resize(1);
+        Assert(shapes.size() == 1);
+        shapes[0].getCircle().radius = newRadius;
     }
 
     if (!needs_update)
         return;
 
-    // Delete old fixtures
-    for (b2Fixture* fixture = getBody()->GetFixtureList();
-         fixture != nullptr;
-         //fixture = fixture->GetNext())
-         fixture = getBody()->GetFixtureList())
-    {
-        getBody()->DestroyFixture(fixture);
-    }
-
-    Assert(getBody()->GetFixtureList() == nullptr);
-
-    // Recreate Box2D shapes from shapes
-
-    // Update main yeast shape
-    {
-        const auto& shape = shapes[0].getCircle();
-
-        m_shape.m_radius = getConverter().convertLength(shape.radius);
-        m_shape.m_p = getConverter().convertPosition(shape.center);
-        getBody()->CreateFixture(&m_shape, getConverter().convertDensity(getDensity()));
-    }
-
-    // Update bud shape
-    if (m_bud)
-    {
-        const auto& shape = shapes[1].getCircle();
-
-        m_bud->shape.m_radius = getConverter().convertLength(shape.radius);
-        m_bud->shape.m_p = getConverter().convertPosition(shape.center);
-        getBody()->CreateFixture(&m_bud->shape, getConverter().convertDensity(getDensity()));
-    }
-
+    // Initialize shapes
+    initShapes();
     m_shapeForceUpdate = false;
 }
-#endif
 
 /* ************************************************************************ */
 

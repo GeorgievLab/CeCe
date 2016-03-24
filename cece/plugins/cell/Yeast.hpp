@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -32,21 +32,18 @@
 
 /* ************************************************************************ */
 
-// Boost
-#include <boost/optional.hpp>
-
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
 #  include "cece/render/Object.hpp"
 #  include "cece/plugins/cell/DrawableYeast.hpp"
 #endif
 
-// Plugin
-#include "cece/plugins/cell/CellBase.hpp"
-
 #ifdef CECE_THREAD_SAFE
 #  include "cece/core/Mutex.hpp"
 #endif
+
+// Plugin
+#include "cece/plugins/cell/CellBase.hpp"
 
 /* ************************************************************************ */
 
@@ -61,31 +58,6 @@ namespace cell {
  */
 class Yeast : public CellBase
 {
-
-// Public Structures
-public:
-
-
-    /**
-     * @brief Yeast bud.
-     */
-    struct Bud
-    {
-        /// Angle.
-        units::Angle angle = units::deg(0);
-
-        /// Bud volume.
-        units::Volume volume = units::um3(0.1);
-
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-        /// Bud shape.
-        b2CircleShape shape;
-#else
-        /// Position offset
-        PositionVector offset;
-#endif
-    };
-
 
 // Public Ctors & Dtors
 public:
@@ -118,7 +90,7 @@ public:
      */
     bool hasBud() const noexcept
     {
-        return m_bud.is_initialized();
+        return m_hasBud;
     }
 
 
@@ -129,10 +101,10 @@ public:
      */
     units::Volume getVolumeBud() const noexcept
     {
-        if (m_bud)
-            return m_bud->volume;
+        if (hasBud())
+            return m_bud.volume;
         else
-            return {};
+            return Zero;
     }
 
 
@@ -143,10 +115,10 @@ public:
      */
     units::Angle getAngleBud() const noexcept
     {
-        if (m_bud)
-            return m_bud->angle;
+        if (hasBud())
+            return m_bud.angle;
         else
-            return {};
+            return Zero;
     }
 
 
@@ -183,10 +155,10 @@ public:
      */
     void setVolumeBud(units::Volume volume) noexcept
     {
-        if (!m_bud)
+        if (!hasBud() && volume != Zero)
             budCreate();
 
-        m_bud->volume = std::move(volume);
+        m_bud.volume = std::move(volume);
     }
 
 
@@ -197,10 +169,10 @@ public:
      */
     void setAngleBud(units::Angle angle) noexcept
     {
-        if (!m_bud)
+        if (!hasBud() && angle != Zero)
             budCreate();
 
-        m_bud->angle = std::move(angle);
+        m_bud.angle = std::move(angle);
     }
 
 
@@ -235,7 +207,7 @@ public:
      *
      * @param dt Time step.
      */
-    void update(units::Duration dt) override;
+    void update(units::Time dt) override;
 
 
     /**
@@ -275,19 +247,34 @@ public:
 protected:
 
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
     /**
      * @brief Update yeast physics shape.
      */
     void updateShape();
-#endif
 
 
 // Private Data Members
 private:
 
-    /// Bud cell.
-    boost::optional<Bud> m_bud;
+
+    /// If yeast has a bud.
+    bool m_hasBud = false;
+
+
+    /**
+     * @brief Yeast bud.
+     */
+    struct
+    {
+        /// Angle.
+        units::Angle angle = Zero;
+
+        /// Bud volume.
+        units::Volume volume = Zero;
+
+        /// Last shape update radius.
+        units::Length lastRadius = Zero;
+    } m_bud;
 
     /// Volume that is needed to bud creation.
     units::Volume m_volumeBudCreate = units::um3(12);
@@ -301,13 +288,11 @@ private:
     render::ObjectSharedPtr<DrawableYeast> m_renderObject;
 #endif
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    /// Main cell shape.
-    b2CircleShape m_shape;
+    /// Last shape update radius.
+    units::Length m_lastRadius = Zero;
 
     /// If shape must be updated.
     bool m_shapeForceUpdate = false;
-#endif
 
 #ifdef CECE_THREAD_SAFE
     /// Access mutex.
