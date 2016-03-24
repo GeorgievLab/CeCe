@@ -28,13 +28,14 @@
 /* ************************************************************************ */
 
 // Qt
-#include <QScopedPointer>
 #include <QObject>
-#include <QMutex>
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
-#include "cece/simulator/Simulation.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
 
@@ -89,18 +90,31 @@ public:
     }
 
 
+// Public Mutators
+public slots:
+
+
     /**
-     * @brief Return syncronization mutex.
+     * @brief Set visualized simulation.
      *
-     * @return
+     * @param simulation
      */
-    QMutex* getMutex() noexcept
+    void setSimulation(simulator::Simulation* simulation) noexcept
     {
-        return &m_mutex;
+        m_simulation = simulation;
+        emit simulationChanged(m_simulation);
     }
 
 
 signals:
+
+
+    /**
+     * @brief Simulator current simulation has been changed.
+     *
+     * @param simulation Pointer to simulation or nullptr.
+     */
+    void simulationChanged(simulator::Simulation* simulation);
 
 
     /**
@@ -110,11 +124,43 @@ signals:
 
 
     /**
-     * @brief Simulation finished.
-     *
-     * @param end
+     * @brief Simulation initialization started.
      */
-    void simulationFinished(bool end);
+    void simulationInitStarted();
+
+
+    /**
+     * @brief Simulation has been initialized.
+     */
+    void simulationInitialized();
+
+
+    /**
+     * @brief Simulation initialization failed.
+     *
+     * @param message
+     */
+    void simulationInitFailed(QString message);
+
+
+    /**
+     * @brief Simulation has been paused.
+     */
+    void simulationPaused();
+
+
+    /**
+     * @brief Simulation finished.
+     */
+    void simulationFinished();
+
+
+    /**
+     * @brief A step has been performed.
+     *
+     * @param iteration Current iteration.
+     */
+    void simulationStepped(int iteration);
 
 
     /**
@@ -125,40 +171,7 @@ signals:
     void simulationError(QString message);
 
 
-    /**
-     * @brief Simulation has been loaded.
-     *
-     * @param flag
-     */
-    void loaded(bool flag);
-
-
-    /**
-     * @brief Load error.
-     *
-     * @param message
-     */
-    void loadError(QString message);
-
-
-    /**
-     * @brief Report if simulation is running.
-     *
-     * @param flag
-     */
-    void running(bool flag);
-
-
-    /**
-     * @brief A step has been performed.
-     *
-     * @param iteration
-     * @param iterations
-     */
-    void stepped(int iteration, int iterations);
-
-
-public:
+public slots:
 
 
     /**
@@ -182,19 +195,6 @@ public:
 
 
     /**
-     * @brief Reset simulation.
-     */
-    void reset();
-
-
-    /**
-     * @brief Create a simulation from source.
-     * @param source
-     */
-    void createSimulation(QString source, QString type);
-
-
-    /**
      * @brief Simulate simulation.
      */
     void simulate();
@@ -204,19 +204,13 @@ public:
 private:
 
     /// Current simulation.
-    QScopedPointer<cece::simulator::Simulation> m_simulation;
-
-    /// Mutex.
-    QMutex m_mutex;
+    ViewPtr<simulator::Simulation> m_simulation;
 
     /// If simulation is running.
     bool m_running = false;
 
-    /// Current source.
-    QString m_source;
-
-    /// Source type.
-    QString m_type;
+    /// Initialization termination flag.
+    AtomicBool m_initTerm{false};
 };
 
 /* ************************************************************************ */

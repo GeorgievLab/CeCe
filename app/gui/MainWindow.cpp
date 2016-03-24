@@ -65,7 +65,6 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->reloadButton->hide();
 
     new XmlHighlighter(ui->plainTextEdit->document());
 
@@ -217,7 +216,6 @@ void MainWindow::simulationReset()
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
     m_simulator.reset();
-    ui->reloadButton->hide();
 }
 
 /* ************************************************************************ */
@@ -323,7 +321,6 @@ void MainWindow::fileOpen(QString filename)
 
     m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
     initSimulation();
-    ui->reloadButton->hide();
 }
 
 /* ************************************************************************ */

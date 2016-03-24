@@ -27,12 +27,10 @@
 #include "Simulator.hpp"
 
 // Qt
-#include <QMutexLocker>
 #include <QThread>
 
 // CeCe
 #include "cece/core/Exception.hpp"
-#include "cece/plugin/Manager.hpp"
 
 /* ************************************************************************ */
 
@@ -51,10 +49,9 @@ Simulator::Simulator(QObject* parent)
 
 void Simulator::start()
 {
-    if (!m_simulation)
+    if (!getSimulation())
         return;
 
-    emit running(m_running = true);
     emit simulationStarted();
 }
 
@@ -63,84 +60,60 @@ void Simulator::start()
 bool Simulator::step()
 {
     Q_ASSERT(m_simulation);
+
+    // Simulation is not initialized
+    if (!m_simulation->isInitialized())
+    {
+        // Notify about init start
+        emit simulationInitStarted();
+
+        try
+        {
+            // Perform simulation initialization
+            m_simulation->initialize(m_initTerm);
+
+            // Terminated by user
+            if (m_initTerm)
+            {
+                emit simulationInitFailed("User terminated");
+                return false;
+            }
+
+            emit simulationInitialized();
+        }
+        catch (const Exception& e)
+        {
+            emit simulationInitFailed(e.what());
+            return false;
+        }
+    }
+
     bool res;
 
     try
     {
-        AtomicBool flag{false};
-        QMutexLocker _(&m_mutex);
-
-        if (!m_simulation->isInitialized())
-            m_simulation->initialize(flag);
-
         // Do a step
-        res = m_simulation->update();
+        bool res = m_simulation->update();
+
+        emit simulationStepped(static_cast<int>(m_simulation->getIteration()));
+
+        if (!res)
+            simulationFinished();
+
+        return res;
     }
     catch (const Exception& e)
     {
         emit simulationError(e.what());
         return false;
     }
-
-    emit stepped(static_cast<int>(m_simulation->getIteration()),
-        static_cast<int>(m_simulation->getIterations()));
-
-    // Simulation finished
-    if (!res)
-        emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
-
-    return res;
 }
 
 /* ************************************************************************ */
 
 void Simulator::pause()
 {
-    emit running(m_running = false);
-}
-
-/* ************************************************************************ */
-
-void Simulator::reset()
-{
-    createSimulation(m_source, m_type);
-}
-
-/* ************************************************************************ */
-
-void Simulator::createSimulation(QString source, QString type)
-{
-    if (m_running)
-    {
-        emit loadError("Simulation is running");
-        return;
-    }
-
-    try
-    {
-        QMutexLocker _(&m_mutex);
-
-        // Create a simulation
-        auto simulation =
-            cece::plugin::Manager::s().getContext().createSimulation(
-                type.toLocal8Bit().data(), source.toLocal8Bit().data());
-
-        // Create simulation
-        m_simulation.reset(simulation.release());
-
-        // Store after initialization
-        m_source = source;
-        m_type = type;
-
-        emit loaded(true);
-        emit stepped(static_cast<int>(m_simulation->getIteration()),
-            static_cast<int>(m_simulation->getIterations()));
-    }
-    catch (const cece::Exception& e)
-    {
-        emit loadError(e.what());
-        emit loaded(false);
-    }
+    emit simulationPaused();
 }
 
 /* ************************************************************************ */
@@ -151,7 +124,7 @@ void Simulator::simulate()
         QThread::msleep(1000 / 30);
 
     m_running = false;
-    emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
+    emit simulationFinished();
 }
 
 /* ************************************************************************ */

@@ -34,108 +34,7 @@
      <number>5</number>
     </property>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="tabPosition">
-       <enum>QTabWidget::North</enum>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="tabSource">
-       <attribute name="title">
-        <string>Source</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="3">
-        <property name="leftMargin">
-         <number>5</number>
-        </property>
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <property name="rightMargin">
-         <number>5</number>
-        </property>
-        <property name="bottomMargin">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="QWidget" name="widget" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QPushButton" name="reloadButton">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>Source modified, reload</string>
-             </property>
-             <property name="icon">
-              <iconset resource="icons.qrc">
-               <normaloff>:/cece/icons/restart-24.png</normaloff>:/cece/icons/restart-24.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>12</width>
-               <height>12</height>
-              </size>
-             </property>
-             <property name="flat">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPlainTextEdit" name="plainTextEdit">
-             <property name="font">
-              <font>
-               <family>Monospace</family>
-              </font>
-             </property>
-             <property name="lineWrapMode">
-              <enum>QPlainTextEdit::NoWrap</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabPreview">
-       <attribute name="title">
-        <string>Preview</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <property name="leftMargin">
-         <number>5</number>
-        </property>
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <property name="rightMargin">
-         <number>5</number>
-        </property>
-        <property name="bottomMargin">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="cece::gui::VisualizationWidget" name="openGLWidget" native="true"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
+     <widget class="cece::gui::VisualizationWidget" name="openGLWidget" native="true"/>
     </item>
     <item>
      <widget class="QProgressBar" name="progressBar">
@@ -210,7 +109,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>ToolBar</string>
    </property>
    <property name="movable">
     <bool>true</bool>
@@ -237,7 +136,7 @@
     <string>Structure</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetTreeContents">
     <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -254,13 +153,6 @@
       <number>5</number>
      </property>
      <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Add ...</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QTreeWidget" name="treeWidgetStructure">
        <property name="indentation">
         <number>20</number>
@@ -273,6 +165,31 @@
          <string>Name</string>
         </property>
        </column>
+       <item>
+        <property name="text">
+         <string>Simulation</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Plugins</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Modules</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Objects</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Programs</string>
+         </property>
+        </item>
+       </item>
       </widget>
      </item>
     </layout>
@@ -283,7 +200,7 @@
     <string>Properties</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetTreeContents_2">
     <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -344,6 +261,33 @@
       <widget class="QTextEdit" name="textEditLog">
        <property name="lineWrapMode">
         <enum>QTextEdit::NoWrap</enum>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Source code</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPlainTextEdit" name="plainTextEdit">
+       <property name="font">
+        <font>
+         <family>Monospace</family>
+        </font>
+       </property>
+       <property name="lineWrapMode">
+        <enum>QPlainTextEdit::NoWrap</enum>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -802,38 +746,6 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plainTextEdit</sender>
-   <signal>textChanged()</signal>
-   <receiver>reloadButton</receiver>
-   <slot>show()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>154</x>
-     <y>252</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>181</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>reloadButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>simulationReset()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>310</x>
-     <y>138</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>429</x>
-     <y>88</y>
     </hint>
    </hints>
   </connection>
