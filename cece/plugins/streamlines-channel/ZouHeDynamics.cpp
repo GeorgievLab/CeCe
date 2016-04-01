@@ -195,14 +195,8 @@ ZouHeDynamics::calcDensity(DataType& data, const VelocityType& velocity) const n
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
     const auto velP = velocity.dot(VELOCITIES.at(m_position));
     const auto wWall = Descriptor::getWeightVerticalSum();
-    const auto wKWall = Descriptor::getWeightVerticalSum(KNOWN_RHO.at(m_position));
-    const auto omega = getOmega();
 
-    return
-        (center + 2.0 * known)
-        /
-        (1.0 - velP * (1.0 + 4.0 * omega / (2.0 - omega) * Descriptor::SPEED_OF_SOUND_SQ_INV * wKWall) - 2.0 * wWall)
-    ;
+    return (center + 2.0 * known) / (1.0 - velP - 2.0 * wWall);
 }
 
 /* ************************************************************************ */
@@ -213,14 +207,8 @@ ZouHeDynamics::calcVelocity(DataType& data, DensityType rho) const noexcept
     const auto center = sumValues(data, CENTER_RHO.at(m_position));
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
     const auto wWall = Descriptor::getWeightVerticalSum();
-    const auto wKWall = Descriptor::getWeightVerticalSum(KNOWN_RHO.at(m_position));
-    const auto omega = getOmega();
 
-    const RealType speed =
-        (1.0 - (1.0 / rho * (center + 2.0 * known) + 2.0 * wWall))
-        /
-        (1.0 + 4.0 * omega / (2.0 - omega) * Descriptor::SPEED_OF_SOUND_SQ_INV * wKWall)
-    ;
+    const RealType speed = (1.0 - (1.0 / rho * (center + 2.0 * known) + 2.0 * wWall));
 
     // Velocity vector
     return speed * VELOCITIES.at(m_position);

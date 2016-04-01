@@ -58,17 +58,7 @@ BgkDynamics::computeDensity(const DataType& data) const noexcept
 BgkDynamics::VelocityType
 BgkDynamics::computeVelocity(const DataType& data) const noexcept
 {
-    const auto omega = getOmega();
-
-    RealType cs2Wall = 0.0;
-
-    // c_s^2 wall is same in all coordinate axes - calculate only for x.
-    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
-        cs2Wall += Descriptor::getWeightVertical(iPop) * Descriptor::DIRECTION_VELOCITIES[iPop][0] * Descriptor::DIRECTION_VELOCITIES[iPop][0];
-
-    return computeMomentum(data) / (computeDensity(data)
-        * static_cast<RealType>(1.0 - 2.0 * omega / (2 - omega) * cs2Wall * Descriptor::SPEED_OF_SOUND_SQ_INV))
-    ;
+    return computeMomentum(data) / computeDensity(data);
 }
 
 /* ************************************************************************ */
