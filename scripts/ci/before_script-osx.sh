@@ -25,13 +25,19 @@
 #                                                                           #
 # ######################################################################### #
 
-mkdir build && cd build
-cmake \
+# Shared configuration arguments
+ARGS=\
 	-DCMAKE_BUILD_TYPE=release \
-	-DGTEST_ROOT=$VENDOR_DIR/gtest \
 	-DDEV_TESTS_BUILD=On \
 	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
-	-DDEV_PLUGIN_streamlines_RENDER=On \
-	..
+	-DDEV_PLUGIN_streamlines_RENDER=On
+
+mkdir build
+pushd build
+
+# Configure project
+cmake $ARGS ..
+
+popd
 
 # ######################################################################### #

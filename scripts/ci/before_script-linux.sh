@@ -25,8 +25,6 @@
 #                                                                           #
 # ######################################################################### #
 
-mkdir build && cd build
-
 # Shared configuration arguments
 ARGS=\
 	-DCMAKE_BUILD_TYPE=release \
@@ -48,8 +46,13 @@ if [ "$CXX" = "clang++" ]; then
 		-DCMAKE_CC_COMPILER=clang-3.6
 fi
 
+mkdir build
+pushd build
+
 # Configure project
 cmake $ARGS ..
+
+popd
 
 # ######################################################################### #
 
