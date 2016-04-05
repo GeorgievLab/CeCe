@@ -29,6 +29,5 @@
 brew outdated glfw3 || brew upgrade glfw3
 brew outdated box2d || brew upgrade box2d
 brew outdated libpng || brew upgrade libpng
-brew outdated gtest || brew upgrade gtest
 
 # ######################################################################### #

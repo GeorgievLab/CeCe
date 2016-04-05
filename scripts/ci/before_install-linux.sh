@@ -39,7 +39,7 @@ if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "g++" ]; then
 fi
 
 if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "clang++" ]; then 
-	export CXX="clang++-3.7" CC="clang-3.7"
+	export CXX="clang++-3.6" CC="clang-3.6"
 fi
 
 # ######################################################################### #
