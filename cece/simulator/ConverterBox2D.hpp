@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -415,6 +415,13 @@ public:
      * @return
      */
     units::Length getMaxObjectTranslation() const noexcept;
+
+
+    /**
+     * @brief Returns converter instance.
+     * @return
+     */
+    static ConverterBox2D& getInstance() noexcept;
 
 
 // Private Data Members

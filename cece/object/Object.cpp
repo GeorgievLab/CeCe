@@ -42,6 +42,7 @@
 // Box2D
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
 #  include <Box2D/Box2D.h>
+#  include "cece/simulator/ConverterBox2D.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -166,7 +167,7 @@ PositionVector Object::getPosition() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertPosition(m_body->GetPosition());
+    return simulator::ConverterBox2D::getInstance().convertPosition(m_body->GetPosition());
 #else
     return m_position;
 #endif
@@ -178,7 +179,7 @@ PositionVector Object::getMassCenterPosition() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertPosition(m_body->GetWorldCenter());
+    return simulator::ConverterBox2D::getInstance().convertPosition(m_body->GetWorldCenter());
 #else
     return m_position;
 #endif
@@ -190,7 +191,7 @@ PositionVector Object::getMassCenterOffset() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertPosition(m_body->GetLocalCenter());
+    return simulator::ConverterBox2D::getInstance().convertPosition(m_body->GetLocalCenter());
 #else
     return m_position;
 #endif
@@ -202,7 +203,9 @@ PositionVector Object::getWorldPosition(PositionVector local) const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertPosition(m_body->GetWorldPoint(getConverter().convertPosition(local)));
+    return simulator::ConverterBox2D::getInstance().convertPosition(
+        m_body->GetWorldPoint(simulator::ConverterBox2D::getInstance().convertPosition(local))
+    );
 #else
     return local;
 #endif
@@ -214,7 +217,7 @@ units::Angle Object::getRotation() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertAngle(m_body->GetAngle());
+    return simulator::ConverterBox2D::getInstance().convertAngle(m_body->GetAngle());
 #else
     return m_rotation;
 #endif
@@ -226,7 +229,7 @@ VelocityVector Object::getVelocity() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertLinearVelocity(m_body->GetLinearVelocity());
+    return simulator::ConverterBox2D::getInstance().convertLinearVelocity(m_body->GetLinearVelocity());
 #else
     return m_velocity;
 #endif
@@ -238,7 +241,7 @@ units::AngularVelocity Object::getAngularVelocity() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertAngularVelocity(m_body->GetAngularVelocity());
+    return simulator::ConverterBox2D::getInstance().convertAngularVelocity(m_body->GetAngularVelocity());
 #else
     return Zero;
 #endif
@@ -250,7 +253,7 @@ units::Mass Object::getMass() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    return getConverter().convertMass(m_body->GetMass());
+    return simulator::ConverterBox2D::getInstance().convertMass(m_body->GetMass());
 #else
     return {1};
 #endif
@@ -258,28 +261,10 @@ units::Mass Object::getMass() const noexcept
 
 /* ************************************************************************ */
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-simulator::ConverterBox2D& Object::getConverter() noexcept
-{
-    return m_simulation.getConverter();
-}
-#endif
-
-/* ************************************************************************ */
-
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-const simulator::ConverterBox2D& Object::getConverter() const noexcept
-{
-    return m_simulation.getConverter();
-}
-#endif
-
-/* ************************************************************************ */
-
 units::Length Object::getMaxTranslation() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
-    return getConverter().getMaxObjectTranslation();
+    return simulator::ConverterBox2D::getInstance().getMaxObjectTranslation();
 #else
     return units::Length(NAN);
 #endif
@@ -302,10 +287,10 @@ void Object::setPosition(PositionVector pos) noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    m_body->SetTransform(getConverter().convertPosition(pos), m_body->GetAngle());
+    m_body->SetTransform(simulator::ConverterBox2D::getInstance().convertPosition(pos), m_body->GetAngle());
 
     if (m_pinBody)
-        m_pinBody->SetTransform(getConverter().convertPosition(pos), 0);
+        m_pinBody->SetTransform(simulator::ConverterBox2D::getInstance().convertPosition(pos), 0);
 #else
     m_position = std::move(pos);
 #endif
@@ -317,7 +302,7 @@ void Object::setRotation(units::Angle angle) noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    m_body->SetTransform(m_body->GetPosition(), getConverter().convertAngle(angle));
+    m_body->SetTransform(m_body->GetPosition(), simulator::ConverterBox2D::getInstance().convertAngle(angle));
 #else
     m_rotation = angle;
 #endif
@@ -329,7 +314,7 @@ void Object::setVelocity(VelocityVector vel) noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    m_body->SetLinearVelocity(getConverter().convertLinearVelocity(vel));
+    m_body->SetLinearVelocity(simulator::ConverterBox2D::getInstance().convertLinearVelocity(vel));
 #else
     m_velocity = std::move(vel);
 #endif
@@ -341,7 +326,7 @@ void Object::setAngularVelocity(units::AngularVelocity vel) noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    m_body->SetAngularVelocity(getConverter().convertAngularVelocity(vel));
+    m_body->SetAngularVelocity(simulator::ConverterBox2D::getInstance().convertAngularVelocity(vel));
 #endif
 }
 
@@ -351,7 +336,7 @@ void Object::applyForce(const ForceVector& force) noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    m_body->ApplyForceToCenter(getConverter().convertForce(force), true);
+    m_body->ApplyForceToCenter(simulator::ConverterBox2D::getInstance().convertForce(force), true);
 #endif
 }
 
@@ -362,8 +347,8 @@ void Object::applyForce(const ForceVector& force, const PositionVector& offset) 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->ApplyForce(
-        getConverter().convertForce(force),
-        m_body->GetWorldPoint(getConverter().convertPosition(offset)),
+        simulator::ConverterBox2D::getInstance().convertForce(force),
+        m_body->GetWorldPoint(simulator::ConverterBox2D::getInstance().convertPosition(offset)),
         true
     );
 
@@ -378,8 +363,8 @@ void Object::applyLinearImpulse(const ImpulseVector& impulse, const PositionVect
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
     m_body->ApplyLinearImpulse(
-        getConverter().convertLinearImpulse(impulse),
-        m_body->GetWorldPoint(getConverter().convertPosition(offset)),
+        simulator::ConverterBox2D::getInstance().convertLinearImpulse(impulse),
+        m_body->GetWorldPoint(simulator::ConverterBox2D::getInstance().convertPosition(offset)),
         true
     );
 #else
@@ -393,7 +378,7 @@ void Object::applyAngularImpulse(const units::Impulse& impulse) noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     Assert(m_body);
-    m_body->ApplyAngularImpulse(getConverter().convertAngularImpulse(impulse), true);
+    m_body->ApplyAngularImpulse(simulator::ConverterBox2D::getInstance().convertAngularImpulse(impulse), true);
 #endif
 }
 
@@ -540,8 +525,8 @@ void Object::initShapes()
         {
             // Create body shape
             auto ptr = makeUnique<b2CircleShape>();
-            ptr->m_radius = getConverter().convertLength(shape.getCircle().radius);
-            ptr->m_p = getConverter().convertPosition(shape.getCircle().center);
+            ptr->m_radius = simulator::ConverterBox2D::getInstance().convertLength(shape.getCircle().radius);
+            ptr->m_p = simulator::ConverterBox2D::getInstance().convertPosition(shape.getCircle().center);
             bodyShape = std::move(ptr);
             break;
         }
@@ -551,7 +536,7 @@ void Object::initShapes()
             // Create body shape
             auto ptr = makeUnique<b2PolygonShape>();
             const auto sh = 0.5 * shape.getRectangle().size;
-            b2Vec2 box = getConverter().convertPosition(sh);
+            b2Vec2 box = simulator::ConverterBox2D::getInstance().convertPosition(sh);
             ptr->SetAsBox(box.x, box.y);
             bodyShape = std::move(ptr);
             break;
@@ -562,7 +547,7 @@ void Object::initShapes()
             DynamicArray<b2Vec2> vertices;
 
             for (const auto& v : shape.getEdges().edges)
-                vertices.push_back(getConverter().convertPosition(v));
+                vertices.push_back(simulator::ConverterBox2D::getInstance().convertPosition(v));
 
             auto ptr = makeUnique<b2ChainShape>();
 
@@ -580,7 +565,7 @@ void Object::initShapes()
         // Store body shape
         if (bodyShape)
         {
-            getBody()->CreateFixture(bodyShape.get(), getConverter().convertDensity(getDensity()));
+            getBody()->CreateFixture(bodyShape.get(), simulator::ConverterBox2D::getInstance().convertDensity(getDensity()));
             m_bodyShapes.push_back(std::move(bodyShape));
         }
     }

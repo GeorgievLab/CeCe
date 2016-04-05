@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -301,6 +301,14 @@ units::Length ConverterBox2D::getMaxObjectTranslation() const noexcept
     const auto coeff = 1.0 / getLengthCoefficient();
 
     return coeff * units::Length{b2_maxTranslation};
+}
+
+/* ************************************************************************ */
+
+ConverterBox2D& ConverterBox2D::getInstance() noexcept
+{
+    static ConverterBox2D instance;
+    return instance;
 }
 
 /* ************************************************************************ */
