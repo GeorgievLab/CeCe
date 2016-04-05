@@ -29,14 +29,4 @@ brew outdated box2d || brew upgrade box2d
 brew outdated libpng || brew upgrade libpng
 brew outdated gtest || brew upgrade gtest
 
-# Build GTest
-if [ ! -d $VENDOR_DIR/gtest ]; then 
-	wget https://github.com/google/googletest/archive/release-1.7.0.zip -O gtest.zip && 
-	unzip gtest.zip -d . && 
-	cd googletest-release-1.7.0 &&
-	cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/gtest -DCMAKE_BUILD_TYPE=release . &&
-	cmake --build . && mkdir -p $VENDOR_DIR/gtest &&
-	cp -r include $VENDOR_DIR/gtest && mkdir -p $VENDOR_DIR/gtest/lib && cp libgtest*.a $VENDOR_DIR/gtest/lib && cd -; 
-fi
-
 # ######################################################################### #
