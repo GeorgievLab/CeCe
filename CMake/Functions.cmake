@@ -203,9 +203,16 @@ function(build_test PROJECT_NAME)
         # Test name
         set(TEST_NAME "${PROJECT_NAME}_test")
 
+        link_directories(${GTEST_LIB_DIRS})
+
         # Create executable
         add_executable(${TEST_NAME}
             ${ARG_SOURCES}
+        )
+
+        # Include directories
+        target_include_directories(${TEST_NAME}
+            PRIVATE ${GTEST_INCLUDE_DIRS}
         )
 
         # Link GTest libraries

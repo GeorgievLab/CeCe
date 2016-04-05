@@ -227,8 +227,7 @@ endif ()
 if (DEV_TESTS_BUILD)
     message(STATUS "Build unit tests")
     enable_testing()
-    find_package(GTest REQUIRED)
-    include_directories(${GTEST_INCLUDE_DIRS})
+    include(GTest)
 endif ()
 
 # Set real type
