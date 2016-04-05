@@ -43,7 +43,7 @@ cmake \
 	-DGLFW_BUILD_EXAMPLES=Off \
 	-DGLFW_BUILD_TESTS=Off .
 cmake --build .
-make install
+sudo make install
 popd
 
 # ######################################################################### #

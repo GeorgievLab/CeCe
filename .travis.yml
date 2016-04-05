@@ -29,11 +29,11 @@ dist: trusty
 # Operating systems
 os:
   - linux
-  - osx
+#  - osx
 
 # Compilers
 compiler:
-  - clang
+#  - clang
   - gcc
 
 language: cpp
