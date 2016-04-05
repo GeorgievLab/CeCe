@@ -31,7 +31,20 @@ sudo apt-get install -qq \
 	libboost-filesystem1.55-dev \
 	xorg-dev \
 	libgl1-mesa-dev \
-	libpython2.7-dev
+	libpython2.7-dev \
+	libbox2d-dev
+
+# Install GLFW3 (not in repo)
+git clone https://github.com/glfw/glfw.git -b 3.1.2 glfw3
+pushd glfw3
+cmake \
+	-DCMAKE_BUILD_TYPE=release \
+	-DGLFW_BUILD_DOCS=Off \
+	-DGLFW_BUILD_EXAMPLES=Off \
+	-DGLFW_BUILD_TESTS=Off .
+cmake --build .
+make install
+popd
 
 # ######################################################################### #
 
