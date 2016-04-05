@@ -1,25 +1,12 @@
 
-Box2D
-
 .codelite/*
 .clang/*
 .build-debug/*
 
-build-debug*
-build-release*
+build-*
 
-core/core.mk
-core/core.txt
-core/Debug/*
+*.mk
+.cmake_dirty
 
-gui/Debug/*
-gui/gui.mk
-gui/gui.txt
+simulations
 
-/simulator/simulator.mk
-/render/render.mk
-/parser/parser.mk
-/Makefile
-/gui/.cmake_dirty
-/cli/.cmake_dirty
-/cli/cli.mk
