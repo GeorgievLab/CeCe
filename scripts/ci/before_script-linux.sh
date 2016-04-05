@@ -46,11 +46,11 @@ if [ "$CXX" = "clang++" ]; then
 		-DCMAKE_CC_COMPILER=clang-3.6
 fi
 
-mkdir build
+mkdir build || exit 1
 pushd build
 
 # Configure project
-cmake $ARGS ..
+cmake $ARGS .. || exit 1
 
 popd
 

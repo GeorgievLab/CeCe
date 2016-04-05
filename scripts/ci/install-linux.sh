@@ -36,14 +36,22 @@ sudo apt-get install -qq \
 
 # Install GLFW3 (not in repo)
 git clone https://github.com/glfw/glfw.git -b 3.1.2 glfw3
+
 pushd glfw3
+
+# Configure
 cmake \
 	-DCMAKE_BUILD_TYPE=release \
 	-DGLFW_BUILD_DOCS=Off \
 	-DGLFW_BUILD_EXAMPLES=Off \
-	-DGLFW_BUILD_TESTS=Off .
-cmake --build .
-sudo make install
+	-DGLFW_BUILD_TESTS=Off . || exit 1
+
+# Build
+cmake --build . || exit 1
+
+# Install
+sudo make install || exit 1
+
 popd
 
 # ######################################################################### #

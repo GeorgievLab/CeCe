@@ -31,7 +31,7 @@ sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
 #sudo add-apt-repository ppa:boost/latest -y
 #sudo add-apt-repository ppa:llvm-toolchain/precise-3.7 -y
 
-sudo apt-get -qq update
+sudo apt-get -qq update || exit 1
 
 # ######################################################################### #
 

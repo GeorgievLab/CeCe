@@ -32,11 +32,11 @@ ARGS=\
 	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
 	-DDEV_PLUGIN_streamlines_RENDER=On
 
-mkdir build
+mkdir build || exit 1
 pushd build
 
 # Configure project
-cmake $ARGS ..
+cmake $ARGS .. || exit 1
 
 popd
 
