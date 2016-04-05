@@ -33,14 +33,5 @@ sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
 
 sudo apt-get -qq update
 
-# Update compiler variables
-if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "g++" ]; then 
-	export CXX="g++-4.9" CC="gcc-4.9"
-fi
-
-if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "clang++" ]; then 
-	export CXX="clang++-3.6" CC="clang-3.6"
-fi
-
 # ######################################################################### #
 

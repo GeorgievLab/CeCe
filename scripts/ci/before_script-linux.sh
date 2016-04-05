@@ -26,13 +26,30 @@
 # ######################################################################### #
 
 mkdir build && cd build
-cmake \
+
+# Shared configuration arguments
+ARGS=\
 	-DCMAKE_BUILD_TYPE=release \
-	-DGTEST_ROOT=$VENDOR_DIR/gtest \
 	-DDEV_TESTS_BUILD=On \
 	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
-	-DDEV_PLUGIN_streamlines_RENDER=On \
-	..
+	-DDEV_PLUGIN_streamlines_RENDER=On
+
+# Use gcc 4.9
+if [ "$CXX" = "g++" ]; then 
+	ARGS=$ARGS \
+		-DCMAKE_CXX_COMPILER=g++-4.9 \
+		-DCMAKE_CC_COMPILER=gcc-4.9
+fi
+
+# Use clang 3.6
+if [ "$CXX" = "clang++" ]; then 
+	ARGS=$ARGS \
+		-DCMAKE_CXX_COMPILER=clang++-3.6 \
+		-DCMAKE_CC_COMPILER=clang-3.6
+fi
+
+# Configure project
+cmake $ARGS ..
 
 # ######################################################################### #
 
