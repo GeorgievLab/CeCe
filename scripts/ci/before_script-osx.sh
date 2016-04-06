@@ -26,11 +26,11 @@
 # ######################################################################### #
 
 # Shared configuration arguments
-ARGS=\
+ARGS="\
 	-DCMAKE_BUILD_TYPE=release \
 	-DDEV_TESTS_BUILD=On \
 	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
-	-DDEV_PLUGIN_streamlines_RENDER=On
+	-DDEV_PLUGIN_streamlines_RENDER=On"
 
 mkdir build || exit 1
 pushd build

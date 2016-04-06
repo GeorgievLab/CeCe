@@ -33,7 +33,7 @@ os:
 
 # Compilers
 compiler:
-#  - clang
+  - clang
   - gcc
 
 language: cpp
@@ -46,11 +46,11 @@ env:
         - secure: "CJ2akGyBPWYDBD4/q0L93gGV0tjcUkeObyWPyMwEJbh3Qk+ObEo0GQqTucjadw2ywnI1DXaRx9kRUrpBSN6ycvzNEdOzT6UYz6Fxfm4X+IowSUxv3zr+T8/70ChBQKDoWG55EsE2pzhjobdXq41E15kNLqfgMLj7LagF6p295t3QG8uu9DFxmnQmPvJvqL6n7H/8mI9/MaUGgAlMYAzpA8DtwWfe3ona/2KWf5lIudrqPVEY4+uFV+qQpt+PuwV8Yja+YVqH+BTW40JZUkB2wsgx91yZwz4VWfi+vNZBOuz17DIf1UuzUn0TLx2l2HV83Jw+GEqGekPUBPC38z9ou8xtF20e+eEvKMjJGXvcATSP1bkLFjUPdG56P9ZIfuS0qtOwrdqH3GbJLV+OCR/jONrBCo0O5UQFmYjEHBQvjqC9gSt3BHjVFlHtfjSqzHposiABFkg+O/9I/ofNSCo7f60No7b5ziO6c7rD+o11tFQVJXha7ByBIcsWCCaI4YeAGLnX5V+UMAYIBUAEvrDWeZqaM77Sure3UvvslL0cj+XjhonAlnc/Hei3rkAC8Rq4SHdoIpbxWsqcT47sfFdWMFWUYKfP1IRnfjFgAzhJ6fkpr70lal2VadaazxYbiPWgB3IJ5mh4WPbCqZ6PWSasAMtCxccS7h47UPAWcIO/+hs="
         - secure: "BjnmUXSBFkWKOzVyKgSmk8DqWorfefyDrbWg6kJ2srSNX3a/Q7hNWNROg8YyvBSybmx1RfdFQX+aKK6/+NveIv63Ks1ZY7oV4eFC/leOB1Q2tUfst4qMtMRoLCaPPv93LoHY8yWGvyUypPQImEGJwIwDYoa2mVXabKPaCP/cApputMQlT0/dc1/jpnR9nG057AkKZUyDzMOO9kyvA+x4pP+ISDNgTUlEuNW69hzOgTNQ8q5zIshEhH+COFVOoNRynCgYHzhG/ocm4wpIji/LPR0A041yk90q0ZAtE6oIC2rsXEQ6naG3W0sSN8JyhUFawKwc3CNE9ZLmZOzqxFaxgFYxRazh3EN+rnpY99cQqfWLoXKc2ijMfjGXG/3Rj1cAHQ2FUQmDBeHZ14k51Zo5xIuB3TVwLJ3fPSzpBABf12QZAuNJMR5ixW4cE5VlbJg/Qq5/bsYDSPByRcNWP3g4svZ2/SfW0LpHNQjudRRhGdaPtqqOX+iibTlyPKno2ul7WWScI6ZDRS9ttRCX1VD5hvCXaRcZd83CoogWjSFnVFRcultYjfpd8RoVEJnVb0ngl1jlu8DMqEJLwBiaGLQ+dN8JRuPthGe0Go0F5PcanjNeoYnqzUv3kNfNLZwM2/6UnCsqGAB8InLOjOtrvxgCQJ6XHohaTpXztaFnQESV6BY="
 
-before_install: . scripts/ci/before_install-$TRAVIS_OS_NAME.sh
-install:        . scripts/ci/install-$TRAVIS_OS_NAME.sh
-before_script:  . scripts/ci/before_script-$TRAVIS_OS_NAME.sh
-script:         . scripts/ci/script-$TRAVIS_OS_NAME.sh
-after_success:  . scripts/ci/after_success-$TRAVIS_OS_NAME.sh
+before_install: ./scripts/ci/before_install-$TRAVIS_OS_NAME.sh
+install:        ./scripts/ci/install-$TRAVIS_OS_NAME.sh
+before_script:  ./scripts/ci/before_script-$TRAVIS_OS_NAME.sh
+script:         ./scripts/ci/script-$TRAVIS_OS_NAME.sh
+after_success:  ./scripts/ci/after_success-$TRAVIS_OS_NAME.sh
 
 #deploy:
 #    provider: script
