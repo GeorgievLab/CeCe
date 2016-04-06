@@ -25,34 +25,13 @@
 #                                                                           #
 # ######################################################################### #
 
-SUFFIX=""
+. deploy.sh
 
-# Add suffix for non-tag releases
-if [ -z "$TRAVIS_TAG" ]; then
-    SUFFIX="$TRAVIS_BRANCH-$TRAVIS_COMMIT"
-fi
+pushd build
 
-# Create a package and deploy
-function pack_and_deploy
-{
-	PLATFORM=$1
-	GENERATOR=$2
-	EXT=$3
+pack_and_deploy "Darwin" "TGZ" "tar.gz"
 
-	# Create a package
-	cpack -G $GENERATOR
-
-	PACKAGE=CeCe-$VERSION-$PLATFORM.$EXT
-
-	if [ -n "$SUFFIX" ]; then
-		PACKAGE_NEW=CeCe-$VERSION-$PLATFORM-$SUFFIX.$EXT
-		mv $PACKAGE $PACKAGE_NEW
-		PACKAGE=$PACKAGE_NEW
-	fi
-
-	echo "Deploy package: $PACKAGE"
-	curl --ftp-create-dirs --ftp-ssl -u $FTP_USER:$FTP_PASSWORD ftp://$FTP_SERVER/bin/ -T $PACKAGE || { echo "Deploy failed"; exit 1; }
-}
+popd
 
 # ######################################################################### #
 
