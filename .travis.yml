@@ -52,13 +52,14 @@ before_script:  bash -x ./scripts/ci/before_script-$TRAVIS_OS_NAME.sh
 script:         bash -x ./scripts/ci/script-$TRAVIS_OS_NAME.sh
 after_success:  bash -x ./scripts/ci/after_success-$TRAVIS_OS_NAME.sh
 
-#deploy:
-#    provider: script
-#    script: scripts/ci/deploy.sh
-#    on:
-#        branch:
-#            - master
-#            - travis-ci
+deploy:
+    provider: script
+    script: scripts/ci/deploy.sh
+    on:
+        branch:
+            - master
+            - travis-ci
+		condition: '! ( ( "$TRAVIS_OS_NAME" = "linux" && $CC = "gcc" ) || ( "$TRAVIS_OS_NAME" = "osx" && $CC = "clang" ) )'
 
 notifications:
   slack:
