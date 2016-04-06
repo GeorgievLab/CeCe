@@ -25,9 +25,15 @@
 #                                                                           #
 # ######################################################################### #
 
+# Print versions of installed apps
+brew list --versions
+
 # Install dependencies
 brew outdated glfw3 || brew upgrade glfw3
 brew outdated box2d || brew upgrade box2d
 brew outdated libpng || brew upgrade libpng
+
+# Previous version doesn't have CMake config
+brew switch box2d 2.3.1
 
 # ######################################################################### #

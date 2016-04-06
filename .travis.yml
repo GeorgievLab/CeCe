@@ -28,13 +28,13 @@ dist: trusty
 
 # Operating systems
 os:
-  - linux
-  - osx
+    - linux
+    - osx
 
 # Compilers
 compiler:
-  - clang
-  - gcc
+    - clang
+    - gcc
 
 language: cpp
 
