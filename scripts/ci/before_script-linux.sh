@@ -26,17 +26,17 @@
 # ######################################################################### #
 
 # Shared configuration arguments
-ARGS=\
+ARGS="\
 	-DCMAKE_BUILD_TYPE=release \
 	-DDEV_TESTS_BUILD=On \
 	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
-	-DDEV_PLUGIN_streamlines_RENDER=On
+	-DDEV_PLUGIN_streamlines_RENDER=On"
 
 # Use gcc 4.9
 if [ "$CXX" = "g++" ]; then 
-	ARGS=$ARGS \
+	ARGS="$ARGS \
 		-DCMAKE_CXX_COMPILER=g++-4.9 \
-		-DCMAKE_CC_COMPILER=gcc-4.9
+		-DCMAKE_CC_COMPILER=gcc-4.9"
 
 	command -v gcc-4.9 > /dev/null 2>&1 || exit 1
 	command -v g++-4.9 > /dev/null 2>&1 || exit 1
@@ -44,9 +44,9 @@ fi
 
 # Use clang 3.6
 if [ "$CXX" = "clang++" ]; then 
-	ARGS=$ARGS \
+	ARGS="$ARGS \
 		-DCMAKE_CXX_COMPILER=clang++-3.6 \
-		-DCMAKE_CC_COMPILER=clang-3.6
+		-DCMAKE_CC_COMPILER=clang-3.6"
 
 	command -v clang-3.6 > /dev/null 2>&1 || exit 1
 	command -v clang++-3.6 > /dev/null 2>&1 || exit 1
