@@ -55,6 +55,7 @@ after_success:  bash -x ./scripts/ci/after_success-$TRAVIS_OS_NAME.sh
 deploy:
     provider: script
     script: scripts/ci/deploy-$TRAVIS_OS_NAME.sh
+    skip_cleanup: true
     on:
         branch:
             - master
