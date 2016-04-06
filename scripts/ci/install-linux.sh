@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,28 +25,34 @@
 #                                                                           #
 # ######################################################################### #
 
-# Include Python API
-find_package(PythonLibs 2.7 REQUIRED)
+sudo apt-get install -qq \
+	g++-4.9 \
+	clang-3.6 \
+	libboost-filesystem1.55-dev \
+	xorg-dev \
+	libgl1-mesa-dev \
+	libpython2.7-dev \
+	libbox2d-dev
 
-# Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
+# Install GLFW3 (not in repo)
+git clone https://github.com/glfw/glfw.git -b 3.1.2 glfw3
+
+pushd glfw3
+
+# Configure
+cmake \
+	-DCMAKE_BUILD_TYPE=release \
+	-DGLFW_BUILD_DOCS=Off \
+	-DGLFW_BUILD_EXAMPLES=Off \
+	-DGLFW_BUILD_TESTS=Off . || exit 1
+
+# Build
+cmake --build . || exit 1
+
+# Install
+sudo make install || exit 1
+
+popd
 
 # ######################################################################### #
 
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/CellBase.cpp
-    wrappers/Yeast.cpp
-)
-
-# ######################################################################### #
-
-# Build plugin
-build_plugin(cell-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell python
-    LIBRARIES ${PYTHON_LIBRARIES}
-)
-
-# ######################################################################### #

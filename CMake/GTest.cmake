@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,28 +23,21 @@
 #                                                                           #
 # ######################################################################### #
 
-# Include Python API
-find_package(PythonLibs 2.7 REQUIRED)
+cmake_minimum_required(VERSION 2.8)
 
-# Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
-
-# ######################################################################### #
-
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/CellBase.cpp
-    wrappers/Yeast.cpp
+include(ExternalProject)
+ExternalProject_Add(GTest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    CMAKE_ARGS -DBUILD_GMOCK:BOOL=Off -DBUILD_GTEST:BOOL=On
+    PREFIX "${CMAKE_BINARY_DIR}"
+    # Disable installation
+    INSTALL_COMMAND ""
 )
 
-# ######################################################################### #
-
-# Build plugin
-build_plugin(cell-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell python
-    LIBRARIES ${PYTHON_LIBRARIES}
-)
+# Specify directories
+ExternalProject_Get_Property(GTest SOURCE_DIR BINARY_DIR)
+set(GTEST_INCLUDE_DIRS ${SOURCE_DIR}/googletest/include)
+set(GTEST_LIB_DIRS ${BINARY_DIR}/googletest)
+set(GTEST_BOTH_LIBRARIES gtest gtest_main)
 
 # ######################################################################### #

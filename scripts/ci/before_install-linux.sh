@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,28 +25,13 @@
 #                                                                           #
 # ######################################################################### #
 
-# Include Python API
-find_package(PythonLibs 2.7 REQUIRED)
+# Add PPAs
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+#sudo add-apt-repository ppa:kalakris/cmake -y
+#sudo add-apt-repository ppa:boost/latest -y
+#sudo add-apt-repository ppa:llvm-toolchain/precise-3.7 -y
 
-# Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
-
-# ######################################################################### #
-
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/CellBase.cpp
-    wrappers/Yeast.cpp
-)
+sudo apt-get -qq update || exit 1
 
 # ######################################################################### #
 
-# Build plugin
-build_plugin(cell-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell python
-    LIBRARIES ${PYTHON_LIBRARIES}
-)
-
-# ######################################################################### #

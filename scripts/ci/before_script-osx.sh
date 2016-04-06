@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,28 +25,19 @@
 #                                                                           #
 # ######################################################################### #
 
-# Include Python API
-find_package(PythonLibs 2.7 REQUIRED)
+# Shared configuration arguments
+ARGS="\
+	-DCMAKE_BUILD_TYPE=release \
+	-DDEV_TESTS_BUILD=On \
+	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
+	-DDEV_PLUGIN_streamlines_RENDER=On"
 
-# Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
+mkdir build || exit 1
+pushd build
 
-# ######################################################################### #
+# Configure project
+cmake $ARGS .. || exit 1
 
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/CellBase.cpp
-    wrappers/Yeast.cpp
-)
-
-# ######################################################################### #
-
-# Build plugin
-build_plugin(cell-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell python
-    LIBRARIES ${PYTHON_LIBRARIES}
-)
+popd
 
 # ######################################################################### #

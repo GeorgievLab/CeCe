@@ -1,101 +1,69 @@
+# ######################################################################### #
+# Georgiev Lab (c) 2015-2016                                                #
+# ######################################################################### #
+# Department of Cybernetics                                                 #
+# Faculty of Applied Sciences                                               #
+# University of West Bohemia in Pilsen                                      #
+# ######################################################################### #
+#                                                                           #
+# This file is part of CeCe.                                                #
+#                                                                           #
+# CeCe is free software: you can redistribute it and/or modify              #
+# it under the terms of the GNU General Public License as published by      #
+# the Free Software Foundation, either version 3 of the License, or         #
+# (at your option) any later version.                                       #
+#                                                                           #
+# CeCe is distributed in the hope that it will be useful,                   #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+# GNU General Public License for more details.                              #
+#                                                                           #
+# You should have received a copy of the GNU General Public License         #
+# along with CeCe.  If not, see <http://www.gnu.org/licenses/>.             #
+#                                                                           #
+# ######################################################################### #
 
-# Container-based
-sudo: false
+sudo: required
+dist: trusty
 
 # Operating systems
 os:
-  - linux
-  - osx
+    - linux
+    - osx
 
 # Compilers
 compiler:
-  - clang
-  - gcc
+    - clang
+    - gcc
+
+language: cpp
 
 # Environment variables
 env:
     global:
-        - VENDOR_DIR=$HOME/vendor/$TRAVIS_OS_NAME
         - VERSION=0.4.3
         - secure: "qZNc/lVI2Hv7f1pLHdnLXrHOXgXkvoDzZGW5czcJQPC1tJ57S3w2IfvvmWxHKRcKvZ/aJXzH9INgvBtopsbmXHxU1QZVXzbO3w+aO9D9TGJYtagx5HIIqqLdHLnOezZJw51KLRj+dUYhwzuWqB4SzjLQI6jV88Ye4T9HuqThMzpg6PBqrdlPLW4bNrYf5SiiB67+tVJLAcR5uB1gej3hLH9LNHDnN07wTO/nRAGz9ZQI1jLNWILRZFM1H6Q3iJjAxpCyjRftaxZ3dBDJSQnji4AkGc9AZ8MfX2IEyA8bzMY44xvMHvImUBZDkET4iz2gNSL1WpQL1YA4bBUD0uNWFVQ/+ewdLMpigFHazd6EqOm3f37Pd3imnjw419Gld1m1P/jiOx+OLwDnmBfI8cQvfy7ph+wEKwc/13sOIAmTG8Toy5wcWGIx9B54O0WTysqIE4vetzmSFRykniuGyR+6IXmClQfArsGWcNQw8RhlGKJNrYUPNtMkhEJe/OzBvIr9hhccqT6YN7UfU4zqQ6ydx3WV6YCLZgNRz8LTflz4MzdqZ1RgvTe/TNXOKptsphoe7Pfh+hDlcJ9rAWx/+09T5tuw4E1pZ5fQO75eSHgyb2FKnsNZFpEI4SxI234sABhZwH/pmo6UB7xXk4mExxFoWUice3ESt28Kx6jNl9FVzrs="
         - secure: "CJ2akGyBPWYDBD4/q0L93gGV0tjcUkeObyWPyMwEJbh3Qk+ObEo0GQqTucjadw2ywnI1DXaRx9kRUrpBSN6ycvzNEdOzT6UYz6Fxfm4X+IowSUxv3zr+T8/70ChBQKDoWG55EsE2pzhjobdXq41E15kNLqfgMLj7LagF6p295t3QG8uu9DFxmnQmPvJvqL6n7H/8mI9/MaUGgAlMYAzpA8DtwWfe3ona/2KWf5lIudrqPVEY4+uFV+qQpt+PuwV8Yja+YVqH+BTW40JZUkB2wsgx91yZwz4VWfi+vNZBOuz17DIf1UuzUn0TLx2l2HV83Jw+GEqGekPUBPC38z9ou8xtF20e+eEvKMjJGXvcATSP1bkLFjUPdG56P9ZIfuS0qtOwrdqH3GbJLV+OCR/jONrBCo0O5UQFmYjEHBQvjqC9gSt3BHjVFlHtfjSqzHposiABFkg+O/9I/ofNSCo7f60No7b5ziO6c7rD+o11tFQVJXha7ByBIcsWCCaI4YeAGLnX5V+UMAYIBUAEvrDWeZqaM77Sure3UvvslL0cj+XjhonAlnc/Hei3rkAC8Rq4SHdoIpbxWsqcT47sfFdWMFWUYKfP1IRnfjFgAzhJ6fkpr70lal2VadaazxYbiPWgB3IJ5mh4WPbCqZ6PWSasAMtCxccS7h47UPAWcIO/+hs="
         - secure: "BjnmUXSBFkWKOzVyKgSmk8DqWorfefyDrbWg6kJ2srSNX3a/Q7hNWNROg8YyvBSybmx1RfdFQX+aKK6/+NveIv63Ks1ZY7oV4eFC/leOB1Q2tUfst4qMtMRoLCaPPv93LoHY8yWGvyUypPQImEGJwIwDYoa2mVXabKPaCP/cApputMQlT0/dc1/jpnR9nG057AkKZUyDzMOO9kyvA+x4pP+ISDNgTUlEuNW69hzOgTNQ8q5zIshEhH+COFVOoNRynCgYHzhG/ocm4wpIji/LPR0A041yk90q0ZAtE6oIC2rsXEQ6naG3W0sSN8JyhUFawKwc3CNE9ZLmZOzqxFaxgFYxRazh3EN+rnpY99cQqfWLoXKc2ijMfjGXG/3Rj1cAHQ2FUQmDBeHZ14k51Zo5xIuB3TVwLJ3fPSzpBABf12QZAuNJMR5ixW4cE5VlbJg/Qq5/bsYDSPByRcNWP3g4svZ2/SfW0LpHNQjudRRhGdaPtqqOX+iibTlyPKno2ul7WWScI6ZDRS9ttRCX1VD5hvCXaRcZd83CoogWjSFnVFRcultYjfpd8RoVEJnVb0ngl1jlu8DMqEJLwBiaGLQ+dN8JRuPthGe0Go0F5PcanjNeoYnqzUv3kNfNLZwM2/6UnCsqGAB8InLOjOtrvxgCQJ6XHohaTpXztaFnQESV6BY="
 
-language: cpp
+before_install: bash -x ./scripts/ci/before_install-$TRAVIS_OS_NAME.sh
+install:        bash -x ./scripts/ci/install-$TRAVIS_OS_NAME.sh
+before_script:  bash -x ./scripts/ci/before_script-$TRAVIS_OS_NAME.sh
+script:         bash -x ./scripts/ci/script-$TRAVIS_OS_NAME.sh
+after_success:  bash -x ./scripts/ci/after_success-$TRAVIS_OS_NAME.sh
 
-addons:
-    apt:
-        sources:
-            - ubuntu-toolchain-r-test
-            - kalakris-cmake
-            - boost-latest
-            - llvm-toolchain-precise-3.7
-        packages:
-            - cmake
-            - g++-4.9
-            - clang-3.7
-            - libboost-filesystem1.55-dev
-            - xorg-dev
-            - libgl1-mesa-dev
-            - libpython2.7-dev
-
-before_install:
-    # Update compiler variables
-    - if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" -a "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
-
-    - mkdir -p $VENDOR_DIR
-    - ls $VENDOR_DIR
-
-    # Build GLFW3
-    - "if [ ! -d $VENDOR_DIR/glfw3 ]; then wget https://github.com/glfw/glfw/archive/3.1.zip -O glfw.zip && unzip glfw.zip -d . && cd glfw-3.1 &&
-      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/glfw3 -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off
-            -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off . &&
-      cmake --build . && make install && cd -; fi"
-
-    # Build Box2D
-    - "if [ ! -d $VENDOR_DIR/box2d ]; then wget https://github.com/erincatto/Box2D/archive/v2.3.1.zip -O box2d.zip && unzip box2d.zip && cd Box2D-2.3.1/Box2D &&
-      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/box2d -DCMAKE_BUILD_TYPE=release -DBOX2D_BUILD_EXAMPLES=Off
-            -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off . &&
-      cmake --build . && make install && cd -; fi"
-
-    # Build LibPNG
-    - "if [ ! -d $VENDOR_DIR/libpng ]; then wget https://github.com/glennrp/libpng/archive/libpng16.zip -O libpng.zip && unzip libpng.zip && cd libpng-libpng16 &&
-      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/libpng -DCMAKE_BUILD_TYPE=release &&
-      cmake --build . && make install && cd -; fi"
-
-    # Build GTest
-    - "if [ ! -d $VENDOR_DIR/gtest ]; then wget https://github.com/google/googletest/archive/release-1.7.0.zip -O gtest.zip && unzip gtest.zip -d . && cd googletest-release-1.7.0 &&
-      cmake -DCMAKE_INSTALL_PREFIX=$VENDOR_DIR/gtest -DCMAKE_BUILD_TYPE=release . &&
-      cmake --build . && mkdir -p $VENDOR_DIR/gtest &&
-      cp -r include $VENDOR_DIR/gtest && mkdir -p $VENDOR_DIR/gtest/lib && cp libgtest*.a $VENDOR_DIR/gtest/lib && cd -; fi"
-
-before_script:
-    - mkdir build && cd build
-    - "cmake
-        -DCMAKE_BUILD_TYPE=release
-        -DGLFW_LOCATION=$VENDOR_DIR/glfw3
-        -DBOX2DDIR=$VENDOR_DIR/box2d
-        -DCMAKE_LIBRARY_PATH=$VENDOR_DIR/libpng
-        -DGTEST_ROOT=$VENDOR_DIR/gtest
-        -DDEV_TESTS_BUILD=On
-        -DDEV_PHYSICS_BUILTIN_DEBUG=On
-        -DDEV_PLUGIN_streamlines_RENDER=On .."
-
-script:
-    - make VERBOSE=1
-    #- ctest --verbose
-    - cpack -G TGZ
-
-after_success:
-    - cd $TRAVIS_BUILD_DIR
-    - resources/scripts/deploy.sh
-
-# Dependencies cache
-cache:
-    directories:
-        - $VENDOR_DIR
+deploy:
+    provider: script
+    script: scripts/ci/deploy-$TRAVIS_OS_NAME.sh
+    skip_cleanup: true
+    on:
+        branch:
+            - master
+            - travis-ci
+        condition: '( ( "$TRAVIS_OS_NAME" = "linux" && $CC = "gcc" ) || ( "$TRAVIS_OS_NAME" = "osx" && $CC = "clang" ) )'
 
 notifications:
   slack:
     secure: Q3gZ4jp6VtWVuCs7S0CzNcuPCd4HtUyhdY0I3uGVintyDJhN0wsJObsBwD6exYkw9FxsIZx7E8STqZoxZgD5S5siqXs6X/cFlzWCME06917+xKOqo5p+vHmPRNr7rYhiH3KYguRJGodf1Xovjjvtas1cI0rNI4jX6MW6NbKrTv0++GAoMOoy4BNGhcZ5MCpHQyalsqLP1yT2wMAFYOIAy6vvJaolF+367etH2HsKeH9Sjz4M2XvZq+A8m4MPvbBhMwYV6vmeS+a1R956OJh8C2Ksz0WuAHpV7KXly9dO8sMsAXZ0Ev7iMs6AsUo6fuJrIECq6LdgoaN0YxLJmNJy8fQEIGMPhfQ+tBfMdje5jUt6WRMQl+qD5M1Pi8iCJQdrx4CXD/CIKdmZSP81McE9RYw1OdIH2Fj+CGpk0gtXF9GrlZO2OmuYWz190bt3go1W5uCYbicfeLxmVL1gZlc4ZK1xbu6VgpI07Z2LIyU2qnA4uJ9Oldrg44nDE3qXpQZvQUJ5yMCRJ8nhr7nvSVbls1COxg2erg4oH4r3FMWyLxWuQnyhJ32FsCCvmbvu2Qr3dXdyuqxTCmaOd587JF2aiN1RV5dpimGszT7mxDB+bvlrN5dxnHayM8uIZ+X7+2f3sZ3GXob5HZrKtAu/ryG3hvz9yypGyPdNAz3bTT5OBSY=
+
+# ######################################################################### #

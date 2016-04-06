@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,28 +25,6 @@
 #                                                                           #
 # ######################################################################### #
 
-# Include Python API
-find_package(PythonLibs 2.7 REQUIRED)
-
-# Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
-
-# ######################################################################### #
-
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/CellBase.cpp
-    wrappers/Yeast.cpp
-)
-
-# ######################################################################### #
-
-# Build plugin
-build_plugin(cell-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell python
-    LIBRARIES ${PYTHON_LIBRARIES}
-)
+brew update || exit 1
 
 # ######################################################################### #

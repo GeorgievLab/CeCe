@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,28 +25,40 @@
 #                                                                           #
 # ######################################################################### #
 
-# Include Python API
-find_package(PythonLibs 2.7 REQUIRED)
+# Shared configuration arguments
+ARGS="\
+	-DCMAKE_BUILD_TYPE=release \
+	-DDEV_TESTS_BUILD=On \
+	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
+	-DDEV_PLUGIN_streamlines_RENDER=On"
 
-# Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
+# Use gcc 4.9
+if [ "$CXX" = "g++" ]; then 
+	ARGS="$ARGS \
+		-DCMAKE_CXX_COMPILER=g++-4.9 \
+		-DCMAKE_CC_COMPILER=gcc-4.9"
+
+	command -v gcc-4.9 > /dev/null 2>&1 || exit 1
+	command -v g++-4.9 > /dev/null 2>&1 || exit 1
+fi
+
+# Use clang 3.6
+if [ "$CXX" = "clang++" ]; then 
+	ARGS="$ARGS \
+		-DCMAKE_CXX_COMPILER=clang++-3.6 \
+		-DCMAKE_CC_COMPILER=clang-3.6"
+
+	command -v clang-3.6 > /dev/null 2>&1 || exit 1
+	command -v clang++-3.6 > /dev/null 2>&1 || exit 1
+fi
+
+mkdir build || exit 1
+pushd build
+
+# Configure project
+cmake $ARGS .. || exit 1
+
+popd
 
 # ######################################################################### #
 
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/CellBase.cpp
-    wrappers/Yeast.cpp
-)
-
-# ######################################################################### #
-
-# Build plugin
-build_plugin(cell-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell python
-    LIBRARIES ${PYTHON_LIBRARIES}
-)
-
-# ######################################################################### #

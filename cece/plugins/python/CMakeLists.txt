@@ -30,7 +30,7 @@ endif ()
 # ######################################################################### #
 
 # Include Python API
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs 2.7 REQUIRED)
 
 # Include directories
 include_directories(${PYTHON_INCLUDE_DIRS})

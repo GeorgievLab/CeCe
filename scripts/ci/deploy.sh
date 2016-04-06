@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,28 +25,34 @@
 #                                                                           #
 # ######################################################################### #
 
-# Include Python API
-find_package(PythonLibs 2.7 REQUIRED)
+SUFFIX=""
 
-# Include directories
-include_directories(${PYTHON_INCLUDE_DIRS})
+# Add suffix for non-tag releases
+if [ -z "$TRAVIS_TAG" ]; then
+    SUFFIX="$TRAVIS_BRANCH-$TRAVIS_COMMIT"
+fi
+
+# Create a package and deploy
+function pack_and_deploy
+{
+	PLATFORM=$1
+	GENERATOR=$2
+	EXT=$3
+
+	# Create a package
+	cpack -G $GENERATOR
+
+	PACKAGE=CeCe-$VERSION-$PLATFORM.$EXT
+
+	if [ -n "$SUFFIX" ]; then
+		PACKAGE_NEW=CeCe-$VERSION-$PLATFORM-$SUFFIX.$EXT
+		mv $PACKAGE $PACKAGE_NEW
+		PACKAGE=$PACKAGE_NEW
+	fi
+
+	echo "Deploy package: $PACKAGE"
+	curl --ftp-create-dirs --ftp-ssl -u $FTP_USER:$FTP_PASSWORD ftp://$FTP_SERVER/bin/ -T $PACKAGE || { echo "Deploy failed"; exit 1; }
+}
 
 # ######################################################################### #
 
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/CellBase.cpp
-    wrappers/Yeast.cpp
-)
-
-# ######################################################################### #
-
-# Build plugin
-build_plugin(cell-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED cell python
-    LIBRARIES ${PYTHON_LIBRARIES}
-)
-
-# ######################################################################### #
