@@ -59,7 +59,7 @@ deploy:
         branch:
             - master
             - travis-ci
-		condition: '! ( ( "$TRAVIS_OS_NAME" = "linux" && $CC = "gcc" ) || ( "$TRAVIS_OS_NAME" = "osx" && $CC = "clang" ) )'
+        condition: '! ( ( "$TRAVIS_OS_NAME" = "linux" && $CC = "gcc" ) || ( "$TRAVIS_OS_NAME" = "osx" && $CC = "clang" ) )'
 
 notifications:
   slack:
