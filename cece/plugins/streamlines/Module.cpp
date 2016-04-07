@@ -382,7 +382,7 @@ void Module::loadConfig(const config::Configuration& config)
         Log::warning("[streamlines] Config option 'grid' is obsolete!");
 
         // Grid size
-        m_lattice.setSize(gridSize);
+        m_lattice.setSize(gridSize + Lattice::Size(1, 1));
 
         // Compute characteristic length
         setNumberNodes(gridSize.getWidth() / getSimulation().getWorldSize().getWidth() * getCharLength());
@@ -396,7 +396,7 @@ void Module::loadConfig(const config::Configuration& config)
             throw InvalidArgumentException("Lattice size cannot be zero");
 
         // Grid size
-        m_lattice.setSize(size);
+        m_lattice.setSize(size + Lattice::Size(1, 1));
     }
 
     if (config.has("tau"))
