@@ -27,6 +27,7 @@
 #include "Simulator.hpp"
 
 // CeCe
+#include "cece/core/Log.hpp"
 #include "cece/plugin/Manager.hpp"
 
 #ifdef CECE_CLI_ENABLE_IMAGE_CAPTURE
@@ -36,6 +37,10 @@
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
+#endif
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
+#  include "cece/simulator/ConverterBox2D.hpp"
 #endif
 
 // CLI
@@ -648,7 +653,7 @@ void Simulator::initScene()
     );
     simulation->getWorld().SetDebugDraw(&m_physicsDebugger);
 
-    m_physicsDebugger.setScale(1.0 / simulation->getConverter().getLengthCoefficient());
+    m_physicsDebugger.setScale(1.0 / simulator::ConverterBox2D::getInstance().getLengthCoefficient());
 #endif
 
     // Initialize simulator

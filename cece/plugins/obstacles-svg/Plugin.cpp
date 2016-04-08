@@ -35,6 +35,7 @@
 // CeCe
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/StaticArray.hpp"
+#include "cece/core/Log.hpp"
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
 #include "cece/config/Configuration.hpp"

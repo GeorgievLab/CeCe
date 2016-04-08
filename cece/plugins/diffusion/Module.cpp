@@ -34,6 +34,7 @@
 // CeCe
 #include "cece/core/constants.hpp"
 #include "cece/core/Assert.hpp"
+#include "cece/core/Log.hpp"
 #include "cece/core/StaticMatrix.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/VectorRange.hpp"

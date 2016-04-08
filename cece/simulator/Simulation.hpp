@@ -32,24 +32,18 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <cassert>
-#include <functional>
-
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/UnitsCtors.hpp"
 #include "cece/core/Vector.hpp"
-#include "cece/core/Log.hpp"
+#include "cece/core/VectorUnits.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/Map.hpp"
-#include "cece/core/Pair.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/FilePath.hpp"
-#include "cece/core/InStream.hpp"
-#include "cece/core/DynamicArray.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/DataTable.hpp"
 #include "cece/core/Parameters.hpp"
@@ -64,7 +58,6 @@
 #include "cece/object/TypeContainer.hpp"
 #include "cece/program/Program.hpp"
 #include "cece/program/NamedContainer.hpp"
-#include "cece/plugin/Library.hpp"
 #include "cece/simulator/IterationType.hpp"
 
 #ifdef CECE_ENABLE_RENDER
@@ -75,6 +68,7 @@
 
 class b2World;
 namespace cece { namespace plugin { class Context; } }
+namespace cece { namespace plugin { class Api; } }
 namespace cece { namespace config { class Configuration; } }
 
 /* ************************************************************************ */
@@ -320,7 +314,7 @@ public:
         if (!module)
             return nullptr;
 
-        assert(dynamic_cast<ModuleType*>(module.get()));
+        Assert(dynamic_cast<ModuleType*>(module.get()));
         return static_cast<ModuleType*>(module.get());
     }
 
