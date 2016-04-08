@@ -34,10 +34,10 @@
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/ViewPtr.hpp"
-#include "cece/core/Parameters.hpp"
 
 /* ************************************************************************ */
 
+namespace cece { namespace core { class Parameters; } }
 namespace cece { namespace simulator { class Simulation; } }
 namespace cece { namespace plugin { class Context; } }
 
