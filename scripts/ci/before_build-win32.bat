@@ -30,7 +30,7 @@ md build
 cd build
 
 :: Configure project
-cmake -G "%GENERATOR% %ARGS% .. || EXIT /B 1
+cmake -G "%GENERATOR%" %ARGS% .. || EXIT /B 1
 
 cd ..
 
