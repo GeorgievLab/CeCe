@@ -23,16 +23,11 @@
 ::                                                                           ::
 :: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ::
 
-:: Shared configuration arguments
-SET ARGS=-DCMAKE_BUILD_TYPE=release -DDEV_TESTS_BUILD=On -DDEV_PHYSICS_BUILTIN_DEBUG=On -DDEV_PLUGIN_streamlines_RENDER=On
-
 md build
 cd build
 
-echo "ARGS: %ARGS%"
-
 :: Configure project
-cmake %ARGS% .. || EXIT /B 1
+cmake -DCMAKE_BUILD_TYPE=release -DDEV_TESTS_BUILD=On -DDEV_PHYSICS_BUILTIN_DEBUG=On -DDEV_PLUGIN_streamlines_RENDER=On .. || EXIT /B 1
 
 cd ..
 
