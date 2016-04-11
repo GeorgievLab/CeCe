@@ -48,7 +48,7 @@ cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DBOX2D_BUILD_EXAMPLES=Off -DB
 cmake --build . || EXIT /B 1
 
 :: Install
-sudo mingw32-make install || EXIT /B 1
+mingw32-make install || EXIT /B 1
 
 cd ..
 cd ..\..
@@ -68,7 +68,7 @@ cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
 cmake --build . || EXIT /B 1
 
 :: Install
-sudo mingw32-make install || EXIT /B 1
+mingw32-make install || EXIT /B 1
 
 cd ..
 cd ..
@@ -88,7 +88,7 @@ cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off -DGLFW_B
 cmake --build . || EXIT /B 1
 
 :: Install
-sudo mingw32-make install || EXIT /B 1
+mingw32-make install || EXIT /B 1
 
 cd ..
 cd ..
