@@ -30,6 +30,9 @@ environment:
     matrix:
         - GENERATOR: MinGW Makefiles
 
+init:
+    - call scripts\ci\init-win32.bat
+
 install:
     - call scripts\ci\install-win32.bat
 

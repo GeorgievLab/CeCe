@@ -23,16 +23,9 @@
 ::                                                                           ::
 :: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ::
 
-:: Shared configuration arguments
-SET ARGS= -DCMAKE_BUILD_TYPE=release -DDEV_TESTS_BUILD=On -DDEV_PHYSICS_BUILTIN_DEBUG=On -DDEV_PLUGIN_streamlines_RENDER=On
-
-md build
-cd build
-
-:: Configure project
-cmake %ARGS% .. || EXIT /B 1
-
-cd ..
+:: Set path to MinGW
+SET PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+SET PATH=C:\MinGW\bin;%PATH%
 
 :: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ::
 
