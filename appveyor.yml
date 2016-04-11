@@ -31,7 +31,8 @@ environment:
         - GENERATOR: MinGW Makefiles
 
 init:
-    - call scripts\ci\init-win32.bat
+    - SET PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
+    - SET PATH=C:\MinGW\bin;%PATH%
 
 install:
     - call scripts\ci\install-win32.bat
