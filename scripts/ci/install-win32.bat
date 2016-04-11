@@ -28,6 +28,7 @@ cd vendor
 
 :: Clone dependencies
 git clone https://github.com/erincatto/Box2D.git -b v2.3.1 Box2D
+git clone https://github.com/madler/zlib.git -b v1.2.8 zlib
 git clone https://github.com/glennrp/libpng -b libpng16 libpng
 git clone https://github.com/glfw/glfw.git -b 3.1.2 glfw3
 
@@ -52,6 +53,26 @@ mingw32-make install || EXIT /B 1
 
 cd ..
 cd ..\..
+
+::::::::::::::::
+
+:: Zlib
+cd zlib
+
+md build
+cd build
+
+:: Configure
+cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
+
+:: Build
+cmake --build . || EXIT /B 1
+
+:: Install
+mingw32-make install || EXIT /B 1
+
+cd ..
+cd ..
 
 ::::::::::::::::
 
