@@ -28,7 +28,7 @@ cd vendor
 
 :: Box2D
 git clone https://github.com/erincatto/Box2D.git -b v2.3.1 Box2D
-cd Box2D
+cd Box2D\Box2D
 
 md build
 cd build
@@ -43,7 +43,7 @@ cmake --build . || EXIT /B 1
 sudo make install || EXIT /B 1
 
 cd ..
-cd ..
+cd ..\..
 
 ::::::::::::::::
 
