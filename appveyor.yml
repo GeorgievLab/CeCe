@@ -30,10 +30,6 @@ environment:
     matrix:
         - GENERATOR: MinGW Makefiles
 
-init:
-    - SET PATH=%PATH:C:\Program Files (x86)\Git\bin;=%
-    - SET PATH=C:\MinGW\bin;%PATH%
-
 install:
     - call scripts\ci\install-win32.bat
 

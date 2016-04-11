@@ -23,13 +23,19 @@
 ::                                                                           ::
 :: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ::
 
-echo %PATH%
-
 md vendor
 cd vendor
 
-:: Box2D
+:: Clone dependencies
 git clone https://github.com/erincatto/Box2D.git -b v2.3.1 Box2D
+git clone https://github.com/glennrp/libpng -b libpng16 libpng
+git clone https://github.com/glfw/glfw.git -b 3.1.2 glfw3
+
+:: Set MinGW path
+SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+SET PATH=C:\MinGW\bin;%PATH%
+
+:: Box2D
 cd Box2D\Box2D
 
 md build
@@ -50,7 +56,6 @@ cd ..\..
 ::::::::::::::::
 
 :: LibPNG
-git clone https://github.com/glennrp/libpng -b libpng16 libpng
 cd libpng
 
 md build
@@ -71,7 +76,6 @@ cd ..
 ::::::::::::::::
 
 :: GLFW3
-git clone https://github.com/glfw/glfw.git -b 3.1.2 glfw3
 cd glfw3
 
 md build
