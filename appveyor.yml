@@ -31,15 +31,15 @@ environment:
         - GENERATOR: MinGW Makefiles
 
 install:
-    - call script\ci\install-win32.bat
+    - call scripts\ci\install-win32.bat
 
 before_build:
-    - call script\ci\before_build-win32.bat
+    - call scripts\ci\before_build-win32.bat
 
 build_script:
-    - call script\ci\build_script-win32.bat
+    - call scripts\ci\build_script-win32.bat
 
 test_script:
-    - call script\ci\test_script-win32.bat
+    - call scripts\ci\test_script-win32.bat
 
 # ######################################################################### #
