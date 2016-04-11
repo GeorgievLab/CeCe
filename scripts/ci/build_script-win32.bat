@@ -26,7 +26,7 @@
 
 cd build
 
-make VERBOSE=1 || EXIT /B 1
+cmake --build . || EXIT /B 1
 
 cd ..
 
