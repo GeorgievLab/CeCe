@@ -25,8 +25,10 @@
 
 #pragma once
 
-// Testing
-//#define DEV_PLUGIN_streamlines_SWAP_TRICK
+/* ************************************************************************ */
+
+// Enable or disable swap trick (memory improvement)
+#define DEV_PLUGIN_streamlines_SWAP_TRICK
 
 /* ************************************************************************ */
 

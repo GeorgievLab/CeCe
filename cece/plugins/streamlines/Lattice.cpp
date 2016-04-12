@@ -62,7 +62,8 @@ void Lattice::collide()
         auto& cell = get(c);
         cell.collide();
 
-        for (Descriptor::DirectionType i = 1; i < half; ++i)
+        // TODO: block swap
+        for (Descriptor::DirectionType i = 1; i <= half; ++i)
         {
             using std::swap;
             swap(cell[i], cell[i + half]);
@@ -83,7 +84,7 @@ void Lattice::stream()
 
     for (auto&& c : range(getSize()))
     {
-        for (Descriptor::DirectionType i = 1; i < half; ++i)
+        for (Descriptor::DirectionType i = 1; i <= half; ++i)
         {
             // Calculate new coordinates
             const Vector<Descriptor::DirectionType> newCoord = c + Descriptor::DIRECTION_VELOCITIES[i];
@@ -124,9 +125,9 @@ void Lattice::collideAndStream()
 {
     collide();
     stream();
-    /*
+/*
     // FIXME: something's wrong
-    constexpr Node::IndexType half = (Node::SIZE - 1) / 2;
+    constexpr Descriptor::IndexType half = (Descriptor::SIZE - 1) / 2;
     const auto size = getSize();
 
     //for (auto&& c : range(getSize()))
@@ -136,12 +137,12 @@ void Lattice::collideAndStream()
         const CoordinateType c{x, y};
 
         auto& cell = get(c);
-        cell.collide(omega);
+        cell.collide();
 
-        for (Node::IndexType i = 1; i < half; ++i)
+        for (Descriptor::IndexType i = 1; i <= half; ++i)
         {
             // Calculate new coordinates
-            const Vector<Node::IndexType> newCoord = c + Node::DIRECTION_VELOCITIES[i];
+            const Vector<Descriptor::IndexType> newCoord = c + Descriptor::DIRECTION_VELOCITIES[i];
 
             if (inRange(newCoord))
             {
@@ -154,7 +155,7 @@ void Lattice::collideAndStream()
             }
         }
     }
-    */
+*/
 }
 
 /* ************************************************************************ */
