@@ -163,11 +163,15 @@
       <File Name="core/InOutStream.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="unit">
-      <File Name="core/Units.cpp"/>
       <File Name="core/Units.hpp"/>
       <File Name="core/UnitsCtors.hpp"/>
       <File Name="core/VectorUnits.cpp"/>
       <File Name="core/VectorUnits.hpp"/>
+      <File Name="core/UnitIo.hpp"/>
+      <File Name="core/UnitSymbol.hpp"/>
+      <File Name="core/UnitIo.cpp"/>
+      <File Name="core/Unit.hpp"/>
+      <File Name="core/Unit.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="log">
       <File Name="core/Log.cpp"/>

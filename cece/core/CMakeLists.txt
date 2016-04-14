@@ -35,8 +35,12 @@ add_library(${PROJECT_NAME} OBJECT
     DynamicArray.hpp
     StaticArray.hpp
     StaticMatrix.hpp
+    Unit.hpp
+    Unit.cpp
+    UnitIo.hpp
+    UnitIo.cpp
+    UnitSymbol.hpp
     Units.hpp
-    Units.cpp
     UnitsCtors.hpp
     Vector.hpp
     Vector.cpp

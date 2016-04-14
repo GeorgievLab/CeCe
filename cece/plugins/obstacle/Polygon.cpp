@@ -28,6 +28,7 @@
 
 // CeCe
 #include "cece/core/VectorUnits.hpp"
+#include "cece/core/UnitIo.hpp"
 #include "cece/core/Shape.hpp"
 #include "cece/core/StringStream.hpp"
 #include "cece/config/Configuration.hpp"

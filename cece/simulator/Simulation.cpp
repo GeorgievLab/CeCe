@@ -40,6 +40,7 @@
 #include "cece/core/Exception.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/FileStream.hpp"
+#include "cece/core/UnitIo.hpp"
 #include "cece/object/FactoryManager.hpp"
 #include "cece/plugin/Library.hpp"
 #include "cece/plugin/Api.hpp"

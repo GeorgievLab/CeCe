@@ -46,6 +46,7 @@
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/Shape.hpp"
+#include "cece/core/Exception.hpp"
 #include "cece/program/Program.hpp"
 #include "cece/program/Container.hpp"
 

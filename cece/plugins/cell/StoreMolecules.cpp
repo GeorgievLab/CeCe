@@ -28,6 +28,7 @@
 
 // CeCe
 #include "cece/core/DataTable.hpp"
+#include "cece/core/Exception.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 

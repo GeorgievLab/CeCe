@@ -43,6 +43,7 @@
 #include "cece/core/Range.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/InStream.hpp"
+#include "cece/core/Exception.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/module/Module.hpp"
 
