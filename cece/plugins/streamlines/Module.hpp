@@ -91,6 +91,17 @@ public:
 
 
     /**
+     * @brief Inlet velocity profile type.
+     */
+    enum class InletType
+    {
+        Auto,
+        Constant,
+        Parabolic
+    };
+
+
+    /**
      * @brief Layout position.
      */
     enum LayoutPosition
@@ -136,6 +147,15 @@ public:
     struct InletVelocities : public StaticArray<units::Velocity, LayoutPosCount>
     {
         using StaticArray<units::Velocity, LayoutPosCount>::StaticArray;
+    };
+
+
+    /**
+     * @brief Inlet velocity profiles.
+     */
+    struct InletTypes : public StaticArray<InletType, LayoutPosCount>
+    {
+        using StaticArray<InletType, LayoutPosCount>::StaticArray;
     };
 
 
@@ -191,6 +211,17 @@ public:
     const InletVelocities& getInletVelocities() const noexcept
     {
         return m_inletVelocities;
+    }
+
+
+    /**
+     * @brief Returns inlet velocity profile types.
+     *
+     * @return
+     */
+    const InletTypes& getInletTypes() const noexcept
+    {
+        return m_inletTypes;
     }
 
 
@@ -378,6 +409,17 @@ public:
     void setInletVelocity(LayoutPosition position, units::Velocity velocity) noexcept
     {
         m_inletVelocities[position] = velocity;
+    }
+
+
+    /**
+     * @brief Set inlet velocity profile types.
+     *
+     * @param types
+     */
+    void setInletTypes(InletTypes types) noexcept
+    {
+        m_inletTypes = types;
     }
 
 
@@ -825,6 +867,9 @@ private:
     /// Inlet velocities
     InletVelocities m_inletVelocities;
 
+    /// Inlet velocity profile types.
+    InletTypes m_inletTypes;
+
     /// Fluid viscosity (of Water).
     units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
 
@@ -917,6 +962,30 @@ InStream& operator>>(InStream& is, Module::LayoutType& type);
  * @return os.
  */
 OutStream& operator<<(OutStream& os, const Module::LayoutType& type);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Read inlet velocity type.
+ *
+ * @param is   Input stream.
+ * @param type Output type.
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Module::InletType& type);
+
+/* ************************************************************************ */
+
+/**
+ * @brief Write inlet velocity type.
+ *
+ * @param os   Output stream.
+ * @param type Input type.
+ *
+ * @return os.
+ */
+OutStream& operator<<(OutStream& os, const Module::InletType& type);
 
 /* ************************************************************************ */
 

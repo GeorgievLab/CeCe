@@ -141,6 +141,46 @@ OutStream& operator<<(OutStream& os, const Module::InletVelocities& velocities)
 
 /* ************************************************************************ */
 
+/**
+ * @brief Read inlet types.
+ *
+ * @param is    Input stream.
+ * @param types
+ *
+ * @return is.
+ */
+InStream& operator>>(InStream& is, Module::InletTypes& types)
+{
+    return is >> std::skipws >>
+        types[Module::LayoutPosTop] >>
+        types[Module::LayoutPosRight] >>
+        types[Module::LayoutPosBottom] >>
+        types[Module::LayoutPosLeft]
+    ;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Write inlet types.
+ *
+ * @param os    Output stream.
+ * @param types
+ *
+ * @return is.
+ */
+OutStream& operator<<(OutStream& os, const Module::InletTypes& types)
+{
+    return os <<
+        types[Module::LayoutPosTop] << " " <<
+        types[Module::LayoutPosRight] << " " <<
+        types[Module::LayoutPosBottom] << " " <<
+        types[Module::LayoutPosLeft]
+    ;
+}
+
+/* ************************************************************************ */
+
 namespace {
 
 /* ************************************************************************ */
@@ -361,6 +401,20 @@ void Module::loadConfig(const config::Configuration& config)
     {
         // Inlet velocities
         setInletVelocities(config.get("inlet-velocities", getInletVelocities()));
+    }
+
+    if (config.has("inlet-type"))
+    {
+        auto type = config.get<InletType>("inlet-type");
+        m_inletTypes[LayoutPosTop]    = type;
+        m_inletTypes[LayoutPosBottom] = type;
+        m_inletTypes[LayoutPosLeft]   = type;
+        m_inletTypes[LayoutPosRight]  = type;
+    }
+    else
+    {
+        // Inlet velocities
+        setInletTypes(config.get("inlet-types", getInletTypes()));
     }
 
     // Viscosity
@@ -809,101 +863,116 @@ VelocityVector Module::inletVelocityProfile(
     DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets
 ) const noexcept
 {
-    //return {getInletVelocities()[pos], Zero};
+    auto type = m_inletTypes[pos];
 
-    StaticArray<Lattice::CoordinateType, 2> inletRange{{Zero, Zero}};
-    bool found = false;
+    if (type == InletType::Auto)
+        type = InletType::Parabolic;
 
-    switch (pos)
+    if (type == InletType::Constant)
     {
-    case LayoutPosTop:
-    case LayoutPosBottom:
-        // Find inlet range
-        for (const auto& inlet : inlets)
-        {
-            if (inlet[0].getX() <= coord.getX() && coord.getX() <= inlet[1].getX())
-            {
-                inletRange = inlet;
-                found = true;
-                break;
-            }
-        }
-        break;
-
-    case LayoutPosLeft:
-    case LayoutPosRight:
-        // Find inlet range
-        for (const auto& inlet : inlets)
-        {
-            if (inlet[0].getY() <= coord.getY() && coord.getY() <= inlet[1].getY())
-            {
-                inletRange = inlet;
-                found = true;
-                break;
-            }
-        }
-        break;
-
-    default:
-        Assert(false);
-        break;
+        return {getInletVelocities()[pos], Zero};
     }
+    else if (type == InletType::Parabolic)
+    {
+        StaticArray<Lattice::CoordinateType, 2> inletRange{{Zero, Zero}};
+        bool found = false;
 
-    if (!found)
+        switch (pos)
+        {
+        case LayoutPosTop:
+        case LayoutPosBottom:
+            // Find inlet range
+            for (const auto& inlet : inlets)
+            {
+                if (inlet[0].getX() <= coord.getX() && coord.getX() <= inlet[1].getX())
+                {
+                    inletRange = inlet;
+                    found = true;
+                    break;
+                }
+            }
+            break;
+
+        case LayoutPosLeft:
+        case LayoutPosRight:
+            // Find inlet range
+            for (const auto& inlet : inlets)
+            {
+                if (inlet[0].getY() <= coord.getY() && coord.getY() <= inlet[1].getY())
+                {
+                    inletRange = inlet;
+                    found = true;
+                    break;
+                }
+            }
+            break;
+
+        default:
+            Assert(false);
+            break;
+        }
+
+        if (!found)
+            return Zero;
+
+        switch (pos)
+        {
+        case LayoutPosTop:
+            return {
+                Zero,
+                -calcPoiseuilleFlow(
+                    getInletVelocities()[pos],
+                    coord.getX() - inletRange[0].getX() + 1,
+                    (inletRange[1] - inletRange[0]).getWidth() + 2
+                )
+            };
+            break;
+
+        case LayoutPosBottom:
+            return {
+                Zero,
+                calcPoiseuilleFlow(
+                    getInletVelocities()[pos],
+                    coord.getX() - inletRange[0].getX() + 1,
+                    (inletRange[1] - inletRange[0]).getWidth() + 2
+                )
+            };
+            break;
+
+        case LayoutPosRight:
+            return {
+                -calcPoiseuilleFlow(
+                    getInletVelocities()[pos],
+                    coord.getY() - inletRange[0].getY() + 1,
+                    (inletRange[1] - inletRange[0]).getHeight() + 2
+                ),
+                Zero
+            };
+            break;
+
+        case LayoutPosLeft:
+            return {
+                calcPoiseuilleFlow(
+                    getInletVelocities()[pos],
+                    coord.getY() - inletRange[0].getY() + 1,
+                    (inletRange[1] - inletRange[0]).getHeight() + 2
+                ),
+                Zero
+            };
+            break;
+
+        default:
+            Assert(false);
+            break;
+        }
+
         return Zero;
-
-    switch (pos)
-    {
-    case LayoutPosTop:
-        return {
-            Zero,
-            -calcPoiseuilleFlow(
-                getInletVelocities()[pos],
-                coord.getX() - inletRange[0].getX() + 1,
-                (inletRange[1] - inletRange[0]).getWidth() + 2
-            )
-        };
-        break;
-
-    case LayoutPosBottom:
-        return {
-            Zero,
-            calcPoiseuilleFlow(
-                getInletVelocities()[pos],
-                coord.getX() - inletRange[0].getX() + 1,
-                (inletRange[1] - inletRange[0]).getWidth() + 2
-            )
-        };
-        break;
-
-    case LayoutPosRight:
-        return {
-            -calcPoiseuilleFlow(
-                getInletVelocities()[pos],
-                coord.getY() - inletRange[0].getY() + 1,
-                (inletRange[1] - inletRange[0]).getHeight() + 2
-            ),
-            Zero
-        };
-        break;
-
-    case LayoutPosLeft:
-        return {
-            calcPoiseuilleFlow(
-                getInletVelocities()[pos],
-                coord.getY() - inletRange[0].getY() + 1,
-                (inletRange[1] - inletRange[0]).getHeight() + 2
-            ),
-            Zero
-        };
-        break;
-
-    default:
-        Assert(false);
-        break;
     }
-
-    return Zero;
+    else
+    {
+        Assert(0 && "InputType enum issue");
+        return Zero;
+    }
 }
 
 /* ************************************************************************ */
@@ -1375,6 +1444,43 @@ OutStream& operator<<(OutStream& os, const Module::LayoutType& type)
         os << "outlet"; break;
     default:
         throw InvalidArgumentException("Unknown layout type");
+    }
+    return os;
+}
+
+/* ************************************************************************ */
+
+InStream& operator>>(InStream& is, Module::InletType& type)
+{
+    String desc;
+    is >> desc;
+
+    if (desc == "constant")
+        type = Module::InletType::Constant;
+    else if (desc == "parabolic")
+        type = Module::InletType::Parabolic;
+    else if (desc == "auto")
+        type = Module::InletType::Auto;
+    else
+        throw InvalidArgumentException("Unknown inlet velocity profile type");
+
+    return is;
+}
+
+/* ************************************************************************ */
+
+OutStream& operator<<(OutStream& os, const Module::InletType& type)
+{
+    switch (type)
+    {
+    case Module::InletType::Auto:
+        os << "auto"; break;
+    case Module::InletType::Constant:
+        os << "constant"; break;
+    case Module::InletType::Parabolic:
+        os << "parabolic"; break;
+    default:
+        throw InvalidArgumentException("Unknown inlet velocity profile type");
     }
     return os;
 }
