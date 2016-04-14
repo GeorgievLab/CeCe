@@ -72,10 +72,9 @@ RealType Descriptor::getWeightVerticalSum() noexcept
 
 void Descriptor::initModel(RealType height)
 {
-    const auto hHeight = 0.5 * height;
-    const auto hHeightSq = hHeight * hHeight;
+    const auto heightSq = height * height;
 
-    if (hHeightSq <= SPEED_OF_SOUND_SQ)
+    if (heightSq <= SPEED_OF_SOUND_SQ)
         throw InvalidArgumentException("Channel height is too small");
 
     // Get weights from D2Q9 model
@@ -84,8 +83,8 @@ void Descriptor::initModel(RealType height)
 
     for (int i = 0; i < 3; ++i)
     {
-        weights[i]     = weights2d[i] * (1.0 - SPEED_OF_SOUND_SQ / hHeightSq);
-        weights[i + 3] = weights2d[i] * (0.5 * SPEED_OF_SOUND_SQ / hHeightSq);
+        weights[i]     = weights2d[i] * (1.0 - SPEED_OF_SOUND_SQ / heightSq);
+        weights[i + 3] = weights2d[i] * (0.5 * SPEED_OF_SOUND_SQ / heightSq);
 
         Assert(weights[i] > 0);
         Assert(weights[i + 3] > 0);
