@@ -39,10 +39,12 @@ SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 SET PATH=C:\MinGW\bin;%PATH%
 
 :: Build boost with MinGW
-cd C:\Libraries\boost
+pushd C:\Libraries\boost
 bootstrap.bat mingw
+@echo on
 b2 toolset=gcc --with-filesystem --with-system variant=release
-cd %APPVEYOR_BUILD_FOLDER%
+@echo on
+popd
 
 :: Box2D
 cd Box2D\Box2D
