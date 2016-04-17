@@ -40,11 +40,8 @@ SET PATH=C:\MinGW\bin;%PATH%
 
 :: Build boost with MinGW
 pushd C:\Libraries\boost
-bootstrap.bat mingw
-echo "Called?"
-@echo on
+call bootstrap.bat mingw
 b2 toolset=gcc --with-filesystem --with-system variant=release
-@echo on
 popd
 
 :: Box2D
