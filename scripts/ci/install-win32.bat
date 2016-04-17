@@ -36,6 +36,12 @@ git clone https://github.com/glfw/glfw.git -b 3.1.2 glfw3
 SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 SET PATH=C:\MinGW\bin;%PATH%
 
+:: Build boost with MinGW
+cd C:\Libraries\boost
+bootstrap.bat mingw
+b2 toolset=gcc --with-filesystem --with-system variant=release
+cd %APPVEYOR_BUILD_FOLDER%
+
 :: Box2D
 cd Box2D\Box2D
 
