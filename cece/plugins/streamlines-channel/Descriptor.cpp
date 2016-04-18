@@ -72,7 +72,7 @@ RealType Descriptor::getWeightVerticalSum() noexcept
 
 void Descriptor::initModel(RealType height)
 {
-    const auto heightSq = height * height;
+    const auto heightSq = (0.25 * height) * (0.25 * height);
 
     if (heightSq <= SPEED_OF_SOUND_SQ)
         throw InvalidArgumentException("Channel height is too small");
