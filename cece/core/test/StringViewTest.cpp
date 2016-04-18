@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -41,14 +41,14 @@ TEST(StringView, construct)
     {
         const char* str = "String literal";
         auto view = StringView(str);
-        EXPECT_EQ(14, view.getLength());
+        EXPECT_EQ(14u, view.getLength());
         EXPECT_EQ(str, view.getData());
     }
 
     {
         auto str = String("String container");
         auto view = StringView(str);
-        EXPECT_EQ(16, view.getLength());
+        EXPECT_EQ(16u, view.getLength());
         EXPECT_EQ(str.c_str(), view.getData());
     }
 }

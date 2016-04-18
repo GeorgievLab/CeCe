@@ -38,7 +38,6 @@
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/StaticArray.hpp"
-#include "cece/core/IntegerSequence.hpp"
 
 /* ************************************************************************ */
 

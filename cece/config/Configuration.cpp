@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -30,6 +30,7 @@
 #include <algorithm>
 
 // CeCe
+#include "cece/core/Parameters.hpp"
 #include "cece/config/MemoryImplementation.hpp"
 
 /* ************************************************************************ */
