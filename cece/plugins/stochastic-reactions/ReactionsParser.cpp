@@ -26,6 +26,8 @@
 // Declaration
 #include "ReactionsParser.hpp"
 
+// C++
+#include <cstdlib>
 // CeCe
 #include "cece/core/Units.hpp"
 #include "cece/core/StringStream.hpp"

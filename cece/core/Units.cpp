@@ -26,6 +26,9 @@
 // Declaration
 #include "cece/core/Units.hpp"
 
+// C++
+#include <cstdlib>
+
 // CeCe
 #include "cece/core/Map.hpp"
 #include "cece/core/StringStream.hpp"

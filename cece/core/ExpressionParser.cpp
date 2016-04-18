@@ -27,6 +27,7 @@
 #include "cece/core/ExpressionParser.hpp"
 
 // C++
+#include <cstdlib>
 #include <cmath>
 #include <cassert>
 #include <algorithm>
@@ -384,7 +385,7 @@ private:
     float constant()
     {
         char* end;
-        float value = strtod(iterator.begin(), &end);
+        float value = strtof(iterator.begin(), &end);
         if (iterator.begin() != end)
         {
             iterator = makeRange<const char*>(end, iterator.end());
