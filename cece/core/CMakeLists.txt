@@ -121,8 +121,13 @@ build_test(core
         test/TokenizerTest.cpp
         ExpressionParser.hpp
         ExpressionParser.cpp
+        Unit.hpp
+        Unit.cpp
+        UnitIo.hpp
+        UnitIo.cpp
+        UnitSymbol.hpp
         Units.hpp
-        Units.cpp
+        UnitsCtors.hpp
         Parameters.hpp
         Parameters.cpp
 )

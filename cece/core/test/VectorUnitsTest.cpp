@@ -30,6 +30,7 @@
 #include <sstream>
 
 // CeCe
+#include "cece/core/UnitIo.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/core/UnitsCtors.hpp"
 
