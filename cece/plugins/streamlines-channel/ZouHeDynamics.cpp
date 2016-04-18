@@ -194,9 +194,9 @@ ZouHeDynamics::calcDensity(DataType& data, const VelocityType& velocity) const n
     const auto center = sumValues(data, CENTER_RHO.at(m_position));
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
     const auto velP = velocity.dot(VELOCITIES.at(m_position));
-    const auto wWall = Descriptor::getWeightVerticalSum();
+    const auto wHs = Descriptor::getWeightHorizontalSum();
 
-    return (center + 2.0 * known) / (1.0 - velP - 2.0 * wWall);
+    return (center + 2.0 * known) / (wHs - velP);
 }
 
 /* ************************************************************************ */
@@ -206,9 +206,9 @@ ZouHeDynamics::calcVelocity(DataType& data, DensityType rho) const noexcept
 {
     const auto center = sumValues(data, CENTER_RHO.at(m_position));
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
-    const auto wWall = Descriptor::getWeightVerticalSum();
+    const auto wHs = Descriptor::getWeightHorizontalSum();
 
-    const RealType speed = (1.0 - (1.0 / rho * (center + 2.0 * known) + 2.0 * wWall));
+    const RealType speed = wHs - (1.0 / rho * (center + 2.0 * known));
 
     // Velocity vector
     return speed * VELOCITIES.at(m_position);
