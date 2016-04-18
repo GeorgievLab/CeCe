@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,9 +27,11 @@
 
 /* ************************************************************************ */
 
-#ifdef __MINGW64__
+#if defined(__MINGW32__) || defined(__MINGW64__)
 // Undefined reference to __impl_Py_InitModule4 on 64 bit MinGW compiler
+#ifdef __MINGW64__
 #define MS_WIN64
+#endif
 // ::hypot issue
 #include <cmath>
 #endif
