@@ -465,7 +465,7 @@ UniquePtr<Node<RealType>> ReactionsParser::parseLeaf()
     if(is(TokenCode::Number))
     {
         char* end;
-        RealType value = strtof(token().value.c_str(), &end);
+        RealType value = strtod(token().value.c_str(), &end);
         next();
         return makeUnique<Amount>(value);
     }

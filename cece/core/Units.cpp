@@ -196,7 +196,7 @@ Value parse(StringView str)
     char* fSymbol;
 
     // Read float value
-    const Value value = std::strtof(str.getData(), &fSymbol);
+    const Value value = std::strtod(str.getData(), &fSymbol);
 
     // Cannot be read
     if (fSymbol == str.getData())

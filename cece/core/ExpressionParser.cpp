@@ -384,7 +384,7 @@ private:
     float constant()
     {
         char* end;
-        float value = strtof(iterator.begin(), &end);
+        float value = strtod(iterator.begin(), &end);
         if (iterator.begin() != end)
         {
             iterator = makeRange<const char*>(end, iterator.end());
