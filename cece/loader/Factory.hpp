@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -45,41 +45,6 @@ class Loader;
  * @brief Simulation loader factory interface.
  */
 using Factory = core::Factory<Loader>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Loader factory for specific loader.
- *
- * @tparam LoaderType
- */
-template<typename LoaderType>
-using FactoryTyped = core::FactoryTyped<core::Factory, LoaderType, Loader>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Loader factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using FactoryCallable = core::FactoryCallable<core::Factory, Callable, Loader>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable loader factory.
- *
- * @param callable Callable object.
- *
- * @return Callable loader factory.
- */
-template<typename Callable>
-FactoryCallable<Callable> makeCallableFactory(Callable callable) noexcept
-{
-    return FactoryCallable<Callable>{std::move(callable)};
-}
 
 /* ************************************************************************ */
 

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -29,8 +29,6 @@
 
 // CeCe
 #include "cece/core/Factory.hpp"
-#include "cece/core/String.hpp"
-#include "cece/program/Program.hpp"
 
 /* ************************************************************************ */
 
@@ -39,45 +37,14 @@ namespace program {
 
 /* ************************************************************************ */
 
+class Program;
+
+/* ************************************************************************ */
+
 /**
  * @brief Program factory interface.
  */
 using Factory = Factory<Program>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Program factory for specific module.
- *
- * @tparam ProgramType
- */
-template<typename ProgramType>
-using FactoryTyped = FactoryTyped<core::Factory, ProgramType, Program>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Program factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using FactoryCallable = FactoryCallable<core::Factory, Callable, Program>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-FactoryCallable<Callable> makeCallableFactory(Callable callable) noexcept
-{
-    return FactoryCallable<Callable>{std::move(callable)};
-}
 
 /* ************************************************************************ */
 

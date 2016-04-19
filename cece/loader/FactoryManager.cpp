@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -36,23 +36,9 @@ namespace loader {
 
 /* ************************************************************************ */
 
-ViewPtr<Factory> FactoryManager::get(const StringView& name) const noexcept
+UniquePtr<Loader> FactoryManager::createLoader(StringView name) const
 {
-    auto it = m_factories.find(String(name));
-
-    return it != m_factories.end() ? it->second.get() : nullptr;
-}
-
-/* ************************************************************************ */
-
-UniquePtr<Loader> FactoryManager::create(const StringView& name) const
-{
-    auto factory = get(name);
-
-    if (factory)
-        return factory->create();
-
-    throw FactoryNotFoundException("Loader factory not found: " + String(name));
+    return createObject<Loader>(name);
 }
 
 /* ************************************************************************ */

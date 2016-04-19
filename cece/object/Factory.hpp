@@ -54,41 +54,6 @@ using Factory = Factory<Object, simulator::Simulation&, String, Object::Type>;
 
 /* ************************************************************************ */
 
-/**
- * @brief Object factory for specific module.
- *
- * @tparam ObjectType
- */
-template<typename ObjectType>
-using FactoryTyped = FactoryTyped<core::Factory, ObjectType, Object, simulator::Simulation&, String, Object::Type>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Object factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using FactoryCallable = FactoryCallable<core::Factory, Callable, Object, simulator::Simulation&, String, Object::Type>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-FactoryCallable<Callable> makeCallableFactory(Callable callable) noexcept
-{
-    return FactoryCallable<Callable>{std::move(callable)};
-}
-
-/* ************************************************************************ */
-
 }
 }
 

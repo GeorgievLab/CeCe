@@ -29,7 +29,6 @@
 
 // CeCe
 #include "cece/core/Factory.hpp"
-#include "cece/init/Initializer.hpp"
 
 /* ************************************************************************ */
 
@@ -38,45 +37,14 @@ namespace init {
 
 /* ************************************************************************ */
 
+class Initializer;
+
+/* ************************************************************************ */
+
 /**
  * @brief Initializer factory interface.
  */
 using Factory = Factory<Initializer>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Initializer factory for specific module.
- *
- * @tparam InitializerType
- */
-template<typename InitializerType>
-using FactoryTyped = FactoryTyped<core::Factory, InitializerType, Initializer>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Initializer factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using FactoryCallable = FactoryCallable<core::Factory, Callable, Initializer>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-FactoryCallable<Callable> makeCallableFactory(Callable callable) noexcept
-{
-    return FactoryCallable<Callable>{std::move(callable)};
-}
 
 /* ************************************************************************ */
 

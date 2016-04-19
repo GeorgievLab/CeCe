@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -30,11 +30,8 @@
 // CeCe
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
-#include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
-#include "cece/core/Map.hpp"
-#include "cece/core/Exception.hpp"
-#include "cece/init/Initializer.hpp"
+#include "cece/core/FactoryManager.hpp"
 #include "cece/init/Factory.hpp"
 
 /* ************************************************************************ */
@@ -44,34 +41,15 @@ namespace init {
 
 /* ************************************************************************ */
 
-/**
- * @brief Exception for access to unregistred initializer factory.
- */
-class FactoryNotFoundException : public InvalidArgumentException
-{
-    using InvalidArgumentException::InvalidArgumentException;
-};
+class Initializer;
 
 /* ************************************************************************ */
 
 /**
  * @brief Initializer factory manager.
  */
-class FactoryManager
+class FactoryManager : public core::FactoryManager<Factory>
 {
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Find initializer factory by name.
-     *
-     * @param name Factory name.
-     *
-     * @return
-     */
-    ViewPtr<Factory> get(StringView name) const noexcept;
 
 
 // Public Mutators
@@ -79,44 +57,9 @@ public:
 
 
     /**
-     * @brief Register a new factory.
+     * @brief Register a new factory for specified initializer.
      *
-     * @param name    Factory name.
-     * @param factory Factory pointer.
-     */
-    void add(String name, UniquePtr<Factory> factory) noexcept
-    {
-        m_factories.emplace(std::move(name), std::move(factory));
-    }
-
-
-    /**
-     * @brief Unregister factory.
-     *
-     * @param name Factory name.
-     */
-    void remove(StringView name) noexcept
-    {
-        m_factories.erase(String(name));
-    }
-
-
-    /**
-     * @brief Register a new factory.
-     *
-     * @tparam FactoryType
-     *
-     * @param name Factory name.
-     */
-    template<typename FactoryType>
-    void create(String name) noexcept
-    {
-        add(std::move(name), makeUnique<FactoryType>());
-    }
-
-
-    /**
-     * @brief Register a new factory for specified module.
+     * @tparam InitializerType Initializer type.
      *
      * @param name Factory name.
      */
@@ -124,18 +67,6 @@ public:
     void createForInitializer(String name) noexcept
     {
         create<FactoryTyped<InitializerType>>(std::move(name));
-    }
-
-
-    /**
-     * @brief Register a new factory for specified module.
-     *
-     * @param name Factory name.
-     */
-    template<typename Callable>
-    void createFromCallback(Callable callable) noexcept
-    {
-        create<FactoryCallable<Callable>>(std::move(callable));
     }
 
 
@@ -153,13 +84,6 @@ public:
      * @throw InitializerFactoryNotFoundException In case of factory with given name doesn't exists.
      */
     UniquePtr<Initializer> createInitializer(StringView name) const;
-
-
-// Private Data Members
-private:
-
-    /// Registered module factories.
-    Map<String, UniquePtr<Factory>> m_factories;
 
 };
 

@@ -209,6 +209,7 @@
       <File Name="core/Shape.hpp"/>
       <File Name="core/ShapeToGrid.hpp"/>
     </VirtualDirectory>
+    <File Name="core/FactoryManager.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="render">
     <File Name="render/Buffer.cpp"/>

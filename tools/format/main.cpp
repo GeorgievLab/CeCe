@@ -109,7 +109,7 @@ int main(int argc, char** argv)
         auto ext = outfile.extension().string().substr(1);
 
         // Find loader by extension
-        auto loader = context.getLoaderFactoryManager().create(ext);
+        auto loader = context.getLoaderFactoryManager().createLoader(ext);
 
         if (!loader)
             throw RuntimeException("Unable to store file with extension: '" + ext + "'");

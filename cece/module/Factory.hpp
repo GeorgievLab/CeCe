@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -49,41 +49,6 @@ class Module;
  * @brief Module factory interface.
  */
 using Factory = Factory<Module, simulator::Simulation&>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory for specific module.
- *
- * @tparam ModuleType
- */
-template<typename ModuleType>
-using FactoryTyped = FactoryTyped<core::Factory, ModuleType, Module, simulator::Simulation&>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module factory with callable backend.
- *
- * @tparam Callable
- */
-template<typename Callable>
-using FactoryCallable = FactoryCallable<core::Factory, Callable, Module, simulator::Simulation&>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make callable module factory.
- *
- * @param callable Callable object.
- *
- * @return Callable module factory.
- */
-template<typename Callable>
-FactoryCallable<Callable> makeCallableFactory(Callable callable) noexcept
-{
-    return FactoryCallable<Callable>{std::move(callable)};
-}
 
 /* ************************************************************************ */
 

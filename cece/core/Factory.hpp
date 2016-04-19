@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -47,6 +47,14 @@ template<typename T, typename... Args>
 class Factory
 {
 
+// Public Types
+public:
+
+
+    /// Produced type.
+    using type = T;
+
+
 // Public Ctors & Dtors
 public:
 
@@ -80,13 +88,22 @@ public:
 /**
  * @brief Factory for specific type.
  *
- * @tparam ParentFactory
+ * @tparam Args
+ */
+template<typename... Args>
+class FactoryTyped;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Factory for specific type.
+ *
  * @tparam T
  * @tparam Base
  * @tparam Args
  */
-template<template<typename, typename...> class ParentFactory, typename T, typename Base, typename... Args>
-class FactoryTyped : public ParentFactory<Base, Args...>
+template<typename T, typename Base, typename... Args>
+class FactoryTyped<Factory<Base, Args...>, T> : public Factory<Base, Args...>
 {
 
 // Public Operations

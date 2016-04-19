@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -36,36 +36,9 @@ namespace object {
 
 /* ************************************************************************ */
 
-ViewPtr<Factory> FactoryManager::get(StringView name) const noexcept
-{
-    // FIXME: C++14
-    auto it = m_factories.find(String(name));
-
-    return it != m_factories.end() ? it->second.get() : nullptr;
-}
-
-/* ************************************************************************ */
-
-DynamicArray<String> FactoryManager::getNames() const noexcept
-{
-    DynamicArray<String> names;
-
-    for (const auto& pair : m_factories)
-        names.push_back(pair.first);
-
-    return names;
-}
-
-/* ************************************************************************ */
-
 UniquePtr<Object> FactoryManager::createObject(StringView name, simulator::Simulation& simulation, Object::Type type) const
 {
-    auto factory = get(name);
-
-    if (factory)
-        return factory->create(simulation, String(name), type);
-
-    throw FactoryNotFoundException("Object factory not found: " + String(name));
+    return core::FactoryManager<Factory>::createObject<Object>(name, simulation, String(name), type);
 }
 
 /* ************************************************************************ */

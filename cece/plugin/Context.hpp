@@ -128,7 +128,7 @@ public:
     template<typename LoaderType>
     void registerLoader(String name) noexcept
     {
-        m_loaderFactoryManager.createForLoader<LoaderType>(std::move(name));
+        m_loaderFactoryManager.createFor<LoaderType>(std::move(name));
     }
 
 
@@ -142,7 +142,7 @@ public:
     template<typename InitializerType>
     void registerInitializer(String name) noexcept
     {
-        m_initFactoryManager.createForInitializer<InitializerType>(std::move(name));
+        m_initFactoryManager.createFor<InitializerType>(std::move(name));
     }
 
 
@@ -156,7 +156,7 @@ public:
     template<typename ModuleType>
     void registerModule(String name) noexcept
     {
-        m_moduleFactoryManager.createForModule<ModuleType>(std::move(name));
+        m_moduleFactoryManager.createFor<ModuleType>(std::move(name));
     }
 
 
@@ -170,7 +170,7 @@ public:
     template<typename ObjectType>
     void registerObject(String name) noexcept
     {
-        m_objectFactoryManager.createForObject<ObjectType>(std::move(name));
+        m_objectFactoryManager.createFor<ObjectType>(std::move(name));
     }
 
 
@@ -184,7 +184,7 @@ public:
     template<typename ProgramType>
     void registerProgram(String name) noexcept
     {
-        m_programFactoryManager.createForProgram<ProgramType>(std::move(name));
+        m_programFactoryManager.createFor<ProgramType>(std::move(name));
     }
 
 

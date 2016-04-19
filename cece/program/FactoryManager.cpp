@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -36,36 +36,9 @@ namespace program {
 
 /* ************************************************************************ */
 
-ViewPtr<Factory> FactoryManager::get(StringView name) const noexcept
-{
-    // FIXME: C++14
-    auto it = m_factories.find(String(name));
-
-    return it != m_factories.end() ? it->second.get() : nullptr;
-}
-
-/* ************************************************************************ */
-
-DynamicArray<String> FactoryManager::getNames() const noexcept
-{
-    DynamicArray<String> names;
-
-    for (const auto& pair : m_factories)
-        names.push_back(pair.first);
-
-    return names;
-}
-
-/* ************************************************************************ */
-
 UniquePtr<Program> FactoryManager::createProgram(StringView name) const
 {
-    auto factory = get(name);
-
-    if (factory)
-        return factory->create();
-
-    throw FactoryNotFoundException("Program factory not found: " + String(name));
+    return createObject<Program>(name);
 }
 
 /* ************************************************************************ */

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -36,24 +36,9 @@ namespace init {
 
 /* ************************************************************************ */
 
-ViewPtr<Factory> FactoryManager::get(StringView name) const noexcept
-{
-    // FIXME: C++14
-    auto it = m_factories.find(String(name));
-
-    return it != m_factories.end() ? it->second.get() : nullptr;
-}
-
-/* ************************************************************************ */
-
 UniquePtr<Initializer> FactoryManager::createInitializer(StringView name) const
 {
-    auto factory = get(name);
-
-    if (factory)
-        return factory->create();
-
-    throw FactoryNotFoundException("Initializer factory not found: " + String(name));
+    return createObject<Initializer>(name);
 }
 
 /* ************************************************************************ */
