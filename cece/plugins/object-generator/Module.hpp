@@ -34,6 +34,7 @@
 
 // CeCe
 #include "cece/core/Real.hpp"
+#include "cece/core/Pair.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/VectorUnits.hpp"

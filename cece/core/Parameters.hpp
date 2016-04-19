@@ -31,8 +31,6 @@
 #include <initializer_list>
 
 // CeCe
-#include "cece/core/Real.hpp"
-#include "cece/core/Pair.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -127,7 +125,7 @@ public:
      *
      * @note In case of missing value, new is created.
      */
-    ValueType& operator[](const KeyViewType& name) noexcept
+    ValueType& operator[](KeyViewType name) noexcept
     {
         return get(name);
     }
@@ -142,7 +140,7 @@ public:
      *
      * @throw MissingParameterException In case of missing value.
      */
-    ValueType operator[](const KeyViewType& name) const
+    ValueType operator[](KeyViewType name) const
     {
         return get(name);
     }
@@ -159,7 +157,7 @@ public:
      *
      * @return
      */
-    bool exists(const KeyViewType& name) const noexcept;
+    bool exists(KeyViewType name) const noexcept;
 
 
     /**
@@ -171,7 +169,7 @@ public:
      *
      * @throw MissingParameterException In case of missing value.
      */
-    ValueType get(const KeyViewType& name) const;
+    ValueType get(KeyViewType name) const;
 
 
     /**
@@ -183,7 +181,7 @@ public:
      *
      * @throw MissingParameterException In case of missing value.
      */
-    ValueType& get(const KeyViewType& name);
+    ValueType& get(KeyViewType name);
 
 
     /**
@@ -194,7 +192,7 @@ public:
      *
      * @return Parameter value.
      */
-    ValueType get(const KeyViewType& name, ValueType def) const noexcept;
+    ValueType get(KeyViewType name, ValueType def) const noexcept;
 
 
     /**

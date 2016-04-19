@@ -36,6 +36,7 @@
 #include "cece/core/Pair.hpp"
 #include "cece/core/StringStream.hpp"
 #include "cece/core/TimeMeasurement.hpp"
+#include "cece/core/UnitIo.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"

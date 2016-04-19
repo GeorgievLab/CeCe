@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -38,10 +38,10 @@ using namespace cece;
 TEST(DynamicArrayTest, size)
 {
     DynamicArray<int> array;
-    EXPECT_EQ(0, array.size());
+    EXPECT_EQ(0u, array.size());
 
-    array.resize(10);
-    EXPECT_EQ(10, array.size());
+    array.resize(10u);
+    EXPECT_EQ(10u, array.size());
 }
 
 /* ************************************************************************ */

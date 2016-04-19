@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -33,7 +33,6 @@
 // CeCe
 #include "cece/core/InStream.hpp"
 #include "cece/core/String.hpp"
-#include "cece/core/StringView.hpp"
 #include "cece/core/StaticArray.hpp"
 #include "cece/core/Vector.hpp"
 

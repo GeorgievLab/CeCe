@@ -33,6 +33,7 @@
 #include "cece/core/Assert.hpp"
 #include "cece/core/constants.hpp"
 #include "cece/core/Shape.hpp"
+#include "cece/core/UnitIo.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 #ifdef CECE_ENABLE_RENDER

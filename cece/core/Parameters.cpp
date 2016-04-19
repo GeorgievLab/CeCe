@@ -48,7 +48,7 @@ namespace {
  * @return
  */
 template<typename Container>
-auto find(Container& data, const Parameters::KeyViewType& name) noexcept -> decltype(&(data.begin()->value))
+auto find(Container& data, Parameters::KeyViewType name) noexcept -> decltype(&(data.begin()->value))
 {
     auto it = std::find_if(data.begin(), data.end(),
         [&name](const Parameters::Record& p) {
@@ -65,14 +65,14 @@ auto find(Container& data, const Parameters::KeyViewType& name) noexcept -> decl
 
 /* ************************************************************************ */
 
-bool Parameters::exists(const KeyViewType& name) const noexcept
+bool Parameters::exists(KeyViewType name) const noexcept
 {
     return find(m_data, name) != nullptr;
 }
 
 /* ************************************************************************ */
 
-Parameters::ValueType Parameters::get(const KeyViewType& name) const
+Parameters::ValueType Parameters::get(KeyViewType name) const
 {
     auto ptr = find(m_data, name);
 
@@ -84,7 +84,7 @@ Parameters::ValueType Parameters::get(const KeyViewType& name) const
 
 /* ************************************************************************ */
 
-Parameters::ValueType& Parameters::get(const KeyViewType& name)
+Parameters::ValueType& Parameters::get(KeyViewType name)
 {
     auto ptr = find(m_data, name);
 
@@ -99,7 +99,7 @@ Parameters::ValueType& Parameters::get(const KeyViewType& name)
 
 /* ************************************************************************ */
 
-Parameters::ValueType Parameters::get(const KeyViewType& name, ValueType def) const noexcept
+Parameters::ValueType Parameters::get(KeyViewType name, ValueType def) const noexcept
 {
     auto ptr = find(m_data, name);
 

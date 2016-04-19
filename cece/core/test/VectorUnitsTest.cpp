@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -30,6 +30,7 @@
 #include <sstream>
 
 // CeCe
+#include "cece/core/UnitIo.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/core/UnitsCtors.hpp"
 

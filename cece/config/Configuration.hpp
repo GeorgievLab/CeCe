@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -35,9 +35,12 @@
 #include "cece/core/Exception.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/StringStream.hpp"
-#include "cece/core/Parameters.hpp"
 #include "cece/config/Exception.hpp"
 #include "cece/config/Implementation.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { inline namespace core { class Parameters; } }
 
 /* ************************************************************************ */
 
@@ -66,7 +69,7 @@ public:
         : m_impl(std::move(impl))
         , m_parameters(parameters)
     {
-        // Nothign to do
+        // Nothing to do
     }
 
 

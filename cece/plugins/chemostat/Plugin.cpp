@@ -25,6 +25,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/core/UnitIo.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/plugin/definition.hpp"

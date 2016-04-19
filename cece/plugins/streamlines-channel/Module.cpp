@@ -29,6 +29,7 @@
 // CeCe
 #include "cece/core/Assert.hpp"
 #include "cece/core/Log.hpp"
+#include "cece/core/UnitIo.hpp"
 #include "cece/config/Configuration.hpp"
 
 // Plugin
