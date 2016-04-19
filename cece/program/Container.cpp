@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -36,56 +36,23 @@ namespace program {
 
 /* ************************************************************************ */
 
-Container::Container(const Container& rhs)
-    : m_programs()
-{
-    m_programs.reserve(rhs.m_programs.size());
-
-    // Clone programs
-    for (const auto& program : rhs.m_programs)
-        add(program->clone());
-}
-
-/* ************************************************************************ */
-
-Container::Container(Container&& rhs) noexcept = default;
-
-/* ************************************************************************ */
-
-Container::~Container() = default;
-
-/* ************************************************************************ */
-
-Container& Container::operator=(const Container& rhs)
-{
-    m_programs.clear();
-    m_programs.reserve(rhs.m_programs.size());
-
-    // Clone programs
-    for (const auto& program : rhs.m_programs)
-        add(program->clone());
-
-    return *this;
-}
-
-/* ************************************************************************ */
-
-Container& Container::operator=(Container&& rhs) = default;
-
-/* ************************************************************************ */
-
-void Container::clear()
-{
-    m_programs.clear();
-}
-
-/* ************************************************************************ */
-
 void Container::call(simulator::Simulation& simulation, object::Object& object, units::Time dt)
 {
     // Invoke all stored programs
-    for (auto& program : m_programs)
-        program->call(simulation, object, dt);
+    invoke(&Program::call, simulation, object, dt);
+}
+
+/* ************************************************************************ */
+
+Container Container::clone() const
+{
+    Container container;
+
+    // Clone programs
+    for (const auto& program : *this)
+        container.add(program->clone());
+
+    return container;
 }
 
 /* ************************************************************************ */

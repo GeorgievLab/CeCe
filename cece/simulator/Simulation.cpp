@@ -436,7 +436,7 @@ void Simulation::initialize(AtomicBool& termFlag)
     Assert(!isInitialized());
 
     // Initialize simulation
-    m_initializers.call(*this);
+    m_initializers.init(*this);
 
     // Initialize modules
     m_modules.init(termFlag);
@@ -639,7 +639,7 @@ void Simulation::storeConfig(config::Configuration& config) const
     {
         auto moduleConfig = config.addConfiguration("module");
         moduleConfig.set("name", module.name);
-        module.module->storeConfig(moduleConfig);
+        module->storeConfig(moduleConfig);
     }
 
     // Store programs

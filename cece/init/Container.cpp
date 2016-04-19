@@ -31,60 +31,18 @@
 
 /* ************************************************************************ */
 
+namespace cece { inline namespace core { template class PtrContainer<init::Initializer>; } }
+
+/* ************************************************************************ */
+
 namespace cece {
 namespace init {
 
 /* ************************************************************************ */
 
-Container::Container(const Container& rhs)
+void Container::init(simulator::Simulation& simulation)
 {
-    m_initializers.reserve(rhs.m_initializers.size());
-
-    // Clone initializers
-    for (const auto& initializer : rhs.m_initializers)
-        m_initializers.push_back(initializer->clone());
-}
-
-/* ************************************************************************ */
-
-Container::Container(Container&& rhs) noexcept = default;
-
-/* ************************************************************************ */
-
-Container::~Container() = default;
-
-/* ************************************************************************ */
-
-Container& Container::operator=(const Container& rhs)
-{
-    m_initializers.clear();
-    m_initializers.reserve(rhs.m_initializers.size());
-
-    // Clone initializers
-    for (const auto& initializer : rhs.m_initializers)
-        m_initializers.push_back(initializer->clone());
-
-    return *this;
-}
-
-/* ************************************************************************ */
-
-Container& Container::operator=(Container&& rhs) = default;
-
-/* ************************************************************************ */
-
-void Container::clear()
-{
-    m_initializers.clear();
-}
-
-/* ************************************************************************ */
-
-void Container::call(simulator::Simulation& simulation)
-{
-    // Invoke all stored initializers
-    for (auto& initializer : m_initializers)
-        initializer->call(simulation);
+    invoke(&Initializer::call, simulation);
 }
 
 /* ************************************************************************ */

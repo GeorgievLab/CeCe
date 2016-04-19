@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,10 +28,8 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/ViewPtr.hpp"
-#include "cece/core/DynamicArray.hpp"
 #include "cece/core/Units.hpp"
+#include "cece/core/PtrContainer.hpp"
 
 /* ************************************************************************ */
 
@@ -52,173 +50,8 @@ class Program;
 /**
  * @brief Container for programs.
  */
-class Container
+class Container : public PtrContainer<Program>
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Default constructor.
-     */
-    Container() = default;
-
-
-    /**
-     * @brief Copy constructor.
-     *
-     * @param rhs
-     */
-    Container(const Container& rhs);
-
-
-    /**
-     * @brief Move constructor.
-     *
-     * @param rhs
-     */
-    Container(Container&& rhs) noexcept;
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Container();
-
-
-// Public Operators
-public:
-
-
-    /**
-     * @brief Copy assignment operator.
-     *
-     * @param rhs
-     *
-     * @return *this
-     */
-    Container& operator=(const Container& rhs);
-
-
-    /**
-     * @brief MOve assignment operator.
-     *
-     * @param rhs
-     *
-     * @return *this
-     */
-    Container& operator=(Container&& rhs);
-
-
-    /**
-     * @brief Returns n-th program.
-     *
-     * @param pos
-     *
-     * @return Pointer to program.
-     */
-    ViewPtr<Program> operator[](std::size_t pos) const noexcept
-    {
-        return m_programs[pos];
-    }
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns a number of stored programs.
-     *
-     * @return
-     */
-    std::size_t getCount() const noexcept
-    {
-        return m_programs.size();
-    }
-
-
-    /**
-     * @brief Returns n-th program.
-     *
-     * @param pos
-     *
-     * @return Pointer to program.
-     */
-    ViewPtr<Program> get(std::size_t pos) const
-    {
-        return m_programs.at(pos);
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Program>>::const_iterator begin() const noexcept
-    {
-        return m_programs.begin();
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Program>>::const_iterator cbegin() const noexcept
-    {
-        return m_programs.cbegin();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Program>>::const_iterator end() const noexcept
-    {
-        return m_programs.end();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Program>>::const_iterator cend() const noexcept
-    {
-        return m_programs.cend();
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Store a program.
-     *
-     * @param program Program object.
-     *
-     * @return View pointer to stored program.
-     */
-    ViewPtr<Program> add(UniquePtr<Program> program)
-    {
-        m_programs.push_back(std::move(program));
-        return m_programs.back();
-    }
-
-
-    /**
-     * @brief Clear container.
-     */
-    void clear();
-
 
 // Public Operations
 public:
@@ -234,11 +67,12 @@ public:
     void call(simulator::Simulation& simulation, object::Object& object, units::Time dt);
 
 
-// Private Data Members
-private:
-
-    /// Stored programs.
-    DynamicArray<UniquePtr<Program>> m_programs;
+    /**
+     * @brief Clone container.
+     *
+     * @return
+     */
+    Container clone() const;
 
 };
 

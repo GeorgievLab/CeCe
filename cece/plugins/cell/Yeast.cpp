@@ -169,7 +169,7 @@ void Yeast::budRelease()
     bud->setPosition(posBud);
     bud->setVelocity(velocityBud);
     bud->setAngularVelocity(omega);
-    bud->setPrograms(getPrograms());
+    bud->setPrograms(getPrograms().clone());
     bud->setDensity(getDensity());
     bud->setGrowthRate(getGrowthRate());
     bud->updateShape();

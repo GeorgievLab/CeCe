@@ -28,13 +28,16 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/UniquePtr.hpp"
-#include "cece/core/ViewPtr.hpp"
-#include "cece/core/DynamicArray.hpp"
+#include "cece/core/PtrContainer.hpp"
 
 /* ************************************************************************ */
 
 namespace cece { namespace simulator { class Simulation; } }
+namespace cece { namespace init { class Initializer; } }
+
+/* ************************************************************************ */
+
+namespace cece { inline namespace core { extern template class PtrContainer<init::Initializer>; } }
 
 /* ************************************************************************ */
 
@@ -43,198 +46,22 @@ namespace init {
 
 /* ************************************************************************ */
 
-class Initializer;
-
-/* ************************************************************************ */
-
 /**
- * @brief Container for programs.
+ * @brief Container for initializers.
  */
-class Container
+class Container : public PtrContainer<Initializer>
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Default constructor.
-     */
-    Container() = default;
-
-
-    /**
-     * @brief Copy constructor.
-     *
-     * @param rhs
-     */
-    Container(const Container& rhs);
-
-
-    /**
-     * @brief Move constructor.
-     *
-     * @param rhs
-     */
-    Container(Container&& rhs) noexcept;
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Container();
-
-
-// Public Operators
-public:
-
-
-    /**
-     * @brief Copy assignment operator.
-     *
-     * @param rhs
-     *
-     * @return *this
-     */
-    Container& operator=(const Container& rhs);
-
-
-    /**
-     * @brief Move assignment operator.
-     *
-     * @param rhs
-     *
-     * @return *this
-     */
-    Container& operator=(Container&& rhs);
-
-
-    /**
-     * @brief Returns n-th initializer.
-     *
-     * @param pos
-     *
-     * @return Pointer to initializer.
-     */
-    ViewPtr<Initializer> operator[](std::size_t pos) const noexcept
-    {
-        return m_initializers[pos];
-    }
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns a number of stored initializers.
-     *
-     * @return
-     */
-    std::size_t getCount() const noexcept
-    {
-        return m_initializers.size();
-    }
-
-
-    /**
-     * @brief Returns n-th initializer.
-     *
-     * @param pos
-     *
-     * @return Pointer to initializer.
-     */
-    ViewPtr<Initializer> get(std::size_t pos) const
-    {
-        return m_initializers.at(pos);
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Initializer>>::const_iterator begin() const noexcept
-    {
-        return m_initializers.begin();
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Initializer>>::const_iterator cbegin() const noexcept
-    {
-        return m_initializers.cbegin();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Initializer>>::const_iterator end() const noexcept
-    {
-        return m_initializers.end();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DynamicArray<UniquePtr<Initializer>>::const_iterator cend() const noexcept
-    {
-        return m_initializers.cend();
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Store an initializer.
-     *
-     * @param initializer Initializer object.
-     *
-     * @return View pointer to stored initializer.
-     */
-    ViewPtr<Initializer> add(UniquePtr<Initializer> initializer)
-    {
-        m_initializers.push_back(std::move(initializer));
-        return m_initializers.back();
-    }
-
-
-    /**
-     * @brief Clear container.
-     */
-    void clear();
-
 
 // Public Operations
 public:
 
 
     /**
-     * @brief Call all initialzers.
+     * @brief Initialize all stored initialzers.
      *
      * @param simulation Simulation object.
      */
-    void call(simulator::Simulation& simulation);
-
-
-// Private Data Members
-private:
-
-    /// Stored initializers.
-    DynamicArray<UniquePtr<Initializer>> m_initializers;
+    void init(simulator::Simulation& simulation);
 
 };
 

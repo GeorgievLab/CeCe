@@ -33,13 +33,10 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/String.hpp"
-#include "cece/core/StringView.hpp"
-#include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
-#include "cece/core/Pair.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/Atomic.hpp"
+#include "cece/core/PtrNamedContainer.hpp"
 
 /* ************************************************************************ */
 
@@ -60,125 +57,11 @@ class Module;
 
 /**
  * @brief Container for modules.
+ *
+ * @todo Cache sorted list of modules.
  */
-class Container
+class Container : public PtrNamedContainer<Module>
 {
-
-// Public Structures
-public:
-
-
-    /**
-     * @brief Container record.
-     */
-    struct Record
-    {
-        /// Module name.
-        String name;
-
-        /// Pointer to module.
-        UniquePtr<Module> module;
-    };
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Container();
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns if module with given name exists.
-     *
-     * @param name Module name.
-     *
-     * @return
-     */
-    bool exists(StringView name) const noexcept;
-
-
-    /**
-     * @brief Returns parameter with given value.
-     *
-     * @param name Module name.
-     *
-     * @return Pointer to module. Can be nullptr.
-     */
-    ViewPtr<Module> get(StringView name) const noexcept;
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DynamicArray<Record>::const_iterator begin() const noexcept
-    {
-        return m_modules.begin();
-    }
-
-
-    /**
-     * @brief Returns begin iterator.
-     *
-     * @return
-     */
-    DynamicArray<Record>::const_iterator cbegin() const noexcept
-    {
-        return m_modules.cbegin();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DynamicArray<Record>::const_iterator end() const noexcept
-    {
-        return m_modules.end();
-    }
-
-
-    /**
-     * @brief Returns end iterator.
-     *
-     * @return
-     */
-    DynamicArray<Record>::const_iterator cend() const noexcept
-    {
-        return m_modules.cend();
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Store or replace module.
-     *
-     * @param name   Module name.
-     * @param module Module object.
-     *
-     * @return Pointer to added module.
-     */
-    ViewPtr<Module> add(String name, UniquePtr<Module> module);
-
-
-    /**
-     * @brief Clear container.
-     */
-    void clear();
-
 
 // Public Operations
 public:
@@ -233,13 +116,6 @@ protected:
      * @return
      */
     DynamicArray<ViewPtr<Module>> getSortedListDesc() const noexcept;
-
-
-// Private Data Members
-private:
-
-    /// Stored modules.
-    DynamicArray<Record> m_modules;
 
 };
 

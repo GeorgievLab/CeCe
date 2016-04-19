@@ -91,6 +91,8 @@ add_library(${PROJECT_NAME} OBJECT
     FactoryManager.hpp
     Shape.hpp
     ShapeToGrid.hpp
+    PtrContainer.hpp
+    PtrNamedContainer.hpp
 )
 
 # ######################################################################### #
