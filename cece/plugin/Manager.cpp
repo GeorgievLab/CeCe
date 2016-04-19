@@ -28,7 +28,6 @@
 
 // C++
 #include <utility>
-#include <regex>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -161,12 +160,7 @@ Map<String, FilePath> Manager::scanDirectory(const FilePath& directory) noexcept
 
     Map<String, FilePath> result;
 
-    // Regular expression
-    const String pattern = Library::FILE_PREFIX + "(.*)" + Library::FILE_EXTENSION;
-    std::regex regex(pattern);
-    std::smatch matches;
-
-    Log::debug("Scanning `", directory.string(), "` for plugins with pattern `", pattern, "`");
+    Log::debug("Scanning `", directory.string(), "` for plugins");
 
     if (!is_directory(directory))
     {
@@ -184,13 +178,19 @@ Map<String, FilePath> Manager::scanDirectory(const FilePath& directory) noexcept
         // Get path
         auto path = entry.path();
         const auto filename = path.filename().string();
+        const auto prefixLength = Library::FILE_PREFIX.length();
+        const auto suffixLength = Library::FILE_EXTENSION.length();
+        const auto suffixStart = filename.length() - suffixLength;
 
-        // Match file name
-        if (!std::regex_match(filename, matches, regex))
+        // Different prefix
+        if (filename.substr(0, prefixLength) != Library::FILE_PREFIX)
             continue;
 
-        if (matches.size() == 2)
-            result.emplace(matches[1].str(), std::move(path));
+        // Different extension
+        if (filename.substr(suffixStart) != Library::FILE_EXTENSION)
+            continue;
+
+        result.emplace(filename.substr(prefixLength, suffixStart - prefixLength), std::move(path));
     }
 
     return result;
