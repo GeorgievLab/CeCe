@@ -78,13 +78,13 @@ public:
     explicit VectorType(String name)
         : ParentType(std::move(name))
     {
-        ParentType::tp_getset = m_properties;
-        ParentType::tp_methods = m_methods;
+        ParentType::tp_getset = const_cast<PyGetSetDef*>(m_properties);
+        ParentType::tp_methods = const_cast<PyMethodDef*>(m_methods);
         ParentType::tp_new = (newfunc) &__new__;
         ParentType::tp_dealloc = (destructor) &__del__;
         ParentType::tp_init = (initproc) &__init__;
         ParentType::tp_richcompare = (richcmpfunc) __cmp__;
-        ParentType::tp_as_number = &m_numberMethods;
+        ParentType::tp_as_number = const_cast<PyNumberMethods*>(&m_numberMethods);
     }
 
 
@@ -566,7 +566,7 @@ public:
 private:
 
     /// Type properties.
-    PyGetSetDef m_properties[7] = {
+    static constexpr PyGetSetDef m_properties[7] = {
         {const_cast<char*>("x"),      (getter) getX, (setter) setX, nullptr},
         {const_cast<char*>("y"),      (getter) getY, (setter) setY, nullptr},
         {const_cast<char*>("width"),  (getter) getX, (setter) setX, nullptr},
@@ -577,13 +577,13 @@ private:
     };
 
     /// Type methods.
-    PyMethodDef m_methods[2] = {
+    static constexpr PyMethodDef m_methods[2] = {
         {"dot", (PyCFunction) dot, METH_VARARGS, nullptr},
         {nullptr}  /* Sentinel */
     };
 
     /// Number methods.
-    PyNumberMethods m_numberMethods = {
+    static constexpr PyNumberMethods m_numberMethods = {
         (binaryfunc) __add__,
         (binaryfunc) __sub__,
         (binaryfunc) __mul__,
@@ -626,6 +626,21 @@ private:
     };
 
 };
+
+/* ************************************************************************ */
+
+template<typename T>
+constexpr PyGetSetDef VectorType<T>::m_properties[7];
+
+/* ************************************************************************ */
+
+template<typename T>
+constexpr PyMethodDef VectorType<T>::m_methods[2];
+
+/* ************************************************************************ */
+
+template<typename T>
+constexpr PyNumberMethods VectorType<T>::m_numberMethods;
 
 /* ************************************************************************ */
 
