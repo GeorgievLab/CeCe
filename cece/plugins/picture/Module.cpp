@@ -95,7 +95,7 @@ void Module::update()
     {
 #if defined(__MINGW32__) || defined(__MINGW64__)
         char buffer[64];
-        std::sprintf(buffer, "%d", value);
+        std::sprintf(buffer, "%d", stepNumber);
         String str = buffer;
 #else
         String str = std::to_string(stepNumber);
