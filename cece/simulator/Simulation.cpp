@@ -647,7 +647,7 @@ void Simulation::storeConfig(config::Configuration& config) const
     {
         auto programConfig = config.addConfiguration("program");
         programConfig.set("name", program.name);
-        program.program->storeConfig(*this, programConfig);
+        program->storeConfig(*this, programConfig);
     }
 
     // TODO: store objects

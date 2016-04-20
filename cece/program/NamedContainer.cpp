@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -26,87 +26,10 @@
 // Declaration
 #include "cece/program/NamedContainer.hpp"
 
-// C++
-#include <algorithm>
-
-// CeCe
-#include "cece/program/Program.hpp"
-
 /* ************************************************************************ */
 
 namespace cece {
 namespace program {
-
-/* ************************************************************************ */
-
-namespace {
-
-/* ************************************************************************ */
-
-/**
- * @brief Find parameter in container.
- *
- * @param data
- *
- * @return
- */
-template<typename ContainerT>
-auto find(ContainerT& data, StringView name) noexcept -> decltype(&(data.begin()->program))
-{
-    auto it = std::find_if(data.begin(), data.end(),
-        [&name](const NamedContainer::Record& p) {
-            return p.name == name;
-        }
-    );
-
-    return it != data.end() ? &(it->program) : nullptr;
-}
-
-/* ************************************************************************ */
-
-}
-
-/* ************************************************************************ */
-
-NamedContainer::~NamedContainer()
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-bool NamedContainer::exists(StringView name) const noexcept
-{
-    return find(m_programs, name) != nullptr;
-}
-
-/* ************************************************************************ */
-
-ViewPtr<Program> NamedContainer::get(StringView name) const noexcept
-{
-    auto ptr = find(m_programs, name);
-
-    if (ptr)
-        return *ptr;
-
-    return nullptr;
-}
-
-/* ************************************************************************ */
-
-void NamedContainer::add(String name, UniquePtr<Program> program)
-{
-    auto ptr = find(m_programs, name);
-
-    if (ptr)
-    {
-        *ptr = std::move(program);
-    }
-    else
-    {
-        m_programs.emplace_back(Record{std::move(name), std::move(program)});
-    }
-}
 
 /* ************************************************************************ */
 
