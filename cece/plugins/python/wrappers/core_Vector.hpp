@@ -566,81 +566,81 @@ public:
 private:
 
     /// Type properties.
-    static constexpr PyGetSetDef m_properties[7] = {
-        {const_cast<char*>("x"),      (getter) getX, (setter) setX, nullptr},
-        {const_cast<char*>("y"),      (getter) getY, (setter) setY, nullptr},
-        {const_cast<char*>("width"),  (getter) getX, (setter) setX, nullptr},
-        {const_cast<char*>("height"), (getter) getY, (setter) setY, nullptr},
-        {const_cast<char*>("length"), (getter) getLength, nullptr, nullptr},
-        {const_cast<char*>("lengthSquared"), (getter) getLengthSquared, nullptr, nullptr},
-        {nullptr}  /* Sentinel */
-    };
+    static PyGetSetDef m_properties[7];
 
     /// Type methods.
-    static constexpr PyMethodDef m_methods[2] = {
-        {"dot", (PyCFunction) dot, METH_VARARGS, nullptr},
-        {nullptr}  /* Sentinel */
-    };
+    static PyMethodDef m_methods[2];
 
     /// Number methods.
-    static constexpr PyNumberMethods m_numberMethods = {
-        (binaryfunc) __add__,
-        (binaryfunc) __sub__,
-        (binaryfunc) __mul__,
-        (binaryfunc) __div__,
-        nullptr,
-        nullptr,
-        nullptr,
-        (unaryfunc) __neg__,
-        (unaryfunc) __pos__,
-        nullptr,
-        (inquiry) __nonzero__,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        (binaryfunc) __iadd__,
-        (binaryfunc) __isub__,
-        (binaryfunc) __imul__,
-        (binaryfunc) __idiv__,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr
-    };
+    static PyNumberMethods m_numberMethods;
 
 };
 
 /* ************************************************************************ */
 
 template<typename T>
-constexpr PyGetSetDef VectorType<T>::m_properties[7];
+PyGetSetDef VectorType<T>::m_properties[7] = {
+    {const_cast<char*>("x"),      (getter) VectorType<T>::getX, (setter) VectorType<T>::setX, nullptr},
+    {const_cast<char*>("y"),      (getter) VectorType<T>::getY, (setter) VectorType<T>::setY, nullptr},
+    {const_cast<char*>("width"),  (getter) VectorType<T>::getX, (setter) VectorType<T>::setX, nullptr},
+    {const_cast<char*>("height"), (getter) VectorType<T>::getY, (setter) VectorType<T>::setY, nullptr},
+    {const_cast<char*>("length"), (getter) VectorType<T>::getLength, nullptr, nullptr},
+    {const_cast<char*>("lengthSquared"), (getter) VectorType<T>::getLengthSquared, nullptr, nullptr},
+    {nullptr}  /* Sentinel */
+};
 
 /* ************************************************************************ */
 
 template<typename T>
-constexpr PyMethodDef VectorType<T>::m_methods[2];
+PyMethodDef VectorType<T>::m_methods[2] = {
+    {"dot", (PyCFunction) VectorType<T>::dot, METH_VARARGS, nullptr},
+    {nullptr}  /* Sentinel */
+};
 
 /* ************************************************************************ */
 
 template<typename T>
-constexpr PyNumberMethods VectorType<T>::m_numberMethods;
+PyNumberMethods VectorType<T>::m_numberMethods = {
+    (binaryfunc) VectorType<T>::__add__,
+    (binaryfunc) VectorType<T>::__sub__,
+    (binaryfunc) VectorType<T>::__mul__,
+    (binaryfunc) VectorType<T>::__div__,
+    nullptr,
+    nullptr,
+    nullptr,
+    (unaryfunc) VectorType<T>::__neg__,
+    (unaryfunc) VectorType<T>::__pos__,
+    nullptr,
+    (inquiry) VectorType<T>::__nonzero__,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    (binaryfunc) VectorType<T>::__iadd__,
+    (binaryfunc) VectorType<T>::__isub__,
+    (binaryfunc) VectorType<T>::__imul__,
+    (binaryfunc) VectorType<T>::__idiv__,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr
+};
 
 /* ************************************************************************ */
 
