@@ -182,6 +182,12 @@ include_directories(${CMAKE_BINARY_DIR})
 
 # ######################################################################### #
 
+if (MINGW)
+    # Fix for MinGW bug
+    # http://stackoverflow.com/questions/33749413/error-hypot-was-not-declared-in-this-scope
+    add_definitions(-D__NO_INLINE__)
+endif ()
+
 if (APPLE)
     add_definitions(-mmacosx-version-min=${MACOSX_VERSION_MIN})
 endif()

@@ -38,6 +38,11 @@ compiler:
 
 language: cpp
 
+# Disable build for AppVeyor branch
+branches:
+    except:
+        - appveyor
+
 # Environment variables
 env:
     global:

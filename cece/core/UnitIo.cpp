@@ -26,6 +26,9 @@
 // Declaration
 #include "cece/core/UnitIo.hpp"
 
+// C++
+#include <cstdlib>
+
 // CeCe
 #include "cece/core/Exception.hpp"
 #include "cece/core/UnitsCtors.hpp"
@@ -83,7 +86,7 @@ Value parse(StringView str)
     char* fSymbol;
 
     // Read float value
-    const Value value = std::strtof(str.getData(), &fSymbol);
+    const Value value = std::strtod(str.getData(), &fSymbol);
 
     // Cannot be read
     if (fSymbol == str.getData())

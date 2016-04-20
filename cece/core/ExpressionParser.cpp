@@ -27,6 +27,7 @@
 #include "cece/core/ExpressionParser.hpp"
 
 // C++
+#include <cstdlib>
 #include <cmath>
 #include <cassert>
 #include <algorithm>

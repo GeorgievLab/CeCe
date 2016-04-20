@@ -26,6 +26,9 @@
 // Declaration
 #include "cece/render/Color.hpp"
 
+// C++
+#include <cstdlib>
+
 // Unix
 #if defined(__unix__)
 #include <arpa/inet.h>

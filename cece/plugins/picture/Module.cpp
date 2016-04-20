@@ -92,7 +92,16 @@ void Module::update()
 
     // Replace placeholder
     if (pos != String::npos)
-        pattern.replace(pos, 2, std::to_string(stepNumber));
+    {
+#if defined(__MINGW32__) || defined(__MINGW64__)
+        char buffer[64];
+        std::sprintf(buffer, "%d", value);
+        String str = buffer;
+#else
+        String str = std::to_string(stepNumber);
+#endif
+        pattern.replace(pos, 2, str);
+    }
 
     FilePath filename;
 

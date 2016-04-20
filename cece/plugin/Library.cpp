@@ -147,7 +147,23 @@ public:
 #if __linux__ || __APPLE__ && __MACH__
         return dlerror();
 #elif _WIN32
-        return "Error code: " + std::to_string(GetLastError());
+        // Get error message
+        const auto err = ::GetLastError();
+        if (err == 0)
+            return {};
+
+        LPSTR buffer = nullptr;
+        const auto size = FormatMessageA(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&buffer, 0, NULL
+        );
+
+        String message(buffer, size);
+
+        // Free the buffer
+        LocalFree(buffer);
+
+        return message;
 #endif
     }
 

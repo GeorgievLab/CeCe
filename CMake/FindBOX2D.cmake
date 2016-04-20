@@ -31,6 +31,7 @@ find_path(BOX2D_INCLUDE_DIR Box2D/Box2D.h
         /opt
         ${BOX2DDIR}
         $ENV{BOX2DDIR}
+        "$ENV{PROGRAMFILES}/Box2D"
 )
 
 set(BOX2D_LIBRARY_NAME Box2D)
@@ -58,6 +59,7 @@ find_library(BOX2D_LIBRARY
         $ENV{BOX2DDIR}
         ${BOX2DDIR_LIB}
         $ENV{BOX2DDIR_LIB}
+        "$ENV{PROGRAMFILES}/Box2D"
 )
 
 set(BOX2D_FOUND FALSE)
