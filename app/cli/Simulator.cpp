@@ -36,7 +36,7 @@
 #endif
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
-#include <cstdio>
+#include <stdio.h>
 #if _WIN32
 // Win32 have different names
 #define popen _popen
