@@ -35,6 +35,15 @@
 #include "cece/core/FileStream.hpp"
 #endif
 
+#ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
+#include <cstdio>
+#if _WIN32
+// Win32 have different names
+#define popen _popen
+#define pclose _pclose
+#endif
+#endif
+
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
 #endif
