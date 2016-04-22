@@ -25,7 +25,9 @@
 
 pushd build
 
-::ctest --verbose || EXIT /B 1
+cpack -G ZIP
+
+appveyor PushArtifact *.zip
 
 popd
 

@@ -26,7 +26,7 @@
 @echo on
 
 md vendor
-cd vendor
+pushd vendor
 
 :: Clone dependencies
 git clone https://github.com/erincatto/Box2D.git -b v2.3.1 Box2D
@@ -45,10 +45,10 @@ b2 toolset=gcc --with-filesystem --with-system variant=release
 popd
 
 :: Box2D
-cd Box2D\Box2D
+pushd Box2D\Box2D
 
 md build
-cd build
+pushd build
 
 :: Configure
 cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DBOX2D_INSTALL=On -DBOX2D_BUILD_EXAMPLES=Off -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off .. || EXIT /B 1
@@ -59,16 +59,16 @@ cmake --build . || EXIT /B 1
 :: Install
 mingw32-make install || EXIT /B 1
 
-cd ..
-cd ..\..
+popd
+popd
 
 ::::::::::::::::
 
 :: Zlib
-cd zlib
+pushd zlib
 
 md build
-cd build
+pushd build
 
 :: Configure
 cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
@@ -79,16 +79,16 @@ cmake --build . || EXIT /B 1
 :: Install
 mingw32-make install || EXIT /B 1
 
-cd ..
-cd ..
+popd
+popd
 
 ::::::::::::::::
 
 :: LibPNG
-cd libpng
+pushd libpng
 
 md build
-cd build
+pushd build
 
 :: Configure
 cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
@@ -99,16 +99,16 @@ cmake --build . || EXIT /B 1
 :: Install
 mingw32-make install || EXIT /B 1
 
-cd ..
-cd ..
+popd
+popd
 
 ::::::::::::::::
 
 :: GLFW3
-cd glfw3
+pushd glfw3
 
 md build
-cd build
+pushd build
 
 :: Configure
 cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off .. || EXIT /B 1
@@ -119,10 +119,11 @@ cmake --build . || EXIT /B 1
 :: Install
 mingw32-make install || EXIT /B 1
 
-cd ..
-cd ..
+popd
+popd
 
-cd ..
+:: vendor
+popd
 
 @echo off
 

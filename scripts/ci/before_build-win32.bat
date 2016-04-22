@@ -28,12 +28,12 @@
 SET ARGS=-DCMAKE_BUILD_TYPE=release -DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=Off -DDEV_PHYSICS_BUILTIN_DEBUG=On -DDEV_PLUGIN_streamlines_RENDER=On -DPNG_PNG_INCLUDE_DIR="C:\Program Files (x86)\libpng\include" -DPNG_LIBRARY_RELEASE="C:\Program Files (x86)\libpng\lib\libpng16.a"
 
 md build
-cd build
+pushd build
 
 :: Configure project
 cmake -G "%GENERATOR%" %ARGS% .. || EXIT /B 1
 
-cd ..
+popd
 
 :: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ::
 
