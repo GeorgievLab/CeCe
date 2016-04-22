@@ -49,6 +49,7 @@ after_build:
     - call scripts\ci\after_build-win32.bat
 
 artifacts:
-  - path: CeCe-*-win32.zip
+    - path: build\CeCe-*-win32.zip
+      name: CeCe
 
 # ######################################################################### #
