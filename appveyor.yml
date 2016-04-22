@@ -30,6 +30,9 @@ environment:
     matrix:
         - GENERATOR: MinGW Makefiles
 
+init:
+  - del c:\programdata\chocolatey\bin\cpack.exe
+
 install:
     - call scripts\ci\install-win32.bat
 
