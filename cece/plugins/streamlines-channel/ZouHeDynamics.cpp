@@ -125,20 +125,29 @@ const Map<ZouHeDynamics::Position, Descriptor::DirectionType> BC_CENTER{{
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> BC_SIDE1{{
-    {ZouHeDynamics::Position::Right,    {{Descriptor::INDEX_MAP[0][0], Descriptor::INDEX_MAP[2][1], Descriptor::INDEX_MAP[0][1]}}},
-    {ZouHeDynamics::Position::Left,     {{Descriptor::INDEX_MAP[0][2], Descriptor::INDEX_MAP[2][1], Descriptor::INDEX_MAP[0][1]}}},
-    {ZouHeDynamics::Position::Top,      {{Descriptor::INDEX_MAP[2][2], Descriptor::INDEX_MAP[1][0], Descriptor::INDEX_MAP[1][2]}}},
-    {ZouHeDynamics::Position::Bottom,   {{Descriptor::INDEX_MAP[0][2], Descriptor::INDEX_MAP[1][0], Descriptor::INDEX_MAP[1][2]}}}
+const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 2>> BC_SIDE1{{
+    {ZouHeDynamics::Position::Right,    {{Descriptor::INDEX_MAP[0][0], Descriptor::INDEX_MAP[2][1]}}},
+    {ZouHeDynamics::Position::Left,     {{Descriptor::INDEX_MAP[0][2], Descriptor::INDEX_MAP[2][1]}}},
+    {ZouHeDynamics::Position::Top,      {{Descriptor::INDEX_MAP[2][2], Descriptor::INDEX_MAP[1][0]}}},
+    {ZouHeDynamics::Position::Bottom,   {{Descriptor::INDEX_MAP[0][2], Descriptor::INDEX_MAP[1][0]}}}
 }};
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> BC_SIDE2{{
-    {ZouHeDynamics::Position::Right,    {{Descriptor::INDEX_MAP[2][0], Descriptor::INDEX_MAP[0][1], Descriptor::INDEX_MAP[2][1]}}},
-    {ZouHeDynamics::Position::Left,     {{Descriptor::INDEX_MAP[2][2], Descriptor::INDEX_MAP[0][1], Descriptor::INDEX_MAP[2][1]}}},
-    {ZouHeDynamics::Position::Top,      {{Descriptor::INDEX_MAP[2][0], Descriptor::INDEX_MAP[1][2], Descriptor::INDEX_MAP[1][0]}}},
-    {ZouHeDynamics::Position::Bottom,   {{Descriptor::INDEX_MAP[0][0], Descriptor::INDEX_MAP[1][2], Descriptor::INDEX_MAP[1][0]}}}
+const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 2>> BC_SIDE2{{
+    {ZouHeDynamics::Position::Right,    {{Descriptor::INDEX_MAP[2][0], Descriptor::INDEX_MAP[0][1]}}},
+    {ZouHeDynamics::Position::Left,     {{Descriptor::INDEX_MAP[2][2], Descriptor::INDEX_MAP[0][1]}}},
+    {ZouHeDynamics::Position::Top,      {{Descriptor::INDEX_MAP[2][0], Descriptor::INDEX_MAP[1][2]}}},
+    {ZouHeDynamics::Position::Bottom,   {{Descriptor::INDEX_MAP[0][0], Descriptor::INDEX_MAP[1][2]}}}
+}};
+
+/* ************************************************************************ */
+
+const Map<ZouHeDynamics::Position, int> BC_SIGN{{
+    {ZouHeDynamics::Position::Right,    -1},
+    {ZouHeDynamics::Position::Left,      1},
+    {ZouHeDynamics::Position::Top,      -1},
+    {ZouHeDynamics::Position::Bottom,    1}
 }};
 
 /* ************************************************************************ */
@@ -221,34 +230,42 @@ void ZouHeDynamics::init(DataType& data, VelocityType velocity, DensityType dens
     const auto center = BC_CENTER.at(m_position);
     const auto side1 = BC_SIDE1.at(m_position);
     const auto side2 = BC_SIDE2.at(m_position);
+    const auto sign = BC_SIGN.at(m_position);
+    const auto velP = velocity.dot(VELOCITIES.at(m_position));
+    const auto wHs = Descriptor::getWeightHorizontalSum();
 
-    DataType eq;
-
-    for (Descriptor::DirectionType iPop = 0; iPop < Descriptor::SIZE; ++iPop)
-    {
-        eq[iPop] = computeEquilibrium(iPop, density, velocity);
-        Assert(eq[iPop] > 0);
-    }
-
-    auto eqDiff = [&eq] (Descriptor::DirectionType iPop) {
-        return eq[iPop] - eq[Descriptor::DIRECTION_OPPOSITES[iPop]];
-    };
+    // Perpendecular non-equilibrium
+    const auto perpNeq =
+        computeEquilibrium(center, density, velocity) -
+        computeEquilibrium(Descriptor::opposite(center), density, velocity)
+    ;
 
     // Center
-    data[center] = data[Descriptor::DIRECTION_OPPOSITES[center]] + eqDiff(center);
+    data[center] = data[Descriptor::opposite(center)] + perpNeq;
     Assert(data[center] > 0);
 
+    const auto side1Off = data[side1[1]] - data[Descriptor::opposite(side1[1])];
+    const auto side2Off = data[side2[1]] - data[Descriptor::opposite(side2[1])];
+
     // Side 1
-    data[side1[0]] = data[Descriptor::DIRECTION_OPPOSITES[side1[0]]] + eqDiff(side1[0])
-        + 0.5 * (data[side1[1]] - data[side1[2]])
-        - 0.5 * eqDiff(side1[1]);
+    data[side1[0]] = data[Descriptor::opposite(side1[0])]
+        + 0.5 * side1Off
+        + sign * 0.5 * density * velP
+        - 0.5 * perpNeq;
     Assert(data[side1[0]] > 0);
 
     // Side 2
-    data[side2[0]] = data[Descriptor::DIRECTION_OPPOSITES[side2[0]]] + eqDiff(side2[0])
-        + 0.5 * (data[side2[1]] - data[side2[2]])
-        - 0.5 * eqDiff(side2[1]);
+    data[side2[0]] = data[Descriptor::opposite(side2[0])]
+        + 0.5 * side2Off
+        + sign * 0.5 * density * velP
+        - 0.5 * perpNeq;
     Assert(data[side2[0]] > 0);
+
+    auto rho = computeDensity(data);
+    auto vel = computeVelocity(data);
+
+    if (rho == density)
+        return;
 }
 
 /* ************************************************************************ */

@@ -177,6 +177,19 @@ public:
         return 4.0 * max / (sizeR * sizeR) * (sizeR * posR - posR * posR);
     }
 
+
+    /**
+     * @brief Returns opposite index.
+     *
+     * @param i
+     *
+     * @return
+     */
+    static constexpr DirectionType opposite(DirectionType i) noexcept
+    {
+        return DIRECTION_OPPOSITES[i];
+    }
+
 };
 
 /* ************************************************************************ */
