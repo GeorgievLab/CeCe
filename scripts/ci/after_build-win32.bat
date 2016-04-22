@@ -27,8 +27,6 @@ pushd build
 
 cpack -G ZIP
 
-appveyor PushArtifact *.zip
-
 popd
 
 :: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ::
