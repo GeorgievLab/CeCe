@@ -43,6 +43,6 @@ test_script:
     - call scripts\ci\test_script-win32.bat
 
 build_success:
-	- call scripts\ci\build_success-win32.bat
+    - call scripts\ci\build_success-win32.bat
 
 # ######################################################################### #
