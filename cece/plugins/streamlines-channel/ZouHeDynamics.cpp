@@ -143,15 +143,6 @@ const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 2>> BC
 
 /* ************************************************************************ */
 
-const Map<ZouHeDynamics::Position, int> BC_SIGN{{
-    {ZouHeDynamics::Position::Right,    -1},
-    {ZouHeDynamics::Position::Left,      1},
-    {ZouHeDynamics::Position::Top,      -1},
-    {ZouHeDynamics::Position::Bottom,    1}
-}};
-
-/* ************************************************************************ */
-
 /**
  * @brief Compute of total sum of given value indices.
  *
@@ -230,36 +221,39 @@ void ZouHeDynamics::init(DataType& data, VelocityType velocity, DensityType dens
     const auto center = BC_CENTER.at(m_position);
     const auto side1 = BC_SIDE1.at(m_position);
     const auto side2 = BC_SIDE2.at(m_position);
-    const auto sign = BC_SIGN.at(m_position);
-    const auto velP = velocity.dot(VELOCITIES.at(m_position));
-    const auto wHs = Descriptor::getWeightHorizontalSum();
 
-    // Perpendecular non-equilibrium
-    const auto perpNeq =
-        computeEquilibrium(center, density, velocity) -
-        computeEquilibrium(Descriptor::opposite(center), density, velocity)
-    ;
+    auto eqDiff = [this, &density, &velocity] (Descriptor::DirectionType iPop) {
+        return
+            computeEquilibrium(iPop, density, velocity) -
+            computeEquilibrium(Descriptor::opposite(iPop), density, velocity)
+        ;
+    };
+
+    const auto side1_0 = side1[0];
+    const auto side1_1 = side1[1];
+    const auto side1_2 = Descriptor::opposite(side1[1]);
+    const auto side2_0 = side2[0];
+    const auto side2_1 = side2[1];
+    const auto side2_2 = Descriptor::opposite(side2[1]);
+
+    const auto side1Off = data[side1_1] - data[side1_2];
+    const auto side2Off = data[side2_1] - data[side2_2];
 
     // Center
-    data[center] = data[Descriptor::opposite(center)] + perpNeq;
+    data[center] = data[Descriptor::opposite(center)] + eqDiff(center);
     Assert(data[center] > 0);
 
-    const auto side1Off = data[side1[1]] - data[Descriptor::opposite(side1[1])];
-    const auto side2Off = data[side2[1]] - data[Descriptor::opposite(side2[1])];
-
     // Side 1
-    data[side1[0]] = data[Descriptor::opposite(side1[0])]
-        + 0.5 * side1Off
-        + sign * 0.5 * density * velP
-        - 0.5 * perpNeq;
-    Assert(data[side1[0]] > 0);
+    data[side1_0] = data[Descriptor::opposite(side1_0)]
+        + eqDiff(side1_0)
+        + 0.5 * side1Off;
+    Assert(data[side1_0] > 0);
 
     // Side 2
-    data[side2[0]] = data[Descriptor::opposite(side2[0])]
-        + 0.5 * side2Off
-        + sign * 0.5 * density * velP
-        - 0.5 * perpNeq;
-    Assert(data[side2[0]] > 0);
+    data[side2_0] = data[Descriptor::opposite(side2_0)]
+        + eqDiff(side2_0)
+        + 0.5 * side2Off;
+    Assert(data[side2_0] > 0);
 
     auto rho = computeDensity(data);
     auto vel = computeVelocity(data);
