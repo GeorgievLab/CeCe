@@ -23,15 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "cece/plugins/streamlines-channel/BounceBackDynamics.hpp"
 
-/* ************************************************************************ */
-
-// CeCe
-#include "cece/core/Units.hpp"
-
-// Plugin
-#include "cece/plugins/streamlines/Module.hpp"
+// CeCe Plugin
+#include "cece/plugins/streamlines-channel/Descriptor.hpp"
 
 /* ************************************************************************ */
 
@@ -41,124 +37,25 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-/**
- * @brief Module for channel streamlines.
- *
- * The main difference between standard streamlines module is support of
- * channel height that affects velocity profiles. This is done by using
- * modified D2Q9 model.
- */
-class Module : public streamlines::Module
+BounceBackDynamics::DensityType
+BounceBackDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
+    VelocityType velocity) const noexcept
 {
+    return Descriptor::calcEquilibrium(
+        Descriptor::getWeightHorizontal(iPop),
+        Descriptor::DIRECTION_VELOCITIES[iPop],
+        density,
+        velocity
+    );
+}
 
-// Public Ctors & Dtors
-public:
+/* ************************************************************************ */
 
-
-    using streamlines::Module::Module;
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns channel height.
-     *
-     * @return
-     */
-    units::Length getHeight() const noexcept
-    {
-        return m_height;
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Set channel height.
-     *
-     * @param height
-     */
-    void setHeight(units::Length height) noexcept
-    {
-        m_height = height;
-    }
-
-
-// Public Operations
-public:
-
-
-    /**
-     * @brief Initialize module.
-     *
-     * @param termFlag Termination flag.
-     */
-    void init(AtomicBool& termFlag) override;
-
-
-    /**
-     * @brief Load module configuration.
-     *
-     * @param config Source configuration.
-     */
-    void loadConfig(const config::Configuration& config) override;
-
-
-    /**
-     * @brief Store module configuration.
-     *
-     * @param config Output configuration.
-     */
-    void storeConfig(config::Configuration& config) const override;
-
-
-// Protected Operations
-protected:
-
-
-    /**
-     * @brief Create fluid dynamics.
-     *
-     * @return
-     */
-    UniquePtr<streamlines::Dynamics> createFluidDynamics() const override;
-
-
-    /**
-     * @brief Create wall dynamics.
-     *
-     * @return
-     */
-    UniquePtr<streamlines::Dynamics> createWallDynamics() const override;
-
-
-    /**
-     * @brief Create border dynamics.
-     *
-     * @param pos
-     *
-     * @return
-     */
-    UniquePtr<streamlines::Dynamics> createBorderDynamics(LayoutPosition pos) const override;
-
-
-    /**
-     * @brief Print streamlines informations.
-     */
-    void printInfo() override;
-
-
-// Private Data Members
-private:
-
-    /// Channel height.
-    units::Length m_height = units::um(1);
-
-};
+ViewPtr<BounceBackDynamics> BounceBackDynamics::getInstance() noexcept
+{
+    static BounceBackDynamics instance;
+    return &instance;
+}
 
 /* ************************************************************************ */
 

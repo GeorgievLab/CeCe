@@ -28,10 +28,10 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Units.hpp"
+#include "cece/core/ViewPtr.hpp"
 
-// Plugin
-#include "cece/plugins/streamlines/Module.hpp"
+// CeCe Plugins
+#include "cece/plugins/streamlines/BounceBackDynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -42,122 +42,34 @@ namespace streamlines_channel {
 /* ************************************************************************ */
 
 /**
- * @brief Module for channel streamlines.
- *
- * The main difference between standard streamlines module is support of
- * channel height that affects velocity profiles. This is done by using
- * modified D2Q9 model.
+ * @brief Bounce back dynamics.
  */
-class Module : public streamlines::Module
+class BounceBackDynamics : public streamlines::BounceBackDynamics
 {
-
-// Public Ctors & Dtors
-public:
-
-
-    using streamlines::Module::Module;
-
-
-// Public Accessors
-public:
-
-
-    /**
-     * @brief Returns channel height.
-     *
-     * @return
-     */
-    units::Length getHeight() const noexcept
-    {
-        return m_height;
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Set channel height.
-     *
-     * @param height
-     */
-    void setHeight(units::Length height) noexcept
-    {
-        m_height = height;
-    }
-
 
 // Public Operations
 public:
 
 
     /**
-     * @brief Initialize module.
+     * @brief Initialize node equilibrum.
      *
-     * @param termFlag Termination flag.
+     * @param density  Macroscopic density.
+     * @param iPop     Direction index.
+     * @param velocity Macroscopic velocity.
+     *
+     * @return Equilibrum distribution.
      */
-    void init(AtomicBool& termFlag) override;
+    DensityType computeEquilibrium(DirectionType iPop, DensityType density,
+        VelocityType velocity) const noexcept override;
 
 
     /**
-     * @brief Load module configuration.
-     *
-     * @param config Source configuration.
-     */
-    void loadConfig(const config::Configuration& config) override;
-
-
-    /**
-     * @brief Store module configuration.
-     *
-     * @param config Output configuration.
-     */
-    void storeConfig(config::Configuration& config) const override;
-
-
-// Protected Operations
-protected:
-
-
-    /**
-     * @brief Create fluid dynamics.
+     * @brief Returns global instance of bounce back dynamics.
      *
      * @return
      */
-    UniquePtr<streamlines::Dynamics> createFluidDynamics() const override;
-
-
-    /**
-     * @brief Create wall dynamics.
-     *
-     * @return
-     */
-    UniquePtr<streamlines::Dynamics> createWallDynamics() const override;
-
-
-    /**
-     * @brief Create border dynamics.
-     *
-     * @param pos
-     *
-     * @return
-     */
-    UniquePtr<streamlines::Dynamics> createBorderDynamics(LayoutPosition pos) const override;
-
-
-    /**
-     * @brief Print streamlines informations.
-     */
-    void printInfo() override;
-
-
-// Private Data Members
-private:
-
-    /// Channel height.
-    units::Length m_height = units::um(1);
-
+    static ViewPtr<BounceBackDynamics> getInstance() noexcept;
 };
 
 /* ************************************************************************ */

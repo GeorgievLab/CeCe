@@ -34,6 +34,8 @@ set(SRCS
     BgkDynamics.cpp
     ZouHeDynamics.hpp
     ZouHeDynamics.cpp
+    BounceBackDynamics.hpp
+    BounceBackDynamics.cpp
 )
 
 # Build plugin

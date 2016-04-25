@@ -251,6 +251,7 @@ void Module::init(AtomicBool& termFlag)
 
     // Set fluid dynamics
     setFluidDynamics(createFluidDynamics());
+    setWallDynamics(createWallDynamics());
 
     m_boundaries[LayoutPosTop]      = createBorderDynamics(LayoutPosTop);
     m_boundaries[LayoutPosBottom]   = createBorderDynamics(LayoutPosBottom);
@@ -628,6 +629,13 @@ UniquePtr<Dynamics> Module::createFluidDynamics() const
 
 /* ************************************************************************ */
 
+UniquePtr<Dynamics> Module::createWallDynamics() const
+{
+    return makeUnique<BounceBackDynamics>();
+}
+
+/* ************************************************************************ */
+
 UniquePtr<Dynamics> Module::createBorderDynamics(LayoutPosition pos) const
 {
     const auto omega = calculateOmega();
@@ -696,7 +704,7 @@ void Module::updateObstacleMap()
             mapShapeToGrid(
                 [this, &velocity] (Coordinate&& coord) {
                     Assert(m_lattice.inRange(coord));
-                    m_lattice[coord].setDynamics(BounceBackDynamics::getInstance());
+                    m_lattice[coord].setDynamics(getWallDynamics());
                 },
                 [] (Coordinate&& coord) {},
                 shape, step, coord, obj->getRotation(), m_lattice.getSize()
@@ -704,7 +712,7 @@ void Module::updateObstacleMap()
         }
     }
 
-    m_lattice.fixupObstacles(BounceBackDynamics::getInstance());
+    m_lattice.fixupObstacles(getWallDynamics());
 
     //if (isDynamicObjectsObstacles())
     //    m_lattice.fixupObstacles(Node::Dynamics::DynamicObstacle);
@@ -1062,7 +1070,7 @@ void Module::initBorderBarrier(LayoutPosition pos)
     for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
     for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
     {
-        m_lattice[{x, y}].setDynamics(BounceBackDynamics::getInstance());
+        m_lattice[{x, y}].setDynamics(getWallDynamics());
     }
 }
 
@@ -1087,7 +1095,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
         for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
         {
             const Lattice::CoordinateType c1 = {x, size.getHeight() - 1};
-            if (m_lattice[c1].getDynamics() == BounceBackDynamics::getInstance())
+            if (m_lattice[c1].getDynamics() == getWallDynamics())
                 continue;
 
             auto c2 = c1;
@@ -1096,7 +1104,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
             for (; x < rngMax.getX(); ++x)
             {
                 const Lattice::CoordinateType cNext = {x, size.getHeight() - 1};
-                if (m_lattice[cNext].getDynamics() == BounceBackDynamics::getInstance())
+                if (m_lattice[cNext].getDynamics() == getWallDynamics())
                     break;
 
                 c2 = cNext;
@@ -1115,7 +1123,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
         for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
         {
             const Lattice::CoordinateType c1 = {x, 0};
-            if (m_lattice[c1].getDynamics() == BounceBackDynamics::getInstance())
+            if (m_lattice[c1].getDynamics() == getWallDynamics())
                 continue;
 
             auto c2 = c1;
@@ -1124,7 +1132,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
             for (; x < rngMax.getX(); ++x)
             {
                 const Lattice::CoordinateType cNext = {x, 0};
-                if (m_lattice[cNext].getDynamics() == BounceBackDynamics::getInstance())
+                if (m_lattice[cNext].getDynamics() == getWallDynamics())
                     break;
 
                 c2 = cNext;
@@ -1143,7 +1151,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
         {
             const Lattice::CoordinateType c1 = {size.getWidth() - 1, y};
-            if (m_lattice[c1].getDynamics() == BounceBackDynamics::getInstance())
+            if (m_lattice[c1].getDynamics() == getWallDynamics())
                 continue;
 
             auto c2 = c1;
@@ -1152,7 +1160,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
             for (; y < rngMax.getY(); ++y)
             {
                 const Lattice::CoordinateType cNext = {size.getWidth() - 1, y};
-                if (m_lattice[cNext].getDynamics() == BounceBackDynamics::getInstance())
+                if (m_lattice[cNext].getDynamics() == getWallDynamics())
                     break;
 
                 c2 = cNext;
@@ -1171,7 +1179,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
         for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
         {
             const Lattice::CoordinateType c1 = {0, y};
-            if (m_lattice[c1].getDynamics() == BounceBackDynamics::getInstance())
+            if (m_lattice[c1].getDynamics() == getWallDynamics())
                 continue;
 
             auto c2 = c1;
@@ -1180,7 +1188,7 @@ void Module::initBorderInletOutlet(LayoutPosition pos)
             for (; y < rngMax.getY(); ++y)
             {
                 const Lattice::CoordinateType cNext = {0, y};
-                if (m_lattice[cNext].getDynamics() == BounceBackDynamics::getInstance())
+                if (m_lattice[cNext].getDynamics() == getWallDynamics())
                     break;
 
                 c2 = cNext;
