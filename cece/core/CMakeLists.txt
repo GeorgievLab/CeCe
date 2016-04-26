@@ -122,17 +122,11 @@ build_test(core
         test/VectorUnitsTest.cpp
         test/ExpressionParserTest.cpp
         test/TokenizerTest.cpp
-        ExpressionParser.hpp
-        ExpressionParser.cpp
-        Unit.hpp
-        Unit.cpp
-        UnitIo.hpp
-        UnitIo.cpp
-        UnitSymbol.hpp
-        Units.hpp
-        UnitsCtors.hpp
-        Parameters.hpp
-        Parameters.cpp
+        test/ParametersTest.cpp
+        test/PtrContainerTest.cpp
+        $<TARGET_OBJECTS:core>
+    LIBRARIES
+        ${Boost_LIBRARIES}
 )
 
 # ######################################################################### #

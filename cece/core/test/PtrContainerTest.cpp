@@ -23,115 +23,131 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/core/Parameters.hpp"
-
 // C++
 #include <algorithm>
 
+// GTest
+#include <gtest/gtest.h>
+
+// CeCe
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/String.hpp"
+#include "cece/core/Exception.hpp"
+#include "cece/core/StaticArray.hpp"
+#include "cece/core/PtrContainer.hpp"
+
 /* ************************************************************************ */
 
-namespace cece {
-inline namespace core {
+using namespace cece;
 
 /* ************************************************************************ */
 
-namespace {
-
-/* ************************************************************************ */
-
-/**
- * @brief Find parameter in container.
- *
- * @param data
- *
- * @return
- */
-template<typename Container>
-auto find(Container& data, Parameters::KeyViewType name) noexcept -> decltype(&(data.begin()->value))
+TEST(PtrContainerTest, ctorEmpty)
 {
-    auto it = std::find_if(data.begin(), data.end(),
-        [&name](const Parameters::Record& p) {
-            return p.name == name;
-        }
-    );
-
-    return it != data.end() ? &(it->value) : nullptr;
+    PtrContainer<int> data;
+    EXPECT_EQ(0, data.getCount());
 }
 
 /* ************************************************************************ */
 
-}
-
-/* ************************************************************************ */
-
-bool Parameters::exists(KeyViewType name) const noexcept
+TEST(PtrContainerTest, read)
 {
-    return find(m_data, name) != nullptr;
+    PtrContainer<int> data;
+    data.create(5);
+    EXPECT_EQ(1, data.getCount());
+
+    EXPECT_EQ(5, *data[0]);
+
+    data.create(0);
+    data.create(566);
+    EXPECT_EQ(3, data.getCount());
+
+    EXPECT_EQ(5, *data[0]);
+    EXPECT_EQ(0, *data[1]);
+    EXPECT_EQ(566, *data[2]);
 }
 
 /* ************************************************************************ */
 
-Parameters::ValueType Parameters::get(KeyViewType name) const
+TEST(PtrContainerTest, get)
 {
-    auto ptr = find(m_data, name);
+    PtrContainer<int> data;
+    data.create(0);
+    data.create(3);
+    EXPECT_EQ(2, data.getCount());
 
-    if (ptr)
-        return *ptr;
-
-    throw MissingParameterException("Cannot find parameter: " + String(name));
+    EXPECT_EQ(0, *data.get(0));
+    EXPECT_EQ(3, *data.get(1));
+    EXPECT_THROW(data.get(2), OutOfRangeException);
 }
 
 /* ************************************************************************ */
 
-Parameters::ValueType& Parameters::get(KeyViewType name) noexcept
+TEST(PtrContainerTest, write)
 {
-    auto ptr = find(m_data, name);
+    PtrContainer<int> data;
+    data.add(makeUnique<int>(10));
+    EXPECT_EQ(1, data.getCount());
 
-    if (ptr)
-        return *ptr;
-
-    // Insert
-    m_data.emplace_back(Record{KeyType(name), ValueType{}});
-
-    return m_data.back().value;
+    EXPECT_EQ(10, *data.get(0));
 }
 
 /* ************************************************************************ */
 
-Parameters::ValueType Parameters::get(KeyViewType name, ValueType def) const noexcept
+TEST(PtrContainerTest, remove)
 {
-    auto ptr = find(m_data, name);
+    PtrContainer<int> data;
+    auto ptr1 = data.create(1);
+    auto ptr2 = data.create(2);
+    auto ptr3 = data.create(3);
 
-    if (ptr)
-        return *ptr;
+    EXPECT_EQ(1, *ptr1);
+    EXPECT_EQ(2, *ptr2);
+    EXPECT_EQ(3, *ptr3);
+    EXPECT_EQ(3, data.getCount());
 
-    return def;
+    data.remove(ptr2);
+    data.remove(ptr1);
+
+    EXPECT_EQ(1, data.getCount());
+    EXPECT_EQ(*ptr3, *data.get(0));
+    EXPECT_EQ(3, *data.get(0));
 }
 
 /* ************************************************************************ */
 
-void Parameters::set(KeyType name, ValueType value) noexcept
+TEST(PtrContainerTest, clear)
 {
-    auto ptr = find(m_data, name);
+    PtrContainer<int> data;
+    data.create(1);
+    data.create(2);
+    data.create(3);
+    EXPECT_EQ(3, data.getCount());
 
-    if (ptr)
-        *ptr = value;
-    else
-        m_data.emplace_back(Record{name, value});
+    data.clear();
+
+    EXPECT_EQ(0, data.getCount());
 }
 
 /* ************************************************************************ */
 
-void Parameters::append(const Parameters& parameters) noexcept
+TEST(PtrContainerTest, iterate)
 {
-    for (const auto& param : parameters.m_data)
-        set(param.name, param.value);
-}
+    const StaticArray<String, 3> names{{"name1", "name2", "name3"}};
 
-/* ************************************************************************ */
+    PtrContainer<String> data;
+    ASSERT_EQ(0, data.getCount());
 
-}
+    for (const auto& name : names)
+        data.create(name);
+
+    // Values
+    EXPECT_TRUE(std::equal(
+        std::begin(data), std::end(data),
+        std::begin(names),
+        [](const UniquePtr<String>& item, const String& name) {
+            return *item == name;
+        }));
 }
 
 /* ************************************************************************ */

@@ -151,6 +151,17 @@ public:
 
 
     /**
+     * @brief Returns a number of stored objects.
+     *
+     * @return
+     */
+    std::size_t getCount() const noexcept
+    {
+        return m_data.size();
+    }
+
+
+    /**
      * @brief Returns if parameter with given name exists.
      *
      * @param name Parameter name.
@@ -178,10 +189,8 @@ public:
      * @param name Parameter name.
      *
      * @return Parameter value.
-     *
-     * @throw MissingParameterException In case of missing value.
      */
-    ValueType& get(KeyViewType name);
+    ValueType& get(KeyViewType name) noexcept;
 
 
     /**
@@ -249,7 +258,7 @@ public:
      * @param name  Parameter name.
      * @param value Value to store.
      */
-    void set(KeyType name, ValueType value);
+    void set(KeyType name, ValueType value) noexcept;
 
 
 // Public Operations
@@ -257,11 +266,11 @@ public:
 
 
     /**
-     * @brief Merge parameters.
+     * @brief Append other parameters.
      *
      * @param parameters
      */
-    void merge(const Parameters& parameters);
+    void append(const Parameters& parameters) noexcept;
 
 
 // Private Data Members

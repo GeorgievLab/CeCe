@@ -37,7 +37,7 @@
 
 /* ************************************************************************ */
 
-namespace cece { namespace core { class Parameters; } }
+namespace cece { inline namespace core { class Parameters; } }
 namespace cece { namespace simulator { class Simulation; } }
 namespace cece { namespace plugin { class Context; } }
 

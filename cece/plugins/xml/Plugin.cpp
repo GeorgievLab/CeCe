@@ -71,7 +71,7 @@ class XmlLoader : public loader::Loader
         auto simulation = makeUnique<Simulation>(context, filename);
 
         if (parameters)
-            simulation->getParameters().merge(*parameters);
+            simulation->getParameters().append(*parameters);
 
         pugi::xml_document doc;
         pugi::xml_parse_result result = doc.load(source);

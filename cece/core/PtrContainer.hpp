@@ -29,6 +29,7 @@
 
 // C++
 #include <utility>
+#include <type_traits>
 
 // CeCe
 #include "cece/core/UniquePtr.hpp"
@@ -153,7 +154,7 @@ public:
 
 
     /**
-     * @brief Store and object.
+     * @brief Store an object.
      *
      * @param object The object to store.
      *
@@ -163,6 +164,39 @@ public:
     {
         m_data.push_back(std::move(object));
         return m_data.back();
+    }
+
+
+    /**
+     * @brief Create and store an object.
+     *
+     * @tparam Args Construction argument types.
+     *
+     * @param args Construction arguments.
+     *
+     * @return View pointer to stored object.
+     */
+    template<typename... Args>
+    ViewPtr<T> create(Args&&... args)
+    {
+        return add(makeUnique<T>(std::forward<Args>(args)...));
+    }
+
+
+    /**
+     * @brief Create and store an object.
+     *
+     * @tparam T2   Type of constructed object.
+     * @tparam Args Construction argument types.
+     *
+     * @param args Construction arguments.
+     *
+     * @return View pointer to stored object.
+     */
+    template<typename T2, typename... Args>
+    ViewPtr<T2> create(Args&&... args)
+    {
+        return add(makeUnique<T2>(std::forward<Args>(args)...));
     }
 
 
@@ -212,9 +246,11 @@ protected:
      *                 called for all stored listeners.
      * @param args...
      */
-    template<typename... Args1, typename... Args2>
-    void invoke(void (T::*fn)(Args1...), Args2&&... args) const
+    template<typename Fn, typename... Args1, typename... Args2>
+    void invoke(Fn fn, Args2&&... args) const
     {
+        static_assert(std::is_member_function_pointer<Fn>::value, "Fn is not a member function.");
+
         // Foreach all object
         for (const auto& object : m_data)
         {

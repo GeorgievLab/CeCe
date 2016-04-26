@@ -122,6 +122,8 @@
       <File Name="core/test/VectorRangeTest.cpp"/>
       <File Name="core/test/VectorTest.cpp"/>
       <File Name="core/test/VectorUnitsTest.cpp"/>
+      <File Name="core/test/ParametersTest.cpp"/>
+      <File Name="core/test/PtrContainerTest.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="CMake">
       <File Name="core/CMakeLists.txt"/>
