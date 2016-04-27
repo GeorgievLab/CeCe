@@ -113,6 +113,7 @@ install(DIRECTORY .
 # Add tests
 build_test(core
     SOURCES
+        test/AlignedAllocatorTest.cpp
         test/DynamicArrayTest.cpp
         test/IteratorRangeTest.cpp
         test/VectorRangeTest.cpp

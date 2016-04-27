@@ -221,7 +221,7 @@ public:
      */
     void deallocate(pointer p, size_type) noexcept
     {
-        return memory::deallocate_aligned_memory(p);
+        memory::deallocate_aligned_memory(p);
     }
 
 
