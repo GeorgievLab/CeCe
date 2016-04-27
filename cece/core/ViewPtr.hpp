@@ -245,8 +245,24 @@ ViewPtr<T> makeView(T* ptr) noexcept
  *
  * @return
  */
-template<typename T>
-bool operator==(const ViewPtr<T>& lhs, const UniquePtr<T>& rhs) noexcept
+template<typename T, typename U>
+bool operator==(const ViewPtr<T>& lhs, const UniquePtr<U>& rhs) noexcept
+{
+    return lhs.get() == rhs.get();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T, typename U>
+bool operator==(const UniquePtr<T>& lhs, const ViewPtr<U>& rhs) noexcept
 {
     return lhs.get() == rhs.get();
 }
@@ -262,9 +278,9 @@ bool operator==(const ViewPtr<T>& lhs, const UniquePtr<T>& rhs) noexcept
  * @return
  */
 template<typename T>
-bool operator==(const UniquePtr<T>& lhs, const ViewPtr<T>& rhs) noexcept
+bool operator==(const ViewPtr<T>& lhs, std::nullptr_t) noexcept
 {
-    return lhs.get() == rhs.get();
+    return lhs.get() == nullptr;
 }
 
 /* ************************************************************************ */
@@ -278,7 +294,39 @@ bool operator==(const UniquePtr<T>& lhs, const ViewPtr<T>& rhs) noexcept
  * @return
  */
 template<typename T>
-bool operator!=(const ViewPtr<T>& lhs, const UniquePtr<T>& rhs) noexcept
+bool operator==(std::nullptr_t, const ViewPtr<T>& rhs) noexcept
+{
+    return nullptr == rhs.get();
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T, typename U>
+bool operator!=(const ViewPtr<T>& lhs, const UniquePtr<U>& rhs) noexcept
+{
+    return !operator==(lhs, rhs);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T, typename U>
+bool operator!=(const UniquePtr<T>& lhs, const ViewPtr<U>& rhs) noexcept
 {
     return !operator==(lhs, rhs);
 }
@@ -294,9 +342,25 @@ bool operator!=(const ViewPtr<T>& lhs, const UniquePtr<T>& rhs) noexcept
  * @return
  */
 template<typename T>
-bool operator!=(const UniquePtr<T>& lhs, const ViewPtr<T>& rhs) noexcept
+bool operator!=(const ViewPtr<T>& lhs, std::nullptr_t) noexcept
 {
-    return !operator==(lhs, rhs);
+    return !operator==(lhs, nullptr);
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Compare view and unique pointer.
+ *
+ * @param lhs
+ * @param rhs
+ *
+ * @return
+ */
+template<typename T>
+bool operator!=(std::nullptr_t, const ViewPtr<T>& rhs) noexcept
+{
+    return !operator==(nullptr, rhs);
 }
 
 /* ************************************************************************ */

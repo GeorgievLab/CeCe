@@ -125,6 +125,7 @@ build_test(core
         test/TokenizerTest.cpp
         test/ParametersTest.cpp
         test/PtrContainerTest.cpp
+        test/ViewPtrTest.cpp
         $<TARGET_OBJECTS:core>
     LIBRARIES
         ${Boost_LIBRARIES}

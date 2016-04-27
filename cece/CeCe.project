@@ -125,6 +125,7 @@
       <File Name="core/test/ParametersTest.cpp"/>
       <File Name="core/test/PtrContainerTest.cpp"/>
       <File Name="core/test/AlignedAllocatorTest.cpp"/>
+      <File Name="core/test/ViewPtrTest.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="CMake">
       <File Name="core/CMakeLists.txt"/>
