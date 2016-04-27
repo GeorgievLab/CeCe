@@ -61,6 +61,7 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     # Static linkage
     if (MINGW)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc -static-libstdc++")
     endif ()
 
 elseif (MSVC)
