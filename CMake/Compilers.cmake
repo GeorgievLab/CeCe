@@ -58,6 +58,11 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     #add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic-errors -pedantic -std=c++11")
 
+    # Static linkage
+    if (MINGW)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
+    endif ()
+
 elseif (MSVC)
     # using Visual Studio C++
     message(FATAL_ERROR
