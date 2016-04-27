@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// Enable or disable swap trick (memory improvement)
+#define DEV_PLUGIN_streamlines_SWAP_TRICK
+
+/* ************************************************************************ */
+
 // CeCe
 #include "cece/core/Units.hpp"
 #include "cece/core/Vector.hpp"
@@ -167,7 +172,7 @@ public:
     }
 
 
-#if !DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
     /**
      * @brief Get item from back buffer.
      *
@@ -182,7 +187,7 @@ public:
 #endif
 
 
-#if !DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
     /**
      * @brief Get item from back buffer.
      *
@@ -208,8 +213,8 @@ public:
      */
     void setSize(Size size)
     {
-#if !DEV_PLUGIN_streamlines_SWAP_TRICK
         m_data.resize(size);
+#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
         m_dataBack.resize(size);
 #endif
     }
@@ -267,7 +272,7 @@ public:
     /// Current lattice data.
     core::Grid<Node> m_data;
 
-#if !DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
     /// Temporaty lattice data.
     core::Grid<Node> m_dataBack;
 #endif
