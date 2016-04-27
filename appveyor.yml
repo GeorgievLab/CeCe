@@ -30,8 +30,13 @@ environment:
     matrix:
         - GENERATOR: MinGW Makefiles
 
+# Branches to build
+branches:
+    except:
+        - travis-ci
+
 init:
-  - del c:\programdata\chocolatey\bin\cpack.exe
+    - del c:\programdata\chocolatey\bin\cpack.exe
 
 install:
     - call scripts\ci\install-win32.bat
