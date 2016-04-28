@@ -33,6 +33,7 @@ set(SRCS
     Loader.hpp
     Loader.cpp
     Factory.hpp
+    Factory.cpp
     FactoryManager.hpp
     FactoryManager.cpp
 )

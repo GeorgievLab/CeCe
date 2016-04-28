@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/ViewPtr.hpp"
@@ -52,7 +53,7 @@ namespace plugin {
 /**
  * @brief Context for plugins. It stores extensions supplied by plugins.
  */
-class Context
+class CECE_EXPORT Context
 {
 
 // Public Accessors

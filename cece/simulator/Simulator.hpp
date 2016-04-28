@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -36,6 +36,7 @@
 #include <atomic>
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/UniquePtr.hpp"
 #ifdef CECE_ENABLE_RENDER
@@ -58,7 +59,7 @@ class Simulation;
  *
  * Simulator handles simulation of the given (owned) simulation in current thread.
  */
-class Simulator final
+class CECE_EXPORT Simulator final
 {
 
 // Public Ctors & Dtors

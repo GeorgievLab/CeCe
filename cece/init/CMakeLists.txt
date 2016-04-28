@@ -34,6 +34,7 @@ set(SRCS
     Container.hpp
     Container.cpp
     Factory.hpp
+    Factory.cpp
     FactoryManager.hpp
     FactoryManager.cpp
 )

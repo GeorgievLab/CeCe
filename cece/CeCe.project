@@ -314,6 +314,7 @@
     <File Name="loader/FactoryManager.hpp"/>
     <File Name="loader/FactoryManager.cpp"/>
     <File Name="loader/Factory.hpp"/>
+    <File Name="loader/Factory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="program">
     <VirtualDirectory Name="CMake">
@@ -327,6 +328,7 @@
     <File Name="program/NamedContainer.cpp"/>
     <File Name="program/NamedContainer.hpp"/>
     <File Name="program/Program.hpp"/>
+    <File Name="program/Factory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="init">
     <File Name="init/Container.cpp"/>
@@ -338,6 +340,7 @@
     <VirtualDirectory Name="CMake">
       <File Name="init/CMakeLists.txt"/>
     </VirtualDirectory>
+    <File Name="init/Factory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="module">
     <File Name="module/Container.cpp"/>
@@ -350,6 +353,7 @@
     <VirtualDirectory Name="CMake">
       <File Name="module/CMakeLists.txt"/>
     </VirtualDirectory>
+    <File Name="module/Factory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="object">
     <VirtualDirectory Name="CMake">
@@ -365,6 +369,7 @@
     <File Name="object/Type.hpp"/>
     <File Name="object/TypeContainer.cpp"/>
     <File Name="object/TypeContainer.hpp"/>
+    <File Name="object/Factory.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="plugin">
     <VirtualDirectory Name="CMake">

@@ -32,11 +32,32 @@
 #include <algorithm>
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/DynamicArray.hpp"
+
+/* ************************************************************************ */
+
+/**
+ * @brief Define pointer named container specialization.
+ */
+#define CECE_PTR_NAMED_CONTAINER(...) \
+    namespace cece { inline namespace core { template class CECE_EXPORT PtrNamedContainer<__VA_ARGS__>; } }
+
+/**
+ * @brief Define extern pointer named container specialization.
+ */
+#define CECE_PTR_NAMED_CONTAINER_EXTERN(...) \
+    namespace cece { inline namespace core { extern template class CECE_EXPORT PtrNamedContainer<__VA_ARGS__>; } }
+
+/**
+ * @brief Define pointer named container specialization.
+ */
+#define CECE_PTR_NAMED_CONTAINER_INST(...) \
+    namespace cece { inline namespace core { template class PtrNamedContainer<__VA_ARGS__>; } }
 
 /* ************************************************************************ */
 

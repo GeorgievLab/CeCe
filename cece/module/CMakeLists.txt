@@ -33,6 +33,7 @@ set(SRCS
     Module.hpp
     Module.cpp
     Factory.hpp
+    Factory.cpp
     FactoryManager.hpp
     FactoryManager.cpp
     Container.hpp

@@ -33,6 +33,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Atomic.hpp"
 
@@ -81,7 +82,7 @@ namespace module {
  *
  * Z-order is similar to priority but for rendering.
  */
-class Module
+class CECE_EXPORT Module
 {
 
 // Public Types

@@ -31,10 +31,6 @@
 
 /* ************************************************************************ */
 
-namespace cece { inline namespace core { template class PtrContainer<init::Initializer>; } }
-
-/* ************************************************************************ */
-
 namespace cece {
 namespace init {
 

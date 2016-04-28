@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/UniquePtr.hpp"
@@ -48,7 +49,7 @@ class Initializer;
 /**
  * @brief Initializer factory manager.
  */
-class FactoryManager : public core::FactoryManager<Factory>
+class CECE_EXPORT FactoryManager : public core::FactoryManager<Factory>
 {
 
 
@@ -66,7 +67,7 @@ public:
     template<typename InitializerType>
     void createForInitializer(String name) noexcept
     {
-        create<FactoryTyped<InitializerType>>(std::move(name));
+        createFor<InitializerType>(std::move(name));
     }
 
 

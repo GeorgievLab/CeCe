@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -125,6 +125,12 @@ add_library(${PROJECT_NAME} SHARED ${SRCS})
 
 # ######################################################################### #
 
+# Generate export header (MSVC)
+include(GenerateExportHeader)
+generate_export_header(${PROJECT_NAME}
+    EXPORT_FILE_NAME "export.hpp"
+)
+
 # Set framework flag
 #set_target_properties(${PROJECT_NAME} PROPERTIES FRAMEWORK 1)
 set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_RPATH On)
@@ -160,7 +166,9 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 # Install configuration file
-install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/config.hpp
+install(FILES
+        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/config.hpp
+        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/export.hpp
     DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}
     COMPONENT Headers
 )

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/render/Color.hpp"
 
@@ -45,7 +46,7 @@ class Context;
 /**
  * @brief Texture object.
  */
-class Texture
+class CECE_EXPORT Texture
 {
 
 // Public Types

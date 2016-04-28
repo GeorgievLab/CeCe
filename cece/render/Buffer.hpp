@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,6 +27,11 @@
 
 /* ************************************************************************ */
 
+// CeCe
+#include "cece/export.hpp"
+
+/* ************************************************************************ */
+
 namespace cece {
 namespace render {
 
@@ -39,7 +44,7 @@ class Context;
 /**
  * @brief GPU buffer.
  */
-class Buffer
+class CECE_EXPORT Buffer
 {
 
 // Public Types

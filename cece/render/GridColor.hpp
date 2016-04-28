@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/Grid.hpp"
 #include "cece/render/Buffer.hpp"
@@ -49,10 +50,8 @@ class Context;
 /**
  * @brief Texture-like grid.
  */
-class GridColor : public GridBase
+class CECE_EXPORT GridColor : public GridBase
 {
-
-
 
 // Public Ctors & Dtors
 public:

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/render/VertexElement.hpp"
 
@@ -41,7 +42,7 @@ namespace render {
 /**
  * @brief Description of vertices stored in vertex buffer.
  */
-class VertexFormat
+class CECE_EXPORT VertexFormat
 {
 
 // Public Ctors & Dtors

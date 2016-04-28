@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Factory.hpp"
 #include "cece/core/String.hpp"
 #include "cece/object/Object.hpp"
@@ -56,5 +57,9 @@ using Factory = Factory<Object, simulator::Simulation&, String, Object::Type>;
 
 }
 }
+
+/* ************************************************************************ */
+
+CECE_FACTORY_EXTERN(object::Object, simulator::Simulation&, String, object::Object::Type)
 
 /* ************************************************************************ */

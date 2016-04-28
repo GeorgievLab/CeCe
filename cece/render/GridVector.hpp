@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/render/Buffer.hpp"
@@ -47,7 +48,7 @@ class Context;
 /**
  * @brief OpenGL grid for vectors object.
  */
-class GridVector : public GridBase
+class CECE_EXPORT GridVector : public GridBase
 {
 
 // Public Ctors & Dtors

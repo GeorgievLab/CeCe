@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/config/Configuration.hpp"
 
@@ -41,7 +42,7 @@ namespace object {
 /**
  * @brief Defines user defined object type.
  */
-struct Type
+struct CECE_EXPORT Type
 {
     /// Object type name.
     String name;

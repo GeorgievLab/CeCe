@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/render/GridColor.hpp"
 #include "cece/render/Shader.hpp"
 #include "cece/render/Program.hpp"
@@ -46,10 +47,8 @@ class Context;
 /**
  * @brief Texture-like grid with color interpolation.
  */
-class GridColorSmooth : public GridColor
+class CECE_EXPORT GridColorSmooth : public GridColor
 {
-
-
 
 // Public Ctors & Dtors
 public:

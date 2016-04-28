@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/UniquePtr.hpp"
@@ -48,7 +49,7 @@ class Loader;
 /**
  * @brief Loader factory manager.
  */
-class FactoryManager : public core::FactoryManager<Factory>
+class CECE_EXPORT FactoryManager : public core::FactoryManager<Factory>
 {
 
 // Public Mutators

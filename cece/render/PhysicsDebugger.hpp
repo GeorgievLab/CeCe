@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -41,6 +41,9 @@
 // Box2D
 #include <Box2D/Box2D.h>
 
+// CeCe
+#include "cece/export.hpp"
+
 /* ************************************************************************ */
 
 struct b2AABB;
@@ -57,7 +60,7 @@ namespace render {
  *
  * @note Based on Erin Catto's version (http://www.box2d.org).
  */
-class PhysicsDebugger : public ::b2Draw
+class CECE_EXPORT PhysicsDebugger : public ::b2Draw
 {
 
 // Public Ctors & Dtors

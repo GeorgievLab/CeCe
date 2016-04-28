@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,16 +28,13 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/PtrContainer.hpp"
 
 /* ************************************************************************ */
 
 namespace cece { namespace simulator { class Simulation; } }
 namespace cece { namespace init { class Initializer; } }
-
-/* ************************************************************************ */
-
-namespace cece { inline namespace core { extern template class PtrContainer<init::Initializer>; } }
 
 /* ************************************************************************ */
 
@@ -49,7 +46,7 @@ namespace init {
 /**
  * @brief Container for initializers.
  */
-class Container : public PtrContainer<Initializer>
+class CECE_EXPORT Container : public PtrContainer<Initializer>
 {
 
 // Public Operations

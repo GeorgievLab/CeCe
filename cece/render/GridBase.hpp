@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -31,6 +31,7 @@
 #include <utility>
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 
 /* ************************************************************************ */
@@ -47,7 +48,7 @@ class Context;
 /**
  * @brief Rendering grid object - base class.
  */
-class GridBase
+class CECE_EXPORT GridBase
 {
 
 // Public Accessors

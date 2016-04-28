@@ -24,42 +24,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/render/GridColorColorMap.hpp"
+#include "cece/loader/Factory.hpp"
 
 // CeCe
-#include "cece/render/Context.hpp"
-
-// Shaders
-#include "vs.colormap.hpp"
-#include "fs.colormap.hpp"
+#include "cece/loader/Loader.hpp"
 
 /* ************************************************************************ */
 
-namespace cece {
-namespace render {
-
-/* ************************************************************************ */
-
-GridColorColorMap::GridColorColorMap(Context& context)
-    : GridColor(context)
-{
-    m_vertexShader.init(render::Shader::Type::VERTEX, g_vertexShader);
-    m_fragmentShader.init(render::Shader::Type::FRAGMENT, g_fragmentShader);
-    m_program.init(m_vertexShader, m_fragmentShader);
-}
-
-/* ************************************************************************ */
-
-void GridColorColorMap::draw(Context& context) noexcept
-{
-    context.setProgram(&m_program);
-    GridColor::draw(context);
-    context.setProgram(nullptr);
-}
-
-/* ************************************************************************ */
-
-}
-}
+CECE_FACTORY_INST(loader::Loader)
 
 /* ************************************************************************ */

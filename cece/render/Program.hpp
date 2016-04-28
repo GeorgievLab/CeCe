@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/render/Shader.hpp"
 
 /* ************************************************************************ */
@@ -40,7 +41,7 @@ namespace render {
 /**
  * @brief OpenGL program object.
  */
-class Program
+class CECE_EXPORT Program
 {
 
 // Public Types

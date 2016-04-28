@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -37,6 +37,7 @@
 #include <functional>
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Any.hpp"
 #include "cece/core/VectorUnits.hpp"
@@ -81,7 +82,7 @@ namespace object {
 /**
  * @brief Basic simulation object.
  */
-class Object
+class CECE_EXPORT Object
 {
 
 // Public Enums

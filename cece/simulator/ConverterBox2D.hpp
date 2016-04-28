@@ -42,6 +42,7 @@
 #include <Box2D/Box2D.h>
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/UnitsCtors.hpp"
 #include "cece/core/VectorUnits.hpp"
@@ -60,7 +61,7 @@ namespace simulator {
  * may not match simulation values, so this class is responsible to convert
  * values between those two systems.
  */
-class ConverterBox2D
+class CECE_EXPORT ConverterBox2D
 {
 
 // Public Accessors

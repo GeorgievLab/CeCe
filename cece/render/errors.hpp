@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -45,6 +45,9 @@
 #include <OpenGL/gl.h>
 #endif
 
+// CeCe
+#include "cece/export.hpp"
+
 /* ************************************************************************ */
 
 /**
@@ -71,7 +74,7 @@ namespace render {
  * @param operation
  * @throw
  */
-void checkGlError(const char* operation);
+void CECE_EXPORT checkGlError(const char* operation);
 
 /* ************************************************************************ */
 
@@ -82,7 +85,7 @@ void checkGlError(const char* operation);
  * @param operation
  * @throw
  */
-void throwGlError(GLenum error, const char* operation);
+void CECE_EXPORT throwGlError(GLenum error, const char* operation);
 
 /* ************************************************************************ */
 

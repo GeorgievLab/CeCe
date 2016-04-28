@@ -42,6 +42,26 @@
 
 /* ************************************************************************ */
 
+/**
+ * @brief Define extern factory manager specialization.
+ */
+#define CECE_FACTORY_MANAGER(...) \
+    namespace cece { inline namespace core { template class CECE_EXPORT FactoryManager<__VA_ARGS__>; } }
+
+/**
+ * @brief Define extern factory manager specialization.
+ */
+#define CECE_FACTORY_MANAGER_EXTERN(...) \
+    namespace cece { inline namespace core { extern template class CECE_EXPORT FactoryManager<__VA_ARGS__>; } }
+
+/**
+ * @brief Define extern factory manager specialization.
+ */
+#define CECE_FACTORY_MANAGER_INST(...) \
+    namespace cece { inline namespace core { template class FactoryManager<__VA_ARGS__>; } }
+
+/* ************************************************************************ */
+
 namespace cece {
 inline namespace core {
 

@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/UniquePtr.hpp"
 
 /* ************************************************************************ */
@@ -45,7 +46,7 @@ namespace init {
 /**
  * @brief Simulation initialization program.
  */
-class Initializer
+class CECE_EXPORT Initializer
 {
 
 // Public Ctors & Dtors

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/UniquePtr.hpp"
@@ -46,7 +47,7 @@ namespace object {
 /**
  * @brief Container for object types.
  */
-class TypeContainer
+class CECE_EXPORT TypeContainer
 {
 
 

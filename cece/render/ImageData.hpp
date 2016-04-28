@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -31,6 +31,7 @@
 #include <cstdint>
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/Vector.hpp"
 
@@ -44,7 +45,7 @@ namespace render {
 /**
  * @brief Image data structure.
  */
-struct ImageData
+struct CECE_EXPORT ImageData
 {
 
     /// Image size.

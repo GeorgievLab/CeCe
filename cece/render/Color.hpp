@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
@@ -42,7 +43,7 @@ namespace render {
 /**
  * @brief Color structure.
  */
-class Color
+class CECE_EXPORT Color
 {
 
 // Public Types

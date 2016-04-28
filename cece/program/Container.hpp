@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/PtrContainer.hpp"
 
@@ -50,7 +51,7 @@ class Program;
 /**
  * @brief Container for programs.
  */
-class Container : public PtrContainer<Program>
+class CECE_EXPORT Container : public PtrContainer<Program>
 {
 
 // Public Operations

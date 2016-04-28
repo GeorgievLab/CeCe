@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -39,6 +39,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -79,7 +80,7 @@ enum class PrimitiveType
 /**
  * @brief Renderer context.
  */
-class Context
+class CECE_EXPORT Context
 {
 
 // Public Ctors & Dtors

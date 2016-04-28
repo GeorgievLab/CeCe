@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/render/datatype.hpp"
 
 /* ************************************************************************ */
@@ -57,7 +58,7 @@ enum class VertexElementType
 /**
  * @brief Vertex format element.
  */
-class VertexElement
+class CECE_EXPORT VertexElement
 {
 
 // Public Ctors

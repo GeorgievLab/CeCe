@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/OutStream.hpp"
@@ -47,7 +48,7 @@ class Simulation;
 /**
  * @brief Time measurement functor with printing current iteration.
  */
-struct TimeMeasurement
+struct CECE_EXPORT TimeMeasurement
 {
     /// Simulation.
     ViewPtr<const Simulation> m_simulation;
