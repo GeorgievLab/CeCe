@@ -65,6 +65,8 @@ add_library(${PROJECT_NAME} OBJECT
     InStream.hpp
     InOutStream.hpp
     FileStream.hpp
+    CsvFile.hpp
+    CsvFile.cpp
     ValueIterator.hpp
     Range.hpp
     VectorRange.hpp

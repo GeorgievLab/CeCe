@@ -23,12 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "cece/core/CsvFile.hpp"
 
-/* ************************************************************************ */
-
-// C++
-#include <tuple>
+// CeCe
+#include "cece/core/Exception.hpp"
 
 /* ************************************************************************ */
 
@@ -37,68 +36,11 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-/**
- * @brief Tuple type.
- *
- * @tparam Args Arguments type.
- */
-template<typename... Args>
-using Tuple = std::tuple<Args...>;
-
-/* ************************************************************************ */
-
-/**
- * @brief Make tuple function.
- */
-template<typename... Types>
-constexpr auto makeTuple(Types&&... args) -> decltype(std::make_tuple(std::forward<Types>(args)...))
+CsvFile::CsvFile(FilePath path)
+    : m_file(path.string(), std::ios::binary | std::ios::out | std::ios::trunc)
 {
-    return std::make_tuple(std::forward<Types>(args)...);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Access function for Tuple.
- *
- * @param t Tuple.
- *
- * @return
- */
-template<unsigned I, class... Types>
-constexpr auto getValue(Tuple<Types...>& t) -> decltype(std::get<I>(t))
-{
-   return std::get<I>(t);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Access function for Tuple.
- *
- * @param t Tuple.
- *
- * @return
- */
-template<unsigned I, class... Types>
-constexpr auto getValue(Tuple<Types...>&& t) -> decltype(std::get<I>(t))
-{
-   return std::get<I>(t);
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Access function for Tuple.
- *
- * @param t Tuple.
- *
- * @return
- */
-template<unsigned I, class... Types>
-constexpr auto getValue(const Tuple<Types...>& t) -> decltype(std::get<I>(t))
-{
-   return std::get<I>(t);
+    if (!m_file.is_open())
+        throw RuntimeException("Cannot open file: " + path.string());
 }
 
 /* ************************************************************************ */
