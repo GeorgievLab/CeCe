@@ -62,6 +62,10 @@
 
 /* ************************************************************************ */
 
+namespace cece { inline namespace core { class CsvFile; } }
+
+/* ************************************************************************ */
+
 namespace cece {
 namespace plugin {
 namespace streamlines {
@@ -930,7 +934,7 @@ private:
     UniquePtr<Dynamics> m_fluidDynamics;
 
     /// Outstream for streamlines data
-    UniquePtr<OutStream> m_dataOut;
+    UniquePtr<CsvFile> m_dataOut;
 
     /// If cell density should be stored.
     bool m_dataOutDensity = false;

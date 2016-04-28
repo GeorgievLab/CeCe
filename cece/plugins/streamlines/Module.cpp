@@ -38,6 +38,7 @@
 #include "cece/core/VectorRange.hpp"
 #include "cece/core/constants.hpp"
 #include "cece/core/FileStream.hpp"
+#include "cece/core/CsvFile.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/BinaryInput.hpp"
 #include "cece/core/BinaryOutput.hpp"
@@ -473,7 +474,7 @@ void Module::loadConfig(const config::Configuration& config)
 
     if (config.has("data-out-filename"))
     {
-        m_dataOut = makeUnique<OutFileStream>(config.get("data-out-filename"));
+        m_dataOut = makeUnique<CsvFile>(config.get("data-out-filename"));
         m_dataOutDensity = config.get<bool>("data-out-density", false);
         m_dataOutPopulations = config.get<bool>("data-out-populations", false);
 
@@ -1330,18 +1331,14 @@ void Module::storeDataHeader()
 {
     Assert(m_dataOut);
 
-    *m_dataOut << "iteration;totalTime;x;y;velX;velY";
-
-    if (m_dataOutDensity)
-        *m_dataOut << ";rho";
-
-    if (m_dataOutPopulations)
-        *m_dataOut << ";d0;d1;d2;d3;d4;d5;d6;d7;d8";
-
-    *m_dataOut << "\n";
+    m_dataOut->writeHeader(
+        "iteration", "totalTime", "x", "y", "velX", "velY",
+        CsvFile::cond(m_dataOutDensity, "rho"),
+        CsvFile::cond(m_dataOutPopulations, "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8")
+    );
 
     // Set stored value precision
-    m_dataOut->precision(std::numeric_limits<Descriptor::DensityType>::digits10 + 1);
+    m_dataOut->setPrecision(std::numeric_limits<Descriptor::DensityType>::digits10 + 1);
 }
 
 /* ************************************************************************ */
@@ -1355,54 +1352,28 @@ void Module::storeData()
         const auto& data = m_lattice[c];
         const auto vel = convertVelocity(data.computeVelocity());
 
-        *m_dataOut <<
-            // iteration
-            getSimulation().getIteration() - 1 << ";" <<
-            // totalTime
-            getSimulation().getTotalTime().value() << ";" <<
-            // x
-            c.getX() << ";" <<
-            // y
-            c.getY() << ";" <<
-            // velX
-            vel.getX().value() << ";" <<
-            // velY
-            vel.getY().value()
-        ;
-
-        if (m_dataOutDensity)
-        {
-            *m_dataOut << ";" <<
-                // rho
+        m_dataOut->writeRecord(
+            getSimulation().getIteration() - 1,
+            getSimulation().getTotalTime().value(),
+            c.getX(),
+            c.getY(),
+            vel.getX().value(),
+            vel.getY().value(),
+            CsvFile::cond(m_dataOutDensity,
                 data.computeDensity()
-            ;
-        }
-
-        if (m_dataOutPopulations)
-        {
-            *m_dataOut << ";" <<
-                // d0
-                data[0] << ";" <<
-                // d1
-                data[1] << ";" <<
-                // d2
-                data[2] << ";" <<
-                // d3
-                data[3] << ";" <<
-                // d4
-                data[4] << ";" <<
-                // d5
-                data[5] << ";" <<
-                // d6
-                data[6] << ";" <<
-                // d7
-                data[7] << ";" <<
-                // d8
+            ),
+            CsvFile::cond(m_dataOutPopulations,
+                data[0],
+                data[1],
+                data[2],
+                data[3],
+                data[4],
+                data[5],
+                data[6],
+                data[7],
                 data[8]
-            ;
-        }
-
-        *m_dataOut << "\n";
+            )
+        );
     }
 
     m_dataOut->flush();
