@@ -100,6 +100,19 @@ public:
 
 
     /**
+     * @brief Returns horizontal - vertical split coefficient.
+     *
+     * Value should be identical with `getWeightHorizontalSum`.
+     *
+     * @return
+     */
+    static RealType getSplitCoefficient() noexcept
+    {
+        return s_splitCoefficient;
+    }
+
+
+    /**
      * @brief Returns summation of horizontal weights.
      *
      * @return
@@ -167,6 +180,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Split coefficient.
+    static RealType s_splitCoefficient;
 
     /// Model horizontal weights.
     static StaticArray<RealType, SIZE> s_weightsHorizontal;

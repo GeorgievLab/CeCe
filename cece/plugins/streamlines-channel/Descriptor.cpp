@@ -42,11 +42,35 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-StaticArray<RealType, Descriptor::SIZE> Descriptor::s_weightsHorizontal;
+RealType Descriptor::s_splitCoefficient = 1.0;
 
 /* ************************************************************************ */
 
-StaticArray<RealType, Descriptor::SIZE> Descriptor::s_weightsVertical;
+StaticArray<RealType, Descriptor::SIZE> Descriptor::s_weightsHorizontal{{
+    WEIGHT_CENTER, // Center
+    WEIGHT_DIAGONAL,
+    WEIGHT_LINEAR,
+    WEIGHT_DIAGONAL,
+    WEIGHT_LINEAR,
+    WEIGHT_DIAGONAL,
+    WEIGHT_LINEAR,
+    WEIGHT_DIAGONAL,
+    WEIGHT_LINEAR
+}};
+
+/* ************************************************************************ */
+
+StaticArray<RealType, Descriptor::SIZE> Descriptor::s_weightsVertical{{
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+}};
 
 /* ************************************************************************ */
 
@@ -72,43 +96,31 @@ RealType Descriptor::getWeightVerticalSum() noexcept
 
 void Descriptor::initModel(RealType height)
 {
+    if (height <= 0)
+        throw InvalidArgumentException("Negative or zero height doesn't make sense");
+
     const auto heightSq = (0.25 * height) * (0.25 * height);
 
     if (heightSq <= SPEED_OF_SOUND_SQ)
         throw InvalidArgumentException("Channel height is too small");
 
-    // Get weights from D2Q9 model
-    constexpr StaticArray<RealType, 3> weights2d = {{WEIGHT_CENTER, WEIGHT_LINEAR, WEIGHT_DIAGONAL}};
-    StaticArray<RealType, 6> weights;
+    // Calculate split coefficient
+    s_splitCoefficient = 1.0 - SPEED_OF_SOUND_SQ / heightSq;
 
-    for (int i = 0; i < 3; ++i)
+    for (std::size_t i = 0; i < SIZE; ++i)
     {
-        weights[i]     = weights2d[i] * (1.0 - SPEED_OF_SOUND_SQ / heightSq);
-        weights[i + 3] = weights2d[i] * (0.5 * SPEED_OF_SOUND_SQ / heightSq);
+        const auto weight = s_weightsHorizontal[i];
 
-        Assert(weights[i] > 0);
-        Assert(weights[i + 3] > 0);
+        // Use 2D LBGK as base for weights
+        s_weightsHorizontal[i] = weight * s_splitCoefficient;
+        Assert(s_weightsHorizontal[i] > 0);
+        Assert(s_weightsHorizontal[i] < 1);
+
+        s_weightsVertical[i] = weight * 0.5 * (1.0 - s_splitCoefficient);
+        Assert(s_weightsVertical[i] > 0);
+        Assert(s_weightsVertical[i] < 1);
     }
 
-    s_weightsHorizontal[0] = weights[0];
-    s_weightsHorizontal[1] = weights[2];
-    s_weightsHorizontal[2] = weights[1];
-    s_weightsHorizontal[3] = weights[2];
-    s_weightsHorizontal[4] = weights[1];
-    s_weightsHorizontal[5] = weights[2];
-    s_weightsHorizontal[6] = weights[1];
-    s_weightsHorizontal[7] = weights[2];
-    s_weightsHorizontal[8] = weights[1];
-
-    s_weightsVertical[0] = weights[3];
-    s_weightsVertical[1] = weights[5];
-    s_weightsVertical[2] = weights[4];
-    s_weightsVertical[3] = weights[5];
-    s_weightsVertical[4] = weights[4];
-    s_weightsVertical[5] = weights[5];
-    s_weightsVertical[6] = weights[4];
-    s_weightsVertical[7] = weights[5];
-    s_weightsVertical[8] = weights[4];
 }
 
 /* ************************************************************************ */
