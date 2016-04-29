@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -182,6 +182,7 @@ ZouHeDynamics::defineDensity(DataType& data, DensityType density) const noexcept
 void
 ZouHeDynamics::defineVelocity(DataType& data, VelocityType velocity) const noexcept
 {
+    velocity /= Descriptor::getSplitCoefficient();
     const auto density = calcDensity(data, velocity);
     init(data, velocity, density);
 }
@@ -194,9 +195,9 @@ ZouHeDynamics::calcDensity(DataType& data, const VelocityType& velocity) const n
     const auto center = sumValues(data, CENTER_RHO.at(m_position));
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
     const auto velP = velocity.dot(VELOCITIES.at(m_position));
-    const auto wHs = Descriptor::getWeightHorizontalSum();
+    const auto wHs = Descriptor::getSplitCoefficient();
 
-    return (center + 2.0 * known) / (wHs - velP);
+    return (center + 2.0 * known) / (wHs * (1.0 - velP));
 }
 
 /* ************************************************************************ */
@@ -206,9 +207,10 @@ ZouHeDynamics::calcVelocity(DataType& data, DensityType rho) const noexcept
 {
     const auto center = sumValues(data, CENTER_RHO.at(m_position));
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
-    const auto wHs = Descriptor::getWeightHorizontalSum();
+    const auto wHs = Descriptor::getSplitCoefficient();
 
-    const RealType speed = wHs - (1.0 / rho * (center + 2.0 * known));
+    //const RealType speed = wHs - (1.0 / rho * (center + 2.0 * known));
+    const RealType speed = 1.0 - (1.0 / (rho * wHs) * (center + 2.0 * known));
 
     // Velocity vector
     return speed * VELOCITIES.at(m_position);
@@ -254,12 +256,6 @@ void ZouHeDynamics::init(DataType& data, VelocityType velocity, DensityType dens
         + eqDiff(side2_0)
         + 0.5 * side2Off;
     Assert(data[side2_0] > 0);
-
-    auto rho = computeDensity(data);
-    auto vel = computeVelocity(data);
-
-    if (rho == density)
-        return;
 }
 
 /* ************************************************************************ */
