@@ -44,65 +44,29 @@ namespace {
 
 /* ************************************************************************ */
 
-const StaticArray<Descriptor::DirectionType, 3> TOP_LINE      = Descriptor::INDEX_MAP[0];
-
-/* ************************************************************************ */
-
-const StaticArray<Descriptor::DirectionType, 3> MIDDLE_LINE   = Descriptor::INDEX_MAP[1];
-
-/* ************************************************************************ */
-
-const StaticArray<Descriptor::DirectionType, 3> BOTTOM_LINE   = Descriptor::INDEX_MAP[2];
-
-/* ************************************************************************ */
-
-const StaticArray<Descriptor::DirectionType, 3> LEFT_COLUMN   = {{
-    Descriptor::INDEX_MAP[0][0],
-    Descriptor::INDEX_MAP[1][0],
-    Descriptor::INDEX_MAP[2][0]
-}};
-
-/* ************************************************************************ */
-
-const StaticArray<Descriptor::DirectionType, 3> MIDDLE_COLUMN {{
-    Descriptor::INDEX_MAP[0][1],
-    Descriptor::INDEX_MAP[1][1],
-    Descriptor::INDEX_MAP[2][1]
-}};
-
-/* ************************************************************************ */
-
-const StaticArray<Descriptor::DirectionType, 3> RIGHT_COLUMN  {{
-    Descriptor::INDEX_MAP[0][2],
-    Descriptor::INDEX_MAP[1][2],
-    Descriptor::INDEX_MAP[2][2]
-}};
-
-/* ************************************************************************ */
-
 const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> CENTER_RHO{{
-    {ZouHeDynamics::Position::Right,    MIDDLE_COLUMN},
-    {ZouHeDynamics::Position::Left,     MIDDLE_COLUMN},
-    {ZouHeDynamics::Position::Top,      MIDDLE_LINE},
-    {ZouHeDynamics::Position::Bottom,   MIDDLE_LINE}
+    {ZouHeDynamics::Position::Right,    Descriptor::MIDDLE_COLUMN},
+    {ZouHeDynamics::Position::Left,     Descriptor::MIDDLE_COLUMN},
+    {ZouHeDynamics::Position::Top,      Descriptor::MIDDLE_LINE},
+    {ZouHeDynamics::Position::Bottom,   Descriptor::MIDDLE_LINE}
 }};
 
 /* ************************************************************************ */
 
 const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> KNOWN_RHO{{
-    {ZouHeDynamics::Position::Right,    RIGHT_COLUMN},
-    {ZouHeDynamics::Position::Left,     LEFT_COLUMN},
-    {ZouHeDynamics::Position::Top,      TOP_LINE},
-    {ZouHeDynamics::Position::Bottom,   BOTTOM_LINE}
+    {ZouHeDynamics::Position::Right,    Descriptor::RIGHT_COLUMN},
+    {ZouHeDynamics::Position::Left,     Descriptor::LEFT_COLUMN},
+    {ZouHeDynamics::Position::Top,      Descriptor::TOP_LINE},
+    {ZouHeDynamics::Position::Bottom,   Descriptor::BOTTOM_LINE}
 }};
 
 /* ************************************************************************ */
 
 const Map<ZouHeDynamics::Position, StaticArray<Descriptor::DirectionType, 3>> UNKNOWN_RHO{{
-    {ZouHeDynamics::Position::Right,    LEFT_COLUMN},
-    {ZouHeDynamics::Position::Left,     RIGHT_COLUMN},
-    {ZouHeDynamics::Position::Top,      BOTTOM_LINE},
-    {ZouHeDynamics::Position::Bottom,   TOP_LINE}
+    {ZouHeDynamics::Position::Right,    Descriptor::LEFT_COLUMN},
+    {ZouHeDynamics::Position::Left,     Descriptor::RIGHT_COLUMN},
+    {ZouHeDynamics::Position::Top,      Descriptor::BOTTOM_LINE},
+    {ZouHeDynamics::Position::Bottom,   Descriptor::TOP_LINE}
 }};
 
 /* ************************************************************************ */
@@ -182,7 +146,6 @@ ZouHeDynamics::defineDensity(DataType& data, DensityType density) const noexcept
 void
 ZouHeDynamics::defineVelocity(DataType& data, VelocityType velocity) const noexcept
 {
-    velocity /= Descriptor::getSplitCoefficient();
     const auto density = calcDensity(data, velocity);
     init(data, velocity, density);
 }
@@ -197,7 +160,8 @@ ZouHeDynamics::calcDensity(DataType& data, const VelocityType& velocity) const n
     const auto velP = velocity.dot(VELOCITIES.at(m_position));
     const auto wHs = Descriptor::getSplitCoefficient();
 
-    return (center + 2.0 * known) / (wHs * (1.0 - velP));
+    return (center + 2.0 * known) / (wHs - velP);
+    //return (center + 2.0 * known) / (wHs * (1.0 - velP));
 }
 
 /* ************************************************************************ */
@@ -209,8 +173,8 @@ ZouHeDynamics::calcVelocity(DataType& data, DensityType rho) const noexcept
     const auto known  = sumValues(data, KNOWN_RHO.at(m_position));
     const auto wHs = Descriptor::getSplitCoefficient();
 
-    //const RealType speed = wHs - (1.0 / rho * (center + 2.0 * known));
-    const RealType speed = 1.0 - (1.0 / (rho * wHs) * (center + 2.0 * known));
+    const RealType speed = wHs - (1.0 / rho * (center + 2.0 * known));
+    //const RealType speed = 1.0 - (1.0 / (rho * wHs) * (center + 2.0 * known));
 
     // Velocity vector
     return speed * VELOCITIES.at(m_position);
@@ -231,30 +195,33 @@ void ZouHeDynamics::init(DataType& data, VelocityType velocity, DensityType dens
         ;
     };
 
+    auto dataDiff = [&data] (Descriptor::DirectionType iPop) {
+        return data[iPop] - data[Descriptor::opposite(iPop)];
+    };
+
     const auto side1_0 = side1[0];
     const auto side1_1 = side1[1];
-    const auto side1_2 = Descriptor::opposite(side1[1]);
     const auto side2_0 = side2[0];
     const auto side2_1 = side2[1];
-    const auto side2_2 = Descriptor::opposite(side2[1]);
-
-    const auto side1Off = data[side1_1] - data[side1_2];
-    const auto side2Off = data[side2_1] - data[side2_2];
 
     // Center
-    data[center] = data[Descriptor::opposite(center)] + eqDiff(center);
+    data[center] = data[Descriptor::opposite(center)]
+        + eqDiff(center)
+    ;
     Assert(data[center] > 0);
 
     // Side 1
     data[side1_0] = data[Descriptor::opposite(side1_0)]
         + eqDiff(side1_0)
-        + 0.5 * side1Off;
+        + 0.5 * dataDiff(side1_1)
+    ;
     Assert(data[side1_0] > 0);
 
     // Side 2
     data[side2_0] = data[Descriptor::opposite(side2_0)]
         + eqDiff(side2_0)
-        + 0.5 * side2Off;
+        + 0.5 * dataDiff(side2_1)
+    ;
     Assert(data[side2_0] > 0);
 }
 

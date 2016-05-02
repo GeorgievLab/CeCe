@@ -94,6 +94,30 @@ public:
         {{3, 4, 5}}
     }};
 
+    /// Direction index top line.
+    static constexpr StaticArray<DirectionType, 3> TOP_LINE = INDEX_MAP[0];
+
+    /// Direction index middle line.
+    static constexpr StaticArray<DirectionType, 3> MIDDLE_LINE = INDEX_MAP[1];
+
+    /// Direction index bottom line.
+    static constexpr StaticArray<DirectionType, 3> BOTTOM_LINE = INDEX_MAP[2];
+
+    /// Direction index left column.
+    static constexpr StaticArray<DirectionType, 3> LEFT_COLUMN = {{
+        INDEX_MAP[0][0], INDEX_MAP[1][0], INDEX_MAP[2][0]
+    }};
+
+    /// Direction index middle column.
+    static constexpr StaticArray<DirectionType, 3> MIDDLE_COLUMN = {{
+        INDEX_MAP[0][1], INDEX_MAP[1][1], INDEX_MAP[2][1]
+    }};
+
+    /// Direction index right column.
+    static constexpr StaticArray<DirectionType, 3> RIGHT_COLUMN = {{
+        INDEX_MAP[0][2], INDEX_MAP[1][2], INDEX_MAP[2][2]
+    }};
+
     /// Direction weights.
     static constexpr StaticArray<RealType, SIZE> DIRECTION_WEIGHTS = {{
         WEIGHT_CENTER, // Center

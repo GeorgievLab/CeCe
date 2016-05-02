@@ -38,6 +38,30 @@ constexpr StaticArray<StaticArray<Descriptor::DirectionType, 3>, 3> Descriptor::
 
 /* ************************************************************************ */
 
+constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::TOP_LINE;
+
+/* ************************************************************************ */
+
+constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_LINE;
+
+/* ************************************************************************ */
+
+constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::BOTTOM_LINE;
+
+/* ************************************************************************ */
+
+constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::LEFT_COLUMN;
+
+/* ************************************************************************ */
+
+constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_COLUMN;
+
+/* ************************************************************************ */
+
+constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::RIGHT_COLUMN;
+
+/* ************************************************************************ */
+
 constexpr StaticArray<RealType, Descriptor::SIZE> Descriptor::DIRECTION_WEIGHTS;
 
 /* ************************************************************************ */
