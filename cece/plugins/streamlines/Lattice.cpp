@@ -54,7 +54,7 @@ void Lattice::initEquilibrium()
 
 void Lattice::collide()
 {
-#ifdef DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifdef CECE_PLUGIN_streamlines_SWAP_TRICK
     constexpr Descriptor::DirectionType half = (Descriptor::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))
@@ -79,7 +79,7 @@ void Lattice::collide()
 
 void Lattice::stream()
 {
-#ifdef DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifdef CECE_PLUGIN_streamlines_SWAP_TRICK
     constexpr Descriptor::DirectionType half = (Descriptor::SIZE - 1) / 2;
 
     for (auto&& c : range(getSize()))

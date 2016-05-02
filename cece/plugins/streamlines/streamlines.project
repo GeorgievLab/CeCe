@@ -35,6 +35,7 @@
     <File Name="Node.hpp"/>
     <File Name="NoDynamics.hpp"/>
     <File Name="ZouHeDynamics.hpp"/>
+    <File Name="config.hpp.in"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
