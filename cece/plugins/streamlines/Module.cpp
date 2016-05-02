@@ -233,6 +233,11 @@ Module::Module(simulator::Simulation& simulation)
     m_layout[LayoutPosBottom] = LayoutType::Barrier;
     m_layout[LayoutPosLeft]   = LayoutType::Inlet;
     m_layout[LayoutPosRight]  = LayoutType::Outlet;
+
+    m_inletTypes[LayoutPosTop]    = InletType::Auto;
+    m_inletTypes[LayoutPosBottom] = InletType::Auto;
+    m_inletTypes[LayoutPosLeft]   = InletType::Auto;
+    m_inletTypes[LayoutPosRight]  = InletType::Auto;
 }
 
 /* ************************************************************************ */
