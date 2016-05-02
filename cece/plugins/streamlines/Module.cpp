@@ -1363,6 +1363,11 @@ void Module::storeData()
     for (auto&& c : range(m_lattice.getSize()))
     {
         const auto& data = m_lattice[c];
+
+        // Do not save data with no dynamics
+        if (data.getDynamics() == NoDynamics::getInstance())
+            continue;
+
         const auto vel = convertVelocity(data.computeVelocity());
 
         m_dataOut->writeRecord(
