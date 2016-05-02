@@ -129,6 +129,14 @@ protected:
 
 
     /**
+     * @brief Create wall dynamics.
+     *
+     * @return
+     */
+    UniquePtr<streamlines::Dynamics> createWallDynamics() const override;
+
+
+    /**
      * @brief Create border dynamics.
      *
      * @param pos

@@ -36,6 +36,7 @@
 #include "cece/plugins/streamlines-channel/Descriptor.hpp"
 #include "cece/plugins/streamlines-channel/BgkDynamics.hpp"
 #include "cece/plugins/streamlines-channel/ZouHeDynamics.hpp"
+#include "cece/plugins/streamlines-channel/BounceBackDynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -80,6 +81,13 @@ void Module::storeConfig(config::Configuration& config) const
 UniquePtr<streamlines::Dynamics> Module::createFluidDynamics() const
 {
     return makeUnique<BgkDynamics>(calculateOmega());
+}
+
+/* ************************************************************************ */
+
+UniquePtr<streamlines::Dynamics> Module::createWallDynamics() const
+{
+    return makeUnique<BounceBackDynamics>();
 }
 
 /* ************************************************************************ */

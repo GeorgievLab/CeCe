@@ -26,6 +26,8 @@
     <File Name="Descriptor.hpp"/>
     <File Name="Module.hpp"/>
     <File Name="ZouHeDynamics.hpp"/>
+    <File Name="BounceBackDynamics.cpp"/>
+    <File Name="BounceBackDynamics.hpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

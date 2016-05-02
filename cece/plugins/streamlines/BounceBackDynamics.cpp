@@ -28,6 +28,7 @@
 
 // C++
 #include <utility>
+#include <algorithm>
 
 // CeCe
 #include "cece/core/Zero.hpp"
@@ -46,7 +47,9 @@ namespace streamlines {
 BounceBackDynamics::DensityType
 BounceBackDynamics::computeDensity(const DataType& data) const noexcept
 {
-    return 1.0;
+    using std::begin;
+    using std::end;
+    return std::accumulate(begin(data), end(data), DensityType(0.0));
 }
 
 /* ************************************************************************ */

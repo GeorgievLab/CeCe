@@ -24,53 +24,38 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/plugins/streamlines/Descriptor.hpp"
+#include "cece/plugins/streamlines-channel/BounceBackDynamics.hpp"
+
+// CeCe Plugin
+#include "cece/plugins/streamlines-channel/Descriptor.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace plugin {
-namespace streamlines {
+namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<Descriptor::DirectionType, 3>, 3> Descriptor::INDEX_MAP;
+BounceBackDynamics::DensityType
+BounceBackDynamics::computeEquilibrium(DirectionType iPop, DensityType density,
+    VelocityType velocity) const noexcept
+{
+    return Descriptor::calcEquilibrium(
+        Descriptor::getWeightHorizontal(iPop),
+        Descriptor::DIRECTION_VELOCITIES[iPop],
+        density,
+        velocity
+    );
+}
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::TOP_LINE;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_LINE;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::BOTTOM_LINE;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::LEFT_COLUMN;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_COLUMN;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::RIGHT_COLUMN;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<RealType, Descriptor::SIZE> Descriptor::DIRECTION_WEIGHTS;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<Vector<int>, Descriptor::SIZE> Descriptor::DIRECTION_VELOCITIES;
-
-/* ************************************************************************ */
-
-constexpr StaticArray<Descriptor::DirectionType, Descriptor::SIZE> Descriptor::DIRECTION_OPPOSITES;
+ViewPtr<BounceBackDynamics> BounceBackDynamics::getInstance() noexcept
+{
+    static BounceBackDynamics instance;
+    return &instance;
+}
 
 /* ************************************************************************ */
 

@@ -389,6 +389,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns wall dynamics.
+     *
+     * @return
+     */
+    ViewPtr<Dynamics> getWallDynamics() const noexcept
+    {
+        return m_wallDynamics;
+    }
+
+
 // Public Mutators
 public:
 
@@ -565,6 +576,17 @@ public:
     }
 
 
+    /**
+     * @brief Set wall dynamics.
+     *
+     * @param dynamics
+     */
+    void setWallDynamics(UniquePtr<Dynamics> dynamics) noexcept
+    {
+        m_wallDynamics = std::move(dynamics);
+    }
+
+
 // Public Operations
 public:
 
@@ -715,6 +737,14 @@ protected:
      * @return
      */
     virtual UniquePtr<Dynamics> createFluidDynamics() const;
+
+
+    /**
+     * @brief Create wall dynamics.
+     *
+     * @return
+     */
+    virtual UniquePtr<Dynamics> createWallDynamics() const;
 
 
     /**
@@ -932,6 +962,8 @@ private:
 #endif
 
     UniquePtr<Dynamics> m_fluidDynamics;
+
+    UniquePtr<Dynamics> m_wallDynamics;
 
     /// Outstream for streamlines data
     UniquePtr<CsvFile> m_dataOut;
