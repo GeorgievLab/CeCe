@@ -27,8 +27,8 @@
 
 /* ************************************************************************ */
 
-// Enable or disable swap trick (memory improvement)
-#define DEV_PLUGIN_streamlines_SWAP_TRICK
+// Plugin config
+#include "cece/plugins/streamlines/config.hpp"
 
 /* ************************************************************************ */
 
@@ -172,7 +172,7 @@ public:
     }
 
 
-#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifndef CECE_PLUGIN_streamlines_SWAP_TRICK
     /**
      * @brief Get item from back buffer.
      *
@@ -187,7 +187,7 @@ public:
 #endif
 
 
-#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifndef CECE_PLUGIN_streamlines_SWAP_TRICK
     /**
      * @brief Get item from back buffer.
      *
@@ -214,7 +214,7 @@ public:
     void setSize(Size size)
     {
         m_data.resize(size);
-#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifndef CECE_PLUGIN_streamlines_SWAP_TRICK
         m_dataBack.resize(size);
 #endif
     }
@@ -272,7 +272,7 @@ public:
     /// Current lattice data.
     core::Grid<Node> m_data;
 
-#ifndef DEV_PLUGIN_streamlines_SWAP_TRICK
+#ifndef CECE_PLUGIN_streamlines_SWAP_TRICK
     /// Temporaty lattice data.
     core::Grid<Node> m_dataBack;
 #endif

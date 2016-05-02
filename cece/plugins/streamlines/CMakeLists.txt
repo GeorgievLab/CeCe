@@ -23,6 +23,16 @@
 #                                                                           #
 # ######################################################################### #
 
+# Enable swap trick
+option(CECE_PLUGIN_streamlines_SWAP_TRICK "Enable OpenLB swap trick improvement" On)
+
+# ######################################################################### #
+
+# Create config file
+configure_file(config.hpp.in config.hpp)
+
+# ######################################################################### #
+
 # Sources
 set(SRCS
     Plugin.cpp
