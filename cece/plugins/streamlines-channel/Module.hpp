@@ -32,6 +32,7 @@
 
 // Plugin
 #include "cece/plugins/streamlines/Module.hpp"
+#include "cece/plugins/streamlines/Boundary.hpp"
 
 /* ************************************************************************ */
 
@@ -143,7 +144,7 @@ protected:
      *
      * @return
      */
-    UniquePtr<streamlines::Dynamics> createBorderDynamics(LayoutPosition pos) const override;
+    UniquePtr<streamlines::Dynamics> createBorderDynamics(streamlines::Boundary::Position pos) const override;
 
 
     /**

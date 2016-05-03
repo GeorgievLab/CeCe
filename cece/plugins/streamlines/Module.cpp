@@ -63,163 +63,11 @@ namespace streamlines {
 
 /* ************************************************************************ */
 
-/**
- * @brief Parse layout description.
- *
- * @param is     Input stream.
- * @param layout Output layout.
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Module::Layout& layout)
-{
-    return is >> std::skipws >>
-        layout[Module::LayoutPosTop] >>
-        layout[Module::LayoutPosRight] >>
-        layout[Module::LayoutPosBottom] >>
-        layout[Module::LayoutPosLeft]
-    ;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Write layout description.
- *
- * @param os     Output stream.
- * @param layout Output layout.
- *
- * @return is.
- */
-OutStream& operator<<(OutStream& os, const Module::Layout& layout)
-{
-    return os <<
-        layout[Module::LayoutPosTop] << " " <<
-        layout[Module::LayoutPosRight] << " " <<
-        layout[Module::LayoutPosBottom] << " " <<
-        layout[Module::LayoutPosLeft]
-    ;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Read inlet velocities.
- *
- * @param is         Input stream.
- * @param velocities
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Module::InletVelocities& velocities)
-{
-    return is >> std::skipws >>
-        velocities[Module::LayoutPosTop] >>
-        velocities[Module::LayoutPosRight] >>
-        velocities[Module::LayoutPosBottom] >>
-        velocities[Module::LayoutPosLeft]
-    ;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Write inlet velocities.
- *
- * @param os         Output stream.
- * @param velocities
- *
- * @return is.
- */
-OutStream& operator<<(OutStream& os, const Module::InletVelocities& velocities)
-{
-    return os <<
-        velocities[Module::LayoutPosTop] << " " <<
-        velocities[Module::LayoutPosRight] << " " <<
-        velocities[Module::LayoutPosBottom] << " " <<
-        velocities[Module::LayoutPosLeft]
-    ;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Read inlet types.
- *
- * @param is    Input stream.
- * @param types
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Module::InletTypes& types)
-{
-    return is >> std::skipws >>
-        types[Module::LayoutPosTop] >>
-        types[Module::LayoutPosRight] >>
-        types[Module::LayoutPosBottom] >>
-        types[Module::LayoutPosLeft]
-    ;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Write inlet types.
- *
- * @param os    Output stream.
- * @param types
- *
- * @return is.
- */
-OutStream& operator<<(OutStream& os, const Module::InletTypes& types)
-{
-    return os <<
-        types[Module::LayoutPosTop] << " " <<
-        types[Module::LayoutPosRight] << " " <<
-        types[Module::LayoutPosBottom] << " " <<
-        types[Module::LayoutPosLeft]
-    ;
-}
-
-/* ************************************************************************ */
-
 namespace {
 
 /* ************************************************************************ */
 
 constexpr StaticArray<char, 5> FILE_GUARD{{'C', 'E', 'S', 'L', '\0'}};
-
-/* ************************************************************************ */
-
-constexpr StaticArray<StaticArray<Vector<int>, 2>, Module::LayoutPosCount> EDGES{{
-    {{{ 1, -1}, { 1,  1}}},
-    {{{-1, -1}, {-1,  1}}},
-    {{{-1,  1}, { 1,  1}}},
-    {{{ 1, -1}, {-1, -1}}}
-}};
-
-/* ************************************************************************ */
-
-/**
- * @brief Calculate Poiseuille flow profile.
- *
- * @param max  Max speed.
- * @param pos  Position from range.
- * @param size Range size.
- *
- * @return
- */
-template<typename T>
-units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
-{
-    Assert(pos >= 0);
-    Assert(pos < size);
-    Assert(size > 1);
-
-    const RealType posF = static_cast<RealType>(pos);
-    const RealType sizeF = static_cast<RealType>(size);
-    return 4.f * max / (sizeF * sizeF) * (sizeF * posF - posF * posF);
-}
 
 /* ************************************************************************ */
 
@@ -229,24 +77,14 @@ units::Velocity calcPoiseuilleFlow(units::Velocity max, T pos, T size) noexcept
 
 Module::Module(simulator::Simulation& simulation)
     : module::Module(simulation)
+    , m_boundaries(simulation)
 {
-    m_layout[LayoutPosTop]    = LayoutType::Barrier;
-    m_layout[LayoutPosBottom] = LayoutType::Barrier;
-    m_layout[LayoutPosLeft]   = LayoutType::Inlet;
-    m_layout[LayoutPosRight]  = LayoutType::Outlet;
-
-    m_inletTypes[LayoutPosTop]    = InletType::Auto;
-    m_inletTypes[LayoutPosBottom] = InletType::Auto;
-    m_inletTypes[LayoutPosLeft]   = InletType::Auto;
-    m_inletTypes[LayoutPosRight]  = InletType::Auto;
+    // Nothing to do
 }
 
 /* ************************************************************************ */
 
-Module::~Module()
-{
-    // Nothing to do
-}
+Module::~Module() = default;
 
 /* ************************************************************************ */
 
@@ -259,12 +97,12 @@ void Module::init(AtomicBool& termFlag)
     setFluidDynamics(createFluidDynamics());
     setWallDynamics(createWallDynamics());
 
-    m_boundaries[LayoutPosTop]      = createBorderDynamics(LayoutPosTop);
-    m_boundaries[LayoutPosBottom]   = createBorderDynamics(LayoutPosBottom);
-    m_boundaries[LayoutPosLeft]     = createBorderDynamics(LayoutPosLeft);
-    m_boundaries[LayoutPosRight]    = createBorderDynamics(LayoutPosRight);
+    // Initialize boundary positions
+    for (int i = 0; i < 4; ++i)
+        m_boundaries[i].setDynamics(createBorderDynamics(m_boundaries[i].getPosition()));
 
-    initBarriers();
+    // Initialize boundaries
+    m_boundaries.init();
 
     // Obstacles
     updateObstacleMap();
@@ -322,29 +160,6 @@ void Module::init(AtomicBool& termFlag)
 
 /* ************************************************************************ */
 
-void Module::initBarriers()
-{
-    // Create barriers
-    for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
-    {
-        if (m_layoutBarriers[pos])
-        {
-            // Barrier recreation is not needed
-            if (m_layout[pos] == LayoutType::Barrier)
-                continue;
-
-            getSimulation().deleteObject(m_layoutBarriers[pos].get());
-            m_layoutBarriers[pos] = nullptr;
-        }
-        else if (m_layout[pos] == LayoutType::Barrier)
-        {
-            initBorderBarrier(static_cast<LayoutPosition>(pos));
-        }
-    }
-}
-
-/* ************************************************************************ */
-
 void Module::update()
 {
     Assert(m_lattice.getSize() != Zero);
@@ -397,45 +212,12 @@ void Module::loadConfig(const config::Configuration& config)
     // Number of inner iterations
     setInnerIterations(config.get("inner-iterations", getInnerIterations()));
 
-    if (config.has("inlet-velocity"))
-    {
-        auto vel = config.get<units::Velocity>("inlet-velocity");
-        m_inletVelocities[LayoutPosTop]    = vel;
-        m_inletVelocities[LayoutPosBottom] = vel;
-        m_inletVelocities[LayoutPosLeft]   = vel;
-        m_inletVelocities[LayoutPosRight]  = vel;
-    }
-    else
-    {
-        // Inlet velocities
-        setInletVelocities(config.get("inlet-velocities", getInletVelocities()));
-    }
+    // Load boundaries config
+    m_boundaries.loadConfig(config);
 
-    if (config.has("inlet-type"))
-    {
-        auto type = config.get<InletType>("inlet-type");
-        m_inletTypes[LayoutPosTop]    = type;
-        m_inletTypes[LayoutPosBottom] = type;
-        m_inletTypes[LayoutPosLeft]   = type;
-        m_inletTypes[LayoutPosRight]  = type;
-    }
-    else
-    {
-        // Inlet velocities
-        setInletTypes(config.get("inlet-types", getInletTypes()));
-    }
-
-    // Viscosity
-    setKinematicViscosity(config.get("kinematic-viscosity", getKinematicViscosity()));
-
-    if (getKinematicViscosity() == Zero)
-        throw InvalidArgumentException("Kinematic viscosity cannot be zero");
-
-    // Characteristic length & time
-    setCharLength(config.get("char-length", getCharLength()));
-    setCharTime(getSimulation().getTimeStep());
-
-    setNumberNodes(config.get("number-nodes", 1));
+    // Load converter configuration
+    m_converter.loadConfig(config);
+    m_converter.setCharTime(getSimulation().getTimeStep());
 
     // Obsolete grid
     auto gridSize = config.get<Lattice::Size>("grid", Lattice::Size{Zero});
@@ -448,12 +230,16 @@ void Module::loadConfig(const config::Configuration& config)
         m_lattice.setSize(gridSize);
 
         // Compute characteristic length
-        setNumberNodes(gridSize.getWidth() / getSimulation().getWorldSize().getWidth() * getCharLength());
+        m_converter.setNumberNodes(
+            gridSize.getWidth() / getSimulation().getWorldSize().getWidth() * m_converter.getCharLength()
+        );
     }
     else
     {
         // Calculate lattice size
-        const auto size = Lattice::Size(getSimulation().getWorldSize() / getCharLength() * getNumberNodes());
+        const auto size = Lattice::Size(
+            getSimulation().getWorldSize() / m_converter.getCharLength() * m_converter.getNumberNodes()
+        );
 
         if (size == Zero)
             throw InvalidArgumentException("Lattice size cannot be zero");
@@ -461,19 +247,6 @@ void Module::loadConfig(const config::Configuration& config)
         // Grid size
         m_lattice.setSize(size + Lattice::Size(1, 1));
     }
-
-    if (config.has("tau"))
-    {
-        setNumberSteps(calculateNumberSteps(config.get<RealType>("tau")));
-    }
-    else
-    {
-        // Set number of time steps
-        setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
-    }
-
-    // Layout
-    setLayout(config.get("layout", getLayout()));
 
     // Enable dynamic object obstacles
     setDynamicObjectsObstacles(config.get("dynamic-object-obstacles", isDynamicObjectsObstacles()));
@@ -513,13 +286,9 @@ void Module::storeConfig(config::Configuration& config) const
 
     config.set("init-iterations", getInitIterations());
     config.set("inner-iterations", getInnerIterations());
-    config.set("inlet-velocities", getInletVelocities());
-    config.set("kinematic-viscosity", getKinematicViscosity());
-    config.set("char-length", getCharLength());
-    config.set("number-nodes", getNumberNodes());
-    config.set("number-steps", getNumberSteps());
 
-    config.set("layout", getLayout());
+    // Store converter config
+    m_converter.storeConfig(config);
 
 #ifdef CECE_ENABLE_RENDER
     config.set("debug-magnitude-scale", getDebugMagnitudeScale());
@@ -545,9 +314,8 @@ void Module::draw(render::Context& context)
     Grid<Descriptor::VelocityType> velocities(size);
 
     // Calculate grid max velocity
-    Assert(!m_inletVelocities.empty());
-    const auto maxInlet = *std::max_element(m_inletVelocities.begin(), m_inletVelocities.end());
-    const auto maxVel = m_debugMagnitudeScale * convertVelocity(maxInlet);
+    const auto maxInlet = m_boundaries.getMaxInletVelocity();
+    const auto maxVel = m_debugMagnitudeScale * m_converter.convertVelocity(maxInlet);
 
     {
 #ifdef CECE_THREAD_SAFE
@@ -575,10 +343,10 @@ void Module::draw(render::Context& context)
             }
             else if (checkDebugDraw(DRAW_DEBUG_OBSTACLES))
             {
-                if (dynamics == m_boundaries[LayoutPosTop] ||
-                    dynamics == m_boundaries[LayoutPosBottom] ||
-                    dynamics == m_boundaries[LayoutPosLeft] ||
-                    dynamics == m_boundaries[LayoutPosRight])
+                if (dynamics == m_boundaries[0].getDynamics() ||
+                    dynamics == m_boundaries[1].getDynamics() ||
+                    dynamics == m_boundaries[2].getDynamics() ||
+                    dynamics == m_boundaries[3].getDynamics())
                 {
                     color = render::colors::RED;
                 }
@@ -630,7 +398,7 @@ void Module::draw(render::Context& context)
 
 UniquePtr<Dynamics> Module::createFluidDynamics() const
 {
-    return makeUnique<BgkDynamics>(calculateOmega());
+    return makeUnique<BgkDynamics>(m_converter.calculateOmega());
 }
 
 /* ************************************************************************ */
@@ -642,22 +410,22 @@ UniquePtr<Dynamics> Module::createWallDynamics() const
 
 /* ************************************************************************ */
 
-UniquePtr<Dynamics> Module::createBorderDynamics(LayoutPosition pos) const
+UniquePtr<Dynamics> Module::createBorderDynamics(Boundary::Position pos) const
 {
-    const auto omega = calculateOmega();
+    const auto omega = m_converter.calculateOmega();
 
     switch (pos)
     {
-    case LayoutPosTop:
+    case Boundary::Position::Top:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Top);
 
-    case LayoutPosBottom:
+    case Boundary::Position::Bottom:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Bottom);
 
-    case LayoutPosLeft:
+    case Boundary::Position::Left:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Left);
 
-    case LayoutPosRight:
+    case Boundary::Position::Right:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Right);
 
     default:
@@ -698,7 +466,7 @@ void Module::updateObstacleMap()
         const auto coord = Coordinate(pos / step);
 
         // Calculate object velocity in LB
-        const auto velocity = convertVelocity(obj->getVelocity());
+        const auto velocity = m_converter.convertVelocity(obj->getVelocity());
 
         // In this case duplicate coordinates doesn't harm and calling
         // operation multiple times on same coordinate is faster than
@@ -752,7 +520,7 @@ void Module::applyToObject(object::Object& object)
     const auto center = object.getMassCenterOffset();
 
     // Coefficient used in force calculation
-    const auto forceCoefficient = 6 * constants::PI * getKinematicViscosity() * object.getDensity();
+    const auto forceCoefficient = 6 * constants::PI * m_converter.getKinematicViscosity() * object.getDensity();
 
     auto force = ForceVector{Zero};
     auto velocityObjEnv = VelocityVector{Zero};
@@ -795,7 +563,7 @@ void Module::applyToObject(object::Object& object)
 
         // Average
         velocityLB /= count;
-        const VelocityVector velocityEnv = convertVelocity(velocityLB);
+        const VelocityVector velocityEnv = m_converter.convertVelocity(velocityLB);
         //const VelocityVector velocityEnv{m_inletVelocities[0], Zero};
 
         if (velocityEnv.getLengthSquared() > maxSpeedSq)
@@ -866,380 +634,7 @@ void Module::applyToObject(object::Object& object)
 
 void Module::applyBoundaryConditions()
 {
-    // Init boundaries
-    for (unsigned int pos = 0; pos < LayoutPosCount; ++pos)
-        initBorderInletOutlet(static_cast<LayoutPosition>(pos));
-}
-
-/* ************************************************************************ */
-
-VelocityVector Module::inletVelocityProfile(
-    Lattice::CoordinateType coord, LayoutPosition pos,
-    DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets
-) const noexcept
-{
-    auto type = m_inletTypes[pos];
-
-    if (type == InletType::Auto)
-        type = InletType::Parabolic;
-
-    if (type == InletType::Constant)
-    {
-        return {getInletVelocities()[pos], Zero};
-    }
-    else if (type == InletType::Parabolic)
-    {
-        StaticArray<Lattice::CoordinateType, 2> inletRange{{Zero, Zero}};
-        bool found = false;
-
-        switch (pos)
-        {
-        case LayoutPosTop:
-        case LayoutPosBottom:
-            // Find inlet range
-            for (const auto& inlet : inlets)
-            {
-                if (inlet[0].getX() <= coord.getX() && coord.getX() <= inlet[1].getX())
-                {
-                    inletRange = inlet;
-                    found = true;
-                    break;
-                }
-            }
-            break;
-
-        case LayoutPosLeft:
-        case LayoutPosRight:
-            // Find inlet range
-            for (const auto& inlet : inlets)
-            {
-                if (inlet[0].getY() <= coord.getY() && coord.getY() <= inlet[1].getY())
-                {
-                    inletRange = inlet;
-                    found = true;
-                    break;
-                }
-            }
-            break;
-
-        default:
-            Assert(false);
-            break;
-        }
-
-        if (!found)
-            return Zero;
-
-        switch (pos)
-        {
-        case LayoutPosTop:
-            return {
-                Zero,
-                -calcPoiseuilleFlow(
-                    getInletVelocities()[pos],
-                    coord.getX() - inletRange[0].getX() + 1,
-                    (inletRange[1] - inletRange[0]).getWidth() + 2
-                )
-            };
-            break;
-
-        case LayoutPosBottom:
-            return {
-                Zero,
-                calcPoiseuilleFlow(
-                    getInletVelocities()[pos],
-                    coord.getX() - inletRange[0].getX() + 1,
-                    (inletRange[1] - inletRange[0]).getWidth() + 2
-                )
-            };
-            break;
-
-        case LayoutPosRight:
-            return {
-                -calcPoiseuilleFlow(
-                    getInletVelocities()[pos],
-                    coord.getY() - inletRange[0].getY() + 1,
-                    (inletRange[1] - inletRange[0]).getHeight() + 2
-                ),
-                Zero
-            };
-            break;
-
-        case LayoutPosLeft:
-            return {
-                calcPoiseuilleFlow(
-                    getInletVelocities()[pos],
-                    coord.getY() - inletRange[0].getY() + 1,
-                    (inletRange[1] - inletRange[0]).getHeight() + 2
-                ),
-                Zero
-            };
-            break;
-
-        default:
-            Assert(false);
-            break;
-        }
-
-        return Zero;
-    }
-    else
-    {
-        Assert(0 && "InputType enum issue");
-        return Zero;
-    }
-}
-
-/* ************************************************************************ */
-
-RealType Module::calculateViscosity() const noexcept
-{
-    const auto charTime = getCharTime() / getNumberSteps();
-    const auto charLength = getCharLength() / getNumberNodes();
-
-    return charTime / (charLength * charLength) * getKinematicViscosity();
-}
-
-/* ************************************************************************ */
-
-RealType Module::calculateTau() const noexcept
-{
-    return Descriptor::SPEED_OF_SOUND_SQ_INV * calculateViscosity() + 0.5;
-}
-
-/* ************************************************************************ */
-
-unsigned int Module::calculateNumberSteps(RealType tau) const noexcept
-{
-    return Descriptor::SPEED_OF_SOUND_SQ_INV *
-        (getCharTime() * getNumberNodes() * getNumberNodes() * getKinematicViscosity())
-        /
-        ((tau - 0.5) * getCharLength() * getCharLength())
-    ;
-}
-
-/* ************************************************************************ */
-
-void Module::initBorderBarrier(LayoutPosition pos)
-{
-    const auto& size = m_lattice.getSize();
-    const auto worldSizeHalf = getSimulation().getWorldSize() * 0.5;
-
-    // Physical size of one lattice cell
-    const auto dl = getSimulation().getWorldSize() / size;
-
-    // Create barrier
-    auto obstacle = getSimulation().buildObject("obstacle.Polygon");
-    auto& shapes = obstacle->getMutableShapes();
-    shapes.resize(1);
-
-    // Init shape
-    shapes[0] = Shape::makeEdges({
-        EDGES[pos][0] * (worldSizeHalf - 0.5 * dl),
-        EDGES[pos][1] * (worldSizeHalf - 0.5 * dl)
-    });
-    obstacle->initShapes();
-
-    // Store obstacle view
-    m_layoutBarriers[pos] = obstacle;
-
-    Vector<Lattice::SizeType> rngMin;
-    Vector<Lattice::SizeType> rngMax;
-
-    switch (pos)
-    {
-    case LayoutPosTop:
-        rngMin = {0, size.getHeight() - 1};
-        rngMax = {size.getWidth(), size.getHeight()};
-        break;
-
-    case LayoutPosBottom:
-        rngMin = {0, 0};
-        rngMax = {size.getWidth(), 1};
-        break;
-
-    case LayoutPosRight:
-        rngMin = {size.getWidth() - 1, 0};
-        rngMax = {size.getWidth(), size.getHeight()};
-        break;
-
-    case LayoutPosLeft:
-        rngMin = {0, 0};
-        rngMax = {1, size.getHeight()};
-        break;
-
-    default:
-        break;
-    }
-
-    // Set obstacles
-    for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-    for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-    {
-        m_lattice[{x, y}].setDynamics(getWallDynamics());
-    }
-}
-
-/* ************************************************************************ */
-
-void Module::initBorderInletOutlet(LayoutPosition pos)
-{
-    const auto& size = m_lattice.getSize();
-
-    Vector<Lattice::SizeType> rngMin;
-    Vector<Lattice::SizeType> rngMax;
-
-    // Detect multiple inlets at the layout position
-    DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets;
-
-    switch (pos)
-    {
-    case LayoutPosTop:
-        rngMin = {0, size.getHeight() - 1};
-        rngMax = {size.getWidth(), size.getHeight()};
-
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-        {
-            const Lattice::CoordinateType c1 = {x, size.getHeight() - 1};
-            if (m_lattice[c1].getDynamics() == getWallDynamics())
-                continue;
-
-            auto c2 = c1;
-
-            ++x;
-            for (; x < rngMax.getX(); ++x)
-            {
-                const Lattice::CoordinateType cNext = {x, size.getHeight() - 1};
-                if (m_lattice[cNext].getDynamics() == getWallDynamics())
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getX() - c2.getX() > 1)
-                inlets.push_back({{c1, c2}});
-        }
-
-        break;
-
-    case LayoutPosBottom:
-        rngMin = {0, 0};
-        rngMax = {size.getWidth(), 1};
-
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-        {
-            const Lattice::CoordinateType c1 = {x, 0};
-            if (m_lattice[c1].getDynamics() == getWallDynamics())
-                continue;
-
-            auto c2 = c1;
-
-            ++x;
-            for (; x < rngMax.getX(); ++x)
-            {
-                const Lattice::CoordinateType cNext = {x, 0};
-                if (m_lattice[cNext].getDynamics() == getWallDynamics())
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getX() - c2.getX() > 1)
-                inlets.push_back({{c1, c2}});
-        }
-
-        break;
-
-    case LayoutPosRight:
-        rngMin = {size.getWidth() - 1, 0};
-        rngMax = {size.getWidth(), size.getHeight()};
-
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        {
-            const Lattice::CoordinateType c1 = {size.getWidth() - 1, y};
-            if (m_lattice[c1].getDynamics() == getWallDynamics())
-                continue;
-
-            auto c2 = c1;
-
-            ++y;
-            for (; y < rngMax.getY(); ++y)
-            {
-                const Lattice::CoordinateType cNext = {size.getWidth() - 1, y};
-                if (m_lattice[cNext].getDynamics() == getWallDynamics())
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getY() - c2.getY() > 1)
-                inlets.push_back({{c1, c2}});
-        }
-
-        break;
-
-    case LayoutPosLeft:
-        rngMin = {0, 0};
-        rngMax = {1, size.getHeight()};
-
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        {
-            const Lattice::CoordinateType c1 = {0, y};
-            if (m_lattice[c1].getDynamics() == getWallDynamics())
-                continue;
-
-            auto c2 = c1;
-
-            ++y;
-            for (; y < rngMax.getY(); ++y)
-            {
-                const Lattice::CoordinateType cNext = {0, y};
-                if (m_lattice[cNext].getDynamics() == getWallDynamics())
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getY() - c2.getY() > 1)
-                inlets.push_back({{c1, c2}});
-        }
-
-        break;
-
-    default:
-        throw RuntimeException("Invalid layout position");
-    }
-
-    if (m_layout[pos] == LayoutType::Outlet)
-    {
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-        {
-            auto& node = m_lattice[{x, y}];
-
-            // Set boundary dynamics
-            if (node.getDynamics() == getFluidDynamics())
-                node.setDynamics(m_boundaries[pos]);
-
-            if (node.getDynamics() == m_boundaries[pos])
-                node.defineDensity(1.0);
-        }
-    }
-    else if (m_layout[pos] == LayoutType::Inlet)
-    {
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-        {
-            auto& node = m_lattice[{x, y}];
-
-            // Set boundary dynamics
-            if (node.getDynamics() == getFluidDynamics())
-                node.setDynamics(m_boundaries[pos]);
-
-            if (node.getDynamics() == m_boundaries[pos])
-                node.defineVelocity(convertVelocity(inletVelocityProfile({x, y}, pos, inlets)));
-        }
-    }
+    m_boundaries.applyConditions(m_converter, m_lattice, getFluidDynamics());
 }
 
 /* ************************************************************************ */
@@ -1249,19 +644,19 @@ void Module::printInfo()
     // Get values
     const auto size = m_lattice.getSize();
 
-    Log::info("[streamlines] Viscosity: ", getKinematicViscosity(), " um2/s");
+    Log::info("[streamlines] Viscosity: ", m_converter.getKinematicViscosity(), " um2/s");
     Log::info("[streamlines] Max object speed: ", getSimulation().getMaxObjectTranslation(), " um/it");
-    Log::info("[streamlines] Char. length: ", getCharLength(), " um");
-    Log::info("[streamlines] Char. time: ", getCharTime(), " s");
-    Log::info("[streamlines] Char. speed: ", getCharVelocity(), " um/s");
-    Log::info("[streamlines] Number of nodes: ", getNumberNodes());
-    Log::info("[streamlines] Number of time steps: ", getNumberSteps());
-    Log::info("[streamlines] Re: ", calculateRe());
+    Log::info("[streamlines] Char. length: ", m_converter.getCharLength(), " um");
+    Log::info("[streamlines] Char. time: ", m_converter.getCharTime(), " s");
+    Log::info("[streamlines] Char. speed: ", m_converter.getCharVelocity(), " um/s");
+    Log::info("[streamlines] Number of nodes: ", m_converter.getNumberNodes());
+    Log::info("[streamlines] Number of time steps: ", m_converter.getNumberSteps());
+    Log::info("[streamlines] Re: ", m_converter.calculateRe());
     Log::info("[streamlines] ## Lattice ##");
-    Log::info("[streamlines] Tau: ", calculateTau());
-    Log::info("[streamlines] Omega: ", calculateOmega());
+    Log::info("[streamlines] Tau: ", m_converter.calculateTau());
+    Log::info("[streamlines] Omega: ", m_converter.calculateOmega());
     Log::info("[streamlines] Grid: (", size.getWidth(), "; ", size.getHeight(), ")");
-    Log::info("[streamlines] Viscosity: ", calculateViscosity());
+    Log::info("[streamlines] Viscosity: ", m_converter.calculateViscosity());
 }
 
 /* ************************************************************************ */
@@ -1278,7 +673,7 @@ void Module::storeToFile(const FilePath& filename)
     out.write(m_lattice.getSize());
 
     // Write relaxation time
-    out.write(calculateTau());
+    out.write(m_converter.calculateTau());
 
     // Number of init iterations
     out.write(m_initIterations);
@@ -1320,7 +715,7 @@ void Module::loadFromFile(const FilePath& filename)
     RealType tau;
     in.read(tau);
 
-    if (tau != calculateTau())
+    if (tau != m_converter.calculateTau())
         throw InvalidArgumentException("[streamlines] Cannot load from file: different relaxation times");
 
     decltype(m_initIterations) iterations;
@@ -1368,7 +763,7 @@ void Module::storeData()
         if (data.getDynamics() == NoDynamics::getInstance())
             continue;
 
-        const auto vel = convertVelocity(data.computeVelocity());
+        const auto vel = m_converter.convertVelocity(data.computeVelocity());
 
         m_dataOut->writeRecord(
             getSimulation().getIteration() - 1,
@@ -1395,84 +790,6 @@ void Module::storeData()
     }
 
     m_dataOut->flush();
-}
-
-/* ************************************************************************ */
-
-InStream& operator>>(InStream& is, Module::LayoutType& type)
-{
-    String desc;
-    is >> desc;
-
-    if (desc == "none")
-        type = Module::LayoutType::None;
-    else if (desc == "barrier")
-        type = Module::LayoutType::Barrier;
-    else if (desc == "inlet")
-        type = Module::LayoutType::Inlet;
-    else if (desc == "outlet")
-        type = Module::LayoutType::Outlet;
-    else
-        throw InvalidArgumentException("Unknown layout type");
-
-    return is;
-}
-
-/* ************************************************************************ */
-
-OutStream& operator<<(OutStream& os, const Module::LayoutType& type)
-{
-    switch (type)
-    {
-    case Module::LayoutType::None:
-        os << "none"; break;
-    case Module::LayoutType::Barrier:
-        os << "barrier"; break;
-    case Module::LayoutType::Inlet:
-        os << "inlet"; break;
-    case Module::LayoutType::Outlet:
-        os << "outlet"; break;
-    default:
-        throw InvalidArgumentException("Unknown layout type");
-    }
-    return os;
-}
-
-/* ************************************************************************ */
-
-InStream& operator>>(InStream& is, Module::InletType& type)
-{
-    String desc;
-    is >> desc;
-
-    if (desc == "constant")
-        type = Module::InletType::Constant;
-    else if (desc == "parabolic")
-        type = Module::InletType::Parabolic;
-    else if (desc == "auto")
-        type = Module::InletType::Auto;
-    else
-        throw InvalidArgumentException("Unknown inlet velocity profile type");
-
-    return is;
-}
-
-/* ************************************************************************ */
-
-OutStream& operator<<(OutStream& os, const Module::InletType& type)
-{
-    switch (type)
-    {
-    case Module::InletType::Auto:
-        os << "auto"; break;
-    case Module::InletType::Constant:
-        os << "constant"; break;
-    case Module::InletType::Parabolic:
-        os << "parabolic"; break;
-    default:
-        throw InvalidArgumentException("Unknown inlet velocity profile type");
-    }
-    return os;
 }
 
 /* ************************************************************************ */

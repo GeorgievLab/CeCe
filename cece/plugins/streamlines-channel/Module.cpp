@@ -49,7 +49,7 @@ namespace streamlines_channel {
 void Module::init(AtomicBool& termFlag)
 {
     // Initialize model
-    Descriptor::initModel(convertLength(getHeight()));
+    Descriptor::initModel(getConverter().convertLength(getHeight()));
 
     // Initialize streamlines
     streamlines::Module::init(termFlag);
@@ -80,7 +80,7 @@ void Module::storeConfig(config::Configuration& config) const
 
 UniquePtr<streamlines::Dynamics> Module::createFluidDynamics() const
 {
-    return makeUnique<BgkDynamics>(calculateOmega());
+    return makeUnique<BgkDynamics>(getConverter().calculateOmega());
 }
 
 /* ************************************************************************ */
@@ -92,22 +92,22 @@ UniquePtr<streamlines::Dynamics> Module::createWallDynamics() const
 
 /* ************************************************************************ */
 
-UniquePtr<streamlines::Dynamics> Module::createBorderDynamics(LayoutPosition pos) const
+UniquePtr<streamlines::Dynamics> Module::createBorderDynamics(streamlines::Boundary::Position pos) const
 {
-    const auto omega = calculateOmega();
+    const auto omega = getConverter().calculateOmega();
 
     switch (pos)
     {
-    case LayoutPosTop:
+    case streamlines::Boundary::Position::Top:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Top);
 
-    case LayoutPosBottom:
+    case streamlines::Boundary::Position::Bottom:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Bottom);
 
-    case LayoutPosLeft:
+    case streamlines::Boundary::Position::Left:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Left);
 
-    case LayoutPosRight:
+    case streamlines::Boundary::Position::Right:
         return makeUnique<ZouHeDynamics>(omega, ZouHeDynamics::Position::Right);
 
     default:
