@@ -55,6 +55,8 @@ set(SRCS
     ZouHeDynamics.cpp
     Boundary.hpp
     Boundary.cpp
+    Converter.hpp
+    Converter.cpp
 )
 
 # Build plugin

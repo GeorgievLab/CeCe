@@ -38,6 +38,8 @@
     <File Name="config.hpp.in"/>
     <File Name="Boundary.hpp"/>
     <File Name="Boundary.cpp"/>
+    <File Name="Converter.hpp"/>
+    <File Name="Converter.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
