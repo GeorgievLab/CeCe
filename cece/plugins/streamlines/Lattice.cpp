@@ -27,6 +27,7 @@
 #include "cece/plugins/streamlines/Lattice.hpp"
 
 // C++
+#include <cstddef>
 #include <utility>
 
 // CeCe
@@ -170,43 +171,35 @@ void Lattice::setDynamics(ViewPtr<Dynamics> dynamics)
 
 void Lattice::fixupObstacles(ViewPtr<Dynamics> dynamics) noexcept
 {
-    auto noDynamics = NoDynamics::getInstance();
-
     using Offset = Vector<typename std::make_signed<Descriptor::IndexType>::type>;
 
-    // Foreach all cells
-    //for (auto&& c : range(Size{1, 1}, getSize() - Size{1, 1}))
-    for (Descriptor::IndexType y = 1; y < getSize().getY() - 1; ++y)
-    for (Descriptor::IndexType x = 1; x < getSize().getX() - 1; ++x)
-    {
-        CoordinateType c{x, y};
+    static constexpr StaticArray<Offset, 9> OFFSETS{{
+        Offset{ 0,  0},
+        Offset{ 1,  0}, Offset{-1,  0}, Offset{ 0,  1}, Offset{ 1,  1},
+        Offset{-1,  1}, Offset{ 0, -1}, Offset{ 1, -1}, Offset{-1, -1}
+    }};
 
+    auto noDynamics = NoDynamics::getInstance();
+
+    // Foreach all cells
+    for (auto&& c : range(getSize()))
+    //for (Descriptor::IndexType y = 0; y < getSize().getY(); ++y)
+    //for (Descriptor::IndexType x = 0; x < getSize().getX(); ++x)
+    {
         if (get(c).getDynamics() != dynamics)
             continue;
 
-        const ViewPtr<Dynamics> types[9] = {
-            get(c).getDynamics(),
-            get(c + Offset{ 1,  0}).getDynamics(),
-            get(c + Offset{-1,  0}).getDynamics(),
-            get(c + Offset{ 0,  1}).getDynamics(),
-            get(c + Offset{ 1,  1}).getDynamics(),
-            get(c + Offset{-1,  1}).getDynamics(),
-            get(c + Offset{ 0, -1}).getDynamics(),
-            get(c + Offset{ 1, -1}).getDynamics(),
-            get(c + Offset{-1, -1}).getDynamics()
-        };
+        bool test = true;
 
-        const bool test =
-            (types[0] == dynamics) &&
-            (types[1] == dynamics || types[1] == noDynamics) &&
-            (types[2] == dynamics || types[2] == noDynamics) &&
-            (types[3] == dynamics || types[3] == noDynamics) &&
-            (types[4] == dynamics || types[4] == noDynamics) &&
-            (types[5] == dynamics || types[5] == noDynamics) &&
-            (types[6] == dynamics || types[6] == noDynamics) &&
-            (types[7] == dynamics || types[7] == noDynamics) &&
-            (types[8] == dynamics || types[8] == noDynamics)
-        ;
+        for (std::size_t i = 0; i < OFFSETS.size(); ++i)
+        {
+            ViewPtr<Dynamics> type;
+
+            if (inRange(c + OFFSETS[i]))
+                type = get(c + OFFSETS[i]).getDynamics();
+
+            test = test && (type == nullptr || type == dynamics || type == noDynamics);
+        }
 
         if (test)
             get(c).setDynamics(noDynamics);
