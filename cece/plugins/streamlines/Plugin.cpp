@@ -46,17 +46,6 @@ public:
 
 
     /**
-     * @brief Returns a list of required plugins.
-     *
-     * @return
-     */
-    DynamicArray<String> requiredPlugins() const override
-    {
-        return {"obstacle"};
-    }
-
-
-    /**
      * @brief On plugin load.
      *
      * @param context Plugin context.

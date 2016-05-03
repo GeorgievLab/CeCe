@@ -55,15 +55,6 @@ namespace {
 
 /* ************************************************************************ */
 
-const Map<Boundary::Position, StaticArray<Vector<int>, 2>> EDGES{{
-    {Boundary::Position::Right,     {Vector<int>{ 1, -1}, Vector<int>{ 1,  1}}},
-    {Boundary::Position::Left,      {Vector<int>{-1, -1}, Vector<int>{-1,  1}}},
-    {Boundary::Position::Top,       {Vector<int>{-1,  1}, Vector<int>{ 1,  1}}},
-    {Boundary::Position::Bottom,    {Vector<int>{ 1, -1}, Vector<int>{-1, -1}}}
-}};
-
-/* ************************************************************************ */
-
 /**
  * @brief Returns ranges based on boundary position.
  *
@@ -127,8 +118,6 @@ InStream& operator>>(InStream& is, Boundary::Type& type)
 
     if (desc == "none")
         type = Boundary::Type::None;
-    else if (desc == "barrier")
-        type = Boundary::Type::Barrier;
     else if (desc == "inlet")
         type = Boundary::Type::Inlet;
     else if (desc == "outlet")
@@ -154,7 +143,6 @@ OutStream& operator<<(OutStream& os, const Boundary::Type& type)
     switch (type)
     {
     case Boundary::Type::None:      os << "none"; break;
-    case Boundary::Type::Barrier:   os << "barrier"; break;
     case Boundary::Type::Inlet:     os << "inlet"; break;
     case Boundary::Type::Outlet:    os << "outlet"; break;
     default: Assert(false && "Unknown boundary type");
@@ -299,27 +287,7 @@ void Boundary::storeConfig(config::Configuration& config) const
 
 /* ************************************************************************ */
 
-void Boundary::initBarrier(simulator::Simulation& simulation)
-{
-    const auto worldSizeHalf = simulation.getWorldSize() * 0.5;
-
-    // Create barrier
-    auto m_barrier = simulation.buildObject("obstacle.Polygon");
-    auto& shapes = m_barrier->getMutableShapes();
-    shapes.resize(1);
-
-    // Init shape
-    shapes[0] = Shape::makeEdges({
-        EDGES.at(m_position)[0] * worldSizeHalf,
-        EDGES.at(m_position)[1] * worldSizeHalf
-    });
-
-    m_barrier->initShapes();
-}
-
-/* ************************************************************************ */
-
-void Boundary::initInletOutlet(Converter& converter, Lattice& lattice, ViewPtr<Dynamics> fluidDynamics)
+void Boundary::apply(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
 {
     const auto size = lattice.getSize();
 

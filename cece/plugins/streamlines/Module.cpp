@@ -102,7 +102,7 @@ void Module::init(AtomicBool& termFlag)
         m_boundaries[i].setDynamics(createBorderDynamics(m_boundaries[i].getPosition()));
 
     // Initialize boundaries
-    m_boundaries.init();
+    m_boundaries.init(m_lattice, getFluidDynamics());
 
     // Obstacles
     updateObstacleMap();
@@ -634,7 +634,7 @@ void Module::applyToObject(object::Object& object)
 
 void Module::applyBoundaryConditions()
 {
-    m_boundaries.applyConditions(m_converter, m_lattice, getFluidDynamics());
+    m_boundaries.applyConditions(m_lattice, m_converter, getFluidDynamics());
 }
 
 /* ************************************************************************ */

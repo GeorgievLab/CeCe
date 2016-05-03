@@ -71,7 +71,6 @@ public:
     enum class Type
     {
         None,
-        Barrier,
         Inlet,
         Outlet
     };
@@ -175,17 +174,6 @@ public:
     }
 
 
-    /**
-     * @brief Returns barrier object.
-     *
-     * @return
-     */
-    ViewPtr<object::Object> getBarrierObject() const noexcept
-    {
-        return m_barrierObject;
-    }
-
-
 // Public Mutators
 public:
 
@@ -245,17 +233,6 @@ public:
     }
 
 
-    /**
-     * @brief Set barrier object.
-     *
-     * @param object
-     */
-    void setBarrierObject(ViewPtr<object::Object> object) noexcept
-    {
-        m_barrierObject = object;
-    }
-
-
 // Public Operations
 public:
 
@@ -277,21 +254,13 @@ public:
 
 
     /**
-     * @brief Init barrier object.
+     * @brief Apply boundary to lattice.
      *
-     * @param simulation
-     */
-    void initBarrier(simulator::Simulation& simulation);
-
-
-    /**
-     * @brief Initialize inlet or outlet.
-     *
-     * @param converter
      * @param lattice
+     * @param converter
      * @param fluidDynamics
      */
-    void initInletOutlet(Converter& converter, Lattice& lattice, ViewPtr<Dynamics> fluidDynamics);
+    void apply(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics);
 
 
     /**
@@ -316,7 +285,7 @@ public:
 // Private Data Members
 private:
 
-    /// Boundary type
+    /// Boundary type.
     Type m_type = Type::None;
 
     /// Boundary position.
@@ -330,9 +299,6 @@ private:
 
     /// Boundary dynamics.
     UniquePtr<Dynamics> m_dynamics;
-
-    /// Barrier object.
-    ViewPtr<object::Object> m_barrierObject = nullptr;
 
     /// A list of boundary holes.
     DynamicArray<StaticArray<Lattice::CoordinateType, 2>> m_holes;

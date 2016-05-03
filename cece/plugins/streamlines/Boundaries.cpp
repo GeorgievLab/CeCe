@@ -102,37 +102,20 @@ units::Velocity Boundaries::getMaxInletVelocity() const noexcept
 
 /* ************************************************************************ */
 
-void Boundaries::init()
+void Boundaries::init(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics)
 {
-    // Create barriers
+    // Init boundaries
     for (auto& boundary : m_boundaries)
-    {
-        if (boundary.getBarrierObject())
-        {
-            // Barrier recreation is not needed
-            if (boundary.getType() == Boundary::Type::Barrier)
-                continue;
-
-            getSimulation().deleteObject(boundary.getBarrierObject());
-            boundary.setBarrierObject(nullptr);
-        }
-        else if (boundary.getType() == Boundary::Type::Barrier)
-        {
-            boundary.initBarrier(getSimulation());
-        }
-    }
+        boundary.findHoles(lattice, fluidDynamics);
 }
 
 /* ************************************************************************ */
 
-void Boundaries::applyConditions(Converter& converter, Lattice& lattice, ViewPtr<Dynamics> fluidDynamics)
+void Boundaries::applyConditions(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
 {
-    // Init boundaries
+    // Apply boundary conditions
     for (auto& boundary : m_boundaries)
-    {
-        boundary.findHoles(lattice, fluidDynamics);
-        boundary.initInletOutlet(converter, lattice, fluidDynamics);
-    }
+        boundary.apply(lattice, converter, fluidDynamics);
 }
 
 /* ************************************************************************ */
@@ -146,9 +129,7 @@ void Boundaries::loadConfig(const config::Configuration& config)
 
         for (std::size_t i = 0; i < layout.size(); ++i)
         {
-            if (layout[i] == "barrier")
-                m_boundaries[i].setType(Boundary::Type::Barrier);
-            else if (layout[i] == "inlet")
+            if (layout[i] == "inlet")
                 m_boundaries[i].setType(Boundary::Type::Inlet);
             else if (layout[i] == "outlet")
                 m_boundaries[i].setType(Boundary::Type::Outlet);

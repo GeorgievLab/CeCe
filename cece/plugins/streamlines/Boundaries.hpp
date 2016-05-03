@@ -206,8 +206,11 @@ public:
 
     /**
      * @brief Initialize boundaries.
+     * @param lattice
+     * @param fluidDynamics
      */
-    void init();
+    void init(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics);
+
 
     /**
      * @brief Apply boundary conditions.
@@ -216,7 +219,7 @@ public:
      * @param lattice
      * @param fluidDynamics
      */
-    void applyConditions(Converter& converter, Lattice& lattice, ViewPtr<Dynamics> fluidDynamics);
+    void applyConditions(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics);
 
 
     /**
