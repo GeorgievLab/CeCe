@@ -57,6 +57,8 @@ set(SRCS
     Boundary.cpp
     Converter.hpp
     Converter.cpp
+    Boundaries.hpp
+    Boundaries.cpp
 )
 
 # Build plugin

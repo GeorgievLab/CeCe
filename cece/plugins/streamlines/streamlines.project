@@ -40,6 +40,8 @@
     <File Name="Boundary.cpp"/>
     <File Name="Converter.hpp"/>
     <File Name="Converter.cpp"/>
+    <File Name="Boundaries.hpp"/>
+    <File Name="Boundaries.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
