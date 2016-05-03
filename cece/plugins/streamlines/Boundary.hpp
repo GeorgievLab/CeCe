@@ -29,16 +29,29 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/core/VectorUnits.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/UniquePtr.hpp"
+
+// Plugin
+#include "cece/plugins/streamlines/Lattice.hpp"
 
 /* ************************************************************************ */
 
 namespace cece { namespace config { class Configuration; } }
+namespace cece { namespace object { class Object; } }
+namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace plugin {
 namespace streamlines {
+
+/* ************************************************************************ */
+
+class Dynamics;
+class Converter;
 
 /* ************************************************************************ */
 
@@ -69,10 +82,10 @@ public:
      */
     enum class Position
     {
-        Right  = 0,
-        Left   = 1,
-        Top    = 2,
-        Bottom = 3
+        Right  = 1,
+        Left   = 3,
+        Top    = 0,
+        Bottom = 2
     };
 
 
@@ -85,6 +98,22 @@ public:
         Constant,
         Parabolic
     };
+
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    Boundary();
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~Boundary();
 
 
 // Public Accessors
@@ -114,28 +143,6 @@ public:
 
 
     /**
-     * @brief Returns boundary center position.
-     *
-     * @return
-     */
-    units::Length getCenter() const noexcept
-    {
-        return m_center;
-    }
-
-
-    /**
-     * @brief Returns boundary size.
-     *
-     * @return
-     */
-    units::Length getSize() const noexcept
-    {
-        return m_size;
-    }
-
-
-    /**
      * @brief Returns boundary type.
      *
      * @return
@@ -143,6 +150,39 @@ public:
     InletProfileType getInletProfileType() const noexcept
     {
         return m_inletProfileType;
+    }
+
+
+    /**
+     * @brief Returns inlet velocity.
+     *
+     * @return
+     */
+    units::Velocity getInletVelocity() const noexcept
+    {
+        return m_inletVelocity;
+    }
+
+
+    /**
+     * @brief Returns dynamics.
+     *
+     * @return
+     */
+    ViewPtr<Dynamics> getDynamics() const noexcept
+    {
+        return m_dynamics;
+    }
+
+
+    /**
+     * @brief Returns barrier object.
+     *
+     * @return
+     */
+    ViewPtr<object::Object> getBarrierObject() const noexcept
+    {
+        return m_barrierObject;
     }
 
 
@@ -173,28 +213,6 @@ public:
 
 
     /**
-     * @brief Set boundary center position.
-     *
-     * @param center
-     */
-    void setCenter(units::Length center) noexcept
-    {
-        m_center = center;
-    }
-
-
-    /**
-     * @brief Set boundary size.
-     *
-     * @param size
-     */
-    void setSize(units::Length size) noexcept
-    {
-        m_size = size;
-    }
-
-
-    /**
      * @brief Set boundary type.
      *
      * @param type
@@ -205,8 +223,41 @@ public:
     }
 
 
+    /**
+     * @brief Set inlet velocity.
+     *
+     * @param velocity
+     */
+    void setInletVelocity(units::Velocity velocity) noexcept
+    {
+        m_inletVelocity = velocity;
+    }
+
+
+    /**
+     * @brief Set dynamics.
+     *
+     * @param dynamics
+     */
+    void setDynamics(UniquePtr<Dynamics> dynamics) noexcept
+    {
+        m_dynamics = std::move(dynamics);
+    }
+
+
+    /**
+     * @brief Set barrier object.
+     *
+     * @param object
+     */
+    void setBarrierObject(ViewPtr<object::Object> object) noexcept
+    {
+        m_barrierObject = object;
+    }
+
+
 // Public Operations
-private:
+public:
 
 
     /**
@@ -225,6 +276,43 @@ private:
     void storeConfig(config::Configuration& config) const;
 
 
+    /**
+     * @brief Init barrier object.
+     *
+     * @param simulation
+     */
+    void initBarrier(simulator::Simulation& simulation);
+
+
+    /**
+     * @brief Initialize inlet or outlet.
+     *
+     * @param converter
+     * @param lattice
+     * @param fluidDynamics
+     */
+    void initInletOutlet(Converter& converter, Lattice& lattice, ViewPtr<Dynamics> fluidDynamics);
+
+
+    /**
+     * @brief Find fluid holes within lattice where is fluid dynamics.
+     *
+     * @param lattice
+     * @param fluidDynamics
+     */
+    void findHoles(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics);
+
+
+    /**
+     * @brief Calculate inlet velocity profile.
+     *
+     * @param coord
+     *
+     * @return
+     */
+    VelocityVector inletVelocity(Lattice::CoordinateType coord) const noexcept;
+
+
 // Private Data Members
 private:
 
@@ -234,14 +322,20 @@ private:
     /// Boundary position.
     Position m_position;
 
-    /// Boundary center position.
-    units::Length m_center;
-
-    /// Boundary size.
-    units::Length m_size;
-
     /// Inlet velocity profile type.
     InletProfileType m_inletProfileType = InletProfileType::Auto;
+
+    /// Inlet velocity.
+    units::Velocity m_inletVelocity = Zero;
+
+    /// Boundary dynamics.
+    UniquePtr<Dynamics> m_dynamics;
+
+    /// Barrier object.
+    ViewPtr<object::Object> m_barrierObject = nullptr;
+
+    /// A list of boundary holes.
+    DynamicArray<StaticArray<Lattice::CoordinateType, 2>> m_holes;
 };
 
 /* ************************************************************************ */
