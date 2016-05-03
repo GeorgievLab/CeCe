@@ -53,6 +53,8 @@ set(SRCS
     BounceBackDynamics.cpp
     ZouHeDynamics.hpp
     ZouHeDynamics.cpp
+    Boundary.hpp
+    Boundary.cpp
 )
 
 # Build plugin
