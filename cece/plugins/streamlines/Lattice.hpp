@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -33,20 +33,21 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Units.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/Grid.hpp"
-#include "cece/core/StaticArray.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/Node.hpp"
-#include "cece/plugins/streamlines/Dynamics.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace plugin {
 namespace streamlines {
+
+/* ************************************************************************ */
+
+class Dynamics;
 
 /* ************************************************************************ */
 

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -32,6 +32,7 @@
 #include "cece/core/ViewPtr.hpp"
 
 // Plugin
+#include "cece/plugins/streamlines/Descriptor.hpp"
 #include "cece/plugins/streamlines/Dynamics.hpp"
 
 /* ************************************************************************ */
@@ -43,7 +44,7 @@ namespace streamlines {
 /* ************************************************************************ */
 
 /**
- * @brief Dynamics with no behavior.
+ * @brief Dynamics with no behavior. Can be used for solid nodes (not wall nodes).
  */
 class NoDynamics : public Dynamics
 {
@@ -61,7 +62,7 @@ public:
      */
     DensityType computeDensity(const DataType& data) const noexcept
     {
-        return 1.0;
+        return Descriptor::DEFAULT_DENSITY;
     }
 
 

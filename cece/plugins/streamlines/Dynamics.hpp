@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -26,11 +26,6 @@
 #pragma once
 
 /* ************************************************************************ */
-
-// CeCe
-#include "cece/core/Real.hpp"
-#include "cece/core/Vector.hpp"
-#include "cece/core/StaticArray.hpp"
 
 // CeCe Plugins
 #include "cece/plugins/streamlines/Descriptor.hpp"

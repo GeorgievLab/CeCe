@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -41,7 +41,7 @@ namespace streamlines {
 /* ************************************************************************ */
 
 /**
- * @brief Utility class.
+ * @brief Utility class which store LB configuration.
  */
 class Descriptor
 {
@@ -86,6 +86,9 @@ public:
 
     /// Number of populations.
     static constexpr DirectionType SIZE = 9;
+
+    /// Default density.
+    static constexpr DensityType DEFAULT_DENSITY = 1.0;
 
     /// Direction index map.
     static constexpr StaticArray<StaticArray<DirectionType, 3>, 3> INDEX_MAP{{
@@ -203,15 +206,15 @@ public:
 
 
     /**
-     * @brief Returns opposite index.
+     * @brief Returns an opposite index.
      *
-     * @param i
+     * @param iPop Population index.
      *
-     * @return
+     * @return Opposite index of iPop.
      */
-    static constexpr DirectionType opposite(DirectionType i) noexcept
+    static constexpr DirectionType opposite(DirectionType iPop) noexcept
     {
-        return DIRECTION_OPPOSITES[i];
+        return DIRECTION_OPPOSITES[iPop];
     }
 
 };

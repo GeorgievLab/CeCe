@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -39,7 +39,7 @@ namespace streamlines {
 /* ************************************************************************ */
 
 /**
- * @brief ZouHe boundary condition dynamics.
+ * @brief Zou He boundary condition dynamics.
  */
 class ZouHeDynamics : public BgkDynamics
 {

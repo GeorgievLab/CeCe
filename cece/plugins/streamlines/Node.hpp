@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,12 +28,10 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Real.hpp"
 #include "cece/core/ViewPtr.hpp"
-#include "cece/core/Vector.hpp"
-#include "cece/core/StaticArray.hpp"
 
 // Plugin
+#include "cece/plugins/streamlines/Descriptor.hpp"
 #include "cece/plugins/streamlines/Dynamics.hpp"
 
 /* ************************************************************************ */
@@ -67,14 +65,6 @@ public:
 
     /// Data type.
     using DataType = typename Dynamics::DataType;
-
-
-// Public Constants
-public:
-
-
-    /// Default density.
-    static constexpr DensityType DEFAULT_DENSITY = 1.0;
 
 
 // Public Operators
@@ -258,7 +248,7 @@ public:
      * @param velocity Cell velocity vector.
      * @param density  Cell density.
      */
-    void initEquilibrium(VelocityType velocity = Zero, DensityType density = DEFAULT_DENSITY) noexcept
+    void initEquilibrium(VelocityType velocity = Zero, DensityType density = Descriptor::DEFAULT_DENSITY) noexcept
     {
         Assert(m_dynamics);
         m_dynamics->initEquilibrium(m_data, velocity, density);
