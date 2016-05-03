@@ -183,8 +183,6 @@ void Lattice::fixupObstacles(ViewPtr<Dynamics> dynamics) noexcept
 
     // Foreach all cells
     for (auto&& c : range(getSize()))
-    //for (Descriptor::IndexType y = 0; y < getSize().getY(); ++y)
-    //for (Descriptor::IndexType x = 0; x < getSize().getX(); ++x)
     {
         if (get(c).getDynamics() != dynamics)
             continue;
