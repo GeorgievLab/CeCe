@@ -28,7 +28,7 @@
 
 // C++
 #include <iterator>
-#include <algorithm>
+#include <numeric>
 
 /* ************************************************************************ */
 

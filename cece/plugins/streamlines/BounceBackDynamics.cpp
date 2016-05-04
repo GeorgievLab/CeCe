@@ -29,7 +29,7 @@
 // C++
 #include <utility>
 #include <iterator>
-#include <algorithm>
+#include <numeric>
 
 // CeCe
 #include "cece/core/Zero.hpp"
