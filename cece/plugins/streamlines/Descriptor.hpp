@@ -98,28 +98,22 @@ public:
     }};
 
     /// Direction index top line.
-    static constexpr StaticArray<DirectionType, 3> TOP_LINE = INDEX_MAP[0];
+    static const StaticArray<DirectionType, 3> TOP_LINE;
 
     /// Direction index middle line.
-    static constexpr StaticArray<DirectionType, 3> MIDDLE_LINE = INDEX_MAP[1];
+    static const StaticArray<DirectionType, 3> MIDDLE_LINE;
 
     /// Direction index bottom line.
-    static constexpr StaticArray<DirectionType, 3> BOTTOM_LINE = INDEX_MAP[2];
+    static const StaticArray<DirectionType, 3> BOTTOM_LINE;
 
     /// Direction index left column.
-    static constexpr StaticArray<DirectionType, 3> LEFT_COLUMN = {{
-        INDEX_MAP[0][0], INDEX_MAP[1][0], INDEX_MAP[2][0]
-    }};
+    static const StaticArray<DirectionType, 3> LEFT_COLUMN;
 
     /// Direction index middle column.
-    static constexpr StaticArray<DirectionType, 3> MIDDLE_COLUMN = {{
-        INDEX_MAP[0][1], INDEX_MAP[1][1], INDEX_MAP[2][1]
-    }};
+    static const StaticArray<DirectionType, 3> MIDDLE_COLUMN;
 
     /// Direction index right column.
-    static constexpr StaticArray<DirectionType, 3> RIGHT_COLUMN = {{
-        INDEX_MAP[0][2], INDEX_MAP[1][2], INDEX_MAP[2][2]
-    }};
+    static const StaticArray<DirectionType, 3> RIGHT_COLUMN;
 
     /// Direction weights.
     static constexpr StaticArray<RealType, SIZE> DIRECTION_WEIGHTS = {{
@@ -212,7 +206,7 @@ public:
      *
      * @return Opposite index of iPop.
      */
-    static constexpr DirectionType opposite(DirectionType iPop) noexcept
+    static DirectionType opposite(DirectionType iPop) noexcept
     {
         return DIRECTION_OPPOSITES[iPop];
     }

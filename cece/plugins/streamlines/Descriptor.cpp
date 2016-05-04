@@ -38,27 +38,33 @@ constexpr StaticArray<StaticArray<Descriptor::DirectionType, 3>, 3> Descriptor::
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::TOP_LINE;
+const StaticArray<Descriptor::DirectionType, 3> Descriptor::TOP_LINE = INDEX_MAP[0];
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_LINE;
+const StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_LINE = INDEX_MAP[1];
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::BOTTOM_LINE;
+const StaticArray<Descriptor::DirectionType, 3> Descriptor::BOTTOM_LINE = INDEX_MAP[2];
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::LEFT_COLUMN;
+const StaticArray<Descriptor::DirectionType, 3> Descriptor::LEFT_COLUMN = {{
+    INDEX_MAP[0][0], INDEX_MAP[1][0], INDEX_MAP[2][0]
+}};
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_COLUMN;
+const StaticArray<Descriptor::DirectionType, 3> Descriptor::MIDDLE_COLUMN = {{
+    INDEX_MAP[0][1], INDEX_MAP[1][1], INDEX_MAP[2][1]
+}};
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Descriptor::DirectionType, 3> Descriptor::RIGHT_COLUMN;
+const StaticArray<Descriptor::DirectionType, 3> Descriptor::RIGHT_COLUMN = {{
+    INDEX_MAP[0][2], INDEX_MAP[1][2], INDEX_MAP[2][2]
+}};
 
 /* ************************************************************************ */
 
