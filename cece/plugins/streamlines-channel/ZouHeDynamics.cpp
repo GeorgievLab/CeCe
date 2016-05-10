@@ -137,7 +137,7 @@ sumValues(ZouHeDynamics::DataType& data, StaticArray<Descriptor::DirectionType, 
 void
 ZouHeDynamics::defineDensity(DataType& data, DensityType density) const noexcept
 {
-    const auto velocity = calcVelocity(data, density);
+    const auto velocity = calcVelocity(data, density) / Descriptor::getSplitCoefficient();
     init(data, velocity, density);
 }
 
@@ -146,6 +146,7 @@ ZouHeDynamics::defineDensity(DataType& data, DensityType density) const noexcept
 void
 ZouHeDynamics::defineVelocity(DataType& data, VelocityType velocity) const noexcept
 {
+    velocity /= Descriptor::getSplitCoefficient();
     const auto density = calcDensity(data, velocity);
     init(data, velocity, density);
 }
