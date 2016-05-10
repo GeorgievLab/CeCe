@@ -129,10 +129,7 @@ public:
     }};
 
     /// Direction velocities.
-    static constexpr StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES = {{
-        { 0,  0},
-        {-1,  1}, {-1,  0}, {-1, -1}, { 0, -1}, { 1, -1}, { 1,  0}, { 1,  1}, { 0,  1}
-    }};
+    static const StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES;
 
     /// Direction opposites
     static constexpr StaticArray<DirectionType, SIZE> DIRECTION_OPPOSITES = {{

@@ -27,16 +27,14 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
 // C++
 #include <cmath>
 #include <type_traits>
 
 // CeCe
+#include "cece/config.hpp"
+#include "cece/export.hpp"
+#include "cece/core/Real.hpp"
 #include "cece/core/Assert.hpp"
 #include "cece/core/Zero.hpp"
 #include "cece/core/Units.hpp"
@@ -310,7 +308,7 @@ public:
      *
      * @return
      */
-    static constexpr bool inRange(T value, T low, T high) noexcept
+    static bool inRange(T value, T low, T high) noexcept
     {
         return value >= low && value < high;
     }
@@ -485,7 +483,10 @@ public:
     /**
      * @brief Default constructor.
      */
-    BasicVector() = default;
+    BasicVector() noexcept
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -494,7 +495,7 @@ public:
      * @param x
      * @param y
      */
-    constexpr BasicVector(T x, T y) noexcept
+    BasicVector(T x, T y) noexcept
         : m_x(x)
         , m_y(y)
     {
@@ -505,7 +506,7 @@ public:
     /**
      * @brief Zero value constructor.
      */
-    constexpr BasicVector(Zero_t) noexcept
+    BasicVector(Zero_t) noexcept
         : m_x{}
         , m_y{}
     {
@@ -564,7 +565,7 @@ public:
      *
      * @return
      */
-    constexpr BasicVector operator+() const noexcept
+    BasicVector operator+() const noexcept
     {
         return *this;
     }
@@ -575,7 +576,7 @@ public:
      *
      * @return
      */
-    constexpr BasicVector operator-() const noexcept
+    BasicVector operator-() const noexcept
     {
         return BasicVector{-getX(), -getY()};
     }
@@ -698,7 +699,7 @@ public:
      *
      * @return
      */
-    constexpr unsigned getSize() const noexcept
+    unsigned getSize() const noexcept
     {
         return SIZE;
     }
@@ -720,7 +721,7 @@ public:
      *
      * @return
      */
-    constexpr T getX() const noexcept
+    const T& getX() const noexcept
     {
         return m_x;
     }
@@ -742,7 +743,7 @@ public:
      *
      * @return
      */
-    constexpr T getY() const noexcept
+    const T& getY() const noexcept
     {
         return m_y;
     }
@@ -764,7 +765,7 @@ public:
      *
      * @return
      */
-    constexpr T getWidth() const noexcept
+    const T& getWidth() const noexcept
     {
         return m_x;
     }
@@ -786,7 +787,7 @@ public:
      *
      * @return
      */
-    constexpr T getHeight() const noexcept
+    const T& getHeight() const noexcept
     {
         return m_y;
     }
@@ -827,7 +828,7 @@ public:
      *
      * @return
      */
-    static constexpr bool inRange(T value, T low, T high) noexcept
+    static bool inRange(T value, T low, T high) noexcept
     {
         return value >= low && value < high;
     }
@@ -841,7 +842,7 @@ public:
      *
      * @return
      */
-    constexpr bool inRange(const BasicVector& low, const BasicVector& high) const noexcept
+    bool inRange(const BasicVector& low, const BasicVector& high) const noexcept
     {
         return (
             inRange(getX(), low.getX(), high.getX()) &&
@@ -871,7 +872,7 @@ public:
      *
      * @return
      */
-    constexpr decltype(T{} * T{}) getLengthSquared() const noexcept
+    decltype(T{} * T{}) getLengthSquared() const noexcept
     {
         return dot(*this);
     }
@@ -884,7 +885,7 @@ public:
      *
      * @return Dot product.
      */
-    constexpr decltype(T{} * T{}) dot(const BasicVector& rhs) const noexcept
+    decltype(T{} * T{}) dot(const BasicVector& rhs) const noexcept
     {
         return {getX() * rhs.getX() + getY() * rhs.getY()};
     }
@@ -922,7 +923,7 @@ public:
      * @return
      */
     template<typename T2>
-    constexpr BasicVector<T2, SIZE> inversed() const noexcept
+    BasicVector<T2, SIZE> inversed() const noexcept
     {
         return BasicVector<T2, SIZE>{T2(1) / getX(), T2(1) / getY()};
     }
@@ -951,7 +952,7 @@ public:
      *
      * @return
      */
-    static constexpr BasicVector createSingle(T val) noexcept
+    static BasicVector createSingle(T val) noexcept
     {
         return BasicVector{val, val};
     }
@@ -1000,7 +1001,10 @@ public:
     /**
      * @brief Default constructor.
      */
-    BasicVector() = default;
+    BasicVector() noexcept
+    {
+        // Nothing to do
+    }
 
 
     /**
@@ -1010,7 +1014,7 @@ public:
      * @param y
      * @param z
      */
-    constexpr BasicVector(T x, T y, T z) noexcept
+    BasicVector(T x, T y, T z) noexcept
         : m_x(x)
         , m_y(y)
         , m_z(z)
@@ -1022,7 +1026,7 @@ public:
     /**
      * @brief Zero value constructor.
      */
-    constexpr BasicVector(Zero_t) noexcept
+    BasicVector(Zero_t) noexcept
         : m_x{}
         , m_y{}
         , m_z{}
@@ -1083,7 +1087,7 @@ public:
      *
      * @return
      */
-    constexpr BasicVector operator+() const noexcept
+    BasicVector operator+() const noexcept
     {
         return *this;
     }
@@ -1094,7 +1098,7 @@ public:
      *
      * @return
      */
-    constexpr BasicVector operator-() const noexcept
+    BasicVector operator-() const noexcept
     {
         return BasicVector{-getX(), -getY(), -getZ()};
     }
@@ -1223,7 +1227,7 @@ public:
      *
      * @return
      */
-    constexpr unsigned getSize() const noexcept
+    unsigned getSize() const noexcept
     {
         return SIZE;
     }
@@ -1245,7 +1249,7 @@ public:
      *
      * @return
      */
-    constexpr T getX() const noexcept
+    const T& getX() const noexcept
     {
         return m_x;
     }
@@ -1267,7 +1271,7 @@ public:
      *
      * @return
      */
-    constexpr T getY() const noexcept
+    const T& getY() const noexcept
     {
         return m_y;
     }
@@ -1289,7 +1293,7 @@ public:
      *
      * @return
      */
-    constexpr T getZ() const noexcept
+    const T& getZ() const noexcept
     {
         return m_z;
     }
@@ -1311,7 +1315,7 @@ public:
      *
      * @return
      */
-    constexpr T getWidth() const noexcept
+    const T& getWidth() const noexcept
     {
         return m_x;
     }
@@ -1333,7 +1337,7 @@ public:
      *
      * @return
      */
-    constexpr T getHeight() const noexcept
+    const T& getHeight() const noexcept
     {
         return m_y;
     }
@@ -1355,7 +1359,7 @@ public:
      *
      * @return
      */
-    constexpr T getDepth() const noexcept
+    const T& getDepth() const noexcept
     {
         return m_z;
     }
@@ -1370,7 +1374,7 @@ public:
      *
      * @return
      */
-    static constexpr bool inRange(T value, T low, T high) noexcept
+    static bool inRange(T value, T low, T high) noexcept
     {
         return value >= low && value < high;
     }
@@ -1384,7 +1388,7 @@ public:
      *
      * @return
      */
-    constexpr bool inRange(const BasicVector& low, const BasicVector& high) const noexcept
+    bool inRange(const BasicVector& low, const BasicVector& high) const noexcept
     {
         return (
             inRange(getX(), low.getX(), high.getX()) &&
@@ -1454,7 +1458,7 @@ public:
      *
      * @return
      */
-    constexpr decltype(T{} * T{}) getLengthSquared() const noexcept
+    decltype(T{} * T{}) getLengthSquared() const noexcept
     {
         return dot(*this);
     }
@@ -1467,7 +1471,7 @@ public:
      *
      * @return Dot product.
      */
-    constexpr decltype(T{} * T{}) dot(const BasicVector& rhs) const noexcept
+    decltype(T{} * T{}) dot(const BasicVector& rhs) const noexcept
     {
         return {
             getX() * rhs.getX() +
@@ -1509,7 +1513,7 @@ public:
      * @return
      */
     template<typename T2>
-    constexpr BasicVector<T2, SIZE> inversed() const noexcept
+    BasicVector<T2, SIZE> inversed() const noexcept
     {
         return BasicVector<T2, SIZE>{
             T2(1) / getX(),
@@ -1526,7 +1530,7 @@ public:
      *
      * @return
      */
-    static constexpr BasicVector createSingle(T val) noexcept
+    static BasicVector createSingle(T val) noexcept
     {
         return {val, val, val};
     }
@@ -1587,16 +1591,13 @@ using VectorUint = Vector<unsigned int>;
 /**
  * @brief Vector of float.
  */
-using VectorFloat = Vector<float>;
+using VectorFloat = Vector<RealType>;
 
 /* ************************************************************************ */
 
-// NOTE: GCC have problem with =default constructor in linking stage.
-#if !defined(__GNUC__)
-extern template class BasicVector<float>;
-extern template class BasicVector<unsigned int>;
-extern template class BasicVector<int>;
-#endif
+extern template class CECE_EXPORT BasicVector<RealType, config::DIMENSION>;
+extern template class CECE_EXPORT BasicVector<unsigned int, config::DIMENSION>;
+extern template class CECE_EXPORT BasicVector<int, config::DIMENSION>;
 
 /* ************************************************************************ */
 

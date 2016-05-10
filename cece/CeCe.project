@@ -179,6 +179,7 @@
       <File Name="core/UnitIo.cpp"/>
       <File Name="core/Unit.hpp"/>
       <File Name="core/Unit.cpp"/>
+      <File Name="core/Units.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="log">
       <File Name="core/Log.cpp"/>

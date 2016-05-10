@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -88,12 +88,12 @@ using SizeVector = Vector<units::Length>;
 
 /* ************************************************************************ */
 
-#if !defined(__GNUC__) // NOTE: GCC have problem with =default constructor in linking stage.
-extern template class Vector<units::Length>;
-extern template class Vector<units::Velocity>;
-extern template class Vector<units::Acceleration>;
-extern template class Vector<units::Force>;
-#endif
+extern template class BasicVector<units::Length, config::DIMENSION>;
+extern template class BasicVector<units::Velocity, config::DIMENSION>;
+extern template class BasicVector<units::Acceleration, config::DIMENSION>;
+extern template class BasicVector<units::Force, config::DIMENSION>;
+extern template class BasicVector<units::Impulse, config::DIMENSION>;
+extern template class BasicVector<RealType, config::DIMENSION>;
 
 /* ************************************************************************ */
 

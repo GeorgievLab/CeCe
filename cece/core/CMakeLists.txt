@@ -41,6 +41,7 @@ add_library(${PROJECT_NAME} OBJECT
     UnitIo.cpp
     UnitSymbol.hpp
     Units.hpp
+    Units.cpp
     UnitsCtors.hpp
     Vector.hpp
     Vector.cpp

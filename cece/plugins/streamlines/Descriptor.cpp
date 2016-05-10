@@ -72,7 +72,10 @@ constexpr StaticArray<RealType, Descriptor::SIZE> Descriptor::DIRECTION_WEIGHTS;
 
 /* ************************************************************************ */
 
-constexpr StaticArray<Vector<int>, Descriptor::SIZE> Descriptor::DIRECTION_VELOCITIES;
+const StaticArray<Vector<int>, Descriptor::SIZE> Descriptor::DIRECTION_VELOCITIES = {{
+    { 0,  0},
+    {-1,  1}, {-1,  0}, {-1, -1}, { 0, -1}, { 1, -1}, { 1,  0}, { 1,  1}, { 0,  1}
+}};
 
 /* ************************************************************************ */
 

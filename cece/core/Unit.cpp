@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -38,22 +38,6 @@ inline namespace core {
 /* ************************************************************************ */
 
 namespace units {
-
-/* ************************************************************************ */
-
-#if 0
-template class Unit<List<BaseLength>, List<>>;
-template class Unit<List<BaseMass>, List<>>;
-template class Unit<List<BaseTime>, List<>>;
-template class Unit<List<BaseLength, BaseLength>, List<>>;
-template class Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
-template class Unit<List<BaseLength>, List<BaseTime>>;
-template class Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
-template class Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
-template class Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
-template class Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
-template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
-#endif
 
 /* ************************************************************************ */
 

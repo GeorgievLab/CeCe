@@ -33,11 +33,9 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-#if !defined(__GNUC__)
-template class Vector<float>;
-template class Vector<unsigned int>;
-template class Vector<int>;
-#endif
+template class BasicVector<RealType, config::DIMENSION>;
+template class BasicVector<unsigned int, config::DIMENSION>;
+template class BasicVector<int, config::DIMENSION>;
 
 /* ************************************************************************ */
 

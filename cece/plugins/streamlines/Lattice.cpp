@@ -173,7 +173,7 @@ void Lattice::fixupObstacles(ViewPtr<Dynamics> dynamics) noexcept
 {
     using Offset = Vector<typename std::make_signed<Descriptor::IndexType>::type>;
 
-    static constexpr StaticArray<Offset, 9> OFFSETS{{
+    static const StaticArray<Offset, 9> OFFSETS{{
         Offset{ 0,  0},
         Offset{ 1,  0}, Offset{-1,  0}, Offset{ 0,  1}, Offset{ 1,  1},
         Offset{-1,  1}, Offset{ 0, -1}, Offset{ 1, -1}, Offset{-1, -1}

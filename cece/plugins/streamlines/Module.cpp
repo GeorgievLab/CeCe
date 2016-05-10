@@ -191,7 +191,7 @@ constexpr StaticArray<char, 5> FILE_GUARD{{'C', 'E', 'S', 'L', '\0'}};
 
 /* ************************************************************************ */
 
-constexpr StaticArray<StaticArray<Vector<int>, 2>, Module::LayoutPosCount> EDGES{{
+const StaticArray<StaticArray<Vector<int>, 2>, Module::LayoutPosCount> EDGES{{
     {{{ 1, -1}, { 1,  1}}},
     {{{-1, -1}, {-1,  1}}},
     {{{-1,  1}, { 1,  1}}},

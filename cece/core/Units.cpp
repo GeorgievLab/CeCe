@@ -24,7 +24,7 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/core/VectorUnits.hpp"
+#include "cece/core/Units.hpp"
 
 /* ************************************************************************ */
 
@@ -33,12 +33,30 @@ inline namespace core {
 
 /* ************************************************************************ */
 
-template class BasicVector<units::Length, config::DIMENSION>;
-template class BasicVector<units::Velocity, config::DIMENSION>;
-template class BasicVector<units::Acceleration, config::DIMENSION>;
-template class BasicVector<units::Force, config::DIMENSION>;
-template class BasicVector<units::Impulse, config::DIMENSION>;
-template class BasicVector<RealType, config::DIMENSION>;
+namespace units {
+
+/* ************************************************************************ */
+
+template class CECE_EXPORT Unit<List<>, List<>>;
+template class CECE_EXPORT Unit<List<BaseLength>, List<>>;
+template class CECE_EXPORT Unit<List<BaseMass>, List<>>;
+template class CECE_EXPORT Unit<List<BaseTime>, List<>>;
+template class CECE_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
+template class CECE_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+template class CECE_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
+template class CECE_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+template class CECE_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
+template class CECE_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime>>;
+template class CECE_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
+template class CECE_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+template class CECE_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+template class CECE_EXPORT Unit<List<BaseAmountOfSubstance>, List<>>;
+template class CECE_EXPORT Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
+template class CECE_EXPORT Unit<List<>, List<BaseTime>>;
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 
