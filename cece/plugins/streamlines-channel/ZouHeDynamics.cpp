@@ -146,6 +146,7 @@ ZouHeDynamics::defineDensity(DataType& data, DensityType density) const noexcept
 void
 ZouHeDynamics::defineVelocity(DataType& data, VelocityType velocity) const noexcept
 {
+    velocity /= Descriptor::getSplitCoefficient();
     const auto density = calcDensity(data, velocity);
     init(data, velocity, density);
 }
