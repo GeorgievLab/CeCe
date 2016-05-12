@@ -107,6 +107,8 @@ public:
     ViewPtr<simulator::Simulation> getSimulation() const noexcept;
 
 
+#ifdef CECE_ENABLE_RENDER
+
     /**
      * @brief Returns if simulation is visualized.
      *
@@ -116,6 +118,8 @@ public:
     {
         return m_visualize;
     }
+
+#endif
 
 
     /**
