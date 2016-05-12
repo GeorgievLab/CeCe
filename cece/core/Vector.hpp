@@ -484,6 +484,8 @@ public:
      * @brief Default constructor.
      */
     BasicVector() noexcept
+        : m_x{}
+        , m_y{}
     {
         // Nothing to do
     }
@@ -1002,6 +1004,9 @@ public:
      * @brief Default constructor.
      */
     BasicVector() noexcept
+        : m_x{}
+        , m_y{}
+        , m_z{}
     {
         // Nothing to do
     }

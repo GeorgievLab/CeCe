@@ -552,6 +552,7 @@ public:
      * @brief Default constructor.
      */
     Unit() noexcept
+        : m_value{}
     {
         // Default ( = default) constructor and extern template are not
         // friends in GCC
