@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -29,12 +29,16 @@
 
 // Qt
 #include <QObject>
+#include <QString>
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/Atomic.hpp"
 
 /* ************************************************************************ */
 
+namespace cece { namespace plugin { class Manager; } }
 namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
@@ -56,9 +60,17 @@ public:
 
     /**
      * @brief Constructor.
+     *
+     * @param manager
      * @param parent
      */
-    explicit Simulator(QObject* parent = nullptr);
+    explicit Simulator(plugin::Manager& manager, QObject* parent = nullptr);
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~Simulator();
 
 
 public:
@@ -86,23 +98,7 @@ public:
      */
     ViewPtr<simulator::Simulation> getSimulation() const noexcept
     {
-        return m_simulation.data();
-    }
-
-
-// Public Mutators
-public slots:
-
-
-    /**
-     * @brief Set visualized simulation.
-     *
-     * @param simulation
-     */
-    void setSimulation(simulator::Simulation* simulation) noexcept
-    {
-        m_simulation = simulation;
-        emit simulationChanged(m_simulation);
+        return m_simulation.get();
     }
 
 
@@ -110,11 +106,11 @@ signals:
 
 
     /**
-     * @brief Simulator current simulation has been changed.
+     * @brief Simulator current simulation has been changed/loaded.
      *
      * @param simulation Pointer to simulation or nullptr.
      */
-    void simulationChanged(simulator::Simulation* simulation);
+    void simulationLoaded(simulator::Simulation* simulation);
 
 
     /**
@@ -175,6 +171,15 @@ public slots:
 
 
     /**
+     * @brief Load simulation.
+     *
+     * @param type Source type.
+     * @param source
+     */
+    void simulationLoad(QString type, QString source);
+
+
+    /**
      * @brief Start simulation.
      */
     void start();
@@ -203,8 +208,11 @@ public slots:
 // Private Data Members
 private:
 
+    /// Plugin manager.
+    plugin::Manager& m_manager;
+
     /// Current simulation.
-    ViewPtr<simulator::Simulation> m_simulation;
+    UniquePtr<simulator::Simulation> m_simulation;
 
     /// If simulation is running.
     bool m_running = false;

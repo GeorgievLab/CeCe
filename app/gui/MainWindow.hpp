@@ -161,23 +161,29 @@ public slots:
 
 
     /**
+     * @brief Create a screenshot from visualization.
+     */
+    void visualizationScreenshot();
+
+
+    /**
      * @brief Show about dialog.
      */
     void helpAbout();
 
 
     /**
-     * @brief If simulator is running.
-     * @param flag
+     * @brief Source code has been modified.
      */
-    void simulatorRunning(bool flag);
+    void sourceCodeWasModified(bool flag);
 
 
     /**
-     * @brief If simulator contains valid simulation.
-     * @param flag
+     * @brief Simulator loads new simulation.
+     *
+     * @param simulation
      */
-    void simulatorLoaded(bool flag);
+    void simulatorLoaded(simulator::Simulation* simulation);
 
 
     /**
@@ -188,31 +194,33 @@ public slots:
 
 
     /**
-     * @brief A simulator step is performed.
-     * @param iteration
-     * @param iterations
+     * @brief On simulator start.
      */
-    void simulatorStepped(int iteration, int iterations);
+    void simulatorStarted();
+
+
+    /**
+     * @brief On simulator pause.
+     */
+    void simulatorPaused();
+
+
+    /**
+     * @brief A simulator step is performed.
+     *
+     * @param iteration
+     */
+    void simulatorStepped(int iteration);
 
 
     /**
      * @brief Simulator finished simulation.
-     *
-     * @param end
      */
-    void simulatorFinished(bool end);
+    void simulatorFinished();
 
 
-    /**
-     * @brief Selected item from tree.
-     * @param item
-     * @param column
-     */
-    void editTreeItemSelected(QTreeWidgetItem* item, int column);
-
-
-// Protected Operations
-protected:
+// Public Operations
+public:
 
 
     /**
@@ -264,18 +272,6 @@ private:
     void updateRecentFileActions();
 
 
-    /**
-     * @brief Initialize simulator.
-     */
-    void initSimulator();
-
-
-    /**
-     * @brief Initialize simulation tree.
-     */
-    void initSimulation();
-
-
 // Private Data Members
 private:
 
@@ -302,18 +298,6 @@ private:
 
     /// Draw timer.
     QTimer m_simulatorDrawTimer;
-
-    /// Plugins tree item.
-    QTreeWidgetItem* m_pluginsItem;
-
-    /// Modules tree item.
-    QTreeWidgetItem* m_modulesItem;
-
-    /// Objects tree item.
-    QTreeWidgetItem* m_objectsItem;
-
-    /// Programs tree item.
-    QTreeWidgetItem* m_programsItem;
 };
 
 /* ************************************************************************ */

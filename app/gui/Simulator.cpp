@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -31,6 +31,8 @@
 
 // CeCe
 #include "cece/core/Exception.hpp"
+#include "cece/plugin/Manager.hpp"
+#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -39,20 +41,46 @@ namespace gui {
 
 /* ************************************************************************ */
 
-Simulator::Simulator(QObject* parent)
+Simulator::Simulator(plugin::Manager& manager, QObject* parent)
     : QObject(parent)
+    , m_manager(manager)
 {
     // Nothing to do
 }
 
 /* ************************************************************************ */
 
+Simulator::~Simulator() = default;
+
+/* ************************************************************************ */
+
+void Simulator::simulationLoad(QString type, QString source)
+{
+    // Convert to CeCe string
+    const String src = source.toStdString();
+    const String tp = type.toStdString();
+
+    // Create simulation
+    try
+    {
+        m_simulation = m_manager.getContext().createSimulation(tp, src);
+        emit simulationLoaded(m_simulation.get());
+    }
+    catch (const Exception& e)
+    {
+        emit simulationError(e.what());
+    }
+}
+
+/* ************************************************************************ */
+
 void Simulator::start()
 {
-    if (!getSimulation())
-        return;
-
-    emit simulationStarted();
+    if (m_simulation)
+    {
+        m_running = true;
+        emit simulationStarted();
+    }
 }
 
 /* ************************************************************************ */
@@ -88,8 +116,6 @@ bool Simulator::step()
         }
     }
 
-    bool res;
-
     try
     {
         // Do a step
@@ -113,6 +139,7 @@ bool Simulator::step()
 
 void Simulator::pause()
 {
+    m_running = false;
     emit simulationPaused();
 }
 
@@ -122,9 +149,6 @@ void Simulator::simulate()
 {
     while (m_running && step())
         QThread::msleep(1000 / 30);
-
-    m_running = false;
-    emit simulationFinished();
 }
 
 /* ************************************************************************ */

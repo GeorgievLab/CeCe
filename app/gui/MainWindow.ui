@@ -11,13 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>[*]</string>
   </property>
   <property name="documentMode">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="dockOptions">
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::VerticalTabs</set>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -34,18 +37,17 @@
      <number>5</number>
     </property>
     <item>
-     <widget class="cece::gui::VisualizationWidget" name="openGLWidget" native="true"/>
-    </item>
-    <item>
-     <widget class="QProgressBar" name="progressBar">
-      <property name="maximum">
-       <number>1</number>
+     <widget class="QPlainTextEdit" name="plainTextSourceCode">
+      <property name="font">
+       <font>
+        <family>Monospace</family>
+       </font>
       </property>
-      <property name="value">
-       <number>0</number>
+      <property name="lineWrapMode">
+       <enum>QPlainTextEdit::NoWrap</enum>
       </property>
-      <property name="format">
-       <string>%v / %m</string>
+      <property name="readOnly">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -85,8 +87,6 @@
     <addaction name="actionPause"/>
     <addaction name="actionStep"/>
     <addaction name="actionReset"/>
-    <addaction name="separator"/>
-    <addaction name="actionScreenshot"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -101,9 +101,16 @@
     <addaction name="actionFullscreen"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuVisualization">
+    <property name="title">
+     <string>Visualization</string>
+    </property>
+    <addaction name="actionScreenshot"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuSimulation"/>
+   <addaction name="menuVisualization"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -130,111 +137,6 @@
    <addaction name="actionPause"/>
    <addaction name="actionStep"/>
    <addaction name="actionReset"/>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetStructure">
-   <property name="windowTitle">
-    <string>Structure</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetTreeContents">
-    <layout class="QVBoxLayout" name="verticalLayout_5">
-     <property name="leftMargin">
-      <number>5</number>
-     </property>
-     <property name="topMargin">
-      <number>5</number>
-     </property>
-     <property name="rightMargin">
-      <number>5</number>
-     </property>
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
-     <item>
-      <widget class="QTreeWidget" name="treeWidgetStructure">
-       <property name="indentation">
-        <number>20</number>
-       </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-       <item>
-        <property name="text">
-         <string>Simulation</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>Plugins</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Modules</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Objects</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Programs</string>
-         </property>
-        </item>
-       </item>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetProperties">
-   <property name="windowTitle">
-    <string>Properties</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetTreeContents_2">
-    <layout class="QVBoxLayout" name="verticalLayout_6">
-     <property name="leftMargin">
-      <number>5</number>
-     </property>
-     <property name="topMargin">
-      <number>5</number>
-     </property>
-     <property name="rightMargin">
-      <number>5</number>
-     </property>
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
-     <item>
-      <widget class="QTableWidget" name="tableWidgetProperties">
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Value</string>
-        </property>
-       </column>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidgetLog">
    <property name="windowTitle">
@@ -270,27 +172,74 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="dockWidgetTools">
    <property name="windowTitle">
-    <string>Source code</string>
+    <string>Tools</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>5</number>
+     </property>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
+     <property name="bottomMargin">
+      <number>5</number>
+     </property>
+     <item>
+      <widget class="QTreeWidget" name="treeWidgetTools">
+       <attribute name="headerStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Plugin</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Type</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetVisualization">
+   <property name="windowTitle">
+    <string>Visualization</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QHBoxLayout" name="horizontalLayout">
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit">
-       <property name="font">
-        <font>
-         <family>Monospace</family>
-        </font>
+      <widget class="cece::gui::VisualizationWidget" name="visualizationWidget" native="true"/>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="progressBar">
+       <property name="maximum">
+        <number>1</number>
        </property>
-       <property name="lineWrapMode">
-        <enum>QPlainTextEdit::NoWrap</enum>
+       <property name="value">
+        <number>0</number>
        </property>
-       <property name="readOnly">
-        <bool>true</bool>
+       <property name="format">
+        <string>%v / %m</string>
        </property>
       </widget>
      </item>
@@ -654,22 +603,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>treeWidgetStructure</sender>
-   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>editTreeItemSelected(QTreeWidgetItem*,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>659</x>
-     <y>344</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionRecentFile1</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -749,6 +682,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionScreenshot</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>visualizationScreenshot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plainTextSourceCode</sender>
+   <signal>modificationChanged(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sourceCodeWasModified(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>291</x>
+     <y>136</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>88</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>fileNew()</slot>
@@ -761,7 +726,8 @@
   <slot>simulationStep()</slot>
   <slot>simulationReset()</slot>
   <slot>helpAbout()</slot>
-  <slot>editTreeItemSelected(QTreeWidgetItem*,int)</slot>
   <slot>fileRecentOpen()</slot>
+  <slot>visualizationScreenshot()</slot>
+  <slot>sourceCodeWasModified(bool)</slot>
  </slots>
 </ui>
