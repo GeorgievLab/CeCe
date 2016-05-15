@@ -60,10 +60,10 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
 
 elseif (MSVC)
     # using Visual Studio C++
-    message(FATAL_ERROR
-        "Visual Studio Compiler doesn't support C++11 standard which is "
-        "required, so we don't support Visual Studio Compiler."
-    )
+#    message(FATAL_ERROR
+#        "Visual Studio Compiler doesn't support C++11 standard which is "
+#        "required, so we don't support Visual Studio Compiler."
+#    )
 endif()
 
 # ######################################################################### #

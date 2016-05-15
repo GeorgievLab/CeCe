@@ -81,6 +81,9 @@ set(CECE_THREAD_SAFE ${THREAD_SAFE})
 # Create config file
 configure_file(config.hpp.in config.hpp)
 
+# Exports macro is not propagated to subdirectories
+add_definitions(-D${PROJECT_NAME}_EXPORTS)
+
 # ######################################################################### #
 
 # Core files
