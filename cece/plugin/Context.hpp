@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/ViewPtr.hpp"
@@ -53,7 +52,7 @@ namespace plugin {
 /**
  * @brief Context for plugins. It stores extensions supplied by plugins.
  */
-class CECE_EXPORT Context
+class Context
 {
 
 // Public Accessors

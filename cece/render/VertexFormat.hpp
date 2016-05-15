@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/render/VertexElement.hpp"
 
@@ -42,7 +41,7 @@ namespace render {
 /**
  * @brief Description of vertices stored in vertex buffer.
  */
-class CECE_EXPORT VertexFormat
+class VertexFormat
 {
 
 // Public Ctors & Dtors

@@ -53,7 +53,7 @@ class Module;
 /**
  * @brief Module factory manager.
  */
-class CECE_EXPORT FactoryManager : public core::FactoryManager<Factory>
+class FactoryManager : public core::FactoryManager<Factory>
 {
 
 // Public Mutators

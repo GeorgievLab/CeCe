@@ -33,7 +33,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Assert.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
@@ -82,9 +81,8 @@ namespace simulator {
 /**
  * @brief Simulation class.
  */
-class CECE_EXPORT Simulation
+class Simulation
 {
-
 
 // Public Types
 public:

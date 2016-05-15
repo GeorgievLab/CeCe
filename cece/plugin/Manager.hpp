@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -66,7 +65,7 @@ class Api;
    @endcode
  * Loading plugin also loads dependent plugins.
  */
-class CECE_EXPORT Manager final
+class Manager final
 {
 
 // Public Ctors & Dtors

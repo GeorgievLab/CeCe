@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/render/Shader.hpp"
 
 /* ************************************************************************ */
@@ -41,7 +40,7 @@ namespace render {
 /**
  * @brief OpenGL program object.
  */
-class CECE_EXPORT Program
+class Program
 {
 
 // Public Types

@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/Pair.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -49,9 +48,8 @@ class Color;
 /**
  * @brief Render object for drawing lines.
  */
-class CECE_EXPORT Lines
+class Lines
 {
-
 
 // Public Types
 public:

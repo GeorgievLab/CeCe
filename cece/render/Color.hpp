@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
@@ -43,7 +42,7 @@ namespace render {
 /**
  * @brief Color structure.
  */
-class CECE_EXPORT Color
+class Color
 {
 
 // Public Types

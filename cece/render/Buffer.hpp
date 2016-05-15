@@ -27,11 +27,6 @@
 
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/export.hpp"
-
-/* ************************************************************************ */
-
 namespace cece {
 namespace render {
 
@@ -44,7 +39,7 @@ class Context;
 /**
  * @brief GPU buffer.
  */
-class CECE_EXPORT Buffer
+class Buffer
 {
 
 // Public Types

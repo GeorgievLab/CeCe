@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Units.hpp"
 
@@ -50,7 +49,7 @@ namespace program {
  *
  * Programs are allowed to store information bound to specific object.
  */
-class CECE_EXPORT Program
+class Program
 {
 
 // Public Ctors & Dtors

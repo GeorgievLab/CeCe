@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Unit.hpp"
 
 /* ************************************************************************ */
@@ -197,22 +196,22 @@ inline constexpr Value rad2deg(Value value) noexcept
 
 /* ************************************************************************ */
 
-extern template class CECE_EXPORT Unit<List<>, List<>>;
-extern template class CECE_EXPORT Unit<List<BaseLength>, List<>>;
-extern template class CECE_EXPORT Unit<List<BaseMass>, List<>>;
-extern template class CECE_EXPORT Unit<List<BaseTime>, List<>>;
-extern template class CECE_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
-extern template class CECE_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
-extern template class CECE_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
-extern template class CECE_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
-extern template class CECE_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
-extern template class CECE_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime>>;
-extern template class CECE_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
-extern template class CECE_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
-extern template class CECE_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
-extern template class CECE_EXPORT Unit<List<BaseAmountOfSubstance>, List<>>;
-extern template class CECE_EXPORT Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
-extern template class CECE_EXPORT Unit<List<>, List<BaseTime>>;
+extern template class Unit<List<>, List<>>;
+extern template class Unit<List<BaseLength>, List<>>;
+extern template class Unit<List<BaseMass>, List<>>;
+extern template class Unit<List<BaseTime>, List<>>;
+extern template class Unit<List<BaseLength, BaseLength>, List<>>;
+extern template class Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+extern template class Unit<List<BaseLength>, List<BaseTime>>;
+extern template class Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+extern template class Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
+extern template class Unit<List<BaseLength, BaseMass>, List<BaseTime>>;
+extern template class Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
+extern template class Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+extern template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+extern template class Unit<List<BaseAmountOfSubstance>, List<>>;
+extern template class Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
+extern template class Unit<List<>, List<BaseTime>>;
 
 /* ************************************************************************ */
 

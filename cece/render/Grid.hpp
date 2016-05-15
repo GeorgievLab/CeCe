@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/render/Buffer.hpp"
 #include "cece/render/GridBase.hpp"
@@ -47,9 +46,8 @@ class Context;
 /**
  * @brief Rendering grid object.
  */
-class CECE_EXPORT Grid : public GridBase
+class Grid : public GridBase
 {
-
 
 // Public Ctors & Dtors
 public:

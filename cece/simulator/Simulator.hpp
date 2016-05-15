@@ -36,7 +36,6 @@
 #include <atomic>
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/UniquePtr.hpp"
 #ifdef CECE_ENABLE_RENDER
@@ -59,7 +58,7 @@ class Simulation;
  *
  * Simulator handles simulation of the given (owned) simulation in current thread.
  */
-class CECE_EXPORT Simulator final
+class Simulator final
 {
 
 // Public Ctors & Dtors

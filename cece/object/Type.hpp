@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/config/Configuration.hpp"
 
@@ -42,7 +41,7 @@ namespace object {
 /**
  * @brief Defines user defined object type.
  */
-struct CECE_EXPORT Type
+struct Type
 {
     /// Object type name.
     String name;

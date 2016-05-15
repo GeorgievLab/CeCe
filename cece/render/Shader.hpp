@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/StaticArray.hpp"
 
 /* ************************************************************************ */
@@ -41,7 +40,7 @@ namespace render {
 /**
  * @brief OpenGL shader object.
  */
-class CECE_EXPORT Shader
+class Shader
 {
 
 // Public Types

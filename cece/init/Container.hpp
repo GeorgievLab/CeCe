@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/PtrContainer.hpp"
 
 /* ************************************************************************ */
@@ -46,7 +45,7 @@ namespace init {
 /**
  * @brief Container for initializers.
  */
-class CECE_EXPORT Container : public PtrContainer<Initializer>
+class Container : public PtrContainer<Initializer>
 {
 
 // Public Operations

@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/render/Buffer.hpp"
 
 /* ************************************************************************ */
@@ -46,7 +45,7 @@ class Color;
 /**
  * @brief Drawing object for rectangle.
  */
-class CECE_EXPORT Rectangle
+class Rectangle
 {
 
 // Public Ctors & Dtors

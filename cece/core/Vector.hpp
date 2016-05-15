@@ -33,7 +33,6 @@
 
 // CeCe
 #include "cece/config.hpp"
-#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Assert.hpp"
 #include "cece/core/Zero.hpp"
@@ -578,7 +577,6 @@ public:
      *
      * @return
      */
-    template<typename X = T, typename std::enable_if<std::is_signed<X>::value>::type* = nullptr>
     BasicVector operator-() const noexcept
     {
         return BasicVector{-getX(), -getY()};
@@ -2607,9 +2605,9 @@ OutStream& operator<<(OutStream& os, const BasicVector<T, N>& vector) noexcept
 
 /* ************************************************************************ */
 
-extern template class CECE_EXPORT BasicVector<RealType, config::DIMENSION>;
-extern template class CECE_EXPORT BasicVector<unsigned int, config::DIMENSION>;
-extern template class CECE_EXPORT BasicVector<int, config::DIMENSION>;
+extern template class BasicVector<RealType, config::DIMENSION>;
+extern template class BasicVector<unsigned int, config::DIMENSION>;
+extern template class BasicVector<int, config::DIMENSION>;
 
 /* ************************************************************************ */
 

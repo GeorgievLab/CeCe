@@ -27,11 +27,6 @@
 
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/export.hpp"
-
-/* ************************************************************************ */
-
 namespace cece {
 namespace plugin {
 
@@ -41,7 +36,7 @@ namespace plugin {
  * @brief Library configuration. Plugin with different configuration
  * cannot be used in simulation.
  */
-struct CECE_EXPORT Config
+struct Config
 {
     int apiVersion;
     int realSize;

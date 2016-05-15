@@ -27,13 +27,8 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
 // CeCe
-#include "cece/export.hpp"
+#include "cece/config.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/Atomic.hpp"
@@ -61,7 +56,7 @@ class Module;
  *
  * @todo Cache sorted list of modules.
  */
-class CECE_EXPORT Container : public PtrNamedContainer<Module>
+class Container : public PtrNamedContainer<Module>
 {
 
 // Public Operations

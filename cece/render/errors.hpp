@@ -46,7 +46,6 @@
 #endif
 
 // CeCe
-#include "cece/export.hpp"
 
 /* ************************************************************************ */
 
@@ -74,7 +73,7 @@ namespace render {
  * @param operation
  * @throw
  */
-void CECE_EXPORT checkGlError(const char* operation);
+void checkGlError(const char* operation);
 
 /* ************************************************************************ */
 
@@ -85,7 +84,7 @@ void CECE_EXPORT checkGlError(const char* operation);
  * @param operation
  * @throw
  */
-void CECE_EXPORT throwGlError(GLenum error, const char* operation);
+void throwGlError(GLenum error, const char* operation);
 
 /* ************************************************************************ */
 

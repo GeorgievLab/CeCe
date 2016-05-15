@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/String.hpp"
@@ -52,7 +51,7 @@ namespace loader {
 /**
  * @brief Simulation loader base class.
  */
-class CECE_EXPORT Loader
+class Loader
 {
 
 // Public Ctors & Dtors

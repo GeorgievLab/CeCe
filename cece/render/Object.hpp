@@ -32,7 +32,6 @@
 #include <utility>
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/render/Context.hpp"
 
 /* ************************************************************************ */
@@ -45,9 +44,8 @@ namespace render {
 /**
  * @brief Basic class for drawing objects.
  */
-class CECE_EXPORT Object
+class Object
 {
-
 
 // Public Ctors & Dtors
 public:

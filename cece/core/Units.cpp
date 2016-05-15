@@ -37,22 +37,22 @@ namespace units {
 
 /* ************************************************************************ */
 
-template class CECE_EXPORT Unit<List<>, List<>>;
-template class CECE_EXPORT Unit<List<BaseLength>, List<>>;
-template class CECE_EXPORT Unit<List<BaseMass>, List<>>;
-template class CECE_EXPORT Unit<List<BaseTime>, List<>>;
-template class CECE_EXPORT Unit<List<BaseLength, BaseLength>, List<>>;
-template class CECE_EXPORT Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
-template class CECE_EXPORT Unit<List<BaseLength>, List<BaseTime>>;
-template class CECE_EXPORT Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
-template class CECE_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
-template class CECE_EXPORT Unit<List<BaseLength, BaseMass>, List<BaseTime>>;
-template class CECE_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
-template class CECE_EXPORT Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
-template class CECE_EXPORT Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
-template class CECE_EXPORT Unit<List<BaseAmountOfSubstance>, List<>>;
-template class CECE_EXPORT Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
-template class CECE_EXPORT Unit<List<>, List<BaseTime>>;
+template class Unit<List<>, List<>>;
+template class Unit<List<BaseLength>, List<>>;
+template class Unit<List<BaseMass>, List<>>;
+template class Unit<List<BaseTime>, List<>>;
+template class Unit<List<BaseLength, BaseLength>, List<>>;
+template class Unit<List<BaseLength, BaseLength, BaseLength>, List<>>;
+template class Unit<List<BaseLength>, List<BaseTime>>;
+template class Unit<List<BaseLength>, List<BaseTime, BaseTime>>;
+template class Unit<List<BaseLength, BaseMass>, List<BaseTime, BaseTime>>;
+template class Unit<List<BaseLength, BaseMass>, List<BaseTime>>;
+template class Unit<List<BaseMass>, List<BaseLength, BaseLength, BaseLength>>;
+template class Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
+template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
+template class Unit<List<BaseAmountOfSubstance>, List<>>;
+template class Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
+template class Unit<List<>, List<BaseTime>>;
 
 /* ************************************************************************ */
 

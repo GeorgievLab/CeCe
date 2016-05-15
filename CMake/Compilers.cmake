@@ -60,10 +60,8 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
 
 elseif (MSVC)
     # using Visual Studio C++
-#    message(FATAL_ERROR
-#        "Visual Studio Compiler doesn't support C++11 standard which is "
-#        "required, so we don't support Visual Studio Compiler."
-#    )
+    # Thanks to CMake 3.4 for solving Windows DLL hell
+    add_definitions(-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=On)
 endif()
 
 # ######################################################################### #

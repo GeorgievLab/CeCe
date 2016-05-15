@@ -37,7 +37,6 @@
 #include <functional>
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Any.hpp"
 #include "cece/core/VectorUnits.hpp"
@@ -82,7 +81,7 @@ namespace object {
 /**
  * @brief Basic simulation object.
  */
-class CECE_EXPORT Object
+class Object
 {
 
 // Public Enums

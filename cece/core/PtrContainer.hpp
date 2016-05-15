@@ -32,7 +32,6 @@
 #include <type_traits>
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -43,13 +42,13 @@
  * @brief Define pointer container specialization.
  */
 #define CECE_PTR_CONTAINER(...) \
-    namespace cece { inline namespace core { template class CECE_EXPORT PtrContainer<__VA_ARGS__>; } }
+    namespace cece { inline namespace core { template class PtrContainer<__VA_ARGS__>; } }
 
 /**
  * @brief Define extern pointer container specialization.
  */
 #define CECE_PTR_CONTAINER_EXTERN(...) \
-    namespace cece { inline namespace core { extern template class CECE_EXPORT PtrContainer<__VA_ARGS__>; } }
+    namespace cece { inline namespace core { extern template class PtrContainer<__VA_ARGS__>; } }
 
 /**
  * @brief Define pointer container specialization.

@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/render/datatype.hpp"
 
 /* ************************************************************************ */
@@ -58,7 +57,7 @@ enum class VertexElementType
 /**
  * @brief Vertex format element.
  */
-class CECE_EXPORT VertexElement
+class VertexElement
 {
 
 // Public Ctors
