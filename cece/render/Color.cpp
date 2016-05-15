@@ -36,6 +36,10 @@
 #include <winsock.h>
 // Everyone likes WINAPI macros...
 #undef TRANSPARENT
+#elif defined(_MSC_VER)
+#include <Winsock2.h>
+#undef TRANSPARENT
+// Everyone likes WINAPI macros...
 #endif
 
 // CeCe
