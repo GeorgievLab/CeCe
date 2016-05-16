@@ -148,6 +148,9 @@ void Simulator::step()
         // Redraw scene
         if (!isPaused() || isForceRedraw())
         {
+            // Update window title
+            updateTitle();
+
             // Draw scene
             draw();
             swap();
@@ -500,6 +503,37 @@ void Simulator::onMouseMove(double xpos, double ypos) noexcept
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
+String Simulator::getTitle() const noexcept
+{
+    String title =
+        APP_NAME
+        " simulator "
+        "[" + m_simulationFile.filename().string() + "] "
+        "(" + toString(getSimulation()->getIteration())
+    ;
+
+    if (!getSimulation()->hasUnlimitedIterations())
+        title += "/" + toString(getSimulation()->getIterations());
+
+    title += ")";
+
+    return title;
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Simulator::updateTitle() noexcept
+{
+    auto title = getTitle();
+    glfwSetWindowTitle(m_window, title.c_str());
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
 void Simulator::initVisualization()
 {
     if (!m_visualize)
@@ -548,7 +582,7 @@ void Simulator::initVisualization()
     // Antialiasing
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    const String title = APP_NAME " simulator [" + m_simulationFile.filename().string() + "]";
+    const String title = getTitle();
 
     Assert(m_windowWidth);
     Assert(m_windowHeight);

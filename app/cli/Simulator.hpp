@@ -284,6 +284,21 @@ private:
 
 #ifdef CECE_ENABLE_RENDER
 
+
+    /**
+     * @brief Returns base window title.
+     *
+     * @return
+     */
+    String getTitle() const noexcept;
+
+
+    /**
+     * @brief Update window title.
+     */
+    void updateTitle() noexcept;
+
+
     /**
      * @brief Init visualization.
      */
