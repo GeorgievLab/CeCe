@@ -44,6 +44,222 @@ using String = std::string;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Converts integer value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+inline String toString(int value)
+{
+#if defined(_WIN32)
+    {
+        char buffer[64];
+        snprintf(buffer, sizeof buffer, "%d", value);
+        return buffer;
+    }
+#else
+    return std::to_string(value);
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts long value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+inline String toString(long value)
+{
+#if defined(_WIN32)
+    {
+        char buffer[64];
+        snprintf(buffer, sizeof buffer, "%ld", value);
+        return buffer;
+    }
+#else
+    return std::to_string(value);
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts long long value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+#ifndef _WIN32
+inline String toString(long long value)
+{
+    return std::to_string(value);
+}
+#endif
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts unsigned value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+inline String toString(unsigned value)
+{
+#if defined(_WIN32)
+    {
+        char buffer[64];
+        snprintf(buffer, sizeof buffer, "%u", value);
+        return buffer;
+    }
+#else
+    return std::to_string(value);
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts unsigned long value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+inline String toString(unsigned long value)
+{
+#if defined(_WIN32)
+    {
+        char buffer[64];
+        snprintf(buffer, sizeof buffer, "%lu", value);
+        return buffer;
+    }
+#else
+    return std::to_string(value);
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts unsigned long long value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+#ifndef _WIN32
+inline String toString(unsigned long long value)
+{
+    return std::to_string(value);
+}
+#endif
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts float value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+inline String toString(float value)
+{
+#if defined(_WIN32)
+    {
+        char buffer[64];
+        snprintf(buffer, sizeof buffer, "%f", value);
+        return buffer;
+    }
+#else
+    return std::to_string(value);
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts double value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+inline String toString(double value)
+{
+#if defined(_WIN32)
+    {
+        char buffer[64];
+        snprintf(buffer, sizeof buffer, "%f", value);
+        return buffer;
+    }
+#else
+    return std::to_string(value);
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts long double value to string.
+ *
+ * @param value Input value.
+ *
+ * @return String value.
+ */
+#ifndef _WIN32
+inline String toString(long double value)
+{
+    return std::to_string(value);
+}
+#endif
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts string value to integer.
+ *
+ * @param value Input value.
+ *
+ * @return Parsed value.
+ */
+inline int str2i(const String& value)
+{
+#if defined(_WIN32)
+    return std::atoi(value.c_str());
+#else
+    return std::stoi(value);
+#endif
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Converts string value to integer.
+ *
+ * @param value Input value.
+ *
+ * @return Parsed value.
+ */
+inline float str2f(const String& value)
+{
+#if defined(_WIN32)
+    return std::atof(value.c_str());
+#else
+    return std::stof(value);
+#endif
+}
+
+/* ************************************************************************ */
+
 }
 }
 
