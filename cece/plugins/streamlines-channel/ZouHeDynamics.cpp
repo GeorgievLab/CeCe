@@ -146,7 +146,6 @@ ZouHeDynamics::defineDensity(DataType& data, DensityType density) const noexcept
 void
 ZouHeDynamics::defineVelocity(DataType& data, VelocityType velocity) const noexcept
 {
-    velocity /= Descriptor::getSplitCoefficient();
     const auto density = calcDensity(data, velocity);
     init(data, velocity, density);
 }
@@ -162,7 +161,6 @@ ZouHeDynamics::calcDensity(DataType& data, const VelocityType& velocity) const n
     const auto wHs = Descriptor::getSplitCoefficient();
 
     return (center + 2.0 * known) / (wHs - velP);
-    //return (center + 2.0 * known) / (wHs * (1.0 - velP));
 }
 
 /* ************************************************************************ */
@@ -175,7 +173,6 @@ ZouHeDynamics::calcVelocity(DataType& data, DensityType rho) const noexcept
     const auto wHs = Descriptor::getSplitCoefficient();
 
     const RealType speed = wHs - (1.0 / rho * (center + 2.0 * known));
-    //const RealType speed = 1.0 - (1.0 / (rho * wHs) * (center + 2.0 * known));
 
     // Velocity vector
     return speed * VELOCITIES.at(m_position);
@@ -191,8 +188,19 @@ void ZouHeDynamics::init(DataType& data, VelocityType velocity, DensityType dens
 
     auto eqDiff = [this, &density, &velocity] (Descriptor::DirectionType iPop) {
         return
-            computeEquilibrium(iPop, density, velocity) -
-            computeEquilibrium(Descriptor::opposite(iPop), density, velocity)
+            Descriptor::calcEquilibrium(
+                Descriptor::DIRECTION_WEIGHTS[iPop],
+                Descriptor::DIRECTION_VELOCITIES[iPop],
+                density,
+                velocity
+            )
+            -
+            Descriptor::calcEquilibrium(
+                Descriptor::DIRECTION_WEIGHTS[Descriptor::opposite(iPop)],
+                Descriptor::DIRECTION_VELOCITIES[Descriptor::opposite(iPop)],
+                density,
+                velocity
+            )
         ;
     };
 
