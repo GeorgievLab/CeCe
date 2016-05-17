@@ -143,9 +143,9 @@ public slots:
 
 
     /**
-     * @brief Pause simulation.
+     * @brief Stop simulation.
      */
-    void simulationPause();
+    void simulationStop();
 
 
     /**
@@ -188,35 +188,48 @@ public slots:
 
     /**
      * @brief On simulator error.
+     *
+     * @param mode
      * @param message
      */
-    void simulatorError(QString message);
+    void simulatorError(Simulator::Mode mode, QString message);
 
 
     /**
      * @brief On simulator start.
+     *
+     * @param mode
      */
-    void simulatorStarted();
-
-
-    /**
-     * @brief On simulator pause.
-     */
-    void simulatorPaused();
+    void simulatorStarted(Simulator::Mode mode);
 
 
     /**
      * @brief A simulator step is performed.
      *
+     * @param mode
      * @param iteration
      */
-    void simulatorStepped(int iteration);
+    void simulatorStepped(Simulator::Mode mode, int iteration);
 
 
     /**
      * @brief Simulator finished simulation.
+     *
+     * @param mode
      */
-    void simulatorFinished();
+    void simulatorFinished(Simulator::Mode mode);
+
+
+    /**
+     * @brief Start simulation initialization.
+     */
+    void simulatorInitializationStart();
+
+
+    /**
+     * @brief Cancel simulation initialization.
+     */
+    void simulatorInitializationCancel();
 
 
 // Public Operations

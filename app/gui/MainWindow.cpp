@@ -72,6 +72,8 @@ MainWindow::MainWindow(QWidget* parent)
     // Store pointer to simulator in visualization
     ui->visualizationWidget->setSimulator(&m_simulator);
 
+    ui->widgetInitializationInfo->hide();
+    ui->widgetModified->hide();
     ui->actionStart->setEnabled(false);
     ui->actionStep->setEnabled(false);
     ui->actionPause->setEnabled(false);
@@ -94,18 +96,18 @@ MainWindow::MainWindow(QWidget* parent)
     // Move simulator into the simulator thread
     m_simulator.moveToThread(&m_simulatorThread);
 
-    connect(&m_simulator, SIGNAL(simulationStarted()), &m_simulatorThread, SLOT(start()));
-    connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::simulate);
-    connect(&m_simulator, &Simulator::simulationFinished, &m_simulatorThread, &QThread::quit, Qt::DirectConnection);
-    connect(&m_simulator, &Simulator::simulationPaused, &m_simulatorThread, &QThread::quit, Qt::DirectConnection);
+    connect(&m_simulator, &Simulator::started, [this] (Simulator::Mode mode) {
+        m_simulatorThread.start();
+    });
+    connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::run);
+    connect(&m_simulator, &Simulator::finished, &m_simulatorThread, &QThread::quit, Qt::DirectConnection);
 
     // Connect thread events
     connect(&m_simulator, &Simulator::simulationLoaded, this, &MainWindow::simulatorLoaded);
-    connect(&m_simulator, &Simulator::simulationError, this, &MainWindow::simulatorError);
-    connect(&m_simulator, &Simulator::simulationStarted, this, &MainWindow::simulatorStarted);
-    connect(&m_simulator, &Simulator::simulationStepped, this, &MainWindow::simulatorStepped);
-    connect(&m_simulator, &Simulator::simulationPaused, this, &MainWindow::simulatorPaused);
-    connect(&m_simulator, &Simulator::simulationFinished, this, &MainWindow::simulatorFinished);
+    connect(&m_simulator, &Simulator::error, this, &MainWindow::simulatorError);
+    connect(&m_simulator, &Simulator::started, this, &MainWindow::simulatorStarted);
+    connect(&m_simulator, &Simulator::stepped, this, &MainWindow::simulatorStepped);
+    connect(&m_simulator, &Simulator::finished, this, &MainWindow::simulatorFinished);
 
     // Simulation drawer
     connect(&m_simulatorDrawTimer, &QTimer::timeout, [this]() {
@@ -128,7 +130,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 MainWindow::~MainWindow()
 {
-    m_simulator.pause();
+    m_simulator.stop();
     m_simulatorThread.quit();
     m_simulatorThread.wait();
     delete ui;
@@ -223,16 +225,16 @@ void MainWindow::simulationStart()
 {
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
-    m_simulator.start();
+    m_simulator.start(Simulator::Mode::Simulate);
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulationPause()
+void MainWindow::simulationStop()
 {
     Q_ASSERT(m_simulator.isRunning());
     Q_ASSERT(m_simulatorThread.isRunning());
-    m_simulator.pause();
+    m_simulator.stop();
 }
 
 /* ************************************************************************ */
@@ -283,6 +285,8 @@ void MainWindow::helpAbout()
 void MainWindow::sourceCodeWasModified(bool flag)
 {
     setWindowModified(flag);
+
+    ui->widgetModified->show();
 }
 
 /* ************************************************************************ */
@@ -294,6 +298,7 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
     ui->actionStart->setEnabled(flag);
     ui->actionStep->setEnabled(flag);
     ui->actionReset->setEnabled(flag);
+    ui->widgetModified->hide();
 
     if (flag)
     {
@@ -304,46 +309,85 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorError(QString message)
+void MainWindow::simulatorError(Simulator::Mode mode, QString message)
 {
     QMessageBox::critical(this, tr("Error"), message);
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorStarted()
+void MainWindow::simulatorStarted(Simulator::Mode mode)
 {
-    ui->actionStart->setEnabled(false);
-    ui->actionPause->setEnabled(true);
-    ui->actionStep->setEnabled(false);
-    ui->actionReset->setEnabled(false);
+    switch (mode)
+    {
+    case Simulator::Mode::Idle:
+        // Ignore
+        break;
+
+    case Simulator::Mode::Initialize:
+        ui->widgetInitializationInfo->show();
+        ui->actionStart->setEnabled(false);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(false);
+        ui->actionReset->setEnabled(false);
+        break;
+
+    case Simulator::Mode::Simulate:
+        ui->actionStart->setEnabled(false);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(false);
+        ui->actionReset->setEnabled(false);
+        break;
+    }
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorPaused()
-{
-    ui->actionStart->setEnabled(true);
-    ui->actionPause->setEnabled(false);
-    ui->actionStep->setEnabled(true);
-    ui->actionReset->setEnabled(true);
-}
-
-/* ************************************************************************ */
-
-void MainWindow::simulatorStepped(int iteration)
+void MainWindow::simulatorStepped(Simulator::Mode mode, int iteration)
 {
     ui->progressBar->setValue(iteration);
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorFinished()
+void MainWindow::simulatorFinished(Simulator::Mode mode)
 {
-    ui->actionStart->setEnabled(false);
-    ui->actionStep->setEnabled(false);
-    ui->actionPause->setEnabled(false);
-    ui->actionReset->setEnabled(true);
+    switch (mode)
+    {
+    case Simulator::Mode::Idle:
+        // Ignore
+        break;
+
+    case Simulator::Mode::Initialize:
+        ui->widgetInitializationInfo->hide();
+        ui->actionStart->setEnabled(true);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(true);
+        ui->actionReset->setEnabled(true);
+        break;
+
+    case Simulator::Mode::Simulate:
+        ui->actionStart->setEnabled(false);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(false);
+        ui->actionReset->setEnabled(true);
+        break;
+    }
+}
+
+/* ************************************************************************ */
+
+void MainWindow::simulatorInitializationStart()
+{
+    m_simulator.start(Simulator::Mode::Initialize);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::simulatorInitializationCancel()
+{
+    if (m_simulator.getMode() == Simulator::Mode::Initialize)
+        m_simulator.stop();
 }
 
 /* ************************************************************************ */
@@ -418,6 +462,7 @@ void MainWindow::fileSave(QString filename)
     QTextStream out(&file);
     out << ui->plainTextSourceCode->toPlainText();
     setCurrentFile(filename);
+    ui->plainTextSourceCode->document()->setModified(false);
 }
 
 /* ************************************************************************ */

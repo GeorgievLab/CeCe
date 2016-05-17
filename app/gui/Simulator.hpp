@@ -55,6 +55,22 @@ class Simulator : public QObject
 {
     Q_OBJECT
 
+// Public Enums
+public:
+
+
+    /**
+     * @brief Simulator modes.
+     */
+    enum class Mode
+    {
+        Idle,
+        Initialize,
+        Simulate
+    };
+
+
+// Public Ctors & Dtors
 public:
 
 
@@ -64,7 +80,7 @@ public:
      * @param manager
      * @param parent
      */
-    explicit Simulator(plugin::Manager& manager, QObject* parent = nullptr);
+    explicit Simulator(plugin::Manager& manager, QObject* parent = nullptr) noexcept;
 
 
     /**
@@ -73,6 +89,7 @@ public:
     ~Simulator();
 
 
+// Public Accessors
 public:
 
 
@@ -84,6 +101,17 @@ public:
     bool isRunning() const noexcept
     {
         return m_running;
+    }
+
+
+    /**
+     * @brief Returns current mode.
+     *
+     * @return
+     */
+    Mode getMode() const noexcept
+    {
+        return m_mode;
     }
 
 
@@ -114,57 +142,38 @@ signals:
 
 
     /**
-     * @brief Simulation started.
-     */
-    void simulationStarted();
-
-
-    /**
-     * @brief Simulation initialization started.
-     */
-    void simulationInitStarted();
-
-
-    /**
-     * @brief Simulation has been initialized.
-     */
-    void simulationInitialized();
-
-
-    /**
-     * @brief Simulation initialization failed.
+     * @brief Simulation started in given mode.
      *
-     * @param message
+     * @param mode Simulation mode.
      */
-    void simulationInitFailed(QString message);
-
-
-    /**
-     * @brief Simulation has been paused.
-     */
-    void simulationPaused();
-
-
-    /**
-     * @brief Simulation finished.
-     */
-    void simulationFinished();
-
-
-    /**
-     * @brief A step has been performed.
-     *
-     * @param iteration Current iteration.
-     */
-    void simulationStepped(int iteration);
+    void started(Mode mode);
 
 
     /**
      * @brief Simulation error.
      *
-     * @param message
+     * @param mode    Simulation mode.
+     * @param message Error message
      */
-    void simulationError(QString message);
+    void error(Mode mode, QString message);
+
+
+    /**
+     * @brief Simulation finished.
+     *
+     * @param mode Simulation mode.
+     * @param end  If simulation can continue.
+     */
+    void finished(Mode mode, bool end = true);
+
+
+    /**
+     * @brief A step has been performed.
+     *
+     * @param mode      Simulation mode.
+     * @param iteration Current iteration.
+     */
+    void stepped(Mode mode, int iteration);
 
 
 public slots:
@@ -176,13 +185,15 @@ public slots:
      * @param type Source type.
      * @param source
      */
-    void simulationLoad(QString type, QString source);
+    void simulationLoad(QString type, QString source) noexcept;
 
 
     /**
      * @brief Start simulation.
+     *
+     * @param mode Simulation mode.
      */
-    void start();
+    void start(Mode mode = Mode::Simulate) noexcept;
 
 
     /**
@@ -190,19 +201,35 @@ public slots:
      *
      * @return
      */
-    bool step();
+    bool step() noexcept;
 
 
     /**
-     * @brief Pause simulation.
+     * @brief Stop simulation.
      */
-    void pause();
+    void stop() noexcept;
+
+
+    /**
+     * @brief Run simulator in current mode.
+     */
+    void run() noexcept;
+
+
+// Private Operations
+private:
+
+
+    /**
+     * @brief Initialize simulation.
+     */
+    void initialize() noexcept;
 
 
     /**
      * @brief Simulate simulation.
      */
-    void simulate();
+    void simulate() noexcept;
 
 
 // Private Data Members
@@ -214,11 +241,12 @@ private:
     /// Current simulation.
     UniquePtr<simulator::Simulation> m_simulation;
 
-    /// If simulation is running.
-    bool m_running = false;
+    /// Current simulator mode.
+    Mode m_mode = Mode::Idle;
 
-    /// Initialization termination flag.
-    AtomicBool m_initTerm{false};
+    /// If simulation is running.
+    AtomicBool m_running{false};
+
 };
 
 /* ************************************************************************ */

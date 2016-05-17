@@ -41,11 +41,11 @@ namespace gui {
 
 /* ************************************************************************ */
 
-Simulator::Simulator(plugin::Manager& manager, QObject* parent)
+Simulator::Simulator(plugin::Manager& manager, QObject* parent) noexcept
     : QObject(parent)
     , m_manager(manager)
 {
-    // Nothing to do
+    qRegisterMetaType<Simulator::Mode>("Mode");
 }
 
 /* ************************************************************************ */
@@ -54,7 +54,7 @@ Simulator::~Simulator() = default;
 
 /* ************************************************************************ */
 
-void Simulator::simulationLoad(QString type, QString source)
+void Simulator::simulationLoad(QString type, QString source) noexcept
 {
     // Convert to CeCe string
     const String src = source.toStdString();
@@ -68,87 +68,101 @@ void Simulator::simulationLoad(QString type, QString source)
     }
     catch (const Exception& e)
     {
-        emit simulationError(e.what());
+        emit error(Mode::Idle, e.what());
     }
 }
 
 /* ************************************************************************ */
 
-void Simulator::start()
+void Simulator::start(Mode mode) noexcept
 {
     if (m_simulation)
-    {
-        m_running = true;
-        emit simulationStarted();
-    }
+        emit started(m_mode = mode);
 }
 
 /* ************************************************************************ */
 
-bool Simulator::step()
+bool Simulator::step() noexcept
 {
     Q_ASSERT(m_simulation);
 
     // Simulation is not initialized
     if (!m_simulation->isInitialized())
-    {
-        // Notify about init start
-        emit simulationInitStarted();
+        initialize();
 
-        try
-        {
-            // Perform simulation initialization
-            m_simulation->initialize(m_initTerm);
-
-            // Terminated by user
-            if (m_initTerm)
-            {
-                emit simulationInitFailed("User terminated");
-                return false;
-            }
-
-            emit simulationInitialized();
-        }
-        catch (const Exception& e)
-        {
-            emit simulationInitFailed(e.what());
-            return false;
-        }
-    }
+    // Don't continue
+    if (!m_running)
+        return false;
 
     try
     {
         // Do a step
         bool res = m_simulation->update();
 
-        emit simulationStepped(static_cast<int>(m_simulation->getIteration()));
+        emit stepped(m_mode, static_cast<int>(m_simulation->getIteration()));
 
         if (!res)
-            simulationFinished();
+            finished(Mode::Simulate, res);
 
         return res;
     }
     catch (const Exception& e)
     {
-        emit simulationError(e.what());
+        emit error(Mode::Simulate, e.what());
         return false;
     }
 }
 
 /* ************************************************************************ */
 
-void Simulator::pause()
+void Simulator::stop() noexcept
 {
     m_running = false;
-    emit simulationPaused();
 }
 
 /* ************************************************************************ */
 
-void Simulator::simulate()
+void Simulator::run() noexcept
 {
+    m_running = true;
+
+    switch (m_mode)
+    {
+    case Mode::Idle:                        break;
+    case Mode::Initialize:  initialize();   break;
+    case Mode::Simulate:    simulate();     break;
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulator::initialize() noexcept
+{
+    try
+    {
+        emit started(Mode::Initialize);
+
+        // Perform simulation initialization
+        m_simulation->initialize(m_running);
+
+        emit finished(Mode::Initialize);
+    }
+    catch (const Exception& e)
+    {
+        emit error(Mode::Initialize, e.what());
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulator::simulate() noexcept
+{
+    emit started(Mode::Simulate);
+
     while (m_running && step())
         QThread::msleep(1000 / 30);
+
+    emit finished(Mode::Simulate);
 }
 
 /* ************************************************************************ */
