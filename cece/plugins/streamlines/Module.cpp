@@ -531,11 +531,8 @@ void Module::storeConfig(config::Configuration& config) const
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::draw(render::Context& context)
+void Module::draw(const simulator::Visualization& visualization, render::Context& context)
 {
-    if (getDrawFlags() == 0)
-        return;
-
     const auto size = m_lattice.getSize();
 
     if (!m_drawableDebug)
@@ -570,10 +567,10 @@ void Module::draw(render::Context& context)
 
             if (dynamics == getFluidDynamics())
             {
-                if (checkDebugDraw(DRAW_DEBUG_MAGNITUDE))
+                if (visualization.isEnabled("velocity"))
                     color = render::Color::fromGray(velocity.getLength() / maxVel);
             }
-            else if (checkDebugDraw(DRAW_DEBUG_OBSTACLES))
+            else if (visualization.isEnabled("obstacles"))
             {
                 if (dynamics == m_boundaries[LayoutPosTop] ||
                     dynamics == m_boundaries[LayoutPosBottom] ||
@@ -616,10 +613,11 @@ void Module::draw(render::Context& context)
     context.matrixPush();
     context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
 
-    if (checkDebugDraw(DRAW_DEBUG_MAGNITUDE) || checkDebugDraw(DRAW_DEBUG_OBSTACLES))
+    // TODO: changeable names
+    if (visualization.isEnabled("velocity") || visualization.isEnabled("obstacles"))
         m_drawableDebug->draw(context);
 
-    if (checkDebugDraw(DRAW_DEBUG_DIRECTION))
+    if (visualization.isEnabled("velocity-field"))
         m_drawableDirections->draw(context);
 
     context.matrixPop();

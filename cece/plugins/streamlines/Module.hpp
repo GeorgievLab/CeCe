@@ -118,20 +118,6 @@ public:
     };
 
 
-// Public Constants
-public:
-
-
-#if defined(CECE_ENABLE_RENDER)
-
-    /// Flag for debug drawing.
-    static constexpr DrawFlags DRAW_DEBUG_MAGNITUDE = 0x01;
-    static constexpr DrawFlags DRAW_DEBUG_DIRECTION = 0x02;
-    static constexpr DrawFlags DRAW_DEBUG_OBSTACLES = 0x04;
-
-#endif
-
-
 // Public Structures
 public:
 
@@ -285,19 +271,6 @@ public:
 
 
 #if defined(CECE_ENABLE_RENDER)
-
-    /**
-     * @brief If debug flag is set.
-     *
-     * @param flag
-     *
-     * @return
-     */
-    bool checkDebugDraw(DrawFlags flag) const noexcept
-    {
-        return getDrawFlags() & flag;
-    }
-
 
     /**
      * @brief Get debug velocity magnitude scale.
@@ -632,9 +605,10 @@ public:
     /**
      * @brief Render module.
      *
+     * @param visualization
      * @param context Rendering context.
      */
-    void draw(render::Context& context) override;
+    void draw(const simulator::Visualization& visualization, render::Context& context) override;
 
 #endif
 

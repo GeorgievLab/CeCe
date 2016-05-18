@@ -98,9 +98,6 @@ public:
     /// Z order type.
     using ZOrderType = int;
 
-    /// Flags for module drawing.
-    using DrawFlags = int;
-
 #endif
 
 
@@ -160,17 +157,6 @@ public:
         return m_zOrder;
     }
 
-
-    /**
-     * @brief Returns module draw flags.
-     *
-     * @return
-     */
-    DrawFlags getDrawFlags() const noexcept
-    {
-        return m_drawFlags;
-    }
-
 #endif
 
 
@@ -199,17 +185,6 @@ public:
     void setZOrder(ZOrderType zOrder) noexcept
     {
         m_zOrder = zOrder;
-    }
-
-
-    /**
-     * @brief Set module draw flags.
-     *
-     * @param flags
-     */
-    void setDrawFlags(DrawFlags flags) noexcept
-    {
-        m_drawFlags = flags;
     }
 
 #endif
@@ -297,9 +272,6 @@ private:
 
     /// Module Z order.
     ZOrderType m_zOrder = 0;
-
-    /// Module draw flags.
-    DrawFlags m_drawFlags = 0;
 
 #endif
 };
