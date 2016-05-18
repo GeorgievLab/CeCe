@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
     // Move simulator into the simulator thread
     m_simulator.moveToThread(&m_simulatorThread);
 
-    connect(&m_simulator, &Simulator::started, [this] (Simulator::Mode mode) {
+    connect(&m_simulator, &Simulator::startRequest, [this] () {
         m_simulatorThread.start();
     });
     connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::run);
@@ -302,8 +302,21 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
 
     if (flag)
     {
+        // Store original format
+        static auto format = ui->progressBar->format();
+
         ui->progressBar->setMinimum(0);
-        ui->progressBar->setMaximum(simulation->getIterations());
+
+        if (simulation->hasUnlimitedIterations())
+        {
+            ui->progressBar->setMaximum(std::numeric_limits<int>::max());
+            ui->progressBar->setFormat("%v");
+        }
+        else
+        {
+            ui->progressBar->setMaximum(simulation->getIterations());
+            ui->progressBar->setFormat(format);
+        }
     }
 }
 
@@ -327,14 +340,14 @@ void MainWindow::simulatorStarted(Simulator::Mode mode)
     case Simulator::Mode::Initialize:
         ui->widgetInitializationInfo->show();
         ui->actionStart->setEnabled(false);
-        ui->actionPause->setEnabled(false);
+        ui->actionPause->setEnabled(true);
         ui->actionStep->setEnabled(false);
         ui->actionReset->setEnabled(false);
         break;
 
     case Simulator::Mode::Simulate:
         ui->actionStart->setEnabled(false);
-        ui->actionPause->setEnabled(false);
+        ui->actionPause->setEnabled(true);
         ui->actionStep->setEnabled(false);
         ui->actionReset->setEnabled(false);
         break;
@@ -367,7 +380,7 @@ void MainWindow::simulatorFinished(Simulator::Mode mode)
         break;
 
     case Simulator::Mode::Simulate:
-        ui->actionStart->setEnabled(false);
+        ui->actionStart->setEnabled(true);
         ui->actionPause->setEnabled(false);
         ui->actionStep->setEnabled(false);
         ui->actionReset->setEnabled(true);
@@ -443,6 +456,10 @@ void MainWindow::fileOpen(QString filename)
     ui->plainTextSourceCode->setPlainText(in.readAll());
     setCurrentFile(filename);
 
+    // Stop previous simulation
+    m_simulator.stop();
+    m_simulatorThread.quit();
+    m_simulatorThread.wait();
     m_simulator.simulationLoad("cece", ui->plainTextSourceCode->toPlainText());
 }
 

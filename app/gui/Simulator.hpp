@@ -30,6 +30,7 @@
 // Qt
 #include <QObject>
 #include <QString>
+#include <QMutex>
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
@@ -130,6 +131,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns synchronization mutex.
+     *
+     * @return
+     */
+    QMutex* getMutex() noexcept
+    {
+        return &m_mutex;
+    }
+
+
 signals:
 
 
@@ -139,6 +151,12 @@ signals:
      * @param simulation Pointer to simulation or nullptr.
      */
     void simulationLoaded(simulator::Simulation* simulation);
+
+
+    /**
+     * @brief Simulation start request.
+     */
+    void startRequest();
 
 
     /**
@@ -247,6 +265,8 @@ private:
     /// If simulation is running.
     AtomicBool m_running{false};
 
+    /// Simulation access mutex.
+    QMutex m_mutex;
 };
 
 /* ************************************************************************ */

@@ -144,7 +144,8 @@ void VisualizationWidget::paintGL()
 
     if (m_simulator && m_simulator->getSimulation() && m_simulator->getSimulation()->isInitialized())
     {
-        //QMutexLocker _(m_simulator->getMutex());
+        // TODO: remove - slow in case of expensive simulation updates
+        QMutexLocker _(m_simulator->getMutex());
         m_simulator->getSimulation()->draw(m_renderContext);
     }
     else

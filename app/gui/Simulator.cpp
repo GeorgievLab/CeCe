@@ -28,6 +28,7 @@
 
 // Qt
 #include <QThread>
+#include <QMutexLocker>
 
 // CeCe
 #include "cece/core/Exception.hpp"
@@ -63,7 +64,10 @@ void Simulator::simulationLoad(QString type, QString source) noexcept
     // Create simulation
     try
     {
+        QMutexLocker _(getMutex());
+
         m_simulation = m_manager.getContext().createSimulation(tp, src);
+
         emit simulationLoaded(m_simulation.get());
     }
     catch (const Exception& e)
@@ -77,7 +81,10 @@ void Simulator::simulationLoad(QString type, QString source) noexcept
 void Simulator::start(Mode mode) noexcept
 {
     if (m_simulation)
-        emit started(m_mode = mode);
+    {
+        m_mode = mode;
+        emit startRequest();
+    }
 }
 
 /* ************************************************************************ */
@@ -96,15 +103,14 @@ bool Simulator::step() noexcept
 
     try
     {
+        QMutexLocker _(getMutex());
+
         // Do a step
-        bool res = m_simulation->update();
+        m_running = m_simulation->update();
 
         emit stepped(m_mode, static_cast<int>(m_simulation->getIteration()));
 
-        if (!res)
-            finished(Mode::Simulate, res);
-
-        return res;
+        return m_running;
     }
     catch (const Exception& e)
     {
@@ -132,6 +138,8 @@ void Simulator::run() noexcept
     case Mode::Initialize:  initialize();   break;
     case Mode::Simulate:    simulate();     break;
     }
+
+    m_running = false;
 }
 
 /* ************************************************************************ */
@@ -140,6 +148,8 @@ void Simulator::initialize() noexcept
 {
     try
     {
+        QMutexLocker _(getMutex());
+
         emit started(Mode::Initialize);
 
         // Perform simulation initialization
@@ -157,6 +167,12 @@ void Simulator::initialize() noexcept
 
 void Simulator::simulate() noexcept
 {
+    Q_ASSERT(m_simulation);
+
+    // Simulation is not initialized
+    if (!m_simulation->isInitialized())
+        initialize();
+
     emit started(Mode::Simulate);
 
     while (m_running && step())
