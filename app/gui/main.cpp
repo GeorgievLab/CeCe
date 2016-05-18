@@ -25,6 +25,7 @@
 
 // Qt
 #include <QApplication>
+#include <QCommandLineParser>
 
 // CeCe
 #include "cece/core/String.hpp"
@@ -79,8 +80,20 @@ int main(int argc, char* argv[])
     app.setApplicationVersion("0.4.3");
     app.setApplicationDisplayName("CeCe");
 
-    cece::gui::MainWindow w;
-    w.show();
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QCoreApplication::applicationName());
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("file", "The file to open.");
+    parser.process(app);
+
+    // Create main window
+    cece::gui::MainWindow win;
+
+    if (!parser.positionalArguments().isEmpty())
+        win.fileOpen(parser.positionalArguments().first());
+
+    win.show();
 
     return app.exec();
 }

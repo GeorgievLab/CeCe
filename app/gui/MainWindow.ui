@@ -11,13 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>[*]</string>
   </property>
   <property name="documentMode">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="dockOptions">
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::VerticalTabs</set>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -34,119 +37,75 @@
      <number>5</number>
     </property>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="tabPosition">
-       <enum>QTabWidget::North</enum>
+     <widget class="QWidget" name="widgetInitializationInfo" native="true">
+      <property name="styleSheet">
+       <string notr="true">QWidget#widgetInitializationInfo { background-color: rgb(252, 255, 129); }</string>
       </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="tabSource">
-       <attribute name="title">
-        <string>Source</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="3">
-        <property name="leftMargin">
-         <number>5</number>
-        </property>
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <property name="rightMargin">
-         <number>5</number>
-        </property>
-        <property name="bottomMargin">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="QWidget" name="widget" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QPushButton" name="reloadButton">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>Source modified, reload</string>
-             </property>
-             <property name="icon">
-              <iconset resource="icons.qrc">
-               <normaloff>:/cece/icons/restart-24.png</normaloff>:/cece/icons/restart-24.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>12</width>
-               <height>12</height>
-              </size>
-             </property>
-             <property name="flat">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPlainTextEdit" name="plainTextEdit">
-             <property name="font">
-              <font>
-               <family>Monospace</family>
-              </font>
-             </property>
-             <property name="lineWrapMode">
-              <enum>QPlainTextEdit::NoWrap</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabPreview">
-       <attribute name="title">
-        <string>Preview</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <property name="leftMargin">
-         <number>5</number>
-        </property>
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <property name="rightMargin">
-         <number>5</number>
-        </property>
-        <property name="bottomMargin">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="cece::gui::VisualizationWidget" name="openGLWidget" native="true"/>
-        </item>
-       </layout>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayoutInitializationInfo" stretch="1,0">
+       <item>
+        <widget class="QLabel" name="labelInitializationInfo">
+         <property name="text">
+          <string>Initializing simulation, it may take a while...</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonInitializationCancel">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
-     <widget class="QProgressBar" name="progressBar">
-      <property name="maximum">
-       <number>1</number>
+     <widget class="QWidget" name="widgetModified" native="true">
+      <property name="styleSheet">
+       <string notr="true">QWidget#widgetModified { background-color: rgb(252, 255, 129); }</string>
       </property>
-      <property name="value">
-       <number>0</number>
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
+       <item>
+        <widget class="QLabel" name="labelModified">
+         <property name="text">
+          <string>Source code has been modified and doen't correspond to current simulation</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::PlainText</enum>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushModifiedReload">
+         <property name="text">
+          <string>Reload</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="plainTextSourceCode">
+      <property name="font">
+       <font>
+        <family>Monospace</family>
+       </font>
       </property>
-      <property name="format">
-       <string>%v / %m</string>
+      <property name="lineWrapMode">
+       <enum>QPlainTextEdit::NoWrap</enum>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -182,12 +141,12 @@
     <property name="title">
      <string>Simulation</string>
     </property>
+    <addaction name="actionSimulationInitialize"/>
+    <addaction name="separator"/>
     <addaction name="actionStart"/>
     <addaction name="actionPause"/>
     <addaction name="actionStep"/>
     <addaction name="actionReset"/>
-    <addaction name="separator"/>
-    <addaction name="actionScreenshot"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -202,15 +161,23 @@
     <addaction name="actionFullscreen"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuVisualization">
+    <property name="title">
+     <string>Visualization</string>
+    </property>
+    <addaction name="actionScreenshot"/>
+    <addaction name="separator"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuSimulation"/>
+   <addaction name="menuVisualization"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>ToolBar</string>
    </property>
    <property name="movable">
     <bool>true</bool>
@@ -231,93 +198,6 @@
    <addaction name="actionPause"/>
    <addaction name="actionStep"/>
    <addaction name="actionReset"/>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetStructure">
-   <property name="windowTitle">
-    <string>Structure</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetTreeContents">
-    <layout class="QVBoxLayout" name="verticalLayout_5">
-     <property name="leftMargin">
-      <number>5</number>
-     </property>
-     <property name="topMargin">
-      <number>5</number>
-     </property>
-     <property name="rightMargin">
-      <number>5</number>
-     </property>
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Add ...</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTreeWidget" name="treeWidgetStructure">
-       <property name="indentation">
-        <number>20</number>
-       </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetProperties">
-   <property name="windowTitle">
-    <string>Properties</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetTreeContents_2">
-    <layout class="QVBoxLayout" name="verticalLayout_6">
-     <property name="leftMargin">
-      <number>5</number>
-     </property>
-     <property name="topMargin">
-      <number>5</number>
-     </property>
-     <property name="rightMargin">
-      <number>5</number>
-     </property>
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
-     <item>
-      <widget class="QTableWidget" name="tableWidgetProperties">
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Value</string>
-        </property>
-       </column>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidgetLog">
    <property name="windowTitle">
@@ -347,6 +227,80 @@
        </property>
        <property name="readOnly">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetTools">
+   <property name="windowTitle">
+    <string>Tools</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>5</number>
+     </property>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
+     <property name="bottomMargin">
+      <number>5</number>
+     </property>
+     <item>
+      <widget class="QTreeWidget" name="treeWidgetTools">
+       <attribute name="headerStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Plugin</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Type</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetVisualization">
+   <property name="windowTitle">
+    <string>Visualization</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="cece::gui::VisualizationWidget" name="visualizationWidget" native="true"/>
+     </item>
+     <item>
+      <widget class="QProgressBar" name="progressBar">
+       <property name="maximum">
+        <number>1</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="format">
+        <string>%v / %m</string>
        </property>
       </widget>
      </item>
@@ -426,6 +380,9 @@
    <property name="text">
     <string>&amp;Start</string>
    </property>
+   <property name="statusTip">
+    <string>Start simulation</string>
+   </property>
    <property name="shortcut">
     <string>F5</string>
    </property>
@@ -437,6 +394,9 @@
    </property>
    <property name="text">
     <string>&amp;Pause</string>
+   </property>
+   <property name="statusTip">
+    <string>Pause running simulation</string>
    </property>
    <property name="shortcut">
     <string>F6</string>
@@ -450,6 +410,9 @@
    <property name="text">
     <string>S&amp;tep</string>
    </property>
+   <property name="statusTip">
+    <string>Do a simulation step</string>
+   </property>
    <property name="shortcut">
     <string>F7</string>
    </property>
@@ -462,6 +425,9 @@
    <property name="text">
     <string>&amp;Restart</string>
    </property>
+   <property name="statusTip">
+    <string>Reload simulation</string>
+   </property>
    <property name="shortcut">
     <string>F8</string>
    </property>
@@ -469,6 +435,9 @@
   <action name="actionScreenshot">
    <property name="text">
     <string>Screenshot</string>
+   </property>
+   <property name="statusTip">
+    <string>Create a screenshot of current visualization</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -511,14 +480,12 @@
     <string>&amp;5 recent 5</string>
    </property>
   </action>
-  <action name="action_Plugins">
+  <action name="actionSimulationInitialize">
    <property name="text">
-    <string>&amp;Plugins ...</string>
+    <string>Initialize</string>
    </property>
-  </action>
-  <action name="actionModules">
-   <property name="text">
-    <string>Modules ...</string>
+   <property name="statusTip">
+    <string>Initialize simulation</string>
    </property>
   </action>
  </widget>
@@ -649,7 +616,7 @@
    <sender>actionPause</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>simulationPause()</slot>
+   <slot>simulationStop()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -702,22 +669,6 @@
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>treeWidgetStructure</sender>
-   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>editTreeItemSelected(QTreeWidgetItem*,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>659</x>
-     <y>344</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -806,34 +757,82 @@
    </hints>
   </connection>
   <connection>
-   <sender>plainTextEdit</sender>
-   <signal>textChanged()</signal>
-   <receiver>reloadButton</receiver>
-   <slot>show()</slot>
+   <sender>actionScreenshot</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>visualizationScreenshot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>252</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>139</y>
+     <x>399</x>
+     <y>299</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>reloadButton</sender>
-   <signal>clicked()</signal>
+   <sender>plainTextSourceCode</sender>
+   <signal>modificationChanged(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>sourceCodeWasModified(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>563</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>88</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSimulationInitialize</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>simulatorInitializationStart()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushModifiedReload</sender>
+   <signal>pressed()</signal>
    <receiver>MainWindow</receiver>
    <slot>simulationReset()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>138</y>
+     <x>643</x>
+     <y>168</y>
     </hint>
     <hint type="destinationlabel">
-     <x>429</x>
-     <y>88</y>
+     <x>634</x>
+     <y>86</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonInitializationCancel</sender>
+   <signal>pressed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>simulatorInitializationCancel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>666</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>670</x>
+     <y>87</y>
     </hint>
    </hints>
   </connection>
@@ -845,11 +844,14 @@
   <slot>fileSaveAs()</slot>
   <slot>viewFullscreen(bool)</slot>
   <slot>simulationStart()</slot>
-  <slot>simulationPause()</slot>
+  <slot>simulationStop()</slot>
   <slot>simulationStep()</slot>
   <slot>simulationReset()</slot>
   <slot>helpAbout()</slot>
-  <slot>editTreeItemSelected(QTreeWidgetItem*,int)</slot>
   <slot>fileRecentOpen()</slot>
+  <slot>visualizationScreenshot()</slot>
+  <slot>sourceCodeWasModified(bool)</slot>
+  <slot>simulatorInitializationCancel()</slot>
+  <slot>simulatorInitializationStart()</slot>
  </slots>
 </ui>

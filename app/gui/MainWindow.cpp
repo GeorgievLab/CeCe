@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -37,6 +37,8 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QStringList>
+#include <QImage>
+#include <QFileInfo>
 
 // CeCe
 #include "cece/core/Log.hpp"
@@ -63,29 +65,57 @@ constexpr int MainWindow::MAX_RECENT_FILES;
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , m_simulator(plugin::Manager::s())
 {
     ui->setupUi(this);
-    ui->reloadButton->hide();
 
-    new XmlHighlighter(ui->plainTextEdit->document());
+    // Store pointer to simulator in visualization
+    ui->visualizationWidget->setSimulator(&m_simulator);
 
-    // Set log stream
-    Log::setOutput(&m_logStream);
-    connect(&m_logStream, &LogStream::append, ui->textEditLog, &QTextEdit::append);
-
+    ui->widgetInitializationInfo->hide();
+    ui->widgetModified->hide();
     ui->actionStart->setEnabled(false);
     ui->actionStep->setEnabled(false);
     ui->actionPause->setEnabled(false);
     ui->actionReset->setEnabled(false);
 
     ui->menuView->addAction(ui->toolBar->toggleViewAction());
-    ui->menuView->addAction(ui->dockWidgetStructure->toggleViewAction());
-    ui->menuView->addAction(ui->dockWidgetProperties->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetVisualization->toggleViewAction());
+    ui->menuView->addAction(ui->dockWidgetTools->toggleViewAction());
     ui->menuView->addAction(ui->dockWidgetLog->toggleViewAction());
 
+    // Set log stream
+    Log::setOutput(&m_logStream);
+    connect(&m_logStream, &LogStream::append, ui->textEditLog, &QTextEdit::append);
+
+    // Restore settings
     restoreSettings();
-    initRecentFiles();
-    initSimulator();
+
+    new XmlHighlighter(ui->plainTextSourceCode->document());
+
+    // Move simulator into the simulator thread
+    m_simulator.moveToThread(&m_simulatorThread);
+
+    connect(&m_simulator, &Simulator::started, [this] (Simulator::Mode mode) {
+        m_simulatorThread.start();
+    });
+    connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::run);
+    connect(&m_simulator, &Simulator::finished, &m_simulatorThread, &QThread::quit, Qt::DirectConnection);
+
+    // Connect thread events
+    connect(&m_simulator, &Simulator::simulationLoaded, this, &MainWindow::simulatorLoaded);
+    connect(&m_simulator, &Simulator::error, this, &MainWindow::simulatorError);
+    connect(&m_simulator, &Simulator::started, this, &MainWindow::simulatorStarted);
+    connect(&m_simulator, &Simulator::stepped, this, &MainWindow::simulatorStepped);
+    connect(&m_simulator, &Simulator::finished, this, &MainWindow::simulatorFinished);
+
+    // Simulation drawer
+    connect(&m_simulatorDrawTimer, &QTimer::timeout, [this]() {
+        ui->visualizationWidget->update();
+    });
+
+    // Start draw timer
+    m_simulatorDrawTimer.start(1000 / 30);
 }
 
 /* ************************************************************************ */
@@ -100,7 +130,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 MainWindow::~MainWindow()
 {
-    m_simulator.pause();
+    m_simulator.stop();
     m_simulatorThread.quit();
     m_simulatorThread.wait();
     delete ui;
@@ -113,7 +143,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::fileNew()
 {
-    ui->plainTextEdit->clear();
+    ui->plainTextSourceCode->clear();
     setCurrentFile(QString());
 }
 
@@ -121,7 +151,10 @@ void MainWindow::fileNew()
 
 void MainWindow::fileOpen()
 {
-    QString filename = QFileDialog::getOpenFileName(this);
+    QString filename = QFileDialog::getOpenFileName(this,
+        QString(), QString(),
+        tr("CeCe file (*.cece)")
+    );
 
     if (filename.isEmpty())
         return;
@@ -137,7 +170,10 @@ void MainWindow::fileSave()
 
     if (!QFileInfo(filename).exists())
     {
-        filename = QFileDialog::getSaveFileName(this, QString(), filename);
+        filename = QFileDialog::getSaveFileName(this,
+            QString(), filename,
+            tr("CeCe file (*.cece)")
+        );
 
         if (filename.isEmpty())
             return;
@@ -189,16 +225,16 @@ void MainWindow::simulationStart()
 {
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
-    m_simulator.start();
+    m_simulator.start(Simulator::Mode::Simulate);
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulationPause()
+void MainWindow::simulationStop()
 {
     Q_ASSERT(m_simulator.isRunning());
     Q_ASSERT(m_simulatorThread.isRunning());
-    m_simulator.pause();
+    m_simulator.stop();
 }
 
 /* ************************************************************************ */
@@ -216,8 +252,25 @@ void MainWindow::simulationReset()
 {
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
-    m_simulator.reset();
-    ui->reloadButton->hide();
+    m_simulator.simulationLoad("cece", ui->plainTextSourceCode->toPlainText());
+}
+
+/* ************************************************************************ */
+
+void MainWindow::visualizationScreenshot()
+{
+    const QString base = !m_filename.isEmpty() ? QFileInfo(m_filename).completeBaseName() : "cece";
+
+    QString filename = QFileDialog::getSaveFileName(this,
+        QString(), QString("%1-%2.%3").arg(base, QString::number(ui->progressBar->value()), "png"),
+        tr("Images (*.png *.jpg)")
+    );
+
+    if (filename.isEmpty())
+        return;
+
+    QImage image = ui->visualizationWidget->grabFrameBuffer();
+    image.save(filename);
 }
 
 /* ************************************************************************ */
@@ -229,53 +282,112 @@ void MainWindow::helpAbout()
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorRunning(bool flag)
+void MainWindow::sourceCodeWasModified(bool flag)
 {
-    ui->actionStart->setEnabled(!flag);
-    ui->actionStep->setEnabled(!flag);
-    ui->actionPause->setEnabled(flag);
+    setWindowModified(flag);
+
+    ui->widgetModified->show();
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorLoaded(bool flag)
+void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
 {
+    const bool flag = simulation != nullptr;
+
     ui->actionStart->setEnabled(flag);
     ui->actionStep->setEnabled(flag);
     ui->actionReset->setEnabled(flag);
+    ui->widgetModified->hide();
+
+    if (flag)
+    {
+        ui->progressBar->setMinimum(0);
+        ui->progressBar->setMaximum(simulation->getIterations());
+    }
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorError(QString message)
+void MainWindow::simulatorError(Simulator::Mode mode, QString message)
 {
     QMessageBox::critical(this, tr("Error"), message);
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorStepped(int iteration, int iterations)
+void MainWindow::simulatorStarted(Simulator::Mode mode)
 {
-    ui->progressBar->setMinimum(0);
-    ui->progressBar->setMaximum(iterations);
+    switch (mode)
+    {
+    case Simulator::Mode::Idle:
+        // Ignore
+        break;
+
+    case Simulator::Mode::Initialize:
+        ui->widgetInitializationInfo->show();
+        ui->actionStart->setEnabled(false);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(false);
+        ui->actionReset->setEnabled(false);
+        break;
+
+    case Simulator::Mode::Simulate:
+        ui->actionStart->setEnabled(false);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(false);
+        ui->actionReset->setEnabled(false);
+        break;
+    }
+}
+
+/* ************************************************************************ */
+
+void MainWindow::simulatorStepped(Simulator::Mode mode, int iteration)
+{
     ui->progressBar->setValue(iteration);
 }
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorFinished(bool end)
+void MainWindow::simulatorFinished(Simulator::Mode mode)
 {
-    ui->actionStart->setEnabled(!end);
-    ui->actionStep->setEnabled(!end);
-    ui->actionPause->setEnabled(end);
-    ui->actionReset->setEnabled(true);
+    switch (mode)
+    {
+    case Simulator::Mode::Idle:
+        // Ignore
+        break;
+
+    case Simulator::Mode::Initialize:
+        ui->widgetInitializationInfo->hide();
+        ui->actionStart->setEnabled(true);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(true);
+        ui->actionReset->setEnabled(true);
+        break;
+
+    case Simulator::Mode::Simulate:
+        ui->actionStart->setEnabled(false);
+        ui->actionPause->setEnabled(false);
+        ui->actionStep->setEnabled(false);
+        ui->actionReset->setEnabled(true);
+        break;
+    }
 }
 
 /* ************************************************************************ */
 
-void MainWindow::editTreeItemSelected(QTreeWidgetItem* item, int)
+void MainWindow::simulatorInitializationStart()
 {
-    // TODO: implement
+    m_simulator.start(Simulator::Mode::Initialize);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::simulatorInitializationCancel()
+{
+    if (m_simulator.getMode() == Simulator::Mode::Initialize)
+        m_simulator.stop();
 }
 
 /* ************************************************************************ */
@@ -283,7 +395,17 @@ void MainWindow::editTreeItemSelected(QTreeWidgetItem* item, int)
 void MainWindow::setCurrentFile(QString filename)
 {
     m_filename = filename;
-    setWindowFilePath(m_filename);
+    //setWindowFilePath(m_filename);
+
+    if (!m_filename.isEmpty())
+    {
+        QFileInfo info(m_filename);
+        setWindowTitle(QString("[*] %1 (~ %2)").arg(info.fileName(), info.path()));
+    }
+    else
+    {
+        setWindowTitle("[*]");
+    }
 
     // Get stored list of recent files
     QSettings settings;
@@ -318,12 +440,10 @@ void MainWindow::fileOpen(QString filename)
     }
 
     QTextStream in(&file);
-    ui->plainTextEdit->setPlainText(in.readAll());
+    ui->plainTextSourceCode->setPlainText(in.readAll());
     setCurrentFile(filename);
 
-    m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
-    initSimulation();
-    ui->reloadButton->hide();
+    m_simulator.simulationLoad("cece", ui->plainTextSourceCode->toPlainText());
 }
 
 /* ************************************************************************ */
@@ -340,11 +460,9 @@ void MainWindow::fileSave(QString filename)
     }
 
     QTextStream out(&file);
-    out << ui->plainTextEdit->toPlainText();
+    out << ui->plainTextSourceCode->toPlainText();
     setCurrentFile(filename);
-
-    m_simulator.createSimulation(ui->plainTextEdit->toPlainText(), "cece");
-    initSimulation();
+    ui->plainTextSourceCode->document()->setModified(false);
 }
 
 /* ************************************************************************ */
@@ -363,6 +481,9 @@ void MainWindow::restoreSettings()
     QSettings settings;
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("windowState").toByteArray());
+
+    // Restore recent files
+    initRecentFiles();
 }
 
 /* ************************************************************************ */
@@ -400,85 +521,6 @@ void MainWindow::updateRecentFileActions()
 
     for (int j = numRecentFiles; j < MAX_RECENT_FILES; ++j)
         m_recentFiles[j]->setVisible(false);
-}
-
-/* ************************************************************************ */
-
-void MainWindow::initSimulator()
-{
-    // Set simulator
-    ui->openGLWidget->setSimulator(&m_simulator);
-
-    // Move simulator into the simulator thread
-    m_simulator.moveToThread(&m_simulatorThread);
-
-    connect(&m_simulator, SIGNAL(simulationStarted()), &m_simulatorThread, SLOT(start()));
-    connect(&m_simulatorThread, &QThread::started, &m_simulator, &Simulator::simulate);
-    connect(&m_simulator, &Simulator::simulationFinished, &m_simulatorThread, &QThread::quit, Qt::DirectConnection);
-
-    // Connect thread events
-    connect(&m_simulator, &Simulator::loaded, this, &MainWindow::simulatorLoaded);
-    connect(&m_simulator, &Simulator::loadError, this, &MainWindow::simulatorError);
-    connect(&m_simulator, &Simulator::running, this, &MainWindow::simulatorRunning);
-    connect(&m_simulator, &Simulator::stepped, this, &MainWindow::simulatorStepped);
-    connect(&m_simulator, &Simulator::simulationFinished, this, &MainWindow::simulatorFinished);
-    connect(&m_simulator, &Simulator::simulationError, this, &MainWindow::simulatorError);
-
-    connect(&m_simulatorDrawTimer, &QTimer::timeout, [this]() {
-        ui->openGLWidget->update();
-    });
-
-    // Start draw timer
-    m_simulatorDrawTimer.start(1000 / 30);
-}
-
-/* ************************************************************************ */
-
-void MainWindow::initSimulation()
-{
-    auto simulation = m_simulator.getSimulation();
-
-    ui->treeWidgetStructure->clear();
-
-    m_pluginsItem = new QTreeWidgetItem(ui->treeWidgetStructure);
-    m_pluginsItem->setText(0, tr("Plugins"));
-
-    // Foreach available plugins
-    for (const auto& plugin : simulation->getPlugins())
-    {
-        auto item = new QTreeWidgetItem(m_pluginsItem);
-        item->setText(0, QString::fromStdString(plugin.first));
-    }
-
-    m_modulesItem = new QTreeWidgetItem(ui->treeWidgetStructure);
-    m_modulesItem->setText(0, tr("Modules"));
-
-    // Foreach available modules
-    for (const auto& module : simulation->getModules())
-    {
-        auto item = new QTreeWidgetItem(m_modulesItem);
-        item->setText(0, QString::fromStdString(module.name));
-    }
-
-    m_objectsItem = new QTreeWidgetItem(ui->treeWidgetStructure);
-    m_objectsItem->setText(0, tr("Objects"));
-
-    // Foreach objects
-    for (const auto& object : simulation->getObjects())
-    {
-        auto item = new QTreeWidgetItem(m_objectsItem);
-        item->setText(0, QString::fromStdString(String(object->getTypeName())));
-    }
-
-    m_programsItem = new QTreeWidgetItem(ui->treeWidgetStructure);
-    m_programsItem->setText(0, tr("Programs"));
-
-    // Foreach available programs
-    for (const auto& program : simulation->getPrograms())
-    {
-        auto item = new QTreeWidgetItem(m_programsItem);
-        item->setText(0, QString::fromStdString(program.name));
-    }
 }
 
 /* ************************************************************************ */

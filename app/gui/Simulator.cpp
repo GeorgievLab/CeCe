@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,12 +27,12 @@
 #include "Simulator.hpp"
 
 // Qt
-#include <QMutexLocker>
 #include <QThread>
 
 // CeCe
 #include "cece/core/Exception.hpp"
 #include "cece/plugin/Manager.hpp"
+#include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
 
@@ -41,117 +41,128 @@ namespace gui {
 
 /* ************************************************************************ */
 
-Simulator::Simulator(QObject* parent)
+Simulator::Simulator(plugin::Manager& manager, QObject* parent) noexcept
     : QObject(parent)
+    , m_manager(manager)
 {
-    // Nothing to do
+    qRegisterMetaType<Simulator::Mode>("Mode");
 }
 
 /* ************************************************************************ */
 
-void Simulator::start()
-{
-    if (!m_simulation)
-        return;
-
-    emit running(m_running = true);
-    emit simulationStarted();
-}
+Simulator::~Simulator() = default;
 
 /* ************************************************************************ */
 
-bool Simulator::step()
+void Simulator::simulationLoad(QString type, QString source) noexcept
 {
-    Q_ASSERT(m_simulation);
-    bool res;
+    // Convert to CeCe string
+    const String src = source.toStdString();
+    const String tp = type.toStdString();
 
+    // Create simulation
     try
     {
-        AtomicBool flag{false};
-        QMutexLocker _(&m_mutex);
-
-        if (!m_simulation->isInitialized())
-            m_simulation->initialize(flag);
-
-        // Do a step
-        res = m_simulation->update();
+        m_simulation = m_manager.getContext().createSimulation(tp, src);
+        emit simulationLoaded(m_simulation.get());
     }
     catch (const Exception& e)
     {
-        emit simulationError(e.what());
+        emit error(Mode::Idle, e.what());
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulator::start(Mode mode) noexcept
+{
+    if (m_simulation)
+        emit started(m_mode = mode);
+}
+
+/* ************************************************************************ */
+
+bool Simulator::step() noexcept
+{
+    Q_ASSERT(m_simulation);
+
+    // Simulation is not initialized
+    if (!m_simulation->isInitialized())
+        initialize();
+
+    // Don't continue
+    if (!m_running)
         return false;
-    }
-
-    emit stepped(static_cast<int>(m_simulation->getIteration()),
-        static_cast<int>(m_simulation->getIterations()));
-
-    // Simulation finished
-    if (!res)
-        emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
-
-    return res;
-}
-
-/* ************************************************************************ */
-
-void Simulator::pause()
-{
-    emit running(m_running = false);
-}
-
-/* ************************************************************************ */
-
-void Simulator::reset()
-{
-    createSimulation(m_source, m_type);
-}
-
-/* ************************************************************************ */
-
-void Simulator::createSimulation(QString source, QString type)
-{
-    if (m_running)
-    {
-        emit loadError("Simulation is running");
-        return;
-    }
 
     try
     {
-        QMutexLocker _(&m_mutex);
+        // Do a step
+        bool res = m_simulation->update();
 
-        // Create a simulation
-        auto simulation =
-            cece::plugin::Manager::s().getContext().createSimulation(
-                type.toLocal8Bit().data(), source.toLocal8Bit().data());
+        emit stepped(m_mode, static_cast<int>(m_simulation->getIteration()));
 
-        // Create simulation
-        m_simulation.reset(simulation.release());
+        if (!res)
+            finished(Mode::Simulate, res);
 
-        // Store after initialization
-        m_source = source;
-        m_type = type;
-
-        emit loaded(true);
-        emit stepped(static_cast<int>(m_simulation->getIteration()),
-            static_cast<int>(m_simulation->getIterations()));
+        return res;
     }
-    catch (const cece::Exception& e)
+    catch (const Exception& e)
     {
-        emit loadError(e.what());
-        emit loaded(false);
+        emit error(Mode::Simulate, e.what());
+        return false;
     }
 }
 
 /* ************************************************************************ */
 
-void Simulator::simulate()
+void Simulator::stop() noexcept
 {
+    m_running = false;
+}
+
+/* ************************************************************************ */
+
+void Simulator::run() noexcept
+{
+    m_running = true;
+
+    switch (m_mode)
+    {
+    case Mode::Idle:                        break;
+    case Mode::Initialize:  initialize();   break;
+    case Mode::Simulate:    simulate();     break;
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulator::initialize() noexcept
+{
+    try
+    {
+        emit started(Mode::Initialize);
+
+        // Perform simulation initialization
+        m_simulation->initialize(m_running);
+
+        emit finished(Mode::Initialize);
+    }
+    catch (const Exception& e)
+    {
+        emit error(Mode::Initialize, e.what());
+    }
+}
+
+/* ************************************************************************ */
+
+void Simulator::simulate() noexcept
+{
+    emit started(Mode::Simulate);
+
     while (m_running && step())
         QThread::msleep(1000 / 30);
 
-    m_running = false;
-    emit simulationFinished(m_simulation->getIteration() == m_simulation->getIterations());
+    emit finished(Mode::Simulate);
 }
 
 /* ************************************************************************ */

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2016                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -28,13 +28,18 @@
 /* ************************************************************************ */
 
 // Qt
-#include <QScopedPointer>
 #include <QObject>
-#include <QMutex>
+#include <QString>
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/core/UniquePtr.hpp"
+#include "cece/core/Atomic.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace plugin { class Manager; } }
+namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
 
@@ -50,16 +55,41 @@ class Simulator : public QObject
 {
     Q_OBJECT
 
+// Public Enums
+public:
+
+
+    /**
+     * @brief Simulator modes.
+     */
+    enum class Mode
+    {
+        Idle,
+        Initialize,
+        Simulate
+    };
+
+
+// Public Ctors & Dtors
 public:
 
 
     /**
      * @brief Constructor.
+     *
+     * @param manager
      * @param parent
      */
-    explicit Simulator(QObject* parent = nullptr);
+    explicit Simulator(plugin::Manager& manager, QObject* parent = nullptr) noexcept;
 
 
+    /**
+     * @brief Destructor.
+     */
+    ~Simulator();
+
+
+// Public Accessors
 public:
 
 
@@ -74,6 +104,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns current mode.
+     *
+     * @return
+     */
+    Mode getMode() const noexcept
+    {
+        return m_mode;
+    }
+
+
 // Public Accessors
 public:
 
@@ -85,18 +126,7 @@ public:
      */
     ViewPtr<simulator::Simulation> getSimulation() const noexcept
     {
-        return m_simulation.data();
-    }
-
-
-    /**
-     * @brief Return syncronization mutex.
-     *
-     * @return
-     */
-    QMutex* getMutex() noexcept
-    {
-        return &m_mutex;
+        return m_simulation.get();
     }
 
 
@@ -104,67 +134,66 @@ signals:
 
 
     /**
-     * @brief Simulation started.
+     * @brief Simulator current simulation has been changed/loaded.
+     *
+     * @param simulation Pointer to simulation or nullptr.
      */
-    void simulationStarted();
+    void simulationLoaded(simulator::Simulation* simulation);
 
 
     /**
-     * @brief Simulation finished.
+     * @brief Simulation started in given mode.
      *
-     * @param end
+     * @param mode Simulation mode.
      */
-    void simulationFinished(bool end);
+    void started(Mode mode);
 
 
     /**
      * @brief Simulation error.
      *
-     * @param message
+     * @param mode    Simulation mode.
+     * @param message Error message
      */
-    void simulationError(QString message);
+    void error(Mode mode, QString message);
 
 
     /**
-     * @brief Simulation has been loaded.
+     * @brief Simulation finished.
      *
-     * @param flag
+     * @param mode Simulation mode.
+     * @param end  If simulation can continue.
      */
-    void loaded(bool flag);
-
-
-    /**
-     * @brief Load error.
-     *
-     * @param message
-     */
-    void loadError(QString message);
-
-
-    /**
-     * @brief Report if simulation is running.
-     *
-     * @param flag
-     */
-    void running(bool flag);
+    void finished(Mode mode, bool end = true);
 
 
     /**
      * @brief A step has been performed.
      *
-     * @param iteration
-     * @param iterations
+     * @param mode      Simulation mode.
+     * @param iteration Current iteration.
      */
-    void stepped(int iteration, int iterations);
+    void stepped(Mode mode, int iteration);
 
 
-public:
+public slots:
+
+
+    /**
+     * @brief Load simulation.
+     *
+     * @param type Source type.
+     * @param source
+     */
+    void simulationLoad(QString type, QString source) noexcept;
 
 
     /**
      * @brief Start simulation.
+     *
+     * @param mode Simulation mode.
      */
-    void start();
+    void start(Mode mode = Mode::Simulate) noexcept;
 
 
     /**
@@ -172,51 +201,52 @@ public:
      *
      * @return
      */
-    bool step();
+    bool step() noexcept;
 
 
     /**
-     * @brief Pause simulation.
+     * @brief Stop simulation.
      */
-    void pause();
+    void stop() noexcept;
 
 
     /**
-     * @brief Reset simulation.
+     * @brief Run simulator in current mode.
      */
-    void reset();
+    void run() noexcept;
+
+
+// Private Operations
+private:
 
 
     /**
-     * @brief Create a simulation from source.
-     * @param source
+     * @brief Initialize simulation.
      */
-    void createSimulation(QString source, QString type);
+    void initialize() noexcept;
 
 
     /**
      * @brief Simulate simulation.
      */
-    void simulate();
+    void simulate() noexcept;
 
 
 // Private Data Members
 private:
 
-    /// Current simulation.
-    QScopedPointer<cece::simulator::Simulation> m_simulation;
+    /// Plugin manager.
+    plugin::Manager& m_manager;
 
-    /// Mutex.
-    QMutex m_mutex;
+    /// Current simulation.
+    UniquePtr<simulator::Simulation> m_simulation;
+
+    /// Current simulator mode.
+    Mode m_mode = Mode::Idle;
 
     /// If simulation is running.
-    bool m_running = false;
+    AtomicBool m_running{false};
 
-    /// Current source.
-    QString m_source;
-
-    /// Source type.
-    QString m_type;
 };
 
 /* ************************************************************************ */

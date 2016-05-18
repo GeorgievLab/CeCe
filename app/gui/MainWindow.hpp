@@ -143,9 +143,9 @@ public slots:
 
 
     /**
-     * @brief Pause simulation.
+     * @brief Stop simulation.
      */
-    void simulationPause();
+    void simulationStop();
 
 
     /**
@@ -161,58 +161,79 @@ public slots:
 
 
     /**
+     * @brief Create a screenshot from visualization.
+     */
+    void visualizationScreenshot();
+
+
+    /**
      * @brief Show about dialog.
      */
     void helpAbout();
 
 
     /**
-     * @brief If simulator is running.
-     * @param flag
+     * @brief Source code has been modified.
      */
-    void simulatorRunning(bool flag);
+    void sourceCodeWasModified(bool flag);
 
 
     /**
-     * @brief If simulator contains valid simulation.
-     * @param flag
+     * @brief Simulator loads new simulation.
+     *
+     * @param simulation
      */
-    void simulatorLoaded(bool flag);
+    void simulatorLoaded(simulator::Simulation* simulation);
 
 
     /**
      * @brief On simulator error.
+     *
+     * @param mode
      * @param message
      */
-    void simulatorError(QString message);
+    void simulatorError(Simulator::Mode mode, QString message);
+
+
+    /**
+     * @brief On simulator start.
+     *
+     * @param mode
+     */
+    void simulatorStarted(Simulator::Mode mode);
 
 
     /**
      * @brief A simulator step is performed.
+     *
+     * @param mode
      * @param iteration
-     * @param iterations
      */
-    void simulatorStepped(int iteration, int iterations);
+    void simulatorStepped(Simulator::Mode mode, int iteration);
 
 
     /**
      * @brief Simulator finished simulation.
      *
-     * @param end
+     * @param mode
      */
-    void simulatorFinished(bool end);
+    void simulatorFinished(Simulator::Mode mode);
 
 
     /**
-     * @brief Selected item from tree.
-     * @param item
-     * @param column
+     * @brief Start simulation initialization.
      */
-    void editTreeItemSelected(QTreeWidgetItem* item, int column);
+    void simulatorInitializationStart();
 
 
-// Protected Operations
-protected:
+    /**
+     * @brief Cancel simulation initialization.
+     */
+    void simulatorInitializationCancel();
+
+
+// Public Operations
+public:
 
 
     /**
@@ -264,18 +285,6 @@ private:
     void updateRecentFileActions();
 
 
-    /**
-     * @brief Initialize simulator.
-     */
-    void initSimulator();
-
-
-    /**
-     * @brief Initialize simulation tree.
-     */
-    void initSimulation();
-
-
 // Private Data Members
 private:
 
@@ -302,18 +311,6 @@ private:
 
     /// Draw timer.
     QTimer m_simulatorDrawTimer;
-
-    /// Plugins tree item.
-    QTreeWidgetItem* m_pluginsItem;
-
-    /// Modules tree item.
-    QTreeWidgetItem* m_modulesItem;
-
-    /// Objects tree item.
-    QTreeWidgetItem* m_objectsItem;
-
-    /// Programs tree item.
-    QTreeWidgetItem* m_programsItem;
 };
 
 /* ************************************************************************ */
