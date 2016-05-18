@@ -329,6 +329,16 @@ private:
     void forceRedraw();
 
 
+    /**
+     * @brief Update layer states according to key event.
+     *
+     * @param key
+     *
+     * @return
+     */
+    bool updateLayers(int key);
+
+
 #ifdef CONFIG_CLI_ENABLE_VIDEO_CAPTURE
 
     /**
