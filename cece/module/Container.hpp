@@ -43,6 +43,7 @@
 
 #ifdef CECE_ENABLE_RENDER
 namespace cece { namespace render { class Context; } }
+namespace cece { namespace simulator { class Visualization; } }
 #endif
 
 /* ************************************************************************ */
@@ -93,9 +94,10 @@ public:
     /**
      * @brief Render modules sorted by z-order.
      *
-     * @param context Rendering context.
+     * @param visualization
+     * @param context       Rendering context.
      */
-    void draw(render::Context& context);
+    void draw(const simulator::Visualization& visualization, render::Context& context);
 
 #endif
 

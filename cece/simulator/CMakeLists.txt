@@ -37,6 +37,9 @@ set(SRCS
     IterationType.hpp
     TimeMeasurement.hpp
     TimeMeasurement.cpp
+    Visualization.hpp
+    Visualization.cpp
+    VisualizationLayer.hpp
 )
 
 if (CONFIG_PHYSICS_BUILTIN)

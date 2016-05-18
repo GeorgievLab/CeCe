@@ -102,6 +102,16 @@ void Module::terminate()
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
+void Module::draw(const simulator::Visualization&, render::Context& context)
+{
+    // Forward
+    draw(context);
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
 void Module::draw(render::Context& context)
 {
     // Nothing to do

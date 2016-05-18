@@ -458,8 +458,12 @@ void Simulation::loadConfig(const config::Configuration& config)
     setIterations(config.get("iterations", getIterations()));
 
 #ifdef CECE_ENABLE_RENDER
-    setVisualized(config.get("visualized", isVisualized()));
-    setBackgroundColor(config.get("background", getBackgroundColor()));
+    m_visualization.setEnabled(config.get("visualized", m_visualization.isEnabled()));
+    m_visualization.setBackgroundColor(config.get("background", m_visualization.getBackgroundColor()));
+
+    auto visualizations = config.getConfigurations("visualization");
+    if (!visualizations.empty())
+        m_visualization.loadConfig(visualizations.front());
 #endif
 
     // Parse plugins
@@ -597,8 +601,10 @@ void Simulation::storeConfig(config::Configuration& config) const
     config.set("iterations", getIterations());
 
 #ifdef CECE_ENABLE_RENDER
-    config.set("background", getBackgroundColor());
-    config.set("visualized", isVisualized());
+    {
+        auto visualization = config.addConfiguration("visualization");
+        m_visualization.storeConfig(visualization);
+    }
 #endif
 
     // Store parameters
@@ -661,7 +667,7 @@ void Simulation::draw(render::Context& context)
     context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
 
     // Render modules
-    m_modules.draw(context);
+    m_modules.draw(m_visualization, context);
 
     // Draw objects
     for (auto& obj : m_objects)

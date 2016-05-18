@@ -44,6 +44,7 @@ namespace cece { namespace config { class Configuration; } }
 
 #ifdef CECE_ENABLE_RENDER
 namespace cece { namespace render { class Context; } }
+namespace cece { namespace simulator { class Visualization; } }
 #endif
 
 /* ************************************************************************ */
@@ -266,7 +267,17 @@ public:
     /**
      * @brief Render module.
      *
-     * @param context Rendering context.
+     * @param visualization Visualization context.
+     * @param context       Rendering context.
+     */
+    virtual void draw(const simulator::Visualization& visualization, render::Context& context);
+
+
+    /**
+     * @brief Render module.
+     *
+     * @param visualization Visualization context.
+     * @param context       Rendering context.
      */
     virtual void draw(render::Context& context);
 

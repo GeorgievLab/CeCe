@@ -63,6 +63,7 @@
 
 #ifdef CECE_ENABLE_RENDER
 #include "cece/render/Color.hpp"
+#include "cece/simulator/Visualization.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -596,26 +597,28 @@ public:
 
 #ifdef CECE_ENABLE_RENDER
 
+
     /**
-     * @brief Get visualize flag.
+     * @brief Returns visualization
      *
      * @return
      */
-    bool isVisualized() const noexcept
+    Visualization& getVisualization() noexcept
     {
-        return m_visualized;
+        return m_visualization;
     }
 
 
     /**
-     * @brief Get background color.
+     * @brief Returns visualization
      *
      * @return
      */
-    const render::Color& getBackgroundColor() const noexcept
+    const Visualization& getVisualization() const noexcept
     {
-        return m_backgroundColor;
+        return m_visualization;
     }
+
 
 #endif
 
@@ -905,32 +908,6 @@ public:
     }
 
 
-#ifdef CECE_ENABLE_RENDER
-
-    /**
-     * @brief Set visualize flag.
-     *
-     * @param value
-     */
-    void setVisualized(bool value) noexcept
-    {
-        m_visualized = value;
-    }
-
-
-    /**
-     * @brief Set background color.
-     *
-     * @param color
-     */
-    void setBackgroundColor(render::Color color) noexcept
-    {
-        m_backgroundColor = color;
-    }
-
-#endif
-
-
 // Public Operations
 public:
 
@@ -1125,13 +1102,8 @@ private:
     object::TypeContainer m_objectClasses;
 
 #ifdef CECE_ENABLE_RENDER
-
-    /// Option if visualization is enabled.
-    bool m_visualized = true;
-
-    /// Background (clear) color.
-    render::Color m_backgroundColor = render::colors::WHITE;
-
+    /// Simulation visualization.
+    Visualization m_visualization;
 #endif
 
 #if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)

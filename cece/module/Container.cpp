@@ -72,7 +72,7 @@ void Container::terminate()
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Container::draw(render::Context& context)
+void Container::draw(const simulator::Visualization& visualization, render::Context& context)
 {
     DynamicArray<ViewPtr<Module>> modules;
 
@@ -87,7 +87,7 @@ void Container::draw(render::Context& context)
 
     // Render modules
     for (auto& module : modules)
-        module->draw(context);
+        module->draw(visualization, context);
 }
 #endif
 
