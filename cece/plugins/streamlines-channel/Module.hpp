@@ -95,9 +95,9 @@ public:
     /**
      * @brief Initialize module.
      *
-     * @param termFlag Termination flag.
+     * @param flag Initialization flag.
      */
-    void init(AtomicBool& termFlag) override;
+    void init(AtomicBool& flag) override;
 
 
     /**

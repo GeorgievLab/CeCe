@@ -113,10 +113,10 @@ ViewPtr<simulator::Simulation> Simulator::getSimulation() const noexcept
 
 /* ************************************************************************ */
 
-void Simulator::init(AtomicBool& termFlag)
+void Simulator::init(AtomicBool& flag)
 {
     // Initialize simulation
-    m_simulator.getSimulation()->initialize(termFlag);
+    m_simulator.getSimulation()->initialize(flag);
 
 #ifdef CECE_ENABLE_RENDER
     if (isVisualized())
@@ -166,12 +166,12 @@ void Simulator::step()
 
 /* ************************************************************************ */
 
-void Simulator::start(AtomicBool& termFlag)
+void Simulator::start(AtomicBool& flag)
 {
-    init(termFlag);
+    init(flag);
 
     // Update simulation
-    while (!termFlag && !isTerminationRequest())
+    while (flag && !isTerminationRequest())
         step();
 }
 

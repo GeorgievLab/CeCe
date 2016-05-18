@@ -155,9 +155,9 @@ public:
     /**
      * @brief Initialize simulation.
      *
-     * @param termFlag Termination flag.
+     * @param flag Flag value.
      */
-    void init(AtomicBool& termFlag);
+    void init(AtomicBool& flag);
 
 
     /**
@@ -169,9 +169,9 @@ public:
     /**
      * @brief Start simulation.
      *
-     * @param termFlag Termination flag.
+     * @param flag Flag value.
      */
-    void start(AtomicBool& termFlag);
+    void start(AtomicBool& flag);
 
 
     /**

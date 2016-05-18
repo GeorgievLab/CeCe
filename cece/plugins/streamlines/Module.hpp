@@ -594,9 +594,9 @@ public:
     /**
      * @brief Initialize lattice.
      *
-     * @param termFlag
+     * @param flag
      */
-    void init(AtomicBool& termFlag) override;
+    void init(AtomicBool& flag) override;
 
 
     /**

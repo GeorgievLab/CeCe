@@ -56,8 +56,8 @@ namespace {
 
 /* ************************************************************************ */
 
-/// Global termination flag
-AtomicBool g_terminated{false};
+/// Global simulate flag
+AtomicBool g_simulate{true};
 
 /* ************************************************************************ */
 
@@ -69,7 +69,7 @@ AtomicBool g_terminated{false};
 void terminate_simulation(int param)
 {
     std::cerr << "Terminating simulation" << std::endl;
-    g_terminated = true;
+    g_simulate = false;
 }
 
 /* ************************************************************************ */
@@ -245,7 +245,7 @@ int main(int argc, char** argv)
         auto args = processArguments(argc, argv);
 
         // Create and run simulator
-        cece::cli::Simulator(args).start(g_terminated);
+        cece::cli::Simulator(args).start(g_simulate);
     }
     catch (const Exception& e)
     {
@@ -259,7 +259,7 @@ int main(int argc, char** argv)
     }
 
     // In case of termination, return special code
-    return g_terminated ? 2 : 0;
+    return g_simulate ? 0 : 2;
 }
 
 /* ************************************************************************ */

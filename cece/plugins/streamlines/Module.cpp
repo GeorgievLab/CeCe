@@ -250,7 +250,7 @@ Module::~Module()
 
 /* ************************************************************************ */
 
-void Module::init(AtomicBool& termFlag)
+void Module::init(AtomicBool& flag)
 {
     // Print simulation info
     printInfo();
@@ -298,7 +298,7 @@ void Module::init(AtomicBool& termFlag)
             if ((it % 100) == 0)
                 Log::info("[streamlines] Initialization ", it, "/", getInitIterations());
 
-            if (termFlag)
+            if (!flag)
             {
                 Log::info("[streamlines] Initialization interrupted.");
                 return;

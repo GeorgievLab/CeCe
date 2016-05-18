@@ -944,9 +944,9 @@ public:
     /**
      * @brief Initialize simulation.
      *
-     * @param termFlag Termination flag.
+     * @param flag Initialization flag.
      */
-    void initialize(AtomicBool& termFlag);
+    void initialize(AtomicBool& flag);
 
 
     /**

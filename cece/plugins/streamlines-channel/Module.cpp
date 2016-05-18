@@ -46,13 +46,13 @@ namespace streamlines_channel {
 
 /* ************************************************************************ */
 
-void Module::init(AtomicBool& termFlag)
+void Module::init(AtomicBool& flag)
 {
     // Initialize model
     Descriptor::initModel(convertLength(getHeight()));
 
     // Initialize streamlines
-    streamlines::Module::init(termFlag);
+    streamlines::Module::init(flag);
 }
 
 /* ************************************************************************ */

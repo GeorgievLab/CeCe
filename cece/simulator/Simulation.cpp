@@ -431,7 +431,7 @@ bool Simulation::update()
 
 /* ************************************************************************ */
 
-void Simulation::initialize(AtomicBool& termFlag)
+void Simulation::initialize(AtomicBool& flag)
 {
     Assert(!isInitialized());
 
@@ -439,7 +439,7 @@ void Simulation::initialize(AtomicBool& termFlag)
     m_initializers.init(*this);
 
     // Initialize modules
-    m_modules.init(termFlag);
+    m_modules.init(flag);
 
     m_initialized = true;
 }

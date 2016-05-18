@@ -71,9 +71,9 @@ public:
     /**
      * @brief Initialize all modules.
      *
-     * @param termFlag Termination flag.
+     * @param flag Continuation flag.
      */
-    void init(AtomicBool& termFlag);
+    void init(AtomicBool& flag);
 
 
     /**

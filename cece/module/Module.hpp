@@ -237,10 +237,10 @@ public:
     /**
      * @brief Initialize module.
      *
-     * @param termFlag Termination flag. If initialization is expensive it should
-     *                 test this variable in case a termination request is sent.
+     * @param flag Continuation flag. If initialization is expensive it should
+     *             test this variable in case a termination request is sent.
      */
-    virtual void init(AtomicBool& termFlag);
+    virtual void init(AtomicBool& flag);
 
 
     /**

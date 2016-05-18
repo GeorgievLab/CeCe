@@ -39,15 +39,15 @@ namespace module {
 
 /* ************************************************************************ */
 
-void Container::init(AtomicBool& termFlag)
+void Container::init(AtomicBool& flag)
 {
     // Update modules
     for (auto& module : getSortedListAsc())
     {
-        if (termFlag)
+        if (!flag)
             break;
 
-        module->init(termFlag);
+        module->init(flag);
     }
 }
 
