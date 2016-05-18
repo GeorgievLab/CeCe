@@ -71,8 +71,8 @@ int main(int argc, char* argv[])
 #endif
     }
 
-    // Preload XML plugin
-    pluginManager.load("xml");
+    // Load all plugins
+    pluginManager.loadAll();
 
     app.setOrganizationName("GeorgievLab");
     app.setOrganizationDomain("ccy.zcu.cz");

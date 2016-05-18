@@ -72,11 +72,33 @@ public:
 
 
     /**
+     * @brief Returns loader factory manager.
+     *
+     * @return
+     */
+    const loader::FactoryManager& getLoaderFactoryManager() const noexcept
+    {
+        return m_loaderFactoryManager;
+    }
+
+
+    /**
      * @brief Returns init factory manager.
      *
      * @return
      */
     init::FactoryManager& getInitFactoryManager() noexcept
+    {
+        return m_initFactoryManager;
+    }
+
+
+    /**
+     * @brief Returns init factory manager.
+     *
+     * @return
+     */
+    const init::FactoryManager& getInitFactoryManager() const noexcept
     {
         return m_initFactoryManager;
     }
@@ -94,6 +116,17 @@ public:
 
 
     /**
+     * @brief Returns module factory manager.
+     *
+     * @return
+     */
+    const module::FactoryManager& getModuleFactoryManager() const noexcept
+    {
+        return m_moduleFactoryManager;
+    }
+
+
+    /**
      * @brief Returns object factory manager.
      *
      * @return
@@ -105,11 +138,33 @@ public:
 
 
     /**
+     * @brief Returns object factory manager.
+     *
+     * @return
+     */
+    const object::FactoryManager& getObjectFactoryManager() const noexcept
+    {
+        return m_objectFactoryManager;
+    }
+
+
+    /**
      * @brief Returns program factory manager.
      *
      * @return
      */
     program::FactoryManager& getProgramFactoryManager() noexcept
+    {
+        return m_programFactoryManager;
+    }
+
+
+    /**
+     * @brief Returns program factory manager.
+     *
+     * @return
+     */
+    const program::FactoryManager& getProgramFactoryManager() const noexcept
     {
         return m_programFactoryManager;
     }

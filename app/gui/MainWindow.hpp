@@ -285,6 +285,12 @@ private:
     void updateRecentFileActions();
 
 
+    /**
+     * @brief Initialize tools.
+     */
+    void initTools();
+
+
 // Private Data Members
 private:
 

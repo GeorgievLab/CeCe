@@ -43,6 +43,7 @@
 // CeCe
 #include "cece/core/Log.hpp"
 #include "cece/plugin/Manager.hpp"
+#include "cece/plugin/Context.hpp"
 
 // UI
 #include "ui_MainWindow.h"
@@ -116,6 +117,9 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Start draw timer
     m_simulatorDrawTimer.start(1000 / 30);
+
+    // Initialize tools from simulator
+    initTools();
 }
 
 /* ************************************************************************ */
@@ -538,6 +542,46 @@ void MainWindow::updateRecentFileActions()
 
     for (int j = numRecentFiles; j < MAX_RECENT_FILES; ++j)
         m_recentFiles[j]->setVisible(false);
+}
+
+/* ************************************************************************ */
+
+void MainWindow::initTools()
+{
+    const plugin::Manager& manager = plugin::Manager::s();
+    const plugin::Context& context = manager.getContext();
+
+    // Foreach initializers
+    for (const auto& name : context.getInitFactoryManager().getNames())
+    {
+        ui->treeWidgetTools->addTopLevelItem(
+            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"init", QString::fromStdString(name)})
+        );
+    }
+
+    // Foreach modules
+    for (const auto& name : context.getModuleFactoryManager().getNames())
+    {
+        ui->treeWidgetTools->addTopLevelItem(
+            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"module", QString::fromStdString(name)})
+        );
+    }
+
+    // Foreach objects
+    for (const auto& name : context.getObjectFactoryManager().getNames())
+    {
+        ui->treeWidgetTools->addTopLevelItem(
+            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"object", QString::fromStdString(name)})
+        );
+    }
+
+    // Foreach programs
+    for (const auto& name : context.getProgramFactoryManager().getNames())
+    {
+        ui->treeWidgetTools->addTopLevelItem(
+            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"program", QString::fromStdString(name)})
+        );
+    }
 }
 
 /* ************************************************************************ */
