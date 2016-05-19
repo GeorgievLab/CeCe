@@ -172,6 +172,8 @@ const char* translateKey(int key) noexcept
     case GLFW_KEY_KP_ENTER:     return "enter";
     case GLFW_KEY_KP_EQUAL:     return "=";
     }
+
+    return "";
 }
 #endif
 
@@ -827,8 +829,13 @@ bool Simulator::updateLayers(int key)
     for (auto& layer : visualization.getLayers())
     {
         if (translateKey(key) == strToLower(layer.getKey()))
+        {
             layer.toggle();
+            return true;
+        }
     }
+
+    return false;
 }
 #endif
 
