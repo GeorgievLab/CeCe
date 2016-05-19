@@ -488,6 +488,9 @@ void Module::loadConfig(const config::Configuration& config)
     }
 
 #ifdef CECE_ENABLE_RENDER
+    m_visualizationLayerDynamicsType = config.get("layer-dynamics", m_visualizationLayerDynamicsType);
+    m_visualizationLayerMagnitude = config.get("layer-magnitude", m_visualizationLayerMagnitude);
+    m_visualizationLayerDensity = config.get("layer-density", m_visualizationLayerDensity);
     setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
 #endif
 
@@ -534,12 +537,18 @@ void Module::storeConfig(config::Configuration& config) const
 void Module::draw(const simulator::Visualization& visualization, render::Context& context)
 {
     const auto size = m_lattice.getSize();
+    const bool drawDynamicsType = visualization.isEnabled(m_visualizationLayerDynamicsType);
+    const bool drawMagnitude = visualization.isEnabled(m_visualizationLayerMagnitude);
+    const bool drawDensity = visualization.isEnabled(m_visualizationLayerDensity);
 
-    if (!m_drawableDebug)
-        m_drawableDebug.create(context, size);
+    if (drawDynamicsType && !m_drawableDynamicsType)
+        m_drawableDynamicsType.create(context, size);
 
-    // Temporary for velocities
-    Grid<Descriptor::VelocityType> velocities(size);
+    if (drawMagnitude && !m_drawableMagnitude)
+        m_drawableMagnitude.create(context, size);
+
+    if (drawDensity && !m_drawableDensity)
+        m_drawableDensity.create(context, size);
 
     // Calculate grid max velocity
     Assert(!m_inletVelocities.empty());
@@ -551,28 +560,25 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         // Lock access
         MutexGuard guard(m_mutex);
 #endif
-
         // Update texture
         for (auto&& c : range(size))
         {
             // Cell alias
             const auto& node = m_lattice[c];
             const auto velocity = node.computeVelocity();
-            auto dynamics = node.getDynamics();
+            const auto density = node.computeDensity();
+            const auto dynamics = node.getDynamics();
 
-            render::Color color = render::colors::BLACK;
-
-            // Node velocity
-            velocities[c] = velocity;
-
-            if (dynamics == getFluidDynamics())
+            // Store dynamics type
+            if (drawDynamicsType)
             {
-                if (visualization.isEnabled("velocity"))
-                    color = render::Color::fromGray(velocity.getLength() / maxVel);
-            }
-            else if (visualization.isEnabled("obstacles"))
-            {
-                if (dynamics == m_boundaries[LayoutPosTop] ||
+                render::Color color;
+
+                if (dynamics == getFluidDynamics())
+                {
+                    color = render::colors::BLACK;
+                }
+                else if (dynamics == m_boundaries[LayoutPosTop] ||
                     dynamics == m_boundaries[LayoutPosBottom] ||
                     dynamics == m_boundaries[LayoutPosLeft] ||
                     dynamics == m_boundaries[LayoutPosRight])
@@ -587,38 +593,44 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
                 {
                     color = render::colors::GREEN;
                 }
-/*
-                case Node::Dynamics::DynamicObstacle:
-                    color = render::colors::RED;
-*/
+
                 // Set alpha channel
                 color.setAlpha(0);
+
+                // Store color
+                m_drawableDynamicsType->set(c, color);
             }
 
-            m_drawableDebug->set(c, color);
-        }
-    }
+            if (drawMagnitude)
+            {
+                m_drawableMagnitude->set(
+                    c,
+                    render::Color::fromGray(velocity.getLength() / maxVel)
+                );
+            }
 
-    if (!m_drawableDirections)
-    {
-        m_drawableDirections.create(context, size, velocities.getData(), maxVel);
-    }
-    else
-    {
-        m_drawableDirections->setMax(maxVel);
-        m_drawableDirections->update(velocities.getData());
+            if (drawDensity)
+            {
+                m_drawableMagnitude->set(
+                    c,
+                    render::Color::fromGray((0.9 - density) / 0.2)
+                );
+            }
+        }
     }
 
     // Draw color grid
     context.matrixPush();
     context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
 
-    // TODO: changeable names
-    if (visualization.isEnabled("velocity") || visualization.isEnabled("obstacles"))
-        m_drawableDebug->draw(context);
+    if (drawDynamicsType && m_drawableDynamicsType)
+        m_drawableDynamicsType->draw(context);
 
-    if (visualization.isEnabled("velocity-field"))
-        m_drawableDirections->draw(context);
+    if (drawMagnitude && m_drawableMagnitude)
+        m_drawableMagnitude->draw(context);
+
+    if (drawDensity && m_drawableDensity)
+        m_drawableDensity->draw(context);
 
     context.matrixPop();
 }

@@ -50,7 +50,6 @@
 #  include "cece/render/Context.hpp"
 #  include "cece/render/Object.hpp"
 #  include "cece/render/GridColorColorMap.hpp"
-#  include "cece/render/GridVector.hpp"
 #endif
 
 #ifdef CECE_THREAD_SAFE
@@ -921,13 +920,26 @@ private:
     bool m_dynamicObjectsObstacles = false;
 
 #if defined(CECE_ENABLE_RENDER)
-    /// Render grid for velocities
-    render::ObjectPtr<render::GridVector> m_drawableDirections;
-
-    /// Rendering grid with filled cells.
-    render::ObjectPtr<render::GridColorColorMap> m_drawableDebug;
-
+    /// Velocity magnitude scale.
     RealType m_debugMagnitudeScale = 2;
+
+    /// Name of layer for flow dynamics type visualization.
+    String m_visualizationLayerDynamicsType;
+
+    /// Name of layer for velocity magnitude visualization.
+    String m_visualizationLayerMagnitude;
+
+    /// Name of layer for density visualization.
+    String m_visualizationLayerDensity;
+
+    /// Rendering grid with dynamics type.
+    render::ObjectPtr<render::GridColorColorMap> m_drawableDynamicsType;
+
+    /// Rendering grid with magnitude.
+    render::ObjectPtr<render::GridColorColorMap> m_drawableMagnitude;
+
+    /// Rendering grid with density.
+    render::ObjectPtr<render::GridColorColorMap> m_drawableDensity;
 #endif
 
 #ifdef CECE_THREAD_SAFE
@@ -935,8 +947,10 @@ private:
     mutable Mutex m_mutex;
 #endif
 
+    /// Used flow dynamics.
     UniquePtr<Dynamics> m_fluidDynamics;
 
+    /// Used wall dynamics.
     UniquePtr<Dynamics> m_wallDynamics;
 
     /// Outstream for streamlines data
@@ -947,6 +961,7 @@ private:
 
     /// If cell populations should be stored.
     bool m_dataOutPopulations = false;
+
 };
 
 /* ************************************************************************ */
