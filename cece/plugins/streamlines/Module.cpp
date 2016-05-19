@@ -28,6 +28,7 @@
 
 // C++
 #include <algorithm>
+#include <limits>
 
 // CeCe
 #include "cece/core/Assert.hpp"
@@ -560,6 +561,16 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         // Lock access
         MutexGuard guard(m_mutex);
 #endif
+        // Find min/max density
+        Descriptor::DensityType rhoMin = std::numeric_limits<Descriptor::DensityType>::max();
+        Descriptor::DensityType rhoMax = 0.0;
+        for (auto&& c : range(size))
+        {
+            const auto density = m_lattice[c].computeDensity();
+            rhoMin = std::min(density, rhoMin);
+            rhoMax = std::max(density, rhoMax);
+        }
+
         // Update texture
         for (auto&& c : range(size))
         {
@@ -611,9 +622,9 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 
             if (drawDensity)
             {
-                m_drawableMagnitude->set(
+                m_drawableDensity->set(
                     c,
-                    render::Color::fromGray((0.9 - density) / 0.2)
+                    render::Color::fromGray((density - rhoMin) / (rhoMax - rhoMin))
                 );
             }
         }
