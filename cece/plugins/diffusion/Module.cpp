@@ -102,6 +102,7 @@ Module::SignalId Module::registerSignal(String name, DiffusionRate rate, Degrada
 #ifdef CECE_ENABLE_RENDER
     m_colors.push_back(g_colors[id % g_colors.size()]);
     m_signalSaturation.push_back(SignalConcentration{1});
+    m_signalVisualizationLayer.push_back(String{});
 #endif
 
     return id;
@@ -195,6 +196,7 @@ void Module::loadConfig(const config::Configuration& config)
         // Set signal color
         setSignalColor(id, signal.get("color", getSignalColor(id)));
         setSignalSaturation(id, signal.get("saturation", getSignalSaturation(id)));
+        setSignalVisualizationLayer(id, signal.get("layer", String{}));
 #endif
     }
 
@@ -261,7 +263,7 @@ void Module::storeConfig(config::Configuration& config) const
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::draw(render::Context& context)
+void Module::draw(const simulator::Visualization& visualization, render::Context& context)
 {
     if (getGridSize() == Zero)
         throw RuntimeException("Diffusion grid size is not set!");
@@ -270,7 +272,7 @@ void Module::draw(render::Context& context)
         m_drawable.create(context, getGridSize());
 
     // Update drawable
-    updateDrawable();
+    updateDrawable(visualization);
 
     context.matrixPush();
     context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
@@ -286,7 +288,7 @@ void Module::draw(render::Context& context)
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::updateDrawable() const
+void Module::updateDrawable(const simulator::Visualization& visualization) const
 {
     assert(m_drawable);
     assert(getGridSize() == m_drawable->getSize());
@@ -296,12 +298,24 @@ void Module::updateDrawable() const
     MutexGuard guard(m_mutex);
 #endif
 
+    // Drawed signals
+    DynamicArray<SignalId> signals;
+
+    for (auto id : getSignalIds())
+    {
+        const auto layer = getSignalVisualizationLayer(id);
+
+        // Store only when empty or enabled
+        if (layer.empty() || visualization.isEnabled(layer))
+            signals.push_back(id);
+    }
+
     // Foreach grid
     for (auto&& c : range(getGridSize()))
     {
         RealType alphaSum = 0;
 
-        for (auto id : getSignalIds())
+        for (auto id : signals)
         {
             if (m_colors[id] != render::colors::TRANSPARENT)
                 alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
@@ -321,7 +335,7 @@ void Module::updateDrawable() const
             render::Color pixelSignals;
 
             // Mixup signal colors
-            for (auto id : getSignalIds())
+            for (auto id : signals)
             {
                 if (m_colors[id] == render::colors::TRANSPARENT)
                     continue;

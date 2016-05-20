@@ -531,6 +531,37 @@ public:
         return getSignalSaturation(id);
     }
 
+
+    /**
+     * @brief Get signal visualization layer (only for rendering).
+     *
+     * @param id Signal identifier.
+     *
+     * @return
+     */
+    const String& getSignalVisualizationLayer(SignalId id) const noexcept
+    {
+        return m_signalVisualizationLayer[id];
+    }
+
+
+    /**
+     * @brief Get signal visualization layer (only for rendering).
+     *
+     * @param name Signal name.
+     *
+     * @return
+     */
+    const String& getSignalVisualizationLayer(const String& name) const
+    {
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        return getSignalVisualizationLayer(id);
+    }
+
 #endif
 
 
@@ -816,6 +847,35 @@ public:
         setSignalSaturation(id, saturation);
     }
 
+
+    /**
+     * @brief Set signal visualization layer.
+     *
+     * @param id    Signal identifier.
+     * @param layer Layer name.
+     */
+    void setSignalVisualizationLayer(SignalId id, String layer) noexcept
+    {
+        m_signalVisualizationLayer[id] = std::move(layer);
+    }
+
+
+    /**
+     * @brief Change signal visualization layer.
+     *
+     * @param name  Signal name.
+     * @param layer Layer name.
+     */
+    void setSignalVisualizationLayer(const String& name, String layer)
+    {
+        const auto id = getSignalId(name);
+
+        if (id == INVALID_SIGNAL_ID)
+            throw InvalidArgumentException("Unknown signal name: " + name);
+
+        setSignalVisualizationLayer(id, std::move(layer));
+    }
+
 #endif
 
 
@@ -850,15 +910,18 @@ public:
     /**
      * @brief Render module.
      *
-     * @param context Rendering context.
+     * @param visualization Visualization context.
+     * @param context       Rendering context.
      */
-    void draw(render::Context& context) override;
+    void draw(const simulator::Visualization& visualization, render::Context& context) override;
 
 
     /**
      * @brief Update drawable.
+     *
+     * @param visualization Visualization context.
      */
-    void updateDrawable() const;
+    void updateDrawable(const simulator::Visualization& visualization) const;
 
 #endif
 
@@ -960,6 +1023,9 @@ private:
 
     /// Signal color saturation.
     DynamicArray<SignalConcentration> m_signalSaturation;
+
+    /// Signal visualization layer.
+    DynamicArray<String> m_signalVisualizationLayer;
 
     /// Drawable signal grid.
 #  if CONFIG_PLUGIN_diffusion_SMOOTH
