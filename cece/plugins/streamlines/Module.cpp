@@ -566,9 +566,15 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         Descriptor::DensityType rhoMax = 0.0;
         for (auto&& c : range(size))
         {
-            const auto density = m_lattice[c].computeDensity();
-            rhoMin = std::min(density, rhoMin);
-            rhoMax = std::max(density, rhoMax);
+            const auto& node = m_lattice[c];
+            const auto dynamics = node.getDynamics();
+
+            if (dynamics == getFluidDynamics())
+            {
+                const auto density = node.computeDensity();
+                rhoMin = std::min(density, rhoMin);
+                rhoMax = std::max(density, rhoMax);
+            }
         }
 
         // Update texture
