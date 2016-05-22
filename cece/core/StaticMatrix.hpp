@@ -76,7 +76,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    constexpr StaticMatrix() = default;
+    StaticMatrix() = default;
 
 
     /**
