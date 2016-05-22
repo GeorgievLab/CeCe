@@ -23,92 +23,75 @@
 #                                                                           #
 # ######################################################################### #
 
-# Create project
-project(core CXX)
-
-# ######################################################################### #
-
 # Create library
-add_library(${PROJECT_NAME} OBJECT
-    Macro.hpp
-    constants.hpp
-    DynamicArray.hpp
-    StaticArray.hpp
-    StaticMatrix.hpp
-    Unit.hpp
-    Unit.cpp
-    UnitIo.hpp
-    UnitIo.cpp
-    UnitSymbol.hpp
-    Units.hpp
-    Units.cpp
-    UnitsCtors.hpp
-    Vector.hpp
-    Vector.cpp
-    VectorUnits.hpp
-    VectorUnits.cpp
-    Grid.hpp
-    Grid.cpp
-    AlignedAllocator.hpp
-    AlignedAllocator.cpp
-    ExpressionParser.hpp
-    ExpressionParser.cpp
-    Log.hpp
-    Log.cpp
-    TimeMeasurement.hpp
-    TimeMeasurement.cpp
-    String.hpp
-    StringView.hpp
-    FilePath.hpp
-    FilePath.cpp
-    Exception.hpp
-    OutStream.hpp
-    InStream.hpp
-    InOutStream.hpp
-    FileStream.hpp
-    CsvFile.hpp
-    CsvFile.cpp
-    ValueIterator.hpp
-    Range.hpp
-    VectorRange.hpp
-    Any.hpp
-    IntegerSequence.hpp
-    Tuple.hpp
-    UniquePtr.hpp
-    ViewPtr.hpp
-    ListenerContainer.hpp
-    Zero.hpp
-    StringStream.hpp
-    Tokenizer.hpp
-    Real.hpp
-    Mutex.hpp
-    Pair.hpp
-    Variant.hpp
-    DataTable.hpp
-    DataTable.cpp
-    SharedPtr.hpp
-    TriBool.hpp
-    Parameters.hpp
-    Parameters.cpp
-    Factory.hpp
-    FactoryManager.hpp
-    Shape.hpp
-    ShapeToGrid.hpp
-    PtrContainer.hpp
-    PtrNamedContainer.hpp
-)
-
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
+set(SOURCES_CORE
+    core/Macro.hpp
+    core/constants.hpp
+    core/DynamicArray.hpp
+    core/StaticArray.hpp
+    core/StaticMatrix.hpp
+    core/Unit.hpp
+    core/Unit.cpp
+    core/UnitIo.hpp
+    core/UnitIo.cpp
+    core/UnitSymbol.hpp
+    core/Units.hpp
+    core/Units.cpp
+    core/UnitsCtors.hpp
+    core/Vector.hpp
+    core/Vector.cpp
+    core/VectorUnits.hpp
+    core/VectorUnits.cpp
+    core/Grid.hpp
+    core/Grid.cpp
+    core/AlignedAllocator.hpp
+    core/AlignedAllocator.cpp
+    core/ExpressionParser.hpp
+    core/ExpressionParser.cpp
+    core/Log.hpp
+    core/Log.cpp
+    core/TimeMeasurement.hpp
+    core/TimeMeasurement.cpp
+    core/String.hpp
+    core/StringView.hpp
+    core/FilePath.hpp
+    core/FilePath.cpp
+    core/Exception.hpp
+    core/OutStream.hpp
+    core/InStream.hpp
+    core/InOutStream.hpp
+    core/FileStream.hpp
+    core/CsvFile.hpp
+    core/CsvFile.cpp
+    core/ValueIterator.hpp
+    core/Range.hpp
+    core/VectorRange.hpp
+    core/Any.hpp
+    core/IntegerSequence.hpp
+    core/Tuple.hpp
+    core/UniquePtr.hpp
+    core/ViewPtr.hpp
+    core/ListenerContainer.hpp
+    core/Zero.hpp
+    core/StringStream.hpp
+    core/Tokenizer.hpp
+    core/Real.hpp
+    core/Mutex.hpp
+    core/Pair.hpp
+    core/Variant.hpp
+    core/DataTable.hpp
+    core/DataTable.cpp
+    core/SharedPtr.hpp
+    core/TriBool.hpp
+    core/Parameters.hpp
+    core/Parameters.cpp
+    core/Factory.hpp
+    core/FactoryManager.hpp
+    core/Shape.hpp
+    core/ShapeToGrid.hpp
+    core/PtrContainer.hpp
+    core/PtrNamedContainer.hpp
+    PARENT_SCOPE
 )
 
 # ######################################################################### #
@@ -129,7 +112,7 @@ build_test(core
         test/ParametersTest.cpp
         test/PtrContainerTest.cpp
         test/ViewPtrTest.cpp
-        $<TARGET_OBJECTS:core>
+        ${SOURCES_CORE}
     LIBRARIES
         ${Boost_LIBRARIES}
 )

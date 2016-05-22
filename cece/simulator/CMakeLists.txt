@@ -23,46 +23,25 @@
 #                                                                           #
 # ######################################################################### #
 
-# Simulation objects
-project(simulator CXX)
-
-# ######################################################################### #
-
 # Sources
-set(SRCS
-    Simulation.hpp
-    Simulation.cpp
-    Simulator.hpp
-    Simulator.cpp
-    IterationType.hpp
-    TimeMeasurement.hpp
-    TimeMeasurement.cpp
+set(SOURCES
+    simulator/Simulation.hpp
+    simulator/Simulation.cpp
+    simulator/Simulator.hpp
+    simulator/Simulator.cpp
+    simulator/IterationType.hpp
+    simulator/TimeMeasurement.hpp
+    simulator/TimeMeasurement.cpp
 )
 
 if (CONFIG_PHYSICS_BUILTIN)
     # Sources
-    set(SRCS ${SRCS}
-        ConverterBox2D.hpp
-        ConverterBox2D.cpp
+    set(SOURCES ${SOURCES}
+        simulator/ConverterBox2D.hpp
+        simulator/ConverterBox2D.cpp
     )
 endif ()
 
-# ######################################################################### #
-
-# Create library
-add_library(${PROJECT_NAME} OBJECT ${SRCS})
-
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
-)
+set(SOURCES_SIMULATOR ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

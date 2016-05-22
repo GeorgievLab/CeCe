@@ -23,42 +23,20 @@
 #                                                                           #
 # ######################################################################### #
 
-# Object library
-project(object CXX)
-
-# ######################################################################### #
-
 # Sources
-set(SRCS
-    Object.hpp
-    Object.cpp
-    Type.hpp
-    TypeContainer.hpp
-    TypeContainer.cpp
-    Factory.hpp
-    Factory.cpp
-    FactoryManager.hpp
-    FactoryManager.cpp
-    Container.hpp
-    Container.cpp
-)
-
-# ######################################################################### #
-
-# Create library
-add_library(${PROJECT_NAME} OBJECT ${SRCS})
-
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
+set(SOURCES_OBJECT
+    object/Object.hpp
+    object/Object.cpp
+    object/Type.hpp
+    object/TypeContainer.hpp
+    object/TypeContainer.cpp
+    object/Factory.hpp
+    object/Factory.cpp
+    object/FactoryManager.hpp
+    object/FactoryManager.cpp
+    object/Container.hpp
+    object/Container.cpp
+    PARENT_SCOPE
 )
 
 # ######################################################################### #

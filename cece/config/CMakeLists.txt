@@ -23,37 +23,15 @@
 #                                                                           #
 # ######################################################################### #
 
-# Config project
-project(config CXX)
-
-# ######################################################################### #
-
 # Sources
-set(SRCS
-    Implementation.hpp
-    Implementation.cpp
-    Configuration.hpp
-    Configuration.cpp
-    MemoryImplementation.hpp
-    MemoryImplementation.cpp
-)
-
-# ######################################################################### #
-
-# Create library
-add_library(${PROJECT_NAME} OBJECT ${SRCS})
-
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
+set(SOURCES_CONFIG
+    config/Implementation.hpp
+    config/Implementation.cpp
+    config/Configuration.hpp
+    config/Configuration.cpp
+    config/MemoryImplementation.hpp
+    config/MemoryImplementation.cpp
+    PARENT_SCOPE
 )
 
 # ######################################################################### #

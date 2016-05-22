@@ -32,6 +32,11 @@ project(cece CXX)
 
 # ######################################################################### #
 
+# Options
+option(DEV_RENDER_GL_ERRORS "Enable OpenGL errors checking." On)
+
+# ######################################################################### #
+
 # Include build-in libraries
 set(PLUGINS_LIBS "")
 set(BUILTIN_PLUGINS "")
@@ -68,6 +73,11 @@ if (CONFIG_RENDER_ENABLE)
 
     # Include OpenGL path
     include_directories(${OPENGL_INCLUDE_DIR})
+
+    # Enable errors
+    if (DEV_RENDER_GL_ERRORS)
+        add_definitions(-DDEV_RENDER_GL_ERRORS=1)
+    endif ()
 endif ()
 
 # ######################################################################### #
@@ -83,6 +93,9 @@ configure_file(config.hpp.in config.hpp)
 
 # Exports macro is not propagated to subdirectories
 add_definitions(-D${PROJECT_NAME}_EXPORTS)
+
+# Pass build-in libraries list
+add_definitions(-DBUILTIN_PLUGINS=${BUILTIN_PLUGINS})
 
 # ######################################################################### #
 
@@ -108,19 +121,19 @@ add_subdirectory(simulator)
 
 # Sources
 set(SRCS
-    $<TARGET_OBJECTS:core>
-    $<TARGET_OBJECTS:config>
-    $<TARGET_OBJECTS:loader>
-    $<TARGET_OBJECTS:init>
-    $<TARGET_OBJECTS:module>
-    $<TARGET_OBJECTS:object>
-    $<TARGET_OBJECTS:program>
-    $<TARGET_OBJECTS:plugin>
-    $<TARGET_OBJECTS:simulator>
+    ${SOURCES_CORE}
+    ${SOURCES_CONFIG}
+    ${SOURCES_LOADER}
+    ${SOURCES_INIT}
+    ${SOURCES_MODULE}
+    ${SOURCES_OBJECT}
+    ${SOURCES_PROGRAM}
+    ${SOURCES_PLUGIN}
+    ${SOURCES_SIMULATOR}
 )
 
 if (CONFIG_RENDER_ENABLE)
-    set(SRCS ${SRCS} $<TARGET_OBJECTS:render>)
+    set(SRCS ${SRCS} ${SOURCES_RENDER}>)
 endif ()
 
 # Create library
@@ -166,6 +179,13 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${INSTALL_DIR_LIBRARY}
     LIBRARY DESTINATION ${INSTALL_DIR_LIBRARY}
     COMPONENT Library
+)
+
+# Install header files
+install(DIRECTORY .
+    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
+    COMPONENT Headers
+    FILES_MATCHING PATTERN "*.hpp"
 )
 
 # Install configuration file
