@@ -101,7 +101,7 @@
  * @param name Plugin name.
  */
 #define CECE_PLUGIN_CREATE_PROTOTYPE(name) \
-    extern "C" CECE_EXPORT cece::plugin::Api* CECE_PLUGIN_PROTOTYPE_NAME(create, name)()
+    extern "C" cece::plugin::Api* CECE_PLUGIN_PROTOTYPE_NAME(create, name)()
 
 /* ************************************************************************ */
 
@@ -134,7 +134,7 @@
  * @param name Plugin name.
  */
 #define CECE_PLUGIN_GET_CONFIG_PROTOTYPE(name) \
-    extern "C" CECE_EXPORT cece::plugin::Config* CECE_PLUGIN_PROTOTYPE_NAME(get_config, name)()
+    extern "C" cece::plugin::Config* CECE_PLUGIN_PROTOTYPE_NAME(get_config, name)()
 
 /* ************************************************************************ */
 
