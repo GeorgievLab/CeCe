@@ -40,6 +40,7 @@
 #include <Winsock2.h>
 #undef TRANSPARENT
 // Everyone likes WINAPI macros...
+#pragma comment(lib, "Ws2_32.lib")
 #endif
 
 // CeCe
