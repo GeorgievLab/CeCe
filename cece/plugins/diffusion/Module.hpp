@@ -168,7 +168,7 @@ public:
      */
     IteratorRange<ValueIterator<SignalId>> getSignalIds() const noexcept
     {
-        return range<SignalId>(0u, getSignalCount());
+        return range<SignalId>(static_cast<SignalId>(0u), static_cast<SignalId>(getSignalCount()));
     }
 
 
@@ -182,7 +182,7 @@ public:
     SignalId getSignalId(const String& name) const noexcept
     {
         auto it = std::find(m_names.begin(), m_names.end(), name);
-        return it != m_names.end() ? std::distance(m_names.begin(), it) : INVALID_SIGNAL_ID;
+        return it != m_names.end() ? static_cast<SignalId>(std::distance(m_names.begin(), it)) : INVALID_SIGNAL_ID;
     }
 
 
@@ -571,7 +571,7 @@ public:
      */
     bool isObstacle(const Coordinate& coord) const noexcept
     {
-        return m_obstacles[coord + OFFSET];
+        return m_obstacles[coord + OFFSET] != 0;
     }
 
 

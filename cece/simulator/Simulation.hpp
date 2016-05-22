@@ -32,6 +32,9 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <cstddef>
+
 // CeCe
 #include "cece/core/Assert.hpp"
 #include "cece/core/Real.hpp"
@@ -345,7 +348,7 @@ public:
      *
      * @return
      */
-    unsigned long getObjectCount() const noexcept
+    std::size_t getObjectCount() const noexcept
     {
         return m_objects.getCount();
     }
@@ -358,7 +361,7 @@ public:
      *
      * @return
      */
-    unsigned long getObjectCountType(StringView className) const noexcept
+    std::size_t getObjectCountType(StringView className) const noexcept
     {
         return m_objects.getCountByType(className);
     }

@@ -235,7 +235,7 @@ void Context::setView(int width, int height) noexcept
     glLoadIdentity();
 
     // Apply zoom matrix
-    float scale = 1.0 / m_camera.getZoom();
+    const float scale = static_cast<float>(1.0 / m_camera.getZoom());
     glScalef(scale, scale, scale);
 
     // Move camera
