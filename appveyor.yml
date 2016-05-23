@@ -30,6 +30,7 @@ environment:
     matrix:
         - GENERATOR: MinGW Makefiles
         - GENERATOR: Visual Studio 14 2015
+          BOOST_LIBRARYDIR: C:\Libraries\boost\lib32-msvc-14.0
 
 # Branches to build
 branches:
