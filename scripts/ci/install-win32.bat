@@ -39,10 +39,12 @@ SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 SET PATH=C:\MinGW\bin;%PATH%
 
 :: Build boost with MinGW
-pushd C:\Libraries\boost
-call bootstrap.bat mingw
-b2 toolset=gcc --with-filesystem --with-system variant=release
-popd
+IF %GENERATOR% == "MinGW Makefiles" (
+    pushd C:\Libraries\boost
+    call bootstrap.bat mingw
+    b2 toolset=gcc --with-filesystem --with-system variant=release
+    popd
+)
 
 :: Box2D
 pushd Box2D\Box2D
@@ -57,7 +59,7 @@ cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DBOX2D_INSTALL=On -DBOX2D_BUI
 cmake --build . || EXIT /B 1
 
 :: Install
-mingw32-make install || EXIT /B 1
+cmake --build . --target install || EXIT /B 1
 
 popd
 popd
@@ -77,7 +79,7 @@ cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
 cmake --build . || EXIT /B 1
 
 :: Install
-mingw32-make install || EXIT /B 1
+cmake --build . --target install || EXIT /B 1
 
 popd
 popd
@@ -97,7 +99,7 @@ cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
 cmake --build . || EXIT /B 1
 
 :: Install
-mingw32-make install || EXIT /B 1
+cmake --build . --target install || EXIT /B 1
 
 popd
 popd
@@ -117,7 +119,7 @@ cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off -DGLFW_B
 cmake --build . || EXIT /B 1
 
 :: Install
-mingw32-make install || EXIT /B 1
+cmake --build . --target install || EXIT /B 1
 
 popd
 popd
