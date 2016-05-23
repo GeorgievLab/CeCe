@@ -26,7 +26,7 @@
 
 pushd build
 
-cmake --build . || EXIT /B 1
+cmake --build . --config Release || EXIT /B 1
 
 popd
 
