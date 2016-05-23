@@ -200,10 +200,11 @@ public slots:
     /**
      * @brief Load simulation.
      *
-     * @param type Source type.
-     * @param source
+     * @param type     Source type.
+     * @param source   Source code.
+     * @param filename Name of the source file.
      */
-    void simulationLoad(QString type, QString source) noexcept;
+    void simulationLoad(QString type, QString source, QString filename) noexcept;
 
 
     /**

@@ -32,6 +32,7 @@
 #include <QThread>
 #include <QTreeWidget>
 #include <QTimer>
+#include <QList>
 
 // GUI
 #include "LogStream.hpp"
@@ -232,6 +233,14 @@ public slots:
     void simulatorInitializationCancel();
 
 
+    /**
+     * @brief Visualization layer toggle.
+     *
+     * @param flag
+     */
+    void visualizationLayerToggle(bool flag);
+
+
 // Public Operations
 public:
 
@@ -317,6 +326,9 @@ private:
 
     /// Draw timer.
     QTimer m_simulatorDrawTimer;
+
+    /// Actions for visualization layers.
+    QList<QAction*> m_visualizationActions;
 };
 
 /* ************************************************************************ */

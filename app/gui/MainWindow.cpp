@@ -256,7 +256,7 @@ void MainWindow::simulationReset()
 {
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
-    m_simulator.simulationLoad("cece", ui->plainTextSourceCode->toPlainText());
+    m_simulator.simulationLoad("cece", ui->plainTextSourceCode->toPlainText(), m_filename);
 }
 
 /* ************************************************************************ */
@@ -304,6 +304,12 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
     ui->actionReset->setEnabled(flag);
     ui->widgetModified->hide();
 
+    // Clear visualization layer actions
+    for (auto action : m_visualizationActions)
+        delete action;
+
+    m_visualizationActions.clear();
+
     if (flag)
     {
         // Store original format
@@ -320,6 +326,18 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
         {
             ui->progressBar->setMaximum(simulation->getIterations());
             ui->progressBar->setFormat(format);
+        }
+
+        // Add visualization layer actions
+        for (const auto& layer : simulation->getVisualization().getLayers())
+        {
+            auto action = new QAction(QString::fromStdString(layer.getName()), this);
+            action->setCheckable(true);
+            action->setChecked(layer.isEnabled());
+            m_visualizationActions.append(action);
+            ui->menuVisualization->addAction(action);
+
+            connect(action, &QAction::toggled, this, &MainWindow::visualizationLayerToggle);
         }
     }
 }
@@ -409,6 +427,28 @@ void MainWindow::simulatorInitializationCancel()
 
 /* ************************************************************************ */
 
+void MainWindow::visualizationLayerToggle(bool flag)
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+
+    if (!action)
+        return;
+
+    // Get visualization
+    auto& visualization = m_simulator.getSimulation()->getVisualization();
+
+    for (auto& layer : visualization.getLayers())
+    {
+        if (layer.getName() == action->text().toStdString())
+        {
+            layer.setEnabled(flag);
+            break;
+        }
+    }
+}
+
+/* ************************************************************************ */
+
 void MainWindow::setCurrentFile(QString filename)
 {
     m_filename = filename;
@@ -464,7 +504,7 @@ void MainWindow::fileOpen(QString filename)
     m_simulator.stop();
     m_simulatorThread.quit();
     m_simulatorThread.wait();
-    m_simulator.simulationLoad("cece", ui->plainTextSourceCode->toPlainText());
+    m_simulator.simulationLoad("cece", ui->plainTextSourceCode->toPlainText(), m_filename);
 }
 
 /* ************************************************************************ */

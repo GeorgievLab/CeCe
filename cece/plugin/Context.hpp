@@ -329,6 +329,20 @@ public:
 
 
     /**
+     * @brief Create a simulation from source.
+     *
+     * @param type     Type of used loader.
+     * @param source   Source code.
+     * @param filepath Path to file.
+     *
+     * @return Pointer to simulation.
+     *
+     * @throw In case of missing file or error in simulation file.
+     */
+    UniquePtr<simulator::Simulation> createSimulation(StringView type, StringView source, const FilePath& filepath);
+
+
+    /**
      * @brief Create an initializer of given type name.
      *
      * @param typeName Type of required initializer.

@@ -68,6 +68,20 @@ UniquePtr<simulator::Simulation> Context::createSimulation(StringView type, Stri
 
 /* ************************************************************************ */
 
+UniquePtr<simulator::Simulation> Context::createSimulation(StringView type, StringView source, const FilePath& filepath)
+{
+    // Create a loader from type
+    auto loader = getLoaderFactoryManager().createLoader(type);
+
+    if (!loader)
+        throw RuntimeException("Unable to find loader '" + String(type) + "'");
+
+    // Create a simulation
+    return loader->fromSource(*this, String(source), filepath);
+}
+
+/* ************************************************************************ */
+
 UniquePtr<init::Initializer> Context::createInitializer(StringView typeName)
 {
     return getInitFactoryManager().createInitializer(typeName);

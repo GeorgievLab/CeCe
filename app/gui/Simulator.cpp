@@ -55,18 +55,19 @@ Simulator::~Simulator() = default;
 
 /* ************************************************************************ */
 
-void Simulator::simulationLoad(QString type, QString source) noexcept
+void Simulator::simulationLoad(QString type, QString source, QString filename) noexcept
 {
     // Convert to CeCe string
     const String src = source.toStdString();
     const String tp = type.toStdString();
+    const String file = filename.toStdString();
 
     // Create simulation
     try
     {
         QMutexLocker _(getMutex());
 
-        m_simulation = m_manager.getContext().createSimulation(tp, src);
+        m_simulation = m_manager.getContext().createSimulation(tp, src, file);
 
         emit simulationLoaded(m_simulation.get());
     }
@@ -106,11 +107,14 @@ bool Simulator::step() noexcept
         QMutexLocker _(getMutex());
 
         // Do a step
-        m_running = m_simulation->update();
+        bool cont = m_simulation->update();
 
         emit stepped(m_mode, static_cast<int>(m_simulation->getIteration()));
 
-        return m_running;
+        if (!cont)
+            stop();
+
+        return cont;
     }
     catch (const Exception& e)
     {
