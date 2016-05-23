@@ -31,6 +31,7 @@
 #include <string>
 #ifdef _WIN32
 #  include <cstdio>
+#  include <cstdlib>
 #endif
 
 /* ************************************************************************ */
