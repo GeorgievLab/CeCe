@@ -26,6 +26,9 @@
 // Declaration
 #include "Reactions.hpp"
 
+// C++
+#include <numeric>
+
 // Reactions
 #include "ReactionsParser.hpp"
 

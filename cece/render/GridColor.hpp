@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/Grid.hpp"
 #include "cece/render/Buffer.hpp"
@@ -50,7 +49,7 @@ class Context;
 /**
  * @brief Texture-like grid.
  */
-class CECE_EXPORT GridColor : public GridBase
+class GridColor : public GridBase
 {
 
 // Public Ctors & Dtors

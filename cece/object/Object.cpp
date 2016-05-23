@@ -553,9 +553,9 @@ void Object::initShapes()
 
             // Create edges loop
             if (vertices.size() < 3)
-                ptr->CreateChain(vertices.data(), vertices.size());
+                ptr->CreateChain(vertices.data(), static_cast<int32>(vertices.size()));
             else
-                ptr->CreateLoop(vertices.data(), vertices.size());
+                ptr->CreateLoop(vertices.data(), static_cast<int32>(vertices.size()));
 
             bodyShape = std::move(ptr);
             break;

@@ -23,11 +23,6 @@
 #                                                                           #
 # ######################################################################### #
 
-# Plugin project
-project(plugin CXX)
-
-# ######################################################################### #
-
 # Sources
 set(SRCS
     Config.hpp
@@ -44,25 +39,8 @@ set(SRCS
 
 # ######################################################################### #
 
-# Pass build-in libraries list
-add_definitions(-DBUILTIN_PLUGINS=${BUILTIN_PLUGINS})
+dir_pretend(SOURCES plugin/ ${SRCS})
 
-# ######################################################################### #
-
-# Create library
-add_library(${PROJECT_NAME} OBJECT ${SRCS})
-
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
-)
+set(SOURCES_PLUGIN ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

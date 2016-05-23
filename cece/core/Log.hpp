@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/StringStream.hpp"
@@ -243,10 +244,10 @@ private:
 private:
 
     /// Standard output.
-    static Output* s_output;
+    static CECE_EXPORT Output* s_output;
 
     /// Error output.
-    static Output* s_error;
+    static CECE_EXPORT Output* s_error;
 
 };
 

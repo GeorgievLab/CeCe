@@ -23,11 +23,6 @@
 #                                                                           #
 # ######################################################################### #
 
-# Loader project
-project(loader CXX)
-
-# ######################################################################### #
-
 # Sources
 set(SRCS
     Loader.hpp
@@ -40,20 +35,8 @@ set(SRCS
 
 # ######################################################################### #
 
-# Create library
-add_library(${PROJECT_NAME} OBJECT ${SRCS})
+dir_pretend(SOURCES loader/ ${SRCS})
 
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
-)
+set(SOURCES_LOADER ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

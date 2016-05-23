@@ -31,21 +31,8 @@
 #include <cassert>
 #include <algorithm>
 
-// OpenGL
-#ifdef __linux__
-#define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#elif defined(_WIN32)
-#include <GL/gl.h>
-#include "cece/render/glext.h"
-#ifdef _MSC_VER
-#pragma comment(lib, "opengl32.lib")
-#endif
-#elif __APPLE__ && __MACH__
-#include <OpenGL/gl.h>
-#endif
-
 // CeCe
+#include "cece/render/OpenGL.hpp"
 #include "cece/render/Color.hpp"
 #include "cece/render/Buffer.hpp"
 #include "cece/render/errors.hpp"
@@ -248,7 +235,7 @@ void Context::setView(int width, int height) noexcept
     glLoadIdentity();
 
     // Apply zoom matrix
-    float scale = 1.0 / m_camera.getZoom();
+    const float scale = static_cast<float>(1.0 / m_camera.getZoom());
     glScalef(scale, scale, scale);
 
     // Move camera

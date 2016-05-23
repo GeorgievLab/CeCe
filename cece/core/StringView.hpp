@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // C++
+#include <cstddef>
 #include <cstring>
 
 // CeCe
@@ -58,10 +59,10 @@ public:
     using CharType = char;
 
     /// Sequence length type.
-    using LengthType = unsigned long;
+    using LengthType = std::size_t;
 
     /// Sequence position type.
-    using PositionType = unsigned long;
+    using PositionType = std::size_t;
 
 
 // Public Ctors & Dtors

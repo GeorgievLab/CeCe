@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/UniquePtr.hpp"
 
 /* ************************************************************************ */
@@ -37,13 +36,13 @@
  * @brief Define extern factory specialization.
  */
 #define CECE_FACTORY(...) \
-    namespace cece { inline namespace core { template class CECE_EXPORT Factory<__VA_ARGS__>; } }
+    namespace cece { inline namespace core { template class Factory<__VA_ARGS__>; } }
 
 /**
  * @brief Define extern factory specialization.
  */
 #define CECE_FACTORY_EXTERN(...) \
-    namespace cece { inline namespace core { extern template class CECE_EXPORT Factory<__VA_ARGS__>; } }
+    namespace cece { inline namespace core { extern template class Factory<__VA_ARGS__>; } }
 
 /**
  * @brief Define extern factory specialization.

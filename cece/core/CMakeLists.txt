@@ -23,13 +23,7 @@
 #                                                                           #
 # ######################################################################### #
 
-# Create project
-project(core CXX)
-
-# ######################################################################### #
-
-# Create library
-add_library(${PROJECT_NAME} OBJECT
+set(SRCS
     Macro.hpp
     constants.hpp
     DynamicArray.hpp
@@ -98,38 +92,37 @@ add_library(${PROJECT_NAME} OBJECT
     PtrNamedContainer.hpp
 )
 
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
+set(SRCS_TEST
+    test/AlignedAllocatorTest.cpp
+    test/DynamicArrayTest.cpp
+    test/IteratorRangeTest.cpp
+    test/VectorRangeTest.cpp
+    test/UnitsTest.cpp
+    test/StringViewTest.cpp
+    test/VectorTest.cpp
+    test/VectorUnitsTest.cpp
+    test/ExpressionParserTest.cpp
+    test/TokenizerTest.cpp
+    test/ParametersTest.cpp
+    test/PtrContainerTest.cpp
+    test/ViewPtrTest.cpp
 )
+
+# ######################################################################### #
+
+dir_pretend(SOURCES core/ ${SRCS})
+dir_pretend(SOURCES_TEST core/ ${SRCS_TEST})
+
+set(SOURCES_CORE ${SOURCES} PARENT_SCOPE)
+set(SOURCES_CORE_TEST ${SOURCES_TEST} PARENT_SCOPE)
 
 # ######################################################################### #
 
 # Add tests
 build_test(core
     SOURCES
-        test/AlignedAllocatorTest.cpp
-        test/DynamicArrayTest.cpp
-        test/IteratorRangeTest.cpp
-        test/VectorRangeTest.cpp
-        test/UnitsTest.cpp
-        test/StringViewTest.cpp
-        test/VectorTest.cpp
-        test/VectorUnitsTest.cpp
-        test/ExpressionParserTest.cpp
-        test/TokenizerTest.cpp
-        test/ParametersTest.cpp
-        test/PtrContainerTest.cpp
-        test/ViewPtrTest.cpp
-        $<TARGET_OBJECTS:core>
+        ${SRCS_TEST}
+        ${SRCS}
     LIBRARIES
         ${Boost_LIBRARIES}
 )

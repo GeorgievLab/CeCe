@@ -32,8 +32,10 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <cstddef>
+
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Assert.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
@@ -83,9 +85,8 @@ namespace simulator {
 /**
  * @brief Simulation class.
  */
-class CECE_EXPORT Simulation
+class Simulation
 {
-
 
 // Public Types
 public:
@@ -348,7 +349,7 @@ public:
      *
      * @return
      */
-    unsigned long getObjectCount() const noexcept
+    std::size_t getObjectCount() const noexcept
     {
         return m_objects.getCount();
     }
@@ -361,7 +362,7 @@ public:
      *
      * @return
      */
-    unsigned long getObjectCountType(StringView className) const noexcept
+    std::size_t getObjectCountType(StringView className) const noexcept
     {
         return m_objects.getCountByType(className);
     }

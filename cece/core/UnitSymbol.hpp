@@ -194,7 +194,7 @@ struct SymbolLength<List<Types...>>
      * @return Total length.
      */
     template<typename Arg, typename... Args>
-    static constexpr Value add(Arg&& arg, Args&&... args) noexcept
+    static constexpr std::size_t add(Arg&& arg, Args&&... args) noexcept
     {
         return arg + add(args...);
     }
@@ -205,9 +205,9 @@ struct SymbolLength<List<Types...>>
      *
      * @return 0.
      */
-    static constexpr Value add() noexcept
+    static constexpr std::size_t add() noexcept
     {
-        return Value(0);
+        return std::size_t(0);
     }
 
 

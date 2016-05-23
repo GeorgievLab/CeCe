@@ -41,9 +41,6 @@
 // Box2D
 #include <Box2D/Box2D.h>
 
-// CeCe
-#include "cece/export.hpp"
-
 /* ************************************************************************ */
 
 struct b2AABB;
@@ -60,7 +57,7 @@ namespace render {
  *
  * @note Based on Erin Catto's version (http://www.box2d.org).
  */
-class CECE_EXPORT PhysicsDebugger : public ::b2Draw
+class PhysicsDebugger : public ::b2Draw
 {
 
 // Public Ctors & Dtors

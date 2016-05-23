@@ -68,10 +68,24 @@ static constexpr int LUMINOUS_INTENSITY_EXPONENT = 0;
 
 /* ************************************************************************ */
 
+/// @link http://stackoverflow.com/questions/26682812/argument-counting-macro-with-zero-arguments-for-visualstudio-2010/26685339#26685339
+#ifdef _MSC_VER // Microsoft compilers
+
+#define EXPAND(x) x
+#define __NARGS(_1, _2, _3, _4, N, ...) N
+#define NARGS_1(...) EXPAND(__NARGS(__VA_ARGS__, 3, 2, 1, 0))
+
+#define AUGMENTER(...) unused, __VA_ARGS__
+#define NARG(...) NARGS_1(AUGMENTER(__VA_ARGS__))
+
+#else // And normal compilers
+
 /// @link https://azraelplanet.wordpress.com/2012/03/30/number-of-arguments-in-__va_args__-gcc/
 #define ARG_N(_1, _2, _3, N, ...) N
 #define NARG_(...) ARG_N(__VA_ARGS__)
 #define NARG(...) NARG_(__VA_ARGS__, 3, 2, 1, 0)
+
+#endif
 
 /* ************************************************************************ */
 

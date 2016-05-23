@@ -31,7 +31,6 @@
 #include <cstdint>
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/Vector.hpp"
 
@@ -45,7 +44,7 @@ namespace render {
 /**
  * @brief Image data structure.
  */
-struct CECE_EXPORT ImageData
+struct ImageData
 {
 
     /// Image size.

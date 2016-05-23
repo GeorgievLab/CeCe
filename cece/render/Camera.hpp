@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/VectorUnits.hpp"
 
@@ -42,7 +41,7 @@ namespace render {
 /**
  * @brief Render camera.
  */
-class CECE_EXPORT Camera
+class Camera
 {
 
 // Public Ctors & Dtors

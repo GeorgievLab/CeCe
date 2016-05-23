@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
@@ -43,7 +42,7 @@ namespace render {
 /**
  * @brief Color structure.
  */
-class CECE_EXPORT Color
+class Color
 {
 
 // Public Types
@@ -182,10 +181,10 @@ public:
      */
     Color& operator*=(RealType val) noexcept
     {
-        m_red   *= val;
-        m_green *= val;
-        m_blue  *= val;
-        m_alpha *= val;
+        m_red   *= static_cast<ComponentType>(val);
+        m_green *= static_cast<ComponentType>(val);
+        m_blue  *= static_cast<ComponentType>(val);
+        m_alpha *= static_cast<ComponentType>(val);
 
         return *this;
     }
@@ -200,10 +199,10 @@ public:
      */
     Color& operator/=(RealType val) noexcept
     {
-        m_red   /= val;
-        m_green /= val;
-        m_blue  /= val;
-        m_alpha /= val;
+        m_red   /= static_cast<ComponentType>(val);
+        m_green /= static_cast<ComponentType>(val);
+        m_blue  /= static_cast<ComponentType>(val);
+        m_alpha /= static_cast<ComponentType>(val);
 
         return *this;
     }

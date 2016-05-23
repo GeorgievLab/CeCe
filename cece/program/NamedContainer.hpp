@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/PtrNamedContainer.hpp"
 
 /* ************************************************************************ */
@@ -45,7 +44,7 @@ class Program;
 /**
  * @brief Container for named programs.
  */
-class CECE_EXPORT NamedContainer : public PtrNamedContainer<Program>
+class NamedContainer : public PtrNamedContainer<Program>
 {
 
 };

@@ -25,30 +25,19 @@
 
 #pragma once
 
-/* ************************************************************************ */
-
-namespace cece {
-namespace plugin {
-
-/* ************************************************************************ */
-
-/**
- * @brief Library configuration. Plugin with different configuration
- * cannot be used in simulation.
- */
-struct Config
-{
-    int apiVersion;
-    int realSize;
-    int renderEnabled;
-    int builtinPhysics;
-    int threadSafe;
-    int dimension;
-};
-
-/* ************************************************************************ */
-
-}
-}
+// OpenGL
+#if defined(__linux__)
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#elif defined(_WIN32)
+#include <windows.h>
+#include <GL/gl.h>
+#include "cece/render/glext.h"
+#ifdef _MSC_VER
+#pragma comment(lib, "opengl32.lib")
+#endif
+#elif __APPLE__ && __MACH__
+#include <OpenGL/gl.h>
+#endif
 
 /* ************************************************************************ */

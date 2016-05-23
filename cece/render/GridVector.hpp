@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/render/Buffer.hpp"
@@ -48,7 +47,7 @@ class Context;
 /**
  * @brief OpenGL grid for vectors object.
  */
-class CECE_EXPORT GridVector : public GridBase
+class GridVector : public GridBase
 {
 
 // Public Ctors & Dtors

@@ -73,7 +73,7 @@ public:
      * @param max   Maximum value.
      * @param min   Minimum value.
      */
-    IteratorVector(Vector<T> value, Vector<T> max, Vector<T> min = Vector<T>::Zero) noexcept
+    IteratorVector(Vector<T> value, Vector<T> max, Vector<T> min = Zero) noexcept
         : m_value(std::move(value))
         , m_max(std::move(max))
         , m_min(std::move(min))

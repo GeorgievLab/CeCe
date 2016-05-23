@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/render/Buffer.hpp"
 
 /* ************************************************************************ */
@@ -46,10 +45,8 @@ class Color;
 /**
  * @brief Drawing object for cicle.
  */
-class CECE_EXPORT Circle
+class Circle
 {
-
-
 
 // Public Ctors & Dtors
 public:

@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
@@ -50,7 +49,7 @@ class Context;
 /**
  * @brief Helper class for wrapping plugin.
  */
-class CECE_EXPORT Library final
+class Library final
 {
 
 // Public Constants

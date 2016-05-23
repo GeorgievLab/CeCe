@@ -33,7 +33,6 @@
 
 // CeCe
 #include "cece/config.hpp"
-#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Assert.hpp"
 #include "cece/core/Zero.hpp"
@@ -457,7 +456,7 @@ private:
  * @brief Two dimensional vector.
  */
 template<typename T>
-struct BasicVector<T, 2>
+class BasicVector<T, 2>
 {
 
 // Public Types
@@ -977,7 +976,7 @@ private:
  * @brief Three dimensional vector.
  */
 template<typename T>
-struct BasicVector<T, 3>
+class BasicVector<T, 3>
 {
 
 // Public Types
@@ -1597,12 +1596,6 @@ using VectorUint = Vector<unsigned int>;
  * @brief Vector of float.
  */
 using VectorFloat = Vector<RealType>;
-
-/* ************************************************************************ */
-
-extern template class CECE_EXPORT BasicVector<RealType, config::DIMENSION>;
-extern template class CECE_EXPORT BasicVector<unsigned int, config::DIMENSION>;
-extern template class CECE_EXPORT BasicVector<int, config::DIMENSION>;
 
 /* ************************************************************************ */
 
@@ -2609,6 +2602,12 @@ OutStream& operator<<(OutStream& os, const BasicVector<T, N>& vector) noexcept
 
     return os;
 }
+
+/* ************************************************************************ */
+
+extern template class BasicVector<RealType, config::DIMENSION>;
+extern template class BasicVector<unsigned int, config::DIMENSION>;
+extern template class BasicVector<int, config::DIMENSION>;
 
 /* ************************************************************************ */
 

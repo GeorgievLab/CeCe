@@ -105,7 +105,7 @@ public:
     /**
      * @brief Creates an invalid token.
      */
-    constexpr BasicToken() noexcept
+    BasicToken() noexcept
         : BasicToken{INVALID}
     {
         // Nothing to do
@@ -117,7 +117,7 @@ public:
      *
      * @param code Token code.
      */
-    explicit constexpr BasicToken(CodeType code) noexcept
+    explicit BasicToken(CodeType code) noexcept
         : BasicToken{std::move(code), ValueType{}}
     {
         // Nothing to do
@@ -130,7 +130,7 @@ public:
      * @param code Token code.
      * @param value Token value.
      */
-    constexpr BasicToken(CodeType code, ValueType value) noexcept
+    BasicToken(CodeType code, ValueType value) noexcept
         : BasicToken{std::move(code), std::move(value), PositionType{}}
     {
         // Nothing to do
@@ -144,7 +144,7 @@ public:
      * @param value Token value.
      * @param position Token start position.
      */
-    constexpr BasicToken(CodeType code, ValueType value, PositionType position) noexcept
+    BasicToken(CodeType code, ValueType value, PositionType position) noexcept
         : code(std::move(code)), value(std::move(value)), position(std::move(position))
     {
         // Nothing to do
@@ -162,7 +162,7 @@ public:
      *
      * @return Is token valid?
      */
-    constexpr operator bool() const noexcept
+    operator bool() const noexcept
     {
         return isValid();
     }
@@ -177,7 +177,7 @@ public:
      *
      * @return Is token valid?
      */
-    constexpr bool isValid() const noexcept
+    bool isValid() const noexcept
     {
         return (code != INVALID);
     }

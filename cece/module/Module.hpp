@@ -83,7 +83,7 @@ namespace module {
  *
  * Z-order is similar to priority but for rendering.
  */
-class CECE_EXPORT Module
+class Module
 {
 
 // Public Types

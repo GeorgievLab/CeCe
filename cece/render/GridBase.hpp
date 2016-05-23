@@ -31,7 +31,6 @@
 #include <utility>
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 
 /* ************************************************************************ */
@@ -48,7 +47,7 @@ class Context;
 /**
  * @brief Rendering grid object - base class.
  */
-class CECE_EXPORT GridBase
+class GridBase
 {
 
 // Public Accessors

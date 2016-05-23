@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/render/GridColor.hpp"
 #include "cece/render/Shader.hpp"
 #include "cece/render/Program.hpp"
@@ -47,7 +46,7 @@ class Context;
 /**
  * @brief Texture-like grid with shader.
  */
-class CECE_EXPORT GridColorColorMap : public GridColor
+class GridColorColorMap : public GridColor
 {
 
 // Public Ctors & Dtors

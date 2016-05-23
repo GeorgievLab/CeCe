@@ -39,7 +39,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -80,7 +79,7 @@ enum class PrimitiveType
 /**
  * @brief Renderer context.
  */
-class CECE_EXPORT Context
+class Context
 {
 
 // Public Ctors & Dtors

@@ -23,11 +23,6 @@
 #                                                                           #
 # ######################################################################### #
 
-# Module project
-project(module CXX)
-
-# ######################################################################### #
-
 # Sources
 set(SRCS
     Module.hpp
@@ -42,20 +37,8 @@ set(SRCS
 
 # ######################################################################### #
 
-# Create library
-add_library(${PROJECT_NAME} OBJECT ${SRCS})
+dir_pretend(SOURCES module/ ${SRCS})
 
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
-)
+set(SOURCES_MODULE ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

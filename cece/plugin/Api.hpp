@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -53,7 +52,7 @@ class Context;
  * @brief Plugin API type. Custom plugins implements this class' functions
  * to provide additional functionality to the simulator.
  */
-class CECE_EXPORT Api
+class Api
 {
 
 // Public Ctors & Dtors

@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/OutStream.hpp"
@@ -48,7 +47,7 @@ class Simulation;
 /**
  * @brief Time measurement functor with printing current iteration.
  */
-struct CECE_EXPORT TimeMeasurement
+struct TimeMeasurement
 {
     /// Simulation.
     ViewPtr<const Simulation> m_simulation;

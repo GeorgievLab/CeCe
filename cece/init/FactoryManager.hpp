@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/UniquePtr.hpp"
@@ -49,9 +48,8 @@ class Initializer;
 /**
  * @brief Initializer factory manager.
  */
-class CECE_EXPORT FactoryManager : public core::FactoryManager<Factory>
+class FactoryManager : public core::FactoryManager<Factory>
 {
-
 
 // Public Mutators
 public:

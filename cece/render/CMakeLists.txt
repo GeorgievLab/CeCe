@@ -29,23 +29,6 @@ endif ()
 
 # ######################################################################### #
 
-# Options
-option(DEV_RENDER_GL_ERRORS "Enable OpenGL errors checking." On)
-
-# ######################################################################### #
-
-# Create project
-project(render CXX)
-
-# ######################################################################### #
-
-# Enable errors
-if (DEV_RENDER_GL_ERRORS)
-    add_definitions(-DDEV_RENDER_GL_ERRORS=1)
-endif ()
-
-# ######################################################################### #
-
 # Sources
 set(SRCS
     datatype.hpp
@@ -99,20 +82,8 @@ endif ()
 
 # ######################################################################### #
 
-# Create library
-add_library(${PROJECT_NAME} OBJECT ${SRCS})
+dir_pretend(SOURCES render/ ${SRCS})
 
-# ######################################################################### #
-
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE On)
-
-# ######################################################################### #
-
-# Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
-)
+set(SOURCES_RENDER ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

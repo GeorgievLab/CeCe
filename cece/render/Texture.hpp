@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/render/Color.hpp"
 
@@ -46,7 +45,7 @@ class Context;
 /**
  * @brief Texture object.
  */
-class CECE_EXPORT Texture
+class Texture
 {
 
 // Public Types

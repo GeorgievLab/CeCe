@@ -28,7 +28,6 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/UniquePtr.hpp"
@@ -47,7 +46,7 @@ namespace object {
 /**
  * @brief Container for object types.
  */
-class CECE_EXPORT TypeContainer
+class TypeContainer
 {
 
 

@@ -422,7 +422,7 @@ bool Simulation::update()
     {
         auto _ = measure_time("sim.physics", TimeMeasurement(this));
 
-        m_world->Step(getPhysicsEngineTimeStep().value(), 10, 10);
+        m_world->Step(static_cast<float32>(getPhysicsEngineTimeStep().value()), 10, 10);
     }
 #endif
 
@@ -664,7 +664,10 @@ void Simulation::storeConfig(config::Configuration& config) const
 #ifdef CECE_ENABLE_RENDER
 void Simulation::draw(render::Context& context)
 {
-    context.setStencilBuffer(getWorldSize().getWidth().value(), getWorldSize().getHeight().value());
+    context.setStencilBuffer(
+        static_cast<float>(getWorldSize().getWidth().value()), 
+        static_cast<float>(getWorldSize().getHeight().value())
+    );
 
     // Render modules
     m_modules.draw(m_visualization, context);

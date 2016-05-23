@@ -27,9 +27,6 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <vector>
-
 // CeCe
 #include "cece/core/Vector.hpp"
 #include "cece/core/DynamicArray.hpp"
