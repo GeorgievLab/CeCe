@@ -53,13 +53,13 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DBOX2D_INSTALL=On -DBOX2D_BUILD_EXAMPLES=Off -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off .. || EXIT /B 1
+cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DBOX2D_INSTALL=On -DBOX2D_BUILD_EXAMPLES=Off -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=On .. || EXIT /B 1
 
 :: Build
-cmake --build . || EXIT /B 1
+cmake --build . --config Release || EXIT /B 1
 
 :: Install
-cmake --build . --target install || EXIT /B 1
+cmake --build . --target install --config Release || EXIT /B 1
 
 popd
 popd
@@ -73,13 +73,13 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
+cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release .. || EXIT /B 1
 
 :: Build
-cmake --build . || EXIT /B 1
+cmake --build . --config Release || EXIT /B 1
 
 :: Install
-cmake --build . --target install || EXIT /B 1
+cmake --build . --target install --config Release || EXIT /B 1
 
 popd
 popd
@@ -93,13 +93,13 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release .. || EXIT /B 1
+cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release .. || EXIT /B 1
 
 :: Build
-cmake --build . || EXIT /B 1
+cmake --build . --config Release || EXIT /B 1
 
 :: Install
-cmake --build . --target install || EXIT /B 1
+cmake --build . --target install --config Release || EXIT /B 1
 
 popd
 popd
@@ -113,13 +113,13 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=release -DGLFW_BUILD_DOCS=Off -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off .. || EXIT /B 1
+cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_DOCS=Off -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off .. || EXIT /B 1
 
 :: Build
-cmake --build . || EXIT /B 1
+cmake --build . --config Release || EXIT /B 1
 
 :: Install
-cmake --build . --target install || EXIT /B 1
+cmake --build . --target install --config Release || EXIT /B 1
 
 popd
 popd
