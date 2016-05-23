@@ -119,6 +119,7 @@ bool Simulator::step() noexcept
     catch (const Exception& e)
     {
         emit error(Mode::Simulate, e.what());
+        emit finished(Mode::Simulate);
         return false;
     }
 }
@@ -164,6 +165,7 @@ void Simulator::initialize() noexcept
     catch (const Exception& e)
     {
         emit error(Mode::Initialize, e.what());
+        emit finished(Mode::Initialize);
     }
 }
 
