@@ -30,6 +30,14 @@ environment:
     matrix:
         - GENERATOR: MinGW Makefiles
 
+# Branches to build
+branches:
+    except:
+        - travis-ci
+
+init:
+    - del c:\programdata\chocolatey\bin\cpack.exe
+
 install:
     - call scripts\ci\install-win32.bat
 
@@ -41,5 +49,12 @@ build_script:
 
 test_script:
     - call scripts\ci\test_script-win32.bat
+
+after_build:
+    - call scripts\ci\after_build-win32.bat
+
+artifacts:
+    - path: build\CeCe-*-win32.zip
+      name: CeCe
 
 # ######################################################################### #

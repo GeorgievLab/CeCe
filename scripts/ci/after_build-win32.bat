@@ -25,7 +25,7 @@
 
 pushd build
 
-::ctest --verbose || EXIT /B 1
+cpack -G ZIP
 
 popd
 
