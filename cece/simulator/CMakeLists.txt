@@ -24,23 +24,27 @@
 # ######################################################################### #
 
 # Sources
-set(SOURCES
-    simulator/Simulation.hpp
-    simulator/Simulation.cpp
-    simulator/Simulator.hpp
-    simulator/Simulator.cpp
-    simulator/IterationType.hpp
-    simulator/TimeMeasurement.hpp
-    simulator/TimeMeasurement.cpp
+set(SRCS
+    Simulation.hpp
+    Simulation.cpp
+    Simulator.hpp
+    Simulator.cpp
+    IterationType.hpp
+    TimeMeasurement.hpp
+    TimeMeasurement.cpp
 )
 
 if (CONFIG_PHYSICS_BUILTIN)
     # Sources
-    set(SOURCES ${SOURCES}
-        simulator/ConverterBox2D.hpp
-        simulator/ConverterBox2D.cpp
+    set(SRCS ${SRCS}
+        ConverterBox2D.hpp
+        ConverterBox2D.cpp
     )
 endif ()
+
+# ######################################################################### #
+
+dir_pretend(SOURCES simulator/ ${SRCS})
 
 set(SOURCES_SIMULATOR ${SOURCES} PARENT_SCOPE)
 

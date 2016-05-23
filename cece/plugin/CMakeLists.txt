@@ -24,18 +24,23 @@
 # ######################################################################### #
 
 # Sources
-set(SOURCES_PLUGIN
-    plugin/Config.hpp
-    plugin/definition.hpp
-    plugin/Library.hpp
-    plugin/Library.cpp
-    plugin/Api.hpp
-    plugin/Api.cpp
-    plugin/Manager.hpp
-    plugin/Manager.cpp
-    plugin/Context.hpp
-    plugin/Context.cpp
-    PARENT_SCOPE
+set(SRCS
+    Config.hpp
+    definition.hpp
+    Library.hpp
+    Library.cpp
+    Api.hpp
+    Api.cpp
+    Manager.hpp
+    Manager.cpp
+    Context.hpp
+    Context.cpp
 )
+
+# ######################################################################### #
+
+dir_pretend(SOURCES plugin/ ${SRCS})
+
+set(SOURCES_PLUGIN ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

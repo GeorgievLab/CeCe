@@ -24,19 +24,24 @@
 # ######################################################################### #
 
 # Sources
-set(SOURCES_OBJECT
-    object/Object.hpp
-    object/Object.cpp
-    object/Type.hpp
-    object/TypeContainer.hpp
-    object/TypeContainer.cpp
-    object/Factory.hpp
-    object/Factory.cpp
-    object/FactoryManager.hpp
-    object/FactoryManager.cpp
-    object/Container.hpp
-    object/Container.cpp
-    PARENT_SCOPE
+set(SRCS
+    Object.hpp
+    Object.cpp
+    Type.hpp
+    TypeContainer.hpp
+    TypeContainer.cpp
+    Factory.hpp
+    Factory.cpp
+    FactoryManager.hpp
+    FactoryManager.cpp
+    Container.hpp
+    Container.cpp
 )
+
+# ######################################################################### #
+
+dir_pretend(SOURCES object/ ${SRCS})
+
+set(SOURCES_OBJECT ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

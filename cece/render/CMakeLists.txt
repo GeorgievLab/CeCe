@@ -30,55 +30,59 @@ endif ()
 # ######################################################################### #
 
 # Sources
-set(SOURCES
-    render/datatype.hpp
-    render/Color.hpp
-    render/Color.cpp
-    render/errors.hpp
-    render/errors.cpp
-    render/Context.hpp
-    render/Context.cpp
-    render/Object.hpp
-    render/Object.cpp
-    render/Camera.hpp
-    render/Camera.cpp
-    render/Buffer.hpp
-    render/Buffer.cpp
-    render/GridBase.hpp
-    render/Grid.hpp
-    render/Grid.cpp
-    render/GridVector.hpp
-    render/GridVector.cpp
-    render/GridColor.hpp
-    render/GridColor.cpp
-    render/GridColorSmooth.hpp
-    render/GridColorSmooth.cpp
-    render/GridColorColorMap.hpp
-    render/GridColorColorMap.cpp
-    render/Shader.hpp
-    render/Shader.cpp
-    render/Program.hpp
-    render/Program.cpp
-    render/VertexElement.hpp
-    render/VertexFormat.hpp
-    render/Texture.hpp
-    render/Texture.cpp
-    render/Circle.hpp
-    render/Circle.cpp
-    render/Rectangle.hpp
-    render/Rectangle.cpp
-    render/ImageData.hpp
-    render/Lines.hpp
-    render/Lines.cpp
-    render/glext.h
+set(SRCS
+    datatype.hpp
+    Color.hpp
+    Color.cpp
+    errors.hpp
+    errors.cpp
+    Context.hpp
+    Context.cpp
+    Object.hpp
+    Object.cpp
+    Camera.hpp
+    Camera.cpp
+    Buffer.hpp
+    Buffer.cpp
+    GridBase.hpp
+    Grid.hpp
+    Grid.cpp
+    GridVector.hpp
+    GridVector.cpp
+    GridColor.hpp
+    GridColor.cpp
+    GridColorSmooth.hpp
+    GridColorSmooth.cpp
+    GridColorColorMap.hpp
+    GridColorColorMap.cpp
+    Shader.hpp
+    Shader.cpp
+    Program.hpp
+    Program.cpp
+    VertexElement.hpp
+    VertexFormat.hpp
+    Texture.hpp
+    Texture.cpp
+    Circle.hpp
+    Circle.cpp
+    Rectangle.hpp
+    Rectangle.cpp
+    ImageData.hpp
+    Lines.hpp
+    Lines.cpp
+    glext.h
 )
 
 if (DEV_PHYSICS_BUILTIN_DEBUG)
-    set(SOURCES ${SOURCES}
-        render/PhysicsDebugger.hpp
-        render/PhysicsDebugger.cpp
+    set(SRCS ${SRCS}
+        PhysicsDebugger.hpp
+        PhysicsDebugger.cpp
     )
 endif ()
+
+# ######################################################################### #
+
+dir_pretend(SOURCES render/ ${SRCS})
 
 set(SOURCES_RENDER ${SOURCES} PARENT_SCOPE)
 

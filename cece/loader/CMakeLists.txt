@@ -24,14 +24,19 @@
 # ######################################################################### #
 
 # Sources
-set(SOURCES_LOADER
-    loader/Loader.hpp
-    loader/Loader.cpp
-    loader/Factory.hpp
-    loader/Factory.cpp
-    loader/FactoryManager.hpp
-    loader/FactoryManager.cpp
-    PARENT_SCOPE
+set(SRCS
+    Loader.hpp
+    Loader.cpp
+    Factory.hpp
+    Factory.cpp
+    FactoryManager.hpp
+    FactoryManager.cpp
 )
+
+# ######################################################################### #
+
+dir_pretend(SOURCES loader/ ${SRCS})
+
+set(SOURCES_LOADER ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

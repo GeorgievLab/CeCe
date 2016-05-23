@@ -234,3 +234,17 @@ function(build_test PROJECT_NAME)
 endfunction ()
 
 # ######################################################################### #
+
+# Pretend directory to source files
+function(dir_pretend OUT DIR)
+
+    set(FILES "")
+
+    foreach (F ${ARGN})
+        list(APPEND FILES "${DIR}${F}")
+    endforeach ()
+
+    set(${OUT} ${FILES} PARENT_SCOPE)
+endfunction ()
+
+# ######################################################################### #

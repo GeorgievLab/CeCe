@@ -24,15 +24,20 @@
 # ######################################################################### #
 
 # Sources
-set(SOURCES_INIT
-    init/Initializer.hpp
-    init/Container.hpp
-    init/Container.cpp
-    init/Factory.hpp
-    init/Factory.cpp
-    init/FactoryManager.hpp
-    init/FactoryManager.cpp
-    PARENT_SCOPE
+set(SRCS
+    Initializer.hpp
+    Container.hpp
+    Container.cpp
+    Factory.hpp
+    Factory.cpp
+    FactoryManager.hpp
+    FactoryManager.cpp
 )
+
+# ######################################################################### #
+
+dir_pretend(SOURCES init/ ${SRCS})
+
+set(SOURCES_INIT ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

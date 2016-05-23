@@ -133,7 +133,7 @@ set(SRCS
 )
 
 if (CONFIG_RENDER_ENABLE)
-    set(SRCS ${SRCS} ${SOURCES_RENDER}>)
+    set(SRCS ${SRCS} ${SOURCES_RENDER})
 endif ()
 
 # Create library

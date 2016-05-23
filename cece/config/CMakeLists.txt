@@ -24,14 +24,19 @@
 # ######################################################################### #
 
 # Sources
-set(SOURCES_CONFIG
-    config/Implementation.hpp
-    config/Implementation.cpp
-    config/Configuration.hpp
-    config/Configuration.cpp
-    config/MemoryImplementation.hpp
-    config/MemoryImplementation.cpp
-    PARENT_SCOPE
+set(SRCS
+    Implementation.hpp
+    Implementation.cpp
+    Configuration.hpp
+    Configuration.cpp
+    MemoryImplementation.hpp
+    MemoryImplementation.cpp
 )
+
+# ######################################################################### #
+
+dir_pretend(SOURCES config/ ${SRCS})
+
+set(SOURCES_CONFIG ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #

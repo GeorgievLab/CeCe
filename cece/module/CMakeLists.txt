@@ -24,16 +24,21 @@
 # ######################################################################### #
 
 # Sources
-set(SOURCES_MODULE
-    module/Module.hpp
-    module/Module.cpp
-    module/Factory.hpp
-    module/Factory.cpp
-    module/FactoryManager.hpp
-    module/FactoryManager.cpp
-    module/Container.hpp
-    module/Container.cpp
-    PARENT_SCOPE
+set(SRCS
+    Module.hpp
+    Module.cpp
+    Factory.hpp
+    Factory.cpp
+    FactoryManager.hpp
+    FactoryManager.cpp
+    Container.hpp
+    Container.cpp
 )
+
+# ######################################################################### #
+
+dir_pretend(SOURCES module/ ${SRCS})
+
+set(SOURCES_MODULE ${SOURCES} PARENT_SCOPE)
 
 # ######################################################################### #
