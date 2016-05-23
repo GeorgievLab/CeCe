@@ -29,6 +29,7 @@ environment:
     BOOST_ROOT: C:\Libraries\boost
     matrix:
         - GENERATOR: MinGW Makefiles
+        - GENERATOR: Visual Studio 14 2015
 
 # Branches to build
 branches:
