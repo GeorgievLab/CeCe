@@ -40,22 +40,16 @@ endif ()
 
 # ######################################################################### #
 
-# Sources
-set(SRCS
-    Plugin.cpp
-    Module.hpp
-    Module.cpp
-    Generator.hpp
-    Generator.cpp
-    ExportModule.hpp
-    ExportModule.cpp
-)
-
-# ######################################################################### #
-
 # Build plugin
 build_plugin(diffusion
-    SOURCES ${SRCS}
+    SOURCES
+        Plugin.cpp
+        Module.hpp
+        Module.cpp
+        Generator.hpp
+        Generator.cpp
+        ExportModule.hpp
+        ExportModule.cpp
 )
 
 # ######################################################################### #

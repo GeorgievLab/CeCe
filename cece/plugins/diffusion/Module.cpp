@@ -73,6 +73,19 @@ constexpr StaticArray<render::Color, 6> g_colors{{
 
 /* ************************************************************************ */
 
+Module::SignalId Module::getSignalId(StringView name) const noexcept
+{
+    for (auto id : getSignalIds())
+    {
+        if (m_signals[id].name == name)
+            return id;
+    }
+
+    return INVALID_SIGNAL_ID;
+}
+
+/* ************************************************************************ */
+
 void Module::setGridSize(SizeType size)
 {
     m_gridSize = std::move(size);
@@ -91,19 +104,21 @@ void Module::setGridSize(SizeType size)
 
 Module::SignalId Module::registerSignal(String name, DiffusionRate rate, DegradationRate degRate)
 {
-    const SignalId id = m_names.size();
+    const SignalId id = m_signals.size();
 
-    m_names.push_back(std::move(name));
-    m_diffusionRates.push_back(rate);
-    m_degradationRates.push_back(degRate);
+    m_signals.push_back(Signal{
+        std::move(name),
+        rate,
+        degRate
+#ifdef CECE_ENABLE_RENDER
+        , g_colors[id % g_colors.size()]
+        , SignalConcentration{1}
+        , String{}
+#endif
+    });
+
     m_gridsFront.emplace_back(m_gridSize + 2 * OFFSET);
     m_gridsBack.emplace_back(m_gridSize + 2 * OFFSET);
-
-#ifdef CECE_ENABLE_RENDER
-    m_colors.push_back(g_colors[id % g_colors.size()]);
-    m_signalSaturation.push_back(SignalConcentration{1});
-    m_signalVisualizationLayer.push_back(String{});
-#endif
 
     return id;
 }
@@ -140,32 +155,6 @@ void Module::update()
 #endif
         // Swap grids
         swapAll();
-    }
-
-    // Store streamlines data
-    if (m_dataOut)
-    {
-        for (auto&& c : range(getGridSize()))
-        {
-            *m_dataOut <<
-                // iteration
-                getSimulation().getIteration() << ";" <<
-                // totalTime
-                getSimulation().getTotalTime().value() << ";" <<
-                // x
-                c.getX() << ";" <<
-                // y
-                c.getY();
-            ;
-
-            // Store signal concentrations
-            for (auto id : getSignalIds())
-                *m_dataOut << ";" << getSignal(id, c);
-
-            *m_dataOut << "\n";
-        }
-
-        m_dataOut->flush();
     }
 }
 
@@ -218,18 +207,6 @@ void Module::loadConfig(const config::Configuration& config)
         Log::info("[diffusion]   Saturation: ", getSignalSaturation(id), " umol/um3");
 #endif
     }
-
-    if (config.has("data-out"))
-    {
-        m_dataOut = makeUnique<OutFileStream>(config.get("data-out"));
-        *m_dataOut << "iteration;totalTime;x;y";
-
-        // Store signal names
-        for (auto id : getSignalIds())
-            *m_dataOut << ";" << getSignalName(id);
-
-        *m_dataOut << "\n";
-    }
 }
 
 /* ************************************************************************ */
@@ -241,16 +218,16 @@ void Module::storeConfig(config::Configuration& config) const
     config.set("grid", getGridSize());
 
     // Foreach signal configurations
-    for (std::size_t i = 0; i < getSignalCount(); ++i)
+    for (auto id : getSignalIds())
     {
         auto signalConfig = config.addConfiguration("signal");
-        signalConfig.set("name", m_names[i]);
-        signalConfig.set("diffusion-rate", m_diffusionRates[i]);
-        signalConfig.set("degradation-rate", m_degradationRates[i]);
+        signalConfig.set("name", getSignalName(id));
+        signalConfig.set("diffusion-rate", getDiffusionRate(id));
+        signalConfig.set("degradation-rate", getDegradationRate(id));
 
 #ifdef CECE_ENABLE_RENDER
-        signalConfig.set("color", m_colors[i]);
-        signalConfig.set("saturation", m_signalSaturation[i]);
+        signalConfig.set("color", getSignalColor(id));
+        signalConfig.set("saturation", getSignalSaturation(id));
 #endif
     }
 
@@ -317,7 +294,7 @@ void Module::updateDrawable(const simulator::Visualization& visualization) const
 
         for (auto id : signals)
         {
-            if (m_colors[id] != render::colors::TRANSPARENT)
+            if (getSignalColor(id) != render::colors::TRANSPARENT)
                 alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
         }
 
@@ -337,14 +314,14 @@ void Module::updateDrawable(const simulator::Visualization& visualization) const
             // Mixup signal colors
             for (auto id : signals)
             {
-                if (m_colors[id] == render::colors::TRANSPARENT)
+                if (getSignalColor(id) == render::colors::TRANSPARENT)
                     continue;
 
                 // Calculate alpha value
                 const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
                 Assert(alpha >= 0);
 
-                pixelSignals += m_colors[id] * alpha / alphaSum;
+                pixelSignals += getSignalColor(id) * alpha / alphaSum;
             }
 
             pixel += (1 - alphaBg) * pixelSignals;
@@ -359,6 +336,28 @@ void Module::updateDrawable(const simulator::Visualization& visualization) const
     }
 }
 #endif
+
+/* ************************************************************************ */
+
+void Module::swap(SignalId id) noexcept
+{
+    using std::swap;
+    swap(m_gridsFront[id], m_gridsBack[id]);
+}
+
+/* ************************************************************************ */
+
+void Module::clearFront(SignalId id) noexcept
+{
+    std::fill(m_gridsFront[id].begin(), m_gridsFront[id].end(), SignalConcentration{});
+}
+
+/* ************************************************************************ */
+
+void Module::clearBack(SignalId id) noexcept
+{
+    std::fill(m_gridsBack[id].begin(), m_gridsBack[id].end(), SignalConcentration{});
+}
 
 /* ************************************************************************ */
 

@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -32,17 +32,14 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <algorithm>
-
 // CeCe
 #include "cece/core/Real.hpp"
 #include "cece/core/String.hpp"
+#include "cece/core/StringView.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Grid.hpp"
 #include "cece/core/Range.hpp"
 #include "cece/core/UniquePtr.hpp"
-#include "cece/core/InStream.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/module/Module.hpp"
@@ -179,11 +176,7 @@ public:
      *
      * @return Signal identifier or INVALID_SIGNAL_ID
      */
-    SignalId getSignalId(const String& name) const noexcept
-    {
-        auto it = std::find(m_names.begin(), m_names.end(), name);
-        return it != m_names.end() ? static_cast<SignalId>(std::distance(m_names.begin(), it)) : INVALID_SIGNAL_ID;
-    }
+    SignalId getSignalId(StringView name) const noexcept;
 
 
     /**
@@ -193,12 +186,12 @@ public:
      *
      * @return Signal identifier.
      */
-    SignalId requireSignalId(const String& name) const
+    SignalId requireSignalId(StringView name) const
     {
         const auto id = getSignalId(name);
 
         if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
+            throw InvalidArgumentException("Unknown signal name: " + String(name));
 
         return id;
     }
@@ -211,10 +204,9 @@ public:
      *
      * @return Signal name or empty string.
      */
-    const String& getSignalName(SignalId id) const noexcept
+    StringView getSignalName(SignalId id) const noexcept
     {
-        static const String empty;
-        return (id < m_names.size()) ? m_names[id] : empty;
+        return (id < m_signals.size()) ? m_signals[id].name : StringView{};
     }
 
 
@@ -254,14 +246,9 @@ public:
      *
      * @return
      */
-    SignalConcentration& getSignalFront(const String& name, const Coordinate& coord)
+    SignalConcentration& getSignalFront(StringView name, const Coordinate& coord)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getSignalFront(id, coord);
+        return getSignalFront(requireSignalId(name), coord);
     }
 
 
@@ -273,14 +260,9 @@ public:
      *
      * @return
      */
-    const SignalConcentration& getSignalFront(const String& name, const Coordinate& coord) const
+    const SignalConcentration& getSignalFront(StringView name, const Coordinate& coord) const
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getSignalFront(id, coord);
+        return getSignalFront(requireSignalId(name), coord);
     }
 
 
@@ -320,14 +302,9 @@ public:
      *
      * @return
      */
-    SignalConcentration& getSignalBack(const String& name, const Coordinate& coord)
+    SignalConcentration& getSignalBack(StringView name, const Coordinate& coord)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getSignalBack(id, coord);
+        return getSignalBack(requireSignalId(name), coord);
     }
 
 
@@ -339,14 +316,9 @@ public:
      *
      * @return
      */
-    const SignalConcentration& getSignalBack(const String& name, const Coordinate& coord) const
+    const SignalConcentration& getSignalBack(StringView name, const Coordinate& coord) const
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getSignalBack(id, coord);
+        return getSignalBack(requireSignalId(name), coord);
     }
 
 
@@ -386,7 +358,7 @@ public:
      *
      * @return
      */
-    SignalConcentration& getSignal(const String& name, const Coordinate& coord)
+    SignalConcentration& getSignal(StringView name, const Coordinate& coord)
     {
         return getSignalFront(name, coord);
     }
@@ -400,7 +372,7 @@ public:
      *
      * @return
      */
-    const SignalConcentration& getSignal(const String& name, const Coordinate& coord) const
+    const SignalConcentration& getSignal(StringView name, const Coordinate& coord) const
     {
         return getSignalFront(name, coord);
     }
@@ -415,7 +387,7 @@ public:
      */
     DiffusionRate getDiffusionRate(SignalId id) const noexcept
     {
-        return m_diffusionRates[id];
+        return m_signals[id].diffusionRate;
     }
 
 
@@ -426,14 +398,9 @@ public:
      *
      * @return
      */
-    DiffusionRate getDiffusionRate(const String& name) const
+    DiffusionRate getDiffusionRate(StringView name) const
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getDiffusionRate(id);
+        return getDiffusionRate(requireSignalId(name));
     }
 
 
@@ -446,7 +413,7 @@ public:
      */
     DegradationRate getDegradationRate(SignalId id) const noexcept
     {
-        return m_degradationRates[id];
+        return m_signals[id].degradationRate;
     }
 
 
@@ -457,14 +424,9 @@ public:
      *
      * @return
      */
-    DegradationRate getDegradationRate(const String& name) const
+    DegradationRate getDegradationRate(StringView name) const
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getDegradationRate(id);
+        return getDegradationRate(requireSignalId(name));
     }
 
 
@@ -479,7 +441,7 @@ public:
      */
     const render::Color& getSignalColor(SignalId id) const noexcept
     {
-        return m_colors[id];
+        return m_signals[id].color;
     }
 
 
@@ -490,14 +452,9 @@ public:
      *
      * @return Signal color.
      */
-    const render::Color& getSignalColor(const String& name) const
+    const render::Color& getSignalColor(StringView name) const
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getSignalColor(id);
+        return getSignalColor(requireSignalId(name));
     }
 
 
@@ -510,7 +467,7 @@ public:
      */
     SignalConcentration getSignalSaturation(SignalId id) const noexcept
     {
-        return m_signalSaturation[id];
+        return m_signals[id].saturation;
     }
 
 
@@ -521,14 +478,9 @@ public:
      *
      * @return
      */
-    SignalConcentration getSignalSaturation(const String& name) const
+    SignalConcentration getSignalSaturation(StringView name) const
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getSignalSaturation(id);
+        return getSignalSaturation(requireSignalId(name));
     }
 
 
@@ -541,7 +493,7 @@ public:
      */
     const String& getSignalVisualizationLayer(SignalId id) const noexcept
     {
-        return m_signalVisualizationLayer[id];
+        return m_signals[id].visualizationLayer;
     }
 
 
@@ -552,14 +504,9 @@ public:
      *
      * @return
      */
-    const String& getSignalVisualizationLayer(const String& name) const
+    const String& getSignalVisualizationLayer(StringView name) const
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        return getSignalVisualizationLayer(id);
+        return getSignalVisualizationLayer(requireSignalId(name));
     }
 
 #endif
@@ -654,12 +601,9 @@ public:
      *
      * @return
      */
-    void setSignalFront(const String& name, const Coordinate& coord, SignalConcentration value)
+    void setSignalFront(StringView name, const Coordinate& coord, SignalConcentration value)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
+        const auto id = requireSignalId(name);
 
         m_gridsFront[id][coord + OFFSET] = value;
     }
@@ -689,12 +633,9 @@ public:
      *
      * @return
      */
-    void setSignalBack(const String& name, const Coordinate& coord, SignalConcentration value)
+    void setSignalBack(StringView name, const Coordinate& coord, SignalConcentration value)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
+        const auto id = requireSignalId(name);
 
         m_gridsBack[id][coord + OFFSET] = value;
     }
@@ -724,7 +665,7 @@ public:
      *
      * @return
      */
-    void setSignal(const String& name, const Coordinate& coord, SignalConcentration value)
+    void setSignal(StringView name, const Coordinate& coord, SignalConcentration value)
     {
         setSignalFront(name, coord, value);
     }
@@ -738,7 +679,7 @@ public:
      */
     void setDiffusionRate(SignalId id, DiffusionRate rate) noexcept
     {
-        m_diffusionRates[id] = rate;
+        m_signals[id].diffusionRate = rate;
     }
 
 
@@ -748,14 +689,9 @@ public:
      * @param name Signal name.
      * @param rate Diffusion rate.
      */
-    void setDiffusionRate(const String& name, DiffusionRate rate)
+    void setDiffusionRate(StringView name, DiffusionRate rate)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        setDiffusionRate(id, rate);
+        setDiffusionRate(requireSignalId(name), rate);
     }
 
 
@@ -767,7 +703,7 @@ public:
      */
     void setDegradationRate(SignalId id, DegradationRate rate) noexcept
     {
-        m_degradationRates[id] = rate;
+        m_signals[id].degradationRate = rate;
     }
 
 
@@ -777,14 +713,9 @@ public:
      * @param name Signal name.
      * @param rate Degradation rate.
      */
-    void setDegradationRate(const String& name, DegradationRate rate)
+    void setDegradationRate(StringView name, DegradationRate rate)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        setDegradationRate(id, rate);
+        setDegradationRate(requireSignalId(name), rate);
     }
 
 
@@ -798,7 +729,7 @@ public:
      */
     void setSignalColor(SignalId id, render::Color color) noexcept
     {
-        m_colors[id] = color;
+        m_signals[id].color = color;
     }
 
 
@@ -808,14 +739,9 @@ public:
      * @param name  Signal name.
      * @param color New signal color.
      */
-    void setSignalColor(const String& name, render::Color color)
+    void setSignalColor(StringView name, render::Color color)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        setSignalColor(id, color);
+        setSignalColor(requireSignalId(name), color);
     }
 
 
@@ -827,7 +753,7 @@ public:
      */
     void setSignalSaturation(SignalId id, SignalConcentration saturation) noexcept
     {
-        m_signalSaturation[id] = saturation;
+        m_signals[id].saturation = saturation;
     }
 
 
@@ -837,14 +763,9 @@ public:
      * @param name       Signal name.
      * @param saturation Signal value when color is max.
      */
-    void setSignalSaturation(const String& name, SignalConcentration saturation)
+    void setSignalSaturation(StringView name, SignalConcentration saturation)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        setSignalSaturation(id, saturation);
+        setSignalSaturation(requireSignalId(name), saturation);
     }
 
 
@@ -856,7 +777,7 @@ public:
      */
     void setSignalVisualizationLayer(SignalId id, String layer) noexcept
     {
-        m_signalVisualizationLayer[id] = std::move(layer);
+        m_signals[id].visualizationLayer = std::move(layer);
     }
 
 
@@ -866,14 +787,9 @@ public:
      * @param name  Signal name.
      * @param layer Layer name.
      */
-    void setSignalVisualizationLayer(const String& name, String layer)
+    void setSignalVisualizationLayer(StringView name, String layer)
     {
-        const auto id = getSignalId(name);
-
-        if (id == INVALID_SIGNAL_ID)
-            throw InvalidArgumentException("Unknown signal name: " + name);
-
-        setSignalVisualizationLayer(id, std::move(layer));
+        setSignalVisualizationLayer(requireSignalId(name), std::move(layer));
     }
 
 #endif
@@ -931,10 +847,7 @@ public:
      *
      * @param id Signal identifier.
      */
-    void swap(SignalId id) noexcept
-    {
-        std::swap(m_gridsFront[id], m_gridsBack[id]);
-    }
+    void swap(SignalId id) noexcept;
 
 
     /**
@@ -953,10 +866,7 @@ public:
      *
      * @param id Signal identifier.
      */
-    void clearFront(SignalId id) noexcept
-    {
-        std::fill(m_gridsFront[id].begin(), m_gridsFront[id].end(), SignalConcentration{});
-    }
+    void clearFront(SignalId id) noexcept;
 
 
     /**
@@ -964,10 +874,7 @@ public:
      *
      * @param id Signal identifier.
      */
-    void clearBack(SignalId id) noexcept
-    {
-        std::fill(m_gridsBack[id].begin(), m_gridsBack[id].end(), SignalConcentration{});
-    }
+    void clearBack(SignalId id) noexcept;
 
 
 // Protected Operations
@@ -989,6 +896,38 @@ protected:
     void updateObstacles();
 
 
+// Private Structures
+private:
+
+
+    /**
+     * @brief Signal description structure.
+     */
+    struct Signal
+    {
+        /// Signal name.
+        String name;
+
+        /// Signal diffusion rate.
+        DiffusionRate diffusionRate;
+
+        /// Signal degradation rate.
+        DegradationRate degradationRate;
+
+#ifdef CECE_ENABLE_RENDER
+
+        /// Signal visualization color.
+        render::Color color;
+
+        /// Signal visualization saturation.
+        SignalConcentration saturation;
+
+        /// Signal visualization layer.
+        String visualizationLayer;
+#endif
+    };
+
+
 // Private Data Members
 private:
 
@@ -996,14 +935,8 @@ private:
     // Grid size without borders.
     SizeType m_gridSize;
 
-    /// Signal names.
-    DynamicArray<String> m_names;
-
-    /// Diffusion rates.
-    DynamicArray<DiffusionRate> m_diffusionRates;
-
-    /// Degradation rates.
-    DynamicArray<DegradationRate> m_degradationRates;
+    /// Supported signals.
+    DynamicArray<Signal> m_signals;
 
     /// Front signal grids.
     DynamicArray<GridType> m_gridsFront;
@@ -1018,15 +951,6 @@ private:
     /// Background color.
     render::Color m_background = render::Color{0, 0, 0, 0};
 
-    /// Signal colors.
-    DynamicArray<render::Color> m_colors;
-
-    /// Signal color saturation.
-    DynamicArray<SignalConcentration> m_signalSaturation;
-
-    /// Signal visualization layer.
-    DynamicArray<String> m_signalVisualizationLayer;
-
     /// Drawable signal grid.
 #  if CONFIG_PLUGIN_diffusion_SMOOTH
     render::ObjectPtr<render::GridColorSmooth> m_drawable;
@@ -1040,8 +964,6 @@ private:
     mutable Mutex m_mutex;
 #endif
 
-    /// Outstream for diffusion data.
-    UniquePtr<OutStream> m_dataOut;
 };
 
 /* ************************************************************************ */
