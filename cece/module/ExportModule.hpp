@@ -23,41 +23,135 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/core/CsvFile.hpp"
+#pragma once
+
+/* ************************************************************************ */
+
+// C++
+#include <utility>
 
 // CeCe
-#include "cece/core/Exception.hpp"
+#include "cece/core/FilePath.hpp"
+#include "cece/core/CsvFile.hpp"
+#include "cece/module/Module.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-inline namespace core {
+namespace module {
 
 /* ************************************************************************ */
 
-CsvFile::CsvFile(FilePath path)
+/**
+ * @brief Helper module for exporting other module data.
+ */
+class ExportModule : public module::Module
 {
-    open(std::move(path));
-}
 
-/* ************************************************************************ */
+// Public Ctors & Dtors
+public:
 
-void CsvFile::open()
-{
-    open(std::move(m_path));
-}
 
-/* ************************************************************************ */
+    using module::Module::Module;
 
-void CsvFile::open(FilePath path)
-{
-    m_path = std::move(path);
-    m_file.open(m_path.string(), std::ios::binary | std::ios::out | std::ios::trunc);
 
-    if (!m_file.is_open())
-        throw RuntimeException("Cannot open file: " + m_path.string());
-}
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns path to output file.
+     *
+     * @return
+     */
+    const FilePath& getFilePath() const noexcept
+    {
+        return m_file.getPath();
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set path to output file.
+     *
+     * @param filePath
+     */
+    void setFilePath(FilePath filePath) noexcept
+    {
+        m_file.setPath(std::move(filePath));
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Load module configuration.
+     *
+     * @param config Source configuration.
+     */
+    void loadConfig(const config::Configuration& config) override;
+
+
+    /**
+     * @brief Store module configuration.
+     *
+     * @param config Destination configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
+     * @brief Initialize module.
+     */
+    void init() override;
+
+
+    /**
+     * @brief Terminate module.
+     */
+    void terminate() override;
+
+
+// Protected Operations
+protected:
+
+
+    /**
+     * @brief Write CSV file header.
+     *
+     * @param args
+     */
+    template<typename... Args>
+    void writeHeader(Args&&... args) noexcept
+    {
+        m_file.writeHeader(std::forward<Args>(args)...);
+    }
+
+
+    /**
+     * @brief Write CSV record.
+     *
+     * @param args
+     */
+    template<typename... Args>
+    void writeRecord(Args&&... args) noexcept
+    {
+        m_file.writeRecord(std::forward<Args>(args)...);
+    }
+
+
+// Protected Data Members
+protected:
+
+    // Output CSV file.
+    CsvFile m_file;
+
+};
 
 /* ************************************************************************ */
 

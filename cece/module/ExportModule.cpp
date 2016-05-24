@@ -24,39 +24,49 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/core/CsvFile.hpp"
+#include "cece/module/ExportModule.hpp"
 
 // CeCe
-#include "cece/core/Exception.hpp"
+#include "cece/core/Log.hpp"
+#include "cece/config/Configuration.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-inline namespace core {
+namespace module {
 
 /* ************************************************************************ */
 
-CsvFile::CsvFile(FilePath path)
+void ExportModule::loadConfig(const config::Configuration& config)
 {
-    open(std::move(path));
+    setFilePath(config.get<FilePath>("filename"));
 }
 
 /* ************************************************************************ */
 
-void CsvFile::open()
+void ExportModule::storeConfig(config::Configuration& config) const
 {
-    open(std::move(m_path));
+    config.set("filename", getFilePath());
 }
 
 /* ************************************************************************ */
 
-void CsvFile::open(FilePath path)
+void ExportModule::init()
 {
-    m_path = std::move(path);
-    m_file.open(m_path.string(), std::ios::binary | std::ios::out | std::ios::trunc);
+    // Open CSV file
+    m_file.open();
 
-    if (!m_file.is_open())
-        throw RuntimeException("Cannot open file: " + m_path.string());
+    Log::info("Exporting data into: ", getFilePath());
+}
+
+/* ************************************************************************ */
+
+void ExportModule::terminate()
+{
+    Log::info("Data exported into: ", getFilePath());
+
+    // Close CSV file
+    m_file.close();
 }
 
 /* ************************************************************************ */

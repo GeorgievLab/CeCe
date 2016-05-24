@@ -27,8 +27,10 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <utility>
+
 // CeCe
-#include "cece/export.hpp"
 #include "cece/core/Tuple.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/FileStream.hpp"
@@ -80,8 +82,34 @@ public:
     explicit CsvFile(FilePath path);
 
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns path to output file.
+     *
+     * @return
+     */
+    const FilePath& getPath() const noexcept
+    {
+        return m_path;
+    }
+
+
 // Public Mutators
 public:
+
+
+    /**
+     * @brief Set path to output file.
+     *
+     * @param filePath
+     */
+    void setPath(FilePath path) noexcept
+    {
+        m_path = std::move(path);
+    }
 
 
     /**
@@ -97,6 +125,29 @@ public:
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Open/reopen current CSV file.
+     */
+    void open();
+
+
+    /**
+     * @brief Open CSV file.
+     *
+     * @param path Path to CSV file.
+     */
+    void open(FilePath path);
+
+
+    /**
+     * @brief Close file.
+     */
+    void close() noexcept
+    {
+        m_file.close();
+    }
 
 
     /**
@@ -220,6 +271,9 @@ protected:
 
 // Private Data Members
 private:
+
+    /// File path.
+    FilePath m_path;
 
     /// File stream.
     FileStream m_file;

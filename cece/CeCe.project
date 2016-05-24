@@ -360,6 +360,8 @@
       <File Name="module/CMakeLists.txt"/>
     </VirtualDirectory>
     <File Name="module/Factory.cpp"/>
+    <File Name="module/ExportModule.hpp"/>
+    <File Name="module/ExportModule.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="object">
     <VirtualDirectory Name="CMake">

@@ -33,6 +33,8 @@ set(SRCS
     FactoryManager.cpp
     Container.hpp
     Container.cpp
+    ExportModule.hpp
+    ExportModule.cpp
 )
 
 # ######################################################################### #
