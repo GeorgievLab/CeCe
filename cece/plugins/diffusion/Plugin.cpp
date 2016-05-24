@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,68 +23,57 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
-
-/* ************************************************************************ */
-
 // CeCe
-#include "cece/core/ViewPtr.hpp"
-#include "cece/module/Module.hpp"
+#include "cece/plugin/definition.hpp"
+#include "cece/plugin/Api.hpp"
+#include "cece/plugin/Context.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"
+#include "cece/plugins/diffusion/Generator.hpp"
+#include "cece/plugins/diffusion/ExportModule.hpp"
 
 /* ************************************************************************ */
 
-namespace cece {
-namespace plugin {
-namespace diffusion {
+using namespace cece;
 
 /* ************************************************************************ */
 
 /**
- * @brief Diffusion store state module.
+ * @brief Diffusion plugin API.
  */
-class StoreState : public module::Module
+class DiffusionApi : public plugin::Api
 {
 
-// Public Ctors & Dtors
-public:
-
-
-    using module::Module::Module;
-
-
-// Public Operations
-public:
-
-
     /**
-     * @brief Load module configuration.
+     * @brief On plugin load.
      *
-     * @param config Source configuration.
+     * @param context Plugin context.
      */
-    void loadConfig(const config::Configuration& config) override;
+    void onLoad(plugin::Context& context) override
+    {
+        context.registerModule<plugin::diffusion::Module>("diffusion");
+        context.registerModule<plugin::diffusion::Generator>("diffusion.generator");
+        context.registerModule<plugin::diffusion::ExportModule>("diffusion.export");
+    }
 
 
     /**
-     * @brief Update module state.
+     * @brief On plugin unload.
+     *
+     * @param context Plugin context.
      */
-    void update() override;
-
-
-// Private Data Members
-private:
-
-    /// A pointer to diffusion module.
-    ViewPtr<plugin::diffusion::Module> m_diffusionModule;
+    void onUnload(plugin::Context& context) override
+    {
+        context.unregisterModule("diffusion.export");
+        context.unregisterModule("diffusion.generator");
+        context.unregisterModule("diffusion");
+    }
 
 };
 
 /* ************************************************************************ */
 
-}
-}
-}
+CECE_DEFINE_PLUGIN(diffusion, DiffusionApi)
 
 /* ************************************************************************ */

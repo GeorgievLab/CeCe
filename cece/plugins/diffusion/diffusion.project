@@ -18,12 +18,12 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
-    <File Name="Library.cpp"/>
-    <File Name="StoreState.cpp"/>
     <File Name="Generator.cpp"/>
     <File Name="Generator.hpp"/>
     <File Name="Module.hpp"/>
-    <File Name="StoreState.hpp"/>
+    <File Name="ExportModule.hpp"/>
+    <File Name="ExportModule.cpp"/>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>

@@ -42,13 +42,13 @@ endif ()
 
 # Sources
 set(SRCS
-    Library.cpp
+    Plugin.cpp
     Module.hpp
     Module.cpp
     Generator.hpp
     Generator.cpp
-    StoreState.hpp
-    StoreState.cpp
+    ExportModule.hpp
+    ExportModule.cpp
 )
 
 # ######################################################################### #

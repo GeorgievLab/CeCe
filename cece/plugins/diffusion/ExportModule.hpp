@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,16 +23,25 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/plugins/diffusion/StoreState.hpp"
+#pragma once
+
+/* ************************************************************************ */
+
+// C++
+#include <utility>
 
 // CeCe
-#include "cece/core/TimeMeasurement.hpp"
-#include "cece/core/Range.hpp"
-#include "cece/core/VectorRange.hpp"
-#include "cece/core/Exception.hpp"
-#include "cece/simulator/TimeMeasurement.hpp"
-#include "cece/simulator/Simulation.hpp"
+#include "cece/core/String.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/core/FilePath.hpp"
+#include "cece/core/CsvFile.hpp"
+#include "cece/core/DynamicArray.hpp"
+#include "cece/module/ExportModule.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace plugin { namespace diffusion { class Module; } } }
 
 /* ************************************************************************ */
 
@@ -42,46 +51,100 @@ namespace diffusion {
 
 /* ************************************************************************ */
 
-void StoreState::loadConfig(const config::Configuration& config)
+/**
+ * @brief Diffusion export module.
+ */
+class ExportModule : public module::ExportModule
 {
-    m_diffusionModule = getSimulation().getModule("diffusion");
 
-    if (!m_diffusionModule)
-        throw RuntimeException("Diffusion module required!");
-}
+// Public Ctors & Dtors
+public:
 
-/* ************************************************************************ */
 
-void StoreState::update()
-{
-    auto _ = measure_time("diffusion.store-state", simulator::TimeMeasurement(getSimulation()));
+    using module::ExportModule::ExportModule;
 
-    // Get data table
-    auto& table = getSimulation().getDataTable("diffusion");
 
-    // Foreach coordinates
-    for (auto&& c : range(m_diffusionModule->getGridSize()))
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns exported signals.
+     *
+     * @return
+     */
+    const DynamicArray<String>& getSignals() const noexcept
     {
-        // Create new row
-        auto row = table.addRow(
-            makePair("iteration", getSimulation().getIteration()),
-            makePair("totalTime", getSimulation().getTotalTime().value()),
-            makePair("x", c.getX()),
-            makePair("y", c.getY())
-        );
-
-        // Foreach signals
-        for (auto signalId : m_diffusionModule->getSignalIds())
-        {
-            table.setData(row,
-                makePair(
-                    m_diffusionModule->getSignalName(signalId),
-                    m_diffusionModule->getSignal(signalId, c).value()
-                )
-            );
-        }
+        return m_signals;
     }
-}
+
+
+    /**
+     * @brief Returns if given signal is exported.
+     *
+     * @param name Signal name.
+     *
+     * @return
+     */
+    bool isExported(StringView name) const noexcept;
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set exported signals.
+     *
+     * @param signals
+     */
+    void setSignals(DynamicArray<String> signals) noexcept
+    {
+        m_signals = std::move(signals);
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Load module configuration.
+     *
+     * @param config Source configuration.
+     */
+    void loadConfig(const config::Configuration& config) override;
+
+
+    /**
+     * @brief Store module configuration.
+     *
+     * @param config Destination configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
+     * @brief Initialize module.
+     */
+    void init() override;
+
+
+    /**
+     * @brief Update module state.
+     */
+    void update() override;
+
+
+// Private Data Members
+private:
+
+    /// A pointer to diffusion module.
+    ViewPtr<plugin::diffusion::Module> m_diffusionModule;
+
+    /// A list of signals to store.
+    DynamicArray<String> m_signals;
+};
 
 /* ************************************************************************ */
 
