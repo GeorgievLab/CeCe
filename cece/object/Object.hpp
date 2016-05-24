@@ -55,11 +55,6 @@
 #  include "cece/render/Context.hpp"
 #endif
 
-// Box2D
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-#  include "cece/simulator/ConverterBox2D.hpp"
-#endif
-
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
@@ -389,22 +384,6 @@ public:
     {
         return m_body;
     }
-
-
-    /**
-     * @brief Returns Box2D units converter.
-     *
-     * @return
-     */
-    simulator::ConverterBox2D& getConverter() noexcept;
-
-
-    /**
-     * @brief Returns Box2D units converter.
-     *
-     * @return
-     */
-    const simulator::ConverterBox2D& getConverter() const noexcept;
 
 #endif
 
