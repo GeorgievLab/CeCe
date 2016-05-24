@@ -24,98 +24,26 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/plugins/diffusion/ExportModule.hpp"
-
-// C++
-#include <algorithm>
+#include "cece/plugins/streamlines/ExportModule.hpp"
 
 // CeCe
 #include "cece/core/Assert.hpp"
 #include "cece/core/Range.hpp"
 #include "cece/core/VectorRange.hpp"
 #include "cece/core/Exception.hpp"
-#include "cece/core/InStream.hpp"
-#include "cece/core/OutStream.hpp"
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
-#include "cece/plugins/diffusion/Module.hpp"
-
-/* ************************************************************************ */
-
-namespace cece {
-inline namespace core {
-namespace {
-
-/* ************************************************************************ */
-
-/**
- * @brief Cast array of values from string.
- *
- * @param value Source value.
- *
- * @return
- */
-InStream& operator>>(InStream& is, DynamicArray<String>& array)
-{
-    String val;
-
-    // Read values
-    while (is >> val)
-        array.push_back(std::move(val));
-
-    return is;
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Cast array of values to string.
- *
- * @param array Array of values.
- *
- * @return
- */
-OutStream& operator<<(OutStream& os, const DynamicArray<String>& array)
-{
-    for (auto it = array.begin(); it != array.end(); ++it)
-    {
-        if (it != array.begin())
-            os << " ";
-
-        os << *it;
-    }
-
-    return os;
-}
-
-/* ************************************************************************ */
-
-}
-}
-}
+#include "cece/plugins/streamlines/Module.hpp"
+#include "cece/plugins/streamlines/Descriptor.hpp"
+#include "cece/plugins/streamlines/NoDynamics.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace plugin {
-namespace diffusion {
-
-/* ************************************************************************ */
-
-bool ExportModule::isExported(StringView name) const noexcept
-{
-    // In case of no expoted signals, export all
-    if (m_signals.empty())
-        return true;
-
-    auto it = std::find_if(m_signals.begin(), m_signals.end(), [&](const String& signal) {
-        return signal == name;
-    });
-
-    return it != m_signals.end();
-}
+namespace streamlines {
 
 /* ************************************************************************ */
 
@@ -123,8 +51,8 @@ void ExportModule::loadConfig(const config::Configuration& config)
 {
     module::ExportModule::loadConfig(config);
 
-    // Get exported signals
-    setSignals(config.get("signals", getSignals()));
+    setDensityExported(config.get("density", isDensityExported()));
+    setPopulationsExported(config.get("populations", isPopulationsExported()));
 }
 
 /* ************************************************************************ */
@@ -133,7 +61,8 @@ void ExportModule::storeConfig(config::Configuration& config) const
 {
     module::ExportModule::storeConfig(config);
 
-    config.set("signals", getSignals());
+    config.set("density", isDensityExported());
+    config.set("populations", isPopulationsExported());
 }
 
 /* ************************************************************************ */
@@ -141,15 +70,21 @@ void ExportModule::storeConfig(config::Configuration& config) const
 void ExportModule::init()
 {
     // Get diffusion module
-    m_module = getSimulation().getModule("diffusion");
+    m_module = getSimulation().getModule("streamlines");
 
     if (!m_module)
-        throw RuntimeException("Diffusion module required!");
+        throw RuntimeException("Streamlines module required!");
 
     module::ExportModule::init();
 
     // Write output header
-    writeHeader("iteration", "time", "x", "y", "signal", "concentration");
+    writeHeader("iteration", "totalTime", "x", "y", "vx", "vy",
+        CsvFile::cond(isDensityExported(), "rho"),
+        CsvFile::cond(isPopulationsExported(), "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8")
+    );
+
+    // Set stored value precision
+    m_file.setPrecision(std::numeric_limits<Descriptor::DensityType>::digits10 + 1);
 }
 
 /* ************************************************************************ */
@@ -158,30 +93,44 @@ void ExportModule::update()
 {
     Assert(m_module);
 
-    // Get simulation
     const auto& sim = getSimulation();
+    const auto& lattice = m_module->getLattice();
 
-    // Foreach coordinates
-    for (auto&& c : range(m_module->getGridSize()))
+    for (auto&& c : range(lattice.getSize()))
     {
-        // Foreach signals
-        for (auto signalId : m_module->getSignalIds())
-        {
-            // Skip non-exported signals
-            if (!isExported(m_module->getSignalName(signalId)))
-                continue;
+        const auto& data = lattice[c];
 
-            // Write record
-            writeRecord(
-                sim.getIteration(),
-                sim.getTotalTime().value(),
-                c.getX(),
-                c.getY(),
-                m_module->getSignalName(signalId),
-                m_module->getSignal(signalId, c).value()
-            );
-        }
+        // Do not save data with no dynamics
+        if (data.getDynamics() == NoDynamics::getInstance())
+            continue;
+
+        const auto vel = m_module->convertVelocity(data.computeVelocity());
+
+        writeRecord(
+            sim.getIteration(),
+            sim.getTotalTime().value(),
+            c.getX(),
+            c.getY(),
+            vel.getX().value(),
+            vel.getY().value(),
+            CsvFile::cond(isDensityExported(),
+                data.computeDensity()
+            ),
+            CsvFile::cond(isPopulationsExported(),
+                data[0],
+                data[1],
+                data[2],
+                data[3],
+                data[4],
+                data[5],
+                data[6],
+                data[7],
+                data[8]
+            )
+        );
     }
+
+    flush();
 }
 
 /* ************************************************************************ */

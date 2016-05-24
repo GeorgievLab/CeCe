@@ -33,31 +33,29 @@ configure_file(config.hpp.in config.hpp)
 
 # ######################################################################### #
 
-# Sources
-set(SRCS
-    Plugin.cpp
-    Descriptor.hpp
-    Descriptor.cpp
-    Module.hpp
-    Module.cpp
-    Lattice.hpp
-    Lattice.cpp
-    Node.hpp
-    Dynamics.hpp
-    Dynamics.cpp
-    NoDynamics.hpp
-    NoDynamics.cpp
-    BgkDynamics.hpp
-    BgkDynamics.cpp
-    BounceBackDynamics.hpp
-    BounceBackDynamics.cpp
-    ZouHeDynamics.hpp
-    ZouHeDynamics.cpp
-)
-
 # Build plugin
 build_plugin(streamlines
-    SOURCES ${SRCS}
+    SOURCES
+        Plugin.cpp
+        Descriptor.hpp
+        Descriptor.cpp
+        Module.hpp
+        Module.cpp
+        Lattice.hpp
+        Lattice.cpp
+        Node.hpp
+        Dynamics.hpp
+        Dynamics.cpp
+        NoDynamics.hpp
+        NoDynamics.cpp
+        BgkDynamics.hpp
+        BgkDynamics.cpp
+        BounceBackDynamics.hpp
+        BounceBackDynamics.cpp
+        ZouHeDynamics.hpp
+        ZouHeDynamics.cpp
+        ExportModule.hpp
+        ExportModule.cpp
 )
 
 # ######################################################################### #

@@ -36,6 +36,8 @@
     <File Name="NoDynamics.hpp"/>
     <File Name="ZouHeDynamics.hpp"/>
     <File Name="config.hpp.in"/>
+    <File Name="ExportModule.hpp"/>
+    <File Name="ExportModule.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

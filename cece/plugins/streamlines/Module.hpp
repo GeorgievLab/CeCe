@@ -63,10 +63,6 @@
 
 /* ************************************************************************ */
 
-namespace cece { inline namespace core { class CsvFile; } }
-
-/* ************************************************************************ */
-
 namespace cece {
 namespace plugin {
 namespace streamlines {
@@ -858,18 +854,6 @@ protected:
     void loadFromFile(const FilePath& filename);
 
 
-    /**
-     * @brief Write header into data file.
-     */
-    void storeDataHeader();
-
-
-    /**
-     * @brief Write data file.
-     */
-    void storeData();
-
-
 // Private Data Members
 private:
 
@@ -954,15 +938,6 @@ private:
 
     /// Used wall dynamics.
     UniquePtr<Dynamics> m_wallDynamics;
-
-    /// Outstream for streamlines data
-    UniquePtr<CsvFile> m_dataOut;
-
-    /// If cell density should be stored.
-    bool m_dataOutDensity = false;
-
-    /// If cell populations should be stored.
-    bool m_dataOutPopulations = false;
 
 };
 

@@ -34,8 +34,6 @@
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/ViewPtr.hpp"
-#include "cece/core/FilePath.hpp"
-#include "cece/core/CsvFile.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/module/ExportModule.hpp"
 
@@ -140,7 +138,7 @@ public:
 private:
 
     /// A pointer to diffusion module.
-    ViewPtr<plugin::diffusion::Module> m_diffusionModule;
+    ViewPtr<plugin::diffusion::Module> m_module;
 
     /// A list of signals to store.
     DynamicArray<String> m_signals;

@@ -27,32 +27,33 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <utility>
-
 // CeCe
-#include "cece/core/FilePath.hpp"
-#include "cece/core/CsvFile.hpp"
-#include "cece/module/Module.hpp"
+#include "cece/core/ViewPtr.hpp"
+#include "cece/module/ExportModule.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace plugin { namespace streamlines { class Module; } } }
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace module {
+namespace plugin {
+namespace streamlines {
 
 /* ************************************************************************ */
 
 /**
- * @brief Helper module for exporting other module data.
+ * @brief Streamlines export module.
  */
-class ExportModule : public module::Module
+class ExportModule : public module::ExportModule
 {
 
 // Public Ctors & Dtors
 public:
 
 
-    using module::Module::Module;
+    using module::ExportModule::ExportModule;
 
 
 // Public Accessors
@@ -60,13 +61,24 @@ public:
 
 
     /**
-     * @brief Returns path to output file.
+     * @brief If density is exported.
      *
      * @return
      */
-    const FilePath& getFilePath() const noexcept
+    bool isDensityExported() const noexcept
     {
-        return m_file.getPath();
+        return m_density;
+    }
+
+
+    /**
+     * @brief If node populations are exported.
+     *
+     * @return
+     */
+    bool isPopulationsExported() const noexcept
+    {
+        return m_populations;
     }
 
 
@@ -75,13 +87,24 @@ public:
 
 
     /**
-     * @brief Set path to output file.
+     * @brief Set if density is exported.
      *
-     * @param filePath
+     * @param flag
      */
-    void setFilePath(FilePath filePath) noexcept
+    void setDensityExported(bool flag) noexcept
     {
-        m_file.setPath(std::move(filePath));
+        m_density = flag;
+    }
+
+
+    /**
+     * @brief Set if node populations are exported.
+     *
+     * @param flag
+     */
+    void setPopulationsExported(bool flag) noexcept
+    {
+        m_populations = flag;
     }
 
 
@@ -112,58 +135,28 @@ public:
 
 
     /**
-     * @brief Terminate module.
+     * @brief Update module state.
      */
-    void terminate() override;
+    void update() override;
 
 
-// Protected Operations
-protected:
+// Private Data Members
+private:
 
+    /// A pointer to streamlines module.
+    ViewPtr<plugin::streamlines::Module> m_module;
 
-    /**
-     * @brief Write CSV file header.
-     *
-     * @param args
-     */
-    template<typename... Args>
-    void writeHeader(Args&&... args) noexcept
-    {
-        m_file.writeHeader(std::forward<Args>(args)...);
-    }
+    /// If cell density should be exported.
+    bool m_density = false;
 
-
-    /**
-     * @brief Write CSV record.
-     *
-     * @param args
-     */
-    template<typename... Args>
-    void writeRecord(Args&&... args) noexcept
-    {
-        m_file.writeRecord(std::forward<Args>(args)...);
-    }
-
-
-    /**
-     * @brief Flush output.
-     */
-    void flush()
-    {
-        m_file.flush();
-    }
-
-
-// Protected Data Members
-protected:
-
-    // Output CSV file.
-    CsvFile m_file;
+    /// If node populations should be exported.
+    bool m_populations = false;
 
 };
 
 /* ************************************************************************ */
 
+}
 }
 }
 

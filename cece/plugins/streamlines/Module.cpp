@@ -352,10 +352,6 @@ void Module::update()
 
     auto _ = measure_time("streamlines", simulator::TimeMeasurement(getSimulation()));
 
-    // Store streamlines data
-    if (m_dataOut)
-        storeData();
-
     // No recalculation
     if (isDynamic())
     {
@@ -478,15 +474,6 @@ void Module::loadConfig(const config::Configuration& config)
 
     // Enable dynamic object obstacles
     setDynamicObjectsObstacles(config.get("dynamic-object-obstacles", isDynamicObjectsObstacles()));
-
-    if (config.has("data-out-filename"))
-    {
-        m_dataOut = makeUnique<CsvFile>(config.get("data-out-filename"));
-        m_dataOutDensity = config.get<bool>("data-out-density", false);
-        m_dataOutPopulations = config.get<bool>("data-out-populations", false);
-
-        storeDataHeader();
-    }
 
 #ifdef CECE_ENABLE_RENDER
     m_visualizationLayerDynamicsType = config.get("layer-dynamics", m_visualizationLayerDynamicsType);
@@ -1363,65 +1350,6 @@ void Module::loadFromFile(const FilePath& filename)
         // Read cell populations
         in.read(cell.getData());
     }
-}
-
-/* ************************************************************************ */
-
-void Module::storeDataHeader()
-{
-    Assert(m_dataOut);
-
-    m_dataOut->writeHeader(
-        "iteration", "totalTime", "x", "y", "velX", "velY",
-        CsvFile::cond(m_dataOutDensity, "rho"),
-        CsvFile::cond(m_dataOutPopulations, "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8")
-    );
-
-    // Set stored value precision
-    m_dataOut->setPrecision(std::numeric_limits<Descriptor::DensityType>::digits10 + 1);
-}
-
-/* ************************************************************************ */
-
-void Module::storeData()
-{
-    Assert(m_dataOut);
-
-    for (auto&& c : range(m_lattice.getSize()))
-    {
-        const auto& data = m_lattice[c];
-
-        // Do not save data with no dynamics
-        if (data.getDynamics() == NoDynamics::getInstance())
-            continue;
-
-        const auto vel = convertVelocity(data.computeVelocity());
-
-        m_dataOut->writeRecord(
-            getSimulation().getIteration() - 1,
-            getSimulation().getTotalTime().value(),
-            c.getX(),
-            c.getY(),
-            vel.getX().value(),
-            vel.getY().value(),
-            CsvFile::cond(m_dataOutDensity,
-                data.computeDensity()
-            ),
-            CsvFile::cond(m_dataOutPopulations,
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                data[4],
-                data[5],
-                data[6],
-                data[7],
-                data[8]
-            )
-        );
-    }
-
-    m_dataOut->flush();
 }
 
 /* ************************************************************************ */
