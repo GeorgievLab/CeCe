@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -31,19 +31,15 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 
 # ######################################################################### #
 
-# Sources
-set(SRCS
-    Plugin.cpp
-    wrappers/Module.cpp
-)
-
-# ######################################################################### #
-
 # Build plugin
 build_plugin(diffusion-python
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED diffusion python
-    LIBRARIES ${PYTHON_LIBRARIES}
+    SOURCES
+        Plugin.cpp
+        wrappers/Module.cpp
+    PLUGINS_REQUIRED
+        diffusion python
+    LIBRARIES
+        ${PYTHON_LIBRARIES}
 )
 
 # ######################################################################### #

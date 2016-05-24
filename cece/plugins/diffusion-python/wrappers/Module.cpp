@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -130,16 +130,33 @@ public:
      */
     static PyObject* getSignal(SelfType* self, PyObject* args) noexcept
     {
-        int id;
+        PyObject* id;
         int x;
         int y;
 
-        if (!PyArg_ParseTuple(args, "iii", &id, &x, &y))
+        if (!PyArg_ParseTuple(args, "Oii", &id, &x, &y))
             return nullptr;
 
-        const auto value = self->value->getSignal(id, plugin::diffusion::Module::Coordinate(x, y));
+        if (PyInt_Check(id) || PyLong_Check(id))
+        {
+            return makeObject(
+                self->value->getSignal(
+                    plugin::diffusion::Module::SignalId(PyLong_AsLong(id)),
+                    plugin::diffusion::Module::Coordinate(x, y)
+                )
+            ).release();
+        }
+        else if (PyString_Check(id))
+        {
+            return makeObject(
+                self->value->getSignal(
+                    PyString_AsString(id),
+                    plugin::diffusion::Module::Coordinate(x, y)
+                )
+            ).release();
+        }
 
-        return makeObject(value).release();
+        return nullptr;
     }
 
 
@@ -153,20 +170,30 @@ public:
      */
     static PyObject* setSignal(SelfType* self, PyObject* args) noexcept
     {
-        int id;
+        PyObject* id;
         int x;
         int y;
-        RealType value;
+        double value;
 
-        if (!PyArg_ParseTuple(args, "iiif", &id, &x, &y, &value))
+        if (!PyArg_ParseTuple(args, "Oiid", &id, &x, &y, &value))
             return nullptr;
 
-        // Set signal value
-        self->value->setSignal(
-            id,
-            plugin::diffusion::Module::Coordinate(x, y),
-            plugin::diffusion::Module::SignalConcentration(value)
-        );
+        if (PyInt_Check(id) || PyLong_Check(id))
+        {
+            self->value->setSignal(
+                plugin::diffusion::Module::SignalId(PyLong_AsLong(id)),
+                plugin::diffusion::Module::Coordinate(x, y),
+                plugin::diffusion::Module::SignalConcentration(value)
+            );
+        }
+        else if (PyString_Check(id))
+        {
+            self->value->setSignal(
+                PyString_AsString(id),
+                plugin::diffusion::Module::Coordinate(x, y),
+                plugin::diffusion::Module::SignalConcentration(value)
+            );
+        }
 
         return none().release();
     }

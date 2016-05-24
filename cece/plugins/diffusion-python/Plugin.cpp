@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -63,6 +63,9 @@ using namespace cece::simulator;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Python diffusion plugin API.
+ */
 class DiffusionPythonApi : public plugin::Api
 {
 
