@@ -26,6 +26,9 @@
 // Declaration
 #include "cece/plugins/streamlines/Boundary.hpp"
 
+// C++
+#include <cstdlib>
+
 // CeCe
 #include "cece/core/Assert.hpp"
 #include "cece/core/String.hpp"
@@ -94,6 +97,7 @@ getRanges(Boundary::Position position, const Lattice::Size& size)
 
     default:
         Assert(false && "Invalid boundary position");
+        std::abort();
     }
 }
 

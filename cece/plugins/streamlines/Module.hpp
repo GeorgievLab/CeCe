@@ -177,6 +177,21 @@ public:
     }
 
 
+#if defined(CECE_ENABLE_RENDER)
+
+    /**
+     * @brief Get debug velocity magnitude scale.
+     *
+     * @return
+     */
+    RealType getDebugMagnitudeScale() const noexcept
+    {
+        return m_debugMagnitudeScale;
+    }
+
+#endif
+
+
     /**
      * @brief If dynamic objects are used as obstacles.
      *

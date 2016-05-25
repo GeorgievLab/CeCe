@@ -316,6 +316,22 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         // Lock access
         MutexGuard guard(m_mutex);
 #endif
+        // Find min/max density
+        Descriptor::DensityType rhoMin = std::numeric_limits<Descriptor::DensityType>::max();
+        Descriptor::DensityType rhoMax = 0.0;
+
+        for (auto&& c : range(size))
+        {
+            const auto& node = m_lattice[c];
+            const auto dynamics = node.getDynamics();
+
+            if (dynamics == getFluidDynamics())
+            {
+                const auto density = node.computeDensity();
+                rhoMin = std::min(density, rhoMin);
+                rhoMax = std::max(density, rhoMax);
+            }
+        }
 
         // Update texture
         for (auto&& c : range(size))
@@ -335,10 +351,10 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
                 {
                     color = render::colors::BLACK;
                 }
-                else if (dynamics == m_boundaries[LayoutPosTop] ||
-                    dynamics == m_boundaries[LayoutPosBottom] ||
-                    dynamics == m_boundaries[LayoutPosLeft] ||
-                    dynamics == m_boundaries[LayoutPosRight])
+                else if (dynamics == m_boundaries[Boundary::Position::Top].getDynamics() ||
+                    dynamics == m_boundaries[Boundary::Position::Bottom].getDynamics() ||
+                    dynamics == m_boundaries[Boundary::Position::Left].getDynamics() ||
+                    dynamics == m_boundaries[Boundary::Position::Right].getDynamics())
                 {
                     color = render::colors::RED;
                 }

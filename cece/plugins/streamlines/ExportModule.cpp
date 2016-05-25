@@ -95,6 +95,7 @@ void ExportModule::update()
 
     const auto& sim = getSimulation();
     const auto& lattice = m_module->getLattice();
+    const auto& conv = m_module->getConverter();
 
     for (auto&& c : range(lattice.getSize()))
     {
@@ -104,7 +105,7 @@ void ExportModule::update()
         if (data.getDynamics() == NoDynamics::getInstance())
             continue;
 
-        const auto vel = m_module->convertVelocity(data.computeVelocity());
+        const auto vel = conv.convertVelocity(data.computeVelocity());
 
         writeRecord(
             sim.getIteration(),
