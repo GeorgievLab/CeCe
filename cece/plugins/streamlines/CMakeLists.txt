@@ -41,6 +41,8 @@ build_plugin(streamlines
         Descriptor.cpp
         Module.hpp
         Module.cpp
+        ExportModule.hpp
+        ExportModule.cpp
         Lattice.hpp
         Lattice.cpp
         Node.hpp
@@ -54,8 +56,12 @@ build_plugin(streamlines
         BounceBackDynamics.cpp
         ZouHeDynamics.hpp
         ZouHeDynamics.cpp
-        ExportModule.hpp
-        ExportModule.cpp
+        Boundary.hpp
+        Boundary.cpp
+        Converter.hpp
+        Converter.cpp
+        Boundaries.hpp
+        Boundaries.cpp
 )
 
 # ######################################################################### #

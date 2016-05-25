@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,85 +23,80 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Must be first
-#include "cece/plugins/python/Python.hpp"
+// Declaration
+#include "cece/plugins/streamlines/Converter.hpp"
 
 // CeCe
-#include "cece/core/StringStream.hpp"
-#include "cece/simulator/Simulation.hpp"
-
-// Diffusion
-#include "cece/plugins/streamlines/Module.hpp"
+#include "cece/core/UnitIo.hpp"
+#include "cece/config/Configuration.hpp"
+#include "cece/config/Exception.hpp"
 
 // Plugin
-#include "cece/plugins/python/Utils.hpp"
-#include "cece/plugins/python/Type.hpp"
+#include "cece/plugins/streamlines/Descriptor.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
 namespace plugin {
-namespace streamlines_python {
+namespace streamlines {
 
 /* ************************************************************************ */
 
-namespace {
-
-/* ************************************************************************ */
-
-using namespace plugin::python;
-
-/* ************************************************************************ */
-
-/**
- * @brief Module type.
- */
-class ModuleType : public Type<plugin::streamlines::Module*>
+RealType Converter::calculateViscosity() const noexcept
 {
+    const auto charTime = getCharTime() / getNumberSteps();
+    const auto charLength = getCharLength() / getNumberNodes();
 
-
-// Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    ModuleType()
-        : Type("streamlines.Module")
-    {
-        tp_methods = m_methods;
-    }
-
-
-// Public Operations
-public:
-
-
-// Private Data Members
-private:
-
-    /// Type methods
-    PyMethodDef m_methods[1] = {
-        {nullptr}  /* Sentinel */
-    };
-
-};
-
-/* ************************************************************************ */
-
-ModuleType g_type;
-
-/* ************************************************************************ */
-
+    return charTime / (charLength * charLength) * getKinematicViscosity();
 }
 
 /* ************************************************************************ */
 
-void init_Module(PyObject* module)
+RealType Converter::calculateTau() const noexcept
 {
-    g_type.tp_base = g_type.getBaseType("simulator.Module");
-    g_type.add(module);
+    return Descriptor::SPEED_OF_SOUND_SQ_INV * calculateViscosity() + 0.5;
+}
+
+/* ************************************************************************ */
+
+unsigned int Converter::calculateNumberSteps(RealType tau) const noexcept
+{
+    return Descriptor::SPEED_OF_SOUND_SQ_INV *
+        (getCharTime() * getNumberNodes() * getNumberNodes() * getKinematicViscosity())
+        /
+        ((tau - 0.5) * getCharLength() * getCharLength())
+    ;
+}
+
+/* ************************************************************************ */
+
+void Converter::loadConfig(const config::Configuration& config)
+{
+    // Viscosity
+    setKinematicViscosity(config.get("kinematic-viscosity", getKinematicViscosity()));
+
+    if (getKinematicViscosity() == Zero)
+        throw config::Exception("Kinematic viscosity ('kinematic-viscosity') cannot be zero");
+
+    // Characteristic length & time
+    setCharLength(config.get("char-length", getCharLength()));
+    setNumberNodes(config.get("number-nodes", getNumberNodes()));
+
+    if (config.has("tau"))
+        setNumberSteps(calculateNumberSteps(config.get<RealType>("tau")));
+    else
+        // Set number of time steps
+        setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
+}
+
+/* ************************************************************************ */
+
+void Converter::storeConfig(config::Configuration& config) const
+{
+    config.set("kinematic-viscosity", getKinematicViscosity());
+    config.set("char-length", getCharLength());
+    config.set("number-nodes", getNumberNodes());
+    config.set("number-steps", getNumberSteps());
 }
 
 /* ************************************************************************ */

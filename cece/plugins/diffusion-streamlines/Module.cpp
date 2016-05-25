@@ -94,7 +94,7 @@ void Module::update()
 
             // Get velocity
             assert(velocityGrid.inRange(vc));
-            const auto& velocity = m_streamlines->convertVelocity(velocityGrid[vc].computeVelocity());
+            const auto& velocity = m_streamlines->getConverter().convertVelocity(velocityGrid[vc].computeVelocity());
 
 
             // TODO: Completely redesign

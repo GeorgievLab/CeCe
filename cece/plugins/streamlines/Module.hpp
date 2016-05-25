@@ -59,7 +59,9 @@
 #endif
 
 // Plugin
+#include "cece/plugins/streamlines/Boundaries.hpp"
 #include "cece/plugins/streamlines/Lattice.hpp"
+#include "cece/plugins/streamlines/Converter.hpp"
 
 /* ************************************************************************ */
 
@@ -74,76 +76,6 @@ namespace streamlines {
  */
 class Module : public module::Module
 {
-
-// Public Enums
-public:
-
-
-    /**
-     * @brief Layout type for side.
-     */
-    enum class LayoutType
-    {
-        None,
-        Barrier,
-        Inlet,
-        Outlet
-    };
-
-
-    /**
-     * @brief Inlet velocity profile type.
-     */
-    enum class InletType
-    {
-        Auto,
-        Constant,
-        Parabolic
-    };
-
-
-    /**
-     * @brief Layout position.
-     */
-    enum LayoutPosition
-    {
-        LayoutPosRight   = 0,
-        LayoutPosLeft    = 1,
-        LayoutPosTop     = 2,
-        LayoutPosBottom  = 3,
-        LayoutPosCount
-    };
-
-
-// Public Structures
-public:
-
-
-    /**
-     * @brief Streamlines layout.
-     */
-    struct Layout : public StaticArray<LayoutType, LayoutPosCount>
-    {
-        using StaticArray<LayoutType, LayoutPosCount>::StaticArray;
-    };
-
-
-    /**
-     * @brief Layout inlet velocities.
-     */
-    struct InletVelocities : public StaticArray<units::Velocity, LayoutPosCount>
-    {
-        using StaticArray<units::Velocity, LayoutPosCount>::StaticArray;
-    };
-
-
-    /**
-     * @brief Inlet velocity profiles.
-     */
-    struct InletTypes : public StaticArray<InletType, LayoutPosCount>
-    {
-        using StaticArray<InletType, LayoutPosCount>::StaticArray;
-    };
 
 
 // Public Ctors & Dtors
@@ -191,35 +123,24 @@ public:
 
 
     /**
-     * @brief Returns layout inlet velocities.
+     * @brief Returns units converter.
      *
      * @return
      */
-    const InletVelocities& getInletVelocities() const noexcept
+    const Converter& getConverter() const noexcept
     {
-        return m_inletVelocities;
+        return m_converter;
     }
 
 
     /**
-     * @brief Returns inlet velocity profile types.
+     * @brief Returns units converter.
      *
      * @return
      */
-    const InletTypes& getInletTypes() const noexcept
+    Converter& getConverter() noexcept
     {
-        return m_inletTypes;
-    }
-
-
-    /**
-     * @brief Returns fluid kinematic viscosity.
-     *
-     * @return
-     */
-    units::KinematicViscosity getKinematicViscosity() const noexcept
-    {
-        return m_kinematicViscosity;
+        return m_converter;
     }
 
 
@@ -246,13 +167,13 @@ public:
 
 
     /**
-     * @brief Returns layout description.
+     * @brief Returns boundaries.
      *
      * @return
      */
-    const Layout& getLayout() const noexcept
+    const Boundaries& getBoundaries() const noexcept
     {
-        return m_layout;
+        return m_boundaries;
     }
 
 
@@ -264,76 +185,6 @@ public:
     bool isDynamicObjectsObstacles() const noexcept
     {
         return m_dynamicObjectsObstacles;
-    }
-
-
-#if defined(CECE_ENABLE_RENDER)
-
-    /**
-     * @brief Get debug velocity magnitude scale.
-     *
-     * @return
-     */
-    RealType getDebugMagnitudeScale() const noexcept
-    {
-        return m_debugMagnitudeScale;
-    }
-
-#endif
-
-
-    /**
-     * @brief Returns characteristic length.
-     *
-     * @return
-     */
-    units::Length getCharLength() const noexcept
-    {
-        return m_charLength;
-    }
-
-
-    /**
-     * @brief Returns characteristic time.
-     *
-     * @return
-     */
-    units::Time getCharTime() const noexcept
-    {
-        return m_charTime;
-    }
-
-
-    /**
-     * @brief Returns characteristic velocity.
-     *
-     * @return
-     */
-    units::Velocity getCharVelocity() const noexcept
-    {
-        return getCharLength() / getCharTime();
-    }
-
-
-    /**
-     * @brief Returns number of nodes in LB along characteristic length.
-     *
-     * @return
-     */
-    unsigned int getNumberNodes() const noexcept
-    {
-        return m_numberNodes;
-    }
-
-
-    /**
-     * @brief Returns number of time steps in LB for units conversion.
-     *
-     * @return
-     */
-    unsigned int getNumberSteps() const noexcept
-    {
-        return m_numberSteps;
     }
 
 
@@ -375,51 +226,6 @@ public:
 
 
     /**
-     * @brief Set layout inlet velocities.
-     *
-     * @param velocities
-     */
-    void setInletVelocities(InletVelocities velocities) noexcept
-    {
-        m_inletVelocities = velocities;
-    }
-
-
-    /**
-     * @brief Set layout inlet velocities.
-     *
-     * @param position Inlet position.
-     * @param velocity
-     */
-    void setInletVelocity(LayoutPosition position, units::Velocity velocity) noexcept
-    {
-        m_inletVelocities[position] = velocity;
-    }
-
-
-    /**
-     * @brief Set inlet velocity profile types.
-     *
-     * @param types
-     */
-    void setInletTypes(InletTypes types) noexcept
-    {
-        m_inletTypes = types;
-    }
-
-
-    /**
-     * @brief Set fluid viscosity.
-     *
-     * @param viscosity
-     */
-    void setKinematicViscosity(units::KinematicViscosity viscosity) noexcept
-    {
-        m_kinematicViscosity = viscosity;
-    }
-
-
-    /**
      * @brief Set init iteration count.
      *
      * @param iterations
@@ -438,17 +244,6 @@ public:
     void setInnerIterations(simulator::IterationCount iterations) noexcept
     {
         m_innerIterations = iterations;
-    }
-
-
-    /**
-     * @brief Set layout.
-     *
-     * @param layout
-     */
-    void setLayout(Layout layout) noexcept
-    {
-        m_layout = layout;
     }
 
 
@@ -476,52 +271,6 @@ public:
     }
 
 #endif
-
-
-    /**
-     * @brief Set characteristic length.
-     *
-     * @param length
-     */
-    void setCharLength(units::Length length) noexcept
-    {
-        m_charLength = length;
-    }
-
-
-    /**
-     * @brief Set characteristic time.
-     *
-     * @param time
-     */
-    void setCharTime(units::Time time) noexcept
-    {
-        m_charTime = time;
-    }
-
-
-    /**
-     * @brief Set number of nodes in LB for units conversion.
-     *
-     * @param nodes
-     */
-    void setNumberNodes(unsigned int nodes) noexcept
-    {
-        Assert(nodes > 0);
-        m_numberNodes = nodes;
-    }
-
-
-    /**
-     * @brief Set number of time steps in LB for units conversion.
-     *
-     * @param steps
-     */
-    void setNumberSteps(unsigned int steps) noexcept
-    {
-        Assert(steps > 0);
-        m_numberSteps = steps;
-    }
 
 
     /**
@@ -610,94 +359,6 @@ public:
 #endif
 
 
-    /**
-     * @brief Convert length from LB to physical.
-     *
-     * @param length
-     *
-     * @return
-     */
-    units::Length convertLength(RealType length) const noexcept
-    {
-        const auto charLength = m_charLength / getNumberNodes();
-        return charLength * length;
-    }
-
-
-    /**
-     * @brief Convert length from physical to LB.
-     *
-     * @param length
-     *
-     * @return
-     */
-    RealType convertLength(units::Length length) const noexcept
-    {
-        const auto charLength = m_charLength / getNumberNodes();
-        return length / charLength;
-    }
-
-
-    /**
-     * @brief Convert velocity from LB to physical.
-     *
-     * @param vel
-     *
-     * @return
-     */
-    units::Velocity convertVelocity(RealType vel) const noexcept
-    {
-        const auto charTime = m_charTime / getNumberSteps();
-        const auto charLength = m_charLength / getNumberNodes();
-        return charLength / charTime * vel;
-    }
-
-
-    /**
-     * @brief Convert velocity from LB to physical.
-     *
-     * @param vel
-     *
-     * @return
-     */
-    VelocityVector convertVelocity(Vector<RealType> vel) const noexcept
-    {
-        const auto charTime = m_charTime / getNumberSteps();
-        const auto charLength = m_charLength / getNumberNodes();
-        return charLength / charTime * vel;
-    }
-
-
-    /**
-     * @brief Convert velocity from physical to LB.
-     *
-     * @param vel
-     *
-     * @return
-     */
-    RealType convertVelocity(units::Velocity vel) const noexcept
-    {
-        const auto charTime = m_charTime / getNumberSteps();
-        const auto charLength = m_charLength / getNumberNodes();
-        return charTime / charLength * vel;
-    }
-
-
-    /**
-     * @brief Convert velocity from physical to LB.
-     *
-     * @param vel
-     *
-     * @return
-     */
-    Vector<RealType> convertVelocity(VelocityVector vel) const noexcept
-    {
-        const auto charTime = m_charTime / getNumberSteps();
-        const auto charLength = m_charLength / getNumberNodes();
-        return charTime / charLength * vel;
-    }
-
-
 // Protected Operations
 protected:
 
@@ -725,7 +386,7 @@ protected:
      *
      * @return
      */
-    virtual UniquePtr<Dynamics> createBorderDynamics(LayoutPosition pos) const;
+    virtual UniquePtr<Dynamics> createBorderDynamics(Boundary::Position pos) const;
 
 
     /**
@@ -754,85 +415,6 @@ protected:
 
 
     /**
-     * @brief Calculate inlet velocity profile.
-     *
-     * @param coord
-     * @param pos
-     * @param inlets
-     *
-     * @return
-     */
-    VelocityVector inletVelocityProfile(
-        Lattice::CoordinateType coord, LayoutPosition pos,
-        DynamicArray<StaticArray<Lattice::CoordinateType, 2>> inlets
-    ) const noexcept;
-
-
-    /**
-     * @brief Calculate viscosity from relaxation time.
-     *
-     * @return
-     */
-    RealType calculateViscosity() const noexcept;
-
-
-    /**
-     * @brief Calculate viscosity from relaxation time.
-     *
-     * @return
-     */
-    RealType calculateTau() const noexcept;
-
-
-    /**
-     * @brief Calculate relaxation frequency.
-     *
-     * @return
-     */
-    RealType calculateOmega() const noexcept
-    {
-        return 1.0 / calculateTau();
-    }
-
-
-    /**
-     * @brief Calculate number of time steps from tau.
-     *
-     * @param tau
-     *
-     * @return
-     */
-    unsigned int calculateNumberSteps(RealType tau) const noexcept;
-
-
-    /**
-     * @brief Calculate Reynolds number.
-     *
-     * @return
-     */
-    RealType calculateRe() const noexcept
-    {
-        return getCharLength() * getCharLength() / getCharTime() / getKinematicViscosity();
-    }
-
-
-    /**
-     * @brief Init border barrier.
-     *
-     * @param pos
-     */
-    void initBorderBarrier(LayoutPosition pos);
-
-
-    /**
-     * @brief Init border inlet/outlet.
-     *
-     * @param pos
-     */
-    void initBorderInletOutlet(LayoutPosition pos);
-
-
-    /**
      * @brief Print streamlines informations.
      */
     virtual void printInfo();
@@ -857,14 +439,8 @@ protected:
 // Private Data Members
 private:
 
-    /// Inlet velocities
-    InletVelocities m_inletVelocities;
-
-    /// Inlet velocity profile types.
-    InletTypes m_inletTypes;
-
-    /// Fluid viscosity (of Water).
-    units::KinematicViscosity m_kinematicViscosity = units::mm2_s(0.658);
+    /// Units converter.
+    Converter m_converter;
 
     /// Number of init iterations.
     simulator::IterationCount m_initIterations = 0;
@@ -872,35 +448,17 @@ private:
     /// Number of inner iterations.
     simulator::IterationCount m_innerIterations = 1;
 
-    /// Characteristic length.
-    units::Length m_charLength = units::um(1);
-
-    /// Characteristic time.
-    units::Time m_charTime = units::s(1);
-
-    /// Number of LB nodes for units conversions.
-    unsigned int m_numberNodes = 1;
-
-    /// Number of LB time steps for units conversions
-    unsigned int m_numberSteps = 1;
-
     /// If streamlines is updated during simulation iterations.
     bool m_dynamic = true;
+
+    /// Boundaries.
+    Boundaries m_boundaries;
 
     /// Path to initialization file.
     FilePath m_initFile;
 
     /// Lattice.
     Lattice m_lattice;
-
-    /// Streamlines layout.
-    Layout m_layout;
-
-    /// Barriers created for layout.
-    StaticArray<ViewPtr<object::Object>, LayoutPosCount> m_layoutBarriers;
-
-    /// Boundary dynamics
-    StaticArray<UniquePtr<Dynamics>, LayoutPosCount> m_boundaries;
 
     /// Use dynamic objects as obstacles
     bool m_dynamicObjectsObstacles = false;
@@ -940,54 +498,6 @@ private:
     UniquePtr<Dynamics> m_wallDynamics;
 
 };
-
-/* ************************************************************************ */
-
-/**
- * @brief Read layout type from stream.
- *
- * @param is   Input stream.
- * @param type Output type.
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Module::LayoutType& type);
-
-/* ************************************************************************ */
-
-/**
- * @brief Write layout type from stream.
- *
- * @param os   Output stream.
- * @param type Input type.
- *
- * @return os.
- */
-OutStream& operator<<(OutStream& os, const Module::LayoutType& type);
-
-/* ************************************************************************ */
-
-/**
- * @brief Read inlet velocity type.
- *
- * @param is   Input stream.
- * @param type Output type.
- *
- * @return is.
- */
-InStream& operator>>(InStream& is, Module::InletType& type);
-
-/* ************************************************************************ */
-
-/**
- * @brief Write inlet velocity type.
- *
- * @param os   Output stream.
- * @param type Input type.
- *
- * @return os.
- */
-OutStream& operator<<(OutStream& os, const Module::InletType& type);
 
 /* ************************************************************************ */
 
