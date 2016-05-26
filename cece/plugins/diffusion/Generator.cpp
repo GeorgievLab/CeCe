@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -55,9 +55,9 @@ namespace {
  *
  * @return
  */
-DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parseActive(String str)
+DynamicArray<simulator::IterationRange> parseActive(String str)
 {
-    DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> res;
+    DynamicArray<simulator::IterationRange> res;
 
     InStringStream iss(std::move(str));
 
@@ -79,7 +79,7 @@ DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parse
         else
         {
             // Single item range
-            res.push_back({it, it});
+            res.push_back({it});
         }
     }
 
@@ -96,7 +96,7 @@ DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parse
  *
  * @return
  */
-bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>>& list, simulator::IterationNumber it)
+bool inRange(const DynamicArray<simulator::IterationRange>& list, simulator::IterationNumber it)
 {
     // No limitation
     if (list.empty())
@@ -104,7 +104,7 @@ bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::Iter
 
     for (const auto& p : list)
     {
-        if (it >= p.first && it <= p.second)
+        if (p.inRange(it))
             return true;
     }
 

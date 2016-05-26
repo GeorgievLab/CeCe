@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -32,10 +32,9 @@
 #include "cece/core/String.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/ViewPtr.hpp"
-#include "cece/core/Pair.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/module/Module.hpp"
-#include "cece/simulator/IterationType.hpp"
+#include "cece/simulator/IterationRange.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"
@@ -109,7 +108,7 @@ private:
         PositionVector size;
 
         /// List of iteration ranges when the generator is active.
-        DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> active;
+        DynamicArray<simulator::IterationRange> active;
     };
 
 
