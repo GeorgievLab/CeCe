@@ -30,6 +30,7 @@
 
 // Plugin
 #include "cece/plugins/streamlines/Module.hpp"
+#include "cece/plugins/streamlines/ExportModule.hpp"
 
 /* ************************************************************************ */
 
@@ -53,6 +54,7 @@ public:
     void onLoad(plugin::Context& context) override
     {
         context.registerModule<plugin::streamlines::Module>("streamlines");
+        context.registerModule<plugin::streamlines::ExportModule>("streamlines.export");
     }
 
 
@@ -63,6 +65,7 @@ public:
      */
     void onUnload(plugin::Context& context) override
     {
+        context.unregisterModule("streamlines.export");
         context.unregisterModule("streamlines");
     }
 
