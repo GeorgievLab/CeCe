@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -78,8 +78,6 @@ set(SRCS
     Mutex.hpp
     Pair.hpp
     Variant.hpp
-    DataTable.hpp
-    DataTable.cpp
     SharedPtr.hpp
     TriBool.hpp
     Parameters.hpp

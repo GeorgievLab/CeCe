@@ -111,31 +111,6 @@ private:
 
 /* ************************************************************************ */
 
-/**
- * @brief Write CSV line into output stream.
- *
- * @param os
- * @param container
- */
-template<typename Container>
-void writeCsvLine(OutStream& os, const Container& container)
-{
-    using std::begin;
-    using std::end;
-
-    for (auto it = begin(container); it != end(container); ++it)
-    {
-        if (it != begin(container))
-            os << ';';
-
-        os << *it;
-    }
-
-    os << "\n";
-}
-
-/* ************************************************************************ */
-
 }
 
 /* ************************************************************************ */
@@ -154,9 +129,6 @@ Simulation::Simulation(plugin::Context& context, FilePath path) noexcept
 
 Simulation::~Simulation()
 {
-    // Store data tables
-    storeDataTables();
-
     // Call finalize simulations for all plugins
     for (auto it = m_plugins.rbegin(); it != m_plugins.rend(); ++it)
     {
@@ -665,7 +637,7 @@ void Simulation::storeConfig(config::Configuration& config) const
 void Simulation::draw(render::Context& context)
 {
     context.setStencilBuffer(
-        static_cast<float>(getWorldSize().getWidth().value()), 
+        static_cast<float>(getWorldSize().getWidth().value()),
         static_cast<float>(getWorldSize().getHeight().value())
     );
 
@@ -734,28 +706,6 @@ ViewPtr<plugin::Api> Simulation::loadPlugin(const String& name) noexcept
     }
 
     return nullptr;
-}
-
-/* ************************************************************************ */
-
-void Simulation::storeDataTables()
-{
-    for (const auto& item : m_dataTables)
-    {
-        const auto& table = item.second;
-
-        std::ofstream file(item.first + ".csv");
-
-        Log::info("Saving data table '", item.first, "' into '", item.first, ".csv'");
-
-        // Write headers
-        writeCsvLine(file, table.getColumns());
-
-        for (const auto& row : table.getRows())
-            writeCsvLine(file, row);
-
-        Log::info("Data table '", item.first, "' saved.");
-    }
 }
 
 /* ************************************************************************ */

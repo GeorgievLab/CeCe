@@ -131,8 +131,6 @@
       <File Name="core/CMakeLists.txt"/>
     </VirtualDirectory>
     <VirtualDirectory Name="container">
-      <File Name="core/DataTable.cpp"/>
-      <File Name="core/DataTable.hpp"/>
       <File Name="core/DynamicArray.hpp"/>
       <File Name="core/ListenerContainer.hpp"/>
       <File Name="core/Map.hpp"/>

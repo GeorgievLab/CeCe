@@ -48,7 +48,6 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/TimeMeasurement.hpp"
-#include "cece/core/DataTable.hpp"
 #include "cece/core/Parameters.hpp"
 #include "cece/core/InOutStream.hpp"
 #include "cece/init/Initializer.hpp"
@@ -65,6 +64,7 @@
 
 #ifdef CECE_ENABLE_RENDER
 #include "cece/render/Color.hpp"
+#include "cece/render/Context.hpp"
 #include "cece/simulator/Visualization.hpp"
 #endif
 
@@ -94,9 +94,6 @@ public:
 
     /// Type of simulation parameter value.
     using ParameterValueType = Parameters::ValueType;
-
-    /// Data table container type.
-    using DataTableContainer = Map<String, DataTable>;
 
 
 // Public Ctors
@@ -552,50 +549,6 @@ public:
     }
 
 
-    /**
-     * @brief Returns data table exists.
-     *
-     * @param name Data table name.
-     *
-     * @return
-     */
-    bool hasDataTable(const StringView& name) const noexcept
-    {
-        return m_dataTables.find(name.getData()) != m_dataTables.end();
-    }
-
-
-    /**
-     * @brief Returns data table with given name.
-     *
-     * @param name Data table name.
-     *
-     * @return Data table.
-     */
-    DataTable& getDataTable(const StringView& name) noexcept
-    {
-        return m_dataTables[name.getData()];
-    }
-
-
-    /**
-     * @brief Returns data table with given name.
-     *
-     * @param name Data table name.
-     *
-     * @return Data table.
-     */
-    const DataTable& getDataTable(const StringView& name) const
-    {
-        auto it = m_dataTables.find(name.getData());
-
-        if (it == m_dataTables.end())
-            throw InvalidArgumentException("Unable to find data table: " + String(name));
-
-        return it->second;
-    }
-
-
 #ifdef CECE_ENABLE_RENDER
 
 
@@ -896,19 +849,6 @@ public:
     UniquePtr<program::Program> buildProgram(StringView name);
 
 
-    /**
-     * @brief Create new data table.
-     *
-     * @param name Data table name.
-     *
-     * @return Created data table.
-     */
-    DataTable& addDataTable(const StringView& name)
-    {
-        return m_dataTables[name.getData()];
-    }
-
-
 // Public Operations
 public:
 
@@ -987,12 +927,6 @@ public:
      * @see requirePlugin
      */
     ViewPtr<plugin::Api> loadPlugin(const String& name) noexcept;
-
-
-    /**
-     * @brief Store data tables into files.
-     */
-    void storeDataTables();
 
 
     /**
@@ -1095,9 +1029,6 @@ private:
 
     /// A map of preddefined programs.
     program::NamedContainer m_programs;
-
-    /// Managed data tables.
-    DataTableContainer m_dataTables;
 
     /// Registered object classes.
     object::TypeContainer m_objectClasses;
