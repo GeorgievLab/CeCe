@@ -1042,9 +1042,6 @@ private:
     bool m_drawPhysics = false;
 #endif
 
-    /// Outstream for simulation objects data.
-    UniquePtr<OutStream> m_dataOutObjects;
-
 };
 
 /* ************************************************************************ */

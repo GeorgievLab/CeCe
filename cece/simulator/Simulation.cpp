@@ -361,35 +361,6 @@ bool Simulation::update()
     // Delete unused objects
     deleteObjects();
 
-    // Store data
-    if (m_dataOutObjects)
-    {
-        for (const auto& object : m_objects)
-        {
-            const auto pos = object->getPosition();
-            const auto vel = object->getVelocity();
-
-            *m_dataOutObjects <<
-                // iteration
-                getIteration() << ";" <<
-                // totalTime
-                getTotalTime() << ";" <<
-                // id
-                object->getId() << ";" <<
-                // typeName
-                object->getTypeName() << ";" <<
-                // posX
-                pos.getX() << ";" <<
-                // posY
-                pos.getY() << ";" <<
-                // velX
-                vel.getX() << ";" <<
-                // velY
-                vel.getY() << "\n"
-            ;
-        }
-    }
-
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     {
         auto _ = measure_time("sim.physics", TimeMeasurement(this));
@@ -553,12 +524,6 @@ void Simulation::loadConfig(const config::Configuration& config)
 
         if (object)
             object->configure(objectConfig, *this);
-    }
-
-    if (config.has("data-out-objects-filename"))
-    {
-        m_dataOutObjects = makeUnique<OutFileStream>(config.get("data-out-objects-filename"));
-        *m_dataOutObjects << "iteration;totalTime;id;typeName;posX;posY;velX;velY\n";
     }
 }
 
