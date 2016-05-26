@@ -368,9 +368,6 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
                     color = render::colors::GREEN;
                 }
 
-                // Set alpha channel
-                color.setAlpha(0);
-
                 // Store color
                 m_drawableDynamicsType->set(c, color);
             }
@@ -386,7 +383,10 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
                 }
                 else
                 {
-                    m_drawableMagnitude->set(c, render::colors::BLACK);
+                    render::Color color = render::colors::BLACK;
+                    color.setAlpha(0);
+
+                    m_drawableMagnitude->set(c, color);
                 }
             }
 
@@ -401,7 +401,10 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
                 }
                 else
                 {
-                    m_drawableMagnitude->set(c, render::colors::BLACK);
+                    render::Color color = render::colors::BLACK;
+                    color.setAlpha(0);
+
+                    m_drawableDensity->set(c, color);
                 }
             }
         }

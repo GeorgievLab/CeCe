@@ -51,6 +51,7 @@
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
 #  include "cece/render/Object.hpp"
+#  include "cece/render/GridColor.hpp"
 #  include "cece/render/GridColorColorMap.hpp"
 #endif
 
@@ -492,7 +493,7 @@ private:
     String m_visualizationLayerDensity;
 
     /// Rendering grid with dynamics type.
-    render::ObjectPtr<render::GridColorColorMap> m_drawableDynamicsType;
+    render::ObjectPtr<render::GridColor> m_drawableDynamicsType;
 
     /// Rendering grid with magnitude.
     render::ObjectPtr<render::GridColorColorMap> m_drawableMagnitude;
