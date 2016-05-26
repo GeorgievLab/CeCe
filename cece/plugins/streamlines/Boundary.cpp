@@ -451,6 +451,7 @@ void Boundary::findHoles(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics)
 
     default:
         Assert(false && "Invalid boundary position");
+        std::abort();
     }
 }
 
@@ -465,7 +466,24 @@ VelocityVector Boundary::inletVelocity(Lattice::CoordinateType coord) const noex
 
     if (type == InletProfileType::Constant)
     {
-        return {m_inletVelocity, Zero};
+        switch (m_position)
+        {
+        case Position::Top:
+            return {Zero, m_inletVelocity};
+
+        case Position::Bottom:
+            return {Zero, -m_inletVelocity};
+
+        case Position::Left:
+            return {-m_inletVelocity, Zero};
+
+        case Position::Right:
+            return {m_inletVelocity, Zero};
+
+        default:
+            Assert(false && "Invalid boundary position");
+            std::abort();
+        }
     }
     else if (type == InletProfileType::Parabolic)
     {
@@ -503,8 +521,8 @@ VelocityVector Boundary::inletVelocity(Lattice::CoordinateType coord) const noex
             break;
 
         default:
-            Assert(false);
-            break;
+            Assert(false && "Invalid boundary position");
+            std::abort();
         }
 
         if (!found)
@@ -557,8 +575,8 @@ VelocityVector Boundary::inletVelocity(Lattice::CoordinateType coord) const noex
             break;
 
         default:
-            Assert(false);
-            break;
+            Assert(false && "Invalid boundary position");
+            std::abort();
         }
 
         return Zero;
