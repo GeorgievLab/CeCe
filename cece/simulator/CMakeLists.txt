@@ -30,6 +30,7 @@ set(SRCS
     Simulator.hpp
     Simulator.cpp
     IterationType.hpp
+    IterationRange.hpp
     TimeMeasurement.hpp
     TimeMeasurement.cpp
     Visualization.hpp

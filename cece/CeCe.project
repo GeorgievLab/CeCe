@@ -292,6 +292,7 @@
     <File Name="simulator/Visualization.hpp"/>
     <File Name="simulator/VisualizationLayer.hpp"/>
     <File Name="simulator/Visualization.cpp"/>
+    <File Name="simulator/IterationRange.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>
