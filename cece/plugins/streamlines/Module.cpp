@@ -213,8 +213,8 @@ void Module::loadConfig(const config::Configuration& config)
     m_boundaries.loadConfig(config);
 
     // Load converter configuration
-    m_converter.loadConfig(config);
     m_converter.setCharTime(getSimulation().getTimeStep());
+    m_converter.loadConfig(config);
 
     // Obsolete grid
     auto gridSize = config.get<Lattice::Size>("grid", Lattice::Size{Zero});
@@ -351,12 +351,13 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
                 {
                     color = render::colors::BLACK;
                 }
-                else if (dynamics == m_boundaries[Boundary::Position::Top].getDynamics() ||
-                    dynamics == m_boundaries[Boundary::Position::Bottom].getDynamics() ||
-                    dynamics == m_boundaries[Boundary::Position::Left].getDynamics() ||
-                    dynamics == m_boundaries[Boundary::Position::Right].getDynamics())
+                else if (m_boundaries.isBoundaryDynamics(dynamics, Boundary::Type::Inlet))
                 {
                     color = render::colors::RED;
+                }
+                else if (m_boundaries.isBoundaryDynamics(dynamics, Boundary::Type::Outlet))
+                {
+                    color = render::colors::BLUE;
                 }
                 else if (dynamics == NoDynamics::getInstance())
                 {
@@ -376,18 +377,32 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 
             if (drawMagnitude)
             {
-                m_drawableMagnitude->set(
-                    c,
-                    render::Color::fromGray(velocity.getLength() / maxVel)
-                );
+                if (dynamics == getFluidDynamics())
+                {
+                    m_drawableMagnitude->set(
+                        c,
+                        render::Color::fromGray(velocity.getLength() / maxVel)
+                    );
+                }
+                else
+                {
+                    m_drawableMagnitude->set(c, render::colors::BLACK);
+                }
             }
 
             if (drawDensity)
             {
-                m_drawableDensity->set(
-                    c,
-                    render::Color::fromGray((density - rhoMin) / (rhoMax - rhoMin))
-                );
+                if (dynamics == getFluidDynamics())
+                {
+                    m_drawableDensity->set(
+                        c,
+                        render::Color::fromGray((density - rhoMin) / (rhoMax - rhoMin))
+                    );
+                }
+                else
+                {
+                    m_drawableMagnitude->set(c, render::colors::BLACK);
+                }
             }
         }
     }

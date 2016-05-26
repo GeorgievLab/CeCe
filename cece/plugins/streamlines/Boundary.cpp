@@ -103,6 +103,72 @@ getRanges(Boundary::Position position, const Lattice::Size& size)
 
 /* ************************************************************************ */
 
+/**
+ * @brief Returns ranges based on boundary position.
+ *
+ * @param position
+ * @param size
+ *
+ * @return
+ */
+StaticArray<Vector<Lattice::SizeType>, 2>
+getRanges(Boundary::Position position, RealType offset, RealType size,
+    const Lattice::Size& gridSize)
+{
+    switch (position)
+    {
+    case Boundary::Position::Top:
+    {
+        Lattice::SizeType off = gridSize.getWidth() / 2 + offset;
+        Lattice::SizeType siz = size / 2;
+
+        return {{
+            {off - siz, gridSize.getHeight() - 1},
+            {off + siz, gridSize.getHeight()}
+        }};
+    }
+
+    case Boundary::Position::Bottom:
+    {
+        Lattice::SizeType off = gridSize.getWidth() / 2 + offset;
+        Lattice::SizeType siz = size / 2;
+
+        return {{
+            {off - siz, 0},
+            {off + siz, 1}
+        }};
+    }
+
+    case Boundary::Position::Right:
+    {
+        Lattice::SizeType off = gridSize.getHeight() / 2;
+        Lattice::SizeType siz = size / 2;
+
+        return {{
+            {gridSize.getWidth() - 1, off - siz},
+            {gridSize.getWidth(), off + siz}
+        }};
+    }
+
+    case Boundary::Position::Left:
+    {
+        Lattice::SizeType off = gridSize.getHeight() / 2;
+        Lattice::SizeType siz = size / 2;
+
+        return {{
+            {0, off - siz},
+            {1, off + siz}
+        }};
+    }
+
+    default:
+        Assert(false && "Invalid boundary position");
+        std::abort();
+    }
+}
+
+/* ************************************************************************ */
+
 }
 
 /* ************************************************************************ */
@@ -225,8 +291,6 @@ InStream& operator>>(InStream& is, Boundary::InletProfileType& type)
 
     if (desc == "constant")
         type = Boundary::InletProfileType::Constant;
-    else if (desc == "parabolic")
-        type = Boundary::InletProfileType::Parabolic;
     else if (desc == "auto")
         type = Boundary::InletProfileType::Auto;
     else
@@ -253,21 +317,12 @@ OutStream& operator<<(OutStream& os, const Boundary::InletProfileType& type)
         os << "auto"; break;
     case Boundary::InletProfileType::Constant:
         os << "constant"; break;
-    case Boundary::InletProfileType::Parabolic:
-        os << "parabolic"; break;
     default:
         Assert(false && "Unknown inlet velocity profile type");
     }
+
     return os;
 }
-
-/* ************************************************************************ */
-
-Boundary::Boundary() = default;
-
-/* ************************************************************************ */
-
-Boundary::~Boundary() = default;
 
 /* ************************************************************************ */
 
@@ -275,6 +330,8 @@ void Boundary::loadConfig(const config::Configuration& config)
 {
     setType(config.get("type", getType()));
     setPosition(config.get("position", getPosition()));
+    setOffset(config.get("offset", getOffset()));
+    setSize(config.get("size", getSize()));
     setInletProfileType(config.get("inlet-profile", getInletProfileType()));
     setInletVelocity(config.get("inlet-velocity", getInletVelocity()));
 }
@@ -285,6 +342,8 @@ void Boundary::storeConfig(config::Configuration& config) const
 {
     config.set("type", getType());
     config.set("position", getPosition());
+    config.get("offset", getOffset());
+    config.get("size", getSize());
     config.set("inlet-profile", getInletProfileType());
     config.set("inlet-velocity", getInletVelocity());
 }
@@ -293,10 +352,13 @@ void Boundary::storeConfig(config::Configuration& config) const
 
 void Boundary::apply(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
 {
-    const auto size = lattice.getSize();
+    const auto gridSize = lattice.getSize();
 
     // Get ranges
-    auto ranges = getRanges(m_position, size);
+    auto ranges = m_size == Zero
+        ? getRanges(m_position, gridSize)
+        : getRanges(m_position, converter.convertLength(m_offset), converter.convertLength(m_size), gridSize)
+    ;
 
     const Vector<Lattice::SizeType> rngMin = ranges[0];
     const Vector<Lattice::SizeType> rngMax = ranges[1];
@@ -335,257 +397,36 @@ void Boundary::apply(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> f
 
 /* ************************************************************************ */
 
-void Boundary::findHoles(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics)
-{
-    const auto size = lattice.getSize();
-
-    // Get ranges
-    auto ranges = getRanges(m_position, size);
-
-    const Vector<Lattice::SizeType> rngMin = ranges[0];
-    const Vector<Lattice::SizeType> rngMax = ranges[1];
-
-    m_holes.clear();
-
-    switch (m_position)
-    {
-    case Position::Top:
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-        {
-            const Lattice::CoordinateType c1 = {x, size.getHeight() - 1};
-            if (lattice[c1].getDynamics() != fluidDynamics)
-                continue;
-
-            auto c2 = c1;
-
-            ++x;
-            for (; x < rngMax.getX(); ++x)
-            {
-                const Lattice::CoordinateType cNext = {x, size.getHeight() - 1};
-                if (lattice[cNext].getDynamics() != fluidDynamics)
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getX() - c2.getX() > 1)
-                m_holes.push_back({{c1, c2}});
-        }
-
-        break;
-
-    case Position::Bottom:
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-        {
-            const Lattice::CoordinateType c1 = {x, 0};
-            if (lattice[c1].getDynamics() != fluidDynamics)
-                continue;
-
-            auto c2 = c1;
-
-            ++x;
-            for (; x < rngMax.getX(); ++x)
-            {
-                const Lattice::CoordinateType cNext = {x, 0};
-                if (lattice[cNext].getDynamics() != fluidDynamics)
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getX() - c2.getX() > 1)
-                m_holes.push_back({{c1, c2}});
-        }
-
-        break;
-
-    case Position::Right:
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        {
-            const Lattice::CoordinateType c1 = {size.getWidth() - 1, y};
-            if (lattice[c1].getDynamics() != fluidDynamics)
-                continue;
-
-            auto c2 = c1;
-
-            ++y;
-            for (; y < rngMax.getY(); ++y)
-            {
-                const Lattice::CoordinateType cNext = {size.getWidth() - 1, y};
-                if (lattice[cNext].getDynamics() != fluidDynamics)
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getY() - c2.getY() > 1)
-                m_holes.push_back({{c1, c2}});
-        }
-
-        break;
-
-    case Position::Left:
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        {
-            const Lattice::CoordinateType c1 = {0, y};
-            if (lattice[c1].getDynamics() != fluidDynamics)
-                continue;
-
-            auto c2 = c1;
-
-            ++y;
-            for (; y < rngMax.getY(); ++y)
-            {
-                const Lattice::CoordinateType cNext = {0, y};
-                if (lattice[cNext].getDynamics() != fluidDynamics)
-                    break;
-
-                c2 = cNext;
-            }
-
-            if (c1.getY() - c2.getY() > 1)
-                m_holes.push_back({{c1, c2}});
-        }
-
-        break;
-
-    default:
-        Assert(false && "Invalid boundary position");
-        std::abort();
-    }
-}
-
-/* ************************************************************************ */
-
 VelocityVector Boundary::inletVelocity(Lattice::CoordinateType coord) const noexcept
 {
     auto type = getInletProfileType();
 
     if (type == InletProfileType::Auto)
-        type = InletProfileType::Parabolic;
+        type = InletProfileType::Constant;
 
     if (type == InletProfileType::Constant)
     {
         switch (m_position)
         {
         case Position::Top:
-            return {Zero, m_inletVelocity};
-
-        case Position::Bottom:
             return {Zero, -m_inletVelocity};
 
-        case Position::Left:
-            return {-m_inletVelocity, Zero};
+        case Position::Bottom:
+            return {Zero, m_inletVelocity};
 
-        case Position::Right:
+        case Position::Left:
             return {m_inletVelocity, Zero};
 
-        default:
-            Assert(false && "Invalid boundary position");
-            std::abort();
-        }
-    }
-    else if (type == InletProfileType::Parabolic)
-    {
-        StaticArray<Lattice::CoordinateType, 2> inletRange{{Zero, Zero}};
-        bool found = false;
-
-        switch (m_position)
-        {
-        case Position::Top:
-        case Position::Bottom:
-            // Find inlet range
-            for (const auto& inlet : m_holes)
-            {
-                if (inlet[0].getX() <= coord.getX() && coord.getX() <= inlet[1].getX())
-                {
-                    inletRange = inlet;
-                    found = true;
-                    break;
-                }
-            }
-            break;
-
-        case Position::Left:
         case Position::Right:
-            // Find inlet range
-            for (const auto& inlet : m_holes)
-            {
-                if (inlet[0].getY() <= coord.getY() && coord.getY() <= inlet[1].getY())
-                {
-                    inletRange = inlet;
-                    found = true;
-                    break;
-                }
-            }
-            break;
+            return {-m_inletVelocity, Zero};
 
         default:
             Assert(false && "Invalid boundary position");
             std::abort();
         }
-
-        if (!found)
-            return Zero;
-
-        switch (m_position)
-        {
-        case Position::Top:
-            return {
-                Zero,
-                -Descriptor::calcPoiseuilleFlow(
-                    m_inletVelocity,
-                    (inletRange[1] - inletRange[0]).getWidth() + 2,
-                    coord.getX() - inletRange[0].getX() + 1
-                )
-            };
-            break;
-
-        case Position::Bottom:
-            return {
-                Zero,
-                Descriptor::calcPoiseuilleFlow(
-                    m_inletVelocity,
-                    (inletRange[1] - inletRange[0]).getWidth() + 2,
-                    coord.getX() - inletRange[0].getX() + 1
-                )
-            };
-            break;
-
-        case Position::Right:
-            return {
-                -Descriptor::calcPoiseuilleFlow(
-                    m_inletVelocity,
-                    (inletRange[1] - inletRange[0]).getHeight() + 2,
-                    coord.getY() - inletRange[0].getY() + 1
-                ),
-                Zero
-            };
-            break;
-
-        case Position::Left:
-            return {
-                Descriptor::calcPoiseuilleFlow(
-                    m_inletVelocity,
-                    (inletRange[1] - inletRange[0]).getHeight() + 2,
-                    coord.getY() - inletRange[0].getY() + 1
-                ),
-                Zero
-            };
-            break;
-
-        default:
-            Assert(false && "Invalid boundary position");
-            std::abort();
-        }
-
-        return Zero;
     }
-    else
-    {
-        Assert(0 && "InputType enum issue");
-        return Zero;
-    }
+
+    return Zero;
 }
 
 /* ************************************************************************ */

@@ -94,25 +94,8 @@ public:
     enum class InletProfileType
     {
         Auto,
-        Constant,
-        Parabolic
+        Constant
     };
-
-
-// Public Ctors & Dtors
-public:
-
-
-    /**
-     * @brief Constructor.
-     */
-    Boundary();
-
-
-    /**
-     * @brief Destructor.
-     */
-    ~Boundary();
 
 
 // Public Accessors
@@ -138,6 +121,28 @@ public:
     Position getPosition() const noexcept
     {
         return m_position;
+    }
+
+
+    /**
+     * @brief Returns boundary offset.
+     *
+     * @return
+     */
+    units::Length getOffset() const noexcept
+    {
+        return m_offset;
+    }
+
+
+    /**
+     * @brief Returns boundary size.
+     *
+     * @return
+     */
+    units::Length getSize() const noexcept
+    {
+        return m_size;
     }
 
 
@@ -197,6 +202,28 @@ public:
     void setPosition(Position position) noexcept
     {
         m_position = position;
+    }
+
+
+    /**
+     * @brief Set boundary offset.
+     *
+     * @param offset
+     */
+    void setOffset(units::Length offset) noexcept
+    {
+        m_offset = offset;
+    }
+
+
+    /**
+     * @brief Set boundary size.
+     *
+     * @param size
+     */
+    void setSize(units::Length size) noexcept
+    {
+        m_size = size;
     }
 
 
@@ -264,15 +291,6 @@ public:
 
 
     /**
-     * @brief Find fluid holes within lattice where is fluid dynamics.
-     *
-     * @param lattice
-     * @param fluidDynamics
-     */
-    void findHoles(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics);
-
-
-    /**
      * @brief Calculate inlet velocity profile.
      *
      * @param coord
@@ -291,6 +309,12 @@ private:
     /// Boundary position.
     Position m_position;
 
+    /// Boundary position offset.
+    units::Length m_offset = Zero;
+
+    /// Boundary size.
+    units::Length m_size = Zero;
+
     /// Inlet velocity profile type.
     InletProfileType m_inletProfileType = InletProfileType::Auto;
 
@@ -300,8 +324,6 @@ private:
     /// Boundary dynamics.
     UniquePtr<Dynamics> m_dynamics;
 
-    /// A list of boundary holes.
-    DynamicArray<StaticArray<Lattice::CoordinateType, 2>> m_holes;
 };
 
 /* ************************************************************************ */

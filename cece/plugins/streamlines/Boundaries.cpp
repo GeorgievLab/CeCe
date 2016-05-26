@@ -102,11 +102,48 @@ units::Velocity Boundaries::getMaxInletVelocity() const noexcept
 
 /* ************************************************************************ */
 
+bool Boundaries::isBoundaryDynamics(ViewPtr<Dynamics> dynamics) const noexcept
+{
+    for (const auto& boundary : m_boundaries)
+    {
+        if (boundary.getDynamics() == dynamics)
+            return true;
+    }
+
+    return false;
+}
+
+/* ************************************************************************ */
+
+bool Boundaries::isBoundaryDynamics(ViewPtr<Dynamics> dynamics, Boundary::Type type) const noexcept
+{
+    for (const auto& boundary : m_boundaries)
+    {
+        if ((boundary.getDynamics() == dynamics) && (boundary.getType() == type))
+            return true;
+    }
+
+    return false;
+}
+
+/* ************************************************************************ */
+
+void Boundaries::initDefault()
+{
+    if (!m_boundaries.empty())
+        return;
+
+    m_boundaries.resize(4);
+
+    for (int i = 0; i < 4; ++i)
+        m_boundaries[i].setPosition(static_cast<Boundary::Position>(i));
+}
+
+/* ************************************************************************ */
+
 void Boundaries::init(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics)
 {
-    // Init boundaries
-    for (auto& boundary : m_boundaries)
-        boundary.findHoles(lattice, fluidDynamics);
+    // Nothing to do
 }
 
 /* ************************************************************************ */
@@ -125,6 +162,9 @@ void Boundaries::loadConfig(const config::Configuration& config)
     // Layout
     if (config.has("layout"))
     {
+        // Create default
+        initDefault();
+
         const auto layout = config.get<StaticArray<String, 4>>("layout");
 
         for (std::size_t i = 0; i < layout.size(); ++i)
@@ -141,6 +181,8 @@ void Boundaries::loadConfig(const config::Configuration& config)
     // Inlet velocities
     if (config.has("inlet-velocity"))
     {
+        initDefault();
+
         const auto velocity = config.get<units::Velocity>("inlet-velocity");
 
         for (auto& boundary : m_boundaries)
@@ -148,6 +190,8 @@ void Boundaries::loadConfig(const config::Configuration& config)
     }
     else if (config.has("inlet-velocities"))
     {
+        initDefault();
+
         const auto velocities = config.get<StaticArray<units::Velocity, 4>>("inlet-velocities");
 
         for (std::size_t i = 0; i < velocities.size(); ++i)
@@ -156,19 +200,21 @@ void Boundaries::loadConfig(const config::Configuration& config)
 
     if (config.has("inlet-type"))
     {
+        initDefault();
+
         const auto typeStr = config.get<String>("inlet-type");
         Boundary::InletProfileType type = Boundary::InletProfileType::Auto;
 
         if (typeStr == "constant")
             type = Boundary::InletProfileType::Constant;
-        else if (typeStr == "parabolic")
-            type = Boundary::InletProfileType::Parabolic;
 
         for (auto& boundary : m_boundaries)
             boundary.setInletProfileType(type);
     }
     else if (config.has("inlet-types"))
     {
+        initDefault();
+
         const auto types = config.get<StaticArray<String, 4>>("inlet-types");
 
         for (std::size_t i = 0; i < types.size(); ++i)
@@ -177,14 +223,18 @@ void Boundaries::loadConfig(const config::Configuration& config)
 
             if (types[i] == "constant")
                 type = Boundary::InletProfileType::Constant;
-            else if (types[i] == "parabolic")
-                type = Boundary::InletProfileType::Parabolic;
 
             m_boundaries[i].setInletProfileType(type);
         }
     }
 
-    // TODO: separate elements
+    // Inlets
+    for (auto&& boundaryConfig : config.getConfigurations("boundary"))
+    {
+        Boundary boundary;
+        boundary.loadConfig(boundaryConfig);
+        m_boundaries.push_back(std::move(boundary));
+    }
 }
 
 /* ************************************************************************ */

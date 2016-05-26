@@ -32,7 +32,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
-#include "cece/core/StaticArray.hpp"
+#include "cece/core/DynamicArray.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/Boundary.hpp"
@@ -99,32 +99,6 @@ public:
     }
 
 
-    /**
-     * @brief Get boundary by position.
-     *
-     * @param position
-     *
-     * @return
-     */
-    Boundary& operator[](Boundary::Position position) noexcept
-    {
-        return get(position);
-    }
-
-
-    /**
-     * @brief Get boundary by position.
-     *
-     * @param position
-     *
-     * @return
-     */
-    const Boundary& operator[](Boundary::Position position) const noexcept
-    {
-        return get(position);
-    }
-
-
 // Public Accessors
 public:
 
@@ -167,32 +141,6 @@ public:
 
 
     /**
-     * @brief Get boundary by position.
-     *
-     * @param position
-     *
-     * @return
-     */
-    Boundary& get(Boundary::Position position) noexcept
-    {
-        return get(static_cast<std::size_t>(position));
-    }
-
-
-    /**
-     * @brief Get boundary by position.
-     *
-     * @param position
-     *
-     * @return
-     */
-    const Boundary& get(Boundary::Position position) const noexcept
-    {
-        return get(static_cast<std::size_t>(position));
-    }
-
-
-    /**
      * @brief Find maximum inlet velocity.
      *
      * @return
@@ -200,8 +148,35 @@ public:
     units::Velocity getMaxInletVelocity() const noexcept;
 
 
+    /**
+     * @brief Check if given dynamics is boundary dynamics.
+     *
+     * @param dynamics
+     *
+     * @return
+     */
+    bool isBoundaryDynamics(ViewPtr<Dynamics> dynamics) const noexcept;
+
+
+    /**
+     * @brief Check if given dynamics is boundary dynamics.
+     *
+     * @param dynamics
+     * @param type
+     *
+     * @return
+     */
+    bool isBoundaryDynamics(ViewPtr<Dynamics> dynamics, Boundary::Type type) const noexcept;
+
+
 // Public Operations
 public:
+
+
+    /**
+     * @brief Initialize default boundaries.
+     */
+    void initDefault();
 
 
     /**
@@ -245,7 +220,8 @@ private:
     simulator::Simulation& m_simulation;
 
     /// Stored boundaries.
-    StaticArray<Boundary, 4> m_boundaries;
+    DynamicArray<Boundary> m_boundaries;
+
 };
 
 /* ************************************************************************ */
