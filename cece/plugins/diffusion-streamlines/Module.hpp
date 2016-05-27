@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -30,10 +30,15 @@
 // CeCe
 #include "cece/core/ViewPtr.hpp"
 #include "cece/module/Module.hpp"
+#include "cece/simulator/IterationType.hpp"
 
 // Plugins
 #include "cece/plugins/diffusion/Module.hpp"
 #include "cece/plugins/streamlines/Module.hpp"
+
+/* ************************************************************************ */
+
+namespace cece { namespace config { class Configuration; } }
 
 /* ************************************************************************ */
 
@@ -56,6 +61,35 @@ public:
     using module::Module::Module;
 
 
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns a number of inner iterations.
+     *
+     * @return
+     */
+    simulator::IterationNumber getInnerIterations() const noexcept
+    {
+        return m_innerIterations;
+    }
+
+
+// Public Mutators
+public:
+
+
+    /**
+     * @brief Set a number of inner iterations.
+     *
+     * @param iterations
+     */
+    void setInnerIterations(simulator::IterationNumber iterations) noexcept
+    {
+        m_innerIterations = iterations;
+    }
+
 
 // Public Operations
 public:
@@ -67,6 +101,20 @@ public:
      * @param config Source configuration.
      */
     void loadConfig(const config::Configuration& config) override;
+
+
+    /**
+     * @brief Store module configuration.
+     *
+     * @param config Output configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
+     * @brief Initialize module.
+     */
+    void init() override;
 
 
     /**
@@ -84,6 +132,8 @@ private:
     /// Streamlines module.
     ViewPtr<streamlines::Module> m_streamlines;
 
+    /// Number of inner iterations.
+    simulator::IterationNumber m_innerIterations = 1;
 };
 
 /* ************************************************************************ */

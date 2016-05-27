@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -50,8 +50,26 @@ namespace diffusion_streamlines {
 
 void Module::loadConfig(const config::Configuration& config)
 {
-    m_streamlines = getSimulation().useModule<plugin::streamlines::Module>("streamlines");
-    m_diffusion = getSimulation().useModule<plugin::diffusion::Module>("diffusion");
+    module::Module::loadConfig(config);
+
+    setInnerIterations(config.get("inner-iterations", getInnerIterations()));
+}
+
+/* ************************************************************************ */
+
+void Module::storeConfig(config::Configuration& config) const
+{
+    module::Module::storeConfig(config);
+
+    config.set("inner-iterations", getInnerIterations());
+}
+
+/* ************************************************************************ */
+
+void Module::init()
+{
+    m_streamlines = getSimulation().getModule("streamlines");
+    m_diffusion = getSimulation().getModule("diffusion");
 }
 
 /* ************************************************************************ */
@@ -74,106 +92,109 @@ void Module::update()
     const auto velocityScale = 1.f / velocityGrid.getSize();
     const auto scale = signalScale / velocityScale;
 
-    // Foreach signals
-    for (auto id : m_diffusion->getSignalIds())
+    for (simulator::IterationNumber i = 0; i < getInnerIterations(); ++i)
     {
-        m_diffusion->clearBack(id);
-
-        // Foreach all combination in range [0, 0] - signalGrid.getSize()
-        for (auto&& c : range(signalGridSize))
+        // Foreach signals
+        for (auto id : m_diffusion->getSignalIds())
         {
-            // Get current signal
-            const auto signal = m_diffusion->getSignal(id, c);
+            m_diffusion->clearBack(id);
 
-            // No signal to send
-            if (!signal)
-                continue;
-
-            // Calculate velocity scale
-            const auto vc = Vector<unsigned>(c * scale);
-
-            // Get velocity
-            assert(velocityGrid.inRange(vc));
-            const auto& velocity = m_streamlines->getConverter().convertVelocity(velocityGrid[vc].computeVelocity());
-
-
-            // TODO: Completely redesign
-
-            // Calculate coordinate change
-            Vector<RealType> dij = velocity * getSimulation().getTimeStep() / step;
-            dij.x() = std::abs(dij.getX());
-            dij.y() = std::abs(dij.getY());
-
-            // Integer value of coordinate change
-            const auto iij = Vector<RealType>{std::floor(dij.getX()), std::floor(dij.getY())};
-            const auto dij2 = dij - iij;
-
-            StaticMatrix<RealType, 2> tmp;
-            Vector<unsigned> offset = Zero;
-
-            if (velocity.getY() < Zero)
+            // Foreach all combination in range [0, 0] - signalGrid.getSize()
+            for (auto&& c : range(signalGridSize))
             {
-                offset.y() = 1;
+                // Get current signal
+                const auto signal = m_diffusion->getSignal(id, c);
 
-                if (velocity.getX() < Zero)
+                // No signal to send
+                if (!signal)
+                    continue;
+
+                // Calculate velocity scale
+                const auto vc = Vector<unsigned>(c * scale);
+
+                // Get velocity
+                assert(velocityGrid.inRange(vc));
+                const auto& velocity = m_streamlines->getConverter().convertVelocity(velocityGrid[vc].computeVelocity());
+
+
+                // TODO: Completely redesign
+
+                // Calculate coordinate change
+                Vector<RealType> dij = velocity * getSimulation().getTimeStep() / step / getInnerIterations();
+                dij.x() = std::abs(dij.getX());
+                dij.y() = std::abs(dij.getY());
+
+                // Integer value of coordinate change
+                const auto iij = Vector<RealType>{std::floor(dij.getX()), std::floor(dij.getY())};
+                const auto dij2 = dij - iij;
+
+                StaticMatrix<RealType, 2> tmp;
+                Vector<unsigned> offset = Zero;
+
+                if (velocity.getY() < Zero)
                 {
-                    offset.x() = 1;
-                    tmp = StaticMatrix<RealType, 2>{{
-                        {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() },
-                        {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())}
-                    }};
+                    offset.y() = 1;
+
+                    if (velocity.getX() < Zero)
+                    {
+                        offset.x() = 1;
+                        tmp = StaticMatrix<RealType, 2>{{
+                            {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() },
+                            {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())}
+                        }};
+                    }
+                    else
+                    {
+                        tmp = StaticMatrix<RealType, 2>{{
+                            {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() },
+                            {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())}
+                        }};
+                    }
                 }
                 else
                 {
-                    tmp = StaticMatrix<RealType, 2>{{
-                        {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() },
-                        {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())}
-                    }};
+                    if (velocity.getX() < Zero)
+                    {
+                        offset.x() = 1;
+                        tmp = StaticMatrix<RealType, 2>{{
+                            {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())},
+                            {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() }
+                        }};
+                    }
+                    else
+                    {
+                        tmp = StaticMatrix<RealType, 2>{{
+                            {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())},
+                            {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() }
+                        }};
+                    }
                 }
-            }
-            else
-            {
-                if (velocity.getX() < Zero)
-                {
-                    offset.x() = 1;
-                    tmp = StaticMatrix<RealType, 2>{{
-                        {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())},
-                        {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() }
-                    }};
-                }
-                else
-                {
-                    tmp = StaticMatrix<RealType, 2>{{
-                        {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())},
-                        {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() }
-                    }};
-                }
-            }
 
-            // Apply matrix
-            for (auto&& ab : range(Vector<unsigned>::createSingle(2)))
-            {
-                const auto ab2 = c + ab + Vector<unsigned>(iij) - offset;
-
-                // Update signal
-                if (m_diffusion->inRange(ab2))
+                // Apply matrix
+                for (auto&& ab : range(Vector<unsigned>::createSingle(2)))
                 {
-                    m_diffusion->getSignalBack(id, ab2) += signal * tmp[ab];
-                    assert(m_diffusion->getSignalBack(id, ab2) >= Zero);
+                    const auto ab2 = c + ab + Vector<unsigned>(iij) - offset;
+
+                    // Update signal
+                    if (m_diffusion->inRange(ab2))
+                    {
+                        m_diffusion->getSignalBack(id, ab2) += signal * tmp[ab];
+                        assert(m_diffusion->getSignalBack(id, ab2) >= Zero);
+                    }
                 }
             }
         }
-    }
 
-    {
+        {
 #ifdef CECE_THREAD_SAFE
-        // Lock diffusion
-        MutexGuard guardDiffusion(m_diffusion->getMutex());
+            // Lock diffusion
+            MutexGuard guardDiffusion(m_diffusion->getMutex());
 #endif
 
-        // Swap buffers
-        for (auto id : m_diffusion->getSignalIds())
-            m_diffusion->swap(id);
+            // Swap buffers
+            for (auto id : m_diffusion->getSignalIds())
+                m_diffusion->swap(id);
+        }
     }
 }
 
