@@ -275,10 +275,28 @@ public:
      *
      * @return Pointer to added object.
      */
-    ViewPtr<Object> addObject(UniquePtr<Object> object)
+    ViewPtr<Object> add(UniquePtr<Object> object)
     {
         m_data.push_back(Record{std::move(object), false});
         return m_data.back().ptr;
+    }
+
+
+    /**
+     * @brief Create and store an object.
+     *
+     * @tparam Args Construction argument types.
+     *
+     * @param args Construction arguments.
+     *
+     * @return View pointer to stored object.
+     */
+    template<typename T, typename... Args>
+    ViewPtr<T> create(Args&&... args)
+    {
+        auto ptr = add(makeUnique<T>(std::forward<Args>(args)...));
+
+        return static_cast<T*>(ptr.get());
     }
 
 

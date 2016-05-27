@@ -32,6 +32,7 @@
 #include <algorithm>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/String.hpp"
@@ -197,6 +198,27 @@ public:
             return *ptr;
 
         return nullptr;
+    }
+
+
+    /**
+     * @brief Returns object with given value.
+     *
+     * @tparam T2 Required type.
+     *
+     * @param name Object name.
+     *
+     * @return Pointer to object. Can be nullptr.
+     */
+    template<typename T2>
+    ViewPtr<T2> get(StringView name) const noexcept
+    {
+        auto ptr = get(name);
+        if (!ptr)
+            return nullptr;
+
+        Assert(dynamic_cast<T2*>(ptr.get()));
+        return static_cast<T2*>(ptr.get());
     }
 
 

@@ -226,7 +226,7 @@ public:
      */
     static PyObject* getObjectCount(SelfType* self) noexcept
     {
-        return makeObject(self->value->getObjectCount()).release();
+        return makeObject(self->value->getObjects().getCount()).release();
     }
 
 
@@ -238,7 +238,7 @@ public:
      *
      * @return
      */
-    static PyObject* useModule(SelfType* self, PyObject* args) noexcept
+    static PyObject* getModule(SelfType* self, PyObject* args) noexcept
     {
         char* name;
 
@@ -247,7 +247,7 @@ public:
 
         try
         {
-            return makeObject(self->value->useModule(name)).release();
+            return makeObject(self->value->getModule(name)).release();
         }
         catch (const cece::Exception& e)
         {
@@ -304,7 +304,7 @@ public:
 
         try
         {
-            return makeObject(self->value->getObjectCountType(name)).release();
+            return makeObject(self->value->getObjects().getCountByType(name)).release();
         }
         catch (const cece::Exception& e)
         {
@@ -334,7 +334,7 @@ public:
         try
         {
             // Return parameter
-            return makeObject(self->value->getParameter(name, def)).release();
+            return makeObject(self->value->getParameters().get(name, def)).release();
         }
         catch (const cece::Exception& e)
         {
@@ -391,7 +391,7 @@ private:
 
     // Type methods.
     PyMethodDef m_methods[6] = {
-        {"useModule",       (PyCFunction) useModule,        METH_VARARGS, nullptr},
+        {"getModule",       (PyCFunction) getModule,        METH_VARARGS, nullptr},
         {"buildObject",     (PyCFunction) buildObject,      METH_VARARGS, nullptr},
         {"objectCountType", (PyCFunction) objectCountType,  METH_VARARGS, nullptr},
         {"getParameter",    (PyCFunction) getParameter,     METH_VARARGS, nullptr},

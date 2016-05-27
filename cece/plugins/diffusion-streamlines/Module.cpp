@@ -50,8 +50,8 @@ namespace diffusion_streamlines {
 
 void Module::loadConfig(const config::Configuration& config)
 {
-    m_streamlines = getSimulation().useModule<plugin::streamlines::Module>("streamlines");
-    m_diffusion = getSimulation().useModule<plugin::diffusion::Module>("diffusion");
+    m_streamlines = getSimulation().getModule<plugin::streamlines::Module>("streamlines");
+    m_diffusion = getSimulation().getModule<plugin::diffusion::Module>("diffusion");
 }
 
 /* ************************************************************************ */
