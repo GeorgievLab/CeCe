@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -23,17 +23,15 @@
 #                                                                           #
 # ######################################################################### #
 
-# Sources
-set(SRCS
-    Library.cpp
-    Module.hpp
-    Module.cpp
-)
-
 # Build plugin
 build_plugin(diffusion-streamlines
-    SOURCES ${SRCS}
-    PLUGINS_REQUIRED diffusion streamlines
+    SOURCES
+        Plugin.cpp
+        Module.hpp
+        Module.cpp
+    PLUGINS_REQUIRED
+        diffusion
+        streamlines
 )
 
 # ######################################################################### #

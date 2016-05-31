@@ -18,8 +18,8 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="Module.cpp"/>
-    <File Name="Library.cpp"/>
     <File Name="Module.hpp"/>
+    <File Name="Plugin.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>
