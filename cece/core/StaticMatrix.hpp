@@ -252,6 +252,26 @@ public:
 
 
     /**
+     * @brief Transform matrix values into different matrix.
+     *
+     * @param fn Transformation function.
+     *
+     * @return
+     */
+    template<typename F>
+    StaticMatrix transform(F fn) const noexcept
+    {
+        StaticMatrix res;
+
+        for (decltype(Width) i = 0; i < WIDTH; ++i)
+            for (decltype(Height) j = 0; j < HEIGHT; ++j)
+                res.m_data[i][j] = fn(i, j, m_data[i][j]);
+
+        return res;
+    }
+
+
+    /**
      * @brief Normalize matrix values.
      *
      * @return
