@@ -56,6 +56,10 @@ namespace cece { namespace render { class Context; } }
 namespace cece { namespace simulator { class Visualization; } }
 #endif
 
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+class b2World;
+#endif
+
 /* ************************************************************************ */
 
 namespace cece {
@@ -157,7 +161,7 @@ public:
      *
      * @return
      */
-    virtual Visualization& getVisualization() noexcept;
+    virtual Visualization& getVisualization() noexcept = 0;
 
 
     /**
@@ -296,6 +300,28 @@ public:
      * @return Pointer to program.
      */
     virtual UniquePtr<program::Program> getProgram(StringView name) const = 0;
+
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+
+    /**
+     * @brief Returns physics world.
+     *
+     * @return
+     */
+    // TODO: remove
+    virtual b2World& getWorld() noexcept = 0;
+
+
+    /**
+     * @brief Returns physics world.
+     *
+     * @return
+     */
+    // TODO: remove
+    virtual const b2World& getWorld() const noexcept = 0;
+
+#endif
 
 
 // Public Mutators

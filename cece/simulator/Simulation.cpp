@@ -30,6 +30,8 @@
 #include <utility>
 
 // CeCe
+#include "cece/core/UnitIo.hpp"
+#include "cece/plugin/Api.hpp"
 #include "cece/init/Initializer.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/object/Type.hpp"
@@ -47,7 +49,7 @@ Simulation::~Simulation() = default;
 
 /* ************************************************************************ */
 
-void Simulation::loadPlugin(const config::Configuration& config)
+ViewPtr<plugin::Api> Simulation::loadPlugin(const config::Configuration& config)
 {
     // Get plugin name
     const String name = config.get("name");

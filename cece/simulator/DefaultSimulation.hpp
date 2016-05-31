@@ -47,24 +47,16 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/FilePath.hpp"
-#include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/Parameters.hpp"
-#include "cece/core/InOutStream.hpp"
-#include "cece/init/Initializer.hpp"
 #include "cece/init/Container.hpp"
-#include "cece/module/Module.hpp"
 #include "cece/module/Container.hpp"
-#include "cece/object/Object.hpp"
 #include "cece/object/Container.hpp"
-#include "cece/object/Type.hpp"
 #include "cece/object/TypeContainer.hpp"
-#include "cece/program/Program.hpp"
 #include "cece/program/NamedContainer.hpp"
 #include "cece/simulator/IterationType.hpp"
+#include "cece/simulator/Simulation.hpp"
 
 #ifdef CECE_ENABLE_RENDER
-#include "cece/render/Color.hpp"
-#include "cece/render/Context.hpp"
 #include "cece/simulator/Visualization.hpp"
 #endif
 
@@ -83,9 +75,9 @@ namespace simulator {
 /* ************************************************************************ */
 
 /**
- * @brief Simulation class.
+ * @brief Default simulation class.
  */
-class Simulation
+class DefaultSimulation : public Simulation
 {
 
 // Public Ctors
@@ -98,13 +90,13 @@ public:
      * @param context Plugin context.
      * @param path    Path to simulation file.
      */
-    explicit Simulation(plugin::Context& context, FilePath path = "<memory>") noexcept;
+    explicit DefaultSimulation(plugin::Context& context, FilePath path = "<memory>") noexcept;
 
 
     /**
-     * @brief Virtual destructor.
+     * @brief Destructor.
      */
-    virtual ~Simulation();
+    ~DefaultSimulation();
 
 
 // Public Accessors
@@ -133,126 +125,6 @@ public:
     }
 
 
-////////
-
-
-    /**
-     * @brief Returns simulation file name.
-     *
-     * @return
-     */
-    const FilePath& getFileName() const noexcept
-    {
-        return m_fileName;
-    }
-
-
-    /**
-     * @brief Returns world size.
-     *
-     * @return
-     */
-    const SizeVector& getWorldSize() const noexcept
-    {
-        return m_worldSize;
-    }
-
-
-    /**
-     * @brief Returns if simulation is initialized.
-     *
-     * @return
-     */
-    bool isInitialized() const noexcept
-    {
-        return m_initialized;
-    }
-
-
-    /**
-     * @brief Returns current iteration.
-     *
-     * @return
-     */
-    IterationNumber getIteration() const noexcept
-    {
-        return m_iteration;
-    }
-
-
-    /**
-     * @brief Returns a number of total iterations.
-     *
-     * @return
-     */
-    IterationNumber getIterations() const noexcept
-    {
-        return m_iterations;
-    }
-
-
-    /**
-     * @brief Returns if there are unlimited iterations.
-     *
-     * @return
-     */
-    bool hasUnlimitedIterations() const noexcept
-    {
-        return getIterations() == 0;
-    }
-
-
-    /**
-     * @brief Returns current simulation time step.
-     *
-     * @return
-     */
-    units::Time getTimeStep() const noexcept
-    {
-        return m_timeStep;
-    }
-
-
-    /**
-     * @brief Returns total simulation time.
-     *
-     * @return
-     */
-    units::Time getTotalTime() const noexcept
-    {
-        return m_totalTime;
-    }
-
-
-#ifdef CECE_ENABLE_RENDER
-
-    /**
-     * @brief Returns visualization
-     *
-     * @return
-     */
-    Visualization& getVisualization() noexcept
-    {
-        return m_visualization;
-    }
-
-
-    /**
-     * @brief Returns visualization
-     *
-     * @return
-     */
-    const Visualization& getVisualization() const noexcept
-    {
-        return m_visualization;
-    }
-
-#endif
-
-
-////////
-
-#if OFF
     /**
      * @brief Returns simulation parameters.
      *
@@ -339,9 +211,109 @@ public:
     {
         return m_programs;
     }
-#endif
 
-/////////
+
+    /**
+     * @brief Returns simulation file name.
+     *
+     * @return
+     */
+    const FilePath& getFileName() const noexcept override
+    {
+        return m_fileName;
+    }
+
+
+    /**
+     * @brief Returns world size.
+     *
+     * @return
+     */
+    const SizeVector& getWorldSize() const noexcept override
+    {
+        return m_worldSize;
+    }
+
+
+    /**
+     * @brief Returns if simulation is initialized.
+     *
+     * @return
+     */
+    bool isInitialized() const noexcept override
+    {
+        return m_initialized;
+    }
+
+
+    /**
+     * @brief Returns current iteration.
+     *
+     * @return
+     */
+    IterationNumber getIteration() const noexcept override
+    {
+        return m_iteration;
+    }
+
+
+    /**
+     * @brief Returns a number of total iterations.
+     *
+     * @return
+     */
+    IterationNumber getIterations() const noexcept override
+    {
+        return m_iterations;
+    }
+
+
+    /**
+     * @brief Returns current simulation time step.
+     *
+     * @return
+     */
+    units::Time getTimeStep() const noexcept override
+    {
+        return m_timeStep;
+    }
+
+
+    /**
+     * @brief Returns total simulation time.
+     *
+     * @return
+     */
+    units::Time getTotalTime() const noexcept override
+    {
+        return m_totalTime;
+    }
+
+
+#ifdef CECE_ENABLE_RENDER
+
+    /**
+     * @brief Returns visualization
+     *
+     * @return
+     */
+    Visualization& getVisualization() noexcept override
+    {
+        return m_visualization;
+    }
+
+
+    /**
+     * @brief Returns visualization
+     *
+     * @return
+     */
+    const Visualization& getVisualization() const noexcept override
+    {
+        return m_visualization;
+    }
+
+#endif
 
 
     /**
@@ -351,7 +323,7 @@ public:
      *
      * @return Pointer to resource stream or nullptr.
      */
-    UniquePtr<InOutStream> getResource(StringView name) noexcept;
+    UniquePtr<InOutStream> getResource(StringView name) noexcept override;
 
 
     /**
@@ -361,7 +333,7 @@ public:
      *
      * @return
      */
-    bool hasParameter(StringView name) const noexcept;
+    bool hasParameter(StringView name) const noexcept override;
 
 
     /**
@@ -373,7 +345,7 @@ public:
      *
      * @throw RuntimeException
      */
-    const String& getParameter(StringView name) const;
+    const String& getParameter(StringView name) const override;
 
 
     /**
@@ -383,7 +355,7 @@ public:
      *
      * @return
      */
-    bool hasModule(StringView name) const noexcept;
+    bool hasModule(StringView name) const noexcept override;
 
 
     /**
@@ -393,75 +365,29 @@ public:
      *
      * @return
      */
-    ViewPtr<module::Module> getModule(StringView name) const noexcept;
+    ViewPtr<module::Module> getModule(StringView name) const noexcept override;
 
 
     /**
-     * @brief Returns required module.
+     * @brief Check if program with given name exists.
      *
-     * @tparam ModuleType
-     *
-     * @param name Module name.
+     * @param name Program name.
      *
      * @return
      */
-    template<typename ModuleType>
-    ViewPtr<ModuleType> getModule(StringView name) const noexcept
-    {
-        auto module = getModule(name);
-
-        if (!module)
-            return nullptr;
-
-        Assert(dynamic_cast<ModuleType*>(module.get()));
-        return static_cast<ModuleType*>(module.get());
-    }
+    bool hasProgram(StringView name) const noexcept override;
 
 
     /**
-     * @brief Returns required module or throw.
+     * @brief Returns program with given name. At first global storage of
+     * program checked and then program factory. In case of global storage
+     * a copy is created so each object work with own data.
      *
-     * @param name Module name.
+     * @param name Program name.
      *
-     * @return
-     *
-     * @throw RuntimeException
+     * @return Pointer to program.
      */
-    ViewPtr<module::Module> requireModule(StringView name) const;
-
-
-    /**
-     * @brief Returns required module or throw.
-     *
-     * @tparam ModuleType
-     *
-     * @param name Module name.
-     *
-     * @return
-     *
-     * @throw RuntimeException
-     */
-    template<typename ModuleType>
-    ViewPtr<ModuleType> requireModule(StringView name) const
-    {
-        auto module = requireModule(name);
-        Assert(dynamic_cast<ModuleType*>(module.get()));
-        return static_cast<ModuleType*>(module.get());
-    }
-
-
-/////////
-
-
-    /**
-     * @brief Return a list of modules.
-     *
-     * @return
-     */
-    const Map<String, ViewPtr<plugin::Api>>& getPlugins() const noexcept
-    {
-        return m_plugins;
-    }
+    UniquePtr<program::Program> getProgram(StringView name) const override;
 
 
     /**
@@ -470,29 +396,6 @@ public:
      * @return
      */
     AccelerationVector getGravity() const noexcept;
-
-
-    /**
-     * @brief Returns if plugin with given name is loaded.
-     *
-     * @param name Plugin name.
-     *
-     * @return If plugin is loaded.
-     */
-    bool isPluginLoaded(const String& name) const noexcept
-    {
-        return m_plugins.find(name) != m_plugins.end();
-    }
-
-
-    /**
-     * @brief Find object class by name.
-     *
-     * @param name
-     *
-     * @return
-     */
-    ViewPtr<const object::Type> findObjectType(StringView name) const noexcept;
 
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
@@ -557,12 +460,30 @@ public:
 
 
     /**
+     * @brief Load plugin into simulation. Loaded plugins allow to use their
+     * symbols within simulation.
+     *
+     * @param name Plugin name.
+     *
+     * @return Plugin API.
+     */
+    ViewPtr<plugin::Api> loadPlugin(StringView name) override;
+
+
+    /**
+     * @brief Unload plugin from simulation.
+     *
+     * @param name Plugin name.
+     */
+    void unloadPlugin(StringView name) override;
+
+
+    /**
      * @brief Set total number of simulation iterations.
      *
-     * @param iterations Number of iterations. If value is 0, there is
-     *                   unlimited number of iterations.
+     * @param iterations Number of iterations.
      */
-    void setIterations(IterationNumber iterations) noexcept
+    void setIterations(IterationNumber iterations) noexcept override
     {
         m_iterations = iterations;
     }
@@ -571,9 +492,9 @@ public:
     /**
      * @brief Change world size.
      *
-     * @param size
+     * @param size Simulation world size.
      */
-    void setWorldSize(SizeVector size) noexcept
+    void setWorldSize(SizeVector size) noexcept override
     {
         m_worldSize = std::move(size);
     }
@@ -584,10 +505,7 @@ public:
      *
      * @param dt Time step.
      */
-    void setTimeStep(units::Time dt);
-
-
-///////////
+    void setTimeStep(units::Time dt) override;
 
 
     /**
@@ -596,38 +514,37 @@ public:
      * @param name  Parameter name.
      * @param value Parameter value.
      */
-    void setParameter(String name, String value);
+    void setParameter(String name, String value) override;
 
 
     /**
-     * @brief Register an initializer.
+     * @brief Add an initializer.
      *
      * @param initializer Initializer.
      *
      * @return
      */
-    ViewPtr<init::Initializer> addInitializer(UniquePtr<init::Initializer> initializer);
+    ViewPtr<init::Initializer> addInitializer(UniquePtr<init::Initializer> initializer) override;
 
 
     /**
-     * @brief Register an initializer.
+     * @brief Create and register initializer.
      *
-     * @param name Initializer name.
+     * @param type Initializer type.
      *
      * @return
      */
-    ViewPtr<init::Initializer> createInitializer(StringView name);
+    ViewPtr<init::Initializer> createInitializer(StringView type) override;
 
 
     /**
-     * @brief Register an initializer.
+     * @brief Remove and delete initializer.
      *
-     * @param name   Initializer name.
-     * @param config Initializer configuration.
+     * @param initializer Initializer to delete.
      *
      * @return
      */
-    ViewPtr<init::Initializer> createInitializer(StringView name, const config::Configuration& config);
+    void deleteInitializer(ViewPtr<init::Initializer> initializer) override;
 
 
     /**
@@ -638,7 +555,56 @@ public:
      *
      * @return
      */
-    ViewPtr<module::Module> addModule(String name, UniquePtr<module::Module> module);
+    ViewPtr<module::Module> addModule(String name, UniquePtr<module::Module> module) override;
+
+
+    /**
+     * @brief Create and register a module.
+     *
+     * @param type Module type and registration name.
+     *
+     * @return
+     */
+    ViewPtr<module::Module> createModule(StringView type) override;
+
+
+    /**
+     * @brief Remove and delete module.
+     *
+     * @param name Module name.
+     */
+    void deleteModule(StringView name) override;
+
+
+    /**
+     * @brief Register object type.
+     *
+     * @param name Object type name.
+     * @param type Objec type.
+     *
+     * @return
+     */
+    ViewPtr<object::Type> addObjectType(String name, UniquePtr<object::Type> type) override;
+
+
+    /**
+     * @brief Create and register object type.
+     *
+     * @param name Object type name.
+     *
+     * @return
+     */
+    ViewPtr<object::Type> createObjectType(String name) override;
+
+
+    /**
+     * @brief Remove and delete and object type.
+     *
+     * @param name Object type name.
+     *
+     * @return
+     */
+    void deleteObjectType(StringView name) override;
 
 
     /**
@@ -648,10 +614,55 @@ public:
      *
      * @return
      */
-    ViewPtr<object::Object> addObject(UniquePtr<object::Object> object);
+    ViewPtr<object::Object> addObject(UniquePtr<object::Object> object) override;
 
 
-//////////
+    /**
+     * @brief Create and register an object.
+     *
+     * @param type Object type.
+     *
+     * @return
+     */
+    ViewPtr<object::Object> createObject(StringView type) override;
+
+
+    /**
+     * @brief Remove given object from simulation and delete it.
+     *
+     * @param object Pointer to deleted object.
+     */
+    void deleteObject(ViewPtr<object::Object> object) override;
+
+
+    /**
+     * @brief Register a program.
+     *
+     * @param name    Program global name.
+     * @param program Program to register.
+     *
+     * @return
+     */
+    ViewPtr<program::Program> addProgram(String name, UniquePtr<program::Program> program) override;
+
+
+    /**
+     * @brief Create and register a program.
+     *
+     * @param name Program name.
+     * @param type Program type.
+     *
+     * @return
+     */
+    ViewPtr<program::Program> createProgram(String name, StringView type) override;
+
+
+    /**
+     * @brief Remove program from simulation and delete it.
+     *
+     * @param name Program name.
+     */
+    void deleteProgram(StringView name) override;
 
 
     /**
@@ -660,29 +671,6 @@ public:
      * @param gravity
      */
     void setGravity(const AccelerationVector& gravity) noexcept;
-
-
-    /**
-     * @brief Register object class.
-     *
-     * @param rec.
-     */
-    void addObjectType(object::Type rec)
-    {
-        m_objectClasses.add(std::move(rec));
-    }
-
-
-    /**
-     * @brief Build object by name.
-     *
-     * @param name Object name.
-     * @param type Type of created object.
-     *
-     * @return Created object.
-     */
-    object::Object* buildObject(const String& name, object::Object::Type type = object::Object::Type::Dynamic);
-
 
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
@@ -715,25 +703,11 @@ public:
 
 
     /**
-     * @brief Reset simulation.
-     */
-    void reset();
-
-
-    /**
-     * @brief Initialize simulation.
-     *
-     * @param flag Initialization flag.
-     */
-    void initialize(AtomicBool& flag);
-
-
-    /**
      * @brief Configure simulation.
      *
      * @param config
      */
-    void loadConfig(const config::Configuration& config);
+    void loadConfig(const config::Configuration& config) override;
 
 
     /**
@@ -741,7 +715,15 @@ public:
      *
      * @param config
      */
-    void storeConfig(config::Configuration& config) const;
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
+     * @brief Initialize simulation.
+     *
+     * @param flag Initialization flag.
+     */
+    void initialize(AtomicBool& flag) override;
 
 
     /**
@@ -749,7 +731,19 @@ public:
      *
      * @return If next step can be calculated.
      */
-    bool update();
+    bool update() override;
+
+
+    /**
+     * @brief Terminate simulation.
+     */
+    void terminate() override;
+
+
+    /**
+     * @brief Reset simulation.
+     */
+    void reset() override;
 
 
 #ifdef CECE_ENABLE_RENDER
@@ -759,35 +753,9 @@ public:
      *
      * @param context Rendering context.
      */
-    void draw(render::Context& context);
+    void draw(render::Context& context) override;
 
 #endif
-
-
-    /**
-     * @brief Loads required plugin with given name.
-     *
-     * @param name Plugin name.
-     *
-     * @return API to loaded plugin.
-     *
-     * @throw In case the plugin cannot be loaded.
-     */
-    ViewPtr<plugin::Api> requirePlugin(const String& name);
-
-
-    /**
-     * @brief Loads plugin with given name.
-     *
-     * In case the library was loaded before, it't not loaded again.
-     *
-     * @param name Plugin name.
-     *
-     * @return Pointer to plugin API or nullptr if plugin cannot be loaded.
-     *
-     * @see requirePlugin
-     */
-    ViewPtr<plugin::Api> loadPlugin(const String& name) noexcept;
 
 
     /**
@@ -800,16 +768,6 @@ public:
     {
         return getPhysicsEngineTimeStep() / getTimeStep();
     }
-
-
-    /**
-     * @brief Find object at qiven position.
-     *
-     * @param position
-     *
-     * @return
-     */
-    ViewPtr<object::Object> query(const PositionVector& position) const noexcept;
 
 
 // Protected Operations
@@ -853,9 +811,6 @@ private:
     /// If simulation is initialized.
     bool m_initialized = false;
 
-    /// A list of simulation initializers.
-    init::Container m_initializers;
-
     /// Number of simulation steps.
     IterationNumber m_iteration = 0;
 
@@ -871,19 +826,20 @@ private:
     /// World size.
     SizeVector m_worldSize{ units::um(400), units::um(400) };
 
+    /// Loaded plugins.
+    Map<String, ViewPtr<plugin::Api>> m_plugins;
+
     /// Simulation parameters.
     Parameters m_parameters;
 
-    /// Used plugins.
-    Map<String, ViewPtr<plugin::Api>> m_plugins;
+    /// A list of simulation initializers.
+    init::Container m_initializers;
 
     /// Simulation modules.
     module::Container m_modules;
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    /// Box2D world
-    UniquePtr<b2World> m_world;
-#endif
+    /// Registered object classes.
+    object::TypeContainer m_objectClasses;
 
     /// Simulation objects.
     object::Container m_objects;
@@ -891,12 +847,14 @@ private:
     /// A map of preddefined programs.
     program::NamedContainer m_programs;
 
-    /// Registered object classes.
-    object::TypeContainer m_objectClasses;
-
 #ifdef CECE_ENABLE_RENDER
     /// Simulation visualization.
     Visualization m_visualization;
+#endif
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+    /// Box2D world
+    UniquePtr<b2World> m_world;
 #endif
 
 #if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
