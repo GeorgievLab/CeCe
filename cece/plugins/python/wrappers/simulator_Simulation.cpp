@@ -189,7 +189,8 @@ public:
      */
     static PyObject* getGravity(SelfType* self) noexcept
     {
-        return makeObject(self->value->getGravity()).release();
+        //return makeObject(self->value->getGravity()).release();
+        return makeObject(0);
     }
 
 
@@ -205,7 +206,7 @@ public:
     {
         try
         {
-            self->value->setGravity(cast<AccelerationVector>(value));
+            //self->value->setGravity(cast<AccelerationVector>(value));
         }
         catch (const cece::Exception& e)
         {
@@ -226,7 +227,8 @@ public:
      */
     static PyObject* getObjectCount(SelfType* self) noexcept
     {
-        return makeObject(self->value->getObjects().getCount()).release();
+        //return makeObject(self->value->getObjects().getCount()).release();
+        return makeObject(0);
     }
 
 
@@ -269,14 +271,13 @@ public:
     static PyObject* buildObject(SelfType* self, PyObject* args) noexcept
     {
         char* name;
-        int type = static_cast<int>(object::Object::Type::Dynamic);
 
-        if (!PyArg_ParseTuple(args, "s|i", &name, &type))
+        if (!PyArg_ParseTuple(args, "s", &name))
             return nullptr;
 
         try
         {
-            return makeObject(self->value->buildObject(name, static_cast<object::Object::Type>(type))).release();
+            return makeObject(self->value->createObject(name)).release();
         }
         catch (const cece::Exception& e)
         {
@@ -334,7 +335,7 @@ public:
         try
         {
             // Return parameter
-            return makeObject(self->value->getParameters().get(name, def)).release();
+            return makeObject(self->value->getParameter(name, def)).release();
         }
         catch (const cece::Exception& e)
         {

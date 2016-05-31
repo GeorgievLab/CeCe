@@ -26,8 +26,10 @@
 // CeCe
 #include "cece/core/Units.hpp"
 #include "cece/core/UnitIo.hpp"
+#include "cece/core/UnitsCtors.hpp"
 #include "cece/core/Vector.hpp"
 #include "cece/core/DynamicArray.hpp"
+#include "cece/core/Shape.hpp"
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
 #include "cece/config/Configuration.hpp"
@@ -67,7 +69,7 @@ class ChemostatApi : public plugin::Api
 
         // Upper part
         {
-            auto obstacle = simulation.buildObject("obstacle.Polygon");
+            auto obstacle = simulation.createObject("obstacle.Polygon");
             auto& shapes = obstacle->getMutableShapes();
             shapes.resize(1);
 
@@ -100,7 +102,7 @@ class ChemostatApi : public plugin::Api
         {
             const auto sizeHalf = size * 0.5;
 
-            auto obstacle = simulation.buildObject("obstacle.Polygon");
+            auto obstacle = simulation.createObject("obstacle.Polygon");
             auto& shapes = obstacle->getMutableShapes();
             shapes.resize(1);
 

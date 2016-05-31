@@ -28,6 +28,7 @@
 
 // CeCe
 #include "cece/core/Exception.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin

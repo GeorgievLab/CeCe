@@ -28,6 +28,10 @@
 
 // CeCe
 #include "cece/loader/Loader.hpp"
+#include "cece/init/Initializer.hpp"
+#include "cece/module/Module.hpp"
+#include "cece/object/Object.hpp"
+#include "cece/program/Program.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */

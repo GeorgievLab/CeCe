@@ -28,6 +28,7 @@
 
 // CeCe
 #include "cece/object/Object.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
