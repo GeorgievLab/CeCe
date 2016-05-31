@@ -158,24 +158,19 @@ void Module::update()
                 }).normalized();
 
                 // Apply matrix
-                for (auto&& ij : range(Coordinate::createSingle(SIZE)))
-                {
-                    const auto coord = c + ij - Coordinate::createSingle(OFFSET);
-
-                    // Update signal
-                    if (m_diffusion->inRange(coord))
-                    {
-                        m_diffusion->getSignalBack(id, coord) += signal * matrix[ij];
-                        Assert(m_diffusion->getSignalBack(id, coord) >= Zero);
-                    }
-                }
+                matrix.for_each([&](size_t i, size_t j, RealType value) {
+                    const auto coord = c + Coordinate(j, i) - OFFSET;
+                    Assert(m_diffusion->inRange(coord));
+                    m_diffusion->getSignalBack(id, coord) += signal * value;
+                    Assert(m_diffusion->getSignalBack(id, coord) >= Zero);
+                });
             }
         }
 
         {
 #ifdef CECE_THREAD_SAFE
             // Lock diffusion
-            MutexGuard guardDiffusion(m_diffusion->getMutex());
+            MutexGuard guard(m_diffusion->getMutex());
 #endif
 
             // Swap buffers

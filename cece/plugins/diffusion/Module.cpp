@@ -132,9 +132,6 @@ void Module::update()
 
     auto _ = measure_time("diffusion", simulator::TimeMeasurement(getSimulation()));
 
-    // Precompute values
-    const auto step = getSimulation().getWorldSize() / getGridSize();
-
     // Update obstacle map from scene
     updateObstacles();
 
@@ -146,7 +143,7 @@ void Module::update()
     // Update all signals
     // TODO: use OpenMP
     for (auto id : getSignalIds())
-        updateSignal(step, id);
+        updateSignal(id);
 
     {
 #ifdef CECE_THREAD_SAFE
@@ -267,8 +264,8 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 #ifdef CECE_ENABLE_RENDER
 void Module::updateDrawable(const simulator::Visualization& visualization) const
 {
-    assert(m_drawable);
-    assert(getGridSize() == m_drawable->getSize());
+    Assert(m_drawable);
+    Assert(getGridSize() == m_drawable->getSize());
 
 #ifdef CECE_THREAD_SAFE
     // Lock access
@@ -361,34 +358,27 @@ void Module::clearBack(SignalId id) noexcept
 
 /* ************************************************************************ */
 
-void Module::updateSignal(const PositionVector& step, SignalId id)
+void Module::updateSignal(SignalId id)
 {
-    // Size of mapping matrix
-    constexpr unsigned MATRIX_SIZE = 2 * OFFSET + 1;
-
-    // Time step
-    const auto dt = getSimulation().getTimeStep();
-
-    // Clear back grid
-    clearBack(id);
-
-    // Amplitude
-    const auto A = 1.f / (4 * constants::PI * getDiffusionRate(id) * dt);
-
-    // Offset coefficients for matrix
+    // Distance coefficients
     static const auto DISTANCES = StaticMatrix<int, MATRIX_SIZE>::makeDistances();
 
+    // Some used values
+    const auto dt = getSimulation().getTimeStep();
+    const auto step = getSimulation().getWorldSize() / getGridSize();
+
     // Generate matrix with coefficients based on distance
-    const auto q = StaticMatrix<units::Area, MATRIX_SIZE>::generate([&step](size_t i, size_t j) {
+    const auto distances = StaticMatrix<units::Area, MATRIX_SIZE>::generate([&step](size_t i, size_t j) {
         return (step * DISTANCES[i][j]).getLengthSquared();
     });
 
-    using MT = units::Inverse<units::Area>::type;
+    // Precompute convolution matrix
+    const auto convMatrix = StaticMatrix<RealType, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
+        return std::exp(-distances[i][j] / (RealType(4.0) * getDiffusionRate(id) * dt));
+    });
 
-    // Create distribution matrix
-    const auto M = StaticMatrix<MT, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
-        return A * std::exp(-q[i][j] / (4.f * getDiffusionRate(id) * dt));
-    }).normalized();
+    // Clear back grid
+    clearBack(id);
 
     // Forech grid without borders
     for (auto&& c : range(getGridSize()))
@@ -397,48 +387,24 @@ void Module::updateSignal(const PositionVector& step, SignalId id)
         auto signal = getSignalFront(id, c);
 
         // Nothing to diffuse
-        if (signal < std::numeric_limits<SignalConcentration>::epsilon())
-            continue;
+        //if (signal.value() < std::numeric_limits<RealType>::epsilon())
+        //    continue;
 
         // Degrade signal
-        signal *= 1 - getDegradationRate(id) * dt;
+        signal *= RealType(1) - getDegradationRate(id) * dt;
 
-        SignalConcentration obstacleSignal = Zero;
-        unsigned int obstacleCells = 0u;
+        // Modify matrix by obstacle presentation
+        const auto matrix = convMatrix.transform([&](size_t i, size_t j, RealType value) {
+            const auto coord = c + Coordinate(j, i) - OFFSET;
+            return isObstacle(coord) ? RealType(0) : value;
+        }).normalized();
 
         // Diffuse signal to grid cells around
-        for (auto&& ab : range(Coordinate::createSingle(MATRIX_SIZE)))
-        {
-            const auto coord = c + ab - OFFSET;
-
-            if (isObstacle(coord))
-            {
-                ++obstacleCells;
-                obstacleSignal += signal * M[ab];
-            }
-            else
-            {
-                getSignalBack(id, coord) += signal * M[ab];
-            }
-        }
-
-        // Only in case there is obstacles
-        if (obstacleCells > 0)
-        {
-            assert(signal >= Zero);
-
-            // Divide obstacle signal between non-obstacle grid cells
-            const SignalConcentration signalAdd = obstacleSignal / (MATRIX_SIZE * MATRIX_SIZE - obstacleCells);
-            assert(signalAdd >= Zero);
-
-            for (auto&& ab : range(Coordinate::createSingle(MATRIX_SIZE)))
-            {
-                const auto coord = c + ab - OFFSET;
-
-                if (!isObstacle(coord))
-                    getSignalBack(id, coord) += signalAdd;
-            }
-        }
+        matrix.for_each([&](size_t i, size_t j, RealType value) {
+            const auto coord = c + Coordinate(j, i) - OFFSET;
+            getSignalBack(id, coord) += signal * value;
+            Assert(getSignalBack(id, coord) >= Zero);
+        });
     }
 }
 
@@ -478,7 +444,7 @@ void Module::updateObstacles()
         {
             mapShapeToGrid(
                 [this] (Coordinate&& coord) {
-                    assert(m_obstacles.inRange(coord + OFFSET));
+                    Assert(m_obstacles.inRange(coord + OFFSET));
                     m_obstacles[coord + OFFSET] = true;
                 },
                 [] (Coordinate&& coord) {},

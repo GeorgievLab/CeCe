@@ -108,7 +108,10 @@ public:
      * It also extend inner grid size by 2 * OFFSET so then the boundary
      * checking is not need.
      */
-    static constexpr typename Coordinate::ValueType OFFSET = 1;
+    static constexpr Coordinate::ValueType OFFSET = 1;
+
+    /// Size of mapping matrix
+    static constexpr Coordinate::ValueType MATRIX_SIZE = 2 * OFFSET + 1;
 
     /// Invalid signal ID.
     static constexpr SignalId INVALID_SIGNAL_ID = -1;
@@ -884,10 +887,9 @@ protected:
     /**
      * @brief Update signal.
      *
-     * @param step Size of one grid cell.
-     * @param id   Signal identifier.
+     * @param id Signal identifier.
      */
-    void updateSignal(const PositionVector& step, SignalId id);
+    void updateSignal(SignalId id);
 
 
     /**
