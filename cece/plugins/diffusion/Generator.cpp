@@ -140,6 +140,9 @@ void Generator::update()
 
         const auto id = m_diffusionModule->getSignalId(source.name);
 
+        if (id == diffusion::Module::INVALID_SIGNAL_ID)
+            throw RuntimeException("Unknown signal to generate: " + source.name);
+
         // Transform from [-size / 2, size / 2] to [0, size] space
         const auto pos = source.position - start;
 
