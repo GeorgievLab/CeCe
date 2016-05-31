@@ -798,6 +798,18 @@ public:
 #endif
 
 
+    /**
+     * @brief Set obstacle flag.
+     *
+     * @param coord
+     * @param flag
+     */
+    void setObstacle(const Coordinate& coord, bool flag) noexcept
+    {
+        m_obstacles[coord + OFFSET] = flag;
+    }
+
+
 // Public Operations
 public:
 
@@ -889,13 +901,13 @@ protected:
      *
      * @param id Signal identifier.
      */
-    void updateSignal(SignalId id);
+    virtual void updateSignal(SignalId id);
 
 
     /**
      * @brief Update obstacle map.
      */
-    void updateObstacles();
+    virtual void updateObstacles();
 
 
 // Private Structures

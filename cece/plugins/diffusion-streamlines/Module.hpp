@@ -29,16 +29,15 @@
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
-#include "cece/module/Module.hpp"
 #include "cece/simulator/IterationType.hpp"
 
 // Plugins
 #include "cece/plugins/diffusion/Module.hpp"
-#include "cece/plugins/streamlines/Module.hpp"
 
 /* ************************************************************************ */
 
 namespace cece { namespace config { class Configuration; } }
+namespace cece { namespace plugin { namespace streamlines { class Module; } } }
 
 /* ************************************************************************ */
 
@@ -51,14 +50,14 @@ namespace diffusion_streamlines {
 /**
  * @brief Module for diffusion & streamlines.
  */
-class Module : public module::Module
+class Module : public diffusion::Module
 {
 
 // Public Ctors & Dtors
 public:
 
 
-    using module::Module::Module;
+    using diffusion::Module::Module;
 
 
 // Public Accessors
@@ -117,17 +116,26 @@ public:
     void init() override;
 
 
+// Protected Operations
+protected:
+
+
     /**
-     * @brief Update module state.
+     * @brief Update signal.
+     *
+     * @param id Signal identifier.
      */
-    void update() override;
+    void updateSignal(SignalId id) override;
+
+
+    /**
+     * @brief Update obstacle map.
+     */
+    void updateObstacles() override;
 
 
 // Private Data Members
 private:
-
-    /// Diffusion module.
-    ViewPtr<diffusion::Module> m_diffusion;
 
     /// Streamlines module.
     ViewPtr<streamlines::Module> m_streamlines;

@@ -125,40 +125,10 @@ Module::SignalId Module::registerSignal(String name, DiffusionRate rate, Degrada
 
 /* ************************************************************************ */
 
-void Module::update()
-{
-    if (getGridSize() == Zero)
-        throw RuntimeException("Diffusion grid size is not set!");
-
-    auto _ = measure_time("diffusion", simulator::TimeMeasurement(getSimulation()));
-
-    // Update obstacle map from scene
-    updateObstacles();
-
-    // For thread safety it is divided to two parts
-    // The first part update diffusion to back buffer that is not used elsewhere,
-    // so it's perfectly safe (it's not a critical section)
-    // The second part just swap buffers - it's critical section but it's fast.
-
-    // Update all signals
-    // TODO: use OpenMP
-    for (auto id : getSignalIds())
-        updateSignal(id);
-
-    {
-#ifdef CECE_THREAD_SAFE
-        // Lock access
-        MutexGuard guard(m_mutex);
-#endif
-        // Swap grids
-        swapAll();
-    }
-}
-
-/* ************************************************************************ */
-
 void Module::loadConfig(const config::Configuration& config)
 {
+    auto _ = measure_time("diffusion.loadConfig", simulator::TimeMeasurement(getSimulation()));
+
     // Configure parent
     module::Module::loadConfig(config);
 
@@ -210,6 +180,8 @@ void Module::loadConfig(const config::Configuration& config)
 
 void Module::storeConfig(config::Configuration& config) const
 {
+    auto _ = measure_time("diffusion.storeConfig", simulator::TimeMeasurement(getSimulation()));
+
     module::Module::storeConfig(config);
 
     config.set("grid", getGridSize());
@@ -232,6 +204,29 @@ void Module::storeConfig(config::Configuration& config) const
     // Set background color
     config.set("background", m_background);
 #endif
+}
+
+/* ************************************************************************ */
+
+void Module::update()
+{
+    if (getGridSize() == Zero)
+        throw RuntimeException("Diffusion grid size is not set!");
+
+    auto _ = measure_time("diffusion.update", simulator::TimeMeasurement(getSimulation()));
+
+    // Update obstacle map from scene
+    updateObstacles();
+
+    // For thread safety it is divided to two parts
+    // The first part update diffusion to back buffer that is not used elsewhere,
+    // so it's perfectly safe (it's not a critical section)
+    // The second part just swap buffers - it's critical section but it's fast.
+
+    // Update all signals
+    // TODO: use OpenMP
+    for (auto id : getSignalIds())
+        updateSignal(id);
 }
 
 /* ************************************************************************ */
@@ -360,6 +355,8 @@ void Module::clearBack(SignalId id) noexcept
 
 void Module::updateSignal(SignalId id)
 {
+    auto _ = measure_time("diffusion.updateSignal", simulator::TimeMeasurement(getSimulation()));
+
     // Distance coefficients
     static const auto DISTANCES = StaticMatrix<int, MATRIX_SIZE>::makeDistances();
 
@@ -383,12 +380,16 @@ void Module::updateSignal(SignalId id)
     // Forech grid without borders
     for (auto&& c : range(getGridSize()))
     {
+        // In obstacle there is no (or shouldn't be) signal
+        if (isObstacle(c))
+            continue;
+
         // Get current signal
         auto signal = getSignalFront(id, c);
 
         // Nothing to diffuse
-        //if (signal.value() < std::numeric_limits<RealType>::epsilon())
-        //    continue;
+        if (!signal)
+            continue;
 
         // Degrade signal
         signal *= RealType(1) - getDegradationRate(id) * dt;
@@ -406,16 +407,21 @@ void Module::updateSignal(SignalId id)
             Assert(getSignalBack(id, coord) >= Zero);
         });
     }
+
+    // Swap buffers
+    swap(id);
 }
 
 /* ************************************************************************ */
 
 void Module::updateObstacles()
 {
+    auto _ = measure_time("diffusion.updateObstacles", simulator::TimeMeasurement(getSimulation()));
+
     // Clear previous flag
     std::fill(m_obstacles.begin(), m_obstacles.end(), false);
 
-    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const PositionVector start = getSimulation().getWorldSize() * -0.5;
     const auto step = getSimulation().getWorldSize() / getGridSize();
 
     // Foreach all cells

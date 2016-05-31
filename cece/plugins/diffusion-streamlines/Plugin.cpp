@@ -53,7 +53,8 @@ class DiffusionStreamlinesApi : public plugin::Api
      */
     void onLoad(plugin::Context& context) override
     {
-        context.registerModule<plugin::diffusion_streamlines::Module>("diffusion-streamlines");
+        context.unregisterModule("diffusion");
+        context.registerModule<plugin::diffusion_streamlines::Module>("diffusion");
     }
 
 
@@ -64,7 +65,7 @@ class DiffusionStreamlinesApi : public plugin::Api
      */
     void onUnload(plugin::Context& context) override
     {
-        context.unregisterModule("diffusion-streamlines");
+        context.unregisterModule("diffusion");
     }
 
 };

@@ -24,22 +24,23 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "Module.hpp"
+#include "cece/plugins/diffusion-streamlines/Module.hpp"
 
 // CeCe
 #include "cece/core/Assert.hpp"
 #include "cece/core/Real.hpp"
+#include "cece/core/Log.hpp"
 #include "cece/core/StaticMatrix.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/VectorRange.hpp"
-#include "cece/core/Log.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugins
-#include "cece/plugins/diffusion/Module.hpp"
 #include "cece/plugins/streamlines/Module.hpp"
 #include "cece/plugins/streamlines/Lattice.hpp"
+#include "cece/plugins/streamlines/Dynamics.hpp"
+#include "cece/plugins/streamlines/NoDynamics.hpp"
 
 /* ************************************************************************ */
 
@@ -51,7 +52,9 @@ namespace diffusion_streamlines {
 
 void Module::loadConfig(const config::Configuration& config)
 {
-    module::Module::loadConfig(config);
+    auto _ = measure_time("diffusion-streamlines.loadConfig", simulator::TimeMeasurement(getSimulation()));
+
+    diffusion::Module::loadConfig(config);
 
     setInnerIterations(config.get("inner-iterations", getInnerIterations()));
 }
@@ -60,7 +63,9 @@ void Module::loadConfig(const config::Configuration& config)
 
 void Module::storeConfig(config::Configuration& config) const
 {
-    module::Module::storeConfig(config);
+    auto _ = measure_time("diffusion-streamlines.storeConfig", simulator::TimeMeasurement(getSimulation()));
+
+    diffusion::Module::storeConfig(config);
 
     config.set("inner-iterations", getInnerIterations());
 }
@@ -69,114 +74,126 @@ void Module::storeConfig(config::Configuration& config) const
 
 void Module::init()
 {
+    auto _ = measure_time("diffusion-streamlines.init", simulator::TimeMeasurement(getSimulation()));
+
     m_streamlines = getSimulation().getModule("streamlines");
-    m_diffusion = getSimulation().getModule("diffusion");
-
     Assert(m_streamlines);
-    Assert(m_diffusion);
 
-    if (m_streamlines->getLattice().getSize() != m_diffusion->getGridSize())
+    // Get lattice
+    const auto& lattice = m_streamlines->getLattice();
+
+    if (lattice.getSize() != getGridSize())
     {
         Log::warning("[diffusion-streamlines] Different grid sizes");
-        m_diffusion->setGridSize(m_streamlines->getLattice().getSize());
+        setGridSize(lattice.getSize());
     }
 }
 
 /* ************************************************************************ */
 
-void Module::update()
+void Module::updateSignal(SignalId id)
 {
-    auto _ = measure_time("diffusion-streamlines", simulator::TimeMeasurement(getSimulation()));
+    auto _ = measure_time("diffusion-streamlines.updateSignal", simulator::TimeMeasurement(getSimulation()));
 
-    using Coordinate = diffusion::Module::Coordinate;
-
-    /// Matrix offset
-    constexpr int OFFSET = 1;
-    constexpr int SIZE = OFFSET * 2 + 1;
+    // Update diffusion
+    diffusion::Module::updateSignal(id);
 
     Assert(m_streamlines);
-    Assert(m_diffusion);
-
-    const auto signalGridSize = m_diffusion->getGridSize();
     const auto& lattice = m_streamlines->getLattice();
     const auto& conv = m_streamlines->getConverter();
 
     // Precompute values
-    const auto step = getSimulation().getWorldSize() / signalGridSize;
-
-    // Time step
+    const auto step = getSimulation().getWorldSize() / getGridSize();
     const auto dt = getSimulation().getTimeStep() / getInnerIterations();
 
     // Same grid sizes
-    Assert(lattice.getSize() == m_diffusion->getGridSize());
+    Assert(lattice.getSize() == getGridSize());
 
     for (simulator::IterationNumber i = 0; i < getInnerIterations(); ++i)
     {
-        // Foreach signals
-        for (auto id : m_diffusion->getSignalIds())
+        clearBack(id);
+
+        // Foreach grid
+        for (auto&& c : range(getGridSize()))
         {
-            m_diffusion->clearBack(id);
+            // In obstacle there is no (or shouldn't be) signal
+            if (isObstacle(c))
+                continue;
 
-            // Foreach all combination in range [0, 0] - signalGrid.getSize()
-            for (auto&& c : range(signalGridSize))
-            {
-                // Get current signal
-                const auto signal = m_diffusion->getSignal(id, c);
+            // Get current signal
+            const auto signal = getSignal(id, c);
 
-                // No signal to send
-                if (!signal)
-                    continue;
+            // No signal to "stream"
+            if (!signal)
+                continue;
 
-                // Get velocity
-                const auto& velocity = conv.convertVelocity(lattice[c].computeVelocity());
+            // Get velocity
+            const auto& velocity = conv.convertVelocity(lattice[c].computeVelocity());
 
-                // Distance change
-                const auto ds = velocity * dt;
+            // Distance change
+            const auto ds = velocity * dt;
 
-                Assert(ds.getX() <= step.getX());
-                Assert(ds.getY() <= step.getY());
+            Assert(ds.getX() <= step.getX());
+            Assert(ds.getY() <= step.getY());
 
-                // Transformation matrix
-                const auto matrix = StaticMatrix<units::Area, SIZE>::generate([&](size_t i, size_t j) {
-                    using std::abs;
-                    using std::max;
+            // Transformation matrix
+            const auto matrix = StaticMatrix<units::Area, MATRIX_SIZE>::generate([&](size_t i, size_t j) {
+                using std::abs;
+                using std::max;
 
-                    const int i2 = (static_cast<int>(i) - OFFSET);
-                    const int j2 = (static_cast<int>(j) - OFFSET);
+                const int i2 = (static_cast<int>(i) - OFFSET);
+                const int j2 = (static_cast<int>(j) - OFFSET);
 
-                    const auto x = (j2 == 0)
-                        ? (step.getX() - abs(ds.getX()))
-                        : max(j2 * ds.getX(), units::Length(0))
-                    ;
+                const auto x = (j2 == 0)
+                    ? (step.getX() - abs(ds.getX()))
+                    : max(j2 * ds.getX(), units::Length(0))
+                ;
 
-                    const auto y = (i2 == 0)
-                        ? (step.getX() - abs(ds.getY()))
-                        : max(i2 * ds.getY(), units::Length(0))
-                    ;
+                const auto y = (i2 == 0)
+                    ? (step.getX() - abs(ds.getY()))
+                    : max(i2 * ds.getY(), units::Length(0))
+                ;
 
-                    return x * y;
-                }).normalized();
+                return x * y;
+            }).normalized();
 
-                // Apply matrix
-                matrix.for_each([&](size_t i, size_t j, RealType value) {
-                    const auto coord = c + Coordinate(j, i) - OFFSET;
-                    Assert(m_diffusion->inRange(coord));
-                    m_diffusion->getSignalBack(id, coord) += signal * value;
-                    Assert(m_diffusion->getSignalBack(id, coord) >= Zero);
-                });
-            }
+            // Apply matrix
+            matrix.for_each([&](size_t i, size_t j, RealType value) {
+                const auto coord = c + Coordinate(j, i) - OFFSET;
+                Assert(inRange(coord));
+                getSignalBack(id, coord) += signal * value;
+                Assert(getSignalBack(id, coord) >= Zero);
+            });
         }
 
-        {
-#ifdef CECE_THREAD_SAFE
-            // Lock diffusion
-            MutexGuard guard(m_diffusion->getMutex());
-#endif
+        // Swap buffers
+        swap(id);
+    }
+}
 
-            // Swap buffers
-            for (auto id : m_diffusion->getSignalIds())
-                m_diffusion->swap(id);
-        }
+/* ************************************************************************ */
+
+void Module::updateObstacles()
+{
+    auto _ = measure_time("diffusion-streamlines.updateObstacles", simulator::TimeMeasurement(getSimulation()));
+
+    // Copy data from streamlines
+    Assert(m_streamlines);
+
+    const auto& lattice = m_streamlines->getLattice();
+    const auto& noDynamics = streamlines::NoDynamics::getInstance();
+    const auto& wallDynamics = m_streamlines->getWallDynamics();
+
+    // Foreach nodes
+    for (auto&& c : range(lattice.getSize()))
+    {
+        const auto& node = lattice[c];
+        const auto& dynamics = node.getDynamics();
+
+        const bool flag = dynamics == noDynamics || dynamics == wallDynamics;
+
+        // Set flag
+        setObstacle(c, flag);
     }
 }
 
