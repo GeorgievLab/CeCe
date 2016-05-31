@@ -32,6 +32,7 @@
 #include "cece/core/StaticMatrix.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/VectorRange.hpp"
+#include "cece/core/Log.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 
@@ -70,6 +71,15 @@ void Module::init()
 {
     m_streamlines = getSimulation().getModule("streamlines");
     m_diffusion = getSimulation().getModule("diffusion");
+
+    Assert(m_streamlines);
+    Assert(m_diffusion);
+
+    if (m_streamlines->getLattice().getSize() != m_diffusion->getGridSize())
+    {
+        Log::warning("[diffusion-streamlines] Different grid sizes");
+        m_diffusion->setGridSize(m_streamlines->getLattice().getSize());
+    }
 }
 
 /* ************************************************************************ */
@@ -78,19 +88,27 @@ void Module::update()
 {
     auto _ = measure_time("diffusion-streamlines", simulator::TimeMeasurement(getSimulation()));
 
+    using Coordinate = diffusion::Module::Coordinate;
+
+    /// Matrix offset
+    constexpr int OFFSET = 1;
+    constexpr int SIZE = OFFSET * 2 + 1;
+
     Assert(m_streamlines);
     Assert(m_diffusion);
 
     const auto signalGridSize = m_diffusion->getGridSize();
-    auto& velocityGrid = m_streamlines->getLattice();
+    const auto& lattice = m_streamlines->getLattice();
+    const auto& conv = m_streamlines->getConverter();
 
     // Precompute values
     const auto step = getSimulation().getWorldSize() / signalGridSize;
 
-    // Scale grids to [0, 1]
-    const auto signalScale = 1.f / signalGridSize;
-    const auto velocityScale = 1.f / velocityGrid.getSize();
-    const auto scale = signalScale / velocityScale;
+    // Time step
+    const auto dt = getSimulation().getTimeStep() / getInnerIterations();
+
+    // Same grid sizes
+    Assert(lattice.getSize() == m_diffusion->getGridSize());
 
     for (simulator::IterationNumber i = 0; i < getInnerIterations(); ++i)
     {
@@ -109,77 +127,46 @@ void Module::update()
                 if (!signal)
                     continue;
 
-                // Calculate velocity scale
-                const auto vc = Vector<unsigned>(c * scale);
-
                 // Get velocity
-                assert(velocityGrid.inRange(vc));
-                const auto& velocity = m_streamlines->getConverter().convertVelocity(velocityGrid[vc].computeVelocity());
+                const auto& velocity = conv.convertVelocity(lattice[c].computeVelocity());
 
+                // Distance change
+                const auto ds = velocity * dt;
 
-                // TODO: Completely redesign
+                Assert(ds.getX() <= step.getX());
+                Assert(ds.getY() <= step.getY());
 
-                // Calculate coordinate change
-                Vector<RealType> dij = velocity * getSimulation().getTimeStep() / step / getInnerIterations();
-                dij.x() = std::abs(dij.getX());
-                dij.y() = std::abs(dij.getY());
+                // Transformation matrix
+                const auto matrix = StaticMatrix<units::Area, SIZE>::generate([&](size_t i, size_t j) {
+                    using std::abs;
+                    using std::max;
 
-                // Integer value of coordinate change
-                const auto iij = Vector<RealType>{std::floor(dij.getX()), std::floor(dij.getY())};
-                const auto dij2 = dij - iij;
+                    const int i2 = (static_cast<int>(i) - OFFSET);
+                    const int j2 = (static_cast<int>(j) - OFFSET);
 
-                StaticMatrix<RealType, 2> tmp;
-                Vector<unsigned> offset = Zero;
+                    const auto x = (j2 == 0)
+                        ? (step.getX() - abs(ds.getX()))
+                        : max(j2 * ds.getX(), units::Length(0))
+                    ;
 
-                if (velocity.getY() < Zero)
-                {
-                    offset.y() = 1;
+                    const auto y = (i2 == 0)
+                        ? (step.getX() - abs(ds.getY()))
+                        : max(i2 * ds.getY(), units::Length(0))
+                    ;
 
-                    if (velocity.getX() < Zero)
-                    {
-                        offset.x() = 1;
-                        tmp = StaticMatrix<RealType, 2>{{
-                            {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() },
-                            {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())}
-                        }};
-                    }
-                    else
-                    {
-                        tmp = StaticMatrix<RealType, 2>{{
-                            {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() },
-                            {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())}
-                        }};
-                    }
-                }
-                else
-                {
-                    if (velocity.getX() < Zero)
-                    {
-                        offset.x() = 1;
-                        tmp = StaticMatrix<RealType, 2>{{
-                            {dij2.getX() * (1 - dij2.getY()), (1 - dij2.getX()) * (1 - dij2.getY())},
-                            {dij2.getX() *      dij2.getY() , (1 - dij2.getX()) *      dij2.getY() }
-                        }};
-                    }
-                    else
-                    {
-                        tmp = StaticMatrix<RealType, 2>{{
-                            {(1 - dij2.getX()) * (1 - dij2.getY()), dij2.getX() * (1 - dij2.getY())},
-                            {(1 - dij2.getX()) *      dij2.getY() , dij2.getX() *      dij2.getY() }
-                        }};
-                    }
-                }
+                    return x * y;
+                }).normalized();
 
                 // Apply matrix
-                for (auto&& ab : range(Vector<unsigned>::createSingle(2)))
+                for (auto&& ij : range(Coordinate::createSingle(SIZE)))
                 {
-                    const auto ab2 = c + ab + Vector<unsigned>(iij) - offset;
+                    const auto coord = c + ij - Coordinate::createSingle(OFFSET);
 
                     // Update signal
-                    if (m_diffusion->inRange(ab2))
+                    if (m_diffusion->inRange(coord))
                     {
-                        m_diffusion->getSignalBack(id, ab2) += signal * tmp[ab];
-                        assert(m_diffusion->getSignalBack(id, ab2) >= Zero);
+                        m_diffusion->getSignalBack(id, coord) += signal * matrix[ij];
+                        Assert(m_diffusion->getSignalBack(id, coord) >= Zero);
                     }
                 }
             }
