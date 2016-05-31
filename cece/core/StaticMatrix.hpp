@@ -252,6 +252,34 @@ public:
 
 
     /**
+     * @brief Normalize matrix values.
+     *
+     * @return
+     */
+    StaticMatrix& normalize() noexcept
+    {
+        *this /= sum();
+        return *this;
+    }
+
+
+    /**
+     * @brief Create normalized matrix.
+     *
+     * @return
+     */
+    StaticMatrix<decltype(T{} / T{}), Width, Height> normalized() noexcept
+    {
+        const auto s = sum();
+
+        if (s == T(0))
+            return *this / T(1);
+        else
+            return *this / s;
+    }
+
+
+    /**
      * @brief Transform matrix values into different matrix.
      *
      * @param fn Transformation function.
@@ -272,25 +300,18 @@ public:
 
 
     /**
-     * @brief Normalize matrix values.
+     * @brief Call function for each value.
+     *
+     * @param fn Called function.
      *
      * @return
      */
-    StaticMatrix& normalize() noexcept
+    template<typename F>
+    void for_each(F fn) const noexcept
     {
-        *this /= sum();
-        return *this;
-    }
-
-
-    /**
-     * @brief Create normalized matrix.
-     *
-     * @return
-     */
-    StaticMatrix<decltype(T{} / T{}), Width, Height> normalized() noexcept
-    {
-        return *this / sum();
+        for (decltype(Width) i = 0; i < WIDTH; ++i)
+            for (decltype(Height) j = 0; j < HEIGHT; ++j)
+                fn(i, j, m_data[i][j]);
     }
 
 
