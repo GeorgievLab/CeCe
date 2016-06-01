@@ -27,8 +27,8 @@
 #include "cece/plugins/diffusion-streamlines/Module.hpp"
 
 // CeCe
-#include "cece/core/Assert.hpp"
 #include "cece/core/Real.hpp"
+#include "cece/core/Assert.hpp"
 #include "cece/core/Log.hpp"
 #include "cece/core/StaticMatrix.hpp"
 #include "cece/core/TimeMeasurement.hpp"
@@ -75,6 +75,8 @@ void Module::storeConfig(config::Configuration& config) const
 void Module::init()
 {
     auto _ = measure_time("diffusion-streamlines.init", simulator::TimeMeasurement(getSimulation()));
+
+    diffusion::Module::init();
 
     m_streamlines = getSimulation().getModule("streamlines");
     Assert(m_streamlines);

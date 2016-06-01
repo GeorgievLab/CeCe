@@ -27,18 +27,15 @@
 #include "cece/plugins/diffusion/Module.hpp"
 
 // C++
-#include <limits>
 #include <algorithm>
-#include <functional>
 
 // CeCe
-#include "cece/core/constants.hpp"
 #include "cece/core/Assert.hpp"
+#include "cece/core/Real.hpp"
 #include "cece/core/Log.hpp"
 #include "cece/core/StaticMatrix.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/VectorRange.hpp"
-#include "cece/core/FileStream.hpp"
 #include "cece/core/ShapeToGrid.hpp"
 #include "cece/core/UnitIo.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
@@ -208,20 +205,24 @@ void Module::storeConfig(config::Configuration& config) const
 
 /* ************************************************************************ */
 
-void Module::update()
+void Module::init()
 {
+    auto _ = measure_time("diffusion.init", simulator::TimeMeasurement(getSimulation()));
+
     if (getGridSize() == Zero)
         throw RuntimeException("Diffusion grid size is not set!");
+}
+
+/* ************************************************************************ */
+
+void Module::update()
+{
+    Assert(getGridSize() != Zero);
 
     auto _ = measure_time("diffusion.update", simulator::TimeMeasurement(getSimulation()));
 
     // Update obstacle map from scene
     updateObstacles();
-
-    // For thread safety it is divided to two parts
-    // The first part update diffusion to back buffer that is not used elsewhere,
-    // so it's perfectly safe (it's not a critical section)
-    // The second part just swap buffers - it's critical section but it's fast.
 
     // Update all signals
     // TODO: use OpenMP
@@ -234,8 +235,9 @@ void Module::update()
 #ifdef CECE_ENABLE_RENDER
 void Module::draw(const simulator::Visualization& visualization, render::Context& context)
 {
-    if (getGridSize() == Zero)
-        throw RuntimeException("Diffusion grid size is not set!");
+    Assert(getGridSize() != Zero);
+
+    auto _ = measure_time("diffusion.draw", simulator::TimeMeasurement(getSimulation()));
 
     if (!m_drawable)
         m_drawable.create(context, getGridSize());
@@ -246,6 +248,7 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
     context.matrixPush();
     context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
     context.colorPush();
+    context.setColor(render::colors::WHITE);
     context.enableAlpha();
     m_drawable->draw(context);
     context.disableAlpha();

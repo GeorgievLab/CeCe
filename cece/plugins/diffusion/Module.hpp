@@ -27,19 +27,13 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
 // CeCe
-#include "cece/core/Real.hpp"
+#include "cece/config.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Grid.hpp"
 #include "cece/core/Range.hpp"
-#include "cece/core/UniquePtr.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/module/Module.hpp"
@@ -828,6 +822,12 @@ public:
      * @param config Output configuration.
      */
     void storeConfig(config::Configuration& config) const override;
+
+
+    /**
+     * @brief Initialize module.
+     */
+    void init() override;
 
 
     /**
