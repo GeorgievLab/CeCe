@@ -157,6 +157,7 @@
       <File Name="core/Vector.cpp"/>
       <File Name="core/Vector.hpp"/>
       <File Name="core/constants.hpp"/>
+      <File Name="core/fastexp.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="io">
       <File Name="core/FilePath.cpp"/>

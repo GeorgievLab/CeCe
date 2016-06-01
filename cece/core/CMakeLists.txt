@@ -26,6 +26,7 @@
 set(SRCS
     Macro.hpp
     constants.hpp
+    fastexp.hpp
     DynamicArray.hpp
     StaticArray.hpp
     StaticMatrix.hpp
