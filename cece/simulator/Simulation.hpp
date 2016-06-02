@@ -43,21 +43,23 @@
 
 /* ************************************************************************ */
 
-namespace cece { namespace init { class Initializer; } }
-namespace cece { namespace module { class Module; } }
-namespace cece { namespace object { class Object; } }
-namespace cece { namespace object { class Type; } }
-namespace cece { namespace program { class Program; } }
-namespace cece { namespace config { class Configuration; } }
-namespace cece { namespace plugin { class Api; } }
+namespace cece {
+    /// @deprecated
+    inline namespace core { class Parameters; }
 
-/// @deprecated
-namespace cece { inline namespace core { class Parameters; } }
+    namespace config { class Configuration; }
+    namespace plugin { class Api; }
+    namespace init { class Initializer; }
+    namespace module { class Module; }
+    namespace object { class Object; }
+    namespace object { class Type; }
+    namespace program { class Program; }
 
 #ifdef CECE_ENABLE_RENDER
-namespace cece { namespace render { class Context; } }
-namespace cece { namespace simulator { class Visualization; } }
+    namespace render { class Context; }
+    namespace simulator { class Visualization; }
 #endif
+}
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
 /// @deprecated

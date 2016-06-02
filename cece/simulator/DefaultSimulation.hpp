@@ -36,8 +36,6 @@
 #include <cstddef>
 
 // CeCe
-#include "cece/core/Assert.hpp"
-#include "cece/core/Real.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/UnitsCtors.hpp"
 #include "cece/core/Vector.hpp"
@@ -62,10 +60,15 @@
 
 /* ************************************************************************ */
 
+namespace cece {
+    namespace config { class Configuration; }
+    namespace plugin { class Api; }
+    namespace plugin { class Context; }
+}
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
 class b2World;
-namespace cece { namespace plugin { class Context; } }
-namespace cece { namespace plugin { class Api; } }
-namespace cece { namespace config { class Configuration; } }
+#endif
 
 /* ************************************************************************ */
 

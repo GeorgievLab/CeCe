@@ -34,19 +34,17 @@
 #include <iomanip>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Log.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/FileStream.hpp"
 #include "cece/core/UnitIo.hpp"
-#include "cece/object/FactoryManager.hpp"
-#include "cece/plugin/Library.hpp"
 #include "cece/plugin/Api.hpp"
 #include "cece/plugin/Manager.hpp"
 #include "cece/init/Initializer.hpp"
 #include "cece/module/Module.hpp"
-#include "cece/module/FactoryManager.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
