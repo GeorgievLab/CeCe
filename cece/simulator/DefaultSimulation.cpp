@@ -74,12 +74,7 @@ DefaultSimulation::DefaultSimulation(plugin::Context& context, FilePath path) no
 
 DefaultSimulation::~DefaultSimulation()
 {
-    // Call finalize simulations for all plugins
-    for (auto it = m_plugins.rbegin(); it != m_plugins.rend(); ++it)
-    {
-        assert(it->second);
-        it->second->finalizeSimulation(*this);
-    }
+    terminate();
 }
 
 /* ************************************************************************ */
@@ -471,18 +466,27 @@ bool DefaultSimulation::update()
 
 /* ************************************************************************ */
 
-void DefaultSimulation::reset()
+bool DefaultSimulation::reset()
 {
-    m_iteration = 0;
-    m_totalTime = Zero;
-    m_initialized = false;
+    // Resetting si not supported
+    return false;
 }
 
 /* ************************************************************************ */
 
 void DefaultSimulation::terminate()
 {
-    // TODO: terminate
+    m_initialized = false;
+
+    // Terminate modules
+    m_modules.terminate();
+
+    // Call finalize simulations for all plugins
+    for (auto it = m_plugins.rbegin(); it != m_plugins.rend(); ++it)
+    {
+        Assert(it->second);
+        it->second->finalizeSimulation(*this);
+    }
 }
 
 /* ************************************************************************ */
@@ -499,12 +503,7 @@ void DefaultSimulation::draw(render::Context& context)
     m_modules.draw(m_visualization, context);
 
     // Draw objects
-    for (auto& obj : m_objects)
-    {
-        Assert(obj);
-        if (obj->isVisible())
-            obj->draw(context);
-    }
+    m_objects.draw(context);
 
 #if defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
     if (m_visualization.isEnabled("physics"))

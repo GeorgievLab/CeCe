@@ -36,6 +36,7 @@
 #include "cece/module/Module.hpp"
 #include "cece/object/Type.hpp"
 #include "cece/object/Object.hpp"
+#include "cece/program/Program.hpp"
 #include "cece/simulator/Visualization.hpp"
 
 /* ************************************************************************ */
@@ -57,6 +58,18 @@ ViewPtr<module::Module> Simulation::requireModule(StringView name) const
         throw RuntimeException("Module not found: " + String(name));
 
     return module;
+}
+
+/* ************************************************************************ */
+
+UniquePtr<program::Program> Simulation::requireProgram(StringView name) const
+{
+    auto program = getProgram(name);
+
+    if (!program)
+        throw RuntimeException("Program not found: " + String(name));
+
+    return program;
 }
 
 /* ************************************************************************ */

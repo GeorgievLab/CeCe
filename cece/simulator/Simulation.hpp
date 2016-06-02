@@ -72,7 +72,7 @@ namespace simulator {
 /* ************************************************************************ */
 
 /**
- * @brief Simulation class.
+ * @brief Abstract simulation class.
  */
 class Simulation
 {
@@ -123,14 +123,6 @@ public:
      * @return
      */
     virtual const SizeVector& getWorldSize() const noexcept = 0;
-
-
-    /**
-     * @brief Returns if simulation is initialized.
-     *
-     * @return
-     */
-    virtual bool isInitialized() const noexcept = 0;
 
 
     /**
@@ -197,6 +189,14 @@ public:
 
 
     /**
+     * @brief Returns if simulation is initialized.
+     *
+     * @return
+     */
+    virtual bool isInitialized() const noexcept = 0;
+
+
+    /**
      * @brief Returns simulation resource.
      *
      * @param name Resource name.
@@ -253,23 +253,23 @@ public:
 
 
     /**
-     * @brief Returns required module.
+     * @brief Returns module stored under given name.
      *
      * @param name Module name.
      *
-     * @return
+     * @return Pointer to module or nullptr.
      */
     virtual ViewPtr<module::Module> getModule(StringView name) const noexcept = 0;
 
 
     /**
-     * @brief Returns required module.
+     * @brief Returns module stored under given name.
      *
-     * @tparam ModuleType
+     * @tparam ModuleType Type of required module.
      *
      * @param name Module name.
      *
-     * @return
+     * @return Pointer to module or nullptr.
      */
     template<typename ModuleType>
     ViewPtr<ModuleType> getModule(StringView name) const noexcept
@@ -285,27 +285,27 @@ public:
 
 
     /**
-     * @brief Returns required module or throw.
+     * @brief Returns module or throw if module not found.
      *
      * @param name Module name.
      *
-     * @return
+     * @return Pointer to module.
      *
-     * @throw RuntimeException
+     * @throw RuntimeException In case module is not found.
      */
     virtual ViewPtr<module::Module> requireModule(StringView name) const;
 
 
     /**
-     * @brief Returns required module or throw.
+     * @brief Returns module or throw if module not found.
      *
-     * @tparam ModuleType
+     * @tparam ModuleType Type of required module.
      *
      * @param name Module name.
      *
-     * @return
+     * @return Pointer to module.
      *
-     * @throw RuntimeException
+     * @throw RuntimeException In case module is not found.
      */
     template<typename ModuleType>
     ViewPtr<ModuleType> requireModule(StringView name) const
@@ -317,7 +317,7 @@ public:
 
 
     /**
-     * @brief Check if program with given name exists.
+     * @brief Check if global program with given name exists.
      *
      * @param name Program name.
      *
@@ -333,9 +333,23 @@ public:
      *
      * @param name Program name.
      *
-     * @return Pointer to program.
+     * @return Pointer to program or nullptr.
      */
     virtual UniquePtr<program::Program> getProgram(StringView name) const = 0;
+
+
+    /**
+     * @brief Returns program with given name. At first global storage of
+     * program checked and then program factory. In case of global storage
+     * a copy is created so each object work with own data.
+     *
+     * @param name Program name.
+     *
+     * @return Pointer to program.
+     *
+     * @throw RuntimeException In case program is not found.
+     */
+    virtual UniquePtr<program::Program> requireProgram(StringView name) const;
 
 
     /**
@@ -477,7 +491,7 @@ public:
      *
      * @param initializer Initializer.
      *
-     * @return
+     * @return Added initializer.
      */
     virtual ViewPtr<init::Initializer> addInitializer(UniquePtr<init::Initializer> initializer) = 0;
 
@@ -485,7 +499,7 @@ public:
     /**
      * @brief Create an initializer.
      *
-     * @return Created initializer.
+     * @return Pointer to created initializer.
      */
     template<typename T>
     ViewPtr<T> createInitializer()
@@ -499,7 +513,7 @@ public:
      *
      * @param type Initializer type.
      *
-     * @return
+     * @return Pointer to created initializer.
      */
     virtual ViewPtr<init::Initializer> createInitializer(StringView type) = 0;
 
@@ -509,7 +523,7 @@ public:
      *
      * @param config Initializer configuration.
      *
-     * @return
+     * @return Pointer to created initializer.
      */
     virtual ViewPtr<init::Initializer> createInitializer(const config::Configuration& config);
 
@@ -518,53 +532,53 @@ public:
      * @brief Remove and delete initializer.
      *
      * @param initializer Initializer to delete.
-     *
-     * @return
      */
     virtual void deleteInitializer(ViewPtr<init::Initializer> initializer) = 0;
 
 
     /**
-     * @brief Add a module.
+     * @brief Adds a module.
      *
      * @param name   Module name.
-     * @param module Added module.
+     * @param module Module to add.
      *
-     * @return
+     * @return Pointer to added module.
      */
     virtual ViewPtr<module::Module> addModule(String name, UniquePtr<module::Module> module) = 0;
 
 
     /**
-     * @brief Create a module.
+     * @brief Create module.
+     *
+     * @tparam ModuleType Created module type.
      *
      * @param name Module name.
      *
-     * @return Created module.
+     * @return Pointer to created module.
      */
-    template<typename T>
-    ViewPtr<T> createModule(String name)
+    template<typename ModuleType>
+    ViewPtr<ModuleType> createModule(String name)
     {
-        return addModule(std::move(name), makeUnique<T>(*this));
+        return addModule(std::move(name), makeUnique<ModuleType>(*this));
     }
 
 
     /**
-     * @brief Create and register a module.
+     * @brief Create and register module.
      *
      * @param type Module type and registration name.
      *
-     * @return
+     * @return Pointer to created module.
      */
     virtual ViewPtr<module::Module> createModule(StringView type) = 0;
 
 
     /**
-     * @brief Create and register a module.
+     * @brief Create, register and configure module.
      *
      * @param config Module configuration.
      *
-     * @return
+     * @return Pointer to created module.
      */
     virtual ViewPtr<module::Module> createModule(const config::Configuration& config);
 
@@ -583,60 +597,59 @@ public:
      * @param name   Object type name.
      * @param parent Parent type name.
      * @param config Type configuration.
-     *
-     * @return
      */
     virtual void addObjectType(String name, String parent, const config::Configuration& config) = 0;
 
 
     /**
-     * @brief Create and register object type.
+     * @brief Create, register and configure object type.
      *
      * @param config Type configuration.
-     *
-     * @return
      */
     virtual void createObjectType(const config::Configuration& config);
 
 
     /**
-     * @brief Add an object.
+     * @brief Adds an object.
      *
-     * @param object Added object.
+     * @param object Object to add.
      *
-     * @return
+     * @return Pointer to added object.
      */
     virtual ViewPtr<object::Object> addObject(UniquePtr<object::Object> object) = 0;
 
 
     /**
-     * @brief Create an object.
+     * @brief Create object.
+     *
+     * @tparam ObjectType Type of created object.
      *
      * @return Created object
      */
-    template<typename T>
-    ViewPtr<T> createObject()
+    template<typename ObjectType>
+    ViewPtr<ObjectType> createObject()
     {
-        return addObject(makeUnique<T>(*this));
+        return addObject(makeUnique<ObjectType>(*this));
     }
 
 
     /**
-     * @brief Create and register an object.
+     * @brief Create and register object.
      *
-     * @param type Object type.
+     * @param type Object type name.
      *
-     * @return
+     * @return Pointer to created object.
      */
     virtual ViewPtr<object::Object> createObject(StringView type) = 0;
 
 
     /**
-     * @brief Create, register and configure an object.
+     * @brief Create, register and configure object.
      *
      * @param config Object configuration.
      *
-     * @return
+     *
+     * @return Pointer to created object.
      */
     virtual ViewPtr<object::Object> createObject(const config::Configuration& config);
 
@@ -650,33 +663,33 @@ public:
 
 
     /**
-     * @brief Register a program.
+     * @brief Adds a program.
      *
      * @param name    Program global name.
      * @param program Program to register.
      *
-     * @return
+     * @return Pointer to added program.
      */
     virtual ViewPtr<program::Program> addProgram(String name, UniquePtr<program::Program> program) = 0;
 
 
     /**
-     * @brief Create and register a program.
+     * @brief Create and register program.
      *
      * @param name Program name.
      * @param type Program type.
      *
-     * @return
+     * @return Pointer to created program.
      */
     virtual ViewPtr<program::Program> createProgram(String name, StringView type) = 0;
 
 
     /**
-     * @brief Create, register and configure a program.
+     * @brief Create, register and configure program.
      *
      * @param config Program configuration.
      *
-     * @return
+     * @return Pointer to created program.
      */
     virtual ViewPtr<program::Program> createProgram(const config::Configuration& config);
 
@@ -696,7 +709,7 @@ public:
     /**
      * @brief Configure simulation.
      *
-     * @param config
+     * @param config Source configuration.
      */
     virtual void loadConfig(const config::Configuration& config);
 
@@ -704,7 +717,7 @@ public:
     /**
      * @brief Store simulation configuration.
      *
-     * @param config
+     * @param config Output configuration.
      */
     virtual void storeConfig(config::Configuration& config) const;
 
@@ -718,9 +731,9 @@ public:
 
 
     /**
-     * @brief Update simulation.
+     * @brief Perform simulation update.
      *
-     * @return If next step can be calculated.
+     * @return If simulation is not finished.
      */
     virtual bool update() = 0;
 
@@ -733,8 +746,13 @@ public:
 
     /**
      * @brief Reset simulation.
+     *
+     * Some simulation implementation cannot support reset feature because
+     * it's not possible to restore simulation initial state (objects, modules, etc.)
+     *
+     * @return If simulation reset is supported.
      */
-    virtual void reset() = 0;
+    virtual bool reset() = 0;
 
 
 #ifdef CECE_ENABLE_RENDER

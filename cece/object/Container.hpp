@@ -37,6 +37,12 @@
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
+namespace core { namespace render { class Context; } }
+#endif
+
+/* ************************************************************************ */
+
 namespace cece {
 namespace object {
 
@@ -316,6 +322,18 @@ public:
      * @brief Remove all deleted objects.
      */
     void removeDeleted() noexcept;
+
+
+#ifdef CECE_ENABLE_RENDER
+
+    /**
+     * @brief Render objects.
+     *
+     * @param context Rendering context.
+     */
+    void draw(render::Context& context);
+
+#endif
 
 
 // Private Data Members
