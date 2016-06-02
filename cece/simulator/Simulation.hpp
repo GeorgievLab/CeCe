@@ -53,10 +53,6 @@ namespace cece { namespace plugin { class Api; } }
 
 /// @deprecated
 namespace cece { inline namespace core { class Parameters; } }
-namespace cece { namespace init { class Container; } }
-namespace cece { namespace module { class Container; } }
-namespace cece { namespace program { class NamedContainer; } }
-namespace cece { namespace object { class Container; } }
 
 #ifdef CECE_ENABLE_RENDER
 namespace cece { namespace render { class Context; } }
@@ -64,6 +60,7 @@ namespace cece { namespace simulator { class Visualization; } }
 #endif
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
+/// @deprecated
 class b2World;
 #endif
 
@@ -110,60 +107,6 @@ public:
      * @deprecated
      */
     virtual const Parameters& getParameters() const noexcept = 0;
-
-
-    /**
-     * @brief Returns simulation modules.
-     *
-     * @return
-     * @deprecated
-     */
-    virtual module::Container& getModuleContainer() noexcept = 0;
-
-
-    /**
-     * @brief Returns simulation modules.
-     *
-     * @return
-     * @deprecated
-     */
-    virtual const module::Container& getModuleContainer() const noexcept = 0;
-
-
-    /**
-     * @brief Returns simulation objects.
-     *
-     * @return
-     * @deprecated
-     */
-    virtual object::Container& getObjectContainer() noexcept = 0;
-
-
-    /**
-     * @brief Returns simulation objects.
-     *
-     * @return
-     * @deprecated
-     */
-    virtual const object::Container& getObjectContainer() const noexcept = 0;
-
-
-    /**
-     * @brief Returns global programs.
-     *
-     * @return
-     * @deprecated
-     */
-    virtual program::NamedContainer& getProgramContainer() noexcept = 0;
-
-
-    /**
-     * @brief Returns global programs.
-     *
-     * @return
-     * @deprecated
-     */
-    virtual const program::NamedContainer& getProgramContainer() const noexcept = 0;
 
 
     /**
@@ -644,6 +587,16 @@ public:
      * @return
      */
     virtual void addObjectType(String name, String parent, const config::Configuration& config) = 0;
+
+
+    /**
+     * @brief Create and register object type.
+     *
+     * @param config Type configuration.
+     *
+     * @return
+     */
+    virtual void createObjectType(const config::Configuration& config);
 
 
     /**

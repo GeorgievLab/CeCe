@@ -152,6 +152,13 @@ ViewPtr<module::Module> Simulation::createModule(const config::Configuration& co
 
 /* ************************************************************************ */
 
+void Simulation::createObjectType(const config::Configuration& config)
+{
+    addObjectType(config.get("name"), config.get("type"), config);
+}
+
+/* ************************************************************************ */
+
 ViewPtr<object::Object> Simulation::createObject(const config::Configuration& config)
 {
     // Get object type
@@ -239,7 +246,7 @@ void Simulation::loadConfig(const config::Configuration& config)
 
     // Register user types
     for (auto&& cfg : config.getConfigurations("type"))
-        addObjectType(cfg.get("name"), cfg.get("base"), cfg);
+        createObjectType(cfg);
 
     // Parse init
     for (auto&& cfg : config.getConfigurations("init"))

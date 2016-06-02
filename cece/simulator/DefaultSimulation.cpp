@@ -506,7 +506,7 @@ void DefaultSimulation::draw(render::Context& context)
             obj->draw(context);
     }
 
-#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
+#if defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
     if (m_visualization.isEnabled("physics"))
         m_world->DrawDebugData();
 #endif
