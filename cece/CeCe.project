@@ -223,6 +223,8 @@
       <File Name="core/ShapeToGrid.hpp"/>
     </VirtualDirectory>
     <File Name="core/FactoryManager.hpp"/>
+    <File Name="core/IterationType.hpp"/>
+    <File Name="core/IterationRange.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="render">
     <File Name="render/Buffer.cpp"/>

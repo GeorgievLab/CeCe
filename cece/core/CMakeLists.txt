@@ -91,6 +91,8 @@ set(SRCS
     ShapeToGrid.hpp
     PtrContainer.hpp
     PtrNamedContainer.hpp
+    IterationType.hpp
+    IterationRange.hpp
 )
 
 set(SRCS_TEST

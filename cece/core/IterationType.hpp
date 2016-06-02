@@ -27,29 +27,20 @@
 
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/core/IterationType.hpp"
+// C++
+#include <cstddef>
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace simulator {
+inline namespace core {
 
 /* ************************************************************************ */
 
 /**
- * @brief Type for iteration number.
- * @deprecated
+ * @brief Type for iteration type.
  */
-using IterationNumber = IterationType;
-
-/* ************************************************************************ */
-
-/**
- * @brief Type for iteration count.
- * @deprecated
- */
-using IterationCount = IterationType;
+using IterationType = std::size_t;
 
 /* ************************************************************************ */
 
