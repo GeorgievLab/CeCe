@@ -31,8 +31,11 @@
 #include <utility>
 
 // CeCe
+#include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/CsvFile.hpp"
+#include "cece/core/IterationRange.hpp"
+#include "cece/core/DynamicArray.hpp"
 #include "cece/module/Module.hpp"
 
 /* ************************************************************************ */
@@ -70,6 +73,27 @@ public:
     }
 
 
+    /**
+     * @brief Returns when export should be active.
+     *
+     * @return
+     */
+    const DynamicArray<IterationRange>& getActive() const noexcept
+    {
+        return m_active;
+    }
+
+
+    /**
+     * @brief Check if module should be active.
+     *
+     * @param it Iteration number.
+     *
+     * @return
+     */
+    bool isActive(IterationType it) const noexcept;
+
+
 // Public Mutators
 public:
 
@@ -82,6 +106,16 @@ public:
     void setFilePath(FilePath filePath) noexcept
     {
         m_file.setPath(std::move(filePath));
+    }
+
+    /**
+     * @brief Set when export should be active.
+     *
+     * @param active
+     */
+    void setActive(DynamicArray<IterationRange> active) noexcept
+    {
+        m_active = std::move(active);
     }
 
 
@@ -154,11 +188,24 @@ protected:
     }
 
 
+    /**
+     * @brief Parse active string.
+     *
+     * @param str Source string
+     *
+     * @return
+     */
+    static DynamicArray<IterationRange> parseActive(String str);
+
+
 // Protected Data Members
 protected:
 
     // Output CSV file.
     CsvFile m_file;
+
+    /// When is export active.
+    DynamicArray<IterationRange> m_active;
 
 };
 

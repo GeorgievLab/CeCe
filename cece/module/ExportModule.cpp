@@ -28,6 +28,7 @@
 
 // CeCe
 #include "cece/core/Log.hpp"
+#include "cece/core/StringStream.hpp"
 #include "cece/config/Configuration.hpp"
 
 /* ************************************************************************ */
@@ -37,9 +38,27 @@ namespace module {
 
 /* ************************************************************************ */
 
+bool ExportModule::isActive(IterationType it) const noexcept
+{
+    // No limitation
+    if (m_active.empty())
+        return true;
+
+    for (const auto& rng : m_active)
+    {
+        if (rng.inRange(it))
+            return true;
+    }
+
+    return false;
+}
+
+/* ************************************************************************ */
+
 void ExportModule::loadConfig(const config::Configuration& config)
 {
     setFilePath(config.get<FilePath>("filename"));
+    setActive(parseActive(config.get("active", String{})));
 }
 
 /* ************************************************************************ */
@@ -47,6 +66,7 @@ void ExportModule::loadConfig(const config::Configuration& config)
 void ExportModule::storeConfig(config::Configuration& config) const
 {
     config.set("filename", getFilePath());
+    // TODO: store active
 }
 
 /* ************************************************************************ */
@@ -67,6 +87,39 @@ void ExportModule::terminate()
 
     // Close CSV file
     m_file.close();
+}
+
+/* ************************************************************************ */
+
+DynamicArray<IterationRange> ExportModule::parseActive(String str)
+{
+    DynamicArray<IterationRange> res;
+
+    InStringStream iss(std::move(str));
+
+    while (true)
+    {
+        IterationType it;
+
+        if (!(iss >> it))
+            break;
+
+        if (iss.peek() == '-')
+        {
+            IterationType itEnd;
+            iss.ignore();
+            iss >> itEnd;
+
+            res.emplace_back(it, itEnd);
+        }
+        else
+        {
+            // Single item range
+            res.emplace_back(it);
+        }
+    }
+
+    return res;
 }
 
 /* ************************************************************************ */
