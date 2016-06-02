@@ -462,19 +462,6 @@ public:
     virtual units::Length getMaxObjectTranslation() const noexcept = 0;
 
 
-#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
-
-    /**
-     * @brief Returns if physics debug data is shown.
-     *
-     * @return
-     * @deprecated
-     */
-    virtual bool isDrawPhysics() const noexcept = 0;
-
-#endif
-
-
 // Public Mutators
 public:
 
@@ -747,19 +734,6 @@ public:
      * @param name Program name.
      */
     virtual void deleteProgram(StringView name) = 0;
-
-
-#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
-
-    /**
-     * @brief If physics debug data should be shown.
-     *
-     * @param flag
-     * @deprecated
-     */
-    virtual void setDrawPhysics(bool flag) noexcept = 0;
-
-#endif
 
 
 // Public Operations

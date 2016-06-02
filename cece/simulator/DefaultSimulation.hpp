@@ -476,21 +476,6 @@ public:
     units::Length getMaxObjectTranslation() const noexcept;
 
 
-#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
-
-    /**
-     * @brief Returns if physics debug data is shown.
-     *
-     * @return
-     */
-    bool isDrawPhysics() const noexcept
-    {
-        return m_drawPhysics;
-    }
-
-#endif
-
-
 // Public Mutators
 public:
 
@@ -698,19 +683,6 @@ public:
      * @param dt Time step.
      */
     void setPhysicsEngineTimeStep(units::Time dt) noexcept;
-
-#endif
-
-
-#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
-
-    /**
-     * @brief If physics debug data should be shown.
-     */
-    void setDrawPhysics(bool flag) noexcept
-    {
-        m_drawPhysics = flag;
-    }
 
 #endif
 
