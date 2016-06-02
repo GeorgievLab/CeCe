@@ -125,6 +125,7 @@ void ExportModule::loadConfig(const config::Configuration& config)
 
     // Get exported signals
     setSignals(config.get("signals", getSignals()));
+    setExportObstacles(config.get("obstacles", isExportedObstacles()));
 }
 
 /* ************************************************************************ */
@@ -134,6 +135,7 @@ void ExportModule::storeConfig(config::Configuration& config) const
     module::ExportModule::storeConfig(config);
 
     config.set("signals", getSignals());
+    config.set("obstacles", isExportedObstacles());
 }
 
 /* ************************************************************************ */
@@ -149,7 +151,9 @@ void ExportModule::init()
     module::ExportModule::init();
 
     // Write output header
-    writeHeader("iteration", "time", "x", "y", "signal", "concentration");
+    writeHeader("iteration", "time", "x", "y", "signal", "concentration",
+        CsvFile::cond(isExportedObstacles(), "obstacle")
+    );
 }
 
 /* ************************************************************************ */
@@ -160,6 +164,12 @@ void ExportModule::update()
 
     // Get simulation
     const auto& sim = getSimulation();
+    const auto iteration = sim.getIteration();
+    const auto totalTime = sim.getTotalTime();
+
+    // Module is not active
+    if (!isActive(iteration))
+        return;
 
     // Foreach coordinates
     for (auto&& c : range(m_module->getGridSize()))
@@ -173,12 +183,13 @@ void ExportModule::update()
 
             // Write record
             writeRecord(
-                sim.getIteration(),
-                sim.getTotalTime().value(),
+                iteration,
+                totalTime.value(),
                 c.getX(),
                 c.getY(),
                 m_module->getSignalName(signalId),
-                m_module->getSignal(signalId, c).value()
+                m_module->getSignal(signalId, c).value(),
+                CsvFile::cond(isExportedObstacles(), m_module->isObstacle(c))
             );
         }
     }

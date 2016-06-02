@@ -33,8 +33,8 @@
 #include "cece/core/Units.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/VectorUnits.hpp"
+#include "cece/core/IterationRange.hpp"
 #include "cece/module/Module.hpp"
-#include "cece/simulator/IterationRange.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"
@@ -108,7 +108,7 @@ private:
         PositionVector size;
 
         /// List of iteration ranges when the generator is active.
-        DynamicArray<simulator::IterationRange> active;
+        DynamicArray<IterationRange> active;
     };
 
 

@@ -55,22 +55,22 @@ namespace {
  *
  * @return
  */
-DynamicArray<simulator::IterationRange> parseActive(String str)
+DynamicArray<IterationRange> parseActive(String str)
 {
-    DynamicArray<simulator::IterationRange> res;
+    DynamicArray<IterationRange> res;
 
     InStringStream iss(std::move(str));
 
     while (true)
     {
-        simulator::IterationNumber it;
+        IterationType it;
 
         if (!(iss >> it))
             break;
 
         if (iss.peek() == '-')
         {
-            simulator::IterationNumber itEnd;
+            IterationType itEnd;
             iss.ignore();
             iss >> itEnd;
 
@@ -96,7 +96,7 @@ DynamicArray<simulator::IterationRange> parseActive(String str)
  *
  * @return
  */
-bool inRange(const DynamicArray<simulator::IterationRange>& list, simulator::IterationNumber it)
+bool inRange(const DynamicArray<IterationRange>& list, IterationType it)
 {
     // No limitation
     if (list.empty())

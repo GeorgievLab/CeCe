@@ -87,6 +87,17 @@ public:
     bool isExported(StringView name) const noexcept;
 
 
+    /**
+     * @brief If information about obstacles is exported.
+     *
+     * @return
+     */
+    bool isExportedObstacles() const noexcept
+    {
+        return m_exportObstacles;
+    }
+
+
 // Public Mutators
 public:
 
@@ -99,6 +110,17 @@ public:
     void setSignals(DynamicArray<String> signals) noexcept
     {
         m_signals = std::move(signals);
+    }
+
+
+    /**
+     * @brief If information about obstacles should be exported.
+     *
+     * @param flag
+     */
+    void setExportObstacles(bool flag) noexcept
+    {
+        m_exportObstacles = flag;
     }
 
 
@@ -142,6 +164,9 @@ private:
 
     /// A list of signals to store.
     DynamicArray<String> m_signals;
+
+    /// If information about obstacles should be exported.
+    bool m_exportObstacles = false;
 };
 
 /* ************************************************************************ */
