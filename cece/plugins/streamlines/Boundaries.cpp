@@ -34,6 +34,7 @@
 #include "cece/core/Zero.hpp"
 #include "cece/core/StaticArray.hpp"
 #include "cece/core/UnitIo.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */

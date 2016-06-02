@@ -34,6 +34,7 @@
 #include "cece/core/Log.hpp"
 #include "cece/core/constants.hpp"
 #include "cece/core/TimeMeasurement.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 

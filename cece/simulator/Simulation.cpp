@@ -49,6 +49,51 @@ Simulation::~Simulation() = default;
 
 /* ************************************************************************ */
 
+ViewPtr<module::Module> Simulation::requireModule(StringView name) const
+{
+    auto module = getModule(name);
+
+    if (!module)
+        throw RuntimeException("Module not found: " + String(name));
+
+    return module;
+}
+
+/* ************************************************************************ */
+
+std::size_t Simulation::getObjectCount(StringView type) const noexcept
+{
+    std::size_t count = 0;
+
+    for (const auto& object : getObjects())
+    {
+        if (object->getTypeName() == type)
+            ++count;
+    }
+
+    return count;
+}
+
+/* ************************************************************************ */
+
+DynamicArray<ViewPtr<object::Object>> Simulation::getObjects(StringView type) const noexcept
+{
+    const auto& objects = getObjects();
+
+    DynamicArray<ViewPtr<object::Object>> res;
+    res.reserve(objects.size());
+
+    for (const auto& object : objects)
+    {
+        if (object->getTypeName() == type)
+            res.push_back(object);
+    }
+
+    return res;
+}
+
+/* ************************************************************************ */
+
 ViewPtr<plugin::Api> Simulation::loadPlugin(const config::Configuration& config)
 {
     // Get plugin name
@@ -103,27 +148,6 @@ ViewPtr<module::Module> Simulation::createModule(const config::Configuration& co
         module->loadConfig(config);
 
     return module;
-}
-
-/* ************************************************************************ */
-
-ViewPtr<object::Type> Simulation::createObjectType(const config::Configuration& config)
-{
-    // Get object type name
-    const String name = config.get("name");
-
-    // Create object type
-    auto type = createObjectType(name);
-
-    // Configure object type
-    if (type)
-    {
-        //type->loadConfig(config);
-        type->baseName = config.get("basename");
-        type->config = config.toMemory();
-    }
-
-    return type;
 }
 
 /* ************************************************************************ */
@@ -215,7 +239,7 @@ void Simulation::loadConfig(const config::Configuration& config)
 
     // Register user types
     for (auto&& cfg : config.getConfigurations("type"))
-        createObjectType(cfg);
+        addObjectType(cfg.get("name"), cfg.get("base"), cfg);
 
     // Parse init
     for (auto&& cfg : config.getConfigurations("init"))

@@ -51,6 +51,13 @@ namespace cece { namespace program { class Program; } }
 namespace cece { namespace config { class Configuration; } }
 namespace cece { namespace plugin { class Api; } }
 
+/// @deprecated
+namespace cece { inline namespace core { class Parameters; } }
+namespace cece { namespace init { class Container; } }
+namespace cece { namespace module { class Container; } }
+namespace cece { namespace program { class NamedContainer; } }
+namespace cece { namespace object { class Container; } }
+
 #ifdef CECE_ENABLE_RENDER
 namespace cece { namespace render { class Context; } }
 namespace cece { namespace simulator { class Visualization; } }
@@ -85,6 +92,78 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns simulation parameters.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual Parameters& getParameters() noexcept = 0;
+
+
+    /**
+     * @brief Returns simulation parameters.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual const Parameters& getParameters() const noexcept = 0;
+
+
+    /**
+     * @brief Returns simulation modules.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual module::Container& getModuleContainer() noexcept = 0;
+
+
+    /**
+     * @brief Returns simulation modules.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual const module::Container& getModuleContainer() const noexcept = 0;
+
+
+    /**
+     * @brief Returns simulation objects.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual object::Container& getObjectContainer() noexcept = 0;
+
+
+    /**
+     * @brief Returns simulation objects.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual const object::Container& getObjectContainer() const noexcept = 0;
+
+
+    /**
+     * @brief Returns global programs.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual program::NamedContainer& getProgramContainer() noexcept = 0;
+
+
+    /**
+     * @brief Returns global programs.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual const program::NamedContainer& getProgramContainer() const noexcept = 0;
 
 
     /**
@@ -203,7 +282,21 @@ public:
      *
      * @throw RuntimeException
      */
-    virtual const String& getParameter(StringView name) const = 0;
+    virtual String getParameter(StringView name) const = 0;
+
+
+    /**
+     * @brief Returns simulation parameter.
+     *
+     * @param name Parameter name.
+     * @param def  Default parameter value.
+     *
+     * @return Parameter value.
+     */
+    virtual String getParameter(StringView name, String def) const
+    {
+        return hasParameter(name) ? getParameter(name) : def;
+    }
 
 
     /**
@@ -302,14 +395,50 @@ public:
     virtual UniquePtr<program::Program> getProgram(StringView name) const = 0;
 
 
+    /**
+     * @brief Returns number of simulation objects.
+     *
+     * @return
+     */
+    virtual std::size_t getObjectCount() const noexcept = 0;
+
+
+    /**
+     * @brief Returns number of simulation objects with given type.
+     *
+     * @param type Object type.
+     *
+     * @return
+     */
+    virtual std::size_t getObjectCount(StringView type) const noexcept;
+
+
+    /**
+     * @brief Returns all objects.
+     *
+     * @return
+     */
+    virtual DynamicArray<ViewPtr<object::Object>> getObjects() const noexcept = 0;
+
+
+    /**
+     * @brief Returns all objects with given type.
+     *
+     * @param type Object type.
+     *
+     * @return
+     */
+    virtual DynamicArray<ViewPtr<object::Object>> getObjects(StringView type) const noexcept;
+
+
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
 
     /**
      * @brief Returns physics world.
      *
      * @return
+     * @deprecated
      */
-    // TODO: remove
     virtual b2World& getWorld() noexcept = 0;
 
 
@@ -317,9 +446,31 @@ public:
      * @brief Returns physics world.
      *
      * @return
+     * @deprecated
      */
-    // TODO: remove
     virtual const b2World& getWorld() const noexcept = 0;
+
+#endif
+
+
+    /**
+     * @brief Returns maximum translation vector magnitude per iteration.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual units::Length getMaxObjectTranslation() const noexcept = 0;
+
+
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
+
+    /**
+     * @brief Returns if physics debug data is shown.
+     *
+     * @return
+     * @deprecated
+     */
+    virtual bool isDrawPhysics() const noexcept = 0;
 
 #endif
 
@@ -402,6 +553,18 @@ public:
 
 
     /**
+     * @brief Create an initializer.
+     *
+     * @return Created initializer.
+     */
+    template<typename T>
+    ViewPtr<T> createInitializer()
+    {
+        return addInitializer(makeUnique<T>());
+    }
+
+
+    /**
      * @brief Create and register initializer.
      *
      * @param type Initializer type.
@@ -443,6 +606,20 @@ public:
 
 
     /**
+     * @brief Create a module.
+     *
+     * @param name Module name.
+     *
+     * @return Created module.
+     */
+    template<typename T>
+    ViewPtr<T> createModule(String name)
+    {
+        return addModule(std::move(name), makeUnique<T>(*this));
+    }
+
+
+    /**
      * @brief Create and register a module.
      *
      * @param type Module type and registration name.
@@ -473,42 +650,13 @@ public:
     /**
      * @brief Register object type.
      *
-     * @param name Object type name.
-     * @param type Objec type.
+     * @param name   Object type name.
+     * @param parent Parent type name.
+     * @param config Type configuration.
      *
      * @return
      */
-    virtual ViewPtr<object::Type> addObjectType(String name, UniquePtr<object::Type> type) = 0;
-
-
-    /**
-     * @brief Create and register object type.
-     *
-     * @param name Object type name.
-     *
-     * @return
-     */
-    virtual ViewPtr<object::Type> createObjectType(String name) = 0;
-
-
-    /**
-     * @brief Create, register and configure object type.
-     *
-     * @param config Object type configuration.
-     *
-     * @return
-     */
-    virtual ViewPtr<object::Type> createObjectType(const config::Configuration& config);
-
-
-    /**
-     * @brief Remove and delete and object type.
-     *
-     * @param name Object type name.
-     *
-     * @return
-     */
-    virtual void deleteObjectType(StringView name) = 0;
+    virtual void addObjectType(String name, String parent, const config::Configuration& config) = 0;
 
 
     /**
@@ -519,6 +667,18 @@ public:
      * @return
      */
     virtual ViewPtr<object::Object> addObject(UniquePtr<object::Object> object) = 0;
+
+
+    /**
+     * @brief Create an object.
+     *
+     * @return Created object
+     */
+    template<typename T>
+    ViewPtr<T> createObject()
+    {
+        return addObject(makeUnique<T>(*this));
+    }
 
 
     /**
@@ -587,6 +747,19 @@ public:
      * @param name Program name.
      */
     virtual void deleteProgram(StringView name) = 0;
+
+
+#if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
+
+    /**
+     * @brief If physics debug data should be shown.
+     *
+     * @param flag
+     * @deprecated
+     */
+    virtual void setDrawPhysics(bool flag) noexcept = 0;
+
+#endif
 
 
 // Public Operations

@@ -77,7 +77,6 @@ class DiffusionPythonApi : public plugin::Api
 
     void initSimulation(Simulation& simulation) override
     {
-        simulation.requirePlugin("python");
         plugin::diffusion_python::init();
     }
 };

@@ -307,7 +307,7 @@ public:
         {
             if (itB->name == name)
             {
-                auto ptr = std::move(*itB);
+                auto ptr = std::move(itB->object);
                 m_data.erase(itB);
                 return ptr;
             }

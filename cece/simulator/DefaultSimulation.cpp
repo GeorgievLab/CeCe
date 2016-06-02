@@ -36,7 +36,6 @@
 // CeCe
 #include "cece/core/Real.hpp"
 #include "cece/core/Log.hpp"
-#include "cece/core/Tuple.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/FileStream.hpp"
@@ -45,7 +44,8 @@
 #include "cece/plugin/Library.hpp"
 #include "cece/plugin/Api.hpp"
 #include "cece/plugin/Manager.hpp"
-#include "cece/config/Exception.hpp"
+#include "cece/init/Initializer.hpp"
+#include "cece/module/Module.hpp"
 #include "cece/module/FactoryManager.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 
@@ -87,7 +87,7 @@ DefaultSimulation::~DefaultSimulation()
 UniquePtr<InOutStream> DefaultSimulation::getResource(StringView name) noexcept
 {
     // Path to resource
-    const auto path = getFileName().parent_path() / name;
+    const auto path = getFileName().parent_path() / String(name);
 
     if (!fileExists(path))
         return nullptr;
@@ -109,7 +109,7 @@ bool DefaultSimulation::hasParameter(StringView name) const noexcept
 
 /* ************************************************************************ */
 
-const String& DefaultSimulation::getParameter(StringView name) const
+String DefaultSimulation::getParameter(StringView name) const
 {
     return m_parameters.get(name);
 }
@@ -145,6 +145,40 @@ UniquePtr<program::Program> DefaultSimulation::getProgram(StringView name) const
         return program->clone();
 
     return m_pluginContext.createProgram(name);
+}
+
+/* ************************************************************************ */
+
+std::size_t DefaultSimulation::getObjectCount() const noexcept
+{
+    return m_objects.getCount();
+}
+
+/* ************************************************************************ */
+
+std::size_t DefaultSimulation::getObjectCount(StringView type) const noexcept
+{
+    return m_objects.getCountByType(type);
+}
+
+/* ************************************************************************ */
+
+DynamicArray<ViewPtr<object::Object>> DefaultSimulation::getObjects() const noexcept
+{
+    DynamicArray<ViewPtr<object::Object>> objects;
+    objects.reserve(m_objects.getCount());
+
+    for (const auto& object : m_objects)
+        objects.push_back(object);
+
+    return objects;
+}
+
+/* ************************************************************************ */
+
+DynamicArray<ViewPtr<object::Object>> DefaultSimulation::getObjects(StringView type) const noexcept
+{
+    return m_objects.getByType(type);
 }
 
 /* ************************************************************************ */
@@ -190,7 +224,7 @@ ViewPtr<plugin::Api> DefaultSimulation::loadPlugin(StringView name)
             return nullptr;
 
         // Store API
-        m_plugins.emplace_back(String(name), api);
+        m_plugins.emplace(String(name), api);
 
         // Init simulation
         api->initSimulation(*this);
@@ -275,7 +309,7 @@ ViewPtr<module::Module> DefaultSimulation::addModule(String name, UniquePtr<modu
 
 ViewPtr<module::Module> DefaultSimulation::createModule(StringView type)
 {
-    addModule(type, m_pluginContext.createModule(name, *this));
+    return addModule(String(type), m_pluginContext.createModule(type, *this));
 }
 
 /* ************************************************************************ */
@@ -287,24 +321,13 @@ void DefaultSimulation::deleteModule(StringView name)
 
 /* ************************************************************************ */
 
-ViewPtr<object::Type> DefaultSimulation::addObjectType(String name, UniquePtr<object::Type> type)
+void DefaultSimulation::addObjectType(String name, String parent, const config::Configuration& config)
 {
-    // TODO: implement
-}
-
-/* ************************************************************************ */
-
-ViewPtr<object::Type> DefaultSimulation::createObjectType(String name)
-{
-    // TODO: implement
-    return nullptr;
-}
-
-/* ************************************************************************ */
-
-void DefaultSimulation::deleteObjectType(StringView name)
-{
-    // TODO: implement
+    return m_objectTypes.add(object::Type{
+        std::move(name),
+        std::move(parent),
+        config.toMemory()
+    });
 }
 
 /* ************************************************************************ */
@@ -457,6 +480,13 @@ void DefaultSimulation::reset()
 
 /* ************************************************************************ */
 
+void DefaultSimulation::terminate()
+{
+    // TODO: terminate
+}
+
+/* ************************************************************************ */
+
 #ifdef CECE_ENABLE_RENDER
 void DefaultSimulation::draw(render::Context& context)
 {
@@ -483,19 +513,6 @@ void DefaultSimulation::draw(render::Context& context)
 
 }
 #endif
-
-/* ************************************************************************ */
-
-ViewPtr<plugin::Api> DefaultSimulation::requirePlugin(const String& name)
-{
-    // Load plugin
-    auto api = loadPlugin(name);
-
-    if (api)
-        return api;
-
-    throw InvalidArgumentException("Plugin '" + name + "' not found");
-}
 
 /* ************************************************************************ */
 

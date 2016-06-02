@@ -74,7 +74,6 @@ class StreamlinesPythonApi : public plugin::Api
 
     void initSimulation(Simulation& simulation) override
     {
-        simulation.requirePlugin("python");
         plugin::streamlines_python::init();
     }
 };

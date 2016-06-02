@@ -33,6 +33,7 @@
 #include "cece/core/ShapeToGrid.hpp"
 #include "cece/core/StringStream.hpp"
 #include "cece/core/UnitIo.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 

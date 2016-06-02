@@ -50,6 +50,7 @@
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
+#  include "cece/simulator/Visualization.hpp"
 #endif
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG

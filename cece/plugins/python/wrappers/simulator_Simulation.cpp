@@ -28,6 +28,8 @@
 
 // CeCe
 #include "cece/core/Assert.hpp"
+#include "cece/object/Object.hpp"
+#include "cece/module/Module.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
@@ -227,8 +229,7 @@ public:
      */
     static PyObject* getObjectCount(SelfType* self) noexcept
     {
-        //return makeObject(self->value->getObjects().getCount()).release();
-        return makeObject(0);
+        return makeObject(self->value->getObjectCount()).release();
     }
 
 
@@ -305,7 +306,7 @@ public:
 
         try
         {
-            return makeObject(self->value->getObjects().getCountByType(name)).release();
+            return makeObject(self->value->getObjectCount(name)).release();
         }
         catch (const cece::Exception& e)
         {

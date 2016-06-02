@@ -29,6 +29,9 @@
 // C++
 #include <numeric>
 
+// CeCe
+#include "cece/config/Configuration.hpp"
+
 // Reactions
 #include "ReactionsParser.hpp"
 

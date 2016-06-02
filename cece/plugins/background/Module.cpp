@@ -33,6 +33,7 @@
 #include "cece/core/VectorRange.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/render/Color.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */

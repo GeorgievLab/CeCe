@@ -152,7 +152,7 @@ public:
      *
      * @return
      */
-    module::Container& getModules() noexcept
+    module::Container& getModuleContainer() noexcept
     {
         return m_modules;
     }
@@ -163,7 +163,7 @@ public:
      *
      * @return
      */
-    const module::Container& getModules() const noexcept
+    const module::Container& getModuleContainer() const noexcept
     {
         return m_modules;
     }
@@ -174,7 +174,7 @@ public:
      *
      * @return
      */
-    object::Container& getObjects() noexcept
+    object::Container& getObjectContainer() noexcept
     {
         return m_objects;
     }
@@ -185,7 +185,7 @@ public:
      *
      * @return
      */
-    const object::Container& getObjects() const noexcept
+    const object::Container& getObjectContainer() const noexcept
     {
         return m_objects;
     }
@@ -196,7 +196,7 @@ public:
      *
      * @return
      */
-    program::NamedContainer& getPrograms() noexcept
+    program::NamedContainer& getProgramContainer() noexcept
     {
         return m_programs;
     }
@@ -207,7 +207,7 @@ public:
      *
      * @return
      */
-    const program::NamedContainer& getPrograms() const noexcept
+    const program::NamedContainer& getProgramContainer() const noexcept
     {
         return m_programs;
     }
@@ -345,7 +345,7 @@ public:
      *
      * @throw RuntimeException
      */
-    const String& getParameter(StringView name) const override;
+    String getParameter(StringView name) const override;
 
 
     /**
@@ -388,6 +388,42 @@ public:
      * @return Pointer to program.
      */
     UniquePtr<program::Program> getProgram(StringView name) const override;
+
+
+    /**
+     * @brief Returns number of simulation objects.
+     *
+     * @return
+     */
+    std::size_t getObjectCount() const noexcept override;
+
+
+    /**
+     * @brief Returns number of simulation objects with given type.
+     *
+     * @param type Object type.
+     *
+     * @return
+     */
+    std::size_t getObjectCount(StringView type) const noexcept override;
+
+
+    /**
+     * @brief Returns all objects.
+     *
+     * @return
+     */
+    DynamicArray<ViewPtr<object::Object>> getObjects() const noexcept override;
+
+
+    /**
+     * @brief Returns all objects with given type.
+     *
+     * @param type Object type.
+     *
+     * @return
+     */
+    DynamicArray<ViewPtr<object::Object>> getObjects(StringView type) const noexcept override;
 
 
     /**
@@ -579,32 +615,13 @@ public:
     /**
      * @brief Register object type.
      *
-     * @param name Object type name.
-     * @param type Objec type.
+     * @param name   Object type name.
+     * @param parent Parent type name.
+     * @param config Type configuration.
      *
      * @return
      */
-    ViewPtr<object::Type> addObjectType(String name, UniquePtr<object::Type> type) override;
-
-
-    /**
-     * @brief Create and register object type.
-     *
-     * @param name Object type name.
-     *
-     * @return
-     */
-    ViewPtr<object::Type> createObjectType(String name) override;
-
-
-    /**
-     * @brief Remove and delete and object type.
-     *
-     * @param name Object type name.
-     *
-     * @return
-     */
-    void deleteObjectType(StringView name) override;
+    void addObjectType(String name, String parent, const config::Configuration& config) override;
 
 
     /**
@@ -838,8 +855,13 @@ private:
     /// Simulation modules.
     module::Container m_modules;
 
-    /// Registered object classes.
-    object::TypeContainer m_objectClasses;
+    /// Registered object types.
+    object::TypeContainer m_objectTypes;
+
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+    /// Box2D world
+    UniquePtr<b2World> m_world;
+#endif
 
     /// Simulation objects.
     object::Container m_objects;
@@ -850,11 +872,6 @@ private:
 #ifdef CECE_ENABLE_RENDER
     /// Simulation visualization.
     Visualization m_visualization;
-#endif
-
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    /// Box2D world
-    UniquePtr<b2World> m_world;
 #endif
 
 #if defined(CECE_ENABLE_RENDER) && defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)

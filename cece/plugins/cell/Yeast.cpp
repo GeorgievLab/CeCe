@@ -34,6 +34,7 @@
 #include "cece/core/constants.hpp"
 #include "cece/core/Shape.hpp"
 #include "cece/core/UnitIo.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 #ifdef CECE_ENABLE_RENDER

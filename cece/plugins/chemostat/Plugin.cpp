@@ -32,6 +32,7 @@
 #include "cece/core/Shape.hpp"
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
