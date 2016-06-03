@@ -873,13 +873,17 @@ void Simulator::initVideoCapture(const FilePath& fileName)
     int height;
     glfwGetFramebufferSize(m_window.get(), &width, &height);
 
-    if (system("which ffmpeg") == 0)
+#if _WIN32
+    if (std::system("WHERE ffmpeg") == 0)
+#else
+    if (std::system("which ffmpeg") == 0)
+#endif
     {
         OutStringStream oss;
         oss <<
             "ffmpeg -r 60 -f rawvideo -pix_fmt rgba "
             "-s " << width << "x" << height << " "
-            "-i - -threads 0 -vf vflip -y "
+            "-i - -threads 0 -vf vflip -y -q:v 1 "
             "" << filename
         ;
 
@@ -888,13 +892,17 @@ void Simulator::initVideoCapture(const FilePath& fileName)
         // Open video writer
         m_videoWriter = popen(oss.str().c_str(), "w");
     }
-    else if (system("which avconv") == 0)
+#if _WIN32
+    else if (std::system("WHERE avconv") == 0)
+#else
+    else if (std::system("which avconv") == 0)
+#endif
     {
         OutStringStream oss;
         oss <<
             "avconv -r 60 -f rawvideo -pix_fmt rgba "
             "-s " << width << "x" << height << " "
-            "-i - -threads 0 -vf vflip -y "
+            "-i - -threads 0 -vf vflip -y -q:v 1 "
             "" << filename
         ;
 
@@ -906,7 +914,7 @@ void Simulator::initVideoCapture(const FilePath& fileName)
 
     // Disable window resizing
     if (!m_videoWriter)
-        Log::warning("Unable to capture video");
+        Log::warning("Unable to capture video: ffmpeg or avconv not found");
 }
 #endif
 
