@@ -128,10 +128,6 @@ void Module::update()
 
 void Module::draw(render::Context& context)
 {
-    // Skip first image, because it's not rendered yet
-    if (getSimulation().getIteration() <= 1)
-        return;
-
 #ifdef CECE_THREAD_SAFE
     // Lock access
     MutexGuard guard(m_mutex);

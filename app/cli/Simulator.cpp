@@ -291,9 +291,6 @@ void Simulator::init(AtomicBool& flag)
 void Simulator::step()
 {
 #ifdef CECE_ENABLE_RENDER
-    if (!isPaused())
-        m_termination = !update();
-
     if (isVisualized())
     {
         // Redraw scene
@@ -310,6 +307,9 @@ void Simulator::step()
         /// Poll for and process events
         glfwPollEvents();
     }
+
+    if (!isPaused())
+        m_termination = !update();
 #else
     m_termination = !update();
 #endif
@@ -342,7 +342,7 @@ void Simulator::draw()
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
     // Capture image
-    if (isVideoCaptured() && m_simulator.getSimulation()->getIteration() > 3)
+    if (isVideoCaptured() && m_simulator.getSimulation()->getIteration() > 1)
         captureVideoFrame();
 #endif
 }
@@ -737,6 +737,12 @@ void Simulator::initVisualization()
     glfwSetCursorPosCallback(m_window, +[](GLFWwindow* win, double xpos, double ypos) {
         reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win))->onMouseMove(xpos, ypos);
     });
+
+    // Clear window
+    glfwMakeContextCurrent(m_window);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glfwSwapBuffers(m_window);
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
     if (!m_videoFileName.empty())
