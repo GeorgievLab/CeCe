@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="20um 20um" dt="1s" iterations="1000">
+
+    <module name="diffusion" grid="100" background="black">
+    </module>
+
+    <program name="make-rfp" language="stochastic-reactions">
+<![CDATA[
+        null > 10 > molA;
+]]>
+    </program>
+
+    <!-- Create yeast -->
+    <object class="cell.Yeast" position="0 5um"  programs="make-rfp cell.store-molecules" />
+</simulation>
+

@@ -1,9 +1,9 @@
 
-## Cell
+# Cell Plugin
 
 Plugin offers things usefull to working with cells.
 
-### Objects
+## Objects
 
 Objects offered by `cell` plugin:
 
@@ -33,16 +33,16 @@ Cell can have set initial amount of molecule at the beginning.
 </object>
 ```
 
-#### Yeast
+### Yeast
 
 | Property             | Type       | Default | Description                         | Example  |
 | -------------------- | ---------- | ------- | ----------------------------------- | -------- |
 | `volume-bud-create`  | `unit[m3]` | `42um3` | Yeast volume when a bud is created. | `300um3` |
 | `volume-bud-release` | `unit[m3]` | `35um3` | Bud volume when is release.         | `300um3` |
 
-### Programs
+## Programs
 
-#### `store-molecules`
+### `store-molecules`
 
 Program that stores amount of all molecules in current iteration to `molecules` data table. It stores object identifier to distinguish between multiple cells.
 
@@ -50,7 +50,7 @@ Program that stores amount of all molecules in current iteration to `molecules` 
 <object class="cell.Yeast" programs="cell.store-molecules" />
 ```
 
-##### Stored data:
+### Stored data:
 
 * `iteration` - Iteration number.
 * `totalTime` - Simulation time in seconds.

@@ -1,33 +1,33 @@
 
-## Cell Python
+# Cell Python Plugin
 
 Adds access to `cell` plugin objects from Python.
 
-### Objects
+## Objects
 
 | Name            | Parent             | Description        |
 | --------------- | ------------------ | ------------------ |
 | `cell.BaseCell` | `simulator.Object` | Base cell object.  |
 | `cell.Yeast`    | `cell.BaseCell`    | Yeast cell.        |
 
-#### Object `cell.BaseCell`
+### Object `cell.BaseCell`
 
 Base class for all cell objects.
 
-##### Properties:
+#### Properties:
 
 | Name         | Type    | Description       |
 | ------------ | ------- | ----------------- |
 | `volume`     | `float` | Cell volume       |
 | `growthRate` | `float` | Cell growth rate. |
 
-##### Methods:
+#### Methods:
 
 | Name            | Return  | Arguments | Description       |
 | --------------- | ------- | --------- | ----------------- |
 | `moleculeCount` | `float` | `string`  | Return amount of required molecule stored in cell. |
 | `kill`          | -       | -         | Kills the cell.   |
 
-#### Object `cell.Yeast`
+### Object `cell.Yeast`
 
 Nothing special.

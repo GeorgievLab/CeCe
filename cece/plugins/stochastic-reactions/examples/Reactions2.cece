@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="20um 20um" dt="1s" iterations="1000" visualized="false">
+
+    <plugin name="diffusion" />
+    <plugin name="cell" />
+    <plugin name="stochastic-reactions" />
+
+    <module name="diffusion" grid="100" background="black" />
+
+    <program name="make-yfp" language="stochastic-reactions">
+<![CDATA[
+        null > 500 / molA > molA;
+        if molA > 500:
+        {
+        null > 10 > molB;
+        null > 20 > molC;
+        null > 30 > molD;
+        }
+]]>
+    </program>
+    <object class="cell.Yeast" position="0 0"    programs="make-yfp cell.store-molecules" />
+</simulation>
+

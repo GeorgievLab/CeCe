@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!-- Simulation definition -->
+<simulation world-size="20um 20um" dt="1s" iterations="1000" visualized="false">
+
+    <plugin name="cell" />
+    <plugin name="diffusion" />
+    <plugin name="stochastic-reactions" />
+
+    <module name="diffusion" grid="100" background="black" />
+
+    <program name="make-rfp" language="stochastic-reactions">
+<![CDATA[
+        null > 5 > molA + molB;
+        molB > 0.01 > molC;
+        if molC > 2 * 100 : molC > 5 > molD;
+]]>
+    </program>
+
+    <!-- Create yeast -->
+    <object class="cell.Yeast" position="0 5um"  programs="make-rfp cell.store-molecules" />
+</simulation>
+

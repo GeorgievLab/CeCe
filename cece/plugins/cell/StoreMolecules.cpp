@@ -43,6 +43,12 @@ namespace cell {
 
 /* ************************************************************************ */
 
+// TODO: find a better solution
+static bool g_header = false;
+CsvFile g_file("molecules.csv");
+
+/* ************************************************************************ */
+
 StoreMolecules::~StoreMolecules() = default;
 
 /* ************************************************************************ */
@@ -56,24 +62,19 @@ UniquePtr<program::Program> StoreMolecules::clone() const
 
 void StoreMolecules::call(simulator::Simulation& simulation, object::Object& object, units::Time dt)
 {
-    // TODO: find a better solution
-
     // Cast to cell
     auto& cell = object.castThrow<CellBase>("Cell object required");
 
-    static bool header = false;
-    CsvFile file("molecules.csv");
-
-    if (!header)
+    if (!g_header)
     {
-        file.writeHeader("iteration", "totalTime", "oid", "molecule", "amount");
-        header = true;
+        g_file.writeHeader("iteration", "totalTime", "oid", "molecule", "amount");
+        g_header = true;
     }
 
     // Store molecules
     for (const auto& molecule : cell.getMolecules())
     {
-        file.writeRecord(
+        g_file.writeRecord(
             simulation.getIteration(),
             simulation.getTotalTime().value(),
             object.getId(),

@@ -1,9 +1,9 @@
 
-## Diffusion
+# Diffusion Plugin
   
 The main module adds support for global diffusion in simulation. Diffusion can handle any number of separate signals. They cannot affect each other.
 
-##### Example:
+## Example:
 
 Enables diffusion with two signals named *GFP* and *RFP* with diffusion and degradation rates. Those signals have specified colors how they are rendered.
 
@@ -14,18 +14,18 @@ Enables diffusion with two signals named *GFP* and *RFP* with diffusion and degr
 </module>
 ```
 
-##### Parameters:
+## Parameters:
 
 | Name         | Type           | Default        | Description |
 | ------------ | -------------- | -------------- | ----------- |
 | `grid`       | `vector[uint]` | -              | Diffusion grid size. |
 | `background` | `color`        | `transparent`  | Background color. |
 
-### Signals
+## Signals
 
 You can specify any number of different signals, there is no limitation. Each signal is specified separately.
 
-##### Parameters:
+### Parameters:
 
 | Name               | Type           | Default        | Description |
 | ------------------ | -------------- | -------------- | ----------- |
@@ -35,18 +35,18 @@ You can specify any number of different signals, there is no limitation. Each si
 | `color`            | `color`        | Predefined     | Signal color when the module is rendered. |
 | `saturation`       | `unit[mol/m3]` | `1umol/um3`    | Defines concentration when signal color is 100%. |
 
-### Additional modules
+## Additional modules
 
-#### `store-state`
+### `Export`
 
 Module that stores values from signal grid of all signals into `diffusion` data table.
 
-##### Example:
+### Example:
 
 Store diffusion data for all iterations.
 
 ```xml
-<module name="diffusion.store-state" />
+<module name="diffusion.export" filename="diffusion.csv" active="100-200" signals="S1 S2" />
 ```
 
 ##### Stored data:

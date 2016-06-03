@@ -1,9 +1,9 @@
 
-## Agglutination
+# Agglutination Plugin
 
 This plugin enables simulation object sticking. When two simulation object collides they might be bound together and after some time the bound can be removed. This is based on bond definition where you can specify required molecules in both collided cells to create a bond. Specifying association and dissociation constant you indirectly defines probability of bond creation and destruction.
 
-##### Example:
+## Example
 
 Example defines bonds between cells.
 
@@ -15,9 +15,9 @@ Example defines bonds between cells.
 </module>
 ```
 
-### Bonds
+## Bonds
 
-##### Parameters:
+### Parameters:
 
 | Name                      | Type    | Default | Description                  |
 | ------------------------- | ------- | ------- | ---------------------------- |
