@@ -276,6 +276,7 @@
       <File Name="render/vs.colormap.hpp"/>
       <File Name="render/vs.smooth.hpp"/>
     </VirtualDirectory>
+    <File Name="render/OpenGL.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="simulator">
     <File Name="simulator/Simulator.cpp"/>

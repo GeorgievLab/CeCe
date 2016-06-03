@@ -25,6 +25,8 @@
 
 #pragma once
 
+/* ************************************************************************ */
+
 // OpenGL
 #if defined(__linux__)
 #define GL_GLEXT_PROTOTYPES
