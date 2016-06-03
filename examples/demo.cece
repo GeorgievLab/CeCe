@@ -34,7 +34,7 @@
             char-length="40um"
             number-nodes="20"
             tau="1.5"
-            _dynamic="false"
+            dynamic="false"
             height="40um"
             layer-magnitude="velocity"
             layer-density="density"
