@@ -33,6 +33,7 @@
 #include "cece/core/StaticMatrix.hpp"
 #include "cece/core/TimeMeasurement.hpp"
 #include "cece/core/VectorRange.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
 

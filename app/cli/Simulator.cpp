@@ -601,7 +601,7 @@ String Simulator::getTitle() const noexcept
 {
     String title =
         APP_NAME
-        " simulator "
+        " "
         "[" + m_simulationFile.filename().string() + "] "
         "(" + toString(getSimulation()->getIteration())
     ;

@@ -214,7 +214,7 @@ class ObstaclesSvgApi : public plugin::Api
         if (!image)
             throw RuntimeException("Cannot parse SVG");
 
-        auto obstacle = simulation.createObject("obstacle.Polygon");
+        auto obstacle = simulation.createObject("obstacle.Polygon", object::Object::Type::Static);
         auto& shapes = obstacle->getMutableShapes();
 
 #ifdef CECE_ENABLE_RENDER

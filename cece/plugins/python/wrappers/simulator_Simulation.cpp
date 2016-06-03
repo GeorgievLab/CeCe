@@ -269,16 +269,17 @@ public:
      *
      * @return
      */
-    static PyObject* buildObject(SelfType* self, PyObject* args) noexcept
+    static PyObject* createObject(SelfType* self, PyObject* args) noexcept
     {
         char* name;
+        int type = static_cast<int>(object::Object::Type::Dynamic);
 
-        if (!PyArg_ParseTuple(args, "s", &name))
+        if (!PyArg_ParseTuple(args, "s|i", &name, &type))
             return nullptr;
 
         try
         {
-            return makeObject(self->value->createObject(name)).release();
+            return makeObject(self->value->createObject(name, static_cast<object::Object::Type>(type))).release();
         }
         catch (const cece::Exception& e)
         {
@@ -394,7 +395,7 @@ private:
     // Type methods.
     PyMethodDef m_methods[6] = {
         {"getModule",       (PyCFunction) getModule,        METH_VARARGS, nullptr},
-        {"buildObject",     (PyCFunction) buildObject,      METH_VARARGS, nullptr},
+        {"createObject",    (PyCFunction) createObject,     METH_VARARGS, nullptr},
         {"objectCountType", (PyCFunction) objectCountType,  METH_VARARGS, nullptr},
         {"getParameter",    (PyCFunction) getParameter,     METH_VARARGS, nullptr},
         {"getObject",       (PyCFunction) getObject,        METH_VARARGS, nullptr},

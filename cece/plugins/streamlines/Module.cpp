@@ -159,6 +159,9 @@ void Module::init(AtomicBool& flag)
     }
 
     Log::info("[streamlines] Initialization done.");
+
+    if (getInitIterations() == 0 && !isDynamic())
+        Log::warning("[streamlines] Static simulation without initialization!");
 }
 
 /* ************************************************************************ */
