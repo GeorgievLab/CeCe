@@ -58,6 +58,7 @@ set(DIR_PLUGINS "${CMAKE_PROJECT_NAME}/plugins")
 option(CONFIG_CLI_ENABLE            "Build CLI application" On)
 option(CONFIG_GUI_ENABLE            "Build GUI application" Off)
 option(CONFIG_RENDER_ENABLE         "Enable simulation rendering (vizualization support)" On)
+option(CONFIG_OPENMP_ENABLE         "Enable OpenMP support" On)
 option(CONFIG_PHYSICS_BUILTIN       "Enable builtin physics engine (Box2D)" On)
 
 # Real type
@@ -174,6 +175,14 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(Boost_USE_STATIC_LIBS On)
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+
+if (CONFIG_OPENMP_ENABLE)
+    find_package(OpenMP)
+    if (OPENMP_FOUND)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    endif ()
+endif ()
 
 # ######################################################################### #
 

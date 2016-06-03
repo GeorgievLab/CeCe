@@ -228,8 +228,8 @@ void Module::update()
     updateObstacles();
 
     // Update all signals
-    // TODO: use OpenMP
-    for (auto id : getSignalIds())
+    #pragma omp parallel for
+    for (SignalId id = 0u; id < getSignalCount(); ++id)
         updateSignal(id);
 }
 

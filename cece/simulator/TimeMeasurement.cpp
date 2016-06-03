@@ -39,6 +39,7 @@ namespace simulator {
 void TimeMeasurement::operator()(OutStream& out, StringView name, Clock::duration dt) const noexcept
 {
     using namespace std::chrono;
+    #pragma omp critical
     out << name.getData() << ";" << m_simulation->getIteration() << ";" << duration_cast<microseconds>(dt).count() << "\n";
 }
 
