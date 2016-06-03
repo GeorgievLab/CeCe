@@ -41,6 +41,9 @@
 #include "cece/core/InOutStream.hpp"
 #include "cece/simulator/IterationType.hpp"
 
+/// @deprecated
+#include "cece/object/Object.hpp"
+
 /* ************************************************************************ */
 
 namespace cece {
@@ -51,7 +54,7 @@ namespace cece {
     namespace plugin { class Api; }
     namespace init { class Initializer; }
     namespace module { class Module; }
-    namespace object { class Object; }
+    //namespace object { class Object; }
     namespace object { class Type; }
     namespace program { class Program; }
 
@@ -643,6 +646,17 @@ public:
      * @return Pointer to created object.
      */
     virtual ViewPtr<object::Object> createObject(StringView type) = 0;
+
+
+    /**
+     * @brief Create and register object.
+     *
+     * @param type Object type name.
+     *
+     * @return Pointer to created object.
+     * @deprecated
+     */
+    virtual ViewPtr<object::Object> createObject(StringView type, object::Object::Type state) = 0;
 
 
     /**

@@ -339,9 +339,16 @@ ViewPtr<object::Object> DefaultSimulation::createObject(StringView type)
 
 /* ************************************************************************ */
 
+ViewPtr<object::Object> DefaultSimulation::createObject(StringView type, object::Object::Type state)
+{
+    return addObject(m_pluginContext.createObject(type, *this, state));
+}
+
+/* ************************************************************************ */
+
 void DefaultSimulation::deleteObject(ViewPtr<object::Object> object)
 {
-    // TODO: implement
+    m_objects.deleteObject(object);
 }
 
 /* ************************************************************************ */

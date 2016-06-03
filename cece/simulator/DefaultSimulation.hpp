@@ -633,6 +633,17 @@ public:
 
 
     /**
+     * @brief Create and register object.
+     *
+     * @param type Object type name.
+     *
+     * @return Pointer to created object.
+     * @deprecated
+     */
+    ViewPtr<object::Object> createObject(StringView type, object::Object::Type state) override;
+
+
+    /**
      * @brief Remove given object from simulation and delete it.
      *
      * @param object Pointer to deleted object.

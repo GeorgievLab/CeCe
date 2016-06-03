@@ -175,13 +175,15 @@ void Simulation::createObjectType(const config::Configuration& config)
 ViewPtr<object::Object> Simulation::createObject(const config::Configuration& config)
 {
     // Get object type
-    const String type = config.has("type")
-        ? config.get("type")
-        : config.get("class")
-    ;
+    //const String type = config.has("type")
+    //    ? config.get("type")
+    //    : config.get("class")
+    //;
+    const auto type = config.get("class");
+    const auto mode = config.get("type", object::Object::Type::Dynamic);
 
     // Create object
-    auto object = createObject(type);
+    auto object = createObject(type, mode);
 
     // Configure object
     if (object)
