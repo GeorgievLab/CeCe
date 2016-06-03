@@ -40,7 +40,9 @@
 #include "cece/plugin/Context.hpp"
 #include "cece/loader/Loader.hpp"
 #include "cece/loader/FactoryManager.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/DefaultSimulation.hpp"
 
 // Plugin
 #include "Configuration.hpp"
@@ -68,7 +70,7 @@ class XmlLoader : public loader::Loader
     UniquePtr<Simulation> fromStream(plugin::Context& context, InStream& source,
         const FilePath& filename, ViewPtr<const Parameters> parameters) const override
     {
-        auto simulation = makeUnique<Simulation>(context, filename);
+        auto simulation = makeUnique<DefaultSimulation>(context, filename);
 
         if (parameters)
             simulation->getParameters().append(*parameters);
@@ -88,7 +90,7 @@ class XmlLoader : public loader::Loader
         // Configure simulation
         simulation->loadConfig(config);
 
-        return simulation;
+        return std::move(simulation);
     }
 
 

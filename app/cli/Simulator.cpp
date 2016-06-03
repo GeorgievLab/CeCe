@@ -50,6 +50,7 @@
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
+#  include "cece/simulator/Visualization.hpp"
 #endif
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
@@ -510,13 +511,6 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
         saveImage();
         break;
     }
-#endif
-
-#ifdef CECE_ENABLE_BOX2D_PHYSICS_DEBUG
-    case GLFW_KEY_D:
-        m_simulator.getSimulation()->setDrawPhysics(!m_simulator.getSimulation()->isDrawPhysics());
-        forceRedraw();
-        break;
 #endif
     }
 }

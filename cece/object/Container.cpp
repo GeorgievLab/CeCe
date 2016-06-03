@@ -94,6 +94,21 @@ void Container::removeDeleted() noexcept
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
+void Container::draw(render::Context& context)
+{
+    for (const auto& obj : m_data)
+    {
+        if (!obj->isVisible())
+            continue;
+
+        obj->draw(context);
+    }
+}
+#endif
+
+/* ************************************************************************ */
+
 }
 }
 

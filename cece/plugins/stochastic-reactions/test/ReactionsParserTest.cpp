@@ -33,6 +33,7 @@
 #include "cece/core/UnitsCtors.hpp"
 #include "cece/plugin/Context.hpp"
 #include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/DefaultSimulation.hpp"
 
 // Plugins
 #include "cece/plugins/cell/CellBase.hpp"
@@ -70,7 +71,7 @@ static void test_impl(
     SCOPED_TRACE(code);
 
     plugin::Context pluginContext;
-    simulator::Simulation simulation(pluginContext);
+    simulator::DefaultSimulation simulation(pluginContext);
     plugin::cell::CellBase cell(simulation);
     Context context(nullptr, cell, nullptr, simulation.getParameters());
 
@@ -136,10 +137,10 @@ static void test_invalid_impl(int line, const String& code)
         // Nothing to do.
     }
     // Reaction IDs
-    EXPECT_EQ(0, reactions.getMoleculeCount());
+    EXPECT_EQ(0u, reactions.getMoleculeCount());
 
     // Reaction table
-    ASSERT_EQ(0, reactions.getReactionCount());
+    ASSERT_EQ(0u, reactions.getReactionCount());
 }
 
 /* ************************************************************************ */

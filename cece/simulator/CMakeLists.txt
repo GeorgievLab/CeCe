@@ -36,6 +36,8 @@ set(SRCS
     Visualization.hpp
     Visualization.cpp
     VisualizationLayer.hpp
+    DefaultSimulation.hpp
+    DefaultSimulation.cpp
 )
 
 if (CONFIG_PHYSICS_BUILTIN)

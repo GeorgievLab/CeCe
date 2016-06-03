@@ -47,8 +47,10 @@
 #include "cece/core/Log.hpp"
 #include "cece/core/UnitIo.hpp"
 #include "cece/object/Object.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/TimeMeasurement.hpp"
 #include "cece/simulator/Simulation.hpp"
+#include "cece/simulator/Visualization.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/NoDynamics.hpp"

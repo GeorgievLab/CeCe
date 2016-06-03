@@ -37,6 +37,7 @@
 #include "cece/core/Real.hpp"
 #include "cece/core/FileStream.hpp"
 #include "cece/config/Configuration.hpp"
+#include "cece/plugin/Context.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Box2D
@@ -386,14 +387,19 @@ void Object::applyAngularImpulse(const units::Impulse& impulse) noexcept
 
 void Object::useProgram(StringView name) noexcept
 {
-    addProgram(getSimulation().getProgram(name));
+    auto program = getSimulation().getProgram(name);
+
+    if (program)
+        addProgram(std::move(program));
+    else
+        Log::warning("Unable to create program '", name, "'");
 }
 
 /* ************************************************************************ */
 
 void Object::destroy()
 {
-    m_simulation.deleteObject(this);
+    getSimulation().deleteObject(this);
 }
 
 /* ************************************************************************ */
@@ -472,14 +478,7 @@ void Object::configure(const config::Configuration& config, simulator::Simulatio
     if (config.has("programs"))
     {
         for (const auto& name : split(config.get("programs"), ' '))
-        {
-            auto program = simulation.getProgram(name);
-
-            if (program)
-                addProgram(std::move(program));
-            else
-                Log::warning("Unable to create program: ", name);
-        }
+            useProgram(name);
     }
 
     if (config.has("data-out"))

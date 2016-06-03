@@ -76,8 +76,6 @@ class CellPythonApi : public plugin::Api
 
     void initSimulation(Simulation& simulation) override
     {
-        // Require python plugin
-        simulation.requirePlugin("python");
         plugin::cell_python::init();
     }
 };

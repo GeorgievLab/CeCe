@@ -131,8 +131,6 @@
       <File Name="core/CMakeLists.txt"/>
     </VirtualDirectory>
     <VirtualDirectory Name="container">
-      <File Name="core/DataTable.cpp"/>
-      <File Name="core/DataTable.hpp"/>
       <File Name="core/DynamicArray.hpp"/>
       <File Name="core/ListenerContainer.hpp"/>
       <File Name="core/Map.hpp"/>
@@ -296,6 +294,8 @@
     <File Name="simulator/VisualizationLayer.hpp"/>
     <File Name="simulator/Visualization.cpp"/>
     <File Name="simulator/IterationRange.hpp"/>
+    <File Name="simulator/DefaultSimulation.hpp"/>
+    <File Name="simulator/DefaultSimulation.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>

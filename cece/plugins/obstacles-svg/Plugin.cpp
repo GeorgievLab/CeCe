@@ -37,9 +37,11 @@
 #include "cece/core/StaticArray.hpp"
 #include "cece/core/Log.hpp"
 #include "cece/core/UnitIo.hpp"
+#include "cece/core/Shape.hpp"
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
 #include "cece/config/Configuration.hpp"
+#include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 #ifdef CECE_ENABLE_RENDER
@@ -212,7 +214,7 @@ class ObstaclesSvgApi : public plugin::Api
         if (!image)
             throw RuntimeException("Cannot parse SVG");
 
-        auto obstacle = simulation.buildObject("obstacle.Polygon");
+        auto obstacle = simulation.createObject("obstacle.Polygon");
         auto& shapes = obstacle->getMutableShapes();
 
 #ifdef CECE_ENABLE_RENDER

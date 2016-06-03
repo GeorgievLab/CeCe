@@ -37,6 +37,12 @@
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
+namespace core { namespace render { class Context; } }
+#endif
+
+/* ************************************************************************ */
+
 namespace cece {
 namespace object {
 
@@ -275,10 +281,28 @@ public:
      *
      * @return Pointer to added object.
      */
-    ViewPtr<Object> addObject(UniquePtr<Object> object)
+    ViewPtr<Object> add(UniquePtr<Object> object)
     {
         m_data.push_back(Record{std::move(object), false});
         return m_data.back().ptr;
+    }
+
+
+    /**
+     * @brief Create and store an object.
+     *
+     * @tparam Args Construction argument types.
+     *
+     * @param args Construction arguments.
+     *
+     * @return View pointer to stored object.
+     */
+    template<typename T, typename... Args>
+    ViewPtr<T> create(Args&&... args)
+    {
+        auto ptr = add(makeUnique<T>(std::forward<Args>(args)...));
+
+        return static_cast<T*>(ptr.get());
     }
 
 
@@ -298,6 +322,18 @@ public:
      * @brief Remove all deleted objects.
      */
     void removeDeleted() noexcept;
+
+
+#ifdef CECE_ENABLE_RENDER
+
+    /**
+     * @brief Render objects.
+     *
+     * @param context Rendering context.
+     */
+    void draw(render::Context& context);
+
+#endif
 
 
 // Private Data Members

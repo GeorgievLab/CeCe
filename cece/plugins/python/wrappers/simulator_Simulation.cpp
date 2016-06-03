@@ -28,6 +28,8 @@
 
 // CeCe
 #include "cece/core/Assert.hpp"
+#include "cece/object/Object.hpp"
+#include "cece/module/Module.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 // Plugin
@@ -189,7 +191,8 @@ public:
      */
     static PyObject* getGravity(SelfType* self) noexcept
     {
-        return makeObject(self->value->getGravity()).release();
+        //return makeObject(self->value->getGravity()).release();
+        return makeObject(0);
     }
 
 
@@ -205,7 +208,7 @@ public:
     {
         try
         {
-            self->value->setGravity(cast<AccelerationVector>(value));
+            //self->value->setGravity(cast<AccelerationVector>(value));
         }
         catch (const cece::Exception& e)
         {
@@ -238,7 +241,7 @@ public:
      *
      * @return
      */
-    static PyObject* useModule(SelfType* self, PyObject* args) noexcept
+    static PyObject* getModule(SelfType* self, PyObject* args) noexcept
     {
         char* name;
 
@@ -247,7 +250,7 @@ public:
 
         try
         {
-            return makeObject(self->value->useModule(name)).release();
+            return makeObject(self->value->getModule(name)).release();
         }
         catch (const cece::Exception& e)
         {
@@ -269,14 +272,13 @@ public:
     static PyObject* buildObject(SelfType* self, PyObject* args) noexcept
     {
         char* name;
-        int type = static_cast<int>(object::Object::Type::Dynamic);
 
-        if (!PyArg_ParseTuple(args, "s|i", &name, &type))
+        if (!PyArg_ParseTuple(args, "s", &name))
             return nullptr;
 
         try
         {
-            return makeObject(self->value->buildObject(name, static_cast<object::Object::Type>(type))).release();
+            return makeObject(self->value->createObject(name)).release();
         }
         catch (const cece::Exception& e)
         {
@@ -304,7 +306,7 @@ public:
 
         try
         {
-            return makeObject(self->value->getObjectCountType(name)).release();
+            return makeObject(self->value->getObjectCount(name)).release();
         }
         catch (const cece::Exception& e)
         {
@@ -391,7 +393,7 @@ private:
 
     // Type methods.
     PyMethodDef m_methods[6] = {
-        {"useModule",       (PyCFunction) useModule,        METH_VARARGS, nullptr},
+        {"getModule",       (PyCFunction) getModule,        METH_VARARGS, nullptr},
         {"buildObject",     (PyCFunction) buildObject,      METH_VARARGS, nullptr},
         {"objectCountType", (PyCFunction) objectCountType,  METH_VARARGS, nullptr},
         {"getParameter",    (PyCFunction) getParameter,     METH_VARARGS, nullptr},

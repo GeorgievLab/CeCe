@@ -37,6 +37,7 @@
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/FileStream.hpp"
+#include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/render/ImageData.hpp"
 

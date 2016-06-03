@@ -32,6 +32,7 @@
 #include <algorithm>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/String.hpp"
@@ -201,6 +202,27 @@ public:
 
 
     /**
+     * @brief Returns object with given value.
+     *
+     * @tparam T2 Required type.
+     *
+     * @param name Object name.
+     *
+     * @return Pointer to object. Can be nullptr.
+     */
+    template<typename T2>
+    ViewPtr<T2> get(StringView name) const noexcept
+    {
+        auto ptr = get(name);
+        if (!ptr)
+            return nullptr;
+
+        Assert(dynamic_cast<T2*>(ptr.get()));
+        return static_cast<T2*>(ptr.get());
+    }
+
+
+    /**
      * @brief Returns begin iterator.
      *
      * @return
@@ -285,7 +307,7 @@ public:
         {
             if (itB->name == name)
             {
-                auto ptr = std::move(*itB);
+                auto ptr = std::move(itB->object);
                 m_data.erase(itB);
                 return ptr;
             }

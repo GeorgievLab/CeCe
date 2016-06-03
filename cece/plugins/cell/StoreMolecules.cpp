@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -27,8 +27,8 @@
 #include "cece/plugins/cell/StoreMolecules.hpp"
 
 // CeCe
-#include "cece/core/DataTable.hpp"
 #include "cece/core/Exception.hpp"
+#include "cece/core/CsvFile.hpp"
 #include "cece/object/Object.hpp"
 #include "cece/simulator/Simulation.hpp"
 
@@ -56,20 +56,31 @@ UniquePtr<program::Program> StoreMolecules::clone() const
 
 void StoreMolecules::call(simulator::Simulation& simulation, object::Object& object, units::Time dt)
 {
+    // TODO: find a better solution
+
     // Cast to cell
     auto& cell = object.castThrow<CellBase>("Cell object required");
 
-    // Get data table
-    auto& table = simulation.getDataTable("molecules");
+    static bool header = false;
+    CsvFile file("molecules.csv");
 
-    // Create new row
-    // iteration;totalTime;id;molecules...
-    table.addRow(
-        makePair("iteration", simulation.getIteration()),
-        makePair("totalTime", simulation.getTotalTime().value()),
-        makePair("id", object.getId()),
-        cell.getMolecules()
-    );
+    if (!header)
+    {
+        file.writeHeader("iteration", "totalTime", "oid", "molecule", "amount");
+        header = true;
+    }
+
+    // Store molecules
+    for (const auto& molecule : cell.getMolecules())
+    {
+        file.writeRecord(
+            simulation.getIteration(),
+            simulation.getTotalTime().value(),
+            object.getId(),
+            molecule.first,
+            molecule.second
+        );
+    }
 }
 
 /* ************************************************************************ */
