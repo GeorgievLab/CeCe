@@ -288,13 +288,11 @@
     <File Name="simulator/Simulation.hpp"/>
     <File Name="simulator/ConverterBox2D.cpp"/>
     <File Name="simulator/ConverterBox2D.hpp"/>
-    <File Name="simulator/IterationType.hpp"/>
     <File Name="simulator/TimeMeasurement.hpp"/>
     <File Name="simulator/TimeMeasurement.cpp"/>
     <File Name="simulator/Visualization.hpp"/>
     <File Name="simulator/VisualizationLayer.hpp"/>
     <File Name="simulator/Visualization.cpp"/>
-    <File Name="simulator/IterationRange.hpp"/>
     <File Name="simulator/DefaultSimulation.hpp"/>
     <File Name="simulator/DefaultSimulation.cpp"/>
   </VirtualDirectory>

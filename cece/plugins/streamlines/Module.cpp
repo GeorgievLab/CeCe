@@ -134,7 +134,7 @@ void Module::init(AtomicBool& flag)
         m_lattice.initEquilibrium();
 
         // Initialization iterations
-        for (simulator::IterationNumber it = 1; it <= getInitIterations(); it++)
+        for (IterationType it = 1; it <= getInitIterations(); it++)
         {
             if ((it % 100) == 0)
                 Log::info("[streamlines] Initialization ", it, "/", getInitIterations());
@@ -184,7 +184,7 @@ void Module::update()
 #endif
 
         // Compute inner iterations
-        for (simulator::IterationNumber it = 0; it < getInnerIterations(); it++)
+        for (IterationType it = 0; it < getInnerIterations(); it++)
         {
             // Collide and propagate
             m_lattice.collideAndStream();

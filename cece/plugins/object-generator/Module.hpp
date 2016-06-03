@@ -27,21 +27,17 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
 // CeCe
+#include "cece/config.hpp"
 #include "cece/core/Real.hpp"
 #include "cece/core/Pair.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/core/DynamicArray.hpp"
+#include "cece/core/IterationRange.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/config/Configuration.hpp"
-#include "cece/simulator/IterationType.hpp"
 
 /* ************************************************************************ */
 
@@ -93,7 +89,7 @@ struct ObjectDesc
     Distributions distributions;
 
     /// List of iteration ranges when the generator is active.
-    DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> active;
+    DynamicArray<IterationRange> active;
 
     /// Object configuration
     config::Configuration config;

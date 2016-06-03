@@ -46,12 +46,12 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/Parameters.hpp"
+#include "cece/core/IterationType.hpp"
 #include "cece/init/Container.hpp"
 #include "cece/module/Container.hpp"
 #include "cece/object/Container.hpp"
 #include "cece/object/TypeContainer.hpp"
 #include "cece/program/NamedContainer.hpp"
-#include "cece/simulator/IterationType.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 #ifdef CECE_ENABLE_RENDER
@@ -254,7 +254,7 @@ public:
      *
      * @return
      */
-    IterationNumber getIteration() const noexcept override
+    IterationType getIteration() const noexcept override
     {
         return m_iteration;
     }
@@ -265,7 +265,7 @@ public:
      *
      * @return
      */
-    IterationNumber getIterations() const noexcept override
+    IterationType getIterations() const noexcept override
     {
         return m_iterations;
     }
@@ -507,7 +507,7 @@ public:
      *
      * @param iterations Number of iterations.
      */
-    void setIterations(IterationNumber iterations) noexcept override
+    void setIterations(IterationType iterations) noexcept override
     {
         m_iterations = iterations;
     }
@@ -803,10 +803,10 @@ private:
     bool m_initialized = false;
 
     /// Number of simulation steps.
-    IterationNumber m_iteration = 0;
+    IterationType m_iteration = 0;
 
     /// Number of iterations.
-    IterationNumber m_iterations = 0;
+    IterationType m_iterations = 0;
 
     /// Simulation step.
     units::Time m_timeStep = Zero;

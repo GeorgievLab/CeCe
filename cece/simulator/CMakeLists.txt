@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -29,8 +29,6 @@ set(SRCS
     Simulation.cpp
     Simulator.hpp
     Simulator.cpp
-    IterationType.hpp
-    IterationRange.hpp
     TimeMeasurement.hpp
     TimeMeasurement.cpp
     Visualization.hpp

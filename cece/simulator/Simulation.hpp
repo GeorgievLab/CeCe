@@ -39,7 +39,7 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/InOutStream.hpp"
-#include "cece/simulator/IterationType.hpp"
+#include "cece/core/IterationType.hpp"
 
 /// @deprecated
 #include "cece/object/Object.hpp"
@@ -135,7 +135,7 @@ public:
      *
      * @return
      */
-    virtual IterationNumber getIteration() const noexcept = 0;
+    virtual IterationType getIteration() const noexcept = 0;
 
 
     /**
@@ -143,7 +143,7 @@ public:
      *
      * @return
      */
-    virtual IterationNumber getIterations() const noexcept = 0;
+    virtual IterationType getIterations() const noexcept = 0;
 
 
     /**
@@ -463,7 +463,7 @@ public:
      *
      * @param iterations Number of iterations.
      */
-    virtual void setIterations(IterationNumber iterations) noexcept = 0;
+    virtual void setIterations(IterationType iterations) noexcept = 0;
 
 
     /**

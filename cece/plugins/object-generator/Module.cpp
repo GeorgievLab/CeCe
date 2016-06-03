@@ -69,31 +69,31 @@ std::default_random_engine g_gen(g_rd());
  *
  * @return
  */
-DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parseActive(String str)
+DynamicArray<IterationRange> parseActive(String str)
 {
-    DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> res;
+    DynamicArray<IterationRange> res;
 
     InStringStream iss(std::move(str));
 
     while (true)
     {
-        simulator::IterationNumber it;
+        IterationType it;
 
         if (!(iss >> it))
             break;
 
         if (iss.peek() == '-')
         {
-            simulator::IterationNumber itEnd;
+            IterationType itEnd;
             iss.ignore();
             iss >> itEnd;
 
-            res.push_back({it, itEnd});
+            res.emplace_back(it, itEnd);
         }
         else
         {
             // Single item range
-            res.push_back({it, it});
+            res.emplace_back(it);
         }
     }
 
@@ -110,7 +110,7 @@ DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>> parse
  *
  * @return
  */
-bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::IterationNumber>>& list, simulator::IterationNumber it)
+bool inRange(const DynamicArray<IterationRange>& list, IterationType it)
 {
     // No limitation
     if (list.empty())
@@ -118,7 +118,7 @@ bool inRange(const DynamicArray<Pair<simulator::IterationNumber, simulator::Iter
 
     for (const auto& p : list)
     {
-        if (it >= p.first && it <= p.second)
+        if (p.inRange(it))
             return true;
     }
 

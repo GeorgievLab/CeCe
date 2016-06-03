@@ -44,9 +44,9 @@
 #include "cece/core/OutStream.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/FilePath.hpp"
+#include "cece/core/IterationType.hpp"
 #include "cece/module/Module.hpp"
 #include "cece/object/Object.hpp"
-#include "cece/simulator/IterationType.hpp"
 
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
@@ -150,7 +150,7 @@ public:
      *
      * @return
      */
-    simulator::IterationCount getInitIterations() const noexcept
+    IterationType getInitIterations() const noexcept
     {
         return m_initIterations;
     }
@@ -161,7 +161,7 @@ public:
      *
      * @return
      */
-    simulator::IterationCount getInnerIterations() const noexcept
+    IterationType getInnerIterations() const noexcept
     {
         return m_innerIterations;
     }
@@ -246,7 +246,7 @@ public:
      *
      * @param iterations
      */
-    void setInitIterations(simulator::IterationCount iterations) noexcept
+    void setInitIterations(IterationType iterations) noexcept
     {
         m_initIterations = iterations;
     }
@@ -257,7 +257,7 @@ public:
      *
      * @param iterations
      */
-    void setInnerIterations(simulator::IterationCount iterations) noexcept
+    void setInnerIterations(IterationType iterations) noexcept
     {
         m_innerIterations = iterations;
     }
@@ -459,10 +459,10 @@ private:
     Converter m_converter;
 
     /// Number of init iterations.
-    simulator::IterationCount m_initIterations = 0;
+    IterationType m_initIterations = 0;
 
     /// Number of inner iterations.
-    simulator::IterationCount m_innerIterations = 1;
+    IterationType m_innerIterations = 1;
 
     /// If streamlines is updated during simulation iterations.
     bool m_dynamic = true;

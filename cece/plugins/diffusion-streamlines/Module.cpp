@@ -112,7 +112,7 @@ void Module::updateSignal(SignalId id)
     // Same grid sizes
     Assert(lattice.getSize() == getGridSize());
 
-    for (simulator::IterationNumber i = 0; i < getInnerIterations(); ++i)
+    for (IterationType i = 0; i < getInnerIterations(); ++i)
     {
         clearBack(id);
 

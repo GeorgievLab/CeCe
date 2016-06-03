@@ -120,7 +120,7 @@ public:
     {
         try
         {
-            self->value->setIterations(cast<simulator::IterationCount>(value));
+            self->value->setIterations(cast<IterationType>(value));
         }
         catch (const cece::Exception& e)
         {

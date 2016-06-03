@@ -29,7 +29,7 @@
 
 // CeCe
 #include "cece/core/ViewPtr.hpp"
-#include "cece/simulator/IterationType.hpp"
+#include "cece/core/IterationType.hpp"
 
 // Plugins
 #include "cece/plugins/diffusion/Module.hpp"
@@ -69,7 +69,7 @@ public:
      *
      * @return
      */
-    simulator::IterationNumber getInnerIterations() const noexcept
+    IterationType getInnerIterations() const noexcept
     {
         return m_innerIterations;
     }
@@ -84,7 +84,7 @@ public:
      *
      * @param iterations
      */
-    void setInnerIterations(simulator::IterationNumber iterations) noexcept
+    void setInnerIterations(IterationType iterations) noexcept
     {
         m_innerIterations = iterations;
     }
@@ -141,7 +141,7 @@ private:
     ViewPtr<streamlines::Module> m_streamlines;
 
     /// Number of inner iterations.
-    simulator::IterationNumber m_innerIterations = 1;
+    IterationType m_innerIterations = 1;
 };
 
 /* ************************************************************************ */
