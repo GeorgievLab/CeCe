@@ -396,10 +396,10 @@ void DefaultSimulation::setPhysicsEngineTimeStep(units::Time dt) noexcept
 
 void DefaultSimulation::loadConfig(const config::Configuration& config)
 {
-    Simulation::loadConfig(config);
-
     if (config.has("length-coefficient"))
         ConverterBox2D::getInstance().setLengthCoefficient(config.get<RealType>("length-coefficient"));
+
+    Simulation::loadConfig(config);
 
     setGravity(config.get("gravity", getGravity()));
 }
