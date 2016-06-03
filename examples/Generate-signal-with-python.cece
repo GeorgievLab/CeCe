@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="20um 20um" dt="1s" iterations="50">
+<simulation world-size="20um 20um" dt="1s" iterations="50" visualized="false">
 
     <!-- Python plugin required -->
     <plugin name="diffusion" />
@@ -18,7 +18,7 @@
 import math
 
 def update(dt, simulation):
-    diffusion = simulation.useModule("diffusion")
+    diffusion = simulation.getModule("diffusion")
     size = diffusion.gridSize
     radius = size.x / 20
     signalAmount = 1
@@ -31,6 +31,6 @@ def update(dt, simulation):
     </module>
 
     <!-- Store diffusion state each iteration -->
-    <module name="diffusion.store-state" />
+    <module name="diffusion.export" filename="diffusion.csv" />
 </simulation>
 

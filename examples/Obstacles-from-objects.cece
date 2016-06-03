@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="200um 100um" dt="1ms" background="black" length-coefficient="1e-1">
+<simulation world-size="200um 100um" dt="1ms" background="white" length-coefficient="1e-1">
 
     <plugin name="cell" />
     <plugin name="obstacle" />
     <plugin name="object-generator" />
+
+    <!-- Define visualization layers -->
+    <visualization enabled="true">
+        <layer name="physics" key="D" />
+    </visualization>
 
     <!-- Generate yeast cells -->
     <module name="object-generator">
@@ -12,14 +17,14 @@
     </module>
 
     <!-- Circles -->
-    <object class="obstacle.Circle" position="0 -50um" radius="10um" show="true" />
+    <object class="obstacle.Circle" position="0 -50um" radius="10um" show="true" color="black" />
 
     <!-- Rectangles -->
-    <object class="obstacle.Rectangle" position="0 50um" size="100um 10um" show="true" />
+    <object class="obstacle.Rectangle" position="0 50um" size="100um 10um" show="true" color="black" />
 
     <!-- Polygons -->
-    <object class="obstacle.Polygon" position="-50um 0" vertices="5um 10um -5um 0 5um -10um" show="true" />
-    <object class="obstacle.Polygon" position="50um 0" vertices="-20um 5um 0 5um 0 15um 20um 0 0 -15um 0 -5um -20um -5um" show="true" />
+    <object class="obstacle.Polygon" position="-50um 0" vertices="5um 10um -5um 0 5um -10um" show="true" color="black" />
+    <object class="obstacle.Polygon" position="50um 0" vertices="-20um 5um 0 5um 0 15um 20um 0 0 -15um 0 -5um -20um -5um" show="true" color="black" />
 
 </simulation>
 

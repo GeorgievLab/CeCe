@@ -1,39 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!-- Simulation definition -->
-<simulation world-size="1280um 800um" dt="13ms" background="white" length-coefficient="1e-1">
+<simulation world-size="1280um 800um" dt="13ms" background="#C0C0C0" length-coefficient="1e-1">
 
-    <parameter name="T" value="1nM" />
-
-    <plugin name="streamlines" />
-    <plugin name="diffusion" />
+    <plugin name="cell" />
+    <plugin name="streamlines-channel" />
+    <_plugin name="diffusion" />
     <plugin name="diffusion-streamlines" />
     <plugin name="stochastic-reactions" />
     <plugin name="object-generator" />
+    <plugin name="obstacles-svg" filename="demo.svg" color="white" />
 
-    <!-- Define streamlines -->
-    <module name="streamlines" grid="320 200" inlet-velocity="200um/s" layout="barrier outlet barrier inlet"/>
-    <module name="diffusion-streamlines" />
-
-    <plugin name="obstacles-image" image="demo.png" />
+    <!-- Define visualization layers -->
+    <visualization enabled="true">
+        <layer name="velocity" key="V" />
+        <layer name="density" key="B" />
+        <layer name="physics" key="D" />
+        <layer name="fluid" key="N" />
+    </visualization>
 
     <!-- Define diffusion module -->
-    <module name="diffusion" grid="320 200">
-        <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="green"  saturation="5nM" />
-        <signal name="RFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="red"    saturation="5nM" />
-        <signal name="YFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="yellow" saturation="5nM" />
+    <module name="diffusion" grid="641 401" inner-iterations="2">
+        <signal name="GFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="green"  saturation="10nM" />
+        <signal name="RFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="red"    saturation="10nM" />
+        <signal name="YFP" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="yellow" saturation="10nM" />
     </module>
+
+    <!-- Define streamlines -->
+    <module name="streamlines"
+            inlet-velocity="200um/s"
+            layout="none outlet none inlet"
+            init-iterations="20000"
+            init-file="%temp%/demo.cece.streamlines"
+            char-length="40um"
+            number-nodes="20"
+            tau="1.5"
+            _dynamic="false"
+            height="40um"
+            layer-magnitude="velocity"
+            layer-density="density"
+            layer-dynamics="fluid"
+    />
 
     <program name="p1" language="stochastic-reactions">
 <![CDATA[
-        null > 50 > env_GFP;
-        if env_RFP > T: null > 50 > YFP;
+        null > 1 > env GFP;
+        if env RFP > 1nM: null > 0.5 > GFP;
 ]]>
     </program>
 
     <program name="p2" language="stochastic-reactions">
 <![CDATA[
-        null > 50 > env_RFP;
-        if env_GFP > T: null > 50 > CFP;
+        null > 1 > env RFP;
+        if env GFP > 1nM: null > 0.5 > RFP;
 ]]>
     </program>
 

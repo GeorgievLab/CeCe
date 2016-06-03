@@ -6,11 +6,19 @@
     <plugin name="object-generator" />
     <plugin name="cell" />
 
+    <!-- Define visualization layers -->
+    <visualization enabled="true">
+        <layer name="velocity" key="V" />
+        <layer name="density" key="B" />
+        <layer name="physics" key="D" />
+        <layer name="fluid" key="N" />
+    </visualization>
+
     <!--
         Plugin loads SVG file and create obstacles from it.
         Path is taken as relative from simulation directory.
     -->
-    <plugin name="obstacles-svg" filename="obstacles.svg" />
+    <plugin name="obstacles-svg" filename="obstacles.svg" color="white" />
 
     <!--
         Streamlines module.
@@ -18,11 +26,16 @@
     -->
     <module name="streamlines"
             init-iterations="10000"
+            init-file="%temp%/Obstacles-from-svg.cece.streamlines"
             inlet-velocity="200um/s"
+            layout="none outlet none inlet"
             char-length="40"
-            number-nodes="20"
-            number-steps="1000"
-            init-file="%temp%/Obstacles-from-svg.cece"
+            number-nodes="10"
+            tau="1.3"
+            dynamic="false"
+            layer-magnitude="velocity"
+            layer-density="density"
+            layer-dynamics="fluid"
     />
 
     <!-- Generate Yeast cells -->
