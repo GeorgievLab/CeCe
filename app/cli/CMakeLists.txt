@@ -62,7 +62,11 @@ if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
 
     # LibPNG is required
     find_package(PNG REQUIRED)
-    include_directories(${PNG_INCLUDE_DIRS})
+    if (WIN32)
+        include_directories(${PNG_PNG_INCLUDE_DIR})
+    else ()
+        include_directories(${PNG_INCLUDE_DIRS})
+    endif ()
 
     if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
         add_definitions(-DCONFIG_CLI_ENABLE_IMAGE_CAPTURE=1)
@@ -166,9 +170,16 @@ if (UNIX AND NOT APPLE)
 endif ()
 
 if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
-    target_link_libraries(${PROJECT_NAME}
-        ${PNG_LIBRARIES}
-    )
+    if (WIN32)
+        # CMake on Windows behave differently
+        target_link_libraries(${PROJECT_NAME}
+            ${PNG_LIBRARY}
+        )
+    else ()
+        target_link_libraries(${PROJECT_NAME}
+            ${PNG_LIBRARIES}
+        )
+    endif ()
 endif ()
 
 # ######################################################################### #

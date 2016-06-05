@@ -29,7 +29,12 @@ if (CONFIG_RENDER_ENABLE)
 
 # LibPNG is required
 find_package(PNG REQUIRED)
-include_directories(${PNG_INCLUDE_DIRS})
+
+if (WIN32)
+    include_directories(${PNG_PNG_INCLUDE_DIR})
+else ()
+    include_directories(${PNG_INCLUDE_DIRS})
+endif ()
 
 # ######################################################################### #
 
@@ -43,14 +48,14 @@ set(SRCS
 # Build plugin
 build_plugin(picture
     SOURCES ${SRCS}
-    LIBRARIES ${PNG_LIBRARIES}
+    LIBRARIES ${PNG_LIBRARIES} ${PNG_LIBRARY}
 )
 
 # ######################################################################### #
 
 if (WIN32)
     # Install PNG libraries
-    install(FILES ${PNG_LIBRARIES}
+    install(FILES ${PNG_LIBRARY}
         DESTINATION ${INSTALL_DIR_LIBRARY}
     )
 endif ()
