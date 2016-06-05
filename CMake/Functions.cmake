@@ -39,7 +39,7 @@ function(build_plugin NAME)
     plugin_project_name(${NAME} FULLNAME)
 
     include(CMakeParseArguments)
-    cmake_parse_arguments(ARG "" "" "SOURCES;LIBRARIES;DEPENDENCIES;PLUGINS_REQUIRED" ${ARGN})
+    cmake_parse_arguments(ARG "EXPORT_HEADER" "" "SOURCES;LIBRARIES;DEPENDENCIES;PLUGINS_REQUIRED" ${ARGN})
 
     # Modify list of plugins (add prefixes)
     set(PLUGINS_DEPENDENCIES "")
@@ -156,6 +156,16 @@ function(build_plugin NAME)
 
         #set(CPACK_COMPONENT_${NAME}_GROUP "Plugins")
     endif ()
+
+    # Generate export header
+    if (ARG_EXPORT_HEADER)
+        include(GenerateExportHeader)
+        generate_export_header(${FULLNAME}
+            EXPORT_FILE_NAME "export.hpp"
+            BASE_NAME "CECE_${FULLNAME}"
+        )
+    endif ()
+
 endfunction()
 
 # ######################################################################### #
