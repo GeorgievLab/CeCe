@@ -24,7 +24,13 @@
 # ######################################################################### #
 
 if (WIN32)
-    set(PYTHON_LIB_PATH "C:/Windows/SysWOW64/python27.dll" CACHE STRING "Path to python2 library")
+    find_library(PYTHON_LIB_PATH 
+        NAMES 
+            python27
+        HINTS
+            C:/Windows/SysWOW64
+            C:/Windows/System32
+    )
 endif ()
 
 # ######################################################################### #
@@ -89,7 +95,7 @@ build_plugin(python
 
 if (WIN32 AND PYTHON_LIB_PATH)
     # Install examples
-    install(FILES ${PYTHON_LIB_PATH}
+    install(FILES "${PYTHON_LIB_PATH}"
         DESTINATION "${INSTALL_DIR_LIBRARY}"
     )
 endif ()

@@ -170,16 +170,9 @@ if (UNIX AND NOT APPLE)
 endif ()
 
 if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
-    if (WIN32)
-        # CMake on Windows behave differently
-        target_link_libraries(${PROJECT_NAME}
-            ${PNG_LIBRARY}
-        )
-    else ()
-        target_link_libraries(${PROJECT_NAME}
-            ${PNG_LIBRARIES}
-        )
-    endif ()
+    target_link_libraries(${PROJECT_NAME}
+        ${PNG_LIBRARIES}
+    )
 endif ()
 
 # ######################################################################### #
@@ -198,13 +191,6 @@ if (APPLE)
             execute_process(COMMAND \"${CMAKE_SOURCE_DIR}/resources/scripts/macosx-libraries.sh\" \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_DIR_RUNTIME}/${CMAKE_PROJECT_NAME}-${PROJECT_NAME}\")
             "
         COMPONENT Runtime
-    )
-endif ()
-
-if (WIN32 AND CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
-    # Install PNG libraries
-    install(FILES ${PNG_LIBRARIES}
-        DESTINATION ${INSTALL_DIR_LIBRARY}
     )
 endif ()
 

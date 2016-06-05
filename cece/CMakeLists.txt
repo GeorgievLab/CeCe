@@ -206,12 +206,20 @@ if (APPLE)
     )
 endif ()
 
-if (APPLE OR WIN32)
+if (APPLE)
     get_filename_component(LIBRARY_PATH ${BOX2D_LIBRARIES} REALPATH)
 
     # Install Box2D library
     install(FILES
         ${LIBRARY_PATH}
+        DESTINATION ${INSTALL_DIR_LIBRARY}
+    )
+endif ()
+
+if (WIN32)
+    # Install Box2D library
+    install(FILES
+        ${BOX2D_LIBRARY_PATH}
         DESTINATION ${INSTALL_DIR_LIBRARY}
     )
 endif ()

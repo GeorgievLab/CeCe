@@ -48,17 +48,8 @@ set(SRCS
 # Build plugin
 build_plugin(picture
     SOURCES ${SRCS}
-    LIBRARIES ${PNG_LIBRARIES} ${PNG_LIBRARY}
+    LIBRARIES ${PNG_LIBRARIES}
 )
-
-# ######################################################################### #
-
-if (WIN32)
-    # Install PNG libraries
-    install(FILES ${PNG_LIBRARY}
-        DESTINATION ${INSTALL_DIR_LIBRARY}
-    )
-endif ()
 
 # ######################################################################### #
 
