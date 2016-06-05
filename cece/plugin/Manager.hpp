@@ -316,11 +316,7 @@ public:
      *
      * @return
      */
-    static Manager& s()
-    {
-        static Manager instance;
-        return instance;
-    }
+    static Manager& s();
 
 
 // Private Operations

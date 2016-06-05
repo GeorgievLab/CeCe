@@ -102,9 +102,9 @@ DynamicArray<String> Manager::getNames() const noexcept
 
 void Manager::addDirectory(FilePath path)
 {
-    Log::debug("New plugins directory: `", path, "`");
+    Log::debug("New plugins directory: `", path.string(), "`");
 
-    m_directories.push_back(std::move(path));
+    m_directories.push_back(path);
 
     // Scan added directory
     auto plugins = scanDirectory(path);
@@ -173,7 +173,10 @@ Map<String, FilePath> Manager::scanDirectory(const FilePath& directory) noexcept
     {
         // Only files
         if (!is_regular_file(entry))
+        {
+            Log::debug("Skipping `", entry.path().string(), "` - not a file");
             continue;
+        }
 
         // Get path
         auto path = entry.path();
@@ -182,6 +185,8 @@ Map<String, FilePath> Manager::scanDirectory(const FilePath& directory) noexcept
         const auto suffixLength = Library::FILE_EXTENSION.length();
         const auto suffixStart = filename.length() - suffixLength;
 
+        Log::debug("Checking: ", filename);
+
         // Different prefix
         if (filename.substr(0, prefixLength) != Library::FILE_PREFIX)
             continue;
@@ -189,6 +194,8 @@ Map<String, FilePath> Manager::scanDirectory(const FilePath& directory) noexcept
         // Different extension
         if (filename.substr(suffixStart) != Library::FILE_EXTENSION)
             continue;
+
+        Log::debug("Plugin: ", filename.substr(prefixLength, suffixStart - prefixLength), " @ ", path.string());
 
         result.emplace(filename.substr(prefixLength, suffixStart - prefixLength), std::move(path));
     }
@@ -210,6 +217,14 @@ Map<String, FilePath> Manager::scanDirectories() const noexcept
     }
 
     return result;
+}
+
+/* ************************************************************************ */
+
+Manager& Manager::s()
+{
+    static Manager instance;
+    return instance;
 }
 
 /* ************************************************************************ */

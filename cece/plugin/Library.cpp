@@ -63,8 +63,10 @@ namespace plugin {
 
 #if __linux__
 const String Library::FILE_PREFIX = "libplugin-";
-#elif _WIN32
+#elif __MINGW32__
 const String Library::FILE_PREFIX = "libplugin-";
+#elif _WIN32
+const String Library::FILE_PREFIX = "plugin-";
 #elif __APPLE__ && __MACH__
 const String Library::FILE_PREFIX = "libplugin-";
 #endif
