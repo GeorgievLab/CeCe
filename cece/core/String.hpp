@@ -258,7 +258,7 @@ inline int str2i(const String& value)
 inline float str2f(const String& value)
 {
 #if defined(_WIN32)
-    return std::atof(value.c_str());
+    return static_cast<float>(std::atof(value.c_str()));
 #else
     return std::stof(value);
 #endif

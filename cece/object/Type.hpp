@@ -41,8 +41,13 @@ namespace object {
 /**
  * @brief Defines user defined object type.
  */
-struct Type
+class Type
 {
+
+// Public Data Members
+public:
+
+
     /// Object type name.
     String name;
 

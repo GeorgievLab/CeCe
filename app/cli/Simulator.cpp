@@ -416,8 +416,8 @@ void Simulator::onResize(int width, int height) noexcept
 #ifdef CECE_ENABLE_RENDER
 void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
 {
-    constexpr float MOVE_COEFF = 5;
-    constexpr float ZOOM_COEFF = 1.1;
+    constexpr float MOVE_COEFF = 5.0f;
+    constexpr float ZOOM_COEFF = 1.1f;
 
     if (action != GLFW_PRESS && action != GLFW_REPEAT)
         return;
@@ -521,7 +521,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
 #ifdef CECE_ENABLE_RENDER
 void Simulator::onMouseScroll(double xoffset, double yoffset) noexcept
 {
-    constexpr float ZOOM_COEFF = 1.1;
+    constexpr float ZOOM_COEFF = 1.1f;
 
     auto& camera = m_simulator.getRenderContext().getCamera();
 

@@ -100,7 +100,7 @@ render::Color CellBase::calcFluorescentColor(const units::Volume volume) const n
     const auto green = gfpValue + yfpValue + cfpValue;
     const auto blue  = cfpValue + bfpValue;
 
-    return render::Color(red, green, blue, 1);
+    return render::Color(red, green, blue, 1.0f);
 }
 #endif
 

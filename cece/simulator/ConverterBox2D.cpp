@@ -53,7 +53,7 @@ float32 ConverterBox2D::convertLength(units::Length length) const noexcept
 {
     const auto coeff = getLengthCoefficient();
 
-    return coeff * length.value();
+    return static_cast<float32>(coeff * length.value());
 }
 
 /* ************************************************************************ */
@@ -74,7 +74,7 @@ b2Vec2 ConverterBox2D::convertPosition(PositionVector position) const noexcept
 {
     const auto coeff = getLengthCoefficient();
 
-    return coeff * b2Vec2{
+    return static_cast<float32>(coeff) * b2Vec2{
         static_cast<float32>(position.getX().value()),
         static_cast<float32>(position.getY().value())
     };
@@ -91,7 +91,7 @@ units::Angle ConverterBox2D::convertAngle(float32 angle) const noexcept
 
 float32 ConverterBox2D::convertAngle(units::Angle angle) const noexcept
 {
-    return angle.value();
+    return static_cast<float32>(angle.value());
 }
 
 /* ************************************************************************ */
@@ -112,7 +112,7 @@ b2Vec2 ConverterBox2D::convertLinearVelocity(VelocityVector velocity) const noex
 {
     const auto coeff = getLengthCoefficient() / getTimeCoefficient();
 
-    return coeff * b2Vec2(
+    return static_cast<float32>(coeff) * b2Vec2(
         static_cast<float32>(velocity.getX().value()),
         static_cast<float32>(velocity.getY().value())
     );
@@ -133,7 +133,7 @@ float32 ConverterBox2D::convertAngularVelocity(units::AngularVelocity velocity) 
 {
     const auto coeff = 1.0 / getTimeCoefficient();
 
-    return coeff * velocity.value();
+    return static_cast<float32>(coeff * velocity.value());
 }
 
 /* ************************************************************************ */
@@ -154,7 +154,7 @@ b2Vec2 ConverterBox2D::convertLinearAcceleration(AccelerationVector acceleration
 {
     const auto coeff = getLengthCoefficient() / (getTimeCoefficient() * getTimeCoefficient());
 
-    return coeff * b2Vec2(
+    return static_cast<float32>(coeff) * b2Vec2(
         static_cast<float32>(acceleration.getX().value()),
         static_cast<float32>(acceleration.getY().value())
     );
@@ -173,9 +173,7 @@ units::Acceleration ConverterBox2D::convertAngularAcceleration(float32 accelerat
 
 float32 ConverterBox2D::convertAngularAcceleration(units::Acceleration acceleration) const noexcept
 {
-    const auto coeff = 1;
-
-    return coeff * acceleration.value();
+    return static_cast<float32>(acceleration.value());
 }
 
 /* ************************************************************************ */
@@ -196,7 +194,7 @@ b2Vec2 ConverterBox2D::convertForce(ForceVector force) const noexcept
 {
     const auto coeff = getLengthCoefficient() / (getTimeCoefficient() * getTimeCoefficient());
 
-    return coeff * b2Vec2{
+    return static_cast<float32>(coeff) * b2Vec2{
         static_cast<float32>(force.getX().value()),
         static_cast<float32>(force.getY().value())
     };
@@ -217,7 +215,7 @@ float32 ConverterBox2D::convertTorque(units::Force torque) const noexcept
 {
     const auto coeff = getLengthCoefficient() / (getTimeCoefficient() * getTimeCoefficient());
 
-    return coeff * torque.value();
+    return static_cast<float32>(coeff * torque.value());
 }
 
 /* ************************************************************************ */
@@ -238,7 +236,7 @@ b2Vec2 ConverterBox2D::convertLinearImpulse(ImpulseVector impulse) const noexcep
 {
     const auto coeff = getLengthCoefficient() / getTimeCoefficient();
 
-    return coeff * b2Vec2{
+    return static_cast<float32>(coeff) * b2Vec2{
         static_cast<float32>(impulse.getX().value()),
         static_cast<float32>(impulse.getY().value())
     };
@@ -259,7 +257,7 @@ float32 ConverterBox2D::convertAngularImpulse(units::Impulse impulse) const noex
 {
     const auto coeff = getLengthCoefficient() / getTimeCoefficient();
 
-    return coeff * impulse.value();
+    return static_cast<float32>(coeff * impulse.value());
 }
 
 /* ************************************************************************ */
@@ -273,7 +271,7 @@ units::Mass ConverterBox2D::convertMass(float32 mass) const noexcept
 
 float32 ConverterBox2D::convertMass(units::Mass mass) const noexcept
 {
-    return mass.value();
+    return static_cast<float32>(mass.value());
 }
 
 /* ************************************************************************ */
@@ -291,7 +289,7 @@ float32 ConverterBox2D::convertDensity(units::Density density) const noexcept
 {
     const auto coeff = getLengthCoefficient() * getLengthCoefficient() * getLengthCoefficient();
 
-    return coeff * density.value();
+    return static_cast<float32>(coeff * density.value());
 }
 
 /* ************************************************************************ */
