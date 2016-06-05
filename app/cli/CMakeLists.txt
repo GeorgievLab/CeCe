@@ -106,6 +106,7 @@ if (APPLE)
 endif ()
 
 if (WIN32)
+    string(TIMESTAMP BUILD_DATE "%Y-%m-%d" UTC)
     configure_file(version.rc version.rc @ONLY NEWLINE_STYLE WIN32)
     set(SRCS ${SRCS} ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 endif ()

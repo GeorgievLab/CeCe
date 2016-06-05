@@ -43,7 +43,7 @@ FILESUBTYPE         VFT2_UNKNOWN
     {
         BLOCK "040904b0"
         {
-            VALUE "Build",            __DATE__ "\0"
+            VALUE "Build",            @BUILD_DATE@ "\0"
             VALUE "Comments",         "Cell-Cell interaction simulator\0"
             VALUE "CompanyName",      "Georgiev Lab\0"
             VALUE "FileDescription",  "CeCe simulator\0"
