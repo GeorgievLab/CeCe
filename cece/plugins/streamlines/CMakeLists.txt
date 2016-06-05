@@ -35,6 +35,7 @@ configure_file(config.hpp.in config.hpp)
 
 # Build plugin
 build_plugin(streamlines
+    EXPORT_HEADER
     SOURCES
         Plugin.cpp
         Descriptor.hpp

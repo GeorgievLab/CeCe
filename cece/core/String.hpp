@@ -155,12 +155,18 @@ inline String toString(unsigned long value)
  *
  * @return String value.
  */
-#ifndef _WIN32
 inline String toString(unsigned long long value)
 {
+#if defined(_WIN32)
+    {
+        char buffer[64];
+        snprintf(buffer, sizeof buffer, "%lu", static_cast<unsigned long>(value));
+        return buffer;
+    }
+#else
     return std::to_string(value);
-}
 #endif
+}
 
 /* ************************************************************************ */
 

@@ -634,9 +634,11 @@ void Simulator::initVisualization()
         return;
 
     // Set callback
-    glfwSetErrorCallback(+[](int error, const char* desc) {
+    // Nasty hack for Visual Studio... have issues with lambda to function conversion
+    void (*errorCallback)(int, const char*) = [](int error, const char* desc) {
         Log::error(desc);
-    });
+    };
+    glfwSetErrorCallback(errorCallback);
 
     // Initialize the library
     if (!glfwInit())
@@ -718,25 +720,30 @@ void Simulator::initVisualization()
     glfwWindowHint(GLFW_SAMPLES, 8);
 
     // Set callbacks
-    glfwSetWindowSizeCallback(m_window, +[](GLFWwindow* win, int width, int height) {
+    void (*windowSizeCallback)(GLFWwindow*, int, int) = [](GLFWwindow* win, int width, int height) {
         reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win))->onResize(width, height);
-    });
+    };
+    glfwSetWindowSizeCallback(m_window, windowSizeCallback);
 
-    glfwSetKeyCallback(m_window, +[](GLFWwindow* win, int key, int code, int action, int mods) {
+    void (*keyCallback)(GLFWwindow*, int, int, int, int) = [](GLFWwindow* win, int key, int code, int action, int mods) {
         reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win))->onKeyPress(key, code, action, mods);
-    });
+    };
+    glfwSetKeyCallback(m_window, keyCallback);
 
-    glfwSetScrollCallback(m_window, +[](GLFWwindow* win, double xoffset, double yoffset) {
+    void (*scrollCallback)(GLFWwindow*, double, double) = [](GLFWwindow* win, double xoffset, double yoffset) {
         reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win))->onMouseScroll(xoffset, yoffset);
-    });
+    };
+    glfwSetScrollCallback(m_window, scrollCallback);
 
-    glfwSetMouseButtonCallback(m_window, +[](GLFWwindow* win, int button, int action, int mods) {
+    void (*mouseButtonCallback)(GLFWwindow*, int, int, int) = [](GLFWwindow* win, int button, int action, int mods) {
         reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win))->onMouseClick(button, action, mods);
-    });
+    };
+    glfwSetMouseButtonCallback(m_window, mouseButtonCallback);
 
-    glfwSetCursorPosCallback(m_window, +[](GLFWwindow* win, double xpos, double ypos) {
+    void (*cursorPosCallback)(GLFWwindow*, double, double) = [](GLFWwindow* win, double xpos, double ypos) {
         reinterpret_cast<Simulator*>(glfwGetWindowUserPointer(win))->onMouseMove(xpos, ypos);
-    });
+    };
+    glfwSetCursorPosCallback(m_window, cursorPosCallback);
 
     // Clear window
     glfwMakeContextCurrent(m_window);

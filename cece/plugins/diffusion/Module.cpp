@@ -229,8 +229,8 @@ void Module::update()
 
     // Update all signals
     #pragma omp parallel for
-    for (SignalId id = 0u; id < getSignalCount(); ++id)
-        updateSignal(id);
+    for (int id = 0u; id < getSignalCount(); ++id)
+        updateSignal(static_cast<SignalId>(id));
 }
 
 /* ************************************************************************ */

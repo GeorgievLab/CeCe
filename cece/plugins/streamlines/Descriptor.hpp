@@ -32,6 +32,9 @@
 #include "cece/core/Vector.hpp"
 #include "cece/core/StaticArray.hpp"
 
+// Plugin
+#include "cece/plugins/streamlines/export.hpp"
+
 /* ************************************************************************ */
 
 namespace cece {
@@ -98,22 +101,22 @@ public:
     }};
 
     /// Direction index top line.
-    static const StaticArray<DirectionType, 3> TOP_LINE;
+    static const CECE_PLUGIN_STREAMLINES_EXPORT StaticArray<DirectionType, 3> TOP_LINE;
 
     /// Direction index middle line.
-    static const StaticArray<DirectionType, 3> MIDDLE_LINE;
+    static const CECE_PLUGIN_STREAMLINES_EXPORT StaticArray<DirectionType, 3> MIDDLE_LINE;
 
     /// Direction index bottom line.
-    static const StaticArray<DirectionType, 3> BOTTOM_LINE;
+    static const CECE_PLUGIN_STREAMLINES_EXPORT StaticArray<DirectionType, 3> BOTTOM_LINE;
 
     /// Direction index left column.
-    static const StaticArray<DirectionType, 3> LEFT_COLUMN;
+    static const CECE_PLUGIN_STREAMLINES_EXPORT StaticArray<DirectionType, 3> LEFT_COLUMN;
 
     /// Direction index middle column.
-    static const StaticArray<DirectionType, 3> MIDDLE_COLUMN;
+    static const CECE_PLUGIN_STREAMLINES_EXPORT StaticArray<DirectionType, 3> MIDDLE_COLUMN;
 
     /// Direction index right column.
-    static const StaticArray<DirectionType, 3> RIGHT_COLUMN;
+    static const CECE_PLUGIN_STREAMLINES_EXPORT StaticArray<DirectionType, 3> RIGHT_COLUMN;
 
     /// Direction weights.
     static constexpr StaticArray<RealType, SIZE> DIRECTION_WEIGHTS = {{
@@ -129,7 +132,7 @@ public:
     }};
 
     /// Direction velocities.
-    static const StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES;
+    static const CECE_PLUGIN_STREAMLINES_EXPORT StaticArray<Vector<int>, SIZE> DIRECTION_VELOCITIES;
 
     /// Direction opposites
     static constexpr StaticArray<DirectionType, SIZE> DIRECTION_OPPOSITES = {{

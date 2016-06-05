@@ -46,7 +46,6 @@
 
 namespace cece {
 inline namespace core {
-namespace {
 
 /* ************************************************************************ */
 
@@ -92,7 +91,6 @@ OutStream& operator<<(OutStream& os, const DynamicArray<String>& array)
 
 /* ************************************************************************ */
 
-}
 }
 }
 
