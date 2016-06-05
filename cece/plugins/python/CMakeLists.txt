@@ -23,18 +23,6 @@
 #                                                                           #
 # ######################################################################### #
 
-if (WIN32)
-    find_library(PYTHON_LIB_PATH 
-        NAMES 
-            python27
-        HINTS
-            C:/Windows/SysWOW64
-            C:/Windows/System32
-    )
-endif ()
-
-# ######################################################################### #
-
 # Include Python API
 find_package(PythonLibs 2.7 REQUIRED)
 
@@ -90,14 +78,5 @@ build_plugin(python
     SOURCES ${SRCS}
     LIBRARIES ${PYTHON_LIBRARIES}
 )
-
-# ######################################################################### #
-
-if (WIN32 AND PYTHON_LIB_PATH)
-    # Install examples
-    install(FILES "${PYTHON_LIB_PATH}"
-        DESTINATION "${INSTALL_DIR_LIBRARY}"
-    )
-endif ()
 
 # ######################################################################### #
