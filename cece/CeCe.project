@@ -223,6 +223,8 @@
     <File Name="core/FactoryManager.hpp"/>
     <File Name="core/IterationType.hpp"/>
     <File Name="core/IterationRange.hpp"/>
+    <File Name="core/CliColor.hpp"/>
+    <File Name="core/CliColor.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="render">
     <File Name="render/Buffer.cpp"/>

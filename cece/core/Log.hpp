@@ -32,6 +32,7 @@
 #include "cece/core/String.hpp"
 #include "cece/core/OutStream.hpp"
 #include "cece/core/StringStream.hpp"
+#include "cece/core/CliColor.hpp"
 
 /* ************************************************************************ */
 
@@ -155,7 +156,7 @@ public:
         if (s_output)
         {
             OutStringStream oss;
-            message(oss, std::forward<Args>(args)...);
+            message(oss, CliColor::LightGreen, "[INFO] ", CliColor::Default, std::forward<Args>(args)...);
             s_output->write(oss.str());
         }
     }
@@ -173,7 +174,7 @@ public:
         if (s_output)
         {
             OutStringStream oss;
-            message(oss, "DEBUG: ", std::forward<Args>(args)...);
+            message(oss, CliColor::Green, "[DBG ] ", CliColor::Default, std::forward<Args>(args)...);
             s_output->write(oss.str());
         }
 #endif
@@ -191,7 +192,7 @@ public:
         if (s_output)
         {
             OutStringStream oss;
-            message(oss, "WARNING: ", std::forward<Args>(args)...);
+            message(oss, CliColor::Yellow, "[WARN] ", CliColor::Default, std::forward<Args>(args)...);
             s_output->write(oss.str());
         }
     }
@@ -208,7 +209,7 @@ public:
         if (s_error)
         {
             OutStringStream oss;
-            message(oss, "ERROR: ", std::forward<Args>(args)...);
+            message(oss, CliColor::Red, "[ERR ] ", CliColor::Default, std::forward<Args>(args)...);
             s_error->write(oss.str());
         }
     }

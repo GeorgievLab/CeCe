@@ -91,6 +91,8 @@ set(SRCS
     PtrNamedContainer.hpp
     IterationType.hpp
     IterationRange.hpp
+    CliColor.hpp
+    CliColor.cpp
 )
 
 set(SRCS_TEST
