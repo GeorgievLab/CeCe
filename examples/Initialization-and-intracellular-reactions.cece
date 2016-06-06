@@ -4,6 +4,7 @@
 
     <!-- Required plugins -->
     <plugin name="python" />
+    <plugin name="cell" />
     <plugin name="cell-python" />
     <plugin name="stochastic-reactions" />
 

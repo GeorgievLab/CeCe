@@ -3,9 +3,10 @@
 <simulation world-size="1280um 800um" dt="13ms" background="#C0C0C0" length-coefficient="1e-1">
 
     <plugin name="cell" />
+    <plugin name="obstacle" />
     <plugin name="streamlines-channel" />
-    <_plugin name="diffusion" />
-    <plugin name="diffusion-streamlines" />
+    <plugin name="diffusion" />
+    <_plugin name="diffusion-streamlines" />
     <plugin name="stochastic-reactions" />
     <plugin name="object-generator" />
     <plugin name="obstacles-svg" filename="demo.svg" color="white" />

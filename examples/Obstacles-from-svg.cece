@@ -5,6 +5,7 @@
     <plugin name="streamlines" />
     <plugin name="object-generator" />
     <plugin name="cell" />
+    <plugin name="obstacle" />
 
     <!-- Define visualization layers -->
     <visualization enabled="true">
