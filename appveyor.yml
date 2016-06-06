@@ -32,6 +32,10 @@ environment:
         - GENERATOR: Visual Studio 14 2015
           BOOST_LIBRARYDIR: C:\Libraries\boost\lib32-msvc-14.0
 
+matrix:
+    allow_failures:
+        - GENERATOR: MinGW Makefiles
+
 # Branches to build
 branches:
     except:
