@@ -43,7 +43,7 @@ using namespace cece;
 TEST(ParametersTest, ctorEmpty)
 {
     Parameters params;
-    EXPECT_EQ(0, params.getCount());
+    EXPECT_EQ(0u, params.getCount());
 }
 
 /* ************************************************************************ */
@@ -54,7 +54,7 @@ TEST(ParametersTest, ctorList)
         {"name1", "value1"},
         {"name2", "value2"}
     };
-    EXPECT_EQ(2, params.getCount());
+    EXPECT_EQ(2u, params.getCount());
 }
 
 /* ************************************************************************ */
@@ -66,7 +66,7 @@ TEST(ParametersTest, read)
         {"name2", "value2"},
         {"name3", "value3"}
     };
-    EXPECT_EQ(3, params.getCount());
+    EXPECT_EQ(3u, params.getCount());
 
     EXPECT_EQ("value1", params["name1"]);
     EXPECT_EQ("value2", params["name2"]);
@@ -84,7 +84,7 @@ TEST(ParametersTest, get)
         {"name1", "value1"},
         {"name2", "value2"}
     };
-    EXPECT_EQ(2, params.getCount());
+    EXPECT_EQ(2u, params.getCount());
 
     EXPECT_EQ("value1", params.get("name1"));
     EXPECT_EQ("value2", params.get("name2"));
@@ -105,7 +105,7 @@ TEST(ParametersTest, write)
 
     EXPECT_EQ("value1", params["name1"]);
     EXPECT_EQ("value4", params["name4"]);
-    EXPECT_EQ(2, params.getCount());
+    EXPECT_EQ(2u, params.getCount());
 
     // Params is not-const, so params[key] will create an entry instead of throw.
     EXPECT_FALSE(params.exists("name2"));
@@ -122,7 +122,7 @@ TEST(ParametersTest, set)
 
     EXPECT_EQ("value1", params.get("name1"));
     EXPECT_EQ("value4", params.get("name4"));
-    EXPECT_EQ(2, params.getCount());
+    EXPECT_EQ(2u, params.getCount());
 
     // Params is not-const, so params[key] will create an entry instead of throw.
     EXPECT_FALSE(params.exists("name2"));
@@ -143,13 +143,13 @@ TEST(ParametersTest, merge)
         {"name4", "value4"}
     };
 
-    EXPECT_EQ(2, params1.getCount());
-    EXPECT_EQ(2, params2.getCount());
+    EXPECT_EQ(2u, params1.getCount());
+    EXPECT_EQ(2u, params2.getCount());
 
     // Append parameters
     params2.append(params1);
 
-    EXPECT_EQ(4, params2.getCount());
+    EXPECT_EQ(4u, params2.getCount());
     EXPECT_EQ("value1", params2.get("name1"));
     EXPECT_EQ("value2", params2.get("name2"));
     EXPECT_EQ("value3", params2.get("name3"));
@@ -168,7 +168,7 @@ TEST(ParametersTest, iterate)
         {"name2", "value2"}
     };
 
-    ASSERT_EQ(2, params.getCount());
+    ASSERT_EQ(2u, params.getCount());
 
     // Names
     EXPECT_TRUE(std::equal(

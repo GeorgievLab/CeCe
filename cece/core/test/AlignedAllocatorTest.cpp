@@ -44,7 +44,7 @@ TEST(AlignedAllocatorTest, byte8)
     for (int i = 0; i < 10000; ++i)
     {
         void* ptr = allocate_aligned_memory(8, 100);
-        EXPECT_EQ(0, reinterpret_cast<uintptr_t>(ptr) & 0x7);
+        EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) & 0x7);
         deallocate_aligned_memory(ptr);
     }
 }
@@ -56,7 +56,7 @@ TEST(AlignedAllocatorTest, byte16)
     for (int i = 0; i < 10000; ++i)
     {
         void* ptr = allocate_aligned_memory(16, 100);
-        EXPECT_EQ(0, reinterpret_cast<uintptr_t>(ptr) & 0xF);
+        EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) & 0xF);
         deallocate_aligned_memory(ptr);
     }
 }
@@ -68,7 +68,7 @@ TEST(AlignedAllocatorTest, byte32)
     for (int i = 0; i < 10000; ++i)
     {
         void* ptr = allocate_aligned_memory(32, 100);
-        EXPECT_EQ(0, reinterpret_cast<uintptr_t>(ptr) & 0x1F);
+        EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) & 0x1F);
         deallocate_aligned_memory(ptr);
     }
 }
@@ -82,7 +82,7 @@ TEST(AlignedAllocatorTest, allocator)
     for (int i = 0; i < 10000; ++i)
     {
         auto ptr = allocator.allocate(10);
-        EXPECT_EQ(0, reinterpret_cast<uintptr_t>(ptr) & 0x1F);
+        EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) & 0x1F);
         allocator.deallocate(ptr, 10);
     }
 }
