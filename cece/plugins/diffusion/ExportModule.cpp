@@ -36,6 +36,7 @@
 #include "cece/core/Exception.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
+#include "cece/core/StringStream.hpp"
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
@@ -45,26 +46,33 @@
 /* ************************************************************************ */
 
 namespace cece {
-inline namespace core {
+namespace plugin {
+namespace diffusion {
+
+/* ************************************************************************ */
+
+namespace {
 
 /* ************************************************************************ */
 
 /**
- * @brief Cast array of values from string.
+ * @brief Parse array of values from string.
  *
- * @param value Source value.
+ * @param str Source string.
  *
  * @return
  */
-InStream& operator>>(InStream& is, DynamicArray<String>& array)
+DynamicArray<String> split(String str)
 {
+    DynamicArray<String> array;
+    InStringStream is(std::move(str));
     String val;
 
     // Read values
     while (is >> val)
         array.push_back(std::move(val));
 
-    return is;
+    return array;
 }
 
 /* ************************************************************************ */
@@ -76,29 +84,24 @@ InStream& operator>>(InStream& is, DynamicArray<String>& array)
  *
  * @return
  */
-OutStream& operator<<(OutStream& os, const DynamicArray<String>& array)
+String join(const DynamicArray<String>& array)
 {
+    String res;
+
     for (auto it = array.begin(); it != array.end(); ++it)
     {
         if (it != array.begin())
-            os << " ";
+            res += " ";
 
-        os << *it;
+        res += *it;
     }
 
-    return os;
+    return res;
 }
 
 /* ************************************************************************ */
 
 }
-}
-
-/* ************************************************************************ */
-
-namespace cece {
-namespace plugin {
-namespace diffusion {
 
 /* ************************************************************************ */
 
@@ -122,7 +125,7 @@ void ExportModule::loadConfig(const config::Configuration& config)
     module::ExportModule::loadConfig(config);
 
     // Get exported signals
-    setSignals(config.get("signals", getSignals()));
+    setSignals(split(config.get("signals", String{})));
     setExportObstacles(config.get("obstacles", isExportedObstacles()));
 }
 
@@ -132,7 +135,7 @@ void ExportModule::storeConfig(config::Configuration& config) const
 {
     module::ExportModule::storeConfig(config);
 
-    config.set("signals", getSignals());
+    config.set("signals", join(getSignals()));
     config.set("obstacles", isExportedObstacles());
 }
 
