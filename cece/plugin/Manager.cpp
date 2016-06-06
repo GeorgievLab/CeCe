@@ -167,7 +167,7 @@ ViewPtr<Api> Manager::load(StringView name)
     // No duplicate are stored because isLoaded is checked before.
     m_unloadOrderRev.push_back(String(name));
 
-    Log::info("Using plugin '", name,"'...");
+    Log::info("Loading plugin '", name,"'...");
 
     // Load plugin
     api->onLoad(getRepository());

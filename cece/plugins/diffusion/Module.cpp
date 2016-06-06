@@ -227,9 +227,9 @@ void Module::update()
     // Update obstacle map from scene
     updateObstacles();
 
-    // Update all signals
+    // Update all signals (MSVC requires signed int)
     #pragma omp parallel for
-    for (int id = 0u; id < getSignalCount(); ++id)
+    for (int id = 0; id < static_cast<int>(getSignalCount()); ++id)
         updateSignal(static_cast<SignalId>(id));
 }
 
