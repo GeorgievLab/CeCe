@@ -34,8 +34,10 @@
 
 /* ************************************************************************ */
 
-namespace cece { namespace simulator { class Simulation; } }
-namespace cece { namespace config { class Configuration; } }
+namespace cece {
+    namespace config    { class Configuration; }
+    namespace simulator { class Simulation; }
+}
 
 /* ************************************************************************ */
 
@@ -44,7 +46,7 @@ namespace plugin {
 
 /* ************************************************************************ */
 
-class Context;
+class Repository;
 
 /* ************************************************************************ */
 
@@ -86,9 +88,9 @@ public:
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugins repository.
      */
-    virtual void onLoad(Context& context)
+    virtual void onLoad(Repository& repository) const
     {
         // Nothing to do
     }
@@ -97,12 +99,9 @@ public:
     /**
      * @brief On plugin unload.
      *
-     * @param context Plugin context.
+     * @param repository Plugins repository.
      */
-    virtual void onUnload(Context& context)
-    {
-        // Nothing to do
-    }
+    virtual void onUnload(Repository& repository) const;
 
 
     /**
@@ -110,7 +109,7 @@ public:
      *
      * @param simulation Simulation.
      */
-    virtual void initSimulation(simulator::Simulation& simulation)
+    virtual void initSimulation(simulator::Simulation& simulation) const
     {
         // Nothing to do
     }
@@ -121,7 +120,7 @@ public:
      *
      * @param simulation Simulation.
      */
-    virtual void finalizeSimulation(simulator::Simulation& simulation)
+    virtual void finalizeSimulation(simulator::Simulation& simulation) const
     {
         // Nothing to do
     }
@@ -133,7 +132,7 @@ public:
      * @param simulation Current simulation.
      * @param config     Plugin configuration.
      */
-    virtual void loadConfig(simulator::Simulation& simulation, const config::Configuration& config)
+    virtual void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) const
     {
         // Nothing to do
     }

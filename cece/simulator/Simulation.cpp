@@ -107,7 +107,7 @@ DynamicArray<ViewPtr<object::Object>> Simulation::getObjects(StringView type) co
 
 /* ************************************************************************ */
 
-ViewPtr<plugin::Api> Simulation::loadPlugin(const config::Configuration& config)
+ViewPtr<const plugin::Api> Simulation::loadPlugin(const config::Configuration& config)
 {
     // Get plugin name
     const String name = config.get("name");

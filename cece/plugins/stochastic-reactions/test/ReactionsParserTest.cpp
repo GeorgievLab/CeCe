@@ -31,7 +31,7 @@
 
 // CeCe
 #include "cece/core/UnitsCtors.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Manager.hpp"
 #include "cece/simulator/Simulation.hpp"
 #include "cece/simulator/DefaultSimulation.hpp"
 
@@ -70,8 +70,7 @@ static void test_impl(
 {
     SCOPED_TRACE(code);
 
-    plugin::Context pluginContext;
-    simulator::DefaultSimulation simulation(pluginContext);
+    simulator::DefaultSimulation simulation(plugin::Manager::s().getRepository());
     plugin::cell::CellBase cell(simulation);
     Context context(nullptr, cell, nullptr, simulation.getParameters());
 

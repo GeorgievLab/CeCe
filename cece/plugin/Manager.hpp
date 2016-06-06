@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -35,7 +35,7 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/plugin/Library.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 /* ************************************************************************ */
 
@@ -70,6 +70,12 @@ class Manager final
 
 // Public Ctors & Dtors
 public:
+
+
+    /**
+     * @brief Constructor.
+     */
+    Manager() noexcept;
 
 
     /**
@@ -198,24 +204,34 @@ public:
 
 
     /**
-     * @brief Returns plugin context.
+     * @brief Find API name.
+     *
+     * @param name Plugin API.
+     *
+     * @return Plugin name.
+     */
+    StringView getName(ViewPtr<const Api> api) const noexcept;
+
+
+    /**
+     * @brief Returns plugin repository.
      *
      * @return
      */
-    Context& getContext() noexcept
+    Repository& getRepository() noexcept
     {
-        return m_context;
+        return m_repository;
     }
 
 
     /**
-     * @brief Returns plugin context.
+     * @brief Returns plugin repository.
      *
      * @return
      */
-    const Context& getContext() const noexcept
+    const Repository& getRepository() const noexcept
     {
-        return m_context;
+        return m_repository;
     }
 
 
@@ -344,8 +360,8 @@ private:
 // Private Data Members
 private:
 
-    /// Plugin context.
-    Context m_context;
+    /// Plugin repository.
+    Repository m_repository;
 
     /// Plugins directory paths.
     DynamicArray<FilePath> m_directories;

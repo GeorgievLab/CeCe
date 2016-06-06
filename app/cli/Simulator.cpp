@@ -33,6 +33,7 @@
 // CeCe
 #include "cece/core/Log.hpp"
 #include "cece/plugin/Manager.hpp"
+#include "cece/plugin/Context.hpp"
 
 #ifdef CECE_CLI_ENABLE_IMAGE_CAPTURE
 #include "cece/core/StringStream.hpp"
@@ -212,12 +213,14 @@ Simulator::Simulator(const Arguments& args)
 {
     auto& manager = plugin::Manager::s();
     manager.addDirectories(args.pluginsDirectories);
+    manager.loadAll();
 
-    // Load initial loader
-    manager.load("xml");
+    // Create plugins context
+    plugin::Context context(manager.getRepository());
+    context.importPlugin("xml");
 
     // Create simulation
-    m_simulator.setSimulation(manager.getContext().createSimulation(m_simulationFile, &args.parameters));
+    m_simulator.setSimulation(context.createSimulation(m_simulationFile, &args.parameters));
 
 #ifdef CECE_ENABLE_RENDER
     if (args.windowWidth)

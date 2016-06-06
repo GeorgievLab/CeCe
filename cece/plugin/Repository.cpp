@@ -1,5 +1,5 @@
 /* ************************************************************************ */
-/* Georgiev Lab (c) 2015                                                    */
+/* Georgiev Lab (c) 2015-2016                                               */
 /* ************************************************************************ */
 /* Department of Cybernetics                                                */
 /* Faculty of Applied Sciences                                              */
@@ -23,49 +23,35 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// CeCe
-#include "cece/plugin/definition.hpp"
-#include "cece/plugin/Api.hpp"
+// Declaration
 #include "cece/plugin/Repository.hpp"
 
-// Plugin
-#include "cece/plugins/diffusion-streamlines/Module.hpp"
-#include "cece/plugins/diffusion/Generator.hpp"
-#include "cece/plugins/diffusion/ExportModule.hpp"
+// CeCe
+#include "cece/core/Log.hpp"
 
 /* ************************************************************************ */
 
-using namespace cece;
+namespace cece {
+namespace plugin {
 
 /* ************************************************************************ */
 
-class DiffusionStreamlinesApi : public plugin::Api
+RepositoryRecord& Repository::registerApi(ViewPtr<const Api> api) noexcept
 {
-
-    DynamicArray<String> requiredPlugins() const override
-    {
-        return {"diffusion", "streamlines"};
-    }
-
-
-    /**
-     * @brief On plugin load.
-     *
-     * @param repository Plugin repository.
-     */
-    void onLoad(plugin::Repository& repository) const override
-    {
-        repository.registerApi(this).
-            registerModule<plugin::diffusion_streamlines::Module>("diffusion").
-            registerModule<plugin::diffusion::Generator>("diffusion.generator").
-            registerModule<plugin::diffusion::ExportModule>("diffusion.export")
-        ;
-    }
-
-};
+    auto it = m_records.emplace(api, RepositoryRecord{});
+    return it.first->second;
+}
 
 /* ************************************************************************ */
 
-CECE_DEFINE_PLUGIN(diffusion_streamlines, DiffusionStreamlinesApi)
+void Repository::unregisterApi(ViewPtr<const Api> api) noexcept
+{
+    m_records.erase(api);
+}
+
+/* ************************************************************************ */
+
+}
+}
 
 /* ************************************************************************ */

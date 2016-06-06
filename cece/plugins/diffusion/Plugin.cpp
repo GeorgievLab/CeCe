@@ -26,7 +26,7 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
 #include "cece/plugins/diffusion/Module.hpp"
@@ -48,26 +48,15 @@ class DiffusionApi : public plugin::Api
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerModule<plugin::diffusion::Module>("diffusion");
-        context.registerModule<plugin::diffusion::Generator>("diffusion.generator");
-        context.registerModule<plugin::diffusion::ExportModule>("diffusion.export");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterModule("diffusion.export");
-        context.unregisterModule("diffusion.generator");
-        context.unregisterModule("diffusion");
+        repository.registerApi(this).
+            registerModule<plugin::diffusion::Module>("diffusion").
+            registerModule<plugin::diffusion::Generator>("diffusion.generator").
+            registerModule<plugin::diffusion::ExportModule>("diffusion.export")
+        ;
     }
 
 };

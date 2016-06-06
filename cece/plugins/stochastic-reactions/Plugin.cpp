@@ -26,7 +26,7 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Reactions
 #include "Reactions.hpp"
@@ -59,22 +59,11 @@ public:
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerProgram<plugin::stochastic_reactions::Reactions>("stochastic-reactions");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterProgram("stochastic-reactions");
+        repository.registerApi(this).registerProgram<plugin::stochastic_reactions::Reactions>("stochastic-reactions");
     }
 
 };

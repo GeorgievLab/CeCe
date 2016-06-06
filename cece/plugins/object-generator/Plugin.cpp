@@ -26,7 +26,7 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
 #include "cece/plugins/object-generator/Module.hpp"
@@ -43,22 +43,11 @@ class ObjectGeneratorApi : public plugin::Api
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerModule<plugin::object_generator::Module>("object-generator");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterModule("object-generator");
+        repository.registerApi(this).registerModule<plugin::object_generator::Module>("object-generator");
     }
 
 };

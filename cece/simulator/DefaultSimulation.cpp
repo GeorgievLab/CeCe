@@ -58,8 +58,8 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-DefaultSimulation::DefaultSimulation(plugin::Context& context, FilePath path) noexcept
-    : m_pluginContext(context)
+DefaultSimulation::DefaultSimulation(const plugin::Repository& repository, FilePath path) noexcept
+    : m_pluginContext(repository)
     , m_fileName(std::move(path))
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     , m_world{makeUnique<b2World>(b2Vec2{0.0f, 0.0f})}
@@ -205,48 +205,30 @@ units::Length DefaultSimulation::getMaxObjectTranslation() const noexcept
 
 /* ************************************************************************ */
 
-ViewPtr<plugin::Api> DefaultSimulation::loadPlugin(StringView name)
+ViewPtr<const plugin::Api> DefaultSimulation::loadPlugin(StringView name)
 {
-    try
-    {
-        // Load plugin
-        // TODO: remove static access
-        auto api = plugin::Manager::s().load(name);
+    auto api = m_pluginContext.importPlugin(name);
 
-        if (!api)
-            return nullptr;
+    if (!api)
+        return nullptr;
 
-        // Store API
-        m_plugins.emplace(String(name), api);
+    // Init simulation
+    api->initSimulation(*this);
 
-        // Init simulation
-        api->initSimulation(*this);
-
-        return api;
-    }
-    catch (const Exception& e)
-    {
-        Log::warning(e.what());
-    }
-
-    return nullptr;
+    return api;
 }
 
 /* ************************************************************************ */
 
 void DefaultSimulation::unloadPlugin(StringView name)
 {
-    // Find plugin
-    auto it = m_plugins.find(String(name));
+    auto api = m_pluginContext.removePlugin(name);
 
-    if (it == m_plugins.end())
+    if (!api)
         return;
 
     // Finalize simulation
-    it->second->finalizeSimulation(*this);
-
-    // Remove plugin
-    m_plugins.erase(it);
+    api->finalizeSimulation(*this);
 }
 
 /* ************************************************************************ */
@@ -487,7 +469,8 @@ void DefaultSimulation::terminate()
     m_modules.terminate();
 
     // Call finalize simulations for all plugins
-    for (auto it = m_plugins.rbegin(); it != m_plugins.rend(); ++it)
+    const auto& plugins = m_pluginContext.getImported();
+    for (auto it = plugins.rbegin(); it != plugins.rend(); ++it)
     {
         Assert(it->second);
         it->second->finalizeSimulation(*this);

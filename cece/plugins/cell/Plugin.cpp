@@ -26,12 +26,12 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
-#include "Yeast.hpp"
-#include "Cell.hpp"
-#include "StoreMolecules.hpp"
+#include "cece/plugins/cell/Yeast.hpp"
+#include "cece/plugins/cell/Cell.hpp"
+#include "cece/plugins/cell/StoreMolecules.hpp"
 
 /* ************************************************************************ */
 
@@ -49,26 +49,15 @@ class CellApi : public plugin::Api
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerObject<Cell>("cell.Cell");
-        context.registerObject<Yeast>("cell.Yeast");
-        context.registerProgram<StoreMolecules>("cell.store-molecules");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterProgram("cell.store-molecules");
-        context.unregisterObject("cell.Cell");
-        context.unregisterObject("cell.Yeast");
+        repository.registerApi(this).
+            registerObject<Cell>("cell.Cell").
+            registerObject<Yeast>("cell.Yeast").
+            registerProgram<StoreMolecules>("cell.store-molecules")
+        ;
     }
 
 };

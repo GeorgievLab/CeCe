@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -33,6 +33,9 @@ set(SRCS
     Api.cpp
     Manager.hpp
     Manager.cpp
+    RepositoryRecord.hpp
+    Repository.hpp
+    Repository.cpp
     Context.hpp
     Context.cpp
 )

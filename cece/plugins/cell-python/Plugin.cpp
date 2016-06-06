@@ -74,7 +74,7 @@ class CellPythonApi : public plugin::Api
     }
 
 
-    void initSimulation(Simulation& simulation) override
+    void initSimulation(Simulation& simulation) const override
     {
         plugin::cell_python::init();
     }

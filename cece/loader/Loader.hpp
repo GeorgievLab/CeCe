@@ -28,18 +28,20 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/InStream.hpp"
 #include "cece/core/OutStream.hpp"
-#include "cece/core/ViewPtr.hpp"
 
 /* ************************************************************************ */
 
-namespace cece { inline namespace core { class Parameters; } }
-namespace cece { namespace simulator { class Simulation; } }
-namespace cece { namespace plugin { class Context; } }
+namespace cece {
+    inline namespace core   { class Parameters; }
+    namespace simulator     { class Simulation; }
+    namespace plugin        { class Repository; }
+}
 
 /* ************************************************************************ */
 
@@ -80,8 +82,9 @@ public:
      *
      * @return Pointer to created simulation.
      */
-    virtual UniquePtr<simulator::Simulation> fromFile(plugin::Context& context,
-        const FilePath& filename, ViewPtr<const Parameters> parameters = nullptr) const;
+    virtual UniquePtr<simulator::Simulation> fromFile(
+        const plugin::Repository& repository, const FilePath& filename,
+        ViewPtr<const Parameters> parameters = nullptr) const;
 
 
     /**
@@ -92,8 +95,10 @@ public:
      *
      * @return Pointer to created simulation.
      */
-    virtual UniquePtr<simulator::Simulation> fromSource(plugin::Context& context,
-        const String& source, const FilePath& filename = "<source>", ViewPtr<const Parameters> parameters = nullptr) const;
+    virtual UniquePtr<simulator::Simulation> fromSource(
+        const plugin::Repository& repository,
+        const String& source, const FilePath& filename = "<source>",
+        ViewPtr<const Parameters> parameters = nullptr) const;
 
 
     /**
@@ -127,8 +132,10 @@ public:
      *
      * @return Created simulation.
      */
-    virtual UniquePtr<simulator::Simulation> fromStream(plugin::Context& context,
-        InStream& is, const FilePath& filename = "<stream>", ViewPtr<const Parameters> parameters = nullptr) const = 0;
+    virtual UniquePtr<simulator::Simulation> fromStream(
+        const plugin::Repository& repository, InStream& is,
+        const FilePath& filename = "<stream>",
+        ViewPtr<const Parameters> parameters = nullptr) const = 0;
 
 
     /**

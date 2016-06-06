@@ -31,6 +31,7 @@
 #include "cece/core/FilePath.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/plugin/Manager.hpp"
+#include "cece/plugin/Context.hpp"
 #include "cece/loader/Loader.hpp"
 #include "cece/simulator/Simulation.hpp"
 
@@ -97,10 +98,11 @@ int main(int argc, char** argv)
 #elif _WIN32
         manager.addDirectory(getPluginsDirectory(argv[0], "."));
 #endif
-        // Load initial loader
-        manager.load("xml");
+        // Load all plugins
+        manager.loadAll();
 
-        auto& context = manager.getContext();
+        // Create plugin context
+        plugin::Context context(manager.getRepository());
 
         // Create simulation
         auto simulation = context.createSimulation(infile);
@@ -108,8 +110,14 @@ int main(int argc, char** argv)
         // File extension
         auto ext = outfile.extension().string().substr(1);
 
+        // Get XML api
+        auto xmlApi = manager.getApi("xml");
+
+        if (!xmlApi)
+            throw RuntimeException("XML plugin API not found");
+
         // Find loader by extension
-        auto loader = context.getLoaderFactoryManager().createLoader(ext);
+        auto loader = manager.getRepository().getLoaderFactoryManager(xmlApi)->createLoader(ext);
 
         if (!loader)
             throw RuntimeException("Unable to store file with extension: '" + ext + "'");

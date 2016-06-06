@@ -436,7 +436,7 @@ public:
      *
      * @return Plugin API.
      */
-    virtual ViewPtr<plugin::Api> loadPlugin(StringView name) = 0;
+    virtual ViewPtr<const plugin::Api> loadPlugin(StringView name) = 0;
 
 
     /**
@@ -447,7 +447,7 @@ public:
      *
      * @return Plugin API.
      */
-    virtual ViewPtr<plugin::Api> loadPlugin(const config::Configuration& config);
+    virtual ViewPtr<const plugin::Api> loadPlugin(const config::Configuration& config);
 
 
     /**

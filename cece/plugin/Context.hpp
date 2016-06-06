@@ -31,16 +31,22 @@
 #include "cece/core/FilePath.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/ViewPtr.hpp"
+#include "cece/core/Map.hpp"
 #include "cece/core/Parameters.hpp"
-#include "cece/loader/FactoryManager.hpp"
-#include "cece/init/FactoryManager.hpp"
-#include "cece/object/FactoryManager.hpp"
-#include "cece/module/FactoryManager.hpp"
-#include "cece/program/FactoryManager.hpp"
+
+/// @deprecated
+#include "cece/object/Object.hpp"
 
 /* ************************************************************************ */
 
-namespace cece { namespace simulator { class Simulation; } }
+namespace cece {
+    namespace init      { class Initializer; }
+    namespace module    { class Module; }
+    //namespace object    { class Object; }
+    namespace object    { class Type; }
+    namespace program   { class Program; }
+    namespace simulator { class Simulation; }
+}
 
 /* ************************************************************************ */
 
@@ -49,257 +55,81 @@ namespace plugin {
 
 /* ************************************************************************ */
 
+class Api;
+class Repository;
+
+/* ************************************************************************ */
+
 /**
- * @brief Context for plugins. It stores extensions supplied by plugins.
+ * @brief Plugins context for simulation.
  */
 class Context
 {
+
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param repository Plugins repository.
+     */
+    explicit Context(const Repository& repository) noexcept
+        : m_repository(repository)
+    {
+        // Nothing to do
+    }
+
 
 // Public Accessors
 public:
 
 
     /**
-     * @brief Returns loader factory manager.
+     * @brief Returns context repository.
      *
      * @return
      */
-    loader::FactoryManager& getLoaderFactoryManager() noexcept
+    const Repository& getRepository() const noexcept
     {
-        return m_loaderFactoryManager;
+        return m_repository;
     }
 
 
     /**
-     * @brief Returns loader factory manager.
+     * @brief Returns map of imported plugins.
      *
      * @return
      */
-    const loader::FactoryManager& getLoaderFactoryManager() const noexcept
+    const Map<String, ViewPtr<const Api>>& getImported() const noexcept
     {
-        return m_loaderFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns init factory manager.
-     *
-     * @return
-     */
-    init::FactoryManager& getInitFactoryManager() noexcept
-    {
-        return m_initFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns init factory manager.
-     *
-     * @return
-     */
-    const init::FactoryManager& getInitFactoryManager() const noexcept
-    {
-        return m_initFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns module factory manager.
-     *
-     * @return
-     */
-    module::FactoryManager& getModuleFactoryManager() noexcept
-    {
-        return m_moduleFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns module factory manager.
-     *
-     * @return
-     */
-    const module::FactoryManager& getModuleFactoryManager() const noexcept
-    {
-        return m_moduleFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns object factory manager.
-     *
-     * @return
-     */
-    object::FactoryManager& getObjectFactoryManager() noexcept
-    {
-        return m_objectFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns object factory manager.
-     *
-     * @return
-     */
-    const object::FactoryManager& getObjectFactoryManager() const noexcept
-    {
-        return m_objectFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns program factory manager.
-     *
-     * @return
-     */
-    program::FactoryManager& getProgramFactoryManager() noexcept
-    {
-        return m_programFactoryManager;
-    }
-
-
-    /**
-     * @brief Returns program factory manager.
-     *
-     * @return
-     */
-    const program::FactoryManager& getProgramFactoryManager() const noexcept
-    {
-        return m_programFactoryManager;
-    }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Register new loader type and create factory for it.
-     *
-     * @tparam LoaderType Type of loader that is created by factory.
-     *
-     * @param name Factory name.
-     */
-    template<typename LoaderType>
-    void registerLoader(String name) noexcept
-    {
-        m_loaderFactoryManager.createFor<LoaderType>(std::move(name));
-    }
-
-
-    /**
-     * @brief Register new initializer type and create factory for it.
-     *
-     * @tparam InitializerType Type of initializer that is created by factory.
-     *
-     * @param name Initializer name.
-     */
-    template<typename InitializerType>
-    void registerInitializer(String name) noexcept
-    {
-        m_initFactoryManager.createFor<InitializerType>(std::move(name));
-    }
-
-
-    /**
-     * @brief Register new module type and create factory for it.
-     *
-     * @tparam ModuleType Type of module that is created by factory.
-     *
-     * @param name Factory name.
-     */
-    template<typename ModuleType>
-    void registerModule(String name) noexcept
-    {
-        m_moduleFactoryManager.createFor<ModuleType>(std::move(name));
-    }
-
-
-    /**
-     * @brief Register new object type and create factory for it.
-     *
-     * @tparam ObjectType Type of object that is created by factory.
-     *
-     * @param name Factory name.
-     */
-    template<typename ObjectType>
-    void registerObject(String name) noexcept
-    {
-        m_objectFactoryManager.createFor<ObjectType>(std::move(name));
-    }
-
-
-    /**
-     * @brief Register new program type and create factory for it.
-     *
-     * @tparam ObjectType Type of program that is created by factory.
-     *
-     * @param name Factory name.
-     */
-    template<typename ProgramType>
-    void registerProgram(String name) noexcept
-    {
-        m_programFactoryManager.createFor<ProgramType>(std::move(name));
-    }
-
-
-    /**
-     * @brief Unregister loader type.
-     *
-     * @param name Loader type name.
-     */
-    void unregisterLoader(StringView name) noexcept
-    {
-        m_loaderFactoryManager.remove(name);
-    }
-
-
-    /**
-     * @brief Unregister initializer type.
-     *
-     * @param name Initializer type name.
-     */
-    void unregisterInitializer(StringView name) noexcept
-    {
-        m_initFactoryManager.remove(name);
-    }
-
-
-    /**
-     * @brief Unregister module type.
-     *
-     * @param name Module type name.
-     */
-    void unregisterModule(StringView name) noexcept
-    {
-        m_moduleFactoryManager.remove(name);
-    }
-
-
-    /**
-     * @brief Unregister object type.
-     *
-     * @param name Object type name.
-     */
-    void unregisterObject(StringView name) noexcept
-    {
-        m_objectFactoryManager.remove(name);
-    }
-
-
-    /**
-     * @brief Unregister program type.
-     *
-     * @param name Program type name.
-     */
-    void unregisterProgram(StringView name) noexcept
-    {
-        m_programFactoryManager.remove(name);
+        return m_plugins;
     }
 
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Import plugin.
+     *
+     * @param name Plugin name.
+     *
+     * @return Plugin API.
+     */
+    ViewPtr<const Api> importPlugin(StringView name);
+
+
+    /**
+     * @brief Remove plugin.
+     *
+     * @param name Plugin name.
+     *
+     * @return Plugin API.
+     */
+    ViewPtr<const Api> removePlugin(StringView name);
 
 
     /**
@@ -312,7 +142,7 @@ public:
      *
      * @throw In case of missing file or error in simulation file.
      */
-    UniquePtr<simulator::Simulation> createSimulation(const FilePath& filepath, ViewPtr<const Parameters> parameters = nullptr);
+    UniquePtr<simulator::Simulation> createSimulation(const FilePath& filepath, ViewPtr<const Parameters> parameters = nullptr) const;
 
 
     /**
@@ -325,7 +155,7 @@ public:
      *
      * @throw In case of missing file or error in simulation file.
      */
-    UniquePtr<simulator::Simulation> createSimulation(StringView type, StringView source);
+    UniquePtr<simulator::Simulation> createSimulation(StringView type, StringView source) const;
 
 
     /**
@@ -339,7 +169,7 @@ public:
      *
      * @throw In case of missing file or error in simulation file.
      */
-    UniquePtr<simulator::Simulation> createSimulation(StringView type, StringView source, const FilePath& filepath);
+    UniquePtr<simulator::Simulation> createSimulation(StringView type, StringView source, const FilePath& filepath) const;
 
 
     /**
@@ -349,7 +179,7 @@ public:
      *
      * @return Pointer to created initializer.
      */
-    UniquePtr<init::Initializer> createInitializer(StringView typeName);
+    UniquePtr<init::Initializer> createInitializer(StringView typeName) const;
 
 
     /**
@@ -360,7 +190,7 @@ public:
      *
      * @return Pointer to created module.
      */
-    UniquePtr<module::Module> createModule(StringView typeName, simulator::Simulation& simulation);
+    UniquePtr<module::Module> createModule(StringView typeName, simulator::Simulation& simulation) const;
 
 
     /**
@@ -372,7 +202,7 @@ public:
      *
      * @return Pointer to created object.
      */
-    UniquePtr<object::Object> createObject(StringView typeName, simulator::Simulation& simulation, object::Object::Type type);
+    UniquePtr<object::Object> createObject(StringView typeName, simulator::Simulation& simulation, object::Object::Type type) const;
 
 
     /**
@@ -382,26 +212,17 @@ public:
      *
      * @return Pointer to created program.
      */
-    UniquePtr<program::Program> createProgram(StringView typeName);
+    UniquePtr<program::Program> createProgram(StringView typeName) const;
 
 
 // Private Data Members
 private:
 
-    /// Loader factory manager.
-    loader::FactoryManager m_loaderFactoryManager;
+    /// Plugins repository.
+    const Repository& m_repository;
 
-    /// Initializer factory manager.
-    init::FactoryManager m_initFactoryManager;
-
-    /// Module factory manager.
-    module::FactoryManager m_moduleFactoryManager;
-
-    /// Object factory manager.
-    object::FactoryManager m_objectFactoryManager;
-
-    /// Program factory manager.
-    program::FactoryManager m_programFactoryManager;
+    /// Imported plugins.
+    Map<String, ViewPtr<const Api>> m_plugins;
 
 };
 

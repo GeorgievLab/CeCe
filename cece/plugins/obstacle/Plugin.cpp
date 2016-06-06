@@ -26,7 +26,7 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
 #include "Circle.hpp"
@@ -49,26 +49,15 @@ class ObstacleApi : public plugin::Api
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerObject<Circle>("obstacle.Circle");
-        context.registerObject<Rectangle>("obstacle.Rectangle");
-        context.registerObject<Polygon>("obstacle.Polygon");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterObject("obstacle.Polygon");
-        context.unregisterObject("obstacle.Rectangle");
-        context.unregisterObject("obstacle.Circle");
+        repository.registerApi(this).
+            registerObject<Circle>("obstacle.Circle").
+            registerObject<Rectangle>("obstacle.Rectangle").
+            registerObject<Polygon>("obstacle.Polygon")
+        ;
     }
 
 };

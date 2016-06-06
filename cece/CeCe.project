@@ -396,5 +396,8 @@
     <File Name="plugin/Manager.hpp"/>
     <File Name="plugin/definition.hpp"/>
     <File Name="plugin/Config.hpp"/>
+    <File Name="plugin/Repository.hpp"/>
+    <File Name="plugin/Repository.cpp"/>
+    <File Name="plugin/RepositoryRecord.hpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

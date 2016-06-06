@@ -71,6 +71,18 @@ public:
      *
      * @param ptr Object pointer.
      */
+    ViewPtr(const ViewPtr<typename std::remove_const<T>::type>& ptr) noexcept
+        : m_ptr(ptr.get())
+    {
+        // Nothing to do
+    }
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param ptr Object pointer.
+     */
     template<typename U>
     ViewPtr(const ViewPtr<U>& ptr) noexcept
         : m_ptr(dynamic_cast<T*>(ptr.get()))

@@ -26,10 +26,20 @@
 // Declaration
 #include "cece/plugin/Api.hpp"
 
+// CeCe
+#include "cece/plugin/Repository.hpp"
+
 /* ************************************************************************ */
 
 namespace cece {
 namespace plugin {
+
+/* ************************************************************************ */
+
+void Api::onUnload(Repository& repository) const
+{
+    repository.unregisterApi(this);
+}
 
 /* ************************************************************************ */
 

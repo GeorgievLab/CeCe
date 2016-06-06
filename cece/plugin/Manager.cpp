@@ -33,6 +33,7 @@
 #include <boost/filesystem.hpp>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/Log.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/Range.hpp"
@@ -58,6 +59,14 @@ const Map<String, Library::CreateFn> Manager::s_builtin{
     BUILTIN_PLUGINS
 };
 #undef ITEM
+
+/* ************************************************************************ */
+
+Manager::Manager() noexcept
+    : m_repository(*this)
+{
+    // Nothing to do
+}
 
 /* ************************************************************************ */
 
@@ -100,6 +109,19 @@ DynamicArray<String> Manager::getNames() const noexcept
 
 /* ************************************************************************ */
 
+StringView Manager::getName(ViewPtr<const Api> api) const noexcept
+{
+    for (const auto& p : m_loaded)
+    {
+        if (std::get<1>(p).getApi() == api)
+            return std::get<0>(p);
+    }
+
+    return {};
+}
+
+/* ************************************************************************ */
+
 void Manager::addDirectory(FilePath path)
 {
     Log::debug("New plugins directory: `", path.string(), "`");
@@ -131,6 +153,7 @@ ViewPtr<Api> Manager::load(StringView name)
 
     // Load internal
     auto api = loadInternal(String(name)).getApi();
+    Assert(api);
 
     // Load dependencies
     for (const auto& plugin : api->requiredPlugins())
@@ -147,7 +170,7 @@ ViewPtr<Api> Manager::load(StringView name)
     Log::info("Using plugin '", name,"'...");
 
     // Load plugin
-    api->onLoad(m_context);
+    api->onLoad(getRepository());
 
     return api;
 }
@@ -286,7 +309,7 @@ void Manager::unloadPlugins()
     {
         auto it = m_loaded.find(*i);
         Assert(it != m_loaded.end());
-        it->second.getApi()->onUnload(m_context);
+        it->second.getApi()->onUnload(getRepository());
     }
 }
 

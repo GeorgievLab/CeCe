@@ -91,6 +91,20 @@ public:
 
 
     /**
+     * @brief Returns if factory with given name exists.
+     *
+     * @param name Factory name.
+     *
+     * @return
+     */
+    bool exists(StringView name) const noexcept
+    {
+        auto it = m_factories.find(String(name));
+        return it != m_factories.end();
+    }
+
+
+    /**
      * @brief Find a factory by name.
      *
      * @param name Factory name.

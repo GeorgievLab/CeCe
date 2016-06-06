@@ -30,7 +30,7 @@
 #include "cece/core/Exception.hpp"
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
 #include "cece/plugins/python/Module.hpp"
@@ -80,9 +80,9 @@ class PythonApi : public plugin::Api
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
         if (PyImport_ExtendInittab(const_cast<struct _inittab*>(INIT_TABLE)) != 0)
             throw RuntimeException("Unable to initialize Python import table");
@@ -90,22 +90,22 @@ class PythonApi : public plugin::Api
         // Initialize Python interpreter
         Py_Initialize();
 
-        context.registerInitializer<plugin::python::Initializer>("python");
-        context.registerModule<plugin::python::Module>("python");
-        context.registerProgram<plugin::python::Program>("python");
+        repository.registerApi(this).
+            registerInitializer<plugin::python::Initializer>("python").
+            registerModule<plugin::python::Module>("python").
+            registerProgram<plugin::python::Program>("python")
+        ;
     }
 
 
     /**
      * @brief On plugin unload.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onUnload(plugin::Context& context) override
+    void onUnload(plugin::Repository& repository) const override
     {
-        context.unregisterModule("python");
-        context.unregisterProgram("python");
-        context.unregisterInitializer("python");
+        plugin::Api::onUnload(repository);
 
         Py_Finalize();
     }

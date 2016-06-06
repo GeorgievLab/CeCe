@@ -47,6 +47,7 @@
 #include "cece/core/FilePath.hpp"
 #include "cece/core/Parameters.hpp"
 #include "cece/core/IterationType.hpp"
+#include "cece/plugin/Context.hpp"
 #include "cece/init/Container.hpp"
 #include "cece/module/Container.hpp"
 #include "cece/object/Container.hpp"
@@ -63,7 +64,7 @@
 namespace cece {
     namespace config { class Configuration; }
     namespace plugin { class Api; }
-    namespace plugin { class Context; }
+    namespace plugin { class Repository; }
 }
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
@@ -90,10 +91,10 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param context Plugin context.
-     * @param path    Path to simulation file.
+     * @param repository Plugin repository.
+     * @param path       Path to simulation file.
      */
-    explicit DefaultSimulation(plugin::Context& context, FilePath path = "<memory>") noexcept;
+    explicit DefaultSimulation(const plugin::Repository& repository, FilePath path = "<memory>") noexcept;
 
 
     /**
@@ -491,7 +492,7 @@ public:
      *
      * @return Plugin API.
      */
-    ViewPtr<plugin::Api> loadPlugin(StringView name) override;
+    ViewPtr<const plugin::Api> loadPlugin(StringView name) override;
 
 
     /**
@@ -794,7 +795,7 @@ protected:
 private:
 
     /// Simulation plugin context.
-    plugin::Context& m_pluginContext;
+    plugin::Context m_pluginContext;
 
     /// Path of simulation file.
     FilePath m_fileName;
@@ -816,9 +817,6 @@ private:
 
     /// World size.
     SizeVector m_worldSize{ units::um(400), units::um(400) };
-
-    /// Loaded plugins.
-    Map<String, ViewPtr<plugin::Api>> m_plugins;
 
     /// Simulation parameters.
     Parameters m_parameters;

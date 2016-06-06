@@ -26,7 +26,7 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
 #include "cece/plugins/agglutination/Module.hpp"
@@ -37,28 +37,22 @@ using namespace cece;
 
 /* ************************************************************************ */
 
+/**
+ * @brief Agglutination plugin API.
+ */
 class AgglutinationApi : public plugin::Api
 {
 
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerModule<plugin::agglutination::Module>("agglutination");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterModule("agglutination");
+        repository.registerApi(this).
+            registerModule<plugin::agglutination::Module>("agglutination")
+        ;
     }
 
 };

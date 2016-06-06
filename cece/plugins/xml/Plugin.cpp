@@ -37,7 +37,7 @@
 #include "cece/core/FilePath.hpp"
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 #include "cece/loader/Loader.hpp"
 #include "cece/loader/FactoryManager.hpp"
 #include "cece/config/Configuration.hpp"
@@ -60,17 +60,17 @@ class XmlLoader : public loader::Loader
     /**
      * @brief Read simulation from input stream.
      *
-     * @param context    Plugin context.
+     * @param repository Plugin repository.
      * @param is         Source stream.
      * @param filename   Source file name.
      * @param parameters Initialization parameters.
      *
      * @return Created simulation.
      */
-    UniquePtr<Simulation> fromStream(plugin::Context& context, InStream& source,
+    UniquePtr<Simulation> fromStream(const plugin::Repository& repository, InStream& source,
         const FilePath& filename, ViewPtr<const Parameters> parameters) const override
     {
-        auto simulation = makeUnique<DefaultSimulation>(context, filename);
+        auto simulation = makeUnique<DefaultSimulation>(repository, filename);
 
         if (parameters)
             simulation->getParameters().append(*parameters);
@@ -128,24 +128,14 @@ class XmlApi : public plugin::Api
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerLoader<XmlLoader>("xml");
-        context.registerLoader<XmlLoader>("cece");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterLoader("cece");
-        context.unregisterLoader("xml");
+        repository.registerApi(this).
+            registerLoader<XmlLoader>("xml").
+            registerLoader<XmlLoader>("cece")
+        ;
     }
 
 };

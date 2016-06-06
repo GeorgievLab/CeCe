@@ -26,7 +26,7 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/Module.hpp"
@@ -49,24 +49,14 @@ public:
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        context.registerModule<plugin::streamlines::Module>("streamlines");
-        context.registerModule<plugin::streamlines::ExportModule>("streamlines.export");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterModule("streamlines.export");
-        context.unregisterModule("streamlines");
+        repository.registerApi(this).
+            registerModule<plugin::streamlines::Module>("streamlines").
+            registerModule<plugin::streamlines::ExportModule>("streamlines.export")
+        ;
     }
 
 };

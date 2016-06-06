@@ -26,10 +26,11 @@
 // CeCe
 #include "cece/plugin/definition.hpp"
 #include "cece/plugin/Api.hpp"
-#include "cece/plugin/Context.hpp"
+#include "cece/plugin/Repository.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines-channel/Module.hpp"
+#include "cece/plugins/streamlines/ExportModule.hpp"
 
 /* ************************************************************************ */
 
@@ -56,24 +57,14 @@ public:
     /**
      * @brief On plugin load.
      *
-     * @param context Plugin context.
+     * @param repository Plugin repository.
      */
-    void onLoad(plugin::Context& context) override
+    void onLoad(plugin::Repository& repository) const override
     {
-        // Unregister previous streamlines module
-        context.unregisterModule("streamlines");
-        context.registerModule<plugin::streamlines_channel::Module>("streamlines");
-    }
-
-
-    /**
-     * @brief On plugin unload.
-     *
-     * @param context Plugin context.
-     */
-    void onUnload(plugin::Context& context) override
-    {
-        context.unregisterModule("streamlines");
+        repository.registerApi(this).
+            registerModule<plugin::streamlines_channel::Module>("streamlines").
+            registerModule<plugin::streamlines::ExportModule>("streamlines.export")
+        ;
     }
 
 };

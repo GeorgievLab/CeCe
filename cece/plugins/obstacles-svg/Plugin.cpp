@@ -193,7 +193,7 @@ class ObstaclesSvgApi : public plugin::Api
      * @param simulation Current simulation.
      * @param config     Plugin configuration.
      */
-    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) override
+    void loadConfig(simulator::Simulation& simulation, const config::Configuration& config) const override
     {
         const float px = 0.3f;
         const auto file = simulation.getResource(config.get("filename"));

@@ -75,7 +75,7 @@ class DiffusionPythonApi : public plugin::Api
     }
 
 
-    void initSimulation(Simulation& simulation) override
+    void initSimulation(Simulation& simulation) const override
     {
         plugin::diffusion_python::init();
     }
