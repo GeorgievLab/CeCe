@@ -55,6 +55,7 @@ static std::random_device g_rd;
 
 Yeast::Yeast(simulator::Simulation& simulation, String typeName, object::Object::Type type) noexcept
     : CellBase(simulation, std::move(typeName), type)
+    , m_renderObject()
 {
     setVolume(units::um3(13));
     setDensity(units::kg(1200) / units::m3(1));
@@ -130,7 +131,6 @@ void Yeast::budCreate()
 {
     Assert(!hasBud());
 
-    std::random_device rd;
     std::default_random_engine eng(g_rd());
     std::uniform_real_distribution<float> dist(0.f, 1.f);
 

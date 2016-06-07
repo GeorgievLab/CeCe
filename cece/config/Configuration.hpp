@@ -138,7 +138,7 @@ public:
      *
      * @return
      */
-    String get(StringView name, String def) const noexcept
+    String get(StringView name, String def) const
     {
         return has(name) ? replaceParameters(m_impl->get(name)) : std::move(def);
     }

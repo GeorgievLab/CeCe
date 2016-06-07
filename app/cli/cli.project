@@ -126,7 +126,7 @@
       </Completion>
     </Configuration>
     <Configuration Name="DebugCLI" CompilerType="GCC" DebuggerType="" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cflags --debug)" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-g;-O0;-Wall;" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
       </Compiler>
       <Linker Options="$(shell wx-config --libs core,base,stc,gl,adv,xrc --debug)" Required="yes">

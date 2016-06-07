@@ -119,7 +119,7 @@ public:
      *
      * @return
      */
-    static View<PyTypeObject> getBaseType(const String& name) noexcept
+    static View<PyTypeObject> getBaseType(const String& name)
     {
         String cname = name;
 
