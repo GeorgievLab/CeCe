@@ -40,37 +40,38 @@
 /* ************************************************************************ */
 
 namespace cece {
-inline namespace core {
+namespace plugin {
+namespace streamlines {
+
+/* ************************************************************************ */
+
+namespace {
 
 /* ************************************************************************ */
 
 /**
- * @brief Read an array of T.
+ * @brief Parse array of values from string.
  *
- * @param is    Input stream.
- * @param array Output array.
+ * @param str Source string.
  *
- * @return is.
+ * @return
  */
 template<typename T, std::size_t N>
-InStream& operator>>(InStream& is, StaticArray<T, N>& array)
+StaticArray<T, N> split(String str)
 {
+    StaticArray<T, N> array;
+    InStringStream is(std::move(str));
+
+    // Read values
     for (std::size_t i = 0; i < N; ++i)
         is >> std::skipws >> array[i];
 
-    return is;
+    return array;
 }
 
 /* ************************************************************************ */
 
 }
-}
-
-/* ************************************************************************ */
-
-namespace cece {
-namespace plugin {
-namespace streamlines {
 
 /* ************************************************************************ */
 
@@ -166,7 +167,7 @@ void Boundaries::loadConfig(const config::Configuration& config)
         // Create default
         initDefault();
 
-        const auto layout = config.get<StaticArray<String, 4>>("layout");
+        const auto layout = split<String, 4>(config.get("layout"));
 
         for (std::size_t i = 0; i < layout.size(); ++i)
         {
@@ -193,7 +194,7 @@ void Boundaries::loadConfig(const config::Configuration& config)
     {
         initDefault();
 
-        const auto velocities = config.get<StaticArray<units::Velocity, 4>>("inlet-velocities");
+        const auto velocities = split<units::Velocity, 4>(config.get("inlet-velocities"));
 
         for (std::size_t i = 0; i < velocities.size(); ++i)
             m_boundaries[i].setInletVelocity(velocities[i]);
@@ -216,7 +217,7 @@ void Boundaries::loadConfig(const config::Configuration& config)
     {
         initDefault();
 
-        const auto types = config.get<StaticArray<String, 4>>("inlet-types");
+        const auto types = split<String, 4>(config.get("inlet-types"));
 
         for (std::size_t i = 0; i < types.size(); ++i)
         {
