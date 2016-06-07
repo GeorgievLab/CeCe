@@ -316,14 +316,28 @@ ViewPtr<object::Object> DefaultSimulation::addObject(UniquePtr<object::Object> o
 
 ViewPtr<object::Object> DefaultSimulation::createObject(StringView type)
 {
-    return addObject(m_pluginContext.createObject(type, *this, object::Object::Type::Dynamic));
+    return createObject(type, object::Object::Type::Dynamic);
 }
 
 /* ************************************************************************ */
 
 ViewPtr<object::Object> DefaultSimulation::createObject(StringView type, object::Object::Type state)
 {
-    return addObject(m_pluginContext.createObject(type, *this, state));
+    // Look in object types
+    if (m_objectTypes.exists(type))
+    {
+        auto objType = m_objectTypes.get(type);
+
+        // Create base object
+        auto object = createObject(objType->baseName);
+        object->configure(objType->config, *this);
+
+        return object;
+    }
+    else
+    {
+        return addObject(m_pluginContext.createObject(type, *this, state));
+    }
 }
 
 /* ************************************************************************ */
