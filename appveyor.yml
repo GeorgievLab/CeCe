@@ -42,6 +42,7 @@ branches:
         - travis-ci
 
 init:
+    - dir %BOOST_ROOT%
     - del c:\programdata\chocolatey\bin\cpack.exe
 
 install:
