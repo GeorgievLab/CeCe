@@ -336,8 +336,16 @@ public:
 
         try
         {
-            // Return parameter
-            return makeObject(self->value->getParameter(name, def)).release();
+            if (def)
+            {
+                // Return parameter
+                return makeObject(self->value->getParameter(name, def)).release();
+            }
+            else
+            {
+                // Return parameter
+                return makeObject(self->value->getParameter(name)).release();
+            }
         }
         catch (const cece::Exception& e)
         {
