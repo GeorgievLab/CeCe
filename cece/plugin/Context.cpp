@@ -108,14 +108,40 @@ String join(const DynamicArray<String>& array) noexcept
 
 /* ************************************************************************ */
 
+bool Context::isImported(StringView name) const noexcept
+{
+    auto it = m_plugins.find(String(name));
+    return it != m_plugins.end();
+}
+
+/* ************************************************************************ */
+
 ViewPtr<const Api> Context::importPlugin(StringView name)
 {
+    // Do not add duplicates
+    auto it = m_plugins.find(String(name));
+
+    // Already imported
+    if (it != m_plugins.end())
+        return it->second;
+
     // Load plugin
     auto api = getRepository().getManager().getApi(name);
 
     // Plugin not found
     if (!api)
         throw RuntimeException("Cannot import plugin: " + String(name));
+
+    // Check conflict plugins
+    for (const auto& pluginName : api->conflictPlugins())
+    {
+        if (isImported(pluginName))
+            throw RuntimeException("Cannot import plugin: " + String(name) + ". Confliction with plugin: " + pluginName);
+    }
+
+    // Import required plugins
+    for (const auto& pluginName : api->requiredPlugins())
+        importPlugin(pluginName);
 
     // Store API
     m_plugins.emplace(String(name), api);

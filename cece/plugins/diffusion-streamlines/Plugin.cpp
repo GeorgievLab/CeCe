@@ -41,10 +41,17 @@ using namespace cece;
 
 class DiffusionStreamlinesApi : public plugin::Api
 {
+public:
 
-    DynamicArray<String> requiredPlugins() const override
+
+    /**
+     * @brief Returns a list of plugins that will conflict with.
+     *
+     * @return
+     */
+    virtual DynamicArray<String> conflictPlugins() const override
     {
-        return {"diffusion", "streamlines"};
+        return {"diffusion"};
     }
 
 

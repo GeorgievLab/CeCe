@@ -86,6 +86,17 @@ public:
 
 
     /**
+     * @brief Returns a list of plugins that will conflict with.
+     *
+     * @return
+     */
+    virtual DynamicArray<String> conflictPlugins() const
+    {
+        return {};
+    }
+
+
+    /**
      * @brief On plugin load.
      *
      * @param repository Plugins repository.

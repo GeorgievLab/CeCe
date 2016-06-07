@@ -44,11 +44,11 @@ public:
 
 
     /**
-     * @brief Returns a list of required plugins.
+     * @brief Returns a list of plugins that will conflict with.
      *
      * @return
      */
-    DynamicArray<String> requiredPlugins() const override
+    DynamicArray<String> conflictPlugins() const override
     {
         return {"streamlines"};
     }

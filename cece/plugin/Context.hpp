@@ -108,6 +108,16 @@ public:
     }
 
 
+    /**
+     * @brief Returns if plugin is already imported.
+     *
+     * @param name Plugin name.
+     *
+     * @return
+     */
+    bool isImported(StringView name) const noexcept;
+
+
 // Public Operations
 public:
 
