@@ -28,11 +28,10 @@ os: Visual Studio 2015
 version: 0.4.4.{build}
 
 environment:
-    BOOST_ROOT: C:\Libraries\boost
+    BOOST_ROOT: C:\Libraries\boost_1_59_0
     matrix:
         - GENERATOR: MinGW Makefiles
         - GENERATOR: Visual Studio 14 2015
-          BOOST_LIBRARYDIR: C:\Libraries\boost\lib32-msvc-14.0
 
 matrix:
     allow_failures:
@@ -44,10 +43,6 @@ branches:
         - travis-ci
 
 init:
-    - dir %BOOST_ROOT%
-    - dir C:\Libraries\boost_1_58_0
-    - dir C:\Libraries\boost_1_59_0
-    - dir C:\Libraries\boost_1_60_0
     - del c:\programdata\chocolatey\bin\cpack.exe
 
 install:
