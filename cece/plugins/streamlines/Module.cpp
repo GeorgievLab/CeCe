@@ -109,6 +109,7 @@ void Module::init(AtomicBool& flag)
 
     // Obstacles
     updateObstacleMap();
+    applyBoundaryConditions();
 
     Log::info("[streamlines] Initialization...");
 
@@ -710,6 +711,9 @@ void Module::storeToFile(const FilePath& filename)
     // Write lattice size
     out.write(m_lattice.getSize());
 
+    // Store lattice hash
+    out.write(calculateLatticeHash());
+
     // Write relaxation time
     out.write(m_converter.calculateTau());
 
@@ -750,6 +754,12 @@ void Module::loadFromFile(const FilePath& filename)
     if (size != m_lattice.getSize())
         throw InvalidArgumentException("[streamlines] Cannot load from file: different lattice sizes");
 
+    std::size_t hash;
+    in.read(hash);
+
+    if (hash != calculateLatticeHash())
+        throw InvalidArgumentException("[streamlines] Cannot load from file: different layout");
+
     RealType tau;
     in.read(tau);
 
@@ -769,6 +779,40 @@ void Module::loadFromFile(const FilePath& filename)
         // Read cell populations
         in.read(cell.getData());
     }
+}
+
+/* ************************************************************************ */
+
+std::size_t Module::calculateLatticeHash() const noexcept
+{
+    // Based on djb2
+    std::size_t hash = 5381;
+    const auto noDynamics = NoDynamics::getInstance();
+    const auto wallDynamics = getWallDynamics();
+    const auto fluidDynamics = getFluidDynamics();
+
+    for (auto&& c : range(m_lattice.getSize()))
+    {
+        const Node& node = m_lattice[c];
+        const auto dynamics = node.getDynamics();
+
+        std::size_t val;
+
+        // Get value based on dynamics
+        if (dynamics == noDynamics)
+            val = 1;
+        else if (dynamics == wallDynamics)
+            val = 2;
+        else if (dynamics == fluidDynamics)
+            val = 3;
+        else
+            val = 4;
+
+        // Can overflow... don't care
+        hash = ((hash << 5) + hash) + val; // hash * 33 + val
+    }
+
+    return hash;
 }
 
 /* ************************************************************************ */

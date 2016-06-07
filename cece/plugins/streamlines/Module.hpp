@@ -452,6 +452,14 @@ protected:
     void loadFromFile(const FilePath& filename);
 
 
+    /**
+     * @brief Calculate lattice hash.
+     *
+     * @return
+     */
+    std::size_t calculateLatticeHash() const noexcept;
+
+
 // Private Data Members
 private:
 
