@@ -70,32 +70,34 @@ OutStream& operator<<(OutStream& os, const CliColor& color) noexcept
     switch (color.getCode())
     {
     default:
-    case FG_WHITE:
-    case FG_DEFAULT:        attr = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE; break;
-    case FG_BLACK:          attr = 0; break;
-    case FG_RED:            attr = FOREGROUND_RED; break;
-    case FG_GREEN:          attr = FOREGROUND_GREEN; break;
-    case FG_YELLOW:         attr = FOREGROUND_RED | FOREGROUND_GREEN; break;
-    case FG_BLUE:           attr = FOREGROUND_BLUE; break;
-    case FG_MAGENTA:        attr = FOREGROUND_RED | FOREGROUND_BLUE; break;
-    case FG_CYAN:           attr = FOREGROUND_GREEN | FOREGROUND_BLUE; break;
-    //case FG_LIGHT_GRAY:
-    //case FG_DARK_GRAY:
-    case FG_LIGHT_RED:      attr = FOREGROUND_RED | FOREGROUND_INTENSITY; break;
-    case FG_LIGHT_GREEN:    attr = FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
-    case FG_LIGHT_YELLOW:   attr = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
-    case FG_LIGHT_BLUE:     attr = FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
-    case FG_LIGHT_MAGENTA:  attr = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
-    case FG_LIGHT_CYAN:     attr = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
-    case BG_RED:            attr = BACKGROUND_RED; break;
-    case BG_GREEN:          attr = BACKGROUND_GREEN; break;
-    case BG_BLUE:           attr = BACKGROUND_BLUE; break;
-    case BG_DEFAULT:        attr = 0;
+    case CliColor::Code::FG_WHITE:
+    case CliColor::Code::FG_DEFAULT:        attr = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE; break;
+    case CliColor::Code::FG_BLACK:          attr = 0; break;
+    case CliColor::Code::FG_RED:            attr = FOREGROUND_RED; break;
+    case CliColor::Code::FG_GREEN:          attr = FOREGROUND_GREEN; break;
+    case CliColor::Code::FG_YELLOW:         attr = FOREGROUND_RED | FOREGROUND_GREEN; break;
+    case CliColor::Code::FG_BLUE:           attr = FOREGROUND_BLUE; break;
+    case CliColor::Code::FG_MAGENTA:        attr = FOREGROUND_RED | FOREGROUND_BLUE; break;
+    case CliColor::Code::FG_CYAN:           attr = FOREGROUND_GREEN | FOREGROUND_BLUE; break;
+    //case CliColor::Code::FG_LIGHT_GRAY:
+    //case CliColor::Code::FG_DARK_GRAY:
+    case CliColor::Code::FG_LIGHT_RED:      attr = FOREGROUND_RED | FOREGROUND_INTENSITY; break;
+    case CliColor::Code::FG_LIGHT_GREEN:    attr = FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
+    case CliColor::Code::FG_LIGHT_YELLOW:   attr = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY; break;
+    case CliColor::Code::FG_LIGHT_BLUE:     attr = FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
+    case CliColor::Code::FG_LIGHT_MAGENTA:  attr = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
+    case CliColor::Code::FG_LIGHT_CYAN:     attr = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY; break;
+    case CliColor::Code::BG_RED:            attr = BACKGROUND_RED; break;
+    case CliColor::Code::BG_GREEN:          attr = BACKGROUND_GREEN; break;
+    case CliColor::Code::BG_BLUE:           attr = BACKGROUND_BLUE; break;
+    case CliColor::Code::BG_DEFAULT:        attr = 0;
     }
 
     // Set attribute for stdout & stderr
     SetConsoleTextAttribute(out, attr);
     SetConsoleTextAttribute(err, attr);
+
+    return os;
 #else
     // Ignore on others
     return os;
