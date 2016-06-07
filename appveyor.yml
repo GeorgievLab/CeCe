@@ -23,6 +23,8 @@
 #                                                                           #
 # ######################################################################### #
 
+os: Visual Studio 2015
+
 version: 0.4.4.{build}
 
 environment:
@@ -43,6 +45,9 @@ branches:
 
 init:
     - dir %BOOST_ROOT%
+    - dir C:\Libraries\boost_1_58_0
+    - dir C:\Libraries\boost_1_59_0
+    - dir C:\Libraries\boost_1_60_0
     - del c:\programdata\chocolatey\bin\cpack.exe
 
 install:
