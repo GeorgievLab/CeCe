@@ -190,6 +190,7 @@ const char* translateKey(int key) noexcept
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
 String strToLower(String str) noexcept
 {
     std::transform(str.begin(), str.end(), str.begin(), [] (String::value_type c) {
@@ -198,6 +199,7 @@ String strToLower(String str) noexcept
 
     return str;
 }
+#endif
 
 /* ************************************************************************ */
 

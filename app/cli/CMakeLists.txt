@@ -55,25 +55,27 @@ endif ()
 
 if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
     if (NOT CONFIG_RENDER_ENABLE)
-        message(FATAL_ERROR "Video/image capture requires rendering support")
-    endif ()
-
-    message(STATUS "Video/image capture support")
-
-    # LibPNG is required
-    find_package(PNG REQUIRED)
-    if (WIN32)
-        include_directories(${PNG_PNG_INCLUDE_DIR})
+        message(WARNING "Video/image capture requires rendering support")
+        set(CONFIG_CLI_ENABLE_IMAGE_CAPTURE Off)
+        set(CONFIG_CLI_ENABLE_VIDEO_CAPTURE Off)
     else ()
-        include_directories(${PNG_INCLUDE_DIRS})
-    endif ()
+        message(STATUS "Video/image capture support")
 
-    if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
-        add_definitions(-DCONFIG_CLI_ENABLE_IMAGE_CAPTURE=1)
-    endif ()
+        # LibPNG is required
+        find_package(PNG REQUIRED)
+        if (WIN32)
+            include_directories(${PNG_PNG_INCLUDE_DIR})
+        else ()
+            include_directories(${PNG_INCLUDE_DIRS})
+        endif ()
 
-    if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
-        add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=1)
+        if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE)
+            add_definitions(-DCONFIG_CLI_ENABLE_IMAGE_CAPTURE=1)
+        endif ()
+
+        if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
+            add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=1)
+        endif ()
     endif ()
 endif ()
 

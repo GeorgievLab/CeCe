@@ -72,7 +72,9 @@ class ChemostatApi : public plugin::Api
         const auto pipeTop = config.get<units::Length>("pipe-top");
         const auto pipeRadius = config.get<units::Length>("pipe-radius");
         const auto size = config.get<Vector<units::Length>>("size");
+#ifdef CECE_ENABLE_RENDER
         const auto visible = config.get("visible", false);
+#endif
 
         // Upper part
         {

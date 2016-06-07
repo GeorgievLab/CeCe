@@ -55,7 +55,9 @@ static std::random_device g_rd;
 
 Yeast::Yeast(simulator::Simulation& simulation, String typeName, object::Object::Type type) noexcept
     : CellBase(simulation, std::move(typeName), type)
+#ifdef CECE_ENABLE_RENDER
     , m_renderObject()
+#endif
 {
     setVolume(units::um3(13));
     setDensity(units::kg(1200) / units::m3(1));
