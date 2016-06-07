@@ -32,15 +32,21 @@ cmake --build .
 
 ### Requirements
 
-* C++11 compiler - GCC, Clang, MSVC
-* CMake v2.8 or newer
-* Box2D v2.3 or newer
-* Boost Filesystem
+* C++11 compiler - GCC, Clang, MSVC.
+* [CMake](https://cmake.org) v2.8 or newer.
+* [Box2D](http://box2d.org) v2.3 or newer.
+* [Boost C++ Libraries](http://www.boost.org) - Filesystem, System, Any, Tribool and Variant.
 
 ### Optional requirements
 
 For some functionality and plugins additional libraries are required.
 
-* Libpng library - image capturing; `obstacles-image` plugins
-* Zlib - required by Libpng
-* GLFW3 - Simulation visualization
+* [libpng](http://libpng.org/pub/png/libpng.html) - image capturing, *picture* plugin and CLI application.
+* [zlib](http://zlib.net) - required by libpng.
+* [GLFW3](http://www.glfw.org) - Simulation visualization.
+
+## Third party libraries
+Libraries that are part of CeCe source code.
+
+* [pugixml](http://pugixml.org) (*xml* plugin).
+* [nanosvg](https://github.com/memononen/nanosvg) (*obstacles-svg* plugin).

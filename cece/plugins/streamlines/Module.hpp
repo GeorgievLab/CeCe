@@ -416,6 +416,7 @@ protected:
      */
     void applyToObjects();
 
+
     /**
      * @brief Apply streamlines to object.
      *
