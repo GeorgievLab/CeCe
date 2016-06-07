@@ -27,10 +27,16 @@
 
 # Shared configuration arguments
 ARGS="\
-	-DCMAKE_BUILD_TYPE=release \
-	-DDEV_TESTS_BUILD=On \
-	-DDEV_PHYSICS_BUILTIN_DEBUG=On \
-	-DDEV_PLUGIN_streamlines_RENDER=On"
+    -DCMAKE_BUILD_TYPE=release \
+    -DDEV_TESTS_BUILD=On \
+    -DDEV_PHYSICS_BUILTIN_DEBUG=On \
+    -DDEV_PLUGIN_streamlines_RENDER=On"
+
+# Disable rendering
+if "${ENABLE_RENDER}" = false; then
+    ARGS="$ARGS \
+        -DCONFIG_ENABLE_RENDER=Off"
+fi
 
 mkdir build || exit 1
 pushd build
