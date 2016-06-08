@@ -29,6 +29,7 @@
 // C++
 #include <random>
 #include <string>
+#include <cmath>
 
 // CeCe
 #include "cece/core/Log.hpp"
@@ -210,49 +211,62 @@ void Module::update()
         if (!inRange(desc.active, iteration))
             continue;
 
-        std::bernoulli_distribution distSpawn(desc.rate * simulation.getTimeStep());
+        // Create object number + probability
+        const auto number = desc.rate * simulation.getTimeStep();
 
-        // Spawn?
-        if (!distSpawn(g_gen))
-            continue;
+        // Number of created with 100% probability
+        const auto baseCount = std::floor(number);
 
-        // Create object
-        auto object = simulation.createObject(desc.className);
-        Assert(object);
+        // Probability of the remaining object
+        const auto probability = number - baseCount;
+        Assert(probability >= 0);
+        Assert(probability <= 1);
+        std::bernoulli_distribution distSpawn(probability);
 
-        PositionVector pos = Zero;
+        // Total number of spawned objects
+        auto count = baseCount + (distSpawn(g_gen) ? 1 : 0);
 
-        // Generate position
-        for (unsigned int i = 0; i < pos.getSize(); ++i)
+        // Generate
+        while (count--)
         {
-            const auto& distr = desc.distributions[i];
+            // Create object
+            auto object = simulation.createObject(desc.className);
+            Assert(object);
 
-            if (distr.type == Distribution::Type::Uniform)
-            {
-                std::uniform_real_distribution<RealType> dist(
-                    distr.parameters[0].value(),
-                    distr.parameters[1].value()
-                );
+            PositionVector pos = Zero;
 
-                pos[i] = units::Length(dist(g_gen));
-            }
-            else if (distr.type == Distribution::Type::Normal)
+            // Generate position
+            for (unsigned int i = 0; i < pos.getSize(); ++i)
             {
-                std::normal_distribution<RealType> dist(
-                    distr.parameters[0].value(),
-                    distr.parameters[1].value()
-                );
+                const auto& distr = desc.distributions[i];
 
-                pos[i] = units::Length(dist(g_gen));
+                if (distr.type == Distribution::Type::Uniform)
+                {
+                    std::uniform_real_distribution<RealType> dist(
+                        distr.parameters[0].value(),
+                        distr.parameters[1].value()
+                    );
+
+                    pos[i] = units::Length(dist(g_gen));
+                }
+                else if (distr.type == Distribution::Type::Normal)
+                {
+                    std::normal_distribution<RealType> dist(
+                        distr.parameters[0].value(),
+                        distr.parameters[1].value()
+                    );
+
+                    pos[i] = units::Length(dist(g_gen));
+                }
+                else
+                {
+                    Assert(false);
+                }
             }
-            else
-            {
-                Assert(false);
-            }
+
+            object->configure(desc.config, simulation);
+            object->setPosition(pos);
         }
-
-        object->configure(desc.config, simulation);
-        object->setPosition(pos);
     }
 
 }
