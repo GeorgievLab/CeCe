@@ -30,12 +30,12 @@ version: 0.4.4.{build}
 environment:
     BOOST_ROOT: C:\Libraries\boost_1_59_0
     matrix:
-        - GENERATOR: MinGW Makefiles
+#        - GENERATOR: MinGW Makefiles
         - GENERATOR: Visual Studio 14 2015
 
-matrix:
-    allow_failures:
-        - GENERATOR: MinGW Makefiles
+#matrix:
+#    allow_failures:
+#        - GENERATOR: MinGW Makefiles
 
 # Branches to build
 branches:

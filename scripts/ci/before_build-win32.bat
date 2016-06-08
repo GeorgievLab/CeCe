@@ -25,7 +25,7 @@
 
 :: Shared configuration arguments
 :: SET ARGS=-DCMAKE_BUILD_TYPE=release -DDEV_TESTS_BUILD=On -DDEV_PHYSICS_BUILTIN_DEBUG=On -DDEV_PLUGIN_streamlines_RENDER=On -DPNG_PNG_INCLUDE_DIR="C:\Program Files (x86)\libpng\include" -DPNG_LIBRARY_RELEASE="C:\Program Files (x86)\libpng\lib\libpng16.a"
-SET ARGS=-DCMAKE_BUILD_TYPE=Release -DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=Off -DDEV_PHYSICS_BUILTIN_DEBUG=On -DDEV_PLUGIN_streamlines_RENDER=On -DPNG_PNG_INCLUDE_DIR="C:\Program Files (x86)\libpng\include" -DPNG_LIBRARY_RELEASE="C:\Program Files (x86)\libpng\lib\libpng16.a"
+SET ARGS=-DCMAKE_BUILD_TYPE=Release -DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=Off -DDEV_PHYSICS_BUILTIN_DEBUG=On -DDEV_PLUGIN_streamlines_RENDER=On -DBOOST_ROOT=%BOOST_ROOT% -DPNG_PNG_INCLUDE_DIR="C:\Program Files (x86)\libpng\include" -DPNG_LIBRARY_RELEASE="C:\Program Files (x86)\libpng\lib\libpng16.a"
 
 md build
 pushd build

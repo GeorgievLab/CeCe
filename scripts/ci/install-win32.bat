@@ -93,7 +93,7 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release .. || EXIT /B 1
+cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DPNG_SHARED=Off .. || EXIT /B 1
 
 :: Build
 cmake --build . --config Release || EXIT /B 1
