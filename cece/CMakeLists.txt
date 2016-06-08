@@ -219,7 +219,7 @@ endif ()
 if (WIN32)
     # Install Box2D library
     install(FILES
-        ${BOX2D_LIBRARY_PATH}
+        "${BOX2D_LIBRARY_PATH}"
         DESTINATION ${INSTALL_DIR_LIBRARY}
     )
 endif ()
