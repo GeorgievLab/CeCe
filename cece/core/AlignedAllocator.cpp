@@ -27,12 +27,14 @@
 #include "cece/core/AlignedAllocator.hpp"
 
 // C++
-#include <cassert>
 #include <cstdlib>
 
 #ifdef _WIN32
 #include <malloc.h>
 #endif
+
+// CeCe
+#include "cece/core/Assert.hpp"
 
 /* ************************************************************************ */
 
@@ -63,8 +65,8 @@ bool is_power_of_two(std::size_t x) noexcept
 
 void* allocate_aligned_memory(std::size_t align, std::size_t size)
 {
-    assert(align >= sizeof(void*));
-    assert(is_power_of_two(align));
+    Assert(align >= sizeof(void*));
+    Assert(is_power_of_two(align));
 
     if (size == 0)
         return nullptr;

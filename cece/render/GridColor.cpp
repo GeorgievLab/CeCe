@@ -26,9 +26,6 @@
 // Declaration
 #include "cece/render/GridColor.hpp"
 
-// C++
-#include <cassert>
-
 // CeCe
 #include "cece/core/StaticArray.hpp"
 #include "cece/render/Context.hpp"

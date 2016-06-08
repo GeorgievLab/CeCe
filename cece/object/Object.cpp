@@ -27,11 +27,11 @@
 #include "cece/object/Object.hpp"
 
 // C++
-#include <cassert>
 #include <string>
 #include <sstream>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/UnitIo.hpp"
 #include "cece/core/Log.hpp"
 #include "cece/core/Real.hpp"
@@ -157,7 +157,7 @@ Object::~Object()
         world.DestroyBody(m_pinBody);
     }
 
-    assert(m_body);
+    Assert(m_body);
     world.DestroyBody(m_body);
 #endif
 }

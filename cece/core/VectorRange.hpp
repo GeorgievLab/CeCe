@@ -27,9 +27,6 @@
 
 /* ************************************************************************ */
 
-// C++
-#include <cassert>
-
 // CeCe
 #include "cece/core/Range.hpp"
 #include "cece/core/Vector.hpp"

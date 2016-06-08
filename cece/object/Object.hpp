@@ -33,10 +33,10 @@
 /* ************************************************************************ */
 
 // C++
-#include <cassert>
 #include <functional>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/Any.hpp"
 #include "cece/core/VectorUnits.hpp"
@@ -653,7 +653,7 @@ public:
     template<typename T>
     T* cast() noexcept
     {
-        assert(dynamic_cast<T*>(this));
+        Assert(dynamic_cast<T*>(this));
         return static_cast<T*>(this);
     }
 
@@ -666,7 +666,7 @@ public:
     template<typename T>
     const T* cast() const noexcept
     {
-        assert(dynamic_cast<const T*>(this));
+        Assert(dynamic_cast<const T*>(this));
         return static_cast<const T*>(this);
     }
 

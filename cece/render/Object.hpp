@@ -28,10 +28,10 @@
 /* ************************************************************************ */
 
 // C++
-#include <cassert>
 #include <utility>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/render/Context.hpp"
 
 /* ************************************************************************ */
@@ -167,7 +167,7 @@ public:
      */
     T& operator*() const noexcept
     {
-        assert(m_ptr);
+        Assert(m_ptr);
         return *m_ptr;
     }
 
@@ -179,7 +179,7 @@ public:
      */
     T* operator->() const noexcept
     {
-        assert(m_ptr);
+        Assert(m_ptr);
         return m_ptr;
     }
 
@@ -286,7 +286,7 @@ public:
      */
     T& operator*() const noexcept
     {
-        assert(m_ptr);
+        Assert(m_ptr);
         return *m_ptr;
     }
 
@@ -298,7 +298,7 @@ public:
      */
     T* operator->() const noexcept
     {
-        assert(m_ptr);
+        Assert(m_ptr);
         return m_ptr;
     }
 
@@ -340,7 +340,7 @@ public:
         }
 
         // Create object
-        assert(s_count == 0);
+        Assert(s_count == 0);
         s_ptr = context.createObject<ObjectWrapper<T>>(std::forward<Args>(args)...);
         s_count = 1;
 
@@ -385,7 +385,7 @@ public:
         {
             s_ptr->release();
             s_ptr = nullptr;
-            assert(s_count == 0);
+            Assert(s_count == 0);
         }
     }
 

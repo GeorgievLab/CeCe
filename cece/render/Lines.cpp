@@ -27,7 +27,6 @@
 #include "cece/render/Lines.hpp"
 
 // C++
-#include <cassert>
 #include <cmath>
 
 // CeCe

@@ -30,6 +30,7 @@
 #include <random>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/ShapeToGrid.hpp"
 #include "cece/simulator/Simulation.hpp"
 
@@ -133,7 +134,7 @@ void changeMolecules(
     concentration += molecules / (NA * volume);
 
     concentration = std::max<plugin::diffusion::Module::SignalConcentration>(concentration, Zero);
-    assert(concentration >= Zero);
+    Assert(concentration >= Zero);
 }
 
 /* ************************************************************************ */
@@ -176,7 +177,7 @@ units::MolarConcentration getMolarConcentration(
         concentration += diffusion.getSignal(id, coord);
 
     // Negative concentration is invalid
-    assert(concentration >= Zero);
+    Assert(concentration >= Zero);
 
     return concentration / coords.size();
 }

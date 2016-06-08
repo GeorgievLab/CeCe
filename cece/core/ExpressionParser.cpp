@@ -29,10 +29,10 @@
 // C++
 #include <cstdlib>
 #include <cmath>
-#include <cassert>
 #include <algorithm>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/constants.hpp"
 #include "cece/core/Tokenizer.hpp"
 #include "cece/core/UnitIo.hpp"
@@ -154,7 +154,7 @@ public:
     {
         TokenType token{ExpressionTokenCode::Identifier};
 
-        assert(isIdentifierBegin());
+        Assert(isIdentifierBegin());
 
         token.value.push_back(value());
         next();

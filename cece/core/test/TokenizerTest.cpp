@@ -30,6 +30,7 @@
 #include <cstring>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/Tokenizer.hpp"
 
@@ -124,7 +125,7 @@ public:
     {
         TokenType token{TestTokenCode::Identifier};
 
-        assert(isIdentifierBegin());
+        Assert(isIdentifierBegin());
 
         token.value.push_back(value());
         next();

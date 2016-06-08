@@ -28,10 +28,10 @@
 
 // C++
 #include <cmath>
-#include <cassert>
 #include <algorithm>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/render/OpenGL.hpp"
 #include "cece/render/Color.hpp"
 #include "cece/render/Buffer.hpp"
@@ -200,7 +200,7 @@ void Context::setWireframe(bool flag) noexcept
 
 void Context::init(const render::Color& color) noexcept
 {
-    assert(!isInitialized());
+    Assert(!isInitialized());
 
     // Clear color.
     glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
@@ -289,7 +289,7 @@ void Context::disableStencilBuffer() noexcept
 
 void Context::frameBegin(int width, int height) noexcept
 {
-    assert(isInitialized());
+    Assert(isInitialized());
 
     // Clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -301,7 +301,7 @@ void Context::frameBegin(int width, int height) noexcept
 
 void Context::frameEnd() noexcept
 {
-    assert(isInitialized());
+    Assert(isInitialized());
     glFlush();
 }
 

@@ -26,9 +26,6 @@
 // Declaration
 #include "cece/render/Circle.hpp"
 
-// C++
-#include <cassert>
-
 // CeCe
 #include "cece/core/constants.hpp"
 #include "cece/render/Color.hpp"

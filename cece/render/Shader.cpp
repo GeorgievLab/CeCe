@@ -26,10 +26,8 @@
 // Declaration
 #include "cece/render/Shader.hpp"
 
-// C++
-#include <cassert>
-
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/Exception.hpp"
@@ -81,7 +79,7 @@ void Shader::init(Type type, const char* source, unsigned length)
     else
         m_id = 0;
 
-    assert(m_id);
+    Assert(m_id);
 
 #ifdef _WIN32
     if (!glShaderSource)

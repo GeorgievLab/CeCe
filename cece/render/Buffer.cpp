@@ -26,10 +26,8 @@
 // Declaration
 #include "cece/render/Buffer.hpp"
 
-// C++
-#include <cassert>
-
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/render/OpenGL.hpp"
 #include "cece/render/errors.hpp"
 
@@ -58,7 +56,7 @@ Buffer::Buffer(Context& context)
 
     // Generate buffer
     gl(glGenBuffers(1, &m_id));
-    assert(m_id != 0);
+    Assert(m_id != 0);
 }
 
 /* ************************************************************************ */
@@ -79,7 +77,7 @@ Buffer::~Buffer()
         glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress("glDeleteBuffers");
 #endif
 
-    assert(isInitialized());
+    Assert(isInitialized());
     gl(glDeleteBuffers(1, &m_id));
 }
 
@@ -87,7 +85,7 @@ Buffer::~Buffer()
 
 void Buffer::resize(SizeType size, const void* data)
 {
-    assert(isInitialized());
+    Assert(isInitialized());
 
 #ifdef _WIN32
     if (!glBindBuffer)

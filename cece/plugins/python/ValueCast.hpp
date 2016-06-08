@@ -31,6 +31,7 @@
 #include "cece/plugins/python/Python.hpp"
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/Units.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/String.hpp"
@@ -140,7 +141,7 @@ struct ValueCastScalar<long, T, Seq...>
      */
     static T convert(View<PyObject> value) noexcept
     {
-        assert(value);
+        Assert(value);
         if (PyLong_Check(value))
             return static_cast<T>(PyLong_AsLong(value));
         else if (PyInt_Check(value))
@@ -148,7 +149,7 @@ struct ValueCastScalar<long, T, Seq...>
         else if (PyFloat_Check(value))
             return static_cast<T>(PyFloat_AsDouble(value));
 
-        assert(false && "Object is not int or float");
+        Assert(false && "Object is not int or float");
         return T{};
     }
 };
@@ -203,7 +204,7 @@ struct ValueCastScalar<double, T, Seq...>
      */
     static T convert(View<PyObject> value) noexcept
     {
-        assert(value);
+        Assert(value);
         if (PyFloat_Check(value))
             return PyFloat_AsDouble(value);
         else if (PyInt_Check(value))
@@ -211,7 +212,7 @@ struct ValueCastScalar<double, T, Seq...>
         else if (PyLong_Check(value))
             return PyLong_AsLong(value);
 
-        assert(false && "Object is not int or float");
+        Assert(false && "Object is not int or float");
         return T{};
     }
 };
@@ -289,7 +290,7 @@ struct ValueCast
         if (!value)
             throw InvalidArgumentException("NULL PyObject");
 
-        assert(PyObject_TypeCheck(value, findType(typeid(T))));
+        Assert(PyObject_TypeCheck(value, findType(typeid(T))));
 
         // Cast to wrapper type
         ObjectWrapper<T>* obj = reinterpret_cast<ObjectWrapper<T>*>(value.get());
@@ -421,7 +422,7 @@ struct ValueCast<bool>
      */
     static bool convert(View<PyObject> value) noexcept
     {
-        assert(PyBool_Check(value));
+        Assert(PyBool_Check(value));
         return value == Py_True;
     }
 };
@@ -470,7 +471,7 @@ struct ValueCast<String>
      */
     static String convert(View<PyObject> value) noexcept
     {
-        assert(PyString_Check(value));
+        Assert(PyString_Check(value));
         return PyString_AsString(value);
     }
 };
@@ -519,7 +520,7 @@ struct ValueCast<StringView>
      */
     static String convert(View<PyObject> value) noexcept
     {
-        assert(PyString_Check(value));
+        Assert(PyString_Check(value));
         return PyString_AsString(value);
     }
 };

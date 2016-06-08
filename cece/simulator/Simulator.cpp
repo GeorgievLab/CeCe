@@ -27,7 +27,6 @@
 #include "cece/simulator/Simulator.hpp"
 
 // C++
-#include <cassert>
 #include <chrono>
 #ifdef __MINGW32__
 // MinGW has issue with undefined reference to __impl_nanosleep (nanosleep function)
@@ -36,6 +35,7 @@
 #include <thread>
 
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/simulator/Simulation.hpp"
 
 /* ************************************************************************ */
@@ -57,7 +57,7 @@ void Simulator::start()
 
 bool Simulator::update()
 {
-    assert(m_simulation);
+    Assert(m_simulation);
     return m_simulation->update();
 }
 
@@ -72,7 +72,7 @@ void Simulator::draw(unsigned int width, unsigned int height)
     // Start frame
     m_renderContext.frameBegin(width, height);
 
-    assert(m_simulation);
+    Assert(m_simulation);
     m_simulation->draw(m_renderContext);
 
     m_renderContext.frameEnd();

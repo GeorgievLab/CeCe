@@ -218,7 +218,7 @@ void Module::update()
 
         // Create object
         auto object = simulation.createObject(desc.className);
-        assert(object);
+        Assert(object);
 
         PositionVector pos = Zero;
 

@@ -29,6 +29,9 @@
 // Declaration
 #include "cece/plugins/python/Source.hpp"
 
+// CeCe
+#include "cece/core/Assert.hpp"
+
 // Plugin
 #include "cece/plugins/python/Exception.hpp"
 
@@ -44,13 +47,13 @@ Source::Source()
     : m_dictionary(PyDict_New())
 {
     auto main = makeView(PyImport_AddModule("__main__"));
-    assert(main);
+    Assert(main);
 
     auto main_dict = makeHandle(PyObject_GetAttrString(main, "__dict__"));
-    assert(main_dict);
+    Assert(main_dict);
 
     auto main_builtins = makeView(PyDict_GetItemString(main_dict, "__builtins__"));
-    assert(main_builtins);
+    Assert(main_builtins);
 
     // Set buildins
     PyDict_SetItemString(m_dictionary, "__builtins__", main_builtins);

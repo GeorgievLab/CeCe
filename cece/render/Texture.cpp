@@ -26,10 +26,8 @@
 // Declaration
 #include "cece/render/Texture.hpp"
 
-// C++
-#include <cassert>
-
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/render/OpenGL.hpp"
 #include "cece/render/errors.hpp"
@@ -69,7 +67,7 @@ Texture::Texture(Context& context, bool filter)
 {
     // Generate texture
     gl(glGenTextures(1, &m_id));
-    assert(m_id != 0);
+    Assert(m_id != 0);
 
     gl(glBindTexture(GL_TEXTURE_2D, m_id));
     gl(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -100,7 +98,7 @@ Texture::Texture(Context& context, Size size, const Color& color, bool filter)
 
 Texture::~Texture()
 {
-    assert(isInitialized());
+    Assert(isInitialized());
     gl(glDeleteTextures(1, &m_id));
 }
 
@@ -121,7 +119,7 @@ void Texture::clear(const Color& color)
 
 void Texture::resize(Size size, const Color& color)
 {
-    assert(isInitialized());
+    Assert(isInitialized());
 
     m_size = std::move(size);
 
@@ -150,7 +148,7 @@ void Texture::update(const Color* colors)
 
 void Texture::create(Size size, const Color* colors)
 {
-    assert(isInitialized());
+    Assert(isInitialized());
 
     m_size = std::move(size);
 
@@ -165,7 +163,7 @@ void Texture::create(Size size, const Color* colors)
 
 void Texture::createGray(Size size, const unsigned char* colors)
 {
-    assert(isInitialized());
+    Assert(isInitialized());
 
     m_size = std::move(size);
 

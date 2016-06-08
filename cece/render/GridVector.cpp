@@ -27,7 +27,6 @@
 #include "cece/render/GridVector.hpp"
 
 // C++
-#include <cassert>
 #include <cmath>
 
 // CeCe

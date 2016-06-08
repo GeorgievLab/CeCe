@@ -26,10 +26,8 @@
 // Declaration
 #include "cece/render/Program.hpp"
 
-// C++
-#include <cassert>
-
 // CeCe
+#include "cece/core/Assert.hpp"
 #include "cece/core/DynamicArray.hpp"
 #include "cece/core/String.hpp"
 #include "cece/core/Exception.hpp"
@@ -76,7 +74,7 @@ Program::UniformId Program::getUniformId(const char* name) const noexcept
         glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
 #endif
 
-    assert(getId());
+    Assert(getId());
     Program::UniformId id;
     gl(id = glGetUniformLocation(getId(), name));
     return id;
@@ -92,7 +90,7 @@ void Program::init(const Shader& vs, const Shader& fs)
 #endif
 
     m_id = glCreateProgram();
-    assert(m_id);
+    Assert(m_id);
 
 #ifdef _WIN32
     if (!glAttachShader)
