@@ -61,7 +61,7 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # using Visual Studio C++
     # Thanks to CMake 3.4 for solving Windows DLL hell
-    add_definitions(-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=On)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS On)
 endif()
 
 # ######################################################################### #
