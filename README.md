@@ -2,6 +2,7 @@
 # The CeCe simulator
 
 [![Build Status](https://travis-ci.org/GeorgievLab/CeCe.svg?branch=master)](https://travis-ci.org/GeorgievLab/CeCe)
+[![Build status](https://ci.appveyor.com/api/projects/status/jdb0jx7g8yiru7w7/branch/master?svg=true)](https://ci.appveyor.com/project/NTSFka/cece/branch/master)
 
 CeCe is a platform for advanced simulation of cells and cell signalling in 2D.
 It includes a physical engine, stochastic chemical reactions, cell-cell bonding, diffusion, hydrodynamics, and a growth model.
@@ -16,10 +17,9 @@ Building from source code is done by CMake (see Requirements).
 ### Linux & OSX
 
 ```bash
-$ cd $SOURCE
 $ mkdir build && cd build
 $ cmake ..
-$ make
+$ cmake --build .
 ```
 
 ### Windows
