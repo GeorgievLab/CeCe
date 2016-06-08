@@ -53,7 +53,15 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DBOX2D_INSTALL=On -DBOX2D_BUILD_EXAMPLES=Off -DBOX2D_BUILD_SHARED=On -DBOX2D_BUILD_STATIC=Off -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=On .. || EXIT /B 1
+cmake -G "%GENERATOR%" ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DBOX2D_INSTALL=On ^
+    -DBOX2D_BUILD_EXAMPLES=Off ^
+    -DBOX2D_BUILD_SHARED=On ^
+    -DBOX2D_BUILD_STATIC=Off ^
+    -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=On ^
+    .. ^
+    || EXIT /B 1
 
 :: Build
 cmake --build . --config Release || EXIT /B 1
@@ -73,7 +81,10 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release .. || EXIT /B 1
+cmake -G "%GENERATOR%" ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    .. ^
+    || EXIT /B 1
 
 :: Build
 cmake --build . --config Release || EXIT /B 1
@@ -93,7 +104,12 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DPNG_SHARED=Off .. || EXIT /B 1
+cmake -G "%GENERATOR%" ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DPNG_SHARED=Off ^
+    -DZLIB_LIBRARY="C:\Program Files (x86)\zlib\lib\zlibstatic.lib" ^
+    .. ^
+    || EXIT /B 1
 
 :: Build
 cmake --build . --config Release || EXIT /B 1
@@ -113,7 +129,13 @@ md build
 pushd build
 
 :: Configure
-cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_DOCS=Off -DGLFW_BUILD_EXAMPLES=Off -DGLFW_BUILD_TESTS=Off .. || EXIT /B 1
+cmake -G "%GENERATOR%" ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DGLFW_BUILD_DOCS=Off ^
+    -DGLFW_BUILD_EXAMPLES=Off ^
+    -DGLFW_BUILD_TESTS=Off ^
+    .. ^
+    || EXIT /B 1
 
 :: Build
 cmake --build . --config Release || EXIT /B 1
