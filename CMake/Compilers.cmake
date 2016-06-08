@@ -24,7 +24,7 @@
 # ######################################################################### #
 
 # Options specific for different compilers
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     # using Clang
     option(CLANG_ASAN               "If address sanitizer should be used" Off)
     option(CLANG_MSAN               "If memory sanitizer should be used" Off)
@@ -58,7 +58,7 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     #add_compile_options(-Wall -pedantic-errors -pedantic -std=c++11)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic-errors -pedantic -std=c++11")
 
-elseif (MSVC)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # using Visual Studio C++
     # Thanks to CMake 3.4 for solving Windows DLL hell
     add_definitions(-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=On)
