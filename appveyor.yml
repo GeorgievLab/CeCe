@@ -28,10 +28,11 @@ os: Visual Studio 2015
 version: 0.4.4.{build}
 
 environment:
-    BOOST_ROOT: C:\Libraries\boost_1_59_0
     matrix:
 #        - GENERATOR: MinGW Makefiles
+#          BOOST_ROOT: C:\Libraries\boost_1_59_0
         - GENERATOR: Visual Studio 14 2015
+          BOOST_ROOT: C:\Libraries\boost_1_59_0
 
 #matrix:
 #    allow_failures:
