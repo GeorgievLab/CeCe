@@ -28,6 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/export.hpp"
 #include "cece/core/OutStream.hpp"
 
 /* ************************************************************************ */
@@ -82,23 +83,23 @@ public:
     /**
      * @brief Predefined foreground colors.
      */
-    static const CliColor Default;
-    static const CliColor Black;
-    static const CliColor Red;
-    static const CliColor Green;
-    static const CliColor Yellow;
-    static const CliColor Blue;
-    static const CliColor Magenta;
-    static const CliColor Cyan;
-    static const CliColor LightGray;
-    static const CliColor DarkGray;
-    static const CliColor LightRed;
-    static const CliColor LightGreen;
-    static const CliColor LightYellow;
-    static const CliColor LightBlue;
-    static const CliColor LightMagenta;
-    static const CliColor LightCyan;
-    static const CliColor White;
+    static const CliColor CECE_EXPORT Default;
+    static const CliColor CECE_EXPORT Black;
+    static const CliColor CECE_EXPORT Red;
+    static const CliColor CECE_EXPORT Green;
+    static const CliColor CECE_EXPORT Yellow;
+    static const CliColor CECE_EXPORT Blue;
+    static const CliColor CECE_EXPORT Magenta;
+    static const CliColor CECE_EXPORT Cyan;
+    static const CliColor CECE_EXPORT LightGray;
+    static const CliColor CECE_EXPORT DarkGray;
+    static const CliColor CECE_EXPORT LightRed;
+    static const CliColor CECE_EXPORT LightGreen;
+    static const CliColor CECE_EXPORT LightYellow;
+    static const CliColor CECE_EXPORT LightBlue;
+    static const CliColor CECE_EXPORT LightMagenta;
+    static const CliColor CECE_EXPORT LightCyan;
+    static const CliColor CECE_EXPORT White;
 
 
 // Public Ctors & Dtors
