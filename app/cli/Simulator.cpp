@@ -29,6 +29,7 @@
 // C++
 #include <cctype>
 #include <algorithm>
+#include <thread>
 
 // CeCe
 #include "cece/core/Log.hpp"
@@ -307,6 +308,10 @@ void Simulator::step()
             // Draw scene
             draw();
             swap();
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(16));
         }
 
         /// Poll for and process events
