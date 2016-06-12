@@ -50,3 +50,10 @@ Libraries that are part of CeCe source code.
 
 * [pugixml](http://pugixml.org) (*xml* plugin).
 * [nanosvg](https://github.com/memononen/nanosvg) (*obstacles-svg* plugin).
+
+## Manual
+
+Detailed manual for specific simulator parts can be found at following pages.
+
+* [CLI application](app/cli/doc/manual.md)
+* [Plugins](cece/plugins/doc/manual.md)

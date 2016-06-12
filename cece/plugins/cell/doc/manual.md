@@ -55,4 +55,5 @@ Program that stores amount of all molecules in current iteration to `molecules` 
 * `iteration` - Iteration number.
 * `totalTime` - Simulation time in seconds.
 * `id`        - Object identifier.
-* `...`       - Column given by molecule name and value is amount of that molecule.
+* `molecule`  - Molecule name.
+* `amount`    - Number of molecules.

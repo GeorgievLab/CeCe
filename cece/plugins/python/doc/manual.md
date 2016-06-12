@@ -1,10 +1,10 @@
-## Python
+# Python Plugin
 
 Python support for dynamic programming.
 
 > Python plugin doesn't support `unit` data type and `float` type is used instead.
 
-### Programs
+## Programs
 Dynamic program generated from Python source code. Called (function `call`) once in each iteration per object that uses this program.
 
 ```python
@@ -18,7 +18,7 @@ def call(object, simulation, dt):
     pass
 ```
 
-### Modules
+## Modules
 
 Dynamic modules generated from Python source code. Module's `update` function is called once in each iteration.
 
@@ -44,26 +44,26 @@ def draw(context, simulation):
     pass
 ```
 
-### Classes
+## Classes
 
 There are some wrappers around simulator core classes.
 
-#### class `simulator.Configuration`
+### class `simulator.Configuration`
 
 Configuration class.
 
-##### Methods:
+#### Methods:
 
 | Name  | Return   | Arguments | Description                                   |
 | ------| -------- | --------- | --------------------------------------------- |
 | `get` | `string` | `string`  | Returns configuration value under given name. |
 
 
-#### class `simulator.Simulation`
+### class `simulator.Simulation`
 
 Main simulation class that contains everything about simulation.
 
-### Properties:
+#### Properties:
 
 | Name           | Type            | Description                  |
 | -------------- | --------------- | ---------------------------- |
@@ -74,22 +74,22 @@ Main simulation class that contains everything about simulation.
 | `totalTime`    | `float`         | Total time spend in simulation in seconds. |
 | `objectsCount` | `uint`          | Number of objects in scene.  |
 
-##### Methods:
+#### Methods:
 
 | Name          | Return             | Arguments        | Description   |
 | ------------- | ------------------ | ---------------- | --------- |
 | `useModule`   | `simulator.Module` | `string`         | Returns required module. If module is not used, it is created by with default configuration. |
 | `buildObject` | `simulator.Object` | `string`, `bool` | Create a new object. The first argument is class name and second one is if object should be static (non-movable). |
 
-#### class `simulator.Module`
+### class `simulator.Module`
 
 Base class for all modules. It doesn't offer anything.
 
-#### class `simulator.Object`
+### class `simulator.Object`
 
 Basic simulation object.
 
-### Properties:
+#### Properties:
 
 | Name       | Type            | Description                  |
 | ---------- | --------------- | ---------------------------- |
@@ -98,7 +98,7 @@ Basic simulation object.
 | `rotation` | `float`         | Object rotation in radians.  |
 | `velocity` | `vector[float]` | Object velocity.             |
 
-##### Methods:
+#### Methods:
 
 | Name         | Return | Arguments | Description                            |
 | ------------ | ------ | --------- | -------------------------------------- |

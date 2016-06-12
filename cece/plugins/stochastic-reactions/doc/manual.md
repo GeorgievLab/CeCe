@@ -1,11 +1,11 @@
 
-## Stochastic reactions
+# Stochastic reactions Plugin
 
 Allows to specify reaction rules that are stochastically being executed inside the cell or in surrounding environment around the cell.
 
 > The syntax is similar to one in NFSim.
 
-### Basic Syntax
+## Basic Syntax
 
 Each reaction has 2 sides, first side gets consumed and second gets added when the reaction occurs.
 This reaction changes molecule `A` to molecule `B`.
@@ -41,7 +41,7 @@ Similarly, this reaction represents degradation of `A`.
 A > 5 > null;
 ```
 
-### Environmental reactions
+## Environmental reactions
 
 If you desire to have reactions which cooperate with diffusion simply add `env` keyword before molecule name.
 
@@ -67,7 +67,7 @@ null > 1 > env A;
 
 Please note that those two representations are not exactly the same although they lead to the same result. In first example there must be molecule `A` present in the cell, after executing the reaction the molecule gets subtracted from the cell and added to the environment. Therefore this reaction represents transportation of molecule outside the cell. In second reaction, the molecule is added and released directly to the environment in single step.
 
-### Reaction Rate
+## Reaction Rate
 
 Each reaction has its reaction rate. Rate is located between the `>` symbols. Rate is number indicating how many times (on average) the reaction occurs during the time step. Following reaction has reaction rate 1.
 
@@ -104,7 +104,7 @@ B > env A > C;
 
 These features can be combined to create complex rate functions.
 
-#### List of built in functions
+### List of built in functions
 
 | Function    | Return value                   |
 |-------------|--------------------------------|
@@ -145,7 +145,7 @@ These features can be combined to create complex rate functions.
 | log(x,y)    | Logarithm to the base x of y   |
 | hill(x,y,z) | x^z / (x^z + y^z)              |
 
-### Conditional reactions
+## Conditional reactions
 
 If you need reaction to happen only when some other molecule is present, take a look at following reaction. This reaction subtracts `A` and `B`, and adds `C + B`. Therefore, this reaction changes `A` to `C` only when `B` is present.
 
@@ -186,7 +186,7 @@ if B > A: D > 1 > C;
 
 You can use any relative operator to compare values (>, <, <=, >=, =, !=).
 
-#### Block condition
+### Block condition
 
 Sometimes more reactions have the same condition. You can simplify your reaction code using block condition.
 
@@ -200,7 +200,7 @@ if B > 500:
 
 By doing this, your condition is applied to all reactions located between brackets.
 
-### Reversible reactions
+## Reversible reactions
 
 Lets say you have 2 reactions, one for expression and one fore degradation of molecule A.
 

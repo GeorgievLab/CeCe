@@ -39,7 +39,7 @@ You can specify any number of different signals, there is no limitation. Each si
 
 ### `Export`
 
-Module that stores values from signal grid of all signals into `diffusion` data table.
+Module store data into CSV file.
 
 ### Example:
 
@@ -55,4 +55,5 @@ Store diffusion data for all iterations.
 * `totalTime` - Simulation time in seconds.
 * `x`         - Grid X coordinate.
 * `y`         - Grid Y coordinate.
-* `...`       - Column given by molecule name and value is amount of that molecule in grid cell.
+* `name`      - Signal name.
+* `concentration` - Signal concentration.

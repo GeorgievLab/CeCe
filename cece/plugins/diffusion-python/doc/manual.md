@@ -1,9 +1,9 @@
 
-## Diffusion Python
+# Diffusion Python
 
 Python language binding for `diffusion` plugin.
 
-##### Example:
+## Example:
 
 This module generates in every iteration some diffusion signal inside defined circle.
 
@@ -25,18 +25,18 @@ def update(dt, simulation):
 ]]></module>
 ```
 
-### Class `diffusion.Module`
+## Class `diffusion.Module`
 
 Diffusion module wrapping class.
 
-##### Properties:
+### Properties:
 
 | Name          | Type           | Description                             |
 | ------------- | -------------- | --------------------------------------- |
 | `gridSize`    | `vector[uint]` | Grid size.                              |
 | `signalCount` | `uint`         | Number of registered diffusion signals. |
 
-##### Methods:
+### Methods:
 
 | Name          | Return   | Arguments                       | Description                                               |
 | ------------- | -------- | ------------------------------- | --------------------------------------------------------- |
