@@ -291,6 +291,7 @@ include(ExampleTests)
 
 # Setup packages creation
 include(Package)
+include(InstallRequiredSystemLibraries)
 
 # ######################################################################### #
 
