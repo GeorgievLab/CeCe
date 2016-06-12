@@ -46,7 +46,7 @@ On Windows the ZIP package contains executable in the main directory and some
 subdirectories with examples and plugins. Application must be executed from command line (`cmd` or `PowerShell`).
 
 ```
-PS > .\cece-cli.exe examples\demo.cece
+PS > .\bin\cece-cli.exe examples\demo.cece
 ```
 
 #### Mac OS X
@@ -62,17 +62,11 @@ $ ./bin/cece-cli examples/demo.cece
 
 #### Linux
 
-We offer only TGZ and DEB package for Ubuntu-like distributions (Ubuntu 14.10 LTS, Mint 17.3).
+We offer only TGZ for Ubuntu-like distributions (Ubuntu 14.10 LTS, Mint 17.3).
 
 In case of TGZ package.
 
 ```bash
-$ ./bin/cece-cli examples/demo.cece
-```
-
-When CeCe is installed using DEB package it's files is installed in the system and is available globally. Then just type following into terminal.
-
-```bash
-$ cece-cli /usr/share/cece/examples/demo.cece
+$ ./bin/cece-cli share/cece/examples/demo.cece
 ```
 
