@@ -182,19 +182,19 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 # Install header files
-install(DIRECTORY .
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
-    COMPONENT Headers
-    FILES_MATCHING PATTERN "*.hpp"
-)
+#install(DIRECTORY .
+#    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/${PROJECT_NAME}
+#    COMPONENT Headers
+#    FILES_MATCHING PATTERN "*.hpp"
+#)
 
 # Install configuration file
-install(FILES
-        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/config.hpp
-        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/export.hpp
-    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}
-    COMPONENT Headers
-)
+#install(FILES
+#        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/config.hpp
+#        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/export.hpp
+#    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}
+#    COMPONENT Headers
+#)
 
 if (APPLE)
     # Fix library paths
