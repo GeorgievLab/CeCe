@@ -138,11 +138,11 @@ function(build_plugin NAME)
         )
 
         # Install header files
-        install(DIRECTORY .
-            DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/plugins/${NAME}
-            COMPONENT Headers
-            FILES_MATCHING PATTERN "*.hpp"
-        )
+        #install(DIRECTORY .
+        #    DESTINATION ${INSTALL_DIR_INCLUDE}/${CMAKE_PROJECT_NAME}/plugins/${NAME}
+        #    COMPONENT Headers
+        #    FILES_MATCHING PATTERN "*.hpp"
+        #)
 
         if (APPLE)
             # Fix library paths
