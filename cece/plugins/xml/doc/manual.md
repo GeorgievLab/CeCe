@@ -1,7 +1,9 @@
 
-## XML
-Basic and most supported loader. It loads simulation from valid *XML* file.
-Some basic knowledge of *XML* files is required.
+# XML plugin
+
+Basic and most supported simulation loader. It loads simulation from valid *XML* file, so
+some basic knowledge of *XML* files is required.
+
 The simplest simulation file looks like:
 
 ```xml
@@ -13,13 +15,21 @@ The simplest simulation file looks like:
 This simulation does almost nothing just runs with iteration time step 1 second.
 
 In the simulation element can be several other elements that specifies the simulation.
-Those elements can have sub-elements but that mostly depends on element type and used plugin.
+Those elements can have sub-elements but that mostly depends on element type.
 
-### Basic elements:
+## Basic elements:
 
-Simulator core defines following elements and their parameters.
+CeCe core defines following elements and their parameters:
 
-#### Simulation
+* `simulation`
+* `plugin`
+* `init`
+* `module`
+* `object`
+* `program`
+* `type`
+
+### Simulation element
 
 The *XML* file root element. It must be always present.
 
@@ -29,70 +39,74 @@ The *XML* file root element. It must be always present.
 | `dt`                   | `unit[s]`         | -                    | Simulation time step. |
 | `iterations`           | `uint`            | `0`                  | Number of simulation iterations. `0` means unlimited. |
 | `background`           | `color`           | `white`              | Background color. |
-| `text-color`           | `color`           | `background` inverse | Color of UI text. |
-| `text-size`            | `uint`            | `30`                 | UI text size. |
-| `show-simulation-time` | `bool`            | `false`              | If simulation time should be rendered. |
+| `length-coefficient`   | `real`            | `1`                  | Coefficient for conversion between simulation length and physics engine length. Used physics engine have some limitation. |
 
-#### Init
+### Plugin element
 
-This element defines program that is executed before the simulation is started. It's good for simulation scene
-initialization in cases when manual specification is hard to write.
-
-| Name       | Type          | Default | Description |
-| ---------- | ------------- | ------- | ----------- |
-| `language` | `plugin-name` | -       | Language in element content. |
-
-#### Plugin
-
-Explicitly loads required plugin. Plugin is implicitly loaded and when is needed but in some cases there is need for explicit load and configuration.
+Element that explicitly import required plugin. Objects from plugin that is not imported cannot be used in simulation.
 
 | Name   | Type          | Default | Description |
 | ------ | ------------- | ------- | ----------- |
-| `name` | `plugin-name` | -       | Plugin name. |
+| `name` | `plugin-name` | -       | Required plugin name. |
 
-> Additional attributes are passed to plugin configuration.
+> It's possible to specify additional element attributes that will be passed to
+> plugin configuration. See more in specific plugin manual.
 
-#### Module
+### Init element
 
-Adds module to simulation.
-
-| Name   | Type                        | Default | Description |
-| ------ | --------------------------- | ------- | ----------- |
-| `name` | `plugin-name(.module-name)` | -       | Name of required module. In most cases you can specify only plugin name but some plugins offsers more modules so you can specify which one you want by adding a suffix. |
-
-> Additional attributes are passed to module configuration.
-
-#### Program
-
-Defines a program that is available for objects. Programs are not executed until are assigned to objects.
+This element defines program that is executed before the simulation is started.
+It's good for simulation scene initialization in cases when manual specification
+is hard to write.
 
 | Name       | Type          | Default | Description |
 | ---------- | ------------- | ------- | ----------- |
-| `name`     | `string`      | -       | Unique program name. |
-| `language` | `plugin-name` | -       | Language in which is the program written. |
+| `type`     | `plugin-name` | -       | Type of used initializer. |
+| `language` | `plugin-name` | -       | Language in element content (same as `type`). |
 
-#### Object
+> Additional attributes can be specified and will be passed to initializer in configuration step.
+
+### Module element
+
+Adds module to simulation.
+
+| Name   | Type               | Default | Description |
+| ------ | ------------------ | ------- | ----------- |
+| `name` | `module-type-name` | -       | Name of required module. Modules that are available for simulation is taken from imported plugins. |
+
+> Additional attributes can be specified and will be passed to module in configuration step.
+
+### Program element
+
+Defines a program that is available for objects. Programs are not executed until are assigned to objects.
+
+| Name       | Type                | Default | Description |
+| ---------- | ------------------- | ------- | ----------- |
+| `name`     | `string`            | -       | Unique program name under which will be available for simulation objects. |
+| `type`     | `program-type-name` | -       | Program type. |
+| `language` | `program-type-name` | -       | Language in which is the program written (same as `type`). |
+
+> Additional attributes can be specified and will be passed to program in configuration step.
+
+### Object element
 
 Adds an object into simulation. Objects are physical entities that can be affected during simulation.
 
 | Name       | Type                | Default | Description |
 | ---------- | ------------------- | ------- | ----------- |
-| `class`    | `plugin-name.name`  | -       | Unique program name. |
+| `class`    | `object-type-name`  | -       | Unique program name. |
 | `visible`  | `bool`              | `true`  | If object is rendered. |
 | `position` | `vector[unit[m]]`   | `0 0`   | Initial object position. `0 0` is in middle of the world. |
 | `velocity` | `vector[unit[m/s]]` | `0 0`   | Initial object velocity. |
 | `density`  | `unit[g/m3]`        | `1`     | Initial object density. |
 | `programs` | `array[string]`     | -       | A list of object programs. |
 
-#### Obstacle
+> Additional attributes can be specified and will be passed to object in configuration step.
 
-Adds a physical obstacle into simulation. There are 3 different types of obstacles. Each of them require different attributes.
+### Type element
 
-| Name       | Type                | Default | Description |
-| ---------- | ------------------- | ------- | ----------- |
-| `visible`  | `bool`              | `true`  | If object is rendered. |
-| `position` | `vector[unit[m]]`   | `0 0`   | Initial object position. `0 0` is in middle of the world. |
-| `type`     | `string`            | -       | Type of obstacle. Possible values: `circle`, `rectangle`, `polygon`. |
-| `radius`   | `unit[m]`           | -       | Circle radius. Required for `circle` type. |
-| `size`     | `vector[unit[m]]`   | -       | Rectangle size. Required for `rectangle` type. |
-| `vertices` | `array[vector[unit[m]]]` | -  | A list of vertices. Required for `polygon` type. |
+Allows to define custom object type.
+
+| Name   | Type               | Default | Description |
+| ------ | ------------------ | ------- | ----------- |
+| `name` | `name`             | -       | Name of custom defined object type. |
+| `type` | `object-type-name` | -       | Name of object type that is used as base type (cannot be user defined type). |

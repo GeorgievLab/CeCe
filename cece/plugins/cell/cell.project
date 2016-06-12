@@ -131,4 +131,7 @@
   </Settings>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
+  <VirtualDirectory Name="doc">
+    <File Name="doc/manual.md"/>
+  </VirtualDirectory>
 </CodeLite_Project>

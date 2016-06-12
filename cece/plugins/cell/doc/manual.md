@@ -12,7 +12,7 @@ Objects offered by `cell` plugin:
 | `cell.Cell`     | Common cell object. |
 | `cell.Yeast`    | Yeast cell.         |
 
-All object share common (unavailable) ancestor that have following properties:
+All objects share common (unavailable) ancestor that have following properties:
 
 | Property         | Type         | Default  | Description                                                   | Example  |
 | ---------------- | ------------ | -------- | ------------------------------------------------------------- | -------- |

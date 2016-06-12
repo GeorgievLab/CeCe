@@ -124,4 +124,7 @@
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="doc">
+    <File Name="doc/manual.md"/>
+  </VirtualDirectory>
 </CodeLite_Project>
