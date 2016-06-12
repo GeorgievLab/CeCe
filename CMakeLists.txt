@@ -1,5 +1,5 @@
 # ######################################################################### #
-# Georgiev Lab (c) 2015                                                     #
+# Georgiev Lab (c) 2015-2016                                                #
 # ######################################################################### #
 # Department of Cybernetics                                                 #
 # Faculty of Applied Sciences                                               #
@@ -42,8 +42,8 @@ set(APP_NAME "CeCe")
 
 # Application version
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 4)
-set(VERSION_PATCH 4)
+set(VERSION_MINOR 5)
+set(VERSION_PATCH 0)
 set(VERSION_SPECIAL "")
 
 # Full version string
