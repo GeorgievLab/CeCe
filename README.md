@@ -10,6 +10,17 @@ CeCe originally started as a part of the iGEM 2015 project from team Czech Repub
 the simulation of microfluidical chips. However, Cece's wide range of tools enables it to be used for
 the simulation of batch cultures, blood streams, cell tissues, and many more biomedically related problems.
 
+## Prebuilt packages
+
+GitHun releases contains prebuilt pacakges for Windows, Mac OSX and Linux.
+
+### Requirements
+
+#### Windows
+
+* [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+* [Python 2.7 32bit](http://python.org)
+
 ## Building from source
 
 Building from source code is done by CMake (see Requirements).
@@ -36,6 +47,7 @@ cmake --build .
 * [CMake](https://cmake.org) v2.8 or newer.
 * [Box2D](http://box2d.org) v2.3 or newer.
 * [Boost C++ Libraries](http://www.boost.org) - Filesystem, System, Any, Tribool and Variant.
+* [Python 2.7](http://python.org) - Python plugins.
 
 ### Optional requirements
 
