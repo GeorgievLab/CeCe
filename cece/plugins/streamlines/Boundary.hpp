@@ -32,6 +32,8 @@
 #include "cece/core/VectorUnits.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
+#include "cece/core/Range.hpp"
+#include "cece/core/DynamicArray.hpp"
 
 // Plugin
 #include "cece/plugins/streamlines/Lattice.hpp"
@@ -169,6 +171,17 @@ public:
 
 
     /**
+     * @brief Returns inlet volumeric flow rate.
+     *
+     * @return
+     */
+    units::VolumericFlow getInletFlow() const noexcept
+    {
+        return m_inletFlow;
+    }
+
+
+    /**
      * @brief Returns dynamics.
      *
      * @return
@@ -250,6 +263,17 @@ public:
 
 
     /**
+     * @brief Set inlet volumeric flow rate.
+     *
+     * @param flow
+     */
+    void setInletFlow(units::VolumericFlow flow) noexcept
+    {
+        m_inletFlow = flow;
+    }
+
+
+    /**
      * @brief Set dynamics.
      *
      * @param dynamics
@@ -281,6 +305,16 @@ public:
 
 
     /**
+     * @brief Update blocks that will be used as boundary.
+     *
+     * @param lattice
+     * @param converter
+     * @param fluidDynamics
+     */
+    void updateBlocks(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics);
+
+
+    /**
      * @brief Apply boundary to lattice.
      *
      * @param lattice
@@ -293,11 +327,13 @@ public:
     /**
      * @brief Calculate inlet velocity profile.
      *
+     * @param converter
      * @param coord
+     * @param width Inlet width.
      *
      * @return
      */
-    VelocityVector inletVelocity(Lattice::CoordinateType coord) const noexcept;
+    VelocityVector inletVelocity(Converter& converter, Lattice::CoordinateType coord, Lattice::SizeType width) const noexcept;
 
 
 // Private Data Members
@@ -321,8 +357,14 @@ private:
     /// Inlet velocity.
     units::Velocity m_inletVelocity = Zero;
 
+    /// Inlet volumeric flow rate.
+    units::VolumericFlow m_inletFlow = Zero;
+
     /// Boundary dynamics.
     UniquePtr<Dynamics> m_dynamics;
+
+    /// Boundary open blocks.
+    DynamicArray<Range<Lattice::SizeType>> m_blocks;
 
 };
 

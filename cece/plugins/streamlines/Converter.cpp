@@ -87,6 +87,9 @@ void Converter::loadConfig(const config::Configuration& config)
     else
         // Set number of time steps
         setNumberSteps(config.get("number-steps", getNumberNodes() * getNumberNodes() * 20));
+
+    // Set channel height
+    setHeight(config.get("height", units::Length(1)));
 }
 
 /* ************************************************************************ */

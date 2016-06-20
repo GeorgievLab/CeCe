@@ -150,6 +150,15 @@ void Boundaries::init(Lattice& lattice, ViewPtr<Dynamics> fluidDynamics)
 
 /* ************************************************************************ */
 
+void Boundaries::updateBlocks(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
+{
+    // Apply boundary conditions
+    for (auto& boundary : m_boundaries)
+        boundary.updateBlocks(lattice, converter, fluidDynamics);
+}
+
+/* ************************************************************************ */
+
 void Boundaries::applyConditions(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
 {
     // Apply boundary conditions

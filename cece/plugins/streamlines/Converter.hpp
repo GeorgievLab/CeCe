@@ -123,6 +123,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns channel height.
+     *
+     * @return Channel height.
+     */
+    units::Length getHeight() const noexcept
+    {
+        return m_height;
+    }
+
+
 // Public Mutators
 public:
 
@@ -181,6 +192,17 @@ public:
     {
         Assert(steps > 0);
         m_numberSteps = steps;
+    }
+
+
+    /**
+     * @brief Set channel height.
+     *
+     * @param height New height.
+     */
+    void setHeight(units::Length height) noexcept
+    {
+        m_height = height;
     }
 
 
@@ -325,6 +347,38 @@ public:
 
 
     /**
+     * @brief Calculate mean velocity from volumeric flow rate.
+     *
+     * @param flow  Volumeric flow rate.
+     * @param width Inlet width.
+     *
+     * @return Mean velocity.
+     *
+     * @note Height is taken from internal value.
+     */
+    units::Velocity calculateVelocity(units::VolumericFlow flow, units::Length width) const noexcept
+    {
+        return calculateVelocity(flow, width * getHeight());
+    }
+
+
+    /**
+     * @brief Calculate mean velocity from volumeric flow rate.
+     *
+     * @param flow Volumeric flow rate.
+     * @param area Flow area.
+     *
+     * @return Mean velocity.
+     *
+     * @note Height is taken from internal value.
+     */
+    units::Velocity calculateVelocity(units::VolumericFlow flow, units::Area area) const noexcept
+    {
+        return flow / area;
+    }
+
+
+    /**
      * @brief Load module configuration.
      *
      * @param config Source configuration.
@@ -358,6 +412,8 @@ private:
     /// Number of LB time steps for units conversions
     unsigned int m_numberSteps = 1;
 
+    /// Streamlines channel height.
+    units::Length m_height = units::um(1);
 };
 
 /* ************************************************************************ */

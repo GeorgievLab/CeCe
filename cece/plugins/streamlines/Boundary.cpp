@@ -59,111 +59,99 @@ namespace {
 /* ************************************************************************ */
 
 /**
- * @brief Returns ranges based on boundary position.
+ * @brief Calculare edge block.
  *
- * @param position
- * @param size
+ * @param offset Center offset.
+ * @param size   Boundary size.
+ * @param count  Total lattice size.
  *
  * @return
  */
-StaticArray<Vector<Lattice::SizeType>, 2>
-getRanges(Boundary::Position position, const Lattice::Size& size)
+Range<Lattice::SizeType> getBlock(Lattice::SizeType offset, Lattice::SizeType size, Lattice::SizeType count) noexcept
 {
-    switch (position)
-    {
-    case Boundary::Position::Top:
-        return {{
-            {0, size.getHeight() - 1},
-            {size.getWidth(), size.getHeight()}
-        }};
+    const Lattice::SizeType off = count / 2 + offset;
+    const Lattice::SizeType siz = size / 2;
 
-    case Boundary::Position::Bottom:
-        return {{
-            {0, 0},
-            {size.getWidth(), 1}
-        }};
-
-    case Boundary::Position::Right:
-        return {{
-            {size.getWidth() - 1, 0},
-            {size.getWidth(), size.getHeight()}
-        }};
-
-    case Boundary::Position::Left:
-        return {{
-            {0, 0},
-            {1, size.getHeight()}
-        }};
-
-    default:
-        Assert(false && "Invalid boundary position");
-        std::abort();
-    }
+    return {off - siz, off + siz};
 }
 
 /* ************************************************************************ */
 
 /**
- * @brief Returns ranges based on boundary position.
+ * @brief Detect blocks for boundary.
  *
- * @param position
- * @param size
+ * @param lattice
+ * @param range
+ * @param fluidDynamics
+ * @param coordFn
  *
  * @return
  */
-StaticArray<Vector<Lattice::SizeType>, 2>
-getRanges(Boundary::Position position, RealType offset, RealType size,
-    const Lattice::Size& gridSize)
+template<typename CoordFn>
+DynamicArray<Range<Lattice::SizeType>> detectBlocks(const Lattice& lattice,
+    Range<Lattice::SizeType> range, ViewPtr<Dynamics> fluidDynamics, CoordFn coordFn) noexcept
 {
-    switch (position)
-    {
-    case Boundary::Position::Top:
-    {
-        Lattice::SizeType off = gridSize.getWidth() / 2 + offset;
-        Lattice::SizeType siz = size / 2;
+    DynamicArray<Range<Lattice::SizeType>> blocks;
 
-        return {{
-            {off - siz, gridSize.getHeight() - 1},
-            {off + siz, gridSize.getHeight()}
-        }};
+    // Foreach boundary edge
+    for (Lattice::SizeType i = range.first(); i < range.last(); ++i)
+    {
+        const auto& node1 = lattice[coordFn(i)];
+
+        if (node1.getDynamics() != fluidDynamics)
+            continue;
+
+        const Lattice::SizeType start = i++;
+
+        // Inner block
+        for (; i < range.last(); ++i)
+        {
+            const auto& node2 = lattice[coordFn(i)];
+
+            if (node2.getDynamics() != fluidDynamics)
+                break;
+        }
+
+        // Insert block
+        blocks.push_back({start, i});
     }
 
-    case Boundary::Position::Bottom:
+    return blocks;
+}
+
+/* ************************************************************************ */
+
+/**
+ * @brief Apply blocks to lattice.
+ *
+ * @param lattice
+ * @param blocks
+ * @param fluidDynamics
+ * @param coordFn
+ * @param applyFn
+ *
+ * @return
+ */
+template<typename CoordFn, typename ApplyFn>
+void applyBlocks(Lattice& lattice, const DynamicArray<Range<Lattice::SizeType>>& blocks,
+    ViewPtr<Dynamics> dynamics, ViewPtr<Dynamics> fluidDynamics, CoordFn coordFn,
+    ApplyFn applyFn) noexcept
+{
+    // Foreach blocks
+    for (const auto& block : blocks)
     {
-        Lattice::SizeType off = gridSize.getWidth() / 2 + offset;
-        Lattice::SizeType siz = size / 2;
+        for (auto i = block.first(); i < block.last(); ++i)
+        {
+            const auto c = coordFn(i);
+            auto& node = lattice[c];
 
-        return {{
-            {off - siz, 0},
-            {off + siz, 1}
-        }};
-    }
+            // Set boundary dynamics
+            if (node.getDynamics() == fluidDynamics)
+                node.setDynamics(dynamics);
 
-    case Boundary::Position::Right:
-    {
-        Lattice::SizeType off = gridSize.getHeight() / 2;
-        Lattice::SizeType siz = size / 2;
-
-        return {{
-            {gridSize.getWidth() - 1, off - siz},
-            {gridSize.getWidth(), off + siz}
-        }};
-    }
-
-    case Boundary::Position::Left:
-    {
-        Lattice::SizeType off = gridSize.getHeight() / 2;
-        Lattice::SizeType siz = size / 2;
-
-        return {{
-            {0, off - siz},
-            {1, off + siz}
-        }};
-    }
-
-    default:
-        Assert(false && "Invalid boundary position");
-        std::abort();
+            if (node.getDynamics() == dynamics)
+                applyFn(node, c, block.getSize());
+        }
     }
 }
 
@@ -334,6 +322,7 @@ void Boundary::loadConfig(const config::Configuration& config)
     setSize(config.get("size", getSize()));
     setInletProfileType(config.get("inlet-profile", getInletProfileType()));
     setInletVelocity(config.get("inlet-velocity", getInletVelocity()));
+    setInletFlow(config.get("inlet-flow-rate", getInletFlow()));
 }
 
 /* ************************************************************************ */
@@ -346,6 +335,71 @@ void Boundary::storeConfig(config::Configuration& config) const
     config.get("size", getSize());
     config.set("inlet-profile", getInletProfileType());
     config.set("inlet-velocity", getInletVelocity());
+    config.set("inlet-flow-rate", getInletFlow());
+}
+
+/* ************************************************************************ */
+
+void Boundary::updateBlocks(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
+{
+    const auto gridSize = lattice.getSize();
+    const auto offset = converter.convertLength(m_offset);
+    const auto size = converter.convertLength(m_size);
+
+    switch (getPosition())
+    {
+    case Position::Top:
+    {
+        // Boundary block
+        const auto block = getBlock(offset, size, gridSize.getWidth());
+
+        // Top edge
+        m_blocks = detectBlocks(lattice, block, fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{i, gridSize.getHeight() - 1};
+        });
+
+        break;
+    }
+
+    case Position::Bottom:
+    {
+        // Boundary block
+        const auto block = getBlock(offset, size, gridSize.getWidth());
+
+        // Bottom edge
+        m_blocks = detectBlocks(lattice, block, fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{i, 0};
+        });
+
+        break;
+    }
+
+    case Position::Left:
+    {
+        // Boundary block
+        const auto block = getBlock(offset, size, gridSize.getHeight());
+
+        // Left edge
+        m_blocks = detectBlocks(lattice, block, fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{0, i};
+        });
+
+        break;
+    }
+
+    case Position::Right:
+    {
+        // Boundary block
+        const auto block = getBlock(offset, size, gridSize.getHeight());
+
+        // Right edge
+        m_blocks = detectBlocks(lattice, block, fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{gridSize.getWidth() - 1, i};
+        });
+
+        break;
+    }
+    }
 }
 
 /* ************************************************************************ */
@@ -354,50 +408,59 @@ void Boundary::apply(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> f
 {
     const auto gridSize = lattice.getSize();
 
-    // Get ranges
-    auto ranges = m_size == Zero
-        ? getRanges(m_position, gridSize)
-        : getRanges(m_position, converter.convertLength(m_offset), converter.convertLength(m_size), gridSize)
-    ;
-
-    const Vector<Lattice::SizeType> rngMin = ranges[0];
-    const Vector<Lattice::SizeType> rngMax = ranges[1];
-
-    if (m_type == Type::Outlet)
-    {
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
+    // Apply function
+    auto applyFn = [&] (Node& node, Lattice::CoordinateType c, Lattice::SizeType width) {
+        if (getType() == Type::Outlet)
         {
-            auto& node = lattice[{x, y}];
-
-            // Set boundary dynamics
-            if (node.getDynamics() == fluidDynamics)
-                node.setDynamics(m_dynamics);
-
-            if (node.getDynamics() == m_dynamics)
-                node.defineDensity(1.0);
+            node.defineDensity(1.0);
         }
+        else if (getType() == Type::Inlet)
+        {
+            node.defineVelocity(converter.convertVelocity(
+                inletVelocity(converter, c, width)
+            ));
+        }
+    };
+
+    switch (getPosition())
+    {
+    case Position::Top:
+    {
+        applyBlocks(lattice, m_blocks, getDynamics(), fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{i, gridSize.getHeight() - 1};
+        }, applyFn);
+        break;
     }
-    else if (m_type == Type::Inlet)
+
+    case Position::Bottom:
     {
-        for (auto y = rngMin.getY(); y < rngMax.getY(); ++y)
-        for (auto x = rngMin.getX(); x < rngMax.getX(); ++x)
-        {
-            auto& node = lattice[{x, y}];
+        applyBlocks(lattice, m_blocks, getDynamics(), fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{i, 0};
+        }, applyFn);
+        break;
+    }
 
-            // Set boundary dynamics
-            if (node.getDynamics() == fluidDynamics)
-                node.setDynamics(m_dynamics);
+    case Position::Left:
+    {
+        applyBlocks(lattice, m_blocks, getDynamics(), fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{0, i};
+        }, applyFn);
+        break;
+    }
 
-            if (node.getDynamics() == m_dynamics)
-                node.defineVelocity(converter.convertVelocity(inletVelocity({x, y})));
-        }
+    case Position::Right:
+    {
+        applyBlocks(lattice, m_blocks, getDynamics(), fluidDynamics, [&](Lattice::SizeType i) {
+            return Lattice::CoordinateType{gridSize.getWidth() - 1, i};
+        }, applyFn);
+        break;
+    }
     }
 }
 
 /* ************************************************************************ */
 
-VelocityVector Boundary::inletVelocity(Lattice::CoordinateType coord) const noexcept
+VelocityVector Boundary::inletVelocity(Converter& converter, Lattice::CoordinateType coord, Lattice::SizeType width) const noexcept
 {
     auto type = getInletProfileType();
 
@@ -406,19 +469,27 @@ VelocityVector Boundary::inletVelocity(Lattice::CoordinateType coord) const noex
 
     if (type == InletProfileType::Constant)
     {
+        // Calculate velocity
+        const units::Velocity velocity = getInletFlow() != Zero
+            ? converter.calculateVelocity(
+                getInletFlow(),
+                converter.convertLength(static_cast<RealType>(width)))
+            : getInletVelocity()
+        ;
+
         switch (m_position)
         {
         case Position::Top:
-            return {Zero, -m_inletVelocity};
+            return {Zero, -velocity};
 
         case Position::Bottom:
-            return {Zero, m_inletVelocity};
+            return {Zero, velocity};
 
         case Position::Left:
-            return {m_inletVelocity, Zero};
+            return {velocity, Zero};
 
         case Position::Right:
-            return {-m_inletVelocity, Zero};
+            return {-velocity, Zero};
 
         default:
             Assert(false && "Invalid boundary position");

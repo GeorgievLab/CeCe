@@ -188,10 +188,20 @@ public:
 
 
     /**
+     * @brief Update conditions blocks.
+     *
+     * @param lattice
+     * @param converter
+     * @param fluidDynamics
+     */
+    void updateBlocks(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics);
+
+
+    /**
      * @brief Apply boundary conditions.
      *
-     * @param converter
      * @param lattice
+     * @param converter
      * @param fluidDynamics
      */
     void applyConditions(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics);
