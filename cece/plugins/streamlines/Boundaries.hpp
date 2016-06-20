@@ -141,14 +141,6 @@ public:
 
 
     /**
-     * @brief Find maximum inlet velocity.
-     *
-     * @return
-     */
-    units::Velocity getMaxInletVelocity() const noexcept;
-
-
-    /**
      * @brief Check if given dynamics is boundary dynamics.
      *
      * @param dynamics

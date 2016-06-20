@@ -109,6 +109,10 @@ void Module::init(AtomicBool& flag)
 
     // Obstacles
     updateObstacleMap();
+
+    // Initialize lattice to equilibrium
+    m_lattice.initEquilibrium();
+
     applyBoundaryConditions();
 
     Log::info("[streamlines] Initialization...");
@@ -258,7 +262,6 @@ void Module::loadConfig(const config::Configuration& config)
     m_visualizationLayerDynamicsType = config.get("layer-dynamics", m_visualizationLayerDynamicsType);
     m_visualizationLayerMagnitude = config.get("layer-magnitude", m_visualizationLayerMagnitude);
     m_visualizationLayerDensity = config.get("layer-density", m_visualizationLayerDensity);
-    setDebugMagnitudeScale(config.get("debug-magnitude-scale", getDebugMagnitudeScale()));
 #endif
 
     // Get initialization file
@@ -287,10 +290,6 @@ void Module::storeConfig(config::Configuration& config) const
     // Store converter config
     m_converter.storeConfig(config);
 
-#ifdef CECE_ENABLE_RENDER
-    config.set("debug-magnitude-scale", getDebugMagnitudeScale());
-#endif
-
     // TODO: init file
 }
 
@@ -313,10 +312,6 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
     if (drawDensity && !m_drawableDensity)
         m_drawableDensity.create(context, size);
 
-    // Calculate grid max velocity
-    const auto maxInlet = m_boundaries.getMaxInletVelocity();
-    const auto maxVel = m_debugMagnitudeScale * m_converter.convertVelocity(maxInlet);
-
     {
 #ifdef CECE_THREAD_SAFE
         // Lock access
@@ -325,6 +320,7 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         // Find min/max density
         Descriptor::DensityType rhoMin = std::numeric_limits<Descriptor::DensityType>::max();
         Descriptor::DensityType rhoMax = 0.0;
+        RealType maxVel = 0.0;
 
         for (auto&& c : range(size))
         {
@@ -333,7 +329,10 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 
             if (dynamics == getFluidDynamics())
             {
+                const auto velocity = node.computeVelocity();
                 const auto density = node.computeDensity();
+
+                maxVel = std::max(maxVel, velocity.getLength());
                 rhoMin = std::min(density, rhoMin);
                 rhoMax = std::max(density, rhoMax);
             }
@@ -526,6 +525,9 @@ void Module::updateObstacleMap()
     }
 
     m_lattice.fixupObstacles(getWallDynamics());
+
+    // Update boundaries blocks
+    m_boundaries.updateBlocks(m_lattice, m_converter, getFluidDynamics());
 
     //if (isDynamicObjectsObstacles())
     //    m_lattice.fixupObstacles(Node::Dynamics::DynamicObstacle);
@@ -736,7 +738,7 @@ void Module::loadFromFile(const FilePath& filename)
     InFileStream ifs(filename.string(), OutFileStream::binary);
 
     if (!ifs.is_open())
-        throw InvalidArgumentException("[streamlines] Cannot load from file: File not found '" + filename.string() + "'");
+        throw InvalidArgumentException("Cannot load from file: File not found '" + filename.string() + "'");
 
     BinaryInput in(ifs);
 
@@ -745,32 +747,32 @@ void Module::loadFromFile(const FilePath& filename)
     in.read(guard);
 
     if (guard != FILE_GUARD)
-        throw InvalidArgumentException("[streamlines] Cannot load from file: File is not valid");
+        throw InvalidArgumentException("Cannot load from file: File is not valid");
 
     // Read lattice size
     Lattice::Size size;
     in.read(size);
 
     if (size != m_lattice.getSize())
-        throw InvalidArgumentException("[streamlines] Cannot load from file: different lattice sizes");
+        throw InvalidArgumentException("Cannot load from file: different lattice sizes");
 
     std::size_t hash;
     in.read(hash);
 
     if (hash != calculateLatticeHash())
-        throw InvalidArgumentException("[streamlines] Cannot load from file: different layout");
+        throw InvalidArgumentException("Cannot load from file: different layout");
 
     RealType tau;
     in.read(tau);
 
     if (tau != m_converter.calculateTau())
-        throw InvalidArgumentException("[streamlines] Cannot load from file: different relaxation times");
+        throw InvalidArgumentException("Cannot load from file: different relaxation times");
 
     decltype(m_initIterations) iterations;
     in.read(iterations);
 
     if (iterations != m_initIterations)
-        throw InvalidArgumentException("[streamlines] Cannot load from file: different init iterations");
+        throw InvalidArgumentException("Cannot load from file: different init iterations");
 
     for (auto&& c : range(m_lattice.getSize()))
     {

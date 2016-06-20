@@ -178,21 +178,6 @@ public:
     }
 
 
-#if defined(CECE_ENABLE_RENDER)
-
-    /**
-     * @brief Get debug velocity magnitude scale.
-     *
-     * @return
-     */
-    RealType getDebugMagnitudeScale() const noexcept
-    {
-        return m_debugMagnitudeScale;
-    }
-
-#endif
-
-
     /**
      * @brief If dynamic objects are used as obstacles.
      *
@@ -272,21 +257,6 @@ public:
     {
         m_dynamicObjectsObstacles = flag;
     }
-
-
-#if defined(CECE_ENABLE_RENDER)
-
-    /**
-     * @brief Set debug velocity magnitude scale.
-     *
-     * @param value
-     */
-    void setDebugMagnitudeScale(RealType value) noexcept
-    {
-        m_debugMagnitudeScale = value;
-    }
-
-#endif
 
 
     /**
@@ -489,9 +459,6 @@ private:
     bool m_dynamicObjectsObstacles = false;
 
 #if defined(CECE_ENABLE_RENDER)
-    /// Velocity magnitude scale.
-    RealType m_debugMagnitudeScale = 2;
-
     /// Name of layer for flow dynamics type visualization.
     String m_visualizationLayerDynamicsType;
 

@@ -85,25 +85,6 @@ Boundaries::Boundaries(simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
-units::Velocity Boundaries::getMaxInletVelocity() const noexcept
-{
-    units::Velocity velocity = Zero;
-
-    for (const auto& boundary : m_boundaries)
-    {
-        // Only inlets
-        if (boundary.getType() != Boundary::Type::Inlet)
-            continue;
-
-        if (velocity < boundary.getInletVelocity())
-            velocity = boundary.getInletVelocity();
-    }
-
-    return velocity;
-}
-
-/* ************************************************************************ */
-
 bool Boundaries::isBoundaryDynamics(ViewPtr<Dynamics> dynamics) const noexcept
 {
     for (const auto& boundary : m_boundaries)
