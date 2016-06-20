@@ -148,7 +148,7 @@ using MolarConcentration = Unit<List<BaseAmountOfSubstance>, List<BaseLength, Ba
 /* ************************************************************************ */
 
 /**
- * @brief Class for representing volume.
+ * @brief Class for representing angle.
  */
 using Angle = Unit<List<>, List<>>;
 
@@ -165,6 +165,13 @@ using AngularVelocity = Unit<List<>, List<BaseTime>>;
  * @brief Class for representing probability.
  */
 using Probability = Unit<List<>, List<>>;
+
+/* ************************************************************************ */
+
+/**
+ * @brief Volumeric flow rate.
+ */
+using VolumericFlow = Unit<List<BaseLength, BaseLength, BaseLength>, List<BaseTime>>;
 
 /* ************************************************************************ */
 
