@@ -260,7 +260,7 @@ public:
      *
      * @return
      */
-    VelocityVector convertVelocity(Vector<RealType> vel) const noexcept
+    units::VelocityVector convertVelocity(Vector<RealType> vel) const noexcept
     {
         const auto charTime = m_charTime / getNumberSteps();
         const auto charLength = m_charLength / getNumberNodes();
@@ -290,7 +290,7 @@ public:
      *
      * @return
      */
-    Vector<RealType> convertVelocity(VelocityVector vel) const noexcept
+    Vector<RealType> convertVelocity(units::VelocityVector vel) const noexcept
     {
         const auto charTime = m_charTime / getNumberSteps();
         const auto charLength = m_charLength / getNumberNodes();

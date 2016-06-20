@@ -384,14 +384,14 @@ void Context::matrixIdentity() noexcept
 
 /* ************************************************************************ */
 
-void Context::matrixTranslate(const PositionVector& pos) noexcept
+void Context::matrixTranslate(const units::PositionVector& pos) noexcept
 {
     gl(glTranslatef(pos.getX().value(), pos.getY().value(), 0));
 }
 
 /* ************************************************************************ */
 
-void Context::matrixScale(const ScaleVector& scale) noexcept
+void Context::matrixScale(const units::ScaleVector& scale) noexcept
 {
     gl(glScalef(scale.getX(), scale.getY(), 1));
 }

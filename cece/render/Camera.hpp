@@ -63,7 +63,7 @@ public:
      *
      * @return
      */
-    const PositionVector& getPosition() const noexcept
+    const units::PositionVector& getPosition() const noexcept
     {
         return m_position;
     }
@@ -89,7 +89,7 @@ public:
      *
      * @param pos
      */
-    void setPosition(PositionVector pos) noexcept
+    void setPosition(units::PositionVector pos) noexcept
     {
         m_position = std::move(pos);
     }
@@ -110,7 +110,7 @@ public:
 private:
 
     /// Camera position.
-    PositionVector m_position;
+    units::PositionVector m_position;
 
     /// Zoom value.
     RealType m_zoom = 1.0;

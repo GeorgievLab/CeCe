@@ -481,7 +481,7 @@ void Module::updateObstacleMap()
     // Clear previous flag
     m_lattice.setDynamics(getFluidDynamics());
 
-    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const units::PositionVector start = getSimulation().getWorldSize() * -0.5f;
     const auto step = getSimulation().getWorldSize() / m_lattice.getSize();
 
     // Foreach all cells
@@ -554,7 +554,7 @@ void Module::applyToObject(object::Object& object)
     const auto maxSpeed = getSimulation().getMaxObjectTranslation() / getSimulation().getTimeStep();
     const auto maxSpeedSq = maxSpeed * maxSpeed;
 
-    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const units::PositionVector start = getSimulation().getWorldSize() * -0.5f;
     const auto step = getSimulation().getWorldSize() / m_lattice.getSize();
 
     // Get mass local center
@@ -563,8 +563,8 @@ void Module::applyToObject(object::Object& object)
     // Coefficient used in force calculation
     const auto forceCoefficient = 6 * constants::PI * m_converter.getKinematicViscosity() * object.getDensity();
 
-    auto force = ForceVector{Zero};
-    auto velocityObjEnv = VelocityVector{Zero};
+    auto force = units::ForceVector{Zero};
+    auto velocityObjEnv = units::VelocityVector{Zero};
 
     // Map shapes border to grid
     for (const auto& shape : object.getShapes())
@@ -604,7 +604,7 @@ void Module::applyToObject(object::Object& object)
 
         // Average
         velocityLB /= count;
-        const VelocityVector velocityEnv = m_converter.convertVelocity(velocityLB);
+        const units::VelocityVector velocityEnv = m_converter.convertVelocity(velocityLB);
         //const VelocityVector velocityEnv{m_inletVelocities[0], Zero};
 
         if (velocityEnv.getLengthSquared() > maxSpeedSq)

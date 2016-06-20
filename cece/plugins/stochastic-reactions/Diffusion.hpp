@@ -50,7 +50,7 @@ namespace stochastic_reactions{
  */
 DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
     const plugin::diffusion::Module::SizeType& gridSize,
-    const SizeVector& worldSize,
+    const units::SizeVector& worldSize,
     const plugin::cell::CellBase& cell);
 
 /* ************************************************************************ */

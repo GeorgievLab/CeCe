@@ -233,7 +233,7 @@ public:
      *
      * @return
      */
-    const SizeVector& getWorldSize() const noexcept override
+    const units::SizeVector& getWorldSize() const noexcept override
     {
         return m_worldSize;
     }
@@ -435,7 +435,7 @@ public:
      *
      * @return
      */
-    AccelerationVector getGravity() const noexcept;
+    units::AccelerationVector getGravity() const noexcept;
 
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
@@ -519,7 +519,7 @@ public:
      *
      * @param size Simulation world size.
      */
-    void setWorldSize(SizeVector size) noexcept override
+    void setWorldSize(units::SizeVector size) noexcept override
     {
         m_worldSize = std::move(size);
     }
@@ -687,7 +687,7 @@ public:
      *
      * @param gravity
      */
-    void setGravity(const AccelerationVector& gravity) noexcept;
+    void setGravity(const units::AccelerationVector& gravity) noexcept;
 
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
@@ -816,7 +816,7 @@ private:
     units::Time m_totalTime = Zero;
 
     /// World size.
-    SizeVector m_worldSize{ units::um(400), units::um(400) };
+    units::SizeVector m_worldSize{ units::um(400), units::um(400) };
 
     /// Simulation parameters.
     Parameters m_parameters;

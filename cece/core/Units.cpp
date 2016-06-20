@@ -53,6 +53,7 @@ template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
 template class Unit<List<BaseAmountOfSubstance>, List<>>;
 template class Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
 template class Unit<List<>, List<BaseTime>>;
+template class Unit<List<BaseLength, BaseLength, BaseLength>, List<BaseTime>>;
 
 /* ************************************************************************ */
 

@@ -83,7 +83,7 @@ void Cell::draw(render::Context& context)
     if (!m_renderObject)
         m_renderObject.create(context);
 
-    PositionVector pos;
+    units::PositionVector pos;
     units::Length radius;
     render::Color color;
 

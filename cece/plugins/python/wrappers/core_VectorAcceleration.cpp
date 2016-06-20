@@ -44,7 +44,7 @@ namespace {
 
 /* ************************************************************************ */
 
-static VectorType<AccelerationVector> g_type("core.VectorAcceleration");
+static VectorType<units::AccelerationVector> g_type("core.VectorAcceleration");
 
 /* ************************************************************************ */
 

@@ -66,7 +66,7 @@ struct ShapeUndefined {};
 struct ShapeCircle
 {
     /// Shape center.
-    PositionVector center;
+    units::PositionVector center;
 
     /// Circle radius.
     units::Length radius;
@@ -80,10 +80,10 @@ struct ShapeCircle
 struct ShapeRectangle
 {
     /// Shape center.
-    PositionVector center;
+    units::PositionVector center;
 
     /// Rectangle size.
-    SizeVector size;
+    units::SizeVector size;
 };
 
 /* ************************************************************************ */
@@ -94,10 +94,10 @@ struct ShapeRectangle
 struct ShapeEdges
 {
     /// Shape center.
-    PositionVector center;
+    units::PositionVector center;
 
     /// List of edges.
-    DynamicArray<PositionVector> edges;
+    DynamicArray<units::PositionVector> edges;
 };
 
 /* ************************************************************************ */
@@ -290,7 +290,7 @@ public:
      *
      * @return
      */
-    static Shape makeCircle(units::Length radius, PositionVector center = Zero) noexcept
+    static Shape makeCircle(units::Length radius, units::PositionVector center = Zero) noexcept
     {
         return Shape{ShapeCircle{center, radius}};
     }
@@ -304,7 +304,7 @@ public:
      *
      * @return
      */
-    static Shape makeRectangle(SizeVector size, PositionVector center = Zero) noexcept
+    static Shape makeRectangle(units::SizeVector size, units::PositionVector center = Zero) noexcept
     {
         return Shape{ShapeRectangle{center, size}};
     }
@@ -318,7 +318,7 @@ public:
      *
      * @return
      */
-    static Shape makeEdges(DynamicArray<PositionVector> edges, PositionVector center = Zero) noexcept
+    static Shape makeEdges(DynamicArray<units::PositionVector> edges, units::PositionVector center = Zero) noexcept
     {
         return Shape{ShapeEdges{center, std::move(edges)}};
     }

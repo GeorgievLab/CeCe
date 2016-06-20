@@ -58,11 +58,11 @@ float32 ConverterBox2D::convertLength(units::Length length) const noexcept
 
 /* ************************************************************************ */
 
-PositionVector ConverterBox2D::convertPosition(b2Vec2 position) const noexcept
+units::PositionVector ConverterBox2D::convertPosition(b2Vec2 position) const noexcept
 {
     const auto coeff = 1.0 / getLengthCoefficient();
 
-    return coeff * PositionVector{
+    return coeff * units::PositionVector{
         units::Length(position.x),
         units::Length(position.y)
     };
@@ -70,7 +70,7 @@ PositionVector ConverterBox2D::convertPosition(b2Vec2 position) const noexcept
 
 /* ************************************************************************ */
 
-b2Vec2 ConverterBox2D::convertPosition(PositionVector position) const noexcept
+b2Vec2 ConverterBox2D::convertPosition(units::PositionVector position) const noexcept
 {
     const auto coeff = getLengthCoefficient();
 
@@ -96,11 +96,11 @@ float32 ConverterBox2D::convertAngle(units::Angle angle) const noexcept
 
 /* ************************************************************************ */
 
-VelocityVector ConverterBox2D::convertLinearVelocity(b2Vec2 velocity) const noexcept
+units::VelocityVector ConverterBox2D::convertLinearVelocity(b2Vec2 velocity) const noexcept
 {
     const auto coeff = getTimeCoefficient() / getLengthCoefficient();
 
-    return coeff * VelocityVector{
+    return coeff * units::VelocityVector{
         units::Velocity(velocity.x),
         units::Velocity(velocity.y)
     };
@@ -108,7 +108,7 @@ VelocityVector ConverterBox2D::convertLinearVelocity(b2Vec2 velocity) const noex
 
 /* ************************************************************************ */
 
-b2Vec2 ConverterBox2D::convertLinearVelocity(VelocityVector velocity) const noexcept
+b2Vec2 ConverterBox2D::convertLinearVelocity(units::VelocityVector velocity) const noexcept
 {
     const auto coeff = getLengthCoefficient() / getTimeCoefficient();
 
@@ -138,11 +138,11 @@ float32 ConverterBox2D::convertAngularVelocity(units::AngularVelocity velocity) 
 
 /* ************************************************************************ */
 
-AccelerationVector ConverterBox2D::convertLinearAcceleration(b2Vec2 acceleration) const noexcept
+units::AccelerationVector ConverterBox2D::convertLinearAcceleration(b2Vec2 acceleration) const noexcept
 {
     const auto coeff = (getTimeCoefficient() * getTimeCoefficient()) / getLengthCoefficient();
 
-    return coeff * AccelerationVector(
+    return coeff * units::AccelerationVector(
         units::Acceleration(acceleration.x),
         units::Acceleration(acceleration.y)
     );
@@ -150,7 +150,7 @@ AccelerationVector ConverterBox2D::convertLinearAcceleration(b2Vec2 acceleration
 
 /* ************************************************************************ */
 
-b2Vec2 ConverterBox2D::convertLinearAcceleration(AccelerationVector acceleration) const noexcept
+b2Vec2 ConverterBox2D::convertLinearAcceleration(units::AccelerationVector acceleration) const noexcept
 {
     const auto coeff = getLengthCoefficient() / (getTimeCoefficient() * getTimeCoefficient());
 
@@ -178,11 +178,11 @@ float32 ConverterBox2D::convertAngularAcceleration(units::Acceleration accelerat
 
 /* ************************************************************************ */
 
-ForceVector ConverterBox2D::convertForce(b2Vec2 force) const noexcept
+units::ForceVector ConverterBox2D::convertForce(b2Vec2 force) const noexcept
 {
     const auto coeff = (getTimeCoefficient() * getTimeCoefficient()) / getLengthCoefficient();
 
-    return coeff * ForceVector(
+    return coeff * units::ForceVector(
         units::Force(force.x),
         units::Force(force.y)
     );
@@ -190,7 +190,7 @@ ForceVector ConverterBox2D::convertForce(b2Vec2 force) const noexcept
 
 /* ************************************************************************ */
 
-b2Vec2 ConverterBox2D::convertForce(ForceVector force) const noexcept
+b2Vec2 ConverterBox2D::convertForce(units::ForceVector force) const noexcept
 {
     const auto coeff = getLengthCoefficient() / (getTimeCoefficient() * getTimeCoefficient());
 
@@ -220,11 +220,11 @@ float32 ConverterBox2D::convertTorque(units::Force torque) const noexcept
 
 /* ************************************************************************ */
 
-ImpulseVector ConverterBox2D::convertLinearImpulse(b2Vec2 impulse) const noexcept
+units::ImpulseVector ConverterBox2D::convertLinearImpulse(b2Vec2 impulse) const noexcept
 {
     const auto coeff = getTimeCoefficient() / getLengthCoefficient();
 
-    return coeff * ImpulseVector(
+    return coeff * units::ImpulseVector(
         units::Impulse(impulse.x),
         units::Impulse(impulse.y)
     );
@@ -232,7 +232,7 @@ ImpulseVector ConverterBox2D::convertLinearImpulse(b2Vec2 impulse) const noexcep
 
 /* ************************************************************************ */
 
-b2Vec2 ConverterBox2D::convertLinearImpulse(ImpulseVector impulse) const noexcept
+b2Vec2 ConverterBox2D::convertLinearImpulse(units::ImpulseVector impulse) const noexcept
 {
     const auto coeff = getLengthCoefficient() / getTimeCoefficient();
 

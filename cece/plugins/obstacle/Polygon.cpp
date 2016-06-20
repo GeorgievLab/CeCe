@@ -45,9 +45,9 @@ void Polygon::configure(const config::Configuration& config, simulator::Simulati
 {
     object::Object::configure(config, simulation);
 
-    DynamicArray<PositionVector> edges;
+    DynamicArray<units::PositionVector> edges;
     InStringStream iss(config.get("vertices"));
-    PositionVector vector;
+    units::PositionVector vector;
 
     while (iss >> vector)
         edges.push_back(vector);

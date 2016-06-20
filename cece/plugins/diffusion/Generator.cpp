@@ -129,7 +129,7 @@ void Generator::update()
     const auto gridSize = m_diffusionModule->getGridSize();
 
     // Step size
-    const PositionVector start = getSimulation().getWorldSize() * -0.5f;
+    const units::PositionVector start = getSimulation().getWorldSize() * -0.5;
     const auto step = getSimulation().getWorldSize() / gridSize;
 
     // Foreach sources
@@ -188,9 +188,9 @@ void Generator::loadConfig(const config::Configuration& config)
     {
         m_sources.push_back(Source{
             cfg.get("signal"),
-            cfg.get<PositionVector>("position"),
+            cfg.get<units::PositionVector>("position"),
             cfg.get<ProductionRate>("production"),
-            cfg.get<PositionVector>("size"),
+            cfg.get<units::PositionVector>("size"),
             parseActive(cfg.get("active", String{}))
         });
     }

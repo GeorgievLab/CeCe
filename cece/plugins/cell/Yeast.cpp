@@ -150,7 +150,7 @@ void Yeast::budRelease()
 
     // Calculate bud position
     const auto angle = getRotation();
-    const auto offset = PositionVector(Zero, calcRadius(getVolume()) + calcRadius(getVolumeBud())).rotated(-getAngleBud());
+    const auto offset = units::PositionVector(Zero, calcRadius(getVolume()) + calcRadius(getVolumeBud())).rotated(-getAngleBud());
 
     const auto omega = getAngularVelocity();
     const auto center = getMassCenterPosition();
@@ -210,7 +210,7 @@ void Yeast::draw(render::Context& context)
     if (!m_renderObject)
         m_renderObject.create(context);
 
-    PositionVector pos;
+    units::PositionVector pos;
     units::Length radius;
     units::Angle angle;
     units::Length budRadius;
@@ -278,7 +278,7 @@ void Yeast::updateShape()
         const auto c2 = newRadius - 2 * radiusMin * (1 + radiusMin / (radiusRelease - radiusMin));
         const auto c = c1 * newBudRadius + c2;
 
-        const auto center = 0.9 * PositionVector(Zero, c).rotated(-m_bud.angle);
+        const auto center = 0.9 * units::PositionVector(Zero, c).rotated(-m_bud.angle);
 
         if (shapes.size() != 2)
         {

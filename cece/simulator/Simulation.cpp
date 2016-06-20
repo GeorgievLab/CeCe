@@ -217,7 +217,7 @@ ViewPtr<program::Program> Simulation::createProgram(const config::Configuration&
 
 void Simulation::loadConfig(const config::Configuration& config)
 {
-    setWorldSize(config.get<SizeVector>("world-size"));
+    setWorldSize(config.get<units::SizeVector>("world-size"));
     setTimeStep(config.get<units::Time>("dt"));
     setIterations(config.get("iterations", getIterations()));
 

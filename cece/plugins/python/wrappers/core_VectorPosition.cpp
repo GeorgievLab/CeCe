@@ -44,7 +44,7 @@ namespace {
 
 /* ************************************************************************ */
 
-static VectorType<PositionVector> g_type("core.VectorPosition");
+static VectorType<units::PositionVector> g_type("core.VectorPosition");
 
 /* ************************************************************************ */
 

@@ -233,7 +233,7 @@ void Module::update()
             auto object = simulation.createObject(desc.className);
             Assert(object);
 
-            PositionVector pos = Zero;
+            units::PositionVector pos = Zero;
 
             // Generate position
             for (unsigned int i = 0; i < pos.getSize(); ++i)
@@ -300,8 +300,8 @@ void Module::loadConfig(const config::Configuration& config)
         }
         else if (cfg.has("size"))
         {
-            const auto pos = cfg.get<PositionVector>("position");
-            const auto size = cfg.get<PositionVector>("size");
+            const auto pos = cfg.get<units::PositionVector>("position");
+            const auto size = cfg.get<units::PositionVector>("size");
             const auto half = size * 0.5;
 
             for (unsigned int i = 0; i < desc.distributions.size(); ++i)
@@ -313,8 +313,8 @@ void Module::loadConfig(const config::Configuration& config)
         }
         else
         {
-            const auto posMin = cfg.get<PositionVector>("position-min");
-            const auto posMax = cfg.get<PositionVector>("position-max");
+            const auto posMin = cfg.get<units::PositionVector>("position-min");
+            const auto posMax = cfg.get<units::PositionVector>("position-max");
 
             for (unsigned int i = 0; i < desc.distributions.size(); ++i)
             {

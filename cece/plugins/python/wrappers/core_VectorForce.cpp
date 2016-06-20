@@ -44,7 +44,7 @@ namespace {
 
 /* ************************************************************************ */
 
-static VectorType<ForceVector> g_type("core.VectorForce");
+static VectorType<units::ForceVector> g_type("core.VectorForce");
 
 /* ************************************************************************ */
 

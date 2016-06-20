@@ -99,13 +99,13 @@ private:
         String name;
 
         /// Source position.
-        PositionVector position;
+        units::PositionVector position;
 
         /// Signal production.
         ProductionRate production;
 
         /// Rectangle size.
-        PositionVector size;
+        units::PositionVector size;
 
         /// List of iteration ranges when the generator is active.
         DynamicArray<IterationRange> active;

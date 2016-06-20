@@ -333,7 +333,7 @@ public:
      *
      * @return
      */
-    VelocityVector inletVelocity(Converter& converter, Lattice::CoordinateType coord, Lattice::SizeType width) const noexcept;
+    units::VelocityVector inletVelocity(Converter& converter, Lattice::CoordinateType coord, Lattice::SizeType width) const noexcept;
 
 
 // Private Data Members

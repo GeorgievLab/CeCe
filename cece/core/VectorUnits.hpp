@@ -39,38 +39,42 @@ inline namespace core {
 
 /* ************************************************************************ */
 
+namespace units {
+
+/* ************************************************************************ */
+
 /**
  * @brief Position vector structure.
  */
-using PositionVector = Vector<units::Length>;
+using PositionVector = Vector<Length>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Velocity vector structure.
  */
-using VelocityVector = Vector<units::Velocity>;
+using VelocityVector = Vector<Velocity>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Acceleration vector structure.
  */
-using AccelerationVector = Vector<units::Acceleration>;
+using AccelerationVector = Vector<Acceleration>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Force vector structure.
  */
-using ForceVector = Vector<units::Force>;
+using ForceVector = Vector<Force>;
 
 /* ************************************************************************ */
 
 /**
  * @brief Impulse vector structure.
  */
-using ImpulseVector = Vector<units::Impulse>;
+using ImpulseVector = Vector<Impulse>;
 
 /* ************************************************************************ */
 
@@ -84,7 +88,11 @@ using ScaleVector = Vector<RealType>;
 /**
  * @brief Size vector.
  */
-using SizeVector = Vector<units::Length>;
+using SizeVector = Vector<Length>;
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 

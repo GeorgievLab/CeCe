@@ -176,7 +176,7 @@ public:
      *
      * @return
      */
-    PositionVector convertPosition(b2Vec2 position) const noexcept;
+    units::PositionVector convertPosition(b2Vec2 position) const noexcept;
 
 
     /**
@@ -186,7 +186,7 @@ public:
      *
      * @return
      */
-    b2Vec2 convertPosition(PositionVector position) const noexcept;
+    b2Vec2 convertPosition(units::PositionVector position) const noexcept;
 
 
     /**
@@ -216,7 +216,7 @@ public:
      *
      * @return
      */
-    VelocityVector convertLinearVelocity(b2Vec2 velocity) const noexcept;
+    units::VelocityVector convertLinearVelocity(b2Vec2 velocity) const noexcept;
 
 
     /**
@@ -226,7 +226,7 @@ public:
      *
      * @return
      */
-    b2Vec2 convertLinearVelocity(VelocityVector velocity) const noexcept;
+    b2Vec2 convertLinearVelocity(units::VelocityVector velocity) const noexcept;
 
 
     /**
@@ -256,7 +256,7 @@ public:
      *
      * @return
      */
-    AccelerationVector convertLinearAcceleration(b2Vec2 acceleration) const noexcept;
+    units::AccelerationVector convertLinearAcceleration(b2Vec2 acceleration) const noexcept;
 
 
     /**
@@ -266,7 +266,7 @@ public:
      *
      * @return
      */
-    b2Vec2 convertLinearAcceleration(AccelerationVector acceleration) const noexcept;
+    b2Vec2 convertLinearAcceleration(units::AccelerationVector acceleration) const noexcept;
 
 
     /**
@@ -296,7 +296,7 @@ public:
      *
      * @return
      */
-    ForceVector convertForce(b2Vec2 force) const noexcept;
+    units::ForceVector convertForce(b2Vec2 force) const noexcept;
 
 
     /**
@@ -306,7 +306,7 @@ public:
      *
      * @return
      */
-    b2Vec2 convertForce(ForceVector force) const noexcept;
+    b2Vec2 convertForce(units::ForceVector force) const noexcept;
 
 
     /**
@@ -336,7 +336,7 @@ public:
      *
      * @return
      */
-    ImpulseVector convertLinearImpulse(b2Vec2 impulse) const noexcept;
+    units::ImpulseVector convertLinearImpulse(b2Vec2 impulse) const noexcept;
 
 
     /**
@@ -346,7 +346,7 @@ public:
      *
      * @return
      */
-    b2Vec2 convertLinearImpulse(ImpulseVector impulse) const noexcept;
+    b2Vec2 convertLinearImpulse(units::ImpulseVector impulse) const noexcept;
 
 
     /**

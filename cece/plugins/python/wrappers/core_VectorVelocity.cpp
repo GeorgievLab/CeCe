@@ -44,7 +44,7 @@ namespace {
 
 /* ************************************************************************ */
 
-static VectorType<VelocityVector> g_type("core.VectorVelocity");
+static VectorType<units::VelocityVector> g_type("core.VectorVelocity");
 
 /* ************************************************************************ */
 

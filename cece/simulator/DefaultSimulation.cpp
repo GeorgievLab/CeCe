@@ -176,7 +176,7 @@ DynamicArray<ViewPtr<object::Object>> DefaultSimulation::getObjects(StringView t
 
 /* ************************************************************************ */
 
-AccelerationVector DefaultSimulation::getGravity() const noexcept
+units::AccelerationVector DefaultSimulation::getGravity() const noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     return ConverterBox2D::getInstance().convertLinearAcceleration(m_world->GetGravity());
@@ -370,7 +370,7 @@ void DefaultSimulation::deleteProgram(StringView name)
 
 /* ************************************************************************ */
 
-void DefaultSimulation::setGravity(const AccelerationVector& gravity) noexcept
+void DefaultSimulation::setGravity(const units::AccelerationVector& gravity) noexcept
 {
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     m_world->SetGravity(ConverterBox2D::getInstance().convertLinearAcceleration(gravity));

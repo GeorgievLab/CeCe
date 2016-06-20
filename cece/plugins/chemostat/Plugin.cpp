@@ -89,15 +89,15 @@ class ChemostatApi : public plugin::Api
                  worldSizeHalf.getY() - pipeTop       // Bottom
             }};
 
-            DynamicArray<PositionVector> vertices;
+            DynamicArray<units::PositionVector> vertices;
             // Top left
-            vertices.push_back(PositionVector{borders[0], borders[2]});
+            vertices.push_back(units::PositionVector{borders[0], borders[2]});
             // Top right
-            vertices.push_back(PositionVector{borders[1], borders[2]});
+            vertices.push_back(units::PositionVector{borders[1], borders[2]});
             // Bottom right
-            vertices.push_back(PositionVector{borders[1], borders[3]});
+            vertices.push_back(units::PositionVector{borders[1], borders[3]});
             // Bottom left
-            vertices.push_back(PositionVector{borders[0], borders[3]});
+            vertices.push_back(units::PositionVector{borders[0], borders[3]});
 
             shapes[0] = Shape::makeEdges(vertices);
 
@@ -126,27 +126,27 @@ class ChemostatApi : public plugin::Api
                  worldSizeHalf.getHeight() - pipeTop - 2 * pipeRadius - size.getHeight() // Middle Bottom
             }};
 
-            DynamicArray<PositionVector> vertices;
+            DynamicArray<units::PositionVector> vertices;
             // Bottom left
-            vertices.push_back(PositionVector{borders[0], borders[5]});
+            vertices.push_back(units::PositionVector{borders[0], borders[5]});
             // Top left
-            vertices.push_back(PositionVector{borders[0], borders[6]});
+            vertices.push_back(units::PositionVector{borders[0], borders[6]});
             // Middle top left
-            vertices.push_back(PositionVector{borders[2] - SLOPE, borders[6]});
-            vertices.push_back(PositionVector{borders[2], borders[6] - SLOPE});
+            vertices.push_back(units::PositionVector{borders[2] - SLOPE, borders[6]});
+            vertices.push_back(units::PositionVector{borders[2], borders[6] - SLOPE});
             // Middle bottom left
-            vertices.push_back(PositionVector{borders[2], borders[7] + SLOPE});
-            vertices.push_back(PositionVector{borders[2] + SLOPE, borders[7]});
+            vertices.push_back(units::PositionVector{borders[2], borders[7] + SLOPE});
+            vertices.push_back(units::PositionVector{borders[2] + SLOPE, borders[7]});
             // Middle bottom right
-            vertices.push_back(PositionVector{borders[3] - SLOPE, borders[7]});
-            vertices.push_back(PositionVector{borders[3], borders[7] + SLOPE});
+            vertices.push_back(units::PositionVector{borders[3] - SLOPE, borders[7]});
+            vertices.push_back(units::PositionVector{borders[3], borders[7] + SLOPE});
             // Middle top right
-            vertices.push_back(PositionVector{borders[3], borders[6] - SLOPE});
-            vertices.push_back(PositionVector{borders[3] + SLOPE, borders[6]});
+            vertices.push_back(units::PositionVector{borders[3], borders[6] - SLOPE});
+            vertices.push_back(units::PositionVector{borders[3] + SLOPE, borders[6]});
             // Top right
-            vertices.push_back(PositionVector{borders[1], borders[6]});
+            vertices.push_back(units::PositionVector{borders[1], borders[6]});
             // Bottom right
-            vertices.push_back(PositionVector{borders[1], borders[5]});
+            vertices.push_back(units::PositionVector{borders[1], borders[5]});
 
             shapes[0] = Shape::makeEdges(vertices);
 

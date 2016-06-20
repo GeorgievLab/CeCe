@@ -459,7 +459,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
     case GLFW_KEY_RIGHT:
     {
         camera.setPosition(camera.getPosition() +
-            MOVE_COEFF * PositionVector{units::Length(-1), Zero}
+            MOVE_COEFF * units::PositionVector{units::Length(-1), Zero}
         );
         forceRedraw();
         break;
@@ -468,7 +468,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
     case GLFW_KEY_LEFT:
     {
         camera.setPosition(camera.getPosition() +
-            MOVE_COEFF * PositionVector{units::Length(1), Zero}
+            MOVE_COEFF * units::PositionVector{units::Length(1), Zero}
         );
         forceRedraw();
         break;
@@ -477,7 +477,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
     case GLFW_KEY_UP:
     {
         camera.setPosition(camera.getPosition() +
-            MOVE_COEFF * PositionVector{Zero, units::Length(-1)}
+            MOVE_COEFF * units::PositionVector{Zero, units::Length(-1)}
         );
         forceRedraw();
         break;
@@ -486,7 +486,7 @@ void Simulator::onKeyPress(int key, int code, int action, int mods) noexcept
     case GLFW_KEY_DOWN:
     {
         camera.setPosition(camera.getPosition() +
-            MOVE_COEFF * PositionVector{Zero, units::Length(1)}
+            MOVE_COEFF * units::PositionVector{Zero, units::Length(1)}
         );
         forceRedraw();
         break;
@@ -590,7 +590,7 @@ void Simulator::onMouseMove(double xpos, double ypos) noexcept
     // Change vector
     const auto change = BasicVector<double, 2>(xpos, ypos) - m_movePos;
 
-    pos += camera.getZoom() * PositionVector{
+    pos += camera.getZoom() * units::PositionVector{
         units::Length(change.getX()),
         units::Length(-change.getY())
     };

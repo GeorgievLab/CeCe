@@ -460,7 +460,8 @@ void Boundary::apply(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> f
 
 /* ************************************************************************ */
 
-VelocityVector Boundary::inletVelocity(Converter& converter, Lattice::CoordinateType coord, Lattice::SizeType width) const noexcept
+units::VelocityVector Boundary::inletVelocity(Converter& converter,
+    Lattice::CoordinateType coord, Lattice::SizeType width) const noexcept
 {
     auto type = getInletProfileType();
 

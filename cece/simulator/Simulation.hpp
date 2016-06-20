@@ -127,7 +127,7 @@ public:
      *
      * @return
      */
-    virtual const SizeVector& getWorldSize() const noexcept = 0;
+    virtual const units::SizeVector& getWorldSize() const noexcept = 0;
 
 
     /**
@@ -471,7 +471,7 @@ public:
      *
      * @param size Simulation world size.
      */
-    virtual void setWorldSize(SizeVector size) noexcept = 0;
+    virtual void setWorldSize(units::SizeVector size) noexcept = 0;
 
 
     /**

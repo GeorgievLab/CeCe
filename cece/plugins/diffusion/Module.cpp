@@ -427,7 +427,7 @@ void Module::updateObstacles()
     // Clear previous flag
     std::fill(m_obstacles.begin(), m_obstacles.end(), false);
 
-    const PositionVector start = getSimulation().getWorldSize() * -0.5;
+    const units::PositionVector start = getSimulation().getWorldSize() * -0.5;
     const auto step = getSimulation().getWorldSize() / getGridSize();
 
     // Foreach all cells

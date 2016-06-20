@@ -301,7 +301,7 @@ public:
      *
      * @return
      */
-    PositionVector getPosition() const noexcept;
+    units::PositionVector getPosition() const noexcept;
 
 
     /**
@@ -309,7 +309,7 @@ public:
      *
      * @return
      */
-    PositionVector getMassCenterPosition() const noexcept;
+    units::PositionVector getMassCenterPosition() const noexcept;
 
 
     /**
@@ -317,7 +317,7 @@ public:
      *
      * @return
      */
-    PositionVector getMassCenterOffset() const noexcept;
+    units::PositionVector getMassCenterOffset() const noexcept;
 
 
     /**
@@ -327,7 +327,7 @@ public:
      *
      * @return
      */
-    PositionVector getWorldPosition(PositionVector local) const noexcept;
+    units::PositionVector getWorldPosition(units::PositionVector local) const noexcept;
 
 
     /**
@@ -343,7 +343,7 @@ public:
      *
      * @return
      */
-    VelocityVector getVelocity() const noexcept;
+    units::VelocityVector getVelocity() const noexcept;
 
 
     /**
@@ -359,7 +359,7 @@ public:
      *
      * @return
      */
-    const ForceVector& getForce() const noexcept
+    const units::ForceVector& getForce() const noexcept
     {
         return m_force;
     }
@@ -502,7 +502,7 @@ public:
      *
      * @param pos
      */
-    void setPosition(PositionVector pos) noexcept;
+    void setPosition(units::PositionVector pos) noexcept;
 
 
     /**
@@ -518,7 +518,7 @@ public:
      *
      * @param vel
      */
-    void setVelocity(VelocityVector vel) noexcept;
+    void setVelocity(units::VelocityVector vel) noexcept;
 
 
     /**
@@ -534,7 +534,7 @@ public:
      *
      * @param force
      */
-    void setForce(ForceVector force) noexcept
+    void setForce(units::ForceVector force) noexcept
     {
         m_force = std::move(force);
     }
@@ -545,7 +545,7 @@ public:
      *
      * @param force
      */
-    void applyForce(const ForceVector& force) noexcept;
+    void applyForce(const units::ForceVector& force) noexcept;
 
 
     /**
@@ -554,7 +554,7 @@ public:
      * @param force
      * @param offset Local offset.
      */
-    void applyForce(const ForceVector& force, const PositionVector& offset) noexcept;
+    void applyForce(const units::ForceVector& force, const units::PositionVector& offset) noexcept;
 
 
     /**
@@ -562,7 +562,7 @@ public:
      *
      * @param impulse
      */
-    void applyLinearImpulse(const ImpulseVector& impulse) noexcept
+    void applyLinearImpulse(const units::ImpulseVector& impulse) noexcept
     {
         applyLinearImpulse(impulse, getMassCenterOffset());
     }
@@ -574,7 +574,7 @@ public:
      * @param impulse
      * @param offset Local offset.
      */
-    void applyLinearImpulse(const ImpulseVector& impulse, const PositionVector& offset) noexcept;
+    void applyLinearImpulse(const units::ImpulseVector& impulse, const units::PositionVector& offset) noexcept;
 
 
     /**
@@ -815,18 +815,18 @@ private:
 #else
 
     /// Object position
-    PositionVector m_position;
+    units::PositionVector m_position;
 
     /// Object rotation.
     units::Angle m_rotation;
 
     /// Object velocity.
-    VelocityVector m_velocity;
+    units::VelocityVector m_velocity;
 
 #endif
 
     /// Box2D doesn't have accessor to force.
-    ForceVector m_force;
+    units::ForceVector m_force;
 
     /// Outstream for object data
     UniquePtr<OutStream> m_dataOut;

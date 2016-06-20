@@ -44,7 +44,7 @@ void Rectangle::configure(const config::Configuration& config, simulator::Simula
     object::Object::configure(config, simulation);
 
     // Init shape
-    getMutableShapes().push_back(Shape::makeRectangle(config.get<PositionVector>("size")));
+    getMutableShapes().push_back(Shape::makeRectangle(config.get<units::PositionVector>("size")));
 
     initShapes();
 }

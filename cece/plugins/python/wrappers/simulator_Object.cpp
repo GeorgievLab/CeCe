@@ -109,7 +109,7 @@ public:
      */
     static int setPosition(SelfType* self, PyObject* value) noexcept
     {
-        self->value->setPosition(cast<PositionVector>(value));
+        self->value->setPosition(cast<units::PositionVector>(value));
 
         return 0;
     }
@@ -167,7 +167,7 @@ public:
      */
     static int setVelocity(SelfType* self, PyObject* value) noexcept
     {
-        self->value->setVelocity(cast<VelocityVector>(value));
+        self->value->setVelocity(cast<units::VelocityVector>(value));
 
         return 0;
     }
@@ -256,7 +256,7 @@ public:
         if (!PyArg_ParseTuple(args, "O", &force))
             return nullptr;
 
-        self->value->applyForce(cast<ForceVector>(force));
+        self->value->applyForce(cast<units::ForceVector>(force));
 
         return none().release();
     }

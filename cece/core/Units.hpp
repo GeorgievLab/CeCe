@@ -219,6 +219,7 @@ extern template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
 extern template class Unit<List<BaseAmountOfSubstance>, List<>>;
 extern template class Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
 extern template class Unit<List<>, List<BaseTime>>;
+extern template class Unit<List<BaseLength, BaseLength, BaseLength>, List<BaseTime>>;
 
 /* ************************************************************************ */
 

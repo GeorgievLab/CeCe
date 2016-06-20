@@ -290,7 +290,7 @@ public:
      *
      * @param pos Translation vector.
      */
-    void matrixTranslate(const PositionVector& pos) noexcept;
+    void matrixTranslate(const units::PositionVector& pos) noexcept;
 
 
     /**
@@ -298,7 +298,7 @@ public:
      *
      * @param scale Scale vector.
      */
-    void matrixScale(const ScaleVector& scale) noexcept;
+    void matrixScale(const units::ScaleVector& scale) noexcept;
 
 
     /**
@@ -308,7 +308,7 @@ public:
      */
     void matrixScale(RealType scale) noexcept
     {
-        return matrixScale(ScaleVector::createSingle(scale));
+        return matrixScale(units::ScaleVector::createSingle(scale));
     }
 
 

@@ -65,7 +65,7 @@ constexpr units::Inverse<units::AmountOfSubstance>::type NA = 6.022140857e23 / u
 
 DynamicArray<plugin::diffusion::Module::Coordinate> getCoordinates(
     const plugin::diffusion::Module::SizeType& gridSize,
-    const SizeVector& worldSize,
+    const units::SizeVector& worldSize,
     const plugin::cell::CellBase& cell)
 {
     const auto start = worldSize * -0.5f;
