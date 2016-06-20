@@ -28,7 +28,7 @@
 /* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Range.hpp"
+#include "cece/core/IteratorRange.hpp"
 #include "cece/core/Map.hpp"
 #include "cece/core/StringView.hpp"
 #include "cece/core/Exception.hpp"

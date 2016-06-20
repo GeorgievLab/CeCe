@@ -27,7 +27,7 @@
 #include <gtest/gtest.h>
 
 // CeCe
-#include "cece/core/Range.hpp"
+#include "cece/core/IteratorRange.hpp"
 #include "cece/core/ExpressionParser.hpp"
 #include "cece/core/constants.hpp"
 

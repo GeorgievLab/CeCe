@@ -28,10 +28,7 @@
 /* ************************************************************************ */
 
 // C++
-#include <iterator>
-
-// CeCe
-#include "cece/core/ValueIterator.hpp"
+#include <type_traits>
 
 /* ************************************************************************ */
 
@@ -41,24 +38,20 @@ inline namespace core {
 /* ************************************************************************ */
 
 /**
- * @brief Iterator range class.
+ * @brief Value range class.
  */
 template<typename T>
-class IteratorRange
+class Range
 {
 
 // Public Types
 public:
 
+    /// Value type.
+    using ValueType = T;
 
-    /// Iterator type
-    using IteratorType = T;
-
-    /// Iterator value type.
-    using ValueType = typename std::iterator_traits<IteratorType>::value_type;
-
-    /// Iterator difference type.
-    using DifferenceType = typename std::iterator_traits<IteratorType>::difference_type;
+    /// Difference type.
+    using DifferenceType = typename std::make_signed<T>::type;
 
 
 // Public Ctors & Dtors
@@ -68,12 +61,12 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param begin
-     * @param end
+     * @param first
+     * @param last
      */
-    constexpr IteratorRange(IteratorType begin, IteratorType end) noexcept
-        : m_begin(begin)
-        , m_end(end)
+    constexpr Range(ValueType first, ValueType last) noexcept
+        : m_first(first)
+        , m_last(last)
     {
         // Nothing to do
     }
@@ -90,7 +83,7 @@ public:
      */
     bool isEmpty() const noexcept
     {
-        return m_begin == m_end;
+        return m_first == m_last;
     }
 
 
@@ -99,20 +92,9 @@ public:
      *
      * @return
      */
-    unsigned long getSize() const noexcept
+    DifferenceType getSize() const noexcept
     {
-        return std::distance(m_begin, m_end);
-    }
-
-
-    /**
-     * @brief Returns reference to value at begin iterator.
-     *
-     * @return
-     */
-    const ValueType& front() const noexcept
-    {
-        return *m_begin;
+        return m_last - m_first;
     }
 
 
@@ -121,135 +103,37 @@ public:
 
 
     /**
-     * @brief Returns begin iterator.
+     * @brief Returns the first value.
      *
      * @return
      */
-    constexpr IteratorType begin() const noexcept
+    constexpr ValueType first() const noexcept
     {
-        return m_begin;
+        return m_first;
     }
 
 
     /**
-     * @brief Returns end iterator.
+     * @brief Returns the last value.
      *
      * @return
      */
-    constexpr IteratorType end() const noexcept
+    constexpr ValueType last() const noexcept
     {
-        return m_end;
-    }
-
-
-    /**
-     * @brief Advance begin iterator.
-     *
-     * @param n Number of steps to advance.
-     *
-     * @return *this.
-     */
-    IteratorRange& advanceBegin(DifferenceType n = 1) noexcept
-    {
-        std::advance(m_begin, n);
-        return *this;
-    }
-
-
-    /**
-     * @brief Advance begin iterator.
-     *
-     * @param n Number of steps to advance.
-     *
-     * @return *this.
-     */
-    IteratorRange& advanceEnd(DifferenceType n = 1) noexcept
-    {
-        std::advance(m_end, n);
-        return *this;
-    }
-
-
-    /**
-     * @brief Advance both iterator.
-     *
-     * @param n Number of steps to advance.
-     *
-     * @return *this.
-     */
-    IteratorRange& advanceBoth(DifferenceType n = 1) noexcept
-    {
-        advanceBegin(n);
-        advanceEnd(n);
-        return *this;
+        return m_last;
     }
 
 
 // Private Data Members
 private:
 
+    /// The first value.
+    ValueType m_first;
 
-    /// Begin iterator.
-    IteratorType m_begin;
-
-    // End iterator.
-    IteratorType m_end;
+    // The last value.
+    ValueType m_last;
 
 };
-
-/* ************************************************************************ */
-
-/**
- * @brief Make iterator range.
- *
- * @param begin Begin iterator.
- * @param end   End iterator.
- *
- * @return Iterator range for given range.
- */
-template<typename Iter>
-constexpr IteratorRange<Iter> makeRange(Iter begin, Iter end) noexcept
-{
-    return IteratorRange<Iter>{begin, end};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Make iterator range from container.
- *
- * @tparam Container Container type.
- *
- * @param c Container.
- *
- * @return Iterator range for whole container data.
- */
-template<typename Container>
-constexpr auto makeRange(Container& c) noexcept -> IteratorRange<decltype(std::begin(c))>
-{
-    using std::begin;
-    using std::end;
-    return IteratorRange<decltype(std::begin(c))>{begin(c), end(c)};
-}
-
-/* ************************************************************************ */
-
-/**
- * @brief Make value range (for-loop like).
- *
- * @param begin Begin value.
- * @param end   End value.
- *
- * @note The end value is not a part of returned range, e.g. range(1, 10)
- * returns values {1, 2, 3, 4, 5, 6, 7, 8, 9}.
- *
- * @return
- */
-template<typename T>
-constexpr IteratorRange<ValueIterator<T>> range(T begin, T end) noexcept
-{
-    return IteratorRange<ValueIterator<T>>{ValueIterator<T>{begin}, ValueIterator<T>{end}};
-}
 
 /* ************************************************************************ */
 

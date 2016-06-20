@@ -29,7 +29,7 @@
 
 // CeCe
 #include "cece/core/Log.hpp"
-#include "cece/core/Range.hpp"
+#include "cece/core/IteratorRange.hpp"
 #include "cece/core/Assert.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/core/StringView.hpp"

@@ -28,7 +28,7 @@
 
 // CeCe
 #include "cece/core/Assert.hpp"
-#include "cece/core/Range.hpp"
+#include "cece/core/IteratorRange.hpp"
 #include "cece/core/VectorRange.hpp"
 #include "cece/core/Exception.hpp"
 #include "cece/config/Configuration.hpp"

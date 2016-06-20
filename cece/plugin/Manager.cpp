@@ -36,7 +36,7 @@
 #include "cece/core/Assert.hpp"
 #include "cece/core/Log.hpp"
 #include "cece/core/Exception.hpp"
-#include "cece/core/Range.hpp"
+#include "cece/core/IteratorRange.hpp"
 #include "cece/loader/Loader.hpp"
 #include "cece/loader/FactoryManager.hpp"
 #include "cece/plugin/Api.hpp"
