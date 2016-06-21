@@ -85,6 +85,32 @@ Boundaries::Boundaries(simulator::Simulation& simulation)
 
 /* ************************************************************************ */
 
+ViewPtr<Boundary> Boundaries::find(StringView name) noexcept
+{
+    for (auto& boundary : m_boundaries)
+    {
+        if (boundary.getName() == name)
+            return &boundary;
+    }
+
+    return nullptr;
+}
+
+/* ************************************************************************ */
+
+ViewPtr<const Boundary> Boundaries::find(StringView name) const noexcept
+{
+    for (const auto& boundary : m_boundaries)
+    {
+        if (boundary.getName() == name)
+            return &boundary;
+    }
+
+    return nullptr;
+}
+
+/* ************************************************************************ */
+
 bool Boundaries::isBoundaryDynamics(ViewPtr<Dynamics> dynamics) const noexcept
 {
     for (const auto& boundary : m_boundaries)

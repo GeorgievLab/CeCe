@@ -32,6 +32,8 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/core/StringView.hpp"
+#include "cece/core/ViewPtr.hpp"
 #include "cece/core/DynamicArray.hpp"
 
 // Plugin
@@ -138,6 +140,26 @@ public:
     {
         return m_boundaries[position];
     }
+
+
+    /**
+     * @brief Find boundary by name.
+     *
+     * @param name Boundary name.
+     *
+     * @return
+     */
+    ViewPtr<Boundary> find(StringView name) noexcept;
+
+
+    /**
+     * @brief Find boundary by name.
+     *
+     * @param name Boundary name.
+     *
+     * @return
+     */
+    ViewPtr<const Boundary> find(StringView name) const noexcept;
 
 
     /**

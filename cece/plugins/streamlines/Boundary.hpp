@@ -31,6 +31,7 @@
 #include "cece/core/Units.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/core/ViewPtr.hpp"
+#include "cece/core/String.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Range.hpp"
 #include "cece/core/DynamicArray.hpp"
@@ -102,6 +103,17 @@ public:
 
 // Public Accessors
 public:
+
+
+    /**
+     * @brief Returns boundary name.
+     *
+     * @return
+     */
+    const String& getName() const noexcept
+    {
+        return m_name;
+    }
 
 
     /**
@@ -194,6 +206,17 @@ public:
 
 // Public Mutators
 public:
+
+
+    /**
+     * @brief Set boundary name.
+     *
+     * @param name
+     */
+    void setName(String name) noexcept
+    {
+        m_name = std::move(name);
+    }
 
 
     /**
@@ -338,6 +361,9 @@ public:
 
 // Private Data Members
 private:
+
+    /// Boundary name.
+    String m_name;
 
     /// Boundary type.
     Type m_type = Type::None;

@@ -316,6 +316,7 @@ OutStream& operator<<(OutStream& os, const Boundary::InletProfileType& type)
 
 void Boundary::loadConfig(const config::Configuration& config)
 {
+    setName(config.get("name", getName()));
     setType(config.get("type", getType()));
     setPosition(config.get("position", getPosition()));
     setOffset(config.get("offset", getOffset()));
@@ -329,6 +330,7 @@ void Boundary::loadConfig(const config::Configuration& config)
 
 void Boundary::storeConfig(config::Configuration& config) const
 {
+    config.set("name", getName());
     config.set("type", getType());
     config.set("position", getPosition());
     config.get("offset", getOffset());
