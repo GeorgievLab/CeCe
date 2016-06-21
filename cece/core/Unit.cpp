@@ -47,7 +47,9 @@ namespace {
 
 const Map<String, int> g_abbreviations = {
     // Molar (10e3 mol/m3)
-    {"M", 3}
+    {"M", 3},
+    // Litre (10e-3 m3)
+    {"l", -3}
 };
 
 /* ************************************************************************ */
@@ -121,7 +123,7 @@ int calcPrefixExponent(const String& symbol, StringView typeSymbol, unsigned int
         const auto it2 = g_abbreviations.find(symbol.substr(1));
 
         if (it2 != g_abbreviations.end())
-            return calcPrefixExponent(symbol.front(), count) + it2->second;
+            return calcPrefixExponent(symbol.front(), 1) + it2->second;
 
         throw InvalidArgumentException(
             "Invalid units symbol. "
