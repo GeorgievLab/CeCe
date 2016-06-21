@@ -141,6 +141,13 @@ using AmountOfSubstance = Unit<List<BaseAmountOfSubstance>, List<>>;
 /* ************************************************************************ */
 
 /**
+ * @brief Number concentration.
+ */
+using NumberConcentration = Unit<List<>, List<BaseLength, BaseLength, BaseLength>>;
+
+/* ************************************************************************ */
+
+/**
  * @brief Molar concentration.
  */
 using MolarConcentration = Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
@@ -218,6 +225,7 @@ extern template class Unit<List<BaseMass>, List<BaseLength, BaseTime>>;
 extern template class Unit<List<BaseLength, BaseLength>, List<BaseTime>>;
 extern template class Unit<List<BaseAmountOfSubstance>, List<>>;
 extern template class Unit<List<BaseAmountOfSubstance>, List<BaseLength, BaseLength, BaseLength>>;
+extern template class Unit<List<>, List<BaseLength, BaseLength, BaseLength>>;
 extern template class Unit<List<>, List<BaseTime>>;
 extern template class Unit<List<BaseLength, BaseLength, BaseLength>, List<BaseTime>>;
 
