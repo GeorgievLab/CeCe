@@ -204,6 +204,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns location blocks.
+     *
+     * @return
+     */
+    const DynamicArray<Range<Lattice::SizeType>>& getBlocks() const noexcept
+    {
+        return m_blocks;
+    }
+
+
 // Public Mutators
 public:
 
