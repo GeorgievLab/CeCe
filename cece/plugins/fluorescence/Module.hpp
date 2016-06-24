@@ -1,0 +1,173 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015-2016                                               */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/*                                                                          */
+/* This file is part of CeCe.                                               */
+/*                                                                          */
+/* CeCe is free software: you can redistribute it and/or modify             */
+/* it under the terms of the GNU General Public License as published by     */
+/* the Free Software Foundation, either version 3 of the License, or        */
+/* (at your option) any later version.                                      */
+/*                                                                          */
+/* CeCe is distributed in the hope that it will be useful,                  */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of           */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            */
+/* GNU General Public License for more details.                             */
+/*                                                                          */
+/* You should have received a copy of the GNU General Public License        */
+/* along with CeCe.  If not, see <http://www.gnu.org/licenses/>.            */
+/*                                                                          */
+/* ************************************************************************ */
+
+#pragma once
+
+/* ************************************************************************ */
+
+// CeCe
+#include "cece/config.hpp"
+#include "cece/core/Real.hpp"
+#include "cece/core/Grid.hpp"
+#include "cece/module/Module.hpp"
+#include "cece/render/Context.hpp"
+
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Object.hpp"
+#  include "cece/render/GridColorSmooth.hpp"
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+namespace cece { namespace render { class Context; } }
+namespace cece { namespace simulator { class Visualization; } }
+#endif
+
+/* ************************************************************************ */
+
+namespace cece {
+namespace plugin {
+namespace fluorescence {
+
+/* ************************************************************************ */
+
+/**
+ * @brief Module for fluorescence visualization.
+ */
+class Module : public module::Module
+{
+
+// Public Types
+public:
+
+
+    /// Fluorescence value type.
+    using Fluorescence = RealType;
+
+    /// Grid type.
+    using GridType = Grid<Fluorescence>;
+
+
+// Public Ctors & Dtors
+public:
+
+
+    using module::Module::Module;
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns grid.
+     *
+     * @return
+     */
+    GridType& getGrid() noexcept
+    {
+        return m_grid;
+    }
+
+
+    /**
+     * @brief Returns grid.
+     *
+     * @return
+     */
+    const GridType& getGrid() const noexcept
+    {
+        return m_grid;
+    }
+
+
+// Public Operations
+public:
+
+
+    /**
+     * @brief Load module configuration.
+     *
+     * @param config Source configuration.
+     */
+    void loadConfig(const config::Configuration& config) override;
+
+
+    /**
+     * @brief Store module configuration.
+     *
+     * @param config Output configuration.
+     */
+    void storeConfig(config::Configuration& config) const override;
+
+
+    /**
+     * @brief Initialize module.
+     */
+    void init() override;
+
+
+    /**
+     * @brief Update module state.
+     */
+    void update() override;
+
+
+#ifdef CECE_ENABLE_RENDER
+
+    /**
+     * @brief Render module.
+     *
+     * @param visualization Visualization context.
+     * @param context       Rendering context.
+     */
+    void draw(const simulator::Visualization& visualization, render::Context& context) override;
+
+#endif
+
+
+// Private Data Members
+private:
+
+    /// Fluorescence grid.
+    Grid<RealType> m_grid;
+
+#ifdef CECE_ENABLE_RENDER
+    /// Render grid
+    render::ObjectPtr<render::GridColorSmooth> m_drawable;
+
+    /// Layer name
+    String m_layerName;
+#endif
+};
+
+/* ************************************************************************ */
+
+}
+}
+}
+
+/* ************************************************************************ */

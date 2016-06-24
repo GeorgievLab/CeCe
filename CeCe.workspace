@@ -27,6 +27,7 @@
   <Project Name="format" Path="tools/format/format.project"/>
   <Project Name="tool-shader-convert" Path="tools/shader-convert/tool-shader-convert.project" Active="No"/>
   <Project Name="object-streamlines-generator" Path="cece/plugins/object-streamlines-generator/object-streamlines-generator.project" Active="No"/>
+  <Project Name="fluorescence" Path="cece/plugins/fluorescence/fluorescence.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
@@ -58,6 +59,7 @@
       <Project Name="format" ConfigName="Debug"/>
       <Project Name="tool_shader-convert" ConfigName="Debug"/>
       <Project Name="plugin_object-streamlines-generator" ConfigName="Debug"/>
+      <Project Name="plugin_fluorescence" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
@@ -89,6 +91,7 @@
       <Project Name="format" ConfigName="Release"/>
       <Project Name="tool_shader-convert" ConfigName="Release"/>
       <Project Name="plugin_object-streamlines-generator" ConfigName="Release"/>
+      <Project Name="plugin_fluorescence" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

@@ -1,0 +1,133 @@
+/* ************************************************************************ */
+/* Georgiev Lab (c) 2015-2016                                               */
+/* ************************************************************************ */
+/* Department of Cybernetics                                                */
+/* Faculty of Applied Sciences                                              */
+/* University of West Bohemia in Pilsen                                     */
+/* ************************************************************************ */
+/*                                                                          */
+/* This file is part of CeCe.                                               */
+/*                                                                          */
+/* CeCe is free software: you can redistribute it and/or modify             */
+/* it under the terms of the GNU General Public License as published by     */
+/* the Free Software Foundation, either version 3 of the License, or        */
+/* (at your option) any later version.                                      */
+/*                                                                          */
+/* CeCe is distributed in the hope that it will be useful,                  */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of           */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            */
+/* GNU General Public License for more details.                             */
+/*                                                                          */
+/* You should have received a copy of the GNU General Public License        */
+/* along with CeCe.  If not, see <http://www.gnu.org/licenses/>.            */
+/*                                                                          */
+/* ************************************************************************ */
+
+// Declaration
+#include "cece/plugins/fluorescence/ExportModule.hpp"
+
+// C++
+#include <algorithm>
+
+// CeCe
+#include "cece/core/Assert.hpp"
+#include "cece/core/UnitIo.hpp"
+#include "cece/core/IteratorRange.hpp"
+#include "cece/core/VectorRange.hpp"
+#include "cece/config/Configuration.hpp"
+#include "cece/simulator/Simulation.hpp"
+
+// Plugins
+#include "cece/plugins/fluorescence/Module.hpp"
+
+/* ************************************************************************ */
+
+namespace cece {
+namespace plugin {
+namespace fluorescence {
+
+/* ************************************************************************ */
+
+void ExportModule::loadConfig(const config::Configuration& config)
+{
+    module::ExportModule::loadConfig(config);
+
+    setPosition(config.get("position", getPosition()));
+    setSize(config.get("size", getSimulation().getWorldSize()));
+}
+
+/* ************************************************************************ */
+
+void ExportModule::storeConfig(config::Configuration& config) const
+{
+    module::ExportModule::storeConfig(config);
+
+    config.set("position", getPosition());
+    config.set("size", getSize());
+}
+
+/* ************************************************************************ */
+
+void ExportModule::init()
+{
+    // Get fluorescence module
+    m_module = getSimulation().getModule("fluorescence");
+
+    if (!m_module)
+        throw RuntimeException("'fluorescence' module required!");
+
+    module::ExportModule::init();
+
+    // Write output header
+    writeHeader("iteration", "time", "x", "y", "fluorescence");
+}
+
+/* ************************************************************************ */
+
+void ExportModule::update()
+{
+    // Get simulation
+    const auto& sim = getSimulation();
+    const auto iteration = sim.getIteration();
+    const auto totalTime = sim.getTotalTime();
+
+    // Module is not active
+    if (!isActive(iteration))
+        return;
+
+    Assert(m_module);
+
+    // Get fluorescence grid
+    const auto& grid = m_module->getGrid();
+
+    const auto worldSize = sim.getWorldSize();
+    const auto worldSizeH = worldSize * 0.5;
+    const auto cellSize = worldSize / grid.getSize();
+
+    // Calculate active area
+    const units::SizeVector areaHalf = m_size * 0.5;
+    const units::PositionVector areaMin = m_position - areaHalf;
+    const units::PositionVector areaMax = m_position + areaHalf;
+
+    using GridType = fluorescence::Module::GridType;
+
+    const auto sizeMin = GridType::CoordinateType((areaMin + worldSizeH) / cellSize);
+    const auto sizeMax = GridType::CoordinateType((areaMax + worldSizeH) / cellSize);
+
+    // Foreach grid
+    for (auto&& c : range(sizeMin, sizeMax))
+    {
+        const GridType::ValueType fluorescence = grid[c];
+
+        // Write record
+        writeRecord(iteration, totalTime.value(), c.getX(), c.getY(), fluorescence);
+    }
+}
+
+/* ************************************************************************ */
+
+}
+}
+}
+
+/* ************************************************************************ */
