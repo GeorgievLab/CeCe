@@ -83,7 +83,9 @@ public:
      *
      * @param name Layer name.
      *
-     * @return
+     * @return If layer is enabled.
+     *
+     * @note In case layer with given name doesn't exists, true is returned.
      */
     bool isEnabled(StringView name) const noexcept;
 

@@ -50,7 +50,7 @@ bool Visualization::isEnabled(StringView name) const noexcept
     });
 
     if (it == m_layers.end())
-        return false;
+        return true;
 
     return it->isEnabled();
 }
