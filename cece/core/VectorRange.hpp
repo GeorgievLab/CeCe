@@ -200,7 +200,7 @@ constexpr IteratorRange<IteratorVector<T>> range(Vector<T> begin, Vector<T> end)
 {
     return makeRange(
         IteratorVector<T>{begin, end - T{1}, begin},
-        IteratorVector<T>{Vector<T>{0, end.getY()}, Zero, Zero}
+        IteratorVector<T>{Vector<T>{begin.getX(), end.getY()}, Zero, Zero}
     );
 }
 
