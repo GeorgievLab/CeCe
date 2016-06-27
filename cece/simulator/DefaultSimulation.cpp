@@ -502,15 +502,15 @@ void DefaultSimulation::draw(render::Context& context)
     );
 
     // Render modules
-    if (m_visualization.isEnabled("modules"))
+    if (m_visualization.isEnabled("modules", true))
         m_modules.draw(m_visualization, context);
 
     // Draw objects
-    if (m_visualization.isEnabled("objects"))
+    if (m_visualization.isEnabled("objects", true))
         m_objects.draw(context);
 
 #if defined(CECE_ENABLE_BOX2D_PHYSICS) && defined(CECE_ENABLE_BOX2D_PHYSICS_DEBUG)
-    if (m_visualization.isEnabled("physics"))
+    if (m_visualization.isEnabled("physics", false))
         m_world->DrawDebugData();
 #endif
 
