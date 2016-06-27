@@ -61,7 +61,15 @@ void Module::loadConfig(const config::Configuration& config)
     m_grid.resize(config.get<GridType::CoordinateType>("size"));
 
 #ifdef CECE_ENABLE_RENDER
-    m_layerName = config.get("layer", String{});
+    String layerName = config.get("layer", String{});
+    m_layerNames.rfp = config.get("layer-RFP", layerName);
+    m_layerNames.gfp = config.get("layer-GFP", layerName);
+    m_layerNames.yfp = config.get("layer-YFP", layerName);
+
+    DensityType saturation = config.get("saturation", DensityType(100));
+    m_saturations.rfp = config.get("saturation-RFP", saturation);
+    m_saturations.gfp = config.get("saturation-GFP", saturation);
+    m_saturations.yfp = config.get("saturation-YFP", saturation);
 #endif
 }
 
@@ -92,7 +100,7 @@ void Module::update()
     const auto worldSizeH = worldSize * 0.5;
     const auto cellSize = worldSize / m_grid.getSize();
 
-    std::fill(m_grid.begin(), m_grid.end(), Fluorescence{});
+    std::fill(m_grid.begin(), m_grid.end(), Proteins<CountType>{0, 0, 0});
 
     // Foreach all objects
     for (const auto& object : sim.getObjects())
@@ -110,22 +118,19 @@ void Module::update()
 
         // Calculate grid coordinates
         const auto coordinates = GridType::CoordinateType((position + worldSizeH) / cellSize);
-        Assert(m_grid.inRange(coordinates));
+
+        // Object is out of range
+        if (!m_grid.inRange(coordinates))
+            continue;
 
         const auto gfp = cell->getMoleculeCount("GFP");
         const auto rfp = cell->getMoleculeCount("RFP");
         const auto yfp = cell->getMoleculeCount("YFP");
 
-        // Sum of proteins
-        auto sum = gfp + rfp + yfp;
-
-        if (sum == 0)
-            continue;
-
-        // TODO: conversion
-        Fluorescence fluorescence = sum / 50.0;
-
-        m_grid[coordinates] += fluorescence;
+        // Add molecules
+        m_grid[coordinates].rfp += rfp;
+        m_grid[coordinates].gfp += gfp;
+        m_grid[coordinates].yfp += yfp;
     }
 }
 
@@ -134,7 +139,10 @@ void Module::update()
 #ifdef CECE_ENABLE_RENDER
 void Module::draw(const simulator::Visualization& visualization, render::Context& context)
 {
-    if (!m_layerName.empty() && !visualization.isEnabled(m_layerName))
+    // If visualization is disabled, do nothing
+    if (!(visualization.isEnabled(m_layerNames.rfp) ||
+          visualization.isEnabled(m_layerNames.gfp) ||
+          visualization.isEnabled(m_layerNames.yfp)))
         return;
 
     if (!m_drawable)
@@ -142,13 +150,33 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 
     Assert(m_drawable);
 
+    // Calculate cell area
+    const auto cellSize = getSimulation().getWorldSize() / m_grid.getSize();
+    const units::Area cellArea = cellSize.getWidth() * cellSize.getHeight();
+
     // Foreach grid
     for (auto&& c : range(m_grid.getSize()))
     {
-        const auto fluorescence = m_grid[c];
+        // Get number of proteins
+        const auto amount = m_grid[c];
+
+        // Calculate density
+        const auto rfpDensity = amount.rfp / cellArea;
+        const auto gfpDensity = amount.gfp / cellArea;
+        const auto yfpDensity = amount.yfp / cellArea;
+
+        // Colors
+        const auto rfp = rfpDensity / m_saturations.rfp;
+        const auto gfp = gfpDensity / m_saturations.gfp;
+        const auto yfp = yfpDensity / m_saturations.yfp;
+
+        auto red    = rfp + 0.5 * yfp;
+        auto green  = gfp + 0.5 * yfp;
+        auto blue   = RealType(0);
+        auto alpha  = std::max({red, green, blue});
 
         // Set color
-        m_drawable->set(c, render::Color::fromGray(fluorescence, fluorescence));
+        m_drawable->set(c, render::Color(red, green, blue, alpha));
     }
 
     // Synchronize

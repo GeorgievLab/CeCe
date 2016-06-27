@@ -60,15 +60,34 @@ namespace fluorescence {
 class Module : public module::Module
 {
 
+// Public Structures
+public:
+
+
+    /**
+     * @brief Fluorescence proteins.
+     */
+    template<typename T>
+    struct Proteins
+    {
+        T rfp;
+        T gfp;
+        T yfp;
+    };
+
+
 // Public Types
 public:
 
 
-    /// Fluorescence value type.
-    using Fluorescence = RealType;
+    /// Molecules number value type.
+    using CountType = unsigned long;
+
+    /// Number per area.
+    using DensityType = typename units::Inverse<units::Area>::type;
 
     /// Grid type.
-    using GridType = Grid<Fluorescence>;
+    using GridType = Grid<Proteins<CountType>>;
 
 
 // Public Ctors & Dtors
@@ -153,14 +172,17 @@ public:
 private:
 
     /// Fluorescence grid.
-    Grid<RealType> m_grid;
+    GridType m_grid;
 
 #ifdef CECE_ENABLE_RENDER
     /// Render grid
     render::ObjectPtr<render::GridColorSmooth> m_drawable;
 
-    /// Layer name
-    String m_layerName;
+    /// Layer names for proteins.
+    Proteins<String> m_layerNames;
+
+    /// GFP saturation.
+    Proteins<DensityType> m_saturations;
 #endif
 };
 
