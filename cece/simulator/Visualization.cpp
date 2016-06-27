@@ -43,14 +43,17 @@ namespace simulator {
 
 /* ************************************************************************ */
 
-bool Visualization::isEnabled(StringView name) const noexcept
+bool Visualization::isEnabled(StringView name, bool def) const noexcept
 {
+    if (name.getLength() == 0)
+        return def;
+
     auto it = std::find_if(m_layers.begin(), m_layers.end(), [&](const VisualizationLayer& layer) {
         return layer.getName() == name;
     });
 
     if (it == m_layers.end())
-        return true;
+        return def;
 
     return it->isEnabled();
 }

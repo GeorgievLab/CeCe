@@ -82,12 +82,13 @@ public:
      * @brief Returns if visualization layer is enabled.
      *
      * @param name Layer name.
+     * @param def  In case the layer doesn't exists.
      *
      * @return If layer is enabled.
      *
      * @note In case layer with given name doesn't exists, true is returned.
      */
-    bool isEnabled(StringView name) const noexcept;
+    bool isEnabled(StringView name, bool def = false) const noexcept;
 
 
     /**
