@@ -74,6 +74,7 @@ static GLenum convert(PrimitiveType type) noexcept
     case PrimitiveType::Triangles:      return GL_TRIANGLES;
     case PrimitiveType::Quads:          return GL_QUADS;
     case PrimitiveType::TriangleFan:    return GL_TRIANGLE_FAN;
+    case PrimitiveType::LineLoop:       return GL_LINE_LOOP;
     }
 
     return 0;

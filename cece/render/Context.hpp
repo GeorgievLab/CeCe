@@ -71,7 +71,8 @@ enum class PrimitiveType
     Lines,
     Triangles,
     Quads,
-    TriangleFan
+    TriangleFan,
+    LineLoop
 };
 
 /* ************************************************************************ */
