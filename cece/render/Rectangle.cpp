@@ -77,7 +77,7 @@ Rectangle::Rectangle(Context& context)
 
 /* ************************************************************************ */
 
-void Rectangle::draw(Context& context, const Color& color) noexcept
+void Rectangle::draw(Context& context, const Color& color, PrimitiveType type) noexcept
 {
     // Set parameters
     context.setColor(color);
@@ -85,7 +85,7 @@ void Rectangle::draw(Context& context, const Color& color) noexcept
     context.setVertexFormat(&g_vformat);
 
     // Draw
-    context.draw(PrimitiveType::Quads, 4);
+    context.draw(type, 4);
 
     // Unset parameters
     context.setVertexFormat(nullptr);

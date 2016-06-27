@@ -29,6 +29,7 @@
 
 // CeCe
 #include "cece/render/Buffer.hpp"
+#include "cece/render/Context.hpp"
 
 /* ************************************************************************ */
 
@@ -82,8 +83,9 @@ public:
      *
      * @param context Rendering context.
      * @param color   Rectangle color.
+     * @param type    Primitive type.
      */
-    void draw(Context& context, const Color& color) noexcept;
+    void draw(Context& context, const Color& color, PrimitiveType type = PrimitiveType::Quads) noexcept;
 
 
 // Private Data Members
