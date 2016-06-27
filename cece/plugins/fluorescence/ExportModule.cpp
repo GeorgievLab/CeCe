@@ -37,6 +37,10 @@
 #include "cece/config/Configuration.hpp"
 #include "cece/simulator/Simulation.hpp"
 
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/simulator/Visualization.hpp"
+#endif
+
 // Plugins
 #include "cece/plugins/fluorescence/Module.hpp"
 
@@ -54,6 +58,11 @@ void ExportModule::loadConfig(const config::Configuration& config)
 
     setPosition(config.get("position", getPosition()));
     setSize(config.get("size", getSimulation().getWorldSize()));
+
+#ifdef CECE_ENABLE_RENDER
+    m_layerName = config.get("layer", String{});
+    m_color = config.get("color", render::colors::WHITE);
+#endif
 }
 
 /* ************************************************************************ */
@@ -78,8 +87,12 @@ void ExportModule::init()
 
     module::ExportModule::init();
 
+#ifdef CECE_ENABLE_RENDER
+    setZOrder(1001);
+#endif
+
     // Write output header
-    writeHeader("iteration", "time", "x", "y", "fluorescence");
+    writeHeader("iteration", "time", "x", "y", "xw", "yw", "rfp", "gfp", "yfp");
 }
 
 /* ************************************************************************ */
@@ -117,12 +130,50 @@ void ExportModule::update()
     // Foreach grid
     for (auto&& c : range(sizeMin, sizeMax))
     {
-        const GridType::ValueType fluorescence = grid[c];
+        if (!grid.inRange(c))
+            continue;
+
+        const auto fluorescences = grid[c];
+
+        // No data
+        if ((fluorescences.rfp + fluorescences.gfp + fluorescences.yfp) == 0)
+            continue;
 
         // Write record
-        writeRecord(iteration, totalTime.value(), c.getX(), c.getY(), fluorescence);
+        writeRecord(iteration, totalTime.value(),
+            c.getX(), c.getY(),
+            cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
+            fluorescences.rfp, fluorescences.gfp, fluorescences.yfp
+        );
     }
 }
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void ExportModule::draw(const simulator::Visualization& visualization, render::Context& context)
+{
+    // If visualization is disabled, do nothing
+    if (!visualization.isEnabled(m_layerName))
+        return;
+
+    if (!m_drawable)
+        m_drawable.create(context);
+
+    Assert(m_drawable);
+
+    context.matrixPush();
+    context.matrixTranslate(m_position);
+    context.matrixScale(m_size / units::Length(1));
+    context.colorPush();
+    context.setColor(render::colors::WHITE);
+    context.enableAlpha();
+    m_drawable->draw(context, m_color, render::PrimitiveType::LineLoop);
+    context.disableAlpha();
+    context.colorPop();
+    context.matrixPop();
+}
+#endif
 
 /* ************************************************************************ */
 

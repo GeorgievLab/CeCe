@@ -28,9 +28,23 @@
 /* ************************************************************************ */
 
 // CeCe
+#include "cece/config.hpp"
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/VectorUnits.hpp"
 #include "cece/module/ExportModule.hpp"
+
+#ifdef CECE_ENABLE_RENDER
+#  include "cece/render/Object.hpp"
+#  include "cece/render/Color.hpp"
+#  include "cece/render/Rectangle.hpp"
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+namespace cece { namespace render { class Context; } }
+namespace cece { namespace simulator { class Visualization; } }
+#endif
 
 /* ************************************************************************ */
 
@@ -141,6 +155,19 @@ public:
     void update() override;
 
 
+#ifdef CECE_ENABLE_RENDER
+
+    /**
+     * @brief Render module.
+     *
+     * @param visualization Visualization context.
+     * @param context       Rendering context.
+     */
+    void draw(const simulator::Visualization& visualization, render::Context& context) override;
+
+#endif
+
+
 // Private Data Members
 private:
 
@@ -153,6 +180,16 @@ private:
     /// Measurement area size.
     units::SizeVector m_size = Zero;
 
+#ifdef CECE_ENABLE_RENDER
+    /// Render grid
+    render::ObjectPtr<render::Rectangle> m_drawable;
+
+    /// Rectangle color.
+    render::Color m_color = render::colors::WHITE;
+
+    /// Layer name.
+    String m_layerName;
+#endif
 };
 
 /* ************************************************************************ */
