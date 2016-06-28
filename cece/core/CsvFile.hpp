@@ -32,6 +32,8 @@
 
 // CeCe
 #include "cece/core/Tuple.hpp"
+#include "cece/core/DynamicArray.hpp"
+#include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
 #include "cece/core/FileStream.hpp"
 #include "cece/core/IntegerSequence.hpp"
@@ -48,21 +50,6 @@ inline namespace core {
  */
 class CsvFile
 {
-
-// Public Structures
-public:
-
-
-    /**
-     * @brief Write condition.
-     */
-    template<typename... Args>
-    struct Condition
-    {
-        bool expr;
-        Tuple<Args...> values;
-    };
-
 
 // Public Ctors & Dtors
 public:
@@ -112,17 +99,6 @@ public:
     }
 
 
-    /**
-     * @brief Set printed value precision.
-     *
-     * @param value
-     */
-    void setPrecision(int value) noexcept
-    {
-        m_file.precision(value);
-    }
-
-
 // Public Operations
 public:
 
@@ -151,17 +127,13 @@ public:
 
 
     /**
-     * @brief Create condition object.
+     * @brief Write CSV file header.
      *
-     * @param expr
      * @param args
-     *
-     * @return
      */
-    template<typename... Args>
-    static Condition<Args...> cond(bool expr, Args&&... args) noexcept
+    void writeHeaderArray(const DynamicArray<String>& values) noexcept
     {
-        return Condition<Args...>{expr, Tuple<Args...>(std::forward<Args>(args)...)};
+        writeLineArray(values);
     }
 
 
@@ -174,6 +146,17 @@ public:
     void writeHeader(Args&&... args) noexcept
     {
         writeLine(std::forward<Args>(args)...);
+    }
+
+
+    /**
+     * @brief Write CSV record.
+     *
+     * @param args
+     */
+    void writeRecordArray(const DynamicArray<String>& values) noexcept
+    {
+        writeLineArray(values);
     }
 
 
@@ -217,19 +200,6 @@ protected:
      * @param arg
      * @param args
      */
-    template<typename... Args, int... Is>
-    void writeTuple(const Tuple<Args...>& args, IntegerSequence<int, Is...>) noexcept
-    {
-        writeValues(getValue<Is>(args)...);
-    }
-
-
-    /**
-     * @brief Write values.
-     *
-     * @param arg
-     * @param args
-     */
     template<typename Arg, typename... Args>
     void writeValues(Arg&& arg, Args&&... args) noexcept
     {
@@ -241,16 +211,19 @@ protected:
     /**
      * @brief Write CSV line.
      *
-     * @param cond
-     * @param args
+     * @param values
      */
-    template<typename... Args1, typename... Args2>
-    void writeValues(Condition<Args1...> cond, Args2&&... args) noexcept
+    void writeLineArray(const DynamicArray<String>& values) noexcept
     {
-        if (cond.expr)
-            writeTuple(cond.values, MakeIntegerSequence<int, 0, sizeof...(Args1)>{});
+        for (auto it = values.begin(); it != values.end(); ++it)
+        {
+            if (it != values.begin())
+                m_file << ';';
 
-        writeValues(std::forward<Args2>(args)...);
+            m_file << *it;
+        }
+
+        m_file << "\r\n";
     }
 
 

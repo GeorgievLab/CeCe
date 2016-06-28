@@ -33,9 +33,11 @@
 // CeCe
 #include "cece/core/String.hpp"
 #include "cece/core/FilePath.hpp"
+#include "cece/core/UniquePtr.hpp"
 #include "cece/core/CsvFile.hpp"
 #include "cece/core/IterationRange.hpp"
 #include "cece/core/DynamicArray.hpp"
+#include "cece/core/DataExport.hpp"
 #include "cece/module/Module.hpp"
 
 /* ************************************************************************ */
@@ -69,7 +71,7 @@ public:
      */
     const FilePath& getFilePath() const noexcept
     {
-        return m_file.getPath();
+        return m_filePath;
     }
 
 
@@ -105,8 +107,9 @@ public:
      */
     void setFilePath(FilePath filePath) noexcept
     {
-        m_file.setPath(std::move(filePath));
+        m_filePath = std::move(filePath);
     }
+
 
     /**
      * @brief Set when export should be active.
@@ -163,7 +166,7 @@ protected:
     template<typename... Args>
     void writeHeader(Args&&... args) noexcept
     {
-        m_file.writeHeader(std::forward<Args>(args)...);
+        m_export->writeHeader(std::forward<Args>(args)...);
     }
 
 
@@ -175,7 +178,7 @@ protected:
     template<typename... Args>
     void writeRecord(Args&&... args) noexcept
     {
-        m_file.writeRecord(std::forward<Args>(args)...);
+        m_export->writeRecord(std::forward<Args>(args)...);
     }
 
 
@@ -184,7 +187,7 @@ protected:
      */
     void flush()
     {
-        m_file.flush();
+        m_export->flush();
     }
 
 
@@ -201,8 +204,11 @@ protected:
 // Protected Data Members
 protected:
 
-    // Output CSV file.
-    CsvFile m_file;
+    /// Data exporter.
+    UniquePtr<DataExport> m_export;
+
+    /// File path.
+    FilePath m_filePath;
 
     /// When is export active.
     DynamicArray<IterationRange> m_active;

@@ -23,105 +23,101 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-// Declaration
-#include "cece/module/ExportModule.hpp"
+#pragma once
+
+/* ************************************************************************ */
 
 // CeCe
-#include "cece/core/Log.hpp"
-#include "cece/core/StringStream.hpp"
-#include "cece/core/DataExportCsv.hpp"
-#include "cece/config/Configuration.hpp"
+#include "cece/core/DataExport.hpp"
+#include "cece/core/CsvFile.hpp"
+#include "cece/core/FilePath.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace module {
+inline namespace core {
 
 /* ************************************************************************ */
 
-bool ExportModule::isActive(IterationType it) const noexcept
+/**
+ * @brief Data exporting class - to CSV file.
+ */
+class DataExportCsv : public DataExport
 {
-    // No limitation
-    if (m_active.empty())
-        return true;
 
-    for (const auto& rng : m_active)
+// Public Ctors & Dtors
+public:
+
+
+    /**
+     * @brief Constructor.
+     *
+     * @param path
+     */
+    explicit DataExportCsv(FilePath path);
+
+
+    /**
+     * @brief Destructor.
+     */
+    ~DataExportCsv();
+
+
+// Public Accessors
+public:
+
+
+    /**
+     * @brief Returns path to output file.
+     *
+     * @return
+     */
+    const FilePath& getFilePath() const noexcept
     {
-        if (rng.inRange(it))
-            return true;
+        return m_file.getPath();
     }
 
-    return false;
-}
 
-/* ************************************************************************ */
+// Public Operations
+public:
 
-void ExportModule::loadConfig(const config::Configuration& config)
-{
-    setFilePath(config.get<FilePath>("filename"));
-    setActive(parseActive(config.get("active", String{})));
-}
 
-/* ************************************************************************ */
+    /**
+     * @brief Flush output.
+     */
+    void flush() override;
 
-void ExportModule::storeConfig(config::Configuration& config) const
-{
-    config.set("filename", getFilePath());
-    // TODO: store active
-}
 
-/* ************************************************************************ */
+// Protected Operations
+protected:
 
-void ExportModule::init()
-{
-    // Open CSV file
-    m_export = makeUnique<DataExportCsv>(m_filePath);
 
-    Log::info("Exporting data into: ", getFilePath());
-}
+    /**
+     * @brief Write data header.
+     *
+     * @param count Number of columns.
+     * @param ...   Column names.
+     */
+    void writeHeaderImpl(int count, ...) override;
 
-/* ************************************************************************ */
 
-void ExportModule::terminate()
-{
-    Log::info("Data exported into: ", getFilePath());
+    /**
+     * @brief Write data record.
+     *
+     * @param count  Number of columns.
+     * @param format Column format string.
+     * @param ...    Column values.
+     */
+    void writeRecordImpl(int count, const char* format, ...) override;
 
-    // Delete exporter
-    m_export.reset();
-}
 
-/* ************************************************************************ */
+// Private Data Members
+protected:
 
-DynamicArray<IterationRange> ExportModule::parseActive(String str)
-{
-    DynamicArray<IterationRange> res;
+    /// CSV file.
+    CsvFile m_file;
 
-    InStringStream iss(std::move(str));
-
-    while (true)
-    {
-        IterationType it;
-
-        if (!(iss >> it))
-            break;
-
-        if (iss.peek() == '-')
-        {
-            IterationType itEnd;
-            iss.ignore();
-            iss >> itEnd;
-
-            res.emplace_back(it, itEnd);
-        }
-        else
-        {
-            // Single item range
-            res.emplace_back(it);
-        }
-    }
-
-    return res;
-}
+};
 
 /* ************************************************************************ */
 

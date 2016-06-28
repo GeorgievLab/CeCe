@@ -63,6 +63,10 @@ set(SRCS
     FileStream.hpp
     CsvFile.hpp
     CsvFile.cpp
+    DataExport.hpp
+    DataExport.cpp
+    DataExportCsv.hpp
+    DataExportCsv.cpp
     ValueIterator.hpp
     Range.hpp
     VectorRange.hpp

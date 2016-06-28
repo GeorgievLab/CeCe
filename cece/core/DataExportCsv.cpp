@@ -24,103 +24,90 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/module/ExportModule.hpp"
+#include "cece/core/DataExportCsv.hpp"
+
+// C++
+#include <cstdarg>
+#include <utility>
 
 // CeCe
-#include "cece/core/Log.hpp"
-#include "cece/core/StringStream.hpp"
-#include "cece/core/DataExportCsv.hpp"
-#include "cece/config/Configuration.hpp"
+#include "cece/core/DynamicArray.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace module {
+inline namespace core {
 
 /* ************************************************************************ */
 
-bool ExportModule::isActive(IterationType it) const noexcept
+DataExportCsv::DataExportCsv(FilePath path)
+    : m_file(std::move(path))
 {
-    // No limitation
-    if (m_active.empty())
-        return true;
+    // Nothing to do
+}
 
-    for (const auto& rng : m_active)
+/* ************************************************************************ */
+
+DataExportCsv::~DataExportCsv() = default;
+
+/* ************************************************************************ */
+
+void DataExportCsv::flush()
+{
+    m_file.flush();
+}
+
+/* ************************************************************************ */
+
+void DataExportCsv::writeHeaderImpl(int count, ...)
+{
+    va_list args;
+    va_start(args, count);
+
+    DynamicArray<String> names(count);
+
+    for (int i = 0; i < count; ++i)
+        names[i] = va_arg(args, const char*);
+
+    va_end(args);
+
+    m_file.writeHeaderArray(names);
+}
+
+/* ************************************************************************ */
+
+void DataExportCsv::writeRecordImpl(int count, const char* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    DynamicArray<String> values(count);
+
+    for (int i = 0; i < count; ++i)
     {
-        if (rng.inRange(it))
-            return true;
-    }
-
-    return false;
-}
-
-/* ************************************************************************ */
-
-void ExportModule::loadConfig(const config::Configuration& config)
-{
-    setFilePath(config.get<FilePath>("filename"));
-    setActive(parseActive(config.get("active", String{})));
-}
-
-/* ************************************************************************ */
-
-void ExportModule::storeConfig(config::Configuration& config) const
-{
-    config.set("filename", getFilePath());
-    // TODO: store active
-}
-
-/* ************************************************************************ */
-
-void ExportModule::init()
-{
-    // Open CSV file
-    m_export = makeUnique<DataExportCsv>(m_filePath);
-
-    Log::info("Exporting data into: ", getFilePath());
-}
-
-/* ************************************************************************ */
-
-void ExportModule::terminate()
-{
-    Log::info("Data exported into: ", getFilePath());
-
-    // Delete exporter
-    m_export.reset();
-}
-
-/* ************************************************************************ */
-
-DynamicArray<IterationRange> ExportModule::parseActive(String str)
-{
-    DynamicArray<IterationRange> res;
-
-    InStringStream iss(std::move(str));
-
-    while (true)
-    {
-        IterationType it;
-
-        if (!(iss >> it))
+        switch (format[i])
+        {
+        case DATA_EXPORT_FORMAT_INT:
+            values[i] = toString(va_arg(args, int));
             break;
 
-        if (iss.peek() == '-')
-        {
-            IterationType itEnd;
-            iss.ignore();
-            iss >> itEnd;
+        case DATA_EXPORT_FORMAT_LONG:
+            values[i] = toString(va_arg(args, long));
+            break;
 
-            res.emplace_back(it, itEnd);
-        }
-        else
-        {
-            // Single item range
-            res.emplace_back(it);
+        case DATA_EXPORT_FORMAT_DOUBLE:
+            values[i] = toString(va_arg(args, double));
+            break;
+
+        case DATA_EXPORT_FORMAT_STRING:
+            values[i] = va_arg(args, const char*);
+            break;
         }
     }
 
-    return res;
+    va_end(args);
+
+    m_file.writeRecordArray(values);
 }
 
 /* ************************************************************************ */

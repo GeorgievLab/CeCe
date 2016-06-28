@@ -152,9 +152,10 @@ void ExportModule::init()
     module::ExportModule::init();
 
     // Write output header
-    writeHeader("iteration", "time", "x", "y", "signal", "concentration",
-        CsvFile::cond(isExportedObstacles(), "obstacle")
-    );
+    if (isExportedObstacles())
+        writeHeader("iteration", "time", "x", "y", "signal", "concentration", "obstacle");
+    else
+        writeHeader("iteration", "time", "x", "y", "signal", "concentration");
 }
 
 /* ************************************************************************ */
@@ -183,15 +184,29 @@ void ExportModule::update()
                 continue;
 
             // Write record
-            writeRecord(
-                iteration,
-                totalTime.value(),
-                c.getX(),
-                c.getY(),
-                m_module->getSignalName(signalId),
-                m_module->getSignal(signalId, c).value(),
-                CsvFile::cond(isExportedObstacles(), m_module->isObstacle(c))
-            );
+            if (isExportedObstacles())
+            {
+                writeRecord(
+                    iteration,
+                    totalTime.value(),
+                    c.getX(),
+                    c.getY(),
+                    m_module->getSignalName(signalId),
+                    m_module->getSignal(signalId, c).value(),
+                    m_module->isObstacle(c)
+                );
+            }
+            else
+            {
+                writeRecord(
+                    iteration,
+                    totalTime.value(),
+                    c.getX(),
+                    c.getY(),
+                    m_module->getSignalName(signalId),
+                    m_module->getSignal(signalId, c).value()
+                );
+            }
         }
     }
 }

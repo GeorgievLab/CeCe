@@ -168,6 +168,10 @@
       <File Name="core/InOutStream.hpp"/>
       <File Name="core/CsvFile.hpp"/>
       <File Name="core/CsvFile.cpp"/>
+      <File Name="core/DataExport.hpp"/>
+      <File Name="core/DataExport.cpp"/>
+      <File Name="core/DataExportCsv.hpp"/>
+      <File Name="core/DataExportCsv.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="unit">
       <File Name="core/Units.hpp"/>

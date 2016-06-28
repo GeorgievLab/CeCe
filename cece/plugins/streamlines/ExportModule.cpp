@@ -78,13 +78,19 @@ void ExportModule::init()
     module::ExportModule::init();
 
     // Write output header
-    writeHeader("iteration", "totalTime", "x", "y", "vx", "vy",
-        CsvFile::cond(isDensityExported(), "rho"),
-        CsvFile::cond(isPopulationsExported(), "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8")
-    );
-
-    // Set stored value precision
-    m_file.setPrecision(std::numeric_limits<Descriptor::DensityType>::digits10 + 1);
+    if (isPopulationsExported())
+    {
+        writeHeader(
+            "iteration", "totalTime", "x", "y", "vx", "vy", "rho",
+            "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"
+        );
+    }
+    else
+    {
+        writeHeader(
+            "iteration", "totalTime", "x", "y", "vx", "vy", "rho"
+        );
+    }
 }
 
 /* ************************************************************************ */
@@ -107,17 +113,16 @@ void ExportModule::update()
 
         const auto vel = conv.convertVelocity(data.computeVelocity());
 
-        writeRecord(
-            sim.getIteration(),
-            sim.getTotalTime().value(),
-            c.getX(),
-            c.getY(),
-            vel.getX().value(),
-            vel.getY().value(),
-            CsvFile::cond(isDensityExported(),
-                data.computeDensity()
-            ),
-            CsvFile::cond(isPopulationsExported(),
+        if (isPopulationsExported())
+        {
+            writeRecord(
+                sim.getIteration(),
+                sim.getTotalTime().value(),
+                c.getX(),
+                c.getY(),
+                vel.getX().value(),
+                vel.getY().value(),
+                data.computeDensity(),
                 data[0],
                 data[1],
                 data[2],
@@ -127,8 +132,20 @@ void ExportModule::update()
                 data[6],
                 data[7],
                 data[8]
-            )
-        );
+            );
+        }
+        else
+        {
+            writeRecord(
+                sim.getIteration(),
+                sim.getTotalTime().value(),
+                c.getX(),
+                c.getY(),
+                vel.getX().value(),
+                vel.getY().value(),
+                data.computeDensity()
+            );
+        }
     }
 
     flush();
