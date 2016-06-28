@@ -44,6 +44,7 @@
 #include "cece/core/Log.hpp"
 #include "cece/plugin/Manager.hpp"
 #include "cece/plugin/Context.hpp"
+#include "cece/simulator/Visualization.hpp"
 
 // UI
 #include "ui_MainWindow.h"
@@ -66,7 +67,7 @@ constexpr int MainWindow::MAX_RECENT_FILES;
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_simulator(plugin::Manager::s())
+    , m_simulator(m_pluginManager.getRepository())
 {
     ui->setupUi(this);
 
@@ -75,10 +76,10 @@ MainWindow::MainWindow(QWidget* parent)
 
     ui->widgetInitializationInfo->hide();
     ui->widgetModified->hide();
-    ui->actionStart->setEnabled(false);
-    ui->actionStep->setEnabled(false);
-    ui->actionPause->setEnabled(false);
-    ui->actionReset->setEnabled(false);
+    ui->actionSimulationStart->setEnabled(false);
+    ui->actionSimulationStep->setEnabled(false);
+    ui->actionSimulationStop->setEnabled(false);
+    ui->actionSimulationReset->setEnabled(false);
 
     ui->menuView->addAction(ui->toolBar->toggleViewAction());
     ui->menuView->addAction(ui->dockWidgetVisualization->toggleViewAction());
@@ -91,6 +92,20 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Restore settings
     restoreSettings();
+
+    // Load directories for plugin manager
+#ifdef DIR_PLUGINS
+    m_pluginManager.addDirectory(DIR_PLUGINS);
+#elif __linux__
+    m_pluginManager.addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
+#elif __APPLE__ && __MACH__
+    m_pluginManager.addDirectory(getPluginsDirectory(argv[0], "../plugins"));
+#elif _WIN32
+    m_pluginManager.addDirectory(getPluginsDirectory(argv[0], "."));
+#endif
+
+    // Load all plugins
+    m_pluginManager.loadAll();
 
     new XmlHighlighter(ui->plainTextSourceCode->document());
 
@@ -145,7 +160,7 @@ MainWindow::~MainWindow()
 
 /* ************************************************************************ */
 
-void MainWindow::fileNew()
+void MainWindow::on_actionFileNew_triggered()
 {
     ui->plainTextSourceCode->clear();
     setCurrentFile(QString());
@@ -153,7 +168,7 @@ void MainWindow::fileNew()
 
 /* ************************************************************************ */
 
-void MainWindow::fileOpen()
+void MainWindow::on_actionFileOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this,
         QString(), QString(),
@@ -168,7 +183,7 @@ void MainWindow::fileOpen()
 
 /* ************************************************************************ */
 
-void MainWindow::fileSave()
+void MainWindow::on_actionFileSave_triggered()
 {
     QString filename = m_filename;
 
@@ -188,7 +203,7 @@ void MainWindow::fileSave()
 
 /* ************************************************************************ */
 
-void MainWindow::fileSaveAs()
+void MainWindow::on_actionFileSaveAs_triggered()
 {
     QString filename =
         QFileDialog::getSaveFileName(this, QString(), m_filename);
@@ -201,7 +216,7 @@ void MainWindow::fileSaveAs()
 
 /* ************************************************************************ */
 
-void MainWindow::fileRecentOpen()
+void MainWindow::on_actionFileRecent1_triggered()
 {
     QAction* action = qobject_cast<QAction*>(sender());
     if (action)
@@ -210,7 +225,43 @@ void MainWindow::fileRecentOpen()
 
 /* ************************************************************************ */
 
-void MainWindow::viewFullscreen(bool flag)
+void MainWindow::on_actionFileRecent2_triggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        fileOpen(action->data().toString());
+}
+
+/* ************************************************************************ */
+
+void MainWindow::on_actionFileRecent3_triggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        fileOpen(action->data().toString());
+}
+
+/* ************************************************************************ */
+
+void MainWindow::on_actionFileRecent4_triggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        fileOpen(action->data().toString());
+}
+
+/* ************************************************************************ */
+
+void MainWindow::on_actionFileRecent5_triggered()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action)
+        fileOpen(action->data().toString());
+}
+
+/* ************************************************************************ */
+
+void MainWindow::on_actionViewFullscreen_toggled(bool flag)
 {
     if (flag)
     {
@@ -225,7 +276,7 @@ void MainWindow::viewFullscreen(bool flag)
 
 /* ************************************************************************ */
 
-void MainWindow::simulationStart()
+void MainWindow::on_actionSimulationStart_triggered()
 {
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
@@ -234,7 +285,7 @@ void MainWindow::simulationStart()
 
 /* ************************************************************************ */
 
-void MainWindow::simulationStop()
+void MainWindow::on_actionSimulationStop_triggered()
 {
     Q_ASSERT(m_simulator.isRunning());
     Q_ASSERT(m_simulatorThread.isRunning());
@@ -243,7 +294,7 @@ void MainWindow::simulationStop()
 
 /* ************************************************************************ */
 
-void MainWindow::simulationStep()
+void MainWindow::on_actionSimulationStep_triggered()
 {
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
@@ -252,7 +303,7 @@ void MainWindow::simulationStep()
 
 /* ************************************************************************ */
 
-void MainWindow::simulationReset()
+void MainWindow::on_actionSimulationReset_triggered()
 {
     Q_ASSERT(!m_simulator.isRunning());
     Q_ASSERT(!m_simulatorThread.isRunning());
@@ -261,7 +312,7 @@ void MainWindow::simulationReset()
 
 /* ************************************************************************ */
 
-void MainWindow::visualizationScreenshot()
+void MainWindow::on_actionVisualizationScreenshot_triggered()
 {
     const QString base = !m_filename.isEmpty() ? QFileInfo(m_filename).completeBaseName() : "cece";
 
@@ -279,7 +330,14 @@ void MainWindow::visualizationScreenshot()
 
 /* ************************************************************************ */
 
-void MainWindow::helpAbout()
+void MainWindow::on_actionPlotCreate_triggered()
+{
+
+}
+
+/* ************************************************************************ */
+
+void MainWindow::on_actionHelpAbout_triggered()
 {
     AboutDialog(this).exec();
 }
@@ -299,9 +357,9 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
 {
     const bool flag = simulation != nullptr;
 
-    ui->actionStart->setEnabled(flag);
-    ui->actionStep->setEnabled(flag);
-    ui->actionReset->setEnabled(flag);
+    ui->actionSimulationStart->setEnabled(flag);
+    ui->actionSimulationStep->setEnabled(flag);
+    ui->actionSimulationReset->setEnabled(flag);
     ui->widgetModified->hide();
 
     // Clear visualization layer actions
@@ -361,17 +419,17 @@ void MainWindow::simulatorStarted(Simulator::Mode mode)
 
     case Simulator::Mode::Initialize:
         ui->widgetInitializationInfo->show();
-        ui->actionStart->setEnabled(false);
-        ui->actionPause->setEnabled(true);
-        ui->actionStep->setEnabled(false);
-        ui->actionReset->setEnabled(false);
+        ui->actionSimulationStart->setEnabled(false);
+        ui->actionSimulationStop->setEnabled(true);
+        ui->actionSimulationStep->setEnabled(false);
+        ui->actionSimulationReset->setEnabled(false);
         break;
 
     case Simulator::Mode::Simulate:
-        ui->actionStart->setEnabled(false);
-        ui->actionPause->setEnabled(true);
-        ui->actionStep->setEnabled(false);
-        ui->actionReset->setEnabled(false);
+        ui->actionSimulationStart->setEnabled(false);
+        ui->actionSimulationStop->setEnabled(true);
+        ui->actionSimulationStep->setEnabled(false);
+        ui->actionSimulationReset->setEnabled(false);
         break;
     }
 }
@@ -395,17 +453,17 @@ void MainWindow::simulatorFinished(Simulator::Mode mode)
 
     case Simulator::Mode::Initialize:
         ui->widgetInitializationInfo->hide();
-        ui->actionStart->setEnabled(true);
-        ui->actionPause->setEnabled(false);
-        ui->actionStep->setEnabled(true);
-        ui->actionReset->setEnabled(true);
+        ui->actionSimulationStart->setEnabled(true);
+        ui->actionSimulationStop->setEnabled(false);
+        ui->actionSimulationStep->setEnabled(true);
+        ui->actionSimulationReset->setEnabled(true);
         break;
 
     case Simulator::Mode::Simulate:
-        ui->actionStart->setEnabled(true);
-        ui->actionPause->setEnabled(false);
-        ui->actionStep->setEnabled(false);
-        ui->actionReset->setEnabled(true);
+        ui->actionSimulationStart->setEnabled(true);
+        ui->actionSimulationStop->setEnabled(false);
+        ui->actionSimulationStep->setEnabled(false);
+        ui->actionSimulationReset->setEnabled(true);
         break;
     }
 }
@@ -551,11 +609,11 @@ void MainWindow::restoreSettings()
 
 void MainWindow::initRecentFiles()
 {
-    m_recentFiles[0] = ui->actionRecentFile1;
-    m_recentFiles[1] = ui->actionRecentFile2;
-    m_recentFiles[2] = ui->actionRecentFile3;
-    m_recentFiles[3] = ui->actionRecentFile4;
-    m_recentFiles[4] = ui->actionRecentFile5;
+    m_recentFiles[0] = ui->actionFileRecent1;
+    m_recentFiles[1] = ui->actionFileRecent2;
+    m_recentFiles[2] = ui->actionFileRecent3;
+    m_recentFiles[3] = ui->actionFileRecent4;
+    m_recentFiles[4] = ui->actionFileRecent5;
 
     for (int i = 0; i < MAX_RECENT_FILES; ++i)
         m_recentFiles[i]->setVisible(false);
@@ -588,39 +646,61 @@ void MainWindow::updateRecentFileActions()
 
 void MainWindow::initTools()
 {
-    const plugin::Manager& manager = plugin::Manager::s();
-    const plugin::Context& context = manager.getContext();
+    const plugin::Repository& repository = m_pluginManager.getRepository();
 
-    // Foreach initializers
-    for (const auto& name : context.getInitFactoryManager().getNames())
+    // Foreach repository records
+    for (const auto& p : repository.getRecords())
     {
-        ui->treeWidgetTools->addTopLevelItem(
-            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"init", QString::fromStdString(name)})
-        );
-    }
+        const String pluginName = String(m_pluginManager.getName(p.first));
+        const plugin::RepositoryRecord& record = p.second;
 
-    // Foreach modules
-    for (const auto& name : context.getModuleFactoryManager().getNames())
-    {
-        ui->treeWidgetTools->addTopLevelItem(
-            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"module", QString::fromStdString(name)})
-        );
-    }
+        // Foreach initializers
+        for (const auto& name : record.getInitFactoryManager().getNames())
+        {
+            ui->treeWidgetTools->addTopLevelItem(
+                new QTreeWidgetItem(ui->treeWidgetTools, QStringList{
+                    QString::fromStdString(pluginName),
+                    "init",
+                    QString::fromStdString(name)
+                })
+            );
+        }
 
-    // Foreach objects
-    for (const auto& name : context.getObjectFactoryManager().getNames())
-    {
-        ui->treeWidgetTools->addTopLevelItem(
-            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"object", QString::fromStdString(name)})
-        );
-    }
+        // Foreach modules
+        for (const auto& name : record.getModuleFactoryManager().getNames())
+        {
+            ui->treeWidgetTools->addTopLevelItem(
+                new QTreeWidgetItem(ui->treeWidgetTools, QStringList{
+                    QString::fromStdString(pluginName),
+                    "module",
+                    QString::fromStdString(name)
+                })
+            );
+        }
 
-    // Foreach programs
-    for (const auto& name : context.getProgramFactoryManager().getNames())
-    {
-        ui->treeWidgetTools->addTopLevelItem(
-            new QTreeWidgetItem(ui->treeWidgetTools, QStringList{"program", QString::fromStdString(name)})
-        );
+        // Foreach objects
+        for (const auto& name : record.getObjectFactoryManager().getNames())
+        {
+            ui->treeWidgetTools->addTopLevelItem(
+                new QTreeWidgetItem(ui->treeWidgetTools, QStringList{
+                    QString::fromStdString(pluginName),
+                    "object",
+                    QString::fromStdString(name)
+                })
+            );
+        }
+
+        // Foreach programs
+        for (const auto& name : record.getProgramFactoryManager().getNames())
+        {
+            ui->treeWidgetTools->addTopLevelItem(
+                new QTreeWidgetItem(ui->treeWidgetTools, QStringList{
+                    QString::fromStdString(pluginName),
+                    "program",
+                    QString::fromStdString(name)
+                })
+            );
+        }
     }
 }
 

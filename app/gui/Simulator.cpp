@@ -42,9 +42,9 @@ namespace gui {
 
 /* ************************************************************************ */
 
-Simulator::Simulator(plugin::Manager& manager, QObject* parent) noexcept
+Simulator::Simulator(const plugin::Repository& repository, QObject* parent) noexcept
     : QObject(parent)
-    , m_manager(manager)
+    , m_context(repository)
 {
     qRegisterMetaType<Simulator::Mode>("Mode");
 }
@@ -62,12 +62,15 @@ void Simulator::simulationLoad(QString type, QString source, QString filename) n
     const String tp = type.toStdString();
     const String file = filename.toStdString();
 
+    // Enable XML plugin by default
+    m_context.importPlugin("xml");
+
     // Create simulation
     try
     {
         QMutexLocker _(getMutex());
 
-        m_simulation = m_manager.getContext().createSimulation(tp, src, file);
+        m_simulation = m_context.createSimulation(tp, src, file);
 
         emit simulationLoaded(m_simulation.get());
     }

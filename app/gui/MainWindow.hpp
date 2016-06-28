@@ -34,16 +34,16 @@
 #include <QTimer>
 #include <QList>
 
+// CeCe
+#include "cece/plugin/Manager.hpp"
+
 // GUI
 #include "LogStream.hpp"
 #include "Simulator.hpp"
 
 /* ************************************************************************ */
 
-namespace Ui
-{
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 
 /* ************************************************************************ */
 
@@ -104,73 +104,103 @@ public slots:
     /**
      * @brief Create a new simulation file.
      */
-    void fileNew();
+    void on_actionFileNew_triggered();
 
 
     /**
      * @brief Open an existing simulation file.
      */
-    void fileOpen();
+    void on_actionFileOpen_triggered();
 
 
     /**
      * @brief Save current simulation file.
      */
-    void fileSave();
+    void on_actionFileSave_triggered();
 
 
     /**
      * @brief Save current simulation file as.
      */
-    void fileSaveAs();
+    void on_actionFileSaveAs_triggered();
 
 
     /**
      * @brief Open recent file.
      */
-    void fileRecentOpen();
+    void on_actionFileRecent1_triggered();
+
+
+    /**
+     * @brief Open recent file.
+     */
+    void on_actionFileRecent2_triggered();
+
+
+    /**
+     * @brief Open recent file.
+     */
+    void on_actionFileRecent3_triggered();
+
+
+    /**
+     * @brief Open recent file.
+     */
+    void on_actionFileRecent4_triggered();
+
+
+    /**
+     * @brief Open recent file.
+     */
+    void on_actionFileRecent5_triggered();
 
 
     /**
      * @brief Toggle fullscreen mode.
      */
-    void viewFullscreen(bool);
+    void on_actionViewFullscreen_toggled(bool);
 
 
     /**
      * @brief Start simulation.
      */
-    void simulationStart();
+    void on_actionSimulationStart_triggered();
 
 
     /**
      * @brief Stop simulation.
      */
-    void simulationStop();
+    void on_actionSimulationStop_triggered();
 
 
     /**
      * @brief Step simulation.
      */
-    void simulationStep();
+    void on_actionSimulationStep_triggered();
 
 
     /**
      * @brief Reset simulace.
      */
-    void simulationReset();
+    void on_actionSimulationReset_triggered();
 
 
     /**
      * @brief Create a screenshot from visualization.
      */
-    void visualizationScreenshot();
+    void on_actionVisualizationScreenshot_triggered();
+
+
+    /**
+     * @brief On plot create requirest.
+     */
+    void on_actionPlotCreate_triggered();
 
 
     /**
      * @brief Show about dialog.
      */
-    void helpAbout();
+    void on_actionHelpAbout_triggered();
 
 
     /**
@@ -305,6 +335,9 @@ private:
 
     /// UI members.
     Ui::MainWindow* ui;
+
+    /// Plugin manager.
+    plugin::Manager m_pluginManager;
 
     /// Output log stream.
     LogStream m_logStream;

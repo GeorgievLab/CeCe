@@ -56,24 +56,6 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    auto& pluginManager = cece::plugin::Manager::s();
-
-    if (pluginManager.getDirectories().empty())
-    {
-#ifdef DIR_PLUGINS
-        pluginManager.addDirectory(DIR_PLUGINS);
-#elif __linux__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../lib/cece/plugins"));
-#elif __APPLE__ && __MACH__
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "../plugins"));
-#elif _WIN32
-        pluginManager.addDirectory(getPluginsDirectory(argv[0], "."));
-#endif
-    }
-
-    // Load all plugins
-    pluginManager.loadAll();
-
     app.setOrganizationName("GeorgievLab");
     app.setOrganizationDomain("ccy.zcu.cz");
     app.setApplicationName("cece");

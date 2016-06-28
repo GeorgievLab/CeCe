@@ -105,7 +105,7 @@ void VisualizationWidget::mouseMoveEvent(QMouseEvent* event)
     // Change vector
     const auto change = event->pos() - m_mousePos;
 
-    pos += camera.getZoom() * PositionVector{
+    pos += camera.getZoom() * units::PositionVector{
         units::Length(change.x()),
         units::Length(-change.y())
     };

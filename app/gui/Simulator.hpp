@@ -36,10 +36,11 @@
 #include "cece/core/ViewPtr.hpp"
 #include "cece/core/UniquePtr.hpp"
 #include "cece/core/Atomic.hpp"
+#include "cece/plugin/Context.hpp"
 
 /* ************************************************************************ */
 
-namespace cece { namespace plugin { class Manager; } }
+namespace cece { namespace plugin { class Repository; } }
 namespace cece { namespace simulator { class Simulation; } }
 
 /* ************************************************************************ */
@@ -78,10 +79,10 @@ public:
     /**
      * @brief Constructor.
      *
-     * @param manager
+     * @param repository Plugin repository
      * @param parent
      */
-    explicit Simulator(plugin::Manager& manager, QObject* parent = nullptr) noexcept;
+    explicit Simulator(const plugin::Repository& repository, QObject* parent = nullptr) noexcept;
 
 
     /**
@@ -254,8 +255,8 @@ private:
 // Private Data Members
 private:
 
-    /// Plugin manager.
-    plugin::Manager& m_manager;
+    /// Plugin context.
+    plugin::Context m_context;
 
     /// Current simulation.
     UniquePtr<simulator::Simulation> m_simulation;
