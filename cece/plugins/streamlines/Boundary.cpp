@@ -69,6 +69,9 @@ namespace {
  */
 Range<Lattice::SizeType> getBlock(Lattice::SizeType offset, Lattice::SizeType size, Lattice::SizeType count) noexcept
 {
+    if (size == 0)
+        size = count;
+
     const Lattice::SizeType off = count / 2 + offset;
     const Lattice::SizeType siz = size / 2;
 
