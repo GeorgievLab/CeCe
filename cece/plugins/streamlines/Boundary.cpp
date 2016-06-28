@@ -344,6 +344,10 @@ void Boundary::storeConfig(config::Configuration& config) const
 
 void Boundary::updateBlocks(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
 {
+    // No boundary
+    if (getType() == Type::None)
+        return;
+
     const auto gridSize = lattice.getSize();
     const auto offset = converter.convertLength(m_offset);
     const auto size = converter.convertLength(m_size);
@@ -408,6 +412,10 @@ void Boundary::updateBlocks(Lattice& lattice, Converter& converter, ViewPtr<Dyna
 
 void Boundary::apply(Lattice& lattice, Converter& converter, ViewPtr<Dynamics> fluidDynamics)
 {
+    // No boundary
+    if (getType() == Type::None)
+        return;
+
     const auto gridSize = lattice.getSize();
 
     // Apply function
