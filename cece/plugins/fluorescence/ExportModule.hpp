@@ -27,6 +27,9 @@
 
 /* ************************************************************************ */
 
+// C++
+#include <utility>
+
 // CeCe
 #include "cece/config.hpp"
 #include "cece/core/ViewPtr.hpp"
@@ -97,6 +100,41 @@ public:
     }
 
 
+    /**
+     * @brief Returns if is stored only total value.
+     *
+     * @param total
+     */
+    bool isTotal() const noexcept
+    {
+        return m_total;
+    }
+
+
+#ifdef CECE_ENABLE_RENDER
+    /**
+     * @brief Returns area color.
+     *
+     * @return
+     */
+    const render::Color& getColor() const noexcept
+    {
+        return m_color;
+    }
+
+
+    /**
+     * @brief Returns layer name.
+     *
+     * @return
+     */
+    const String& getLayerName() const noexcept
+    {
+        return m_layerName;
+    }
+#endif
+
+
 // Public Mutators
 public:
 
@@ -121,6 +159,41 @@ public:
     {
         m_size = size;
     }
+
+
+    /**
+     * @brief Set if is stored only total value.
+     *
+     * @param total
+     */
+    void setTotal(bool total) noexcept
+    {
+        m_total = total;
+    }
+
+
+#ifdef CECE_ENABLE_RENDER
+    /**
+     * @brief Set area color.
+     *
+     * @param color
+     */
+    void setColor(render::Color color) noexcept
+    {
+        m_color = color;
+    }
+
+
+    /**
+     * @brief Set layer name.
+     *
+     * @param name Layer name.
+     */
+    void setLayerName(String name) noexcept
+    {
+        m_layerName = std::move(name);
+    }
+#endif
 
 
 // Public Operations
@@ -179,6 +252,9 @@ private:
 
     /// Measurement area size.
     units::SizeVector m_size = Zero;
+
+    /// Store only sum values.
+    bool m_total = false;
 
 #ifdef CECE_ENABLE_RENDER
     /// Render grid

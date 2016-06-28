@@ -58,10 +58,11 @@ void ExportModule::loadConfig(const config::Configuration& config)
 
     setPosition(config.get("position", getPosition()));
     setSize(config.get("size", getSimulation().getWorldSize()));
+    setTotal(config.get("total", isTotal()));
 
 #ifdef CECE_ENABLE_RENDER
-    m_layerName = config.get("layer", String{});
-    m_color = config.get("color", render::colors::WHITE);
+    setLayerName(config.get("layer", getLayerName()));
+    setColor(config.get("color", getColor()));
 #endif
 }
 
@@ -73,6 +74,12 @@ void ExportModule::storeConfig(config::Configuration& config) const
 
     config.set("position", getPosition());
     config.set("size", getSize());
+    config.set("total", isTotal());
+
+#ifdef CECE_ENABLE_RENDER
+    config.set("layer", getLayerName());
+    config.get("color", getColor());
+#endif
 }
 
 /* ************************************************************************ */
@@ -92,7 +99,10 @@ void ExportModule::init()
 #endif
 
     // Write output header
-    writeHeader("iteration", "time", "x", "y", "xw", "yw", "rfp", "gfp", "yfp");
+    if (isTotal())
+        writeHeader("iteration", "time", "rfp", "gfp", "yfp");
+    else
+        writeHeader("iteration", "time", "x", "y", "xw", "yw", "rfp", "gfp", "yfp");
 }
 
 /* ************************************************************************ */
@@ -127,24 +137,59 @@ void ExportModule::update()
     const auto sizeMin = GridType::CoordinateType((areaMin + worldSizeH) / cellSize);
     const auto sizeMax = GridType::CoordinateType((areaMax + worldSizeH) / cellSize);
 
-    // Foreach grid
-    for (auto&& c : range(sizeMin, sizeMax))
+    if (isTotal())
     {
-        if (!grid.inRange(c))
-            continue;
+        // Accumulate values from given area
 
-        const auto fluorescences = grid[c];
+        GridType::ValueType total{0, 0, 0};
 
-        // No data
-        if ((fluorescences.rfp + fluorescences.gfp + fluorescences.yfp) == 0)
-            continue;
+        // Foreach grid
+        for (auto&& c : range(sizeMin, sizeMax))
+        {
+            if (!grid.inRange(c))
+                continue;
+
+            // Get data
+            const auto proteins = grid[c];
+
+            // No data
+            if (!(proteins.rfp || proteins.gfp || proteins.yfp))
+                continue;
+
+            total.rfp += proteins.rfp;
+            total.gfp += proteins.gfp;
+            total.yfp += proteins.yfp;
+        }
 
         // Write record
         writeRecord(iteration, totalTime.value(),
-            c.getX(), c.getY(),
-            cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
-            fluorescences.rfp, fluorescences.gfp, fluorescences.yfp
+            total.rfp, total.gfp, total.yfp
         );
+    }
+    else
+    {
+        // Store each value from given area
+
+        // Foreach grid
+        for (auto&& c : range(sizeMin, sizeMax))
+        {
+            if (!grid.inRange(c))
+                continue;
+
+            // Get data
+            const auto proteins = grid[c];
+
+            // No data
+            if (!(proteins.rfp || proteins.gfp || proteins.yfp))
+                continue;
+
+            // Write record
+            writeRecord(iteration, totalTime.value(),
+                c.getX(), c.getY(),
+                cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
+                proteins.rfp, proteins.gfp, proteins.yfp
+            );
+        }
     }
 }
 
@@ -154,7 +199,7 @@ void ExportModule::update()
 void ExportModule::draw(const simulator::Visualization& visualization, render::Context& context)
 {
     // If visualization is disabled, do nothing
-    if (!visualization.isEnabled(m_layerName))
+    if (!visualization.isEnabled(getLayerName()))
         return;
 
     if (!m_drawable)
@@ -163,12 +208,12 @@ void ExportModule::draw(const simulator::Visualization& visualization, render::C
     Assert(m_drawable);
 
     context.matrixPush();
-    context.matrixTranslate(m_position);
-    context.matrixScale(m_size / units::Length(1));
+    context.matrixTranslate(getPosition());
+    context.matrixScale(getSize() / units::Length(1));
     context.colorPush();
     context.setColor(render::colors::WHITE);
     context.enableAlpha();
-    m_drawable->draw(context, m_color, render::PrimitiveType::LineLoop);
+    m_drawable->draw(context, getColor(), render::PrimitiveType::LineLoop);
     context.disableAlpha();
     context.colorPop();
     context.matrixPop();
