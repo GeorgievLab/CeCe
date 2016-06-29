@@ -102,15 +102,15 @@ struct DataExportFormat
 /**
  * @brief Formatting structure.
  */
-template<>
-struct DataExportFormat<int>
+template<typename Tin, typename Tout, char Format>
+struct DataExportFormatBase
 {
     /// Format character.
-    static constexpr char FORMAT = DATA_EXPORT_FORMAT_INT;
+    static constexpr char FORMAT = Format;
 
     /// Types
-    using StoreType = int;
-    using PassType = int;
+    using StoreType = Tout;
+    using PassType = Tout;
 
 
     /**
@@ -120,7 +120,7 @@ struct DataExportFormat<int>
      *
      * @return Result string.
      */
-    static int convertStorage(int value)
+    static StoreType convertStorage(Tin value) noexcept
     {
         return value;
     }
@@ -133,7 +133,7 @@ struct DataExportFormat<int>
      *
      * @return Result string.
      */
-    static int convertPass(int value)
+    static PassType convertPass(StoreType value) noexcept
     {
         return value;
     }
@@ -141,87 +141,29 @@ struct DataExportFormat<int>
 
 /* ************************************************************************ */
 
-/**
- * @brief Formatting structure.
- */
 template<>
-struct DataExportFormat<long>
-{
-    /// Format character.
-    static constexpr char FORMAT = DATA_EXPORT_FORMAT_LONG;
+struct DataExportFormat<int> : public DataExportFormatBase<int, int, DATA_EXPORT_FORMAT_INT> {};
 
-    /// Types
-    using StoreType = long;
-    using PassType = long;
-
-
-    /**
-     * @brief Convert value.
-     *
-     * @param value Value to convert.
-     *
-     * @return Result string.
-     */
-    static long convertStorage(long value)
-    {
-        return value;
-    }
-
-
-    /**
-     * @brief Convert value.
-     *
-     * @param value Value to convert.
-     *
-     * @return Result string.
-     */
-    static long convertPass(long value)
-    {
-        return value;
-    }
-};
-
-/* ************************************************************************ */
-
-/**
- * @brief Formatting structure.
- */
 template<>
-struct DataExportFormat<double>
-{
-    /// Format character.
-    static constexpr char FORMAT = DATA_EXPORT_FORMAT_DOUBLE;
+struct DataExportFormat<unsigned int> : public DataExportFormatBase<unsigned int, int, DATA_EXPORT_FORMAT_INT> {};
 
-    /// Types
-    using StoreType = double;
-    using PassType = double;
+template<>
+struct DataExportFormat<long> : public DataExportFormatBase<long, long, DATA_EXPORT_FORMAT_LONG> {};
 
+template<>
+struct DataExportFormat<unsigned long> : public DataExportFormatBase<unsigned long, long, DATA_EXPORT_FORMAT_LONG> {};
 
-    /**
-     * @brief Convert value.
-     *
-     * @param value Value to convert.
-     *
-     * @return Result string.
-     */
-    static double convertStorage(double value)
-    {
-        return value;
-    }
+template<>
+struct DataExportFormat<long long> : public DataExportFormatBase<long long, long, DATA_EXPORT_FORMAT_LONG> {};
 
+template<>
+struct DataExportFormat<unsigned long long> : public DataExportFormatBase<unsigned long long, long, DATA_EXPORT_FORMAT_LONG> {};
 
-    /**
-     * @brief Convert value.
-     *
-     * @param value Value to convert.
-     *
-     * @return Result string.
-     */
-    static double convertPass(double value)
-    {
-        return value;
-    }
-};
+template<>
+struct DataExportFormat<double> : public DataExportFormatBase<double, double, DATA_EXPORT_FORMAT_DOUBLE> {};
+
+template<>
+struct DataExportFormat<float> : public DataExportFormatBase<float, double, DATA_EXPORT_FORMAT_DOUBLE> {};
 
 /* ************************************************************************ */
 
@@ -354,16 +296,16 @@ private:
     void writeRecordCall(IntegerSequence<int, Is...>, Args&&... args)
     {
         // Data format
-        const char format[] = { DataExportFormat<Args>::FORMAT... };
+        const char format[] = { DataExportFormat<typename std::decay<Args>::type>::FORMAT... };
 
         // Storage for arguments
-        const Tuple<typename DataExportFormat<Args>::StoreType...> storage{
-            DataExportFormat<Args>::convertStorage(std::forward<Args>(args))...
+        const Tuple<typename DataExportFormat<typename std::decay<Args>::type>::StoreType...> storage{
+            DataExportFormat<typename std::decay<Args>::type>::convertStorage(std::forward<Args>(args))...
         };
 
         // Calling arguments
-        const Tuple<typename DataExportFormat<Args>::PassType...> arguments{
-            DataExportFormat<Args>::convertPass(getValue<Is>(storage))...
+        const Tuple<typename DataExportFormat<typename std::decay<Args>::type>::PassType...> arguments{
+            DataExportFormat<typename std::decay<Args>::type>::convertPass(getValue<Is>(storage))...
         };
 
         writeRecordImpl(
