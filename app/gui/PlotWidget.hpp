@@ -27,7 +27,11 @@
 
 /* ************************************************************************ */
 
+// Qt
 #include <QWidget>
+#include <QStringList>
+#include <QList>
+#include <QVariant>
 
 /* ************************************************************************ */
 
@@ -70,17 +74,24 @@ public:
 
 
     /**
-     * @brief Set label of X axis.
-     * @param label
+     * @brief Set column name for X axis.
+     * @param name
      */
-    void setXAxisLabel(QString label) noexcept;
+    void setXAxisName(QString name) noexcept;
 
 
     /**
-     * @brief Set label of Y axis.
-     * @param label
+     * @brief Set column name for Y axis.
+     * @param name
      */
-    void setYAxisLabel(QString label) noexcept;
+    void setYAxisName(QString name) noexcept;
+
+
+    /**
+     * @brief Set column name for group.
+     * @param name
+     */
+    void setGroupName(QString name) noexcept;
 
 
 // Slots
@@ -90,11 +101,10 @@ public slots:
     /**
      * @brief Add plot data.
      *
-     * @param x
-     * @param y
-     * @param color
+     * @param names
+     * @param values
      */
-    void dataAdd(double x, double y, QString color);
+    void dataAdd(QStringList names, QList<QVariant> value);
 
 
 // Private Data Members
@@ -102,6 +112,15 @@ private:
 
     /// UI.
     Ui::PlotWidget *ui;
+
+    /// Name of X axis.
+    QString m_xName;
+
+    /// Name of Y axis.
+    QString m_yName;
+
+    /// Name of group.
+    QString m_groupName;
 };
 
 /* ************************************************************************ */

@@ -100,11 +100,11 @@ public:
 
 
     /**
-     * @brief Returns color.
+     * @brief Returns group name.
      *
      * @return
      */
-    QString getColor() const noexcept;
+    QString getGroup() const noexcept;
 
 
 // Public Slots
@@ -118,6 +118,38 @@ public slots:
     void on_comboBoxSource_currentIndexChanged(QString name);
 
 
+    /**
+     * @brief On axis x selected.
+     * @param name
+     */
+    void on_comboBoxAxisX_currentIndexChanged(QString name);
+
+
+    /**
+     * @brief On axis y selected.
+     * @param name
+     */
+    void on_comboBoxAxisY_currentIndexChanged(QString name);
+
+
+    /**
+     * @brief On group selected.
+     * @param name
+     */
+    void on_comboBoxGroup_currentIndexChanged(QString name);
+
+
+// Private Operations
+private:
+
+
+    /**
+     * @brief Check if current state is valid.
+     */
+    void checkValidity();
+
+
+// Private Data Members
 private:
 
     /// UI members.

@@ -30,12 +30,13 @@
 // Qt
 #include <QObject>
 #include <QString>
+#include <QStringList>
+#include <QList>
+#include <QVariant>
 
 // CeCe
 #include "cece/core/DataExport.hpp"
 #include "cece/core/String.hpp"
-#include "cece/core/StringView.hpp"
-#include "cece/core/DynamicArray.hpp"
 
 /* ************************************************************************ */
 
@@ -82,7 +83,7 @@ public:
      *
      * @return
      */
-    const String& getName() const noexcept
+    QString getName() const noexcept
     {
         return m_name;
     }
@@ -93,35 +94,10 @@ public:
      *
      * @return
      */
-    const DynamicArray<String>& getNames() const noexcept
+    const QStringList& getNames() const noexcept
     {
         return m_names;
     }
-
-
-// Public Mutators
-public:
-
-
-    /**
-     * @brief Set X axis column.
-     * @param name
-     */
-    void setXColumn(StringView name) noexcept;
-
-
-    /**
-     * @brief Set Y axis column.
-     * @param name
-     */
-    void setYColumn(StringView name) noexcept;
-
-
-    /**
-     * @brief Set color column.
-     * @param name
-     */
-    void setColorColumn(StringView name) noexcept;
 
 
 // Signals
@@ -131,11 +107,10 @@ signals:
     /**
      * @brief Data added.
      *
-     * @param x     X value.
-     * @param y     Y value.
-     * @param color Color value.
+     * @param names
+     * @param values
      */
-    void dataAdded(double x, double y, QString color);
+    void dataAdded(QStringList names, QList<QVariant> values);
 
 
 // Protected Operations
@@ -165,19 +140,11 @@ protected:
 private:
 
     /// Exporter name.
-    String m_name;
+    QString m_name;
 
     /// Exported value names.
-    DynamicArray<String> m_names;
+    QStringList m_names;
 
-    /// X axis column index.
-    int m_x = -1;
-
-    /// Y axis column index.
-    int m_y = -1;
-
-    /// Color column index.
-    int m_color = -1;
 };
 
 /* ************************************************************************ */

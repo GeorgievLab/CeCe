@@ -41,8 +41,6 @@ PlotWidget::PlotWidget(QWidget *parent)
     , ui(new Ui::PlotWidget)
 {
     ui->setupUi(this);
-
-    ui->plot->legend->setVisible(true);
 }
 
 /* ************************************************************************ */
@@ -54,50 +52,77 @@ PlotWidget::~PlotWidget()
 
 /* ************************************************************************ */
 
-void PlotWidget::setXAxisLabel(QString label) noexcept
+void PlotWidget::setXAxisName(QString name) noexcept
 {
-    ui->plot->xAxis->setLabel(label);
+    ui->plot->xAxis->setLabel(name);
+    m_xName = name;
 }
 
 /* ************************************************************************ */
 
-void PlotWidget::setYAxisLabel(QString label) noexcept
+void PlotWidget::setYAxisName(QString name) noexcept
 {
-    ui->plot->yAxis->setLabel(label);
+    ui->plot->yAxis->setLabel(name);
+    m_yName = name;
 }
 
 /* ************************************************************************ */
 
-void PlotWidget::dataAdd(double x, double y, QString color)
+void PlotWidget::setGroupName(QString name) noexcept
 {
+    ui->plot->legend->setVisible(true);
+    m_groupName = name;
+}
+
+/* ************************************************************************ */
+
+void PlotWidget::dataAdd(QStringList names, QList<QVariant> values)
+{
+    static const QColor colors[4] = {
+        Qt::red,
+        Qt::green,
+        Qt::blue,
+        Qt::yellow
+    };
+
+
+    double xValue = 0;
+    double yValue = 0;
+    QString group;
+
+    // Foreach values
+    for (int i = 0; i < names.size(); ++i)
+    {
+        if (names[i] == m_xName)
+            xValue = values[i].toDouble();
+        else if (names[i] == m_yName)
+            yValue = values[i].toDouble();
+        else if (names[i] == m_groupName)
+            group = values[i].toString();
+    }
+
     QCPGraph* graph = nullptr;
 
+    // Find graph by name
     for (int i = 0; i < ui->plot->graphCount(); ++i)
     {
-        if (ui->plot->graph(i)->name() == color)
+        if (ui->plot->graph(i)->name() == group)
         {
             graph = ui->plot->graph(i);
             break;
         }
     }
 
+    // No graph for given group
     if (!graph)
     {
         const int i = ui->plot->graphCount();
-
-        static const QColor colors[4] = {
-            Qt::red,
-            Qt::green,
-            Qt::blue,
-            Qt::yellow
-        };
-
         graph = ui->plot->addGraph();
-        graph->setName(color);
+        graph->setName(group);
         graph->setPen(QPen(colors[i % 4]));
     }
 
-    graph->addData(x, y);
+    graph->addData(xValue, yValue);
     ui->plot->rescaleAxes();
     ui->plot->replot();
 }

@@ -26,6 +26,9 @@
 // Declaration
 #include "PlotCreateDialog.hpp"
 
+// Qt
+#include <QPushButton>
+
 // UI
 #include "ui_PlotCreateDialog.h"
 
@@ -48,10 +51,13 @@ PlotCreateDialog::PlotCreateDialog(ViewPtr<DataExportPlotFactory> factory, QWidg
     ui->setupUi(this);
 
     // Foreach exporters
-    for (const auto& exporter : m_factory->getExporters())
+    const auto& exporters = m_factory->getExporters();
+    for (const auto& exporter : exporters)
     {
-        ui->comboBoxSource->addItem(QString::fromStdString(exporter->getName()));
+        ui->comboBoxSource->addItem(exporter->getName());
     }
+
+    checkValidity();
 }
 
 /* ************************************************************************ */
@@ -84,37 +90,92 @@ QString PlotCreateDialog::getAxisY() const noexcept
 
 /* ************************************************************************ */
 
-QString PlotCreateDialog::getColor() const noexcept
+QString PlotCreateDialog::getGroup() const noexcept
 {
-    return ui->comboBoxColor->currentText();
+    return ui->comboBoxGroup->currentText();
 }
 
 /* ************************************************************************ */
 
 void PlotCreateDialog::on_comboBoxSource_currentIndexChanged(QString name)
 {
+    if (name.isEmpty())
+    {
+        checkValidity();
+        return;
+    }
+
+    ui->comboBoxAxisX->clear();
+    ui->comboBoxAxisY->clear();
+    ui->comboBoxGroup->clear();
+
     // Foreach exporters
     for (const auto& exporter : m_factory->getExporters())
     {
         Q_ASSERT(exporter);
 
         // Find required exporter
-        if (QString::fromStdString(exporter->getName()) != name)
+        if (exporter->getName() != name)
+            continue;
+
+        // Get value names
+        const auto& names = exporter->getNames();
+
+        if (names.empty())
             continue;
 
         ui->comboBoxAxisX->addItem("");
         ui->comboBoxAxisY->addItem("");
-        ui->comboBoxColor->addItem("");
+        ui->comboBoxGroup->addItem("");
 
-        for (const auto& column : exporter->getNames())
+        for (const auto& column : names)
         {
-            QString columnName = QString::fromStdString(column);
-
-            ui->comboBoxAxisX->addItem(columnName);
-            ui->comboBoxAxisY->addItem(columnName);
-            ui->comboBoxColor->addItem(columnName);
+            ui->comboBoxAxisX->addItem(column);
+            ui->comboBoxAxisY->addItem(column);
+            ui->comboBoxGroup->addItem(column);
         }
     }
+
+    checkValidity();
+}
+
+/* ************************************************************************ */
+
+void PlotCreateDialog::on_comboBoxAxisX_currentIndexChanged(QString name)
+{
+    checkValidity();
+}
+
+/* ************************************************************************ */
+
+void PlotCreateDialog::on_comboBoxAxisY_currentIndexChanged(QString name)
+{
+    checkValidity();
+}
+
+/* ************************************************************************ */
+
+void PlotCreateDialog::on_comboBoxGroup_currentIndexChanged(QString name)
+{
+    checkValidity();
+}
+
+/* ************************************************************************ */
+
+void PlotCreateDialog::checkValidity()
+{
+    ui->comboBoxAxisX->setEnabled(ui->comboBoxAxisX->count() > 0);
+    ui->comboBoxAxisY->setEnabled(ui->comboBoxAxisY->count() > 0);
+    ui->comboBoxGroup->setEnabled(ui->comboBoxGroup->count() > 0);
+
+    const bool res =
+        ui->comboBoxSource->currentText().isEmpty() ||
+        ui->comboBoxAxisX->currentText().isEmpty() ||
+        ui->comboBoxAxisY->currentText().isEmpty()
+    ;
+
+    // Disable main button
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!res);
 }
 
 /* ************************************************************************ */

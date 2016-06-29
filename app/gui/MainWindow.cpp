@@ -348,21 +348,16 @@ void MainWindow::on_actionPlotCreate_triggered()
     dock->setWindowTitle(dlg.getSource());
     dock->setObjectName(dlg.getSource());
     PlotWidget* widget = new PlotWidget();
-    widget->setXAxisLabel(dlg.getAxisX());
-    widget->setYAxisLabel(dlg.getAxisY());
+    widget->setXAxisName(dlg.getAxisX());
+    widget->setYAxisName(dlg.getAxisY());
+    widget->setGroupName(dlg.getGroup());
 
     dock->setWidget(widget);
+    dock->setAttribute(Qt::WA_DeleteOnClose, true);
     addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock);
 
     String source = dlg.getSource().toStdString();
     auto exporter = m_dataExportFactory.getExporter(source);
-
-    auto x = dlg.getAxisX().toStdString();
-    auto y = dlg.getAxisY().toStdString();
-    auto color = dlg.getColor().toStdString();
-    exporter->setXColumn(x);
-    exporter->setYColumn(y);
-    exporter->setColorColumn(color);
 
     connect(exporter.get(), &DataExportPlot::dataAdded, widget, &PlotWidget::dataAdd);
 

@@ -53,9 +53,11 @@ UniquePtr<DataExport> DataExportPlotFactory::create(String name) const noexcept
 
 ViewPtr<DataExportPlot> DataExportPlotFactory::getExporter(StringView name) const noexcept
 {
+    QString qname = name.getData();
+
     for (const auto& exporter : m_exporters)
     {
-        if (exporter->getName() == name)
+        if (exporter->getName() == qname)
             return exporter;
     }
 
