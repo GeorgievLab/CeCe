@@ -26,6 +26,9 @@
 // Declaration
 #include "Simulator.hpp"
 
+// C++
+#include <clocale>
+
 // Qt
 #include <QThread>
 #include <QMutexLocker>
@@ -39,6 +42,31 @@
 
 namespace cece {
 namespace gui {
+
+/* ************************************************************************ */
+
+namespace {
+
+/* ************************************************************************ */
+
+struct LocaleScope
+{
+    const char* old;
+
+    LocaleScope(const char* locale) : old(setlocale(LC_ALL, nullptr))
+    {
+        setlocale(LC_ALL, locale);
+    }
+
+    ~LocaleScope()
+    {
+        setlocale(LC_ALL, old);
+    }
+};
+
+/* ************************************************************************ */
+
+}
 
 /* ************************************************************************ */
 
@@ -69,6 +97,8 @@ void Simulator::simulationLoad(QString type, QString source, QString filename) n
     try
     {
         QMutexLocker _(getMutex());
+
+        LocaleScope locale("C");
 
         m_simulation = m_context.createSimulation(tp, src, file);
 

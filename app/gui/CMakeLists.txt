@@ -36,6 +36,7 @@ set(CMAKE_AUTORCC On)
 # Find the QtWidgets library
 find_package(Qt5Widgets)
 find_package(Qt5OpenGL)
+find_package(Qt5PrintSupport)
 
 # ######################################################################### #
 
@@ -61,6 +62,9 @@ set(SRCS
     AboutDialog.hpp
     AboutDialog.cpp
     AboutDialog.ui
+    PlotCreateDialog.hpp
+    PlotCreateDialog.cpp
+    PlotCreateDialog.ui
     Simulator.hpp
     Simulator.cpp
     VisualizationWidget.hpp
@@ -70,6 +74,16 @@ set(SRCS
     XmlHighlighter.hpp
     XmlHighlighter.cpp
     icons.qrc
+    PlotWidget.hpp
+    PlotWidget.cpp
+
+    DataExportPlot.hpp
+    DataExportPlot.cpp
+    DataExportPlotFactory.hpp
+    DataExportPlotFactory.cpp
+
+    qcustomplot.h
+    qcustomplot.cpp
 )
 
 if (APPLE)
@@ -119,6 +133,7 @@ target_link_libraries(${PROJECT_NAME}
     cece
     Qt5::Widgets
     Qt5::OpenGL
+    Qt5::PrintSupport
 )
 
 if (UNIX AND NOT APPLE)

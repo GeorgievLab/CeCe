@@ -42,6 +42,7 @@
 
 // CeCe
 #include "cece/core/Log.hpp"
+#include "cece/core/DataExport.hpp"
 #include "cece/plugin/Manager.hpp"
 #include "cece/plugin/Context.hpp"
 #include "cece/simulator/Visualization.hpp"
@@ -51,6 +52,9 @@
 
 // GUI
 #include "AboutDialog.hpp"
+#include "PlotCreateDialog.hpp"
+#include "PlotWidget.hpp"
+#include "DataExportPlot.hpp"
 #include "XmlHighlighter.hpp"
 
 /* ************************************************************************ */
@@ -135,6 +139,9 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Initialize tools from simulator
     initTools();
+
+    // Set data export factory
+    DataExport::setFactory(&m_dataExportFactory);
 }
 
 /* ************************************************************************ */
@@ -332,7 +339,35 @@ void MainWindow::on_actionVisualizationScreenshot_triggered()
 
 void MainWindow::on_actionPlotCreate_triggered()
 {
+    PlotCreateDialog dlg(&m_dataExportFactory, this);
 
+    if (dlg.exec() == QDialog::Rejected)
+        return;
+
+    QDockWidget* dock = new QDockWidget(this);
+    dock->setWindowTitle(dlg.getSource());
+    dock->setObjectName(dlg.getSource());
+    PlotWidget* widget = new PlotWidget();
+    widget->setXAxisLabel(dlg.getAxisX());
+    widget->setYAxisLabel(dlg.getAxisY());
+
+    dock->setWidget(widget);
+    addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock);
+
+    String source = dlg.getSource().toStdString();
+    auto exporter = m_dataExportFactory.getExporter(source);
+
+    auto x = dlg.getAxisX().toStdString();
+    auto y = dlg.getAxisY().toStdString();
+    auto color = dlg.getColor().toStdString();
+    exporter->setXColumn(x);
+    exporter->setYColumn(y);
+    exporter->setColorColumn(color);
+
+    connect(exporter.get(), &DataExportPlot::dataAdded, widget, &PlotWidget::dataAdd);
+
+    // Move exporter to simulation thread
+    exporter->moveToThread(&m_simulatorThread);
 }
 
 /* ************************************************************************ */

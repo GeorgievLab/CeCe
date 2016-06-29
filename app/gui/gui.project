@@ -43,6 +43,14 @@
     <File Name="LogStream.cpp"/>
     <File Name="XmlHighlighter.hpp"/>
     <File Name="XmlHighlighter.cpp"/>
+    <File Name="PlotCreateDialog.hpp"/>
+    <File Name="PlotCreateDialog.cpp"/>
+    <File Name="DataExportPlot.hpp"/>
+    <File Name="DataExportPlot.cpp"/>
+    <File Name="DataExportPlotFactory.hpp"/>
+    <File Name="DataExportPlotFactory.cpp"/>
+    <File Name="PlotWidget.cpp"/>
+    <File Name="PlotWidget.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="win_resources.rc"/>
@@ -55,6 +63,8 @@
   <VirtualDirectory Name="ui">
     <File Name="MainWindow.ui"/>
     <File Name="AboutDialog.ui"/>
+    <File Name="PlotCreateDialog.ui"/>
+    <File Name="PlotWidget.ui"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>
@@ -162,4 +172,8 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="qcustomplot">
+    <File Name="qcustomplot.cpp"/>
+    <File Name="qcustomplot.h"/>
+  </VirtualDirectory>
 </CodeLite_Project>

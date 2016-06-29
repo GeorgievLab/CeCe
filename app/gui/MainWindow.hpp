@@ -40,6 +40,7 @@
 // GUI
 #include "LogStream.hpp"
 #include "Simulator.hpp"
+#include "DataExportPlotFactory.hpp"
 
 /* ************************************************************************ */
 
@@ -362,6 +363,9 @@ private:
 
     /// Actions for visualization layers.
     QList<QAction*> m_visualizationActions;
+
+    /// Data plot export factory.
+    DataExportPlotFactory m_dataExportFactory;
 };
 
 /* ************************************************************************ */
