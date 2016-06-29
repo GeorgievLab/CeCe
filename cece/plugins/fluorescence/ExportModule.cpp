@@ -100,9 +100,9 @@ void ExportModule::init()
 
     // Write output header
     if (isTotal())
-        writeHeader("iteration", "time", "rfp", "gfp", "yfp");
+        writeHeader("iteration", "time", "protein", "amount");
     else
-        writeHeader("iteration", "time", "x", "y", "xw", "yw", "rfp", "gfp", "yfp");
+        writeHeader("iteration", "time", "x", "y", "xw", "yw", "protein", "amount");
 }
 
 /* ************************************************************************ */
@@ -162,9 +162,9 @@ void ExportModule::update()
         }
 
         // Write record
-        writeRecord(iteration, totalTime.value(),
-            total.rfp, total.gfp, total.yfp
-        );
+        writeRecord(iteration, totalTime.value(), "RFP", total.rfp);
+        writeRecord(iteration, totalTime.value(), "GFP", total.gfp);
+        writeRecord(iteration, totalTime.value(), "YFP", total.yfp);
     }
     else
     {
@@ -184,10 +184,17 @@ void ExportModule::update()
                 continue;
 
             // Write record
-            writeRecord(iteration, totalTime.value(),
-                c.getX(), c.getY(),
+            writeRecord(iteration, totalTime.value(), c.getX(), c.getY(),
                 cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
-                proteins.rfp, proteins.gfp, proteins.yfp
+                "RFP", proteins.rfp
+            );
+            writeRecord(iteration, totalTime.value(), c.getX(), c.getY(),
+                cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
+                "GFP", proteins.gfp
+            );
+            writeRecord(iteration, totalTime.value(), c.getX(), c.getY(),
+                cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
+                "YFP", proteins.yfp
             );
         }
     }
