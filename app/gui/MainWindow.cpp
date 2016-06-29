@@ -397,6 +397,7 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
         delete action;
 
     m_visualizationActions.clear();
+    m_dataExportFactory.reset();
 
     if (flag)
     {
