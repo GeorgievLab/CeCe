@@ -172,6 +172,10 @@
       <File Name="core/DataExport.cpp"/>
       <File Name="core/DataExportCsv.hpp"/>
       <File Name="core/DataExportCsv.cpp"/>
+      <File Name="core/DataExportFactory.hpp"/>
+      <File Name="core/DataExportFactory.cpp"/>
+      <File Name="core/DataExportCsvFactory.hpp"/>
+      <File Name="core/DataExportCsvFactory.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="unit">
       <File Name="core/Units.hpp"/>

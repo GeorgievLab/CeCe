@@ -34,8 +34,10 @@
 #include "cece/core/String.hpp"
 #include "cece/core/StaticArray.hpp"
 #include "cece/core/Tuple.hpp"
+#include "cece/core/ViewPtr.hpp"
 #include "cece/core/IntegerSequence.hpp"
 #include "cece/core/StringStream.hpp"
+#include "cece/core/DataExportFactory.hpp"
 
 /* ************************************************************************ */
 
@@ -279,6 +281,27 @@ public:
     virtual void flush();
 
 
+    /**
+     * @brief Set factory.
+     *
+     * @param factory A pointer to new factory.
+     */
+    static void setFactory(ViewPtr<DataExportFactory> factory) noexcept
+    {
+        s_factory = factory;
+    }
+
+
+    /**
+     * @brief Create data export object.
+     *
+     * @param name
+     *
+     * @return
+     */
+    static UniquePtr<DataExport> create(String name);
+
+
 // Protected Operations
 protected:
 
@@ -349,6 +372,13 @@ private:
             getValue<Is>(arguments)...
         );
     }
+
+
+// Private Data Members
+private:
+
+    /// Factory.
+    static ViewPtr<DataExportFactory> s_factory;
 
 };
 

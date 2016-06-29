@@ -67,6 +67,10 @@ set(SRCS
     DataExport.cpp
     DataExportCsv.hpp
     DataExportCsv.cpp
+    DataExportFactory.hpp
+    DataExportFactory.cpp
+    DataExportCsvFactory.hpp
+    DataExportCsvFactory.cpp
     ValueIterator.hpp
     Range.hpp
     VectorRange.hpp

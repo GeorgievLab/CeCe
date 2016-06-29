@@ -24,59 +24,13 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/core/DataExport.hpp"
-
-// C++
-#include <utility>
+#include "cece/core/DataExportFactory.hpp"
 
 // CeCe
-#include "cece/core/DataExportCsvFactory.hpp"
+#include "cece/core/DataExport.hpp"
 
 /* ************************************************************************ */
 
-namespace cece {
-inline namespace core {
-
-/* ************************************************************************ */
-
-namespace {
-
-/* ************************************************************************ */
-
-DataExportCsvFactory g_defaultFactory;
-
-/* ************************************************************************ */
-
-}
-
-/* ************************************************************************ */
-
-ViewPtr<DataExportFactory> DataExport::s_factory = &g_defaultFactory;
-
-/* ************************************************************************ */
-
-DataExport::~DataExport() = default;
-
-/* ************************************************************************ */
-
-void DataExport::flush()
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-UniquePtr<DataExport> DataExport::create(String name)
-{
-    if (!s_factory)
-        return nullptr;
-
-    return s_factory->create(std::move(name));
-}
-
-/* ************************************************************************ */
-
-}
-}
+CECE_FACTORY_INST(DataExport, String)
 
 /* ************************************************************************ */
