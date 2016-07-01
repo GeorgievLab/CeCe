@@ -256,7 +256,7 @@ public slots:
      *
      * @param mode
      */
-    void simulatorFinished(Simulator::Mode mode);
+    void simulatorFinished(Simulator::Mode mode, bool end);
 
 
     /**

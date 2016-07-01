@@ -144,15 +144,12 @@ bool Simulator::step() noexcept
 
         emit stepped(m_mode, static_cast<int>(m_simulation->getIteration()));
 
-        if (!cont)
-            stop();
-
         return cont;
     }
     catch (const Exception& e)
     {
         emit error(Mode::Simulate, e.what());
-        emit finished(Mode::Simulate);
+        emit finished(Mode::Simulate, false);
         return false;
     }
 }
@@ -198,7 +195,7 @@ void Simulator::initialize() noexcept
     catch (const Exception& e)
     {
         emit error(Mode::Initialize, e.what());
-        emit finished(Mode::Initialize);
+        emit finished(Mode::Initialize, false);
     }
 }
 
@@ -217,7 +214,9 @@ void Simulator::simulate() noexcept
     while (m_running && step())
         QThread::msleep(1000 / 30);
 
-    emit finished(Mode::Simulate);
+    emit finished(Mode::Simulate, m_running);
+
+    m_running = false;
 }
 
 /* ************************************************************************ */

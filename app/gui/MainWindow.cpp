@@ -492,7 +492,7 @@ void MainWindow::simulatorStepped(Simulator::Mode mode, int iteration)
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorFinished(Simulator::Mode mode)
+void MainWindow::simulatorFinished(Simulator::Mode mode, bool end)
 {
     switch (mode)
     {
@@ -522,7 +522,7 @@ void MainWindow::simulatorFinished(Simulator::Mode mode)
     case Simulator::Mode::Simulate:
         ui->actionSimulationStart->setEnabled(true);
         ui->actionSimulationStop->setEnabled(false);
-        ui->actionSimulationStep->setEnabled(false);
+        ui->actionSimulationStep->setEnabled(!end);
         ui->actionSimulationReset->setEnabled(true);
         break;
     }
