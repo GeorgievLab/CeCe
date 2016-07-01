@@ -188,6 +188,12 @@ public slots:
 
 
     /**
+     * @brief Reset view for visualization.
+     */
+    void on_actionVisualizationResetView_triggered();
+
+
+    /**
      * @brief Create a screenshot from visualization.
      */
     void on_actionVisualizationScreenshot_triggered();

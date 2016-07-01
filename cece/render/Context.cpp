@@ -199,12 +199,20 @@ void Context::setWireframe(bool flag) noexcept
 
 /* ************************************************************************ */
 
+void Context::setClearColor(const Color& color) noexcept
+{
+    // Clear color.
+    glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+}
+
+/* ************************************************************************ */
+
 void Context::init(const render::Color& color) noexcept
 {
     Assert(!isInitialized());
 
-    // Clear color.
-    glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    // Clear color
+    setClearColor(color);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);

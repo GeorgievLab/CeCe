@@ -163,6 +163,7 @@
     <property name="title">
      <string>Visualization</string>
     </property>
+    <addaction name="actionVisualizationResetView"/>
     <addaction name="actionVisualizationScreenshot"/>
     <addaction name="separator"/>
    </widget>
@@ -502,6 +503,11 @@
   <action name="actionPlotCreate">
    <property name="text">
     <string>&amp;Create...</string>
+   </property>
+  </action>
+  <action name="actionVisualizationResetView">
+   <property name="text">
+    <string>Reset view</string>
    </property>
   </action>
  </widget>

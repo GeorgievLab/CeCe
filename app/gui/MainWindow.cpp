@@ -322,6 +322,14 @@ void MainWindow::on_actionSimulationReset_triggered()
 
 /* ************************************************************************ */
 
+void MainWindow::on_actionVisualizationResetView_triggered()
+{
+    // Fit simulation to view
+    ui->visualizationWidget->fitToView();
+}
+
+/* ************************************************************************ */
+
 void MainWindow::on_actionVisualizationScreenshot_triggered()
 {
     const QString base = !m_filename.isEmpty() ? QFileInfo(m_filename).completeBaseName() : "cece";
@@ -395,6 +403,9 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
     ui->actionSimulationReset->setEnabled(flag);
     ui->widgetModified->hide();
     ui->progressBar->setValue(0);
+
+    // Fit simulation to view
+    ui->visualizationWidget->fitToView();
 
     // Clear visualization layer actions
     for (auto action : m_visualizationActions)

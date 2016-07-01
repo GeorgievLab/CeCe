@@ -96,6 +96,16 @@ public:
     }
 
 
+// Public Operations
+public:
+
+
+    /**
+     * @brief Fit simulation to view.
+     */
+    void fitToView() noexcept;
+
+
 // Protected Events
 protected:
 

@@ -33,6 +33,7 @@
 
 // CeCe
 #include "cece/core/Units.hpp"
+#include "cece/simulator/Visualization.hpp"
 
 /* ************************************************************************ */
 
@@ -45,6 +46,21 @@ VisualizationWidget::VisualizationWidget(QWidget* parent)
     : QGLWidget(parent)
 {
     // Nothing to do
+}
+
+/* ************************************************************************ */
+
+void VisualizationWidget::fitToView() noexcept
+{
+    if (!m_simulator && m_simulator->getSimulation())
+        return;
+
+    auto size = m_simulator->getSimulation()->getWorldSize();
+    auto& camera = m_renderContext.getCamera();
+    camera.setPosition(Zero);
+    camera.setZoom(
+        std::max(size.getWidth() / width(), size.getHeight() / height()).value()
+    );
 }
 
 /* ************************************************************************ */
@@ -144,6 +160,9 @@ void VisualizationWidget::paintGL()
 
     if (m_simulator && m_simulator->getSimulation() && m_simulator->getSimulation()->isInitialized())
     {
+        // Set clear color
+        m_renderContext.setClearColor(m_simulator->getSimulation()->getVisualization().getBackgroundColor());
+
         // TODO: remove - slow in case of expensive simulation updates
         QMutexLocker _(m_simulator->getMutex());
         m_simulator->getSimulation()->draw(m_renderContext);

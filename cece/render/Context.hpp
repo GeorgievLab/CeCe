@@ -180,6 +180,14 @@ public:
 
 
     /**
+     * @brief Set clear color.
+     *
+     * @param color
+     */
+    void setClearColor(const Color& color) noexcept;
+
+
+    /**
      * @brief Initialize context.
      *
      * @param clearColor
