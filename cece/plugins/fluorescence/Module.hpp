@@ -76,18 +76,27 @@ public:
     };
 
 
+    /**
+     * @brief Grid value state.
+     */
+    struct Record
+    {
+        /// Number of proteins.
+        Proteins<unsigned long> proteins;
+
+        /// Number of cells.
+        unsigned long count;
+    };
+
+
 // Public Types
 public:
-
-
-    /// Molecules number value type.
-    using CountType = unsigned long;
 
     /// Number per area.
     using DensityType = typename units::Inverse<units::Area>::type;
 
     /// Grid type.
-    using GridType = Grid<Proteins<CountType>>;
+    using GridType = Grid<Record>;
 
 
 // Public Ctors & Dtors

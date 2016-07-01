@@ -100,9 +100,9 @@ void ExportModule::init()
 
     // Write output header
     if (isTotal())
-        writeHeader("iteration", "time", "protein", "amount");
+        writeHeader("iteration", "time", "protein", "amount", "cells", "average");
     else
-        writeHeader("iteration", "time", "x", "y", "xw", "yw", "protein", "amount");
+        writeHeader("iteration", "time", "x", "y", "xw", "yw", "protein", "amount", "average", "cells", "average");
 }
 
 /* ************************************************************************ */
@@ -150,21 +150,29 @@ void ExportModule::update()
                 continue;
 
             // Get data
-            const auto proteins = grid[c];
+            const auto record = grid[c];
+            const auto& proteins = record.proteins;
 
             // No data
             if (!(proteins.rfp || proteins.gfp || proteins.yfp))
                 continue;
 
-            total.rfp += proteins.rfp;
-            total.gfp += proteins.gfp;
-            total.yfp += proteins.yfp;
+            total.proteins.rfp += proteins.rfp;
+            total.proteins.gfp += proteins.gfp;
+            total.proteins.yfp += proteins.yfp;
+            total.count += record.count;
         }
 
         // Write record
-        writeRecord(iteration, totalTime.value(), "RFP", total.rfp);
-        writeRecord(iteration, totalTime.value(), "GFP", total.gfp);
-        writeRecord(iteration, totalTime.value(), "YFP", total.yfp);
+        writeRecord(iteration, totalTime.value(), "RFP",
+            total.proteins.rfp, total.count, total.count ? (double) total.proteins.rfp / total.count : 0
+        );
+        writeRecord(iteration, totalTime.value(), "GFP",
+            total.proteins.gfp, total.count, total.count ? (double) total.proteins.gfp / total.count : 0
+        );
+        writeRecord(iteration, totalTime.value(), "YFP",
+            total.proteins.yfp, total.count, total.count ? (double) total.proteins.yfp / total.count : 0
+        );
     }
     else
     {
@@ -177,7 +185,8 @@ void ExportModule::update()
                 continue;
 
             // Get data
-            const auto proteins = grid[c];
+            const auto record = grid[c];
+            const auto& proteins = record.proteins;
 
             // No data
             if (!(proteins.rfp || proteins.gfp || proteins.yfp))
@@ -186,15 +195,15 @@ void ExportModule::update()
             // Write record
             writeRecord(iteration, totalTime.value(), c.getX(), c.getY(),
                 cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
-                "RFP", proteins.rfp
+                "RFP", proteins.rfp, record.count, record.count ? (double) proteins.rfp / record.count : 0
             );
             writeRecord(iteration, totalTime.value(), c.getX(), c.getY(),
                 cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
-                "GFP", proteins.gfp
+                "GFP", proteins.gfp, record.count, record.count ? (double) proteins.gfp / record.count : 0
             );
             writeRecord(iteration, totalTime.value(), c.getX(), c.getY(),
                 cellSize.getWidth() * c.getX(), cellSize.getHeight() * c.getY(),
-                "YFP", proteins.yfp
+                "YFP", proteins.yfp, record.count, record.count ? (double) proteins.yfp / record.count : 0
             );
         }
     }

@@ -100,7 +100,7 @@ void Module::update()
     const auto worldSizeH = worldSize * 0.5;
     const auto cellSize = worldSize / m_grid.getSize();
 
-    std::fill(m_grid.begin(), m_grid.end(), Proteins<CountType>{0, 0, 0});
+    std::fill(m_grid.begin(), m_grid.end(), Record{});
 
     // Foreach all objects
     for (const auto& object : sim.getObjects())
@@ -128,9 +128,10 @@ void Module::update()
         const auto yfp = cell->getMoleculeCount("YFP");
 
         // Add molecules
-        m_grid[coordinates].rfp += rfp;
-        m_grid[coordinates].gfp += gfp;
-        m_grid[coordinates].yfp += yfp;
+        m_grid[coordinates].proteins.rfp += rfp;
+        m_grid[coordinates].proteins.gfp += gfp;
+        m_grid[coordinates].proteins.yfp += yfp;
+        m_grid[coordinates].count += 1;
     }
 }
 
@@ -158,12 +159,13 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
     for (auto&& c : range(m_grid.getSize()))
     {
         // Get number of proteins
-        const auto amount = m_grid[c];
+        const auto record = m_grid[c];
+        const auto& proteins = record.proteins;
 
         // Calculate density
-        const auto rfpDensity = amount.rfp / cellArea;
-        const auto gfpDensity = amount.gfp / cellArea;
-        const auto yfpDensity = amount.yfp / cellArea;
+        const auto rfpDensity = proteins.rfp / cellArea;
+        const auto gfpDensity = proteins.gfp / cellArea;
+        const auto yfpDensity = proteins.yfp / cellArea;
 
         // Colors
         const auto rfp = rfpDensity / m_saturations.rfp;

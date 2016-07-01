@@ -111,6 +111,17 @@ public:
     }
 
 
+    /**
+     * @brief Returns if is stored only as average value.
+     *
+     * @param total
+     */
+    bool isAverage() const noexcept
+    {
+        return m_average;
+    }
+
+
 #ifdef CECE_ENABLE_RENDER
     /**
      * @brief Returns area color.
@@ -169,6 +180,17 @@ public:
     void setTotal(bool total) noexcept
     {
         m_total = total;
+    }
+
+
+    /**
+     * @brief Set if is stored only average value.
+     *
+     * @param average
+     */
+    void setAverage(bool average) noexcept
+    {
+        m_average = average;
     }
 
 
@@ -255,6 +277,9 @@ private:
 
     /// Store only sum values.
     bool m_total = false;
+
+    /// Store only average values.
+    bool m_average = false;
 
 #ifdef CECE_ENABLE_RENDER
     /// Render grid
