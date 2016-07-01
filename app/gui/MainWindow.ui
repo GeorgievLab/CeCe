@@ -141,8 +141,6 @@
     <property name="title">
      <string>Simulation</string>
     </property>
-    <addaction name="actionSimulationInitialize"/>
-    <addaction name="separator"/>
     <addaction name="actionSimulationStart"/>
     <addaction name="actionSimulationStop"/>
     <addaction name="actionSimulationStep"/>

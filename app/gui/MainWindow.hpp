@@ -254,12 +254,6 @@ public slots:
 
 
     /**
-     * @brief Start simulation initialization.
-     */
-    void simulatorInitializationStart();
-
-
-    /**
      * @brief Cancel simulation initialization.
      */
     void simulatorInitializationCancel();

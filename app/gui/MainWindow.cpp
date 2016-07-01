@@ -519,13 +519,6 @@ void MainWindow::simulatorFinished(Simulator::Mode mode)
 
 /* ************************************************************************ */
 
-void MainWindow::simulatorInitializationStart()
-{
-    m_simulator.start(Simulator::Mode::Initialize);
-}
-
-/* ************************************************************************ */
-
 void MainWindow::simulatorInitializationCancel()
 {
     if (m_simulator.getMode() == Simulator::Mode::Initialize)
