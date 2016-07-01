@@ -419,6 +419,9 @@ void DefaultSimulation::initialize(AtomicBool& flag)
     // Initialize modules
     m_modules.init(flag);
 
+    if (!flag)
+        return;
+
     // Initialize simulation
     m_initializers.init(*this);
 

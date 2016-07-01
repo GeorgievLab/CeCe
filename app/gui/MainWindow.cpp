@@ -391,6 +391,7 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
     ui->actionSimulationStep->setEnabled(flag);
     ui->actionSimulationReset->setEnabled(flag);
     ui->widgetModified->hide();
+    ui->progressBar->setValue(0);
 
     // Clear visualization layer actions
     for (auto action : m_visualizationActions)
@@ -429,6 +430,9 @@ void MainWindow::simulatorLoaded(simulator::Simulation* simulation)
             connect(action, &QAction::toggled, this, &MainWindow::visualizationLayerToggle);
         }
     }
+
+    // Initialize simulation by default
+    emit m_simulator.start(Simulator::Mode::Initialize);
 }
 
 /* ************************************************************************ */
@@ -451,7 +455,7 @@ void MainWindow::simulatorStarted(Simulator::Mode mode)
     case Simulator::Mode::Initialize:
         ui->widgetInitializationInfo->show();
         ui->actionSimulationStart->setEnabled(false);
-        ui->actionSimulationStop->setEnabled(true);
+        ui->actionSimulationStop->setEnabled(false);
         ui->actionSimulationStep->setEnabled(false);
         ui->actionSimulationReset->setEnabled(false);
         break;
@@ -484,10 +488,21 @@ void MainWindow::simulatorFinished(Simulator::Mode mode)
 
     case Simulator::Mode::Initialize:
         ui->widgetInitializationInfo->hide();
-        ui->actionSimulationStart->setEnabled(true);
-        ui->actionSimulationStop->setEnabled(false);
-        ui->actionSimulationStep->setEnabled(true);
-        ui->actionSimulationReset->setEnabled(true);
+
+        if (m_simulator.getSimulation() && m_simulator.getSimulation()->isInitialized())
+        {
+            ui->actionSimulationStart->setEnabled(true);
+            ui->actionSimulationStop->setEnabled(false);
+            ui->actionSimulationStep->setEnabled(true);
+            ui->actionSimulationReset->setEnabled(true);
+        }
+        else
+        {
+            ui->actionSimulationStart->setEnabled(false);
+            ui->actionSimulationStop->setEnabled(false);
+            ui->actionSimulationStep->setEnabled(false);
+            ui->actionSimulationReset->setEnabled(true);
+        }
         break;
 
     case Simulator::Mode::Simulate:
