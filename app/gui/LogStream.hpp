@@ -55,9 +55,11 @@ signals:
     /**
      * @brief A new message logged.
      *
-     * @param message
+     * @param type    Message type.
+     * @param section Message section.
+     * @param msg     Message to log.
      */
-    void append(QString message);
+    void append(Log::Type type, QString section, QString message);
 
 
 // Public Operations
@@ -67,9 +69,11 @@ public:
     /**
      * @brief Write a message to output.
      *
-     * @param msg
+     * @param type    Message type.
+     * @param section Message section.
+     * @param msg     Message to log.
      */
-    void write(const String& msg) override;
+    void write(Log::Type type, const String& section, const String& msg) override;
 
 };
 

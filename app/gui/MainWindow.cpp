@@ -39,6 +39,7 @@
 #include <QStringList>
 #include <QImage>
 #include <QFileInfo>
+#include <QScrollBar>
 
 // CeCe
 #include "cece/core/Log.hpp"
@@ -73,6 +74,8 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
     , m_simulator(m_pluginManager.getRepository())
 {
+    qRegisterMetaType<Log::Type>("Log::Type");
+
     ui->setupUi(this);
 
     // Store pointer to simulator in visualization
@@ -92,7 +95,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     // Set log stream
     Log::setOutput(&m_logStream);
-    connect(&m_logStream, &LogStream::append, ui->textEditLog, &QTextEdit::append);
+    connect(&m_logStream, &LogStream::append, this, &MainWindow::logAppend);
 
     // Restore settings
     restoreSettings();
@@ -549,6 +552,32 @@ void MainWindow::visualizationLayerToggle(bool flag)
             break;
         }
     }
+}
+
+/* ************************************************************************ */
+
+void MainWindow::logAppend(Log::Type type, QString section, QString message)
+{
+    QString msg;
+
+    switch (type)
+    {
+    case Log::Type::Default: break;
+    case Log::Type::Info:    msg += "<font style='color: blue'>[INFO]</font> "; break;
+    case Log::Type::Warning: msg += "<font style='color: yellow'>[WARN]</font> "; break;
+    case Log::Type::Error:   msg += "<font style='color: red'>[ERROR]</font> "; break;
+    case Log::Type::Debug:   msg += "<font style='color: green'>[DEBUG]</font> "; break;
+    }
+
+    if (!section.isEmpty())
+        msg += "[" + section + "] ";
+
+    msg += message;
+
+    ui->textEditLog->append(msg);
+
+    QScrollBar* sb = ui->textEditLog->verticalScrollBar();
+    sb->setValue(sb->maximum());
 }
 
 /* ************************************************************************ */

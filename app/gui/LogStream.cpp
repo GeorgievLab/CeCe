@@ -33,9 +33,9 @@ namespace gui {
 
 /* ************************************************************************ */
 
-void LogStream::write(const String& msg)
+void LogStream::write(Log::Type type, const String& section, const String& msg)
 {
-    emit append(QString::fromStdString(msg));
+    emit append(type, QString::fromStdString(section), QString::fromStdString(msg));
 }
 
 /* ************************************************************************ */

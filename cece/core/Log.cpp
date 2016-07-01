@@ -52,10 +52,24 @@ Log::StreamOutput::~StreamOutput() = default;
 
 /* ************************************************************************ */
 
-void Log::StreamOutput::write(const String& msg)
+void Log::StreamOutput::write(Type type, const String& section, const String& msg)
 {
-    if (m_os)
-        *m_os << msg << std::endl;
+    if (!m_os)
+        return;
+
+    switch (type)
+    {
+    case Type::Default: break;
+    case Type::Info:    *m_os << CliColor::LightGreen   << "[INFO] "  << CliColor::Default; break;
+    case Type::Warning: *m_os << CliColor::Yellow       << "[WARN] "  << CliColor::Default; break;
+    case Type::Error:   *m_os << CliColor::Red          << "[ERROR] " << CliColor::Default; break;
+    case Type::Debug:   *m_os << CliColor::Green        << "[DEBUG] " << CliColor::Default; break;
+    }
+
+    if (!section.empty())
+        *m_os << "[" << section << "] ";
+
+    *m_os << msg << std::endl;
 }
 
 /* ************************************************************************ */

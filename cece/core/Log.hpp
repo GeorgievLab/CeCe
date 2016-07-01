@@ -47,6 +47,23 @@ inline namespace core {
 class Log
 {
 
+// Public Enums
+public:
+
+
+    /**
+     * @brief Log message types.
+     */
+    enum class Type
+    {
+        Default,
+        Info,
+        Warning,
+        Error,
+        Debug
+    };
+
+
 // Public Classes
 public:
 
@@ -70,9 +87,11 @@ public:
         /**
          * @brief Write a message to output.
          *
-         * @param msg
+         * @param type    Message type.
+         * @param section Message section.
+         * @param msg     Message to log.
          */
-        virtual void write(const String& msg) = 0;
+        virtual void write(Type type, const String& section, const String& msg) = 0;
     };
 
 
@@ -103,9 +122,11 @@ public:
         /**
          * @brief Write a message to output.
          *
-         * @param msg
+         * @param type    Message type.
+         * @param section Message section.
+         * @param msg     Message to log.
          */
-        void write(const String& msg) override;
+        void write(Type type, const String& section, const String& msg) override;
 
     // Private Data Members
     private:
@@ -156,8 +177,8 @@ public:
         if (s_output)
         {
             OutStringStream oss;
-            message(oss, CliColor::LightGreen, "[INFO] ", CliColor::Default, std::forward<Args>(args)...);
-            s_output->write(oss.str());
+            message(oss, std::forward<Args>(args)...);
+            s_output->write(Type::Info, String{}, oss.str());
         }
     }
 
@@ -174,8 +195,8 @@ public:
         if (s_output)
         {
             OutStringStream oss;
-            message(oss, CliColor::Green, "[DBG ] ", CliColor::Default, std::forward<Args>(args)...);
-            s_output->write(oss.str());
+            message(oss, std::forward<Args>(args)...);
+            s_output->write(Type::Debug, String{}, oss.str());
         }
 #endif
     }
@@ -192,8 +213,8 @@ public:
         if (s_output)
         {
             OutStringStream oss;
-            message(oss, CliColor::Yellow, "[WARN] ", CliColor::Default, std::forward<Args>(args)...);
-            s_output->write(oss.str());
+            message(oss, std::forward<Args>(args)...);
+            s_output->write(Type::Warning, String{}, oss.str());
         }
     }
 
@@ -209,8 +230,8 @@ public:
         if (s_error)
         {
             OutStringStream oss;
-            message(oss, CliColor::Red, "[ERR ] ", CliColor::Default, std::forward<Args>(args)...);
-            s_error->write(oss.str());
+            message(oss, std::forward<Args>(args)...);
+            s_error->write(Type::Error, String{}, oss.str());
         }
     }
 

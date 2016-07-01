@@ -35,6 +35,7 @@
 #include <QList>
 
 // CeCe
+#include "cece/core/Log.hpp"
 #include "cece/plugin/Manager.hpp"
 
 // GUI
@@ -270,6 +271,16 @@ public slots:
      * @param flag
      */
     void visualizationLayerToggle(bool flag);
+
+
+    /**
+     * @brief A new message logged.
+     *
+     * @param type    Message type.
+     * @param section Message section.
+     * @param msg     Message to log.
+     */
+    void logAppend(Log::Type type, QString section, QString message);
 
 
 // Public Operations
