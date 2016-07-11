@@ -362,6 +362,7 @@ void MainWindow::on_actionPlotCreate_triggered()
     widget->setXAxisName(dlg.getAxisX());
     widget->setYAxisName(dlg.getAxisY());
     widget->setGroupName(dlg.getGroup());
+    widget->setType(dlg.getType());
 
     dock->setWidget(widget);
     dock->setAttribute(Qt::WA_DeleteOnClose, true);

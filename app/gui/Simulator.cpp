@@ -53,14 +53,16 @@ struct LocaleScope
 {
     const char* old;
 
-    LocaleScope(const char* locale) : old(setlocale(LC_ALL, nullptr))
+    LocaleScope(const char* locale)
+        : old(setlocale(LC_ALL, nullptr))
     {
         setlocale(LC_ALL, locale);
     }
 
     ~LocaleScope()
     {
-        setlocale(LC_ALL, old);
+        if (old)
+            setlocale(LC_ALL, old);
     }
 };
 

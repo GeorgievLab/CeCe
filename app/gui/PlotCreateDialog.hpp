@@ -107,6 +107,14 @@ public:
     QString getGroup() const noexcept;
 
 
+    /**
+     * @brief Returns plot type.
+     *
+     * @return
+     */
+    QString getType() const noexcept;
+
+
 // Public Slots
 public slots:
 

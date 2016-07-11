@@ -97,6 +97,13 @@ QString PlotCreateDialog::getGroup() const noexcept
 
 /* ************************************************************************ */
 
+QString PlotCreateDialog::getType() const noexcept
+{
+    return ui->comboBoxType->currentText();
+}
+
+/* ************************************************************************ */
+
 void PlotCreateDialog::on_comboBoxSource_currentIndexChanged(QString name)
 {
     if (name.isEmpty())

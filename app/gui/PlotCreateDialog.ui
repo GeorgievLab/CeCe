@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>382</width>
-    <height>162</height>
+    <height>188</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
      <item row="0" column="1">
       <widget class="QComboBox" name="comboBoxSource"/>
      </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="labelAxisX">
        <property name="text">
         <string>Axis X:</string>
@@ -39,10 +39,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <widget class="QComboBox" name="comboBoxAxisX"/>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="labelAxisY">
        <property name="text">
         <string>Axis Y:</string>
@@ -52,10 +52,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QComboBox" name="comboBoxAxisY"/>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="labelGroup">
        <property name="text">
         <string>Group:</string>
@@ -65,8 +65,29 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QComboBox" name="comboBoxGroup"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBoxType">
+       <item>
+        <property name="text">
+         <string>Line</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Point</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelType">
+       <property name="text">
+        <string>Plot type:</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

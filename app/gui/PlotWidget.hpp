@@ -94,6 +94,13 @@ public:
     void setGroupName(QString name) noexcept;
 
 
+    /**
+     * @brief Set plot type.
+     * @param type
+     */
+    void setType(QString type) noexcept;
+
+
 // Slots
 public slots:
 
@@ -121,6 +128,9 @@ private:
 
     /// Name of group.
     QString m_groupName;
+
+    /// Plot type.
+    QString m_type;
 };
 
 /* ************************************************************************ */

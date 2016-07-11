@@ -76,6 +76,13 @@ void PlotWidget::setGroupName(QString name) noexcept
 
 /* ************************************************************************ */
 
+void PlotWidget::setType(QString type) noexcept
+{
+    m_type = type;
+}
+
+/* ************************************************************************ */
+
 void PlotWidget::dataAdd(QStringList names, QList<QVariant> values)
 {
     static const QColor colors[4] = {
@@ -120,6 +127,12 @@ void PlotWidget::dataAdd(QStringList names, QList<QVariant> values)
         graph = ui->plot->addGraph();
         graph->setName(group);
         graph->setPen(QPen(colors[i % 4]));
+
+        if (m_type == "Point")
+        {
+            graph->setLineStyle(QCPGraph::lsNone);
+            graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+        }
     }
 
     graph->addData(xValue, yValue);
