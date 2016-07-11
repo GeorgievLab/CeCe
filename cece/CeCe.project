@@ -143,6 +143,7 @@
       <File Name="core/PtrNamedContainer.hpp"/>
       <File Name="core/IteratorRange.hpp"/>
       <File Name="core/Range.hpp"/>
+      <File Name="core/Set.hpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="allocator">
       <File Name="core/AlignedAllocator.cpp"/>
