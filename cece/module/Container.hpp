@@ -88,11 +88,23 @@ public:
 
     /**
      * @brief Render modules sorted by z-order.
-     *
-     * @param visualization
+     * @param visualization Visualization context.
      * @param context       Rendering context.
      */
     void draw(const simulator::Visualization& visualization, render::Context& context);
+
+
+    /**
+     * @brief Store modules drawing state.
+     * @param visualization Visualization context.
+     */
+    void drawStoreState(const simulator::Visualization& visualization);
+
+
+    /**
+     * @brief Swap modules drawing state.
+     */
+    void drawSwapState();
 
 #endif
 

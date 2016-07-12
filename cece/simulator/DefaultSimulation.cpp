@@ -457,6 +457,17 @@ bool DefaultSimulation::update()
     // Delete unused objects
     deleteObjects();
 
+    // Update states
+    m_modules.drawStoreState(m_visualization);
+
+    {
+#ifdef CECE_THREAD_SAFE
+        MutexGuard _(m_mutex);
+#endif
+        // Swap states
+        m_modules.drawSwapState();
+    }
+
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     {
         auto _ = measure_time("sim.physics", TimeMeasurement(this));
@@ -503,6 +514,10 @@ void DefaultSimulation::draw(render::Context& context)
         static_cast<float>(getWorldSize().getWidth().value()),
         static_cast<float>(getWorldSize().getHeight().value())
     );
+
+#ifdef CECE_THREAD_SAFE
+    MutexGuard _(m_mutex);
+#endif
 
     // Render modules
     if (m_visualization.isEnabled("modules", true))

@@ -93,6 +93,26 @@ void Container::draw(const simulator::Visualization& visualization, render::Cont
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
+void Container::drawStoreState(const simulator::Visualization& visualization)
+{
+    for (auto& module : *this)
+        module->drawStoreState(visualization);
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Container::drawSwapState()
+{
+    for (auto& module : *this)
+        module->drawSwapState();
+}
+#endif
+
+/* ************************************************************************ */
+
 DynamicArray<ViewPtr<Module>>
 Container::getSortedListAsc() const noexcept
 {
