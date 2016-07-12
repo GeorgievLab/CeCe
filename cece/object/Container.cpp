@@ -109,6 +109,26 @@ void Container::draw(render::Context& context)
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
+void Container::drawStoreState(const simulator::Visualization& visualization)
+{
+    for (const auto& obj : m_data)
+        obj->drawStoreState(visualization);
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Container::drawSwapState()
+{
+    for (const auto& obj : m_data)
+        obj->drawSwapState();
+}
+#endif
+
+/* ************************************************************************ */
+
 }
 }
 

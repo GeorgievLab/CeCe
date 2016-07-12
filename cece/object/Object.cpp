@@ -573,6 +573,51 @@ void Object::initShapes()
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
+void Object::draw(const simulator::Visualization&, render::Context& context)
+{
+    draw(context);
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Object::draw(render::Context& context)
+{
+    // Nothing to do
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Object::drawStoreState(const simulator::Visualization&)
+{
+    drawStoreState();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Object::drawStoreState()
+{
+    // Nothing to do
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Object::drawSwapState()
+{
+    // Nothing to do
+}
+#endif
+
+/* ************************************************************************ */
+
 }
 }
 

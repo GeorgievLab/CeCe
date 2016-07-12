@@ -333,6 +333,19 @@ public:
      */
     void draw(render::Context& context);
 
+
+    /**
+     * @brief Store objects drawing state.
+     * @param visualization Visualization context.
+     */
+    void drawStoreState(const simulator::Visualization& visualization);
+
+
+    /**
+     * @brief Swap objects drawing state.
+     */
+    void drawSwapState();
+
 #endif
 
 

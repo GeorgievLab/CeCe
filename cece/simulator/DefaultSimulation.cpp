@@ -427,6 +427,19 @@ void DefaultSimulation::initialize(AtomicBool& flag)
 
     // Mark simulation initialized
     m_initialized = true;
+
+    // Update states
+    m_modules.drawStoreState(m_visualization);
+    m_objects.drawStoreState(m_visualization);
+
+    {
+#ifdef CECE_THREAD_SAFE
+        MutexGuard _(m_mutex);
+#endif
+        // Swap states
+        m_modules.drawSwapState();
+        m_objects.drawSwapState();
+    }
 }
 
 /* ************************************************************************ */
@@ -459,6 +472,7 @@ bool DefaultSimulation::update()
 
     // Update states
     m_modules.drawStoreState(m_visualization);
+    m_objects.drawStoreState(m_visualization);
 
     {
 #ifdef CECE_THREAD_SAFE
@@ -466,6 +480,7 @@ bool DefaultSimulation::update()
 #endif
         // Swap states
         m_modules.drawSwapState();
+        m_objects.drawSwapState();
     }
 
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
