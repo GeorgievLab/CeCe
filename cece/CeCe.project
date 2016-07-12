@@ -290,6 +290,8 @@
     </VirtualDirectory>
     <File Name="render/OpenGL.hpp"/>
     <File Name="render/State.hpp"/>
+    <File Name="render/Image.hpp"/>
+    <File Name="render/Image.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="simulator">
     <File Name="simulator/Simulator.cpp"/>

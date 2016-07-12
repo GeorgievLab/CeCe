@@ -24,12 +24,6 @@
 /* ************************************************************************ */
 
 // Declaration
-#include "cece/render/GridColor.hpp"
-
-// CeCe
-#include "cece/core/StaticArray.hpp"
-#include "cece/render/Context.hpp"
-#include "cece/render/VertexFormat.hpp"
 #include "cece/render/Image.hpp"
 
 /* ************************************************************************ */
@@ -39,99 +33,29 @@ namespace render {
 
 /* ************************************************************************ */
 
-// Vertex structure
-struct Vertex
-{
-    float x, y;
-    float u, v;
-};
+Image::Image() = default;
 
 /* ************************************************************************ */
 
-static const StaticArray<Vertex, 4> g_vertices = {{
-    { 0.5f,  0.5f, 1.0f, 1.0f},
-    { 0.5f, -0.5f, 1.0f, 0.0f},
-    {-0.5f, -0.5f, 0.0f, 0.0f},
-    {-0.5f,  0.5f, 0.0f, 1.0f}
-}};
-
-/* ************************************************************************ */
-
-GridColor::GridColor(Context& context)
-    : m_texture(context)
-    , m_buffer(context, g_vertices.size() * sizeof(decltype(g_vertices)::value_type), g_vertices.data())
-{
-    // Nothing to do
-}
-
-/* ************************************************************************ */
-
-GridColor::GridColor(Context& context, Size size)
-    : GridColor(context)
+Image::Image(Size size)
 {
     resize(std::move(size));
 }
 
 /* ************************************************************************ */
 
-void GridColor::setImage(const Image& img)
+void Image::resize(Size size, const Color& color)
 {
-    m_texture.update(img.getData());
-}
-
-/* ************************************************************************ */
-
-void GridColor::draw(Context& context) noexcept
-{
-    static render::VertexFormat vformat{
-        render::VertexElement(render::VertexElementType::Position, render::DataType::Float, 2),
-        render::VertexElement(render::VertexElementType::TexCoord, render::DataType::Float, 2)
-    };
-
-    if (m_colorsUpdated)
-        sync();
-
-    // Set parameters
-    context.setVertexBuffer(&m_buffer);
-    context.setVertexFormat(&vformat);
-    context.setTexture(&m_texture);
-
-    // Draw
-    context.draw(PrimitiveType::Quads, 4);
-
-    // Unset parameters
-    context.setTexture(nullptr);
-    context.setVertexFormat(nullptr);
-    context.setVertexBuffer(nullptr);
-}
-
-/* ************************************************************************ */
-
-void GridColor::resize(Size size, const Color& color)
-{
-    GridBase::resize(std::move(size));
-
     // Resize color grid
-    m_colors.resize(getSize(), color);
-    m_texture.resize(getSize(), color);
+    m_colors.resize(size, color);
 }
 
 /* ************************************************************************ */
 
-void GridColor::clear(const Color& color)
+void Image::clear(const Color& color)
 {
     for (auto& c : m_colors)
         c = color;
-
-    m_colorsUpdated = true;
-}
-
-/* ************************************************************************ */
-
-void GridColor::sync()
-{
-    m_texture.update(m_colors.getData());
-    m_colorsUpdated = false;
 }
 
 /* ************************************************************************ */

@@ -30,10 +30,7 @@
 // CeCe
 #include "cece/core/Vector.hpp"
 #include "cece/core/Grid.hpp"
-#include "cece/render/Buffer.hpp"
 #include "cece/render/Color.hpp"
-#include "cece/render/Texture.hpp"
-#include "cece/render/GridBase.hpp"
 
 /* ************************************************************************ */
 
@@ -42,15 +39,10 @@ namespace render {
 
 /* ************************************************************************ */
 
-class Context;
-class Image;
-
-/* ************************************************************************ */
-
 /**
- * @brief Texture-like grid.
+ * @brief Image (color grid).
  */
-class GridColor : public GridBase
+class Image
 {
 
 // Public Ctors & Dtors
@@ -59,19 +51,16 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param context Rendering context.
      */
-    explicit GridColor(Context& context);
+    Image();
 
 
     /**
      * @brief Constructor.
      *
-     * @param context Rendering context.
-     * @param size
+     * @param size Image size.
      */
-    GridColor(Context& context, Size size);
+    explicit Image(Size size);
 
 
 // Public Operators
@@ -102,17 +91,8 @@ public:
     }
 
 
-// Public Accessors
+// Public Accessors & Mutators
 public:
-
-
-    /**
-     * @brief Returns if object is initialized.
-     */
-    bool isInitialized() const noexcept
-    {
-        return m_buffer.isInitialized()/* && m_texture.isInitialized() */;
-    }
 
 
     /**
@@ -139,10 +119,6 @@ public:
     }
 
 
-// Public Mutators
-public:
-
-
     /**
      * @brief Set pixel color.
      *
@@ -151,38 +127,34 @@ public:
      */
     void set(const Coordinate& coord, const Color& color) noexcept
     {
-        // Set color
         m_colors[coord] = color;
-        m_colorsUpdated = true;
     }
 
 
     /**
-     * @brief Set flag that indicates the texture on GPU should be updated.
+     * @brief Returns image size.
+     *
+     * @return
      */
-    void colorsUpdated() noexcept
+    Size getSize() const noexcept
     {
-        m_colorsUpdated = true;
+        return m_colors.getSize();
     }
 
 
     /**
-     * @brief Copy image data.
-     * @param img Source image.
+     * @brief Returns image data.
+     *
+     * @return
      */
-    void setImage(const Image& img);
+    const Color* getData() const noexcept
+    {
+        return m_colors.getData();
+    }
 
 
 // Public Operators
 public:
-
-
-    /**
-     * @brief Render at current position.
-     *
-     * @param context Rendering context.
-     */
-    void draw(Context& context) noexcept;
 
 
     /**
@@ -202,26 +174,11 @@ public:
     void clear(const Color& color);
 
 
-    /**
-     * @brief Synchronize local buffer with GPU texture.
-     */
-    void sync();
-
-
 // Private Data Members
 private:
 
-    /// Texture.
-    Texture m_texture;
-
-    /// Buffer for texture rendering.
-    Buffer m_buffer;
-
     /// Buffer for storing texture data.
     Grid<Color> m_colors;
-
-    /// If colors were updated.
-    bool m_colorsUpdated = false;
 
 };
 
