@@ -195,8 +195,16 @@ void Module::save(const FilePath& filename)
     // Row size
     const auto rowSize = png_get_rowbytes(png, info);
 
-    for (png_int_32 y = m_size.getHeight(); y >= 0; y--)
-        rowPtrs[y] = m_data.data() + y * rowSize;
+    // Copy data
+    {
+#ifdef CECE_THREAD_SAFE
+        // Lock access
+        MutexGuard guard(m_mutex);
+#endif
+
+        for (png_int_32 y = m_size.getHeight(); y >= 0; y--)
+            rowPtrs[y] = m_data.data() + y * rowSize;
+    }
 
     // Write data
     png_write_image(png, rowPtrs.data());

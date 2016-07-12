@@ -57,10 +57,6 @@
 #  include "cece/render/GridColorColorMap.hpp"
 #endif
 
-#ifdef CECE_THREAD_SAFE
-#  include "cece/core/Mutex.hpp"
-#endif
-
 // Plugin
 #include "cece/plugins/streamlines/Boundaries.hpp"
 #include "cece/plugins/streamlines/Lattice.hpp"

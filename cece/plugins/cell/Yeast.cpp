@@ -81,11 +81,6 @@ Yeast::~Yeast()
 
 void Yeast::update(units::Duration dt)
 {
-#ifdef CECE_THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
-#endif
-
     const auto volume0 = getVolume();
     CellBase::update(dt);
     const auto volume1 = getVolume();

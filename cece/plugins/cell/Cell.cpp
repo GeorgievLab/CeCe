@@ -52,11 +52,6 @@ Cell::Cell(simulator::Simulation& simulation, String typeName, object::Object::T
 
 void Cell::update(units::Duration dt)
 {
-#ifdef CECE_THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
-#endif
-
     CellBase::update(dt);
 
     // Update shape radius
