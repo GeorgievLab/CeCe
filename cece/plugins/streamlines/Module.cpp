@@ -183,11 +183,6 @@ void Module::update()
         // Obstacles
         updateObstacleMap();
 
-#ifdef CECE_THREAD_SAFE
-        // Lock access
-        MutexGuard guard(m_mutex);
-#endif
-
         // Compute inner iterations
         for (IterationType it = 0; it < getInnerIterations(); it++)
         {
@@ -312,112 +307,20 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
     if (drawDensity && !m_drawableDensity)
         m_drawableDensity.create(context, size);
 
-    {
-#ifdef CECE_THREAD_SAFE
-        // Lock access
-        MutexGuard guard(m_mutex);
-#endif
-        // Find min/max density
-        Descriptor::DensityType rhoMin = std::numeric_limits<Descriptor::DensityType>::max();
-        Descriptor::DensityType rhoMax = 0.0;
-        RealType maxVel = 0.0;
+    RenderState& state = m_drawableState.getFront();
 
-        for (auto&& c : range(size))
-        {
-            const auto& node = m_lattice[c];
-            const auto dynamics = node.getDynamics();
+    if (drawDynamicsType && m_drawableDynamicsType)
+        m_drawableDynamicsType->setImage(state.imageDynamicsType);
 
-            if (dynamics == getFluidDynamics())
-            {
-                const auto velocity = node.computeVelocity();
-                const auto density = node.computeDensity();
+    if (drawMagnitude && m_drawableMagnitude)
+        m_drawableMagnitude->setImage(state.imageMagnitude);
 
-                maxVel = std::max(maxVel, velocity.getLength());
-                rhoMin = std::min(density, rhoMin);
-                rhoMax = std::max(density, rhoMax);
-            }
-        }
-
-        // Update texture
-        for (auto&& c : range(size))
-        {
-            // Cell alias
-            const auto& node = m_lattice[c];
-            const auto velocity = node.computeVelocity();
-            const auto density = node.computeDensity();
-            const auto dynamics = node.getDynamics();
-
-            // Store dynamics type
-            if (drawDynamicsType)
-            {
-                render::Color color;
-
-                if (dynamics == getFluidDynamics())
-                {
-                    color = render::colors::BLACK;
-                }
-                else if (m_boundaries.isBoundaryDynamics(dynamics, Boundary::Type::Inlet))
-                {
-                    color = render::colors::RED;
-                }
-                else if (m_boundaries.isBoundaryDynamics(dynamics, Boundary::Type::Outlet))
-                {
-                    color = render::colors::BLUE;
-                }
-                else if (dynamics == NoDynamics::getInstance())
-                {
-                    color = render::colors::WHITE;
-                }
-                else
-                {
-                    color = render::colors::GREEN;
-                }
-
-                // Store color
-                m_drawableDynamicsType->set(c, color);
-            }
-
-            if (drawMagnitude)
-            {
-                if (dynamics == getFluidDynamics())
-                {
-                    m_drawableMagnitude->set(
-                        c,
-                        render::Color::fromGray(velocity.getLength() / maxVel)
-                    );
-                }
-                else
-                {
-                    render::Color color = render::colors::BLACK;
-                    color.setAlpha(0);
-
-                    m_drawableMagnitude->set(c, color);
-                }
-            }
-
-            if (drawDensity)
-            {
-                if (dynamics == getFluidDynamics())
-                {
-                    m_drawableDensity->set(
-                        c,
-                        render::Color::fromGray((density - rhoMin) / (rhoMax - rhoMin))
-                    );
-                }
-                else
-                {
-                    render::Color color = render::colors::BLACK;
-                    color.setAlpha(0);
-
-                    m_drawableDensity->set(c, color);
-                }
-            }
-        }
-    }
+    if (drawDensity && m_drawableDensity)
+        m_drawableDensity->setImage(state.imageDensity);
 
     // Draw color grid
     context.matrixPush();
-    context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
+    context.matrixScale(state.scale);
 
     if (drawDynamicsType && m_drawableDynamicsType)
         m_drawableDynamicsType->draw(context);
@@ -429,6 +332,134 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         m_drawableDensity->draw(context);
 
     context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::drawStoreState(const simulator::Visualization& visualization)
+{
+    const auto size = m_lattice.getSize();
+    const bool drawDynamicsType = visualization.isEnabled(m_visualizationLayerDynamicsType);
+    const bool drawMagnitude = visualization.isEnabled(m_visualizationLayerMagnitude);
+    const bool drawDensity = visualization.isEnabled(m_visualizationLayerDensity);
+
+    // Render state
+    RenderState& state = m_drawableState.getBack();
+
+    state.scale = getSimulation().getWorldSize() / units::Length(1);
+
+    // Resize image
+    state.imageDynamicsType.resize(size);
+    state.imageMagnitude.resize(size);
+    state.imageDensity.resize(size);
+
+    // Find min/max density
+    Descriptor::DensityType rhoMin = std::numeric_limits<Descriptor::DensityType>::max();
+    Descriptor::DensityType rhoMax = 0.0;
+    RealType maxVel = 0.0;
+
+    for (auto&& c : range(size))
+    {
+        const auto& node = m_lattice[c];
+        const auto dynamics = node.getDynamics();
+
+        if (dynamics == getFluidDynamics())
+        {
+            const auto velocity = node.computeVelocity();
+            const auto density = node.computeDensity();
+
+            maxVel = std::max(maxVel, velocity.getLength());
+            rhoMin = std::min(density, rhoMin);
+            rhoMax = std::max(density, rhoMax);
+        }
+    }
+
+    // Update texture
+    for (auto&& c : range(size))
+    {
+        // Cell alias
+        const auto& node = m_lattice[c];
+        const auto velocity = node.computeVelocity();
+        const auto density = node.computeDensity();
+        const auto dynamics = node.getDynamics();
+
+        // Store dynamics type
+        if (drawDynamicsType)
+        {
+            render::Color color;
+
+            if (dynamics == getFluidDynamics())
+            {
+                color = render::colors::BLACK;
+            }
+            else if (m_boundaries.isBoundaryDynamics(dynamics, Boundary::Type::Inlet))
+            {
+                color = render::colors::RED;
+            }
+            else if (m_boundaries.isBoundaryDynamics(dynamics, Boundary::Type::Outlet))
+            {
+                color = render::colors::BLUE;
+            }
+            else if (dynamics == NoDynamics::getInstance())
+            {
+                color = render::colors::WHITE;
+            }
+            else
+            {
+                color = render::colors::GREEN;
+            }
+
+            // Store color
+            state.imageDynamicsType.set(c, color);
+        }
+
+        if (drawMagnitude)
+        {
+            if (dynamics == getFluidDynamics())
+            {
+                state.imageMagnitude.set(
+                    c,
+                    render::Color::fromGray(velocity.getLength() / maxVel)
+                );
+            }
+            else
+            {
+                render::Color color = render::colors::BLACK;
+                color.setAlpha(0);
+
+                state.imageMagnitude.set(c, color);
+            }
+        }
+
+        if (drawDensity)
+        {
+            if (dynamics == getFluidDynamics())
+            {
+                state.imageDensity.set(
+                    c,
+                    render::Color::fromGray((density - rhoMin) / (rhoMax - rhoMin))
+                );
+            }
+            else
+            {
+                render::Color color = render::colors::BLACK;
+                color.setAlpha(0);
+
+                state.imageDensity.set(c, color);
+            }
+        }
+    }
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 

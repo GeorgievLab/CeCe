@@ -35,6 +35,7 @@
 #include "cece/module/ExportModule.hpp"
 
 #ifdef CECE_ENABLE_RENDER
+#  include "cece/render/State.hpp"
 #  include "cece/render/Object.hpp"
 #  include "cece/render/Color.hpp"
 #  include "cece/render/Rectangle.hpp"
@@ -229,8 +230,38 @@ public:
      */
     void draw(const simulator::Visualization& visualization, render::Context& context) override;
 
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     */
+    void drawStoreState() override;
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    void drawSwapState() override;
+
 #endif
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        units::PositionVector position;
+        units::SizeVector size;
+        render::Color color;
+    };
+#endif
 
 // Private Data Members
 private:
@@ -250,6 +281,9 @@ private:
 #ifdef CECE_ENABLE_RENDER
     /// Renderable object.
     render::ObjectPtr<render::Rectangle> m_drawable;
+
+    /// Render state.
+    render::State<RenderState> m_drawableState;
 
     /// Rectangle color.
     render::Color m_color = render::colors::WHITE;

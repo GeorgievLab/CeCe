@@ -151,9 +151,38 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 
     Assert(m_drawable);
 
+    RenderState& state = m_drawableState.getFront();
+
+    // Set image data
+    m_drawable->setImage(state.image);
+
+    context.matrixPush();
+    context.matrixScale(state.scale);
+    context.colorPush();
+    context.setColor(render::colors::WHITE);
+    context.enableAlpha();
+    m_drawable->draw(context);
+    context.disableAlpha();
+    context.colorPop();
+    context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::drawStoreState()
+{
+    RenderState& state = m_drawableState.getBack();
+
+    state.scale = getSimulation().getWorldSize() / units::Length(1);
+
     // Calculate cell area
     const auto cellSize = getSimulation().getWorldSize() / m_grid.getSize();
     const units::Area cellArea = cellSize.getWidth() * cellSize.getHeight();
+
+    // Resize image
+    state.image.resize(m_grid.getSize());
 
     // Foreach grid
     for (auto&& c : range(m_grid.getSize()))
@@ -178,21 +207,17 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         auto alpha  = std::max({red, green, blue});
 
         // Set color
-        m_drawable->set(c, render::Color(red, green, blue, alpha));
+        state.image.set(c, render::Color(red, green, blue, alpha));
     }
+}
+#endif
 
-    // Synchronize
-    m_drawable->sync();
+/* ************************************************************************ */
 
-    context.matrixPush();
-    context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
-    context.colorPush();
-    context.setColor(render::colors::WHITE);
-    context.enableAlpha();
-    m_drawable->draw(context);
-    context.disableAlpha();
-    context.colorPop();
-    context.matrixPop();
+#ifdef CECE_ENABLE_RENDER
+void Module::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 

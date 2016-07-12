@@ -175,16 +175,41 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 
     Assert(m_drawable);
 
+    // Get current state
+    const RenderState& state = m_drawableState.getFront();
+
     context.matrixPush();
-    context.matrixTranslate(getPosition());
-    context.matrixScale(getSize() / units::Length(1));
+    context.matrixTranslate(state.position);
+    context.matrixScale(state.size / units::Length(1));
     context.colorPush();
     context.setColor(render::colors::WHITE);
     context.enableAlpha();
-    m_drawable->draw(context, getColor(), render::PrimitiveType::LineLoop);
+    m_drawable->draw(context, state.color, render::PrimitiveType::LineLoop);
     context.disableAlpha();
     context.colorPop();
     context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::drawStoreState()
+{
+    RenderState& state = m_drawableState.getBack();
+
+    state.position = getPosition();
+    state.size = getSize();
+    state.color = getColor();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 

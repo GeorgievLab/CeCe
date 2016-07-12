@@ -42,15 +42,13 @@
 #  include "cece/render/Color.hpp"
 #  include "cece/render/Context.hpp"
 #  include "cece/render/Object.hpp"
+#  include "cece/render/Image.hpp"
+#  include "cece/render/State.hpp"
 #  if CONFIG_PLUGIN_diffusion_SMOOTH
 #    include "cece/render/GridColorSmooth.hpp"
 #  else
 #    include "cece/render/GridColor.hpp"
 #  endif
-#endif
-
-#ifdef CECE_THREAD_SAFE
-#  include "cece/core/Mutex.hpp"
 #endif
 
 /* ************************************************************************ */
@@ -522,21 +520,6 @@ public:
     }
 
 
-#ifdef CECE_THREAD_SAFE
-
-    /**
-     * @brief Returns module mutex.
-     *
-     * @return
-     */
-    Mutex& getMutex() noexcept
-    {
-        return m_mutex;
-    }
-
-#endif
-
-
     /**
      * @brief Check if there is an obstacle at given coordinates.
      *
@@ -848,11 +831,23 @@ public:
 
 
     /**
-     * @brief Update drawable.
-     *
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
      * @param visualization Visualization context.
      */
-    void updateDrawable(const simulator::Visualization& visualization) const;
+    void drawStoreState(const simulator::Visualization& visualization) override;
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    void drawSwapState() override;
 
 #endif
 
@@ -909,6 +904,17 @@ protected:
      */
     virtual void updateObstacles();
 
+#ifdef CECE_ENABLE_RENDER
+
+    /**
+     * @brief Update drawable.
+     *
+     * @param img           Image to update.
+     * @param visualization Visualization context.
+     */
+    void updateImage(render::Image& img, const simulator::Visualization& visualization) const;
+
+#endif
 
 // Private Structures
 private:
@@ -941,6 +947,19 @@ private:
 #endif
     };
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        /// Image scale.
+        units::ScaleVector scale;
+
+        /// Image to render.
+        render::Image image;
+    };
+#endif
 
 // Private Data Members
 private:
@@ -965,17 +984,15 @@ private:
     /// Background color.
     render::Color m_background = render::Color{0, 0, 0, 0};
 
+    /// Render state.
+    render::State<RenderState> m_drawableState;
+
     /// Drawable signal grid.
 #  if CONFIG_PLUGIN_diffusion_SMOOTH
     render::ObjectPtr<render::GridColorSmooth> m_drawable;
 #  else
     render::ObjectPtr<render::GridColor> m_drawable;
 #  endif
-#endif
-
-#ifdef CECE_THREAD_SAFE
-    /// Access mutex.
-    mutable Mutex m_mutex;
 #endif
 
 };

@@ -54,6 +54,9 @@ namespace background {
 
 /**
  * @brief Module for rendering background image.
+ *
+ * @note Module doesn't need to use render state because image cannot be
+ * changed after initial step.
  */
 class Module : public module::Module
 {
