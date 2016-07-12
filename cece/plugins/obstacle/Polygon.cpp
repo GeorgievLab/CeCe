@@ -63,40 +63,59 @@ void Polygon::configure(const config::Configuration& config, simulator::Simulati
 #ifdef CECE_ENABLE_RENDER
 void Polygon::draw(render::Context& context)
 {
+    const RenderState& state = m_drawableState.getFront();
+
     if (!m_drawPolygon)
-    {
-        DynamicArray<render::Lines::LineType> lines;
-
-        for (const auto& shape : getShapes())
-        {
-            const auto& edges = shape.getEdges().edges;
-            lines.reserve(lines.size() + edges.size());
-
-            // Create lines from shape
-            for (std::size_t i = 1u; i < edges.size(); ++i)
-            {
-                lines.push_back(makePair(
-                    render::Lines::PointType(edges[i - 1].getX().value(), edges[i - 1].getY().value()),
-                    render::Lines::PointType(edges[i].getX().value(), edges[i].getY().value())
-                ));
-            }
-
-            if (edges.size() > 2)
-            {
-                lines.push_back(makePair(
-                    render::Lines::PointType(edges.back().getX().value(), edges.back().getY().value()),
-                    render::Lines::PointType(edges.front().getX().value(), edges.front().getY().value())
-                ));
-            }
-        }
-
-        m_drawPolygon.create(context, std::move(lines));
-    }
+        m_drawPolygon.create(context, state.lines);
 
     context.matrixPush();
-    context.matrixTranslate(getPosition());
-    m_drawPolygon->draw(context, getColor());
+    context.matrixTranslate(state.position);
+    m_drawPolygon->draw(context, state.color);
     context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Polygon::drawStoreState()
+{
+    RenderState& state = m_drawableState.getBack();
+
+    state.position = getPosition();
+    state.color = getColor();
+
+    for (const auto& shape : getShapes())
+    {
+        const auto& edges = shape.getEdges().edges;
+        state.lines.reserve(state.lines.size() + edges.size());
+
+        // Create lines from shape
+        for (std::size_t i = 1u; i < edges.size(); ++i)
+        {
+            state.lines.push_back(makePair(
+                render::Lines::PointType(edges[i - 1].getX().value(), edges[i - 1].getY().value()),
+                render::Lines::PointType(edges[i].getX().value(), edges[i].getY().value())
+            ));
+        }
+
+        if (edges.size() > 2)
+        {
+            state.lines.push_back(makePair(
+                render::Lines::PointType(edges.back().getX().value(), edges.back().getY().value()),
+                render::Lines::PointType(edges.front().getX().value(), edges.front().getY().value())
+            ));
+        }
+    }
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Polygon::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 

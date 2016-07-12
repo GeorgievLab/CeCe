@@ -36,6 +36,7 @@
 #include "cece/object/Object.hpp"
 
 #ifdef CECE_ENABLE_RENDER
+#  include "cece/render/State.hpp"
 #  include "cece/render/Object.hpp"
 #  include "cece/render/Rectangle.hpp"
 #endif
@@ -94,8 +95,38 @@ public:
      */
     void draw(render::Context& context) override;
 
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     */
+    void drawStoreState() override;
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    void drawSwapState() override;
+
 #endif
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        units::PositionVector position;
+        units::SizeVector size;
+        render::Color color;
+    };
+#endif
 
 // Private Data Members
 private:
@@ -104,6 +135,9 @@ private:
 
     /// Shared object for drawing rectangle.
     render::ObjectSharedPtr<render::Rectangle> m_drawRectangle;
+
+    /// Render state.
+    render::State<RenderState> m_drawableState;
 
 #endif
 };

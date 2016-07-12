@@ -210,46 +210,54 @@ void Yeast::draw(render::Context& context)
     if (!m_renderObject)
         m_renderObject.create(context);
 
-    units::PositionVector pos;
-    units::Length radius;
-    units::Angle angle;
-    units::Length budRadius;
-    render::Color color;
-
-    {
-#ifdef CECE_THREAD_SAFE
-        // Lock access
-        MutexGuard guard(m_mutex);
-#endif
-
-        pos = getPosition();
-        radius = calcRadius(getVolume());
-
-        if (hasBud())
-        {
-            angle = getRotation() - m_bud.angle;
-            budRadius = calcRadius(m_bud.volume);
-            color = calcFluorescentColor(getVolume() + m_bud.volume);
-        }
-        else
-        {
-            angle = getRotation();
-            budRadius = Zero;
-            color = calcFluorescentColor(getVolume());
-        }
-    }
+    const RenderState& state = m_drawableState.getBack();
 
     // Transform
     context.matrixPush();
-    context.matrixTranslate(pos);
-    context.matrixRotate(angle);
-    context.matrixScale(2 * radius.value());
+    context.matrixTranslate(state.position);
+    context.matrixRotate(state.angle);
+    context.matrixScale(2 * state.radius.value());
     context.colorPush();
     context.enableAlpha();
-    m_renderObject->draw(context, 0.5, 0.5 * (budRadius / radius), color, getIdentificationColor());
+    m_renderObject->draw(context, 0.5, 0.5 * (state.budRadius / state.radius), state.color, state.idColor);
     context.disableAlpha();
     context.colorPop();
     context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Yeast::drawStoreState()
+{
+    RenderState& state = m_drawableState.getBack();
+
+    state.position = getPosition();
+    state.radius = calcRadius(getVolume());
+    state.idColor = getIdentificationColor();
+
+    if (hasBud())
+    {
+        state.angle = getRotation() - m_bud.angle;
+        state.budRadius = calcRadius(m_bud.volume);
+        state.color = calcFluorescentColor(getVolume() + m_bud.volume);
+    }
+    else
+    {
+        state.angle = getRotation();
+        state.budRadius = Zero;
+        state.color = calcFluorescentColor(getVolume());
+    }
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Yeast::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 

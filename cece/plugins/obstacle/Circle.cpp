@@ -57,13 +57,36 @@ void Circle::draw(render::Context& context)
     if (!m_drawCircle)
         m_drawCircle.create(context);
 
-    const auto& shape = getShapes().back();
+    const RenderState& state = m_drawableState.getFront();
 
     context.matrixPush();
-    context.matrixTranslate(getPosition());
-    context.matrixScale(shape.getCircle().radius / units::Length(1));
-    m_drawCircle->draw(context, getColor());
+    context.matrixTranslate(state.position);
+    context.matrixScale(state.radius / units::Length(1));
+    m_drawCircle->draw(context, state.color);
     context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Circle::drawStoreState()
+{
+    RenderState& state = m_drawableState.getBack();
+    const auto& shape = getShapes().back();
+
+    state.position = getPosition();
+    state.radius = shape.getCircle().radius;
+    state.color = getColor();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Circle::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 
