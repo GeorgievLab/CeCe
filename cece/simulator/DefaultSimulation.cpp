@@ -422,11 +422,11 @@ void DefaultSimulation::initialize(AtomicBool& flag)
     if (!flag)
         return;
 
+    // Add pending objects
+    m_objects.addPending();
+
     // Initialize simulation
     m_initializers.init(*this);
-
-    // Mark simulation initialized
-    m_initialized = true;
 
     // Update states
     m_modules.drawStoreState(m_visualization);
@@ -440,6 +440,9 @@ void DefaultSimulation::initialize(AtomicBool& flag)
         m_modules.drawSwapState();
         m_objects.drawSwapState();
     }
+
+    // Mark simulation initialized
+    m_initialized = true;
 }
 
 /* ************************************************************************ */
@@ -464,11 +467,13 @@ bool DefaultSimulation::update()
     // Update objects
     updateObjects();
 
-    // Detect object that leaved the scene
-    detectDeserters();
+#ifdef CECE_ENABLE_BOX2D_PHYSICS
+    {
+        auto _ = measure_time("sim.physics", TimeMeasurement(this));
 
-    // Delete unused objects
-    deleteObjects();
+        m_world->Step(static_cast<float32>(getPhysicsEngineTimeStep().value()), 10, 10);
+    }
+#endif
 
     // Update states
     m_modules.drawStoreState(m_visualization);
@@ -483,13 +488,19 @@ bool DefaultSimulation::update()
         m_objects.drawSwapState();
     }
 
-#ifdef CECE_ENABLE_BOX2D_PHYSICS
-    {
-        auto _ = measure_time("sim.physics", TimeMeasurement(this));
+    // Detect object that leaved the scene
+    detectDeserters();
 
-        m_world->Step(static_cast<float32>(getPhysicsEngineTimeStep().value()), 10, 10);
-    }
+    {
+#ifdef CECE_THREAD_SAFE
+        MutexGuard _(m_mutex);
 #endif
+        // Remove deleted objects
+        m_objects.removeDeleted();
+
+        // Add pending objects
+        m_objects.addPending();
+    }
 
     return (hasUnlimitedIterations() || getIteration() <= getIterations());
 }
@@ -595,16 +606,6 @@ void DefaultSimulation::detectDeserters()
         if (!pos.inRange(-hh, hh))
             m_objects.deleteObject(obj);
     };
-}
-
-/* ************************************************************************ */
-
-void DefaultSimulation::deleteObjects()
-{
-    auto _ = measure_time("sim.delete", TimeMeasurement(this));
-
-    // Remove deleted objects
-    m_objects.removeDeleted();
 }
 
 /* ************************************************************************ */

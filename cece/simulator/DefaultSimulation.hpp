@@ -789,12 +789,6 @@ protected:
     void detectDeserters();
 
 
-    /**
-     * @brief Delete objects marked for deletion.
-     */
-    void deleteObjects();
-
-
 // Private Data Members
 private:
 

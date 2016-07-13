@@ -84,6 +84,20 @@ void Container::deleteObject(ViewPtr<Object> object)
 
 /* ************************************************************************ */
 
+void Container::addPending() noexcept
+{
+    // Move objects
+    m_data.insert(
+        m_data.end(),
+        std::make_move_iterator(m_add.begin()),
+        std::make_move_iterator(m_add.end())
+    );
+
+    m_add.clear();
+}
+
+/* ************************************************************************ */
+
 void Container::removeDeleted() noexcept
 {
     // Delete objects

@@ -283,8 +283,8 @@ public:
      */
     ViewPtr<Object> add(UniquePtr<Object> object)
     {
-        m_data.push_back(Record{std::move(object), false});
-        return m_data.back().ptr;
+        m_add.push_back(Record{std::move(object), false});
+        return m_add.back().ptr;
     }
 
 
@@ -316,6 +316,12 @@ public:
 
 // Public Operations
 public:
+
+
+    /**
+     * @brief Add pending objects.
+     */
+    void addPending() noexcept;
 
 
     /**
@@ -355,6 +361,8 @@ private:
     /// Data.
     DataType m_data;
 
+    /// List of objects that will be added to the container.
+    DynamicArray<Record> m_add;
 };
 
 /* ************************************************************************ */
