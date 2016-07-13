@@ -37,6 +37,7 @@
 
 // C++
 #include <atomic>
+#include <thread>
 
 // GLFW
 #ifdef CECE_ENABLE_RENDER
@@ -383,10 +384,18 @@ private:
 #endif
 
     /// Termination request flag.
+#ifdef CECE_CLI_ENABLE_RENDER_THREAD
+    AtomicBool m_termination{false};
+#else
     bool m_termination = false;
+#endif
 
     /// If simulation is paused.
+#ifdef CECE_CLI_ENABLE_RENDER_THREAD
+    AtomicBool m_paused{false};
+#else
     bool m_paused = false;
+#endif
 
     /// Path to simulation file.
     FilePath m_simulationFile;
@@ -415,6 +424,13 @@ private:
 
     /// Last position for move cursor.
     BasicVector<double, 2> m_movePos;
+#endif
+
+#ifdef CECE_ENABLE_RENDER
+#ifdef CECE_CLI_ENABLE_RENDER_THREAD
+    /// Render thread.
+    std::thread m_renderThread;
+#endif
 #endif
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE

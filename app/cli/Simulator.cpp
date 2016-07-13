@@ -252,6 +252,13 @@ Simulator::Simulator(const Arguments& args)
 
 Simulator::~Simulator()
 {
+#ifdef CECE_ENABLE_RENDER
+#ifdef CECE_CLI_ENABLE_RENDER_THREAD
+    // Stop render thread
+    m_renderThread.join();
+#endif
+#endif
+
     // Delete simulation
     m_simulator.setSimulation(nullptr);
 #ifdef CECE_ENABLE_RENDER
@@ -288,6 +295,38 @@ void Simulator::init(AtomicBool& flag)
 
         // Initialize scene
         initScene();
+
+#ifdef CECE_CLI_ENABLE_RENDER_THREAD
+        // Disable current context
+        glfwMakeContextCurrent(NULL);
+
+        // Start render thread.
+        m_renderThread = std::thread([&]() {
+
+            // Make current context
+            glfwMakeContextCurrent(m_window);
+
+            while (!m_termination && !glfwWindowShouldClose(m_window))
+            {
+                if (!isVisualized())
+                    continue;
+
+                // Redraw scene
+                if (!isPaused() || isForceRedraw())
+                {
+                    // Draw scene
+                    draw();
+                    swap();
+                }
+                else
+                {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+                }
+            }
+
+            glfwMakeContextCurrent(NULL);
+        });
+#endif
     }
 #endif
 }
@@ -305,14 +344,18 @@ void Simulator::step()
             // Update window title
             updateTitle();
 
+#ifndef CECE_CLI_ENABLE_RENDER_THREAD
             // Draw scene
             draw();
             swap();
+#endif
         }
+#ifndef CECE_CLI_ENABLE_RENDER_THREAD
         else
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(16));
         }
+#endif
 
         /// Poll for and process events
         glfwPollEvents();
@@ -760,6 +803,10 @@ void Simulator::initVisualization()
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(m_window);
+
+#ifdef CECE_CLI_ENABLE_RENDER_THREAD
+    glfwMakeContextCurrent(NULL);
+#endif
 
 #ifdef CECE_CLI_ENABLE_VIDEO_CAPTURE
     if (!m_videoFileName.empty())
