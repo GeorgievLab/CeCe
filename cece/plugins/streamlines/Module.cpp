@@ -307,7 +307,7 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
     if (drawDensity && !m_drawableDensity)
         m_drawableDensity.create(context, size);
 
-    RenderState& state = m_drawableState.getFront();
+    const RenderState& state = m_drawableState.getFront();
 
     if (drawDynamicsType && m_drawableDynamicsType)
         m_drawableDynamicsType->setImage(state.imageDynamicsType);

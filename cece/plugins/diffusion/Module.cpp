@@ -246,7 +246,7 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
         m_drawable.create(context, getGridSize());
 
     // Get render state
-    RenderState& state = m_drawableState.getBack();
+    const RenderState& state = m_drawableState.getFront();
 
     // Copy image
     m_drawable->setImage(state.image);

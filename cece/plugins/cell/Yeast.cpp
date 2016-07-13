@@ -205,7 +205,7 @@ void Yeast::draw(render::Context& context)
     if (!m_renderObject)
         m_renderObject.create(context);
 
-    const RenderState& state = m_drawableState.getBack();
+    const RenderState& state = m_drawableState.getFront();
 
     // Transform
     context.matrixPush();

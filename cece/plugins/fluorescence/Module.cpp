@@ -151,7 +151,7 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 
     Assert(m_drawable);
 
-    RenderState& state = m_drawableState.getFront();
+    const RenderState& state = m_drawableState.getFront();
 
     // Set image data
     m_drawable->setImage(state.image);
