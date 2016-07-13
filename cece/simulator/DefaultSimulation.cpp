@@ -416,6 +416,9 @@ void DefaultSimulation::initialize(AtomicBool& flag)
 {
     Assert(!isInitialized());
 
+    // Add pending objects
+    m_objects.addPending();
+
     // Initialize modules
     m_modules.init(flag);
 
