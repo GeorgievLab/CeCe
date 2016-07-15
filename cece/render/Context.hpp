@@ -494,6 +494,12 @@ public:
 
 
     /**
+     * @brief Delete all objects.
+     */
+    void deleteObjects();
+
+
+    /**
      * @brief Delete released objects.
      */
     void deleteReleasedObjects();

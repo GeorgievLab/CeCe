@@ -111,6 +111,14 @@ protected:
 
 
     /**
+     * @brief Close event.
+     *
+     * @param event
+     */
+    void closeEvent(QCloseEvent* event) override;
+
+
+    /**
      * @brief Mouse scroll event.
      *
      * @param event

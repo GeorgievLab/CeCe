@@ -117,7 +117,7 @@ public:
     }
 
 
-// Public Accessors
+// Public Accessors & Mutators
 public:
 
 
@@ -130,6 +130,14 @@ public:
     {
         return m_simulation.get();
     }
+
+
+    /**
+     * @brief Delete simulation.
+     *
+     * @return
+     */
+    void deleteSimulation() noexcept;
 
 
     /**

@@ -27,6 +27,7 @@
 #include "VisualizationWidget.hpp"
 
 // Qt
+#include <QCloseEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QMutexLocker>
@@ -61,6 +62,17 @@ void VisualizationWidget::fitToView() noexcept
     camera.setZoom(
         std::max(size.getWidth() / width(), size.getHeight() / height()).value()
     );
+}
+
+/* ************************************************************************ */
+
+void VisualizationWidget::closeEvent(QCloseEvent* event)
+{
+    makeCurrent();
+
+    // Delete old objects
+    m_renderContext.deleteReleasedObjects();
+    m_renderContext.deleteObjects();
 }
 
 /* ************************************************************************ */

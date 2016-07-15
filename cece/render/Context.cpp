@@ -663,6 +663,13 @@ void Context::deleteObject(const Object* obj)
 
 /* ************************************************************************ */
 
+void Context::deleteObjects()
+{
+    m_objects.clear();
+}
+
+/* ************************************************************************ */
+
 void Context::deleteReleasedObjects()
 {
     m_releasedObjects.clear();

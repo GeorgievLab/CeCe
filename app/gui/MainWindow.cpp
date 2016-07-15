@@ -162,6 +162,9 @@ MainWindow::~MainWindow()
     m_simulator.stop();
     m_simulatorThread.quit();
     m_simulatorThread.wait();
+    m_simulator.deleteSimulation();
+    // This needs to be called to ensure the visualization widget properly destroys render objects.
+    ui->visualizationWidget->close();
     delete ui;
 
     // Disable output

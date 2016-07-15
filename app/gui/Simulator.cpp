@@ -85,6 +85,13 @@ Simulator::~Simulator() = default;
 
 /* ************************************************************************ */
 
+void Simulator::deleteSimulation() noexcept
+{
+    return m_simulation.reset();
+}
+
+/* ************************************************************************ */
+
 void Simulator::simulationLoad(QString type, QString source, QString filename) noexcept
 {
     // Convert to CeCe string
