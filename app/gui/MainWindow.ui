@@ -74,7 +74,7 @@
        <item>
         <widget class="QLabel" name="labelModified">
          <property name="text">
-          <string>Source code has been modified and doen't correspond to current simulation</string>
+          <string>Source code has been modified and doesn't correspond to current simulation</string>
          </property>
          <property name="textFormat">
           <enum>Qt::PlainText</enum>
@@ -567,6 +567,22 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFileExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
     </hint>
    </hints>
   </connection>

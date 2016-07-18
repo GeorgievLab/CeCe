@@ -23,19 +23,11 @@
 /*                                                                          */
 /* ************************************************************************ */
 
-#pragma once
+// Declaration
+#include "PlotCustomizationDialog.hpp"
 
-/* ************************************************************************ */
-
-// Qt
-#include <QWidget>
-#include <QStringList>
-#include <QList>
-#include <QVariant>
-
-/* ************************************************************************ */
-
-namespace Ui { class PlotWidget; }
+// UI
+#include "ui_PlotCustomizationDialog.h"
 
 /* ************************************************************************ */
 
@@ -44,112 +36,61 @@ namespace gui {
 
 /* ************************************************************************ */
 
-/**
- * @brief Widget for plot.
- */
-class PlotWidget : public QWidget
+PlotCustomizationDialog::PlotCustomizationDialog(QWidget* parent)
+    : QDialog(parent)
+    , ui(new Ui::PlotCustomizationDialog)
 {
-    Q_OBJECT
+    ui->setupUi(this);
+}
 
-// Public Ctors & Dtors
-public:
+/* ************************************************************************ */
 
+PlotCustomizationDialog::~PlotCustomizationDialog()
+{
+    delete ui;
+}
 
-    /**
-     * @brief Constructor.
-     *
-     * @param parent
-     */
-    explicit PlotWidget(QWidget *parent = 0);
+/* ************************************************************************ */
 
+QString PlotCustomizationDialog::getPlotTitle() const noexcept
+{
+    return ui->lineEditTitle->text();
+}
 
-    /**
-     * @brief Destructor.
-     */
-    ~PlotWidget();
+/* ************************************************************************ */
 
+void PlotCustomizationDialog::setPlotTitle(QString title) noexcept
+{
+    ui->lineEditTitle->setText(title);
+}
 
-// Public Mutators
-public:
+/* ************************************************************************ */
 
+QString PlotCustomizationDialog::getPlotXLabel() const noexcept
+{
+    return ui->lineEditX->text();
+}
 
-    /**
-     * @brief Set column name for X axis.
-     * @param name
-     */
-    void setXAxisName(QString name) noexcept;
+/* ************************************************************************ */
 
+void PlotCustomizationDialog::setPlotXLabel(QString label) noexcept
+{
+    ui->lineEditX->setText(label);
+}
 
-    /**
-     * @brief Set column name for Y axis.
-     * @param name
-     */
-    void setYAxisName(QString name) noexcept;
+/* ************************************************************************ */
 
+QString PlotCustomizationDialog::getPlotYLabel() const noexcept
+{
+    return ui->lineEditY->text();
+}
 
-    /**
-     * @brief Set column name for group.
-     * @param name
-     */
-    void setGroupName(QString name) noexcept;
+/* ************************************************************************ */
 
-
-    /**
-     * @brief Set plot type.
-     * @param type
-     */
-    void setType(QString type) noexcept;
-
-
-// Slots
-public slots:
-
-
-    /**
-     * @brief Add plot data.
-     *
-     * @param names
-     * @param values
-     */
-    void dataAdd(QStringList names, QList<QVariant> value);
-
-
-    /**
-     * @brief Customize action click.
-     */
-    void on_actionCustomize_triggered();
-
-
-    /**
-     * @brief Save action click.
-     */
-    void on_actionSave_triggered();
-
-
-    /**
-     * @brief Save data action click.
-     */
-    void on_actionSaveData_triggered();
-
-
-// Private Data Members
-private:
-
-    /// UI.
-    Ui::PlotWidget *ui;
-
-    /// Name of X axis.
-    QString m_xName;
-
-    /// Name of Y axis.
-    QString m_yName;
-
-    /// Name of group.
-    QString m_groupName;
-
-    /// Plot type.
-    QString m_type;
-};
+void PlotCustomizationDialog::setPlotYLabel(QString label) noexcept
+{
+    ui->lineEditY->setText(label);
+}
 
 /* ************************************************************************ */
 

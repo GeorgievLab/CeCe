@@ -26,8 +26,17 @@
 // Declaration
 #include "PlotWidget.hpp"
 
+// Qt
+#include <QFileDialog>
+#include <QPixmap>
+#include <QFile>
+#include <QTextStream>
+
 // Ui
 #include "ui_PlotWidget.h"
+
+// GUI
+#include "PlotCustomizationDialog.hpp"
 
 /* ************************************************************************ */
 
@@ -40,7 +49,13 @@ PlotWidget::PlotWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::PlotWidget)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+
     ui->setupUi(this);
+
+    ui->plot->addAction(ui->actionCustomize);
+    ui->plot->addAction(ui->actionSave);
+    ui->plot->addAction(ui->actionSaveData);
 }
 
 /* ************************************************************************ */
@@ -70,7 +85,6 @@ void PlotWidget::setYAxisName(QString name) noexcept
 
 void PlotWidget::setGroupName(QString name) noexcept
 {
-    ui->plot->legend->setVisible(true);
     m_groupName = name;
 }
 
@@ -133,11 +147,118 @@ void PlotWidget::dataAdd(QStringList names, QList<QVariant> values)
             graph->setLineStyle(QCPGraph::lsNone);
             graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
         }
+
+        // Show legend
+        if (i > 1)
+            ui->plot->legend->setVisible(true);
     }
 
     graph->addData(xValue, yValue);
     ui->plot->rescaleAxes();
     ui->plot->replot();
+}
+
+/* ************************************************************************ */
+
+void PlotWidget::on_actionCustomize_triggered()
+{
+    PlotCustomizationDialog dlg(this);
+
+    // Get layout
+    QCPLayoutGrid* layout = ui->plot->plotLayout();
+    QCPPlotTitle* title = nullptr;
+
+    // Find title element
+    for (int i = 0; i < layout->elementCount(); ++i)
+    {
+         if ((title = qobject_cast<QCPPlotTitle*>(layout->elementAt(i))))
+             break;
+    }
+
+    dlg.setPlotTitle(title ? title->text() : QString());
+    dlg.setPlotXLabel(ui->plot->xAxis->label());
+    dlg.setPlotYLabel(ui->plot->yAxis->label());
+
+    if (dlg.exec() == QDialog::Rejected)
+        return;
+
+    if (!dlg.getPlotTitle().isEmpty())
+    {
+        if (title)
+        {
+            title->setText(dlg.getPlotTitle());
+        }
+        else
+        {
+            layout->insertRow(0);
+            layout->addElement(0, 0, new QCPPlotTitle(ui->plot, dlg.getPlotTitle()));
+        }
+    }
+    else if (title)
+    {
+        layout->remove(title);
+    }
+
+    ui->plot->xAxis->setLabel(dlg.getPlotXLabel());
+    ui->plot->yAxis->setLabel(dlg.getPlotYLabel());
+
+    ui->plot->replot();
+    update();
+}
+
+/* ************************************************************************ */
+
+void PlotWidget::on_actionSave_triggered()
+{
+    QString filename = QFileDialog::getSaveFileName(this,
+        QString(), QStringLiteral("plot.png"),
+        tr("Images (*.png *.jpg)")
+    );
+
+    if (filename.isEmpty())
+        return;
+
+    // Plot pixels
+    QPixmap pixmap = ui->plot->toPixmap();
+
+    // Save pixmap
+    pixmap.save(filename);
+}
+
+/* ************************************************************************ */
+
+void PlotWidget::on_actionSaveData_triggered()
+{
+    QString filename = QFileDialog::getSaveFileName(this,
+        QString(), QStringLiteral("plot.csv"),
+        tr("CSV file (*.csv)")
+    );
+
+    if (filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    if (!file.open(QFile::WriteOnly | QFile::Truncate))
+        return;
+
+    QTextStream output(&file);
+
+    // Write header
+    output << m_groupName << ";" << m_xName << ";" << m_yName << "\n";
+
+    for (int i = 0; i < ui->plot->graphCount(); ++i)
+    {
+        QCPGraph* graph = ui->plot->graph(i);
+        Q_ASSERT(graph);
+        QCPDataMap* data = graph->data();
+        Q_ASSERT(data);
+
+        for (const auto& p : *data)
+        {
+            // Write row
+            output << graph->name() << ";" << p.key << ";" << p.value << "\n";
+        }
+    }
 }
 
 /* ************************************************************************ */

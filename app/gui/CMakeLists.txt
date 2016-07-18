@@ -76,6 +76,8 @@ set(SRCS
     icons.qrc
     PlotWidget.hpp
     PlotWidget.cpp
+    PlotCustomizationDialog.hpp
+    PlotCustomizationDialog.cpp
 
     DataExportPlot.hpp
     DataExportPlot.cpp

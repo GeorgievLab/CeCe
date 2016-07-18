@@ -15,9 +15,31 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QCustomPlot" name="plot" native="true"/>
+    <widget class="QCustomPlot" name="plot" native="true">
+     <property name="contextMenuPolicy">
+      <enum>Qt::ActionsContextMenu</enum>
+     </property>
+    </widget>
    </item>
   </layout>
+  <action name="actionCustomize">
+   <property name="text">
+    <string>Customize</string>
+   </property>
+   <property name="toolTip">
+    <string>Customize plot</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save...</string>
+   </property>
+  </action>
+  <action name="actionSaveData">
+   <property name="text">
+    <string>Save data...</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

@@ -29,11 +29,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="AboutDialog.cpp"/>
-    <File Name="AboutDialog.hpp"/>
     <File Name="main.cpp"/>
-    <File Name="MainWindow.cpp"/>
-    <File Name="MainWindow.hpp"/>
     <File Name="version.hpp.in"/>
     <File Name="Simulator.cpp"/>
     <File Name="Simulator.hpp"/>
@@ -43,14 +39,10 @@
     <File Name="LogStream.cpp"/>
     <File Name="XmlHighlighter.hpp"/>
     <File Name="XmlHighlighter.cpp"/>
-    <File Name="PlotCreateDialog.hpp"/>
-    <File Name="PlotCreateDialog.cpp"/>
     <File Name="DataExportPlot.hpp"/>
     <File Name="DataExportPlot.cpp"/>
     <File Name="DataExportPlotFactory.hpp"/>
     <File Name="DataExportPlotFactory.cpp"/>
-    <File Name="PlotWidget.cpp"/>
-    <File Name="PlotWidget.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="win_resources.rc"/>
@@ -65,6 +57,17 @@
     <File Name="AboutDialog.ui"/>
     <File Name="PlotCreateDialog.ui"/>
     <File Name="PlotWidget.ui"/>
+    <File Name="PlotCustomizationDialog.ui"/>
+    <File Name="PlotCreateDialog.cpp"/>
+    <File Name="PlotCreateDialog.hpp"/>
+    <File Name="PlotCustomizationDialog.cpp"/>
+    <File Name="PlotCustomizationDialog.hpp"/>
+    <File Name="PlotWidget.cpp"/>
+    <File Name="PlotWidget.hpp"/>
+    <File Name="MainWindow.cpp"/>
+    <File Name="MainWindow.hpp"/>
+    <File Name="AboutDialog.cpp"/>
+    <File Name="AboutDialog.hpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="CMake">
     <File Name="CMakeLists.txt"/>

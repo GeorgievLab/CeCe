@@ -28,14 +28,14 @@
 /* ************************************************************************ */
 
 // Qt
-#include <QWidget>
-#include <QStringList>
-#include <QList>
-#include <QVariant>
+#include <QDialog>
+
+// CeCe
+#include "cece/core/ViewPtr.hpp"
 
 /* ************************************************************************ */
 
-namespace Ui { class PlotWidget; }
+namespace Ui { class PlotCustomizationDialog; }
 
 /* ************************************************************************ */
 
@@ -45,110 +45,86 @@ namespace gui {
 /* ************************************************************************ */
 
 /**
- * @brief Widget for plot.
+ * @brief Plot customization dialog.
  */
-class PlotWidget : public QWidget
+class PlotCustomizationDialog : public QDialog
 {
     Q_OBJECT
 
-// Public Ctors & Dtors
 public:
 
 
     /**
      * @brief Constructor.
-     *
      * @param parent
      */
-    explicit PlotWidget(QWidget *parent = 0);
+    explicit PlotCustomizationDialog(QWidget* parent = nullptr);
 
 
     /**
      * @brief Destructor.
      */
-    ~PlotWidget();
+    ~PlotCustomizationDialog();
 
 
-// Public Mutators
+// Public Accessors & Mutators
 public:
 
 
     /**
-     * @brief Set column name for X axis.
-     * @param name
-     */
-    void setXAxisName(QString name) noexcept;
-
-
-    /**
-     * @brief Set column name for Y axis.
-     * @param name
-     */
-    void setYAxisName(QString name) noexcept;
-
-
-    /**
-     * @brief Set column name for group.
-     * @param name
-     */
-    void setGroupName(QString name) noexcept;
-
-
-    /**
-     * @brief Set plot type.
-     * @param type
-     */
-    void setType(QString type) noexcept;
-
-
-// Slots
-public slots:
-
-
-    /**
-     * @brief Add plot data.
+     * @brief Returns plot title.
      *
-     * @param names
-     * @param values
+     * @return
      */
-    void dataAdd(QStringList names, QList<QVariant> value);
+    QString getPlotTitle() const noexcept;
 
 
     /**
-     * @brief Customize action click.
+     * @brief Set plot title.
+     *
+     * @param title
      */
-    void on_actionCustomize_triggered();
+    void setPlotTitle(QString title) noexcept;
 
 
     /**
-     * @brief Save action click.
+     * @brief Returns plot X label.
+     *
+     * @return
      */
-    void on_actionSave_triggered();
+    QString getPlotXLabel() const noexcept;
 
 
     /**
-     * @brief Save data action click.
+     * @brief Set plot X label.
+     *
+     * @param title
      */
-    void on_actionSaveData_triggered();
+    void setPlotXLabel(QString label) noexcept;
+
+
+    /**
+     * @brief Returns plot Y label.
+     *
+     * @return
+     */
+    QString getPlotYLabel() const noexcept;
+
+
+    /**
+     * @brief Set plot Y label.
+     *
+     * @param title
+     */
+    void setPlotYLabel(QString label) noexcept;
 
 
 // Private Data Members
 private:
 
-    /// UI.
-    Ui::PlotWidget *ui;
+    /// UI members.
+    Ui::PlotCustomizationDialog* ui;
 
-    /// Name of X axis.
-    QString m_xName;
-
-    /// Name of Y axis.
-    QString m_yName;
-
-    /// Name of group.
-    QString m_groupName;
-
-    /// Plot type.
-    QString m_type;
 };
 
 /* ************************************************************************ */
