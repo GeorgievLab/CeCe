@@ -122,6 +122,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME "${CMAKE_PROJECT_NAME}-${PROJECT_NAME}"
 )
 
+# Hide symbols
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
 if (APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Info.plist.in
@@ -150,7 +153,7 @@ if (UNIX AND NOT APPLE)
 
     # Install desktop entry
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.desktop
-        DESTINATION /usr/share/applications
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
     )
 endif ()
 
@@ -162,7 +165,7 @@ install(TARGETS ${PROJECT_NAME}
 
 # Install icons
 if (UNIX AND NOT APPLE)
-    install(FILES ${CMAKE_SOURCE_DIR}/icons/icon_128x128.png
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/icons/icon_128x128.png
         DESTINATION ${INSTALL_DIR_DATA}/icons
     )
 endif ()

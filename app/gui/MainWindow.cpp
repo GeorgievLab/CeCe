@@ -369,7 +369,8 @@ void MainWindow::on_actionPlotCreate_triggered()
 
     dock->setWidget(widget);
     dock->setAttribute(Qt::WA_DeleteOnClose, true);
-    addDockWidget(static_cast<Qt::DockWidgetArea>(2), dock);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    update();
 
     String source = dlg.getSource().toStdString();
     auto exporter = m_dataExportFactory.getExporter(source);
