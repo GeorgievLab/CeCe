@@ -34,6 +34,10 @@
 #include "cece/core/Atomic.hpp"
 #include "cece/core/PtrNamedContainer.hpp"
 
+#ifdef CECE_ENABLE_RENDER
+#include "cece/render/State.hpp"
+#endif
+
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
@@ -127,6 +131,24 @@ protected:
      */
     DynamicArray<ViewPtr<Module>> getSortedListDesc() const noexcept;
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        /// Modules to render
+        DynamicArray<ViewPtr<Module>> modules;
+    };
+#endif
+
+// Private Data Members
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    /// Render state.
+    render::State<RenderState> m_drawableState;
+#endif
 };
 
 /* ************************************************************************ */

@@ -478,6 +478,9 @@ bool DefaultSimulation::update()
     }
 #endif
 
+    // Detect object that leaved the scene
+    detectDeserters();
+
     // Update states
     m_modules.drawStoreState(m_visualization);
     m_objects.drawStoreState(m_visualization);
@@ -490,9 +493,6 @@ bool DefaultSimulation::update()
         m_modules.drawSwapState();
         m_objects.drawSwapState();
     }
-
-    // Detect object that leaved the scene
-    detectDeserters();
 
     {
 #ifdef CECE_THREAD_SAFE

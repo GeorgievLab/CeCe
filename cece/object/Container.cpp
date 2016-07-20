@@ -111,12 +111,14 @@ void Container::removeDeleted() noexcept
 #ifdef CECE_ENABLE_RENDER
 void Container::draw(render::Context& context)
 {
-    for (const auto& obj : m_data)
+    const RenderState& state = m_drawableState.getFront();
+
+    for (auto& obj : state.objects)
     {
         if (!obj->isVisible())
             continue;
 
-        obj->draw(context);
+        obj.get()->draw(context);
     }
 }
 #endif
@@ -126,8 +128,19 @@ void Container::draw(render::Context& context)
 #ifdef CECE_ENABLE_RENDER
 void Container::drawStoreState(const simulator::Visualization& visualization)
 {
+    RenderState& state = m_drawableState.getBack();
+    state.objects.clear();
+
     for (const auto& obj : m_data)
+    {
+        // Ignore deleted objects
+        if (obj.deleted)
+            continue;
+
         obj->drawStoreState(visualization);
+        // Store object to draw
+        state.objects.push_back(obj.ptr);
+    }
 }
 #endif
 
@@ -138,6 +151,8 @@ void Container::drawSwapState()
 {
     for (const auto& obj : m_data)
         obj->drawSwapState();
+
+    m_drawableState.swap();
 }
 #endif
 
