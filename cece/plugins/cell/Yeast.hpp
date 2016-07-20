@@ -33,13 +33,10 @@
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-#  include "cece/render/Context.hpp"
+#  include "cece/render/State.hpp"
 #  include "cece/render/Object.hpp"
+#  include "cece/render/Context.hpp"
 #  include "cece/plugins/cell/DrawableYeast.hpp"
-#endif
-
-#ifdef CECE_THREAD_SAFE
-#  include "cece/core/Mutex.hpp"
 #endif
 
 // Plugin
@@ -240,6 +237,25 @@ public:
      */
     virtual void draw(render::Context& context) override;
 
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     */
+    void drawStoreState() override;
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    void drawSwapState() override;
+
 #endif
 
 
@@ -252,6 +268,21 @@ protected:
      */
     void updateShape();
 
+
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        units::PositionVector position;
+        units::Length radius;
+        units::Angle angle;
+        units::Length budRadius;
+        render::Color color;
+        render::Color idColor;
+    };
+#endif
 
 // Private Data Members
 private:
@@ -286,6 +317,9 @@ private:
     /// Render object for Yeast.
     /// Shared between all instances, it's same for all instances.
     render::ObjectSharedPtr<DrawableYeast> m_renderObject;
+
+    /// Render state.
+    render::State<RenderState> m_drawableState;
 #endif
 
     /// Last shape update radius.
@@ -293,11 +327,6 @@ private:
 
     /// If shape must be updated.
     bool m_shapeForceUpdate = false;
-
-#ifdef CECE_THREAD_SAFE
-    /// Access mutex.
-    mutable Mutex m_mutex;
-#endif
 
 };
 

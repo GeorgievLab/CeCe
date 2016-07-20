@@ -27,50 +27,75 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
+// C++
+#include <utility>
 
 // CeCe
-#include "cece/object/Object.hpp"
-
-#ifdef CECE_ENABLE_RENDER
-#  include "cece/render/State.hpp"
-#  include "cece/render/Object.hpp"
-#  include "cece/render/Rectangle.hpp"
-#endif
+#include "cece/core/Assert.hpp"
+#include "cece/render/Context.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace obstacle {
+namespace render {
 
 /* ************************************************************************ */
 
 /**
- * @brief Rectangle obstacle.
+ * @brief Special template class for storing renderable objects state.
+ *
+ * @tparam StateType State type.
  */
-class Rectangle : public object::Object
+template<typename StateType>
+class State
 {
 
-// Public Ctors & Dtors
+// Public Accessors & Mutators
 public:
 
 
     /**
-     * @brief Constructor.
+     * @brief Returns front state.
      *
-     * @param simulation Simulation object reference.
+     * @return
      */
-    explicit Rectangle(simulator::Simulation& simulation, String typeName = "obstacle.Rectangle",
-                   object::Object::Type type = object::Object::Type::Static) noexcept
-        : object::Object(simulation, typeName, object::Object::Type::Static)
+    StateType& getFront() noexcept
     {
-        // Nothing to do
+        return m_front;
     }
 
+
+    /**
+     * @brief Returns front state.
+     *
+     * @return
+     */
+    const StateType& getFront() const noexcept
+    {
+        return m_front;
+    }
+
+
+    /**
+     * @brief Returns back state.
+     *
+     * @return
+     */
+    StateType& getBack() noexcept
+    {
+        return m_back;
+    }
+
+
+    /**
+     * @brief Returns back state.
+     *
+     * @return
+     */
+    const StateType& getBack() const noexcept
+    {
+        return m_back;
+    }
 
 
 // Public Operations
@@ -78,75 +103,28 @@ public:
 
 
     /**
-     * @brief Configure obstacle.
-     *
-     * @param config
-     * @param simulation
+     * @brief Swap states (front & back).
      */
-    void configure(const config::Configuration& config, simulator::Simulation& simulation) override;
-
-
-#ifdef CECE_ENABLE_RENDER
-
-    /**
-     * @brief Render obstacle.
-     *
-     * @param context Rendering context.
-     */
-    void draw(render::Context& context) override;
-
-
-    /**
-     * @brief Store current state for drawing.
-     * State should be stored in back state because the front state is
-     * used for rendering.
-     * Drawing state should contain data that can be modified during update()
-     * call and are used for rendering.
-     */
-    void drawStoreState() override;
-
-
-    /**
-     * @brief Swap render state.
-     * Calling this function should be guarded by mutex for all modules
-     * to ensure all modules are in same render state.
-     * Function should be fast because otherwise it will block rendering.
-     */
-    void drawSwapState() override;
-
-#endif
-
-// Private Structures
-private:
-
-#ifdef CECE_ENABLE_RENDER
-    struct RenderState
+    void swap()
     {
-        units::PositionVector position;
-        units::SizeVector size;
-        render::Color color;
-    };
-#endif
+        using std::swap;
+        swap(m_front, m_back);
+    }
+
 
 // Private Data Members
 private:
 
-#ifdef CECE_ENABLE_RENDER
+    /// Currently rendered state.
+    StateType m_front;
 
-    /// Shared object for drawing rectangle.
-    render::ObjectSharedPtr<render::Rectangle> m_drawRectangle;
-
-    /// Render state.
-    render::State<RenderState> m_drawableState;
-
-#endif
+    /// Currently written state.
+    StateType m_back;
 };
 
 /* ************************************************************************ */
 
 }
 }
-}
 
 /* ************************************************************************ */
-

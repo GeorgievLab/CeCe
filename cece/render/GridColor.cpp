@@ -30,6 +30,7 @@
 #include "cece/core/StaticArray.hpp"
 #include "cece/render/Context.hpp"
 #include "cece/render/VertexFormat.hpp"
+#include "cece/render/Image.hpp"
 
 /* ************************************************************************ */
 
@@ -69,6 +70,13 @@ GridColor::GridColor(Context& context, Size size)
     : GridColor(context)
 {
     resize(std::move(size));
+}
+
+/* ************************************************************************ */
+
+void GridColor::setImage(const Image& img)
+{
+    m_texture.update(img.getData());
 }
 
 /* ************************************************************************ */

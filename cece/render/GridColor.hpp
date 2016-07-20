@@ -43,6 +43,7 @@ namespace render {
 /* ************************************************************************ */
 
 class Context;
+class Image;
 
 /* ************************************************************************ */
 
@@ -163,6 +164,13 @@ public:
     {
         m_colorsUpdated = true;
     }
+
+
+    /**
+     * @brief Copy image data.
+     * @param img Source image.
+     */
+    void setImage(const Image& img);
 
 
 // Public Operators

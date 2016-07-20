@@ -416,14 +416,33 @@ void DefaultSimulation::initialize(AtomicBool& flag)
 {
     Assert(!isInitialized());
 
+    // Add pending objects
+    m_objects.addPending();
+
     // Initialize modules
     m_modules.init(flag);
 
     if (!flag)
         return;
 
+    // Add pending objects
+    m_objects.addPending();
+
     // Initialize simulation
     m_initializers.init(*this);
+
+    // Update states
+    m_modules.drawStoreState(m_visualization);
+    m_objects.drawStoreState(m_visualization);
+
+    {
+#ifdef CECE_THREAD_SAFE
+        MutexGuard _(m_mutex);
+#endif
+        // Swap states
+        m_modules.drawSwapState();
+        m_objects.drawSwapState();
+    }
 
     // Mark simulation initialized
     m_initialized = true;
@@ -451,12 +470,6 @@ bool DefaultSimulation::update()
     // Update objects
     updateObjects();
 
-    // Detect object that leaved the scene
-    detectDeserters();
-
-    // Delete unused objects
-    deleteObjects();
-
 #ifdef CECE_ENABLE_BOX2D_PHYSICS
     {
         auto _ = measure_time("sim.physics", TimeMeasurement(this));
@@ -464,6 +477,33 @@ bool DefaultSimulation::update()
         m_world->Step(static_cast<float32>(getPhysicsEngineTimeStep().value()), 10, 10);
     }
 #endif
+
+    // Detect object that leaved the scene
+    detectDeserters();
+
+    // Update states
+    m_modules.drawStoreState(m_visualization);
+    m_objects.drawStoreState(m_visualization);
+
+    {
+#ifdef CECE_THREAD_SAFE
+        MutexGuard _(m_mutex);
+#endif
+        // Swap states
+        m_modules.drawSwapState();
+        m_objects.drawSwapState();
+    }
+
+    {
+#ifdef CECE_THREAD_SAFE
+        MutexGuard _(m_mutex);
+#endif
+        // Remove deleted objects
+        m_objects.removeDeleted();
+
+        // Add pending objects
+        m_objects.addPending();
+    }
 
     return (hasUnlimitedIterations() || getIteration() <= getIterations());
 }
@@ -503,6 +543,10 @@ void DefaultSimulation::draw(render::Context& context)
         static_cast<float>(getWorldSize().getWidth().value()),
         static_cast<float>(getWorldSize().getHeight().value())
     );
+
+#ifdef CECE_THREAD_SAFE
+    MutexGuard _(m_mutex);
+#endif
 
     // Render modules
     if (m_visualization.isEnabled("modules", true))
@@ -565,16 +609,6 @@ void DefaultSimulation::detectDeserters()
         if (!pos.inRange(-hh, hh))
             m_objects.deleteObject(obj);
     };
-}
-
-/* ************************************************************************ */
-
-void DefaultSimulation::deleteObjects()
-{
-    auto _ = measure_time("sim.delete", TimeMeasurement(this));
-
-    // Remove deleted objects
-    m_objects.removeDeleted();
 }
 
 /* ************************************************************************ */

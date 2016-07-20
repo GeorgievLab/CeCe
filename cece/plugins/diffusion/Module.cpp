@@ -245,11 +245,14 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
     if (!m_drawable)
         m_drawable.create(context, getGridSize());
 
-    // Update drawable
-    updateDrawable(visualization);
+    // Get render state
+    const RenderState& state = m_drawableState.getFront();
+
+    // Copy image
+    m_drawable->setImage(state.image);
 
     context.matrixPush();
-    context.matrixScale(getSimulation().getWorldSize() / units::Length(1));
+    context.matrixScale(state.scale);
     context.colorPush();
     context.setColor(render::colors::WHITE);
     context.enableAlpha();
@@ -263,75 +266,23 @@ void Module::draw(const simulator::Visualization& visualization, render::Context
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
-void Module::updateDrawable(const simulator::Visualization& visualization) const
+void Module::drawStoreState(const simulator::Visualization& visualization)
 {
-    Assert(m_drawable);
-    Assert(getGridSize() == m_drawable->getSize());
+    RenderState& state = m_drawableState.getBack();
 
-#ifdef CECE_THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
+    state.scale = getSimulation().getWorldSize() / units::Length(1);
+
+    // Update image
+    updateImage(state.image, visualization);
+}
 #endif
 
-    // Drawed signals
-    DynamicArray<SignalId> signals;
+/* ************************************************************************ */
 
-    for (auto id : getSignalIds())
-    {
-        const auto layer = getSignalVisualizationLayer(id);
-
-        // Store only when empty or enabled
-        if (layer.empty() || visualization.isEnabled(layer))
-            signals.push_back(id);
-    }
-
-    // Foreach grid
-    for (auto&& c : range(getGridSize()))
-    {
-        RealType alphaSum = 0;
-
-        for (auto id : signals)
-        {
-            if (getSignalColor(id) != render::colors::TRANSPARENT)
-                alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
-        }
-
-        Assert(alphaSum >= 0);
-
-        // Alpha for background
-        const auto alphaBg = std::max<RealType>(1 - alphaSum, 0);
-        Assert(alphaBg >= 0);
-
-        // Initial pixel colour
-        auto pixel = m_background * alphaBg;
-
-        if (alphaSum > 0)
-        {
-            render::Color pixelSignals;
-
-            // Mixup signal colors
-            for (auto id : signals)
-            {
-                if (getSignalColor(id) == render::colors::TRANSPARENT)
-                    continue;
-
-                // Calculate alpha value
-                const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
-                Assert(alpha >= 0);
-
-                pixelSignals += getSignalColor(id) * alpha / alphaSum;
-            }
-
-            pixel += (1 - alphaBg) * pixelSignals;
-        }
-
-#if DEV_PLUGIN_diffusion_OBSTACLES_RENDER
-        if (isObstacle(c))
-            pixel = render::colors::BLUE;
-#endif
-
-        m_drawable->set(c, pixel);
-    }
+#ifdef CECE_ENABLE_RENDER
+void Module::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 
@@ -465,6 +416,76 @@ void Module::updateObstacles()
         }
     }
 }
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::updateImage(render::Image& img, const simulator::Visualization& visualization) const
+{
+    img.resize(getGridSize());
+    Assert(getGridSize() == img.getSize());
+
+    // Drawed signals
+    DynamicArray<SignalId> signals;
+
+    for (auto id : getSignalIds())
+    {
+        const auto layer = getSignalVisualizationLayer(id);
+
+        // Store only when empty or enabled
+        if (layer.empty() || visualization.isEnabled(layer))
+            signals.push_back(id);
+    }
+
+    // Foreach grid
+    for (auto&& c : range(getGridSize()))
+    {
+        RealType alphaSum = 0;
+
+        for (auto id : signals)
+        {
+            if (getSignalColor(id) != render::colors::TRANSPARENT)
+                alphaSum += std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+        }
+
+        Assert(alphaSum >= 0);
+
+        // Alpha for background
+        const auto alphaBg = std::max<RealType>(1 - alphaSum, 0);
+        Assert(alphaBg >= 0);
+
+        // Initial pixel colour
+        auto pixel = m_background * alphaBg;
+
+        if (alphaSum > 0)
+        {
+            render::Color pixelSignals;
+
+            // Mixup signal colors
+            for (auto id : signals)
+            {
+                if (getSignalColor(id) == render::colors::TRANSPARENT)
+                    continue;
+
+                // Calculate alpha value
+                const auto alpha = std::min<RealType>(getSignal(id, c) / getSignalSaturation(id), 1);
+                Assert(alpha >= 0);
+
+                pixelSignals += getSignalColor(id) * alpha / alphaSum;
+            }
+
+            pixel += (1 - alphaBg) * pixelSignals;
+        }
+
+#if DEV_PLUGIN_diffusion_OBSTACLES_RENDER
+        if (isObstacle(c))
+            pixel = render::colors::BLUE;
+#endif
+
+        img.set(c, pixel);
+    }
+}
+#endif
 
 /* ************************************************************************ */
 

@@ -32,6 +32,7 @@ project(cli CXX)
 if (CONFIG_RENDER_ENABLE)
     option(CONFIG_CLI_ENABLE_IMAGE_CAPTURE "Enable support for image capturing" On)
     option(CONFIG_CLI_ENABLE_VIDEO_CAPTURE "Enable support for video capturing" On)
+    option(CONFIG_CLI_ENABLE_RENDER_THREAD "Enable support for rendering thread" Off)
 endif ()
 
 # ######################################################################### #
@@ -76,6 +77,14 @@ if (CONFIG_CLI_ENABLE_IMAGE_CAPTURE OR CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
         if (CONFIG_CLI_ENABLE_VIDEO_CAPTURE)
             add_definitions(-DCONFIG_CLI_ENABLE_VIDEO_CAPTURE=1)
         endif ()
+    endif ()
+endif ()
+
+if (CONFIG_CLI_ENABLE_RENDER_THREAD)
+    if (CONFIG_THREAD_SAFE)
+        add_definitions(-DCECE_CLI_ENABLE_RENDER_THREAD)
+    else ()
+        message(WARNING "No thread safe support, disabling CLI rendering thread")
     endif ()
 endif ()
 

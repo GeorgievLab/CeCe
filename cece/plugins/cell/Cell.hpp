@@ -34,12 +34,9 @@
 
 // CeCe
 #ifdef CECE_ENABLE_RENDER
-#  include "cece/render/Context.hpp"
+#  include "cece/render/State.hpp"
 #  include "cece/render/Object.hpp"
-#endif
-
-#ifdef CECE_THREAD_SAFE
-#  include "cece/core/Mutex.hpp"
+#  include "cece/render/Context.hpp"
 #endif
 
 // Plugin
@@ -121,8 +118,39 @@ public:
      */
     void draw(render::Context& context) override;
 
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     */
+    void drawStoreState() override;
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    void drawSwapState() override;
+
 #endif
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        units::PositionVector position;
+        units::Length radius;
+        units::Angle rotation;
+        render::Color color;
+    };
+#endif
 
 // Private Data Members
 private:
@@ -130,11 +158,9 @@ private:
 #ifdef CECE_ENABLE_RENDER
     /// Cell drawable.
     render::ObjectSharedPtr<DrawableCell> m_renderObject;
-#endif
 
-#ifdef CECE_THREAD_SAFE
-    /// Access mutex.
-    mutable Mutex m_mutex;
+    /// Render state.
+    render::State<RenderState> m_drawableState;
 #endif
 
 };

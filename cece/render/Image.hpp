@@ -27,32 +27,22 @@
 
 /* ************************************************************************ */
 
-// CeCe config
-#include "cece/config.hpp"
-
-/* ************************************************************************ */
-
 // CeCe
-#include "cece/object/Object.hpp"
-
-#ifdef CECE_ENABLE_RENDER
-#  include "cece/render/State.hpp"
-#  include "cece/render/Object.hpp"
-#  include "cece/render/Rectangle.hpp"
-#endif
+#include "cece/core/Vector.hpp"
+#include "cece/core/Grid.hpp"
+#include "cece/render/Color.hpp"
 
 /* ************************************************************************ */
 
 namespace cece {
-namespace plugin {
-namespace obstacle {
+namespace render {
 
 /* ************************************************************************ */
 
 /**
- * @brief Rectangle obstacle.
+ * @brief Image (color grid).
  */
-class Rectangle : public object::Object
+class Image
 {
 
 // Public Ctors & Dtors
@@ -61,92 +51,140 @@ public:
 
     /**
      * @brief Constructor.
-     *
-     * @param simulation Simulation object reference.
      */
-    explicit Rectangle(simulator::Simulation& simulation, String typeName = "obstacle.Rectangle",
-                   object::Object::Type type = object::Object::Type::Static) noexcept
-        : object::Object(simulation, typeName, object::Object::Type::Static)
-    {
-        // Nothing to do
-    }
+    Image();
 
 
+    /**
+     * @brief Constructor.
+     *
+     * @param size Image size.
+     */
+    explicit Image(Size size);
 
-// Public Operations
+
+// Public Operators
 public:
 
 
     /**
-     * @brief Configure obstacle.
+     * @brief Get mutable pixel color.
      *
-     * @param config
-     * @param simulation
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
      */
-    void configure(const config::Configuration& config, simulator::Simulation& simulation) override;
-
-
-#ifdef CECE_ENABLE_RENDER
-
-    /**
-     * @brief Render obstacle.
-     *
-     * @param context Rendering context.
-     */
-    void draw(render::Context& context) override;
-
-
-    /**
-     * @brief Store current state for drawing.
-     * State should be stored in back state because the front state is
-     * used for rendering.
-     * Drawing state should contain data that can be modified during update()
-     * call and are used for rendering.
-     */
-    void drawStoreState() override;
-
-
-    /**
-     * @brief Swap render state.
-     * Calling this function should be guarded by mutex for all modules
-     * to ensure all modules are in same render state.
-     * Function should be fast because otherwise it will block rendering.
-     */
-    void drawSwapState() override;
-
-#endif
-
-// Private Structures
-private:
-
-#ifdef CECE_ENABLE_RENDER
-    struct RenderState
+    Color& operator[](const Coordinate& coord) noexcept
     {
-        units::PositionVector position;
-        units::SizeVector size;
-        render::Color color;
-    };
-#endif
+        return get(coord);
+    }
+
+
+    /**
+     * @brief Get pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    const Color& operator[](const Coordinate& coord) const noexcept
+    {
+        return get(coord);
+    }
+
+
+// Public Accessors & Mutators
+public:
+
+
+    /**
+     * @brief Get mutable pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    Color& get(const Coordinate& coord) noexcept
+    {
+        return m_colors[coord];
+    }
+
+
+    /**
+     * @brief Get pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    const Color& get(const Coordinate& coord) const noexcept
+    {
+        return m_colors[coord];
+    }
+
+
+    /**
+     * @brief Set pixel color.
+     *
+     * @param coord Pixel coordinates.
+     * @param color Pixel color.
+     */
+    void set(const Coordinate& coord, const Color& color) noexcept
+    {
+        m_colors[coord] = color;
+    }
+
+
+    /**
+     * @brief Returns image size.
+     *
+     * @return
+     */
+    Size getSize() const noexcept
+    {
+        return m_colors.getSize();
+    }
+
+
+    /**
+     * @brief Returns image data.
+     *
+     * @return
+     */
+    const Color* getData() const noexcept
+    {
+        return m_colors.getData();
+    }
+
+
+// Public Operators
+public:
+
+
+    /**
+     * @brief Resize grid.
+     *
+     * @param size  New grid size.
+     * @param color Background color.
+     */
+    void resize(Size size, const Color& color = colors::BLACK);
+
+
+    /**
+     * @brief Clear grid to default color.
+     *
+     * @param color Clear color.
+     */
+    void clear(const Color& color);
+
 
 // Private Data Members
 private:
 
-#ifdef CECE_ENABLE_RENDER
+    /// Buffer for storing texture data.
+    Grid<Color> m_colors;
 
-    /// Shared object for drawing rectangle.
-    render::ObjectSharedPtr<render::Rectangle> m_drawRectangle;
-
-    /// Render state.
-    render::State<RenderState> m_drawableState;
-
-#endif
 };
 
 /* ************************************************************************ */
 
 }
 }
-}
 
 /* ************************************************************************ */
-

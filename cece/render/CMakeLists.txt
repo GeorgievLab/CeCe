@@ -71,6 +71,9 @@ set(SRCS
     Lines.hpp
     Lines.cpp
     glext.h
+    State.hpp
+    Image.hpp
+    Image.cpp
 )
 
 if (DEV_PHYSICS_BUILTIN_DEBUG)

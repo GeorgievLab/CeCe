@@ -34,6 +34,10 @@
 #include "cece/core/Atomic.hpp"
 #include "cece/core/PtrNamedContainer.hpp"
 
+#ifdef CECE_ENABLE_RENDER
+#include "cece/render/State.hpp"
+#endif
+
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
@@ -88,11 +92,23 @@ public:
 
     /**
      * @brief Render modules sorted by z-order.
-     *
-     * @param visualization
+     * @param visualization Visualization context.
      * @param context       Rendering context.
      */
     void draw(const simulator::Visualization& visualization, render::Context& context);
+
+
+    /**
+     * @brief Store modules drawing state.
+     * @param visualization Visualization context.
+     */
+    void drawStoreState(const simulator::Visualization& visualization);
+
+
+    /**
+     * @brief Swap modules drawing state.
+     */
+    void drawSwapState();
 
 #endif
 
@@ -115,6 +131,24 @@ protected:
      */
     DynamicArray<ViewPtr<Module>> getSortedListDesc() const noexcept;
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        /// Modules to render
+        DynamicArray<ViewPtr<Module>> modules;
+    };
+#endif
+
+// Private Data Members
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    /// Render state.
+    render::State<RenderState> m_drawableState;
+#endif
 };
 
 /* ************************************************************************ */

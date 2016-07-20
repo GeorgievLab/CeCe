@@ -60,6 +60,7 @@ option(CONFIG_GUI_ENABLE            "Build GUI application" Off)
 option(CONFIG_RENDER_ENABLE         "Enable simulation rendering (vizualization support)" On)
 option(CONFIG_OPENMP_ENABLE         "Enable OpenMP support" On)
 option(CONFIG_PHYSICS_BUILTIN       "Enable builtin physics engine (Box2D)" On)
+option(CONFIG_THREAD_SAFE           "Enable thread support" Off)
 
 # Real type
 set(CONFIG_REAL_TYPE "double" CACHE STRING "Type used for real values")
@@ -77,9 +78,6 @@ if (APPLE)
     set(MACOSX_VERSION_MIN "10.9" CACHE STRING "Minimum version of MacOS X to support")
     set(OSX_LIB_DIRS "" CACHE STRING "Additional directories for libraries packaged in Bundle")
 endif ()
-
-# If simulator should be thread safe
-set(THREAD_SAFE Off)
 
 # Must be defined
 if (NOT CONFIG_REAL_TYPE)
@@ -201,7 +199,11 @@ endif()
 if (CONFIG_GUI_ENABLE)
     message(STATUS "Build GUI application")
     set(CONFIG_RENDER_ENABLE On)
-    set(THREAD_SAFE On)
+
+    if (NOT CONFIG_THREAD_SAFE)
+        message(WARNING "GUI requires thread support")
+        set(CONFIG_THREAD_SAFE On)
+    endif ()
 else ()
     # If GUI is disabled build CLI
     set(CONFIG_CLI_ENABLE On)

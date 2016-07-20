@@ -52,11 +52,6 @@ Cell::Cell(simulator::Simulation& simulation, String typeName, object::Object::T
 
 void Cell::update(units::Duration dt)
 {
-#ifdef CECE_THREAD_SAFE
-    // Lock access
-    MutexGuard guard(m_mutex);
-#endif
-
     CellBase::update(dt);
 
     // Update shape radius
@@ -83,32 +78,42 @@ void Cell::draw(render::Context& context)
     if (!m_renderObject)
         m_renderObject.create(context);
 
-    units::PositionVector pos;
-    units::Length radius;
-    render::Color color;
-
-    {
-#ifdef CECE_THREAD_SAFE
-        // Lock access
-        MutexGuard guard(m_mutex);
-#endif
-
-        pos = getPosition();
-        radius = calcRadius(getVolume());
-        color = calcFluorescentColor();
-    }
+    const RenderState& state = m_drawableState.getFront();
 
     // Transform
     context.matrixPush();
-    context.matrixTranslate(pos);
-    context.matrixScale(2 * radius.value());
-    context.matrixRotate(getRotation());
+    context.matrixTranslate(state.position);
+    context.matrixScale(2 * state.radius.value());
+    context.matrixRotate(state.rotation);
     context.colorPush();
     context.enableAlpha();
-    m_renderObject->draw(context, radius / units::Length(1), color);
+    m_renderObject->draw(context, state.radius / units::Length(1), state.color);
     context.disableAlpha();
     context.colorPop();
     context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Cell::drawStoreState()
+{
+    RenderState& state = m_drawableState.getBack();
+
+    state.position = getPosition();
+    state.radius = calcRadius(getVolume());
+    state.rotation = getRotation();
+    state.color = calcFluorescentColor();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Cell::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 

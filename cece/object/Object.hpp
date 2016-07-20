@@ -63,8 +63,9 @@ class b2Shape;
 class b2Joint;
 #endif
 
-namespace cece { namespace simulator { class Simulation; } }
 namespace cece { namespace config { class Configuration; } }
+namespace cece { namespace simulator { class Simulation; } }
+namespace cece { namespace simulator { class Visualization; } }
 
 /* ************************************************************************ */
 
@@ -750,13 +751,47 @@ public:
 
     /**
      * @brief Render object.
-     *
-     * @param context
+     * @param visualization Visualization context.
+     * @param context Render context.
      */
-    virtual void draw(render::Context& context)
-    {
-        // Nothing to do
-    }
+    virtual void draw(const simulator::Visualization& visualization, render::Context& context);
+
+
+    /**
+     * @brief Render object.
+     * @param context Render context.
+     */
+    virtual void draw(render::Context& context);
+
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     * @param visualization Visualization context.
+     */
+    virtual void drawStoreState(const simulator::Visualization& visualization);
+
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     */
+    virtual void drawStoreState();
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    virtual void drawSwapState();
 
 #endif
 

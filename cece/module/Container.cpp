@@ -74,11 +74,10 @@ void Container::terminate()
 #ifdef CECE_ENABLE_RENDER
 void Container::draw(const simulator::Visualization& visualization, render::Context& context)
 {
-    DynamicArray<ViewPtr<Module>> modules;
+    const RenderState& state = m_drawableState.getFront();
 
-    // Copy modules (view pointer)
-    for (const auto& module : *this)
-        modules.push_back(module);
+    // Copy list
+    DynamicArray<ViewPtr<Module>> modules = state.modules;
 
     // Sort modules by rendering order
     std::sort(modules.begin(), modules.end(), [](const ViewPtr<Module>& lhs, const ViewPtr<Module>& rhs) {
@@ -88,6 +87,35 @@ void Container::draw(const simulator::Visualization& visualization, render::Cont
     // Render modules
     for (auto& module : modules)
         module->draw(visualization, context);
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Container::drawStoreState(const simulator::Visualization& visualization)
+{
+    RenderState& state = m_drawableState.getBack();
+    state.modules.clear();
+
+    for (auto& module : *this)
+    {
+        module->drawStoreState(visualization);
+        // Store module to draw
+        state.modules.push_back(module);
+    }
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Container::drawSwapState()
+{
+    for (auto& module : *this)
+        module->drawSwapState();
+
+    m_drawableState.swap();
 }
 #endif
 

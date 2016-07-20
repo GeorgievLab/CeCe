@@ -35,6 +35,10 @@
 #include "cece/core/DynamicArray.hpp"
 #include "cece/object/Object.hpp"
 
+#ifdef CECE_ENABLE_RENDER
+#include "cece/render/State.hpp"
+#endif
+
 /* ************************************************************************ */
 
 #ifdef CECE_ENABLE_RENDER
@@ -283,8 +287,8 @@ public:
      */
     ViewPtr<Object> add(UniquePtr<Object> object)
     {
-        m_data.push_back(Record{std::move(object), false});
-        return m_data.back().ptr;
+        m_add.push_back(Record{std::move(object), false});
+        return m_add.back().ptr;
     }
 
 
@@ -319,6 +323,12 @@ public:
 
 
     /**
+     * @brief Add pending objects.
+     */
+    void addPending() noexcept;
+
+
+    /**
      * @brief Remove all deleted objects.
      */
     void removeDeleted() noexcept;
@@ -333,8 +343,31 @@ public:
      */
     void draw(render::Context& context);
 
+
+    /**
+     * @brief Store objects drawing state.
+     * @param visualization Visualization context.
+     */
+    void drawStoreState(const simulator::Visualization& visualization);
+
+
+    /**
+     * @brief Swap objects drawing state.
+     */
+    void drawSwapState();
+
 #endif
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        /// Objects to render
+        DynamicArray<ViewPtr<Object>> objects;
+    };
+#endif
 
 // Private Data Members
 private:
@@ -342,6 +375,13 @@ private:
     /// Data.
     DataType m_data;
 
+    /// List of objects that will be added to the container.
+    DynamicArray<Record> m_add;
+
+#ifdef CECE_ENABLE_RENDER
+    /// Render state.
+    render::State<RenderState> m_drawableState;
+#endif
 };
 
 /* ************************************************************************ */

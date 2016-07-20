@@ -120,6 +120,33 @@ void Module::draw(render::Context& context)
 
 /* ************************************************************************ */
 
+#ifdef CECE_ENABLE_RENDER
+void Module::drawStoreState(const simulator::Visualization&)
+{
+    drawStoreState();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::drawStoreState()
+{
+    // Nothing to do
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Module::drawSwapState()
+{
+    // Nothing to do
+}
+#endif
+
+/* ************************************************************************ */
+
 }
 }
 

@@ -241,7 +241,6 @@ public:
 
     /**
      * @brief Render module.
-     *
      * @param visualization Visualization context.
      * @param context       Rendering context.
      */
@@ -250,11 +249,41 @@ public:
 
     /**
      * @brief Render module.
-     *
+     * Call of this function should be guarded with mutex for all modules.
      * @param visualization Visualization context.
      * @param context       Rendering context.
      */
     virtual void draw(render::Context& context);
+
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     * @param visualization Visualization context.
+     */
+    virtual void drawStoreState(const simulator::Visualization& visualization);
+
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     */
+    virtual void drawStoreState();
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    virtual void drawSwapState();
 
 #endif
 

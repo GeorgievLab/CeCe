@@ -84,6 +84,20 @@ void Container::deleteObject(ViewPtr<Object> object)
 
 /* ************************************************************************ */
 
+void Container::addPending() noexcept
+{
+    // Move objects
+    m_data.insert(
+        m_data.end(),
+        std::make_move_iterator(m_add.begin()),
+        std::make_move_iterator(m_add.end())
+    );
+
+    m_add.clear();
+}
+
+/* ************************************************************************ */
+
 void Container::removeDeleted() noexcept
 {
     // Delete objects
@@ -97,13 +111,48 @@ void Container::removeDeleted() noexcept
 #ifdef CECE_ENABLE_RENDER
 void Container::draw(render::Context& context)
 {
-    for (const auto& obj : m_data)
+    const RenderState& state = m_drawableState.getFront();
+
+    for (auto& obj : state.objects)
     {
         if (!obj->isVisible())
             continue;
 
-        obj->draw(context);
+        obj.get()->draw(context);
     }
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Container::drawStoreState(const simulator::Visualization& visualization)
+{
+    RenderState& state = m_drawableState.getBack();
+    state.objects.clear();
+
+    for (const auto& obj : m_data)
+    {
+        // Ignore deleted objects
+        if (obj.deleted)
+            continue;
+
+        obj->drawStoreState(visualization);
+        // Store object to draw
+        state.objects.push_back(obj.ptr);
+    }
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Container::drawSwapState()
+{
+    for (const auto& obj : m_data)
+        obj->drawSwapState();
+
+    m_drawableState.swap();
 }
 #endif
 

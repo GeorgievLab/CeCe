@@ -51,12 +51,10 @@
 #ifdef CECE_ENABLE_RENDER
 #  include "cece/render/Context.hpp"
 #  include "cece/render/Object.hpp"
+#  include "cece/render/State.hpp"
+#  include "cece/render/Image.hpp"
 #  include "cece/render/GridColor.hpp"
 #  include "cece/render/GridColorColorMap.hpp"
-#endif
-
-#ifdef CECE_THREAD_SAFE
-#  include "cece/core/Mutex.hpp"
 #endif
 
 // Plugin
@@ -342,6 +340,26 @@ public:
      */
     void draw(const simulator::Visualization& visualization, render::Context& context) override;
 
+
+    /**
+     * @brief Store current state for drawing.
+     * State should be stored in back state because the front state is
+     * used for rendering.
+     * Drawing state should contain data that can be modified during update()
+     * call and are used for rendering.
+     * @param visualization Visualization context.
+     */
+    void drawStoreState(const simulator::Visualization& visualization) override;
+
+
+    /**
+     * @brief Swap render state.
+     * Calling this function should be guarded by mutex for all modules
+     * to ensure all modules are in same render state.
+     * Function should be fast because otherwise it will block rendering.
+     */
+    void drawSwapState() override;
+
 #endif
 
 
@@ -430,6 +448,18 @@ protected:
      */
     std::size_t calculateLatticeHash() const noexcept;
 
+// Private Structures
+private:
+
+#ifdef CECE_ENABLE_RENDER
+    struct RenderState
+    {
+        units::ScaleVector scale;
+        render::Image imageDynamicsType;
+        render::Image imageMagnitude;
+        render::Image imageDensity;
+    };
+#endif
 
 // Private Data Members
 private:
@@ -476,11 +506,9 @@ private:
 
     /// Rendering grid with density.
     render::ObjectPtr<render::GridColorColorMap> m_drawableDensity;
-#endif
 
-#ifdef CECE_THREAD_SAFE
-    /// Access mutex.
-    mutable Mutex m_mutex;
+    /// Render state.
+    render::State<RenderState> m_drawableState;
 #endif
 
     /// Used flow dynamics.

@@ -59,6 +59,10 @@
 #include "cece/simulator/Visualization.hpp"
 #endif
 
+#ifdef CECE_THREAD_SAFE
+#include "cece/core/Mutex.hpp"
+#endif
+
 /* ************************************************************************ */
 
 namespace cece {
@@ -785,12 +789,6 @@ protected:
     void detectDeserters();
 
 
-    /**
-     * @brief Delete objects marked for deletion.
-     */
-    void deleteObjects();
-
-
 // Private Data Members
 private:
 
@@ -850,6 +848,9 @@ private:
     bool m_drawPhysics = false;
 #endif
 
+#ifdef CECE_THREAD_SAFE
+    Mutex m_mutex;
+#endif
 };
 
 /* ************************************************************************ */

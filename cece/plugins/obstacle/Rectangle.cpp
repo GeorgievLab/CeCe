@@ -57,13 +57,36 @@ void Rectangle::draw(render::Context& context)
     if (!m_drawRectangle)
         m_drawRectangle.create(context);
 
-    const auto& shape = getShapes().back();
+    const RenderState& state = m_drawableState.getFront();
 
     context.matrixPush();
-    context.matrixTranslate(getPosition());
-    context.matrixScale(shape.getRectangle().size / units::Length(1));
-    m_drawRectangle->draw(context, getColor());
+    context.matrixTranslate(state.position);
+    context.matrixScale(state.size / units::Length(1));
+    m_drawRectangle->draw(context, state.color);
     context.matrixPop();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Rectangle::drawStoreState()
+{
+    RenderState& state = m_drawableState.getBack();
+    const auto& shape = getShapes().back();
+
+    state.position = getPosition();
+    state.size = shape.getRectangle().size;
+    state.color = getColor();
+}
+#endif
+
+/* ************************************************************************ */
+
+#ifdef CECE_ENABLE_RENDER
+void Rectangle::drawSwapState()
+{
+    m_drawableState.swap();
 }
 #endif
 
