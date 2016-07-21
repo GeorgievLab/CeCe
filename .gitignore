@@ -10,3 +10,4 @@ build-*
 
 simulations
 
+/compile_commands.json

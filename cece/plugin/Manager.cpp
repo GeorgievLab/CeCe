@@ -48,20 +48,6 @@ namespace plugin {
 
 /* ************************************************************************ */
 
-#define ITEM(name, validname) extern "C" plugin::Api* PLUGIN_PROTOTYPE_NAME_BUILTIN(create, validname)();
-BUILTIN_PLUGINS
-#undef ITEM
-
-/* ************************************************************************ */
-
-#define ITEM(name, validname) { # name, PLUGIN_PROTOTYPE_NAME_BUILTIN(create, validname) },
-const Map<String, Library::CreateFn> Manager::s_builtin{
-    BUILTIN_PLUGINS
-};
-#undef ITEM
-
-/* ************************************************************************ */
-
 Manager::Manager() noexcept
     : m_repository(*this)
 {
@@ -70,39 +56,13 @@ Manager::Manager() noexcept
 
 /* ************************************************************************ */
 
-DynamicArray<String> Manager::getNamesBuiltin() const noexcept
-{
-    DynamicArray<String> names;
-    names.reserve(s_builtin.size());
-
-    for (const auto& p : s_builtin)
-        names.push_back(p.first);
-
-    return names;
-}
-
-/* ************************************************************************ */
-
-DynamicArray<String> Manager::getNamesExtern() const noexcept
-{
-    DynamicArray<String> names;
-    names.reserve(m_extern.size());
-
-    for (const auto& p : m_extern)
-        names.push_back(p.first);
-
-    return names;
-}
-
-/* ************************************************************************ */
-
 DynamicArray<String> Manager::getNames() const noexcept
 {
-    auto names = getNamesBuiltin();
-    auto namesExtern = getNamesExtern();
-    names.reserve(names.size() + namesExtern.size());
+    DynamicArray<String> names;
+    names.reserve(m_paths.size());
 
-    std::move(namesExtern.begin(), namesExtern.end(), std::back_inserter(names));
+    for (const auto& p : m_paths)
+        names.push_back(p.first);
 
     return names;
 }
@@ -132,7 +92,7 @@ void Manager::addDirectory(FilePath path)
     auto plugins = scanDirectory(path);
 
     // Append plugin directories
-    m_extern.insert(make_move_iterator(plugins.begin()), make_move_iterator(plugins.end()));
+    m_paths.insert(make_move_iterator(plugins.begin()), make_move_iterator(plugins.end()));
 }
 
 /* ************************************************************************ */
@@ -255,39 +215,19 @@ Manager& Manager::s()
 Library& Manager::loadInternal(String name)
 {
     // Try to find library in cache
-    // FIXME: In C++14 there is overloaded version of find
     auto it = m_loaded.find(name);
 
     // Found
     if (it != m_loaded.end())
         return std::get<1>(*it);
 
-    // Try to find in builtin libraries
-    // FIXME: In C++14 there is overloaded version of find
-    auto itBuiltin = s_builtin.find(name);
-
-    // Required library is builtin
-    if (itBuiltin != s_builtin.end())
-    {
-        Log::debug("Loading builtin plugin `", name, "`...");
-
-        // Insert into cache
-        auto ptr = m_loaded.emplace(std::piecewise_construct,
-            std::forward_as_tuple(name),
-            std::forward_as_tuple(name, UniquePtr<Api>(itBuiltin->second()))
-        );
-
-        return std::get<1>(*std::get<0>(ptr));
-    }
-    else
     {
         Log::debug("Loading external plugin `", name, "`...");
 
-        // Load extern
-        // FIXME: In C++14 there is overloaded version of find
-        auto it = m_extern.find(name);
+        // Load plugin library
+        auto it = m_paths.find(name);
 
-        if (it == m_extern.end())
+        if (it == m_paths.end())
             throw InvalidArgumentException("Unable to find plugin '" + name + "'");
 
         // Insert into cache

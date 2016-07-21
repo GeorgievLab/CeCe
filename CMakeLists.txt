@@ -89,7 +89,6 @@ endif ()
 # List of plugins variables
 set(PLUGINS_AVAILABLE "")
 set(PLUGINS_BUILD "")
-set(PLUGINS_BUILTIN "")
 
 # Get list of available plugins
 file(GLOB PLUGINS_DIRECTORIES RELATIVE "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}" "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}/*")
@@ -97,12 +96,6 @@ foreach(PLUGIN_DIR ${PLUGINS_DIRECTORIES})
     if ((NOT "${PLUGIN_DIR}" STREQUAL "doc") AND (IS_DIRECTORY "${CMAKE_SOURCE_DIR}/${DIR_PLUGINS}/${PLUGIN_DIR}"))
         list(APPEND PLUGINS_AVAILABLE ${PLUGIN_DIR})
         option(PLUGINS_BUILD_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}'" On)
-        option(PLUGINS_BUILTIN_${PLUGIN_DIR} "Build plugin '${PLUGIN_DIR}' as builtin" Off)
-
-        if (PLUGINS_BUILTIN_${PLUGIN_DIR})
-            list(APPEND PLUGINS_BUILTIN ${PLUGIN_DIR})
-            set(PLUGINS_BUILD_${PLUGIN_DIR} On)
-        endif ()
 
         if (PLUGINS_BUILD_${PLUGIN_DIR})
             list(APPEND PLUGINS_BUILD ${PLUGIN_DIR})

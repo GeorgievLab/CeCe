@@ -105,34 +105,6 @@ public:
 
 
     /**
-     * @brief Check if builtin plugin with given name exists.
-     *
-     * @param name Plugin name.
-     *
-     * @return If builtin plugin exists.
-     */
-    bool isAvailableBuiltin(StringView name) const noexcept
-    {
-        // FIXME: In C++14 there is overloaded version of find
-        return s_builtin.find(String(name)) != s_builtin.end();
-    }
-
-
-    /**
-     * @brief Check if extern plugin with given name exists.
-     *
-     * @param name Plugin name.
-     *
-     * @return If extern plugin exists.
-     */
-    bool isAvailableExtern(StringView name) const noexcept
-    {
-        // FIXME: In C++14 there is overloaded version of find
-        return m_extern.find(String(name)) != m_extern.end();
-    }
-
-
-    /**
      * @brief Check if plugin with given name exists.
      *
      * @param name Plugin name.
@@ -141,24 +113,9 @@ public:
      */
     bool isAvailable(StringView name) const noexcept
     {
-        return isAvailableBuiltin(name) || isAvailableExtern(name);
+        // FIXME: In C++14 there is overloaded version of find
+        return m_paths.find(String(name)) != m_paths.end();
     }
-
-
-    /**
-     * @brief Return a list of builtin plugins.
-     *
-     * @return An array of builtin plugins names.
-     */
-    DynamicArray<String> getNamesBuiltin() const noexcept;
-
-
-    /**
-     * @brief Return a list of extern plugins.
-     *
-     * @return An array of extern plugin names.
-     */
-    DynamicArray<String> getNamesExtern() const noexcept;
 
 
     /**
@@ -308,7 +265,7 @@ public:
      */
     void rescanDirectories() noexcept
     {
-        m_extern = scanDirectories();
+        m_paths = scanDirectories();
     }
 
 
@@ -366,17 +323,14 @@ private:
     /// Plugins directory paths.
     DynamicArray<FilePath> m_directories;
 
-    /// Extern plugins paths.
-    Map<String, FilePath> m_extern;
+    /// Paths to plugin libraries.
+    Map<String, FilePath> m_paths;
 
     /// Loaded plugins.
     Map<String, Library> m_loaded;
 
     /// Order in which plugins should be unloaded (in reverse order).
     DynamicArray<String> m_unloadOrderRev;
-
-    /// Builtin plugins create API functions.
-    static const Map<String, Library::CreateFn> s_builtin;
 
 };
 

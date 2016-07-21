@@ -37,22 +37,6 @@ option(DEV_RENDER_GL_ERRORS "Enable OpenGL errors checking." On)
 
 # ######################################################################### #
 
-# Include build-in libraries
-set(PLUGINS_LIBS "")
-set(BUILTIN_PLUGINS "")
-
-# Foreach build-in plugins
-foreach (PLUGIN ${PLUGINS_BUILTIN})
-    message(STATUS "Builtin plugin: ${PLUGIN}")
-    plugin_project_name(${PLUGIN} PLUGIN_PROJECT)
-    set(PLUGINS_LIBS ${PLUGINS_LIBS} ${PLUGIN_PROJECT})
-    # Fix module name: replace '-' by '_'
-    string(REPLACE "-" "_" FIXED_PLUGIN ${PLUGIN})
-    set(BUILTIN_PLUGINS "${BUILTIN_PLUGINS}ITEM(${PLUGIN},${FIXED_PLUGIN})")
-endforeach ()
-
-# ######################################################################### #
-
 # Include Python API
 if (UNIX AND NOT APPLE)
     # Link boost dynamically on Linux
@@ -93,9 +77,6 @@ configure_file(config.hpp.in config.hpp)
 
 # Exports macro is not propagated to subdirectories
 add_definitions(-D${PROJECT_NAME}_EXPORTS)
-
-# Pass build-in libraries list
-add_definitions(-DBUILTIN_PLUGINS=${BUILTIN_PLUGINS})
 
 # ######################################################################### #
 
@@ -153,7 +134,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_RPATH On)
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
-    ${PLUGINS_LIBS}
     ${Boost_LIBRARIES}
 )
 
