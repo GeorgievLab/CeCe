@@ -610,10 +610,15 @@ void MainWindow::setCurrentFile(QString filename)
     QSettings settings;
     QStringList files = settings.value("recentFileList").toStringList();
 
-    if (!m_filename.isEmpty())
     {
-        files.removeAll(m_filename);
-        files.prepend(m_filename);
+        QFileInfo info(m_filename);
+        QString path = info.canonicalFilePath();
+
+        if (!path.isEmpty())
+        {
+            files.removeAll(path);
+            files.prepend(path);
+        }
     }
 
     while (files.size() > MAX_RECENT_FILES)
