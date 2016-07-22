@@ -33,6 +33,7 @@
 #include "cece/plugin/Manager.hpp"
 
 // GUI
+#include "version.hpp"
 #include "MainWindow.hpp"
 
 /* ************************************************************************ */
@@ -59,7 +60,7 @@ int main(int argc, char* argv[])
     app.setOrganizationName("GeorgievLab");
     app.setOrganizationDomain("ccy.zcu.cz");
     app.setApplicationName("cece");
-    app.setApplicationVersion("0.4.3");
+    app.setApplicationVersion(QStringLiteral(VERSION));
     app.setApplicationDisplayName("CeCe");
 
     QCommandLineParser parser;

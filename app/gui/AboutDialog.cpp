@@ -26,6 +26,10 @@
 // Declaration
 #include "AboutDialog.hpp"
 
+// Qt
+#include <QApplication>
+#include <QDate>
+
 // UI
 #include "ui_AboutDialog.h"
 
@@ -40,6 +44,11 @@ AboutDialog::AboutDialog(QWidget* parent)
     : QDialog(parent), ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+
+    QDate date = QDate::currentDate();
+
+    ui->labelVersionValue->setText(QApplication::applicationVersion());
+    ui->labelBuildValue->setText(date.toString());
 }
 
 /* ************************************************************************ */
