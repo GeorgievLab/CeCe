@@ -1,13 +1,3 @@
 
-.codelite/*
-.clang/*
-.build-debug/*
+build*
 
-build-*
-
-*.mk
-.cmake_dirty
-
-simulations
-
-/compile_commands.json

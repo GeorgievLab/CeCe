@@ -4,3 +4,9 @@
 [submodule "plugins"]
 	path = plugins
 	url = ../CeCe-plugins
+[submodule "app/cli"]
+	path = app/cli
+	url = ../CeCe-cli
+[submodule "app/gui"]
+	path = app/gui
+	url = ../CeCe-gui
