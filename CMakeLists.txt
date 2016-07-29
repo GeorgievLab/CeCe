@@ -27,17 +27,29 @@ cmake_minimum_required(VERSION 3.1)
 
 # ######################################################################### #
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/core
-    ${CMAKE_CURRENT_BINARY_DIR}/core
-)
+option(CECE_BUILD_CLI "Build CLI application" On)
+option(CECE_BUILD_GUI "Build GUI application" On)
 
 # ######################################################################### #
 
 add_subdirectory(core)
 add_subdirectory(plugins)
-add_subdirectory(app/cli)
-add_subdirectory(app/gui)
+
+if (CECE_BUILD_CLI)
+    add_subdirectory(app/cli)
+endif ()
+
+if (CECE_BUILD_GUI)
+    add_subdirectory(app/gui)
+endif ()
+
+# ######################################################################### #
+
+# Build unit tests
+# CECE_TESTS_BUILD is an option in CeCe-core
+if (CECE_TESTS_BUILD)
+    enable_testing()
+endif ()
 
 # ######################################################################### #
 
