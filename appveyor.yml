@@ -25,15 +25,28 @@
 
 os: Visual Studio 2015
 
-version: 0.5.0.{build}
+version: 0.6.0.{build}
 
 environment:
     matrix:
+        - GENERATOR: Visual Studio 14 2015 Win64
+          CECE_RENDER: On
+          DEPLOY: On
+        - GENERATOR: Visual Studio 14 2015 Win64
+          CECE_RENDER: Off
+          DEPLOY: Off
         - GENERATOR: Visual Studio 14 2015
-          BOOST_ROOT: C:\Libraries\boost_1_59_0
-          BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib32-msvc-14.0
+          CECE_RENDER: On
+          DEPLOY: Off
+        - GENERATOR: Visual Studio 14 2015
+          CECE_RENDER: Off
+          DEPLOY: Off
         - GENERATOR: MinGW Makefiles
-          BOOST_ROOT: C:\Libraries\boost_1_59_0
+          CECE_RENDER: On
+          DEPLOY: Off
+        - GENERATOR: MinGW Makefiles
+          CECE_RENDER: Off
+          DEPLOY: Off
 
 matrix:
     allow_failures:
@@ -44,26 +57,16 @@ branches:
     except:
         - travis-ci
 
-init:
-    - del c:\programdata\chocolatey\bin\cpack.exe
-
 install:
-    - call scripts\ci\install-win32.bat
+    - git submodule update --init --recursive
+    - SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+    - SET PATH=C:\MinGW\bin;%PATH%
+    - call plugins\scripts\ci\install-win32.bat
 
 before_build:
-    - call scripts\ci\before_build-win32.bat
+    - call plugins\scripts\ci\before_build-win32.bat
 
 build_script:
-    - call scripts\ci\build_script-win32.bat
-
-test_script:
-    - call scripts\ci\test_script-win32.bat
-
-after_build:
-    - call scripts\ci\after_build-win32.bat
-
-artifacts:
-    - path: build\CeCe-*-win32.zip
-      name: CeCe
+    - pushd build && cmake --build . --config Release & popd
 
 # ######################################################################### #
