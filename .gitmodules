@@ -7,6 +7,6 @@
 [submodule "app/cli"]
 	path = app/cli
 	url = ../CeCe-cli
-[submodule "app/gui"]
-	path = app/gui
-	url = ../CeCe-gui
+[submodule "examples"]
+	path = examples
+	url = ../CeCe-examples
