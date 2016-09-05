@@ -10,16 +10,12 @@ CeCe originally started as a part of the iGEM 2015 project from team Czech Repub
 the simulation of microfluidical chips. However, Cece's wide range of tools enables it to be used for
 the simulation of batch cultures, blood streams, cell tissues, and many more biomedically related problems.
 
+> This repository is just a metarepository for other parts of the CeCe project. It's updated only occasionally, see individual repositories for the newest version.
+> Repositories: [core](https://github.com/GeorgievLab/CeCe-core), [plugins](https://github.com/GeorgievLab/CeCe-plugins), [CLI](https://github.com/GeorgievLab/CeCe-cli), [examples](https://github.com/GeorgievLab/CeCe-examples)
+
 ## Prebuilt packages
 
-GitHun releases contains prebuilt pacakges for Windows, Mac OSX and Linux.
-
-### Requirements
-
-#### Windows
-
-* [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
-* [Python 2.7 32bit](http://python.org)
+GitHub releases contains prebuilt packages (release version) for Windows, Mac OSX and Linux.
 
 ## Building from source
 
@@ -44,28 +40,6 @@ cmake --build .
 ### Requirements
 
 * C++11 compiler - GCC, Clang, MSVC.
-* [CMake](https://cmake.org) v2.8 or newer.
-* [Box2D](http://box2d.org) v2.3 or newer.
-* [Boost C++ Libraries](http://www.boost.org) - Filesystem, System, Any, Tribool and Variant.
-* [Python 2.7](http://python.org) - Python plugins.
-
-### Optional requirements
-
-For some functionality and plugins additional libraries are required.
-
-* [libpng](http://libpng.org/pub/png/libpng.html) - image capturing, *picture* plugin and CLI application.
-* [zlib](http://zlib.net) - required by libpng.
-* [GLFW3](http://www.glfw.org) - Simulation visualization.
-
-## Third party libraries
-Libraries that are part of CeCe source code.
-
-* [pugixml](http://pugixml.org) (*xml* plugin).
-* [nanosvg](https://github.com/memononen/nanosvg) (*obstacles-svg* plugin).
-
-## Manual
-
-Detailed manual for specific simulator parts can be found at following pages.
-
-* [CLI application](app/cli/doc/manual.md)
-* [Plugins](cece/plugins/doc/manual.md)
+* [CMake](https://cmake.org) v3.1 or newer.
+* From [plugins](https://github.com/GeorgievLab/CeCe-plugins) repository.
+* From [cli](https://github.com/GeorgievLab/CeCe-cli) repository.
