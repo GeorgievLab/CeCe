@@ -28,7 +28,6 @@ cmake_minimum_required(VERSION 3.1)
 # ######################################################################### #
 
 option(CECE_BUILD_CLI "Build CLI application" On)
-option(CECE_BUILD_GUI "Build GUI application" On)
 
 # ######################################################################### #
 
@@ -37,10 +36,6 @@ add_subdirectory(plugins)
 
 if (CECE_BUILD_CLI)
     add_subdirectory(app/cli)
-endif ()
-
-if (CECE_BUILD_GUI)
-    add_subdirectory(app/gui)
 endif ()
 
 # ######################################################################### #
