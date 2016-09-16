@@ -1,0 +1,38 @@
+---
+layout: article
+permalink: /download/
+title: "Download"
+share: false
+---
+
+## Stable builds
+
+Stable builds contain whole package (CLI application, plugins and examples).
+
+| Version | Release date | OS | Download |
+| ------- | ------------ | -- | -------- |{% for link in site.data.stable %}
+| {{ link.version }} | {{ link.date }} | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) |{% endfor %}
+
+## Nighty builds
+
+Nighty builds are built regulary by CI services ([Travis-CI](https://travis-ci.org), [Appveyor](https://www.appveyor.com)) and stored on [Bintray](https://bintray.com). Those builds are not tested and can contain bugs but on other hand they offer improvements in comparision with stable builds.
+
+### CLI
+
+Command line application. Usage requires some basic knowledge about command line / terminal. You can look into [documentation](/documentation/) for more information.
+
+| OS | Lastest | Older |
+| -- | -------- |{% for link in site.data.nighty_cli %}
+| {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
+
+[Go to download page](https://bintray.com/georgievlab/CeCe-cli-nighty)
+
+## Source code
+
+Whole project is released as open-source under [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) license and source is available on [GitHub](https://github.com). Project is split into separate parts which can be used separately. You can use only core library and plugins and create own version of CLI or GUI application.
+
+* [Core library](https://github.com/GeorgievLab/CeCe-cli)
+* [Standard plugins](https://github.com/GeorgievLab/CeCe-plugins)
+* [Examples](https://github.com/GeorgievLab/CeCe-examples)
+* [CLI application](https://github.com/GeorgievLab/CeCe-cli)
+* [GUI application](https://github.com/GeorgievLab/CeCe-gui)

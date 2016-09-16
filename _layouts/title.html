@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% if page.title %}{{ page.title }} • {% endif %}{{ site.title }}</title>
+    {% if page.excerpt %}<meta name="description" content="{{ page.excerpt | strip_html }}">{% endif %}
+    {% if page.tags %}<meta name="keywords" content="{{ page.tags | join: ', ' }}">{% endif %}
+    {% if page.author %}
+      {% assign author = site.data.authors[page.author] %}{% else %}{% assign author = site.owner %}
+    {% endif %}
+    {% include open-graph.html %}
+
+    <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.url }}">
+
+    <link href="{{ site.url }}/atom.xml" type="application/atom+xml" rel="alternate" title="{{ site.title }} Atom Feed">
+    <link href="{{ site.url }}/sitemap.xml" type="application/xml" rel="sitemap" title="Sitemap">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cleartype" content="on">
+
+    <link rel="stylesheet" href="{{ site.url }}/css/main.css">
+    <!-- HTML5 Shiv and Media Query Support for IE -->
+    <!--[if lt IE 9]>
+      <script src="{{ site.url }}/js/vendor/html5shiv.min.js"></script>
+      <script src="{{ site.url }}/js/vendor/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="{{ site.url }}/js/vendor/jquery-1.9.1.min.js"></script>
+    <script src="{{ site.url }}/js/main.js"></script>
+  </head>
+
+  <body id="js-body">
+    {% include browser-upgrade.html %}
+    {% include header.html %}
+    {% include navigation-sliding.html %}
+
+    <div class="page-lead" style="background-image: url({{ site.url }}/images/page-lead.png)">
+      <div class="wrap page-lead-content">
+        <h1>CeCe</h1>
+        <h2>Make an advanced simulation of cell communication in dynamic environment.</h2>
+        <a href="{{ site.url }}/documentation/" class="btn-inverse">Read Documentation</a> &nbsp; or &nbsp; <a href="{{ site.url }}/download/" class="btn-inverse">Download</a>
+      </div><!-- /.page-lead-content -->
+    </div><!-- /.page-lead -->
+
+    <div id="page-wrapper">
+      <div id="main" role="main">
+        <div class="wrap">
+            <div id="content" class="page-content">
+                {{ content }}
+                <hr />
+                {% if page.comments == true %}
+                <aside>
+                    {% include comments.html %}
+                </aside>
+                {% endif %}
+            </div><!-- /.content -->
+        </div><!-- ./wrap -->
+    </div><!-- /#main -->
+
+      {% include footer.html %}
+    </div>
+
+  </body>
+</html>
