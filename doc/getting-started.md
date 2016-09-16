@@ -1,6 +1,6 @@
 ---
 layout: article
-permalink: /documentation/getting-started
+permalink: /documentation/getting-started/
 title: "Getting started"
 share: false
 categories:
