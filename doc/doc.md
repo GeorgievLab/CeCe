@@ -9,11 +9,11 @@ Welcome to CeCe project documentation. You can find basic project's documenation
 
 ## User
 
-* [Getting started](/documentation/getting-started/)
-* [Writing a simulation](/documentation/writing-a-simulation/)
-* [Sample simulation](/documentation/sample-simulation/)
+* [Getting started]({% link doc/getting-started.md %})
+* [Writing a simulation]({% link doc/writing-a-simulation.md %})
+* [Sample simulation]({% link doc/sample-simulation.md %})
 
 ## Programmer
 
-* [Custom plugin](/documentation/custom-plugin/)
-* [Plugin API](/documentation/plugin-api/)
+* [Custom plugin]({% link doc/custom-plugin.md %})
+* [Plugin API]({% link doc/plugin-api.md %})
