@@ -10,22 +10,20 @@ share: false
 Stable builds contain whole package (CLI application, plugins and examples).
 
 | Version | Release date | OS | Download |
-| ------- | ------------ | -- | -------- |{% for link in site.data.stable %}
+| ------- | ------------ | -- | -------- |{% for link in site.data.build_stable %}
 | {{ link.version }} | {{ link.date }} | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) |{% endfor %}
 
-## Nighty builds
+## CI builds
 
-Nighty builds are built regulary by CI services ([Travis-CI](https://travis-ci.org), [Appveyor](https://www.appveyor.com)) and stored on [Bintray](https://bintray.com). Those builds are not tested and can contain bugs but on other hand they offer improvements in comparision with stable builds.
+CI builds are built regulary by CI services ([Travis-CI](https://travis-ci.org), [Appveyor](https://www.appveyor.com)) and stored on [Bintray](https://bintray.com). Those builds are not tested and can contain bugs but on other hand they offer improvements in comparision with stable builds.
 
 ### CLI
 
 Command line application. Usage requires some basic knowledge about command line / terminal. You can look into [documentation](/documentation/) for more information.
 
 | OS | Lastest | Older |
-| -- | -------- |{% for link in site.data.nighty_cli %}
+| -- | -------- |{% for link in site.data.build_cli_ci %}
 | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
-
-[Go to download page](https://bintray.com/georgievlab/CeCe-cli-nighty)
 
 ## Source code
 
