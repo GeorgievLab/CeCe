@@ -21,7 +21,7 @@ CI builds are built regulary by CI services ([Travis-CI](https://travis-ci.org),
 
 Command line application. Usage requires some basic knowledge about command line / terminal. You can look into [documentation](/documentation/) for more information.
 
-| OS | Lastest | Older |
+| OS | Latest | Older |
 | -- | -------- |{% for link in site.data.build_cli_ci %}
 | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
 
