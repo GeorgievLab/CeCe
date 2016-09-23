@@ -8,5 +8,5 @@
   all: https://bintray.com/georgievlab/CeCe-cli-ci/macOS#files
 
 - os: Linux 64bit
-  link: https://bintray.com/georgievlab/CeCe-cli-ci/linux/_latestVersion#files
-  all: https://bintray.com/georgievlab/CeCe-cli-ci/linux#files
+  link: https://bintray.com/georgievlab/CeCe-cli-ci/linux-x64/_latestVersion#files
+  all: https://bintray.com/georgievlab/CeCe-cli-ci/linux-x64#files
