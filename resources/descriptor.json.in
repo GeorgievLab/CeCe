@@ -1,0 +1,14 @@
+{
+    "package": {
+        "name": "@BINTRAY_PLATFORM@",
+        "repo": "CeCe",
+        "subject": "georgievlab"
+    },
+    "version": {
+        "name": "@BINTRAY_VERSION@"
+    },
+    "files": [
+        {"includePattern": "build/(CeCe.*.tar.gz)", "uploadPattern":"\$1"}
+    ],
+    "publish": true
+}
