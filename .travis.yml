@@ -95,4 +95,20 @@ after_success:
     - GTEST_COLOR=1 ctest --verbose
     - popd
 
+before_deploy:
+    - pushd build
+    - cpack -G TGZ
+    - popd
+
+deploy:
+    provider: bintray
+    file: "build/descriptor.json"
+    user: "ntsfka"
+    key:
+        secure: "LPt4Tx0NfVRJpqqfPTnSXsPfHeRFp2OhP3W1P+IR7NrQEUk7o6RTQeEtans6lBsIC2bibwGqX2VN/kvYtC7j48tm4/Fqds6KTm3wUfWWl0t9L12js15n7YaKz6xr8/C/IDIFZYdzjqDbj6wbOTtNNUOvR2fCF4a2z/bgRVZd5YwPk7LmnUeSB/2MPpB/ccJ/ggsFCCUGLN6LiUynTihlBJWaxOJfF96q9B2wHn4GXdhzuZdzfreKqApEHiPeC9Bm+HIuRuGaHgnvmjFGCe0rGO+SHOsL/zjRQioO0+eS4C5V2Z3KmXbTQn0J0F2m072BaJ9i4lUXBEFL7hQUNxi9UnvnRMbskottHhAMYVCA5RhYJOuw4GRdI5PJfsKGDQ0fmy5rRsHKZk0DdrnGLLMJyXViLtjPbuTbMzc3xcAJ0V5fh+sxxF2yHVnjEL2kNe3XCJjCojEA3brEdeoIhz9iuvcbs48Zgzj+SFtgx2Tzvt/gBDmbL5p56+doxnymC2tv+Fw1STyhpU8NtY8Qh0Yo3hNCaXnFIkGL4b+e2ZP0KQeo0l5lgZ5+acGF17+XtNe4yjJV3mDw44qEwWWcgDu9I/U/C/ReajTyStEIws6aRKsnola4v+X6oehh8PPBSOyNJJ2fQiKk5nXwvdHEekSy2KJXwfUitutr8jrtnaClcD8="
+    skip_cleanup: true
+    on:
+        branch: master
+        condition: "$DEPLOY = On"
+
 # ######################################################################### #
