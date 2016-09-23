@@ -61,10 +61,10 @@ install:
     - git submodule update --init --recursive
     - SET PATH=%PATH:C:\Program Files\Git\usr\bin;=%
     - SET PATH=C:\MinGW\bin;%PATH%
-    - call plugins\scripts\ci\install-win32.bat
 
 before_build:
-    - call plugins\scripts\ci\before_build-win32.bat
+    - md build
+    - pushd build && cmake -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release .. & popd
 
 build_script:
     - pushd build && cmake --build . --config Release & popd

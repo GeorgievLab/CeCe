@@ -77,7 +77,6 @@ before_install:
 install:
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew outdated cmake  || brew upgrade cmake  ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew outdated ccache || brew upgrade ccache ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew outdated libpng || brew upgrade libpng ; fi
 
 before_script:
     - if [ "$TRAVIS_OS_NAME" == "linux" -a "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
