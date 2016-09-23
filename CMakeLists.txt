@@ -40,6 +40,14 @@ endif ()
 
 # ######################################################################### #
 
+install(
+    DIRECTORY examples/
+    DESTINATION examples
+    PATTERN ".git" EXCLUDE
+)
+
+# ######################################################################### #
+
 # Build unit tests
 # CECE_TESTS_BUILD is an option in CeCe-core
 if (CECE_TESTS_BUILD)
