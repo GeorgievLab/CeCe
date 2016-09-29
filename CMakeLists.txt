@@ -78,6 +78,15 @@ configure_file(resources/descriptor.json.in descriptor.json @ONLY)
 
 include(InstallRequiredSystemLibraries)
 
+set(SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
+if (${SYSTEM_NAME} MATCHES "Windows")
+    if (CMAKE_CL_64)
+        set(SYSTEM_NAME "Win64")
+    else ()
+        set(SYSTEM_NAME "Win32")
+    endif ()
+endif ()
+
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CeCe simulator")
 set(CPACK_PACKAGE_VENDOR "Georgiev Lab")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
@@ -88,7 +97,7 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${CECE_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${CECE_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${CECE_VERSION_PATCH})
 set(CPACK_PACKAGE_CONTACT "Jiří Fatka <fatkaj@ntis.zcu.cz>")
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${SYSTEM_NAME}")
 
 # ######################################################################### #
 
