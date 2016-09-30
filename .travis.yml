@@ -107,7 +107,6 @@ deploy:
         secure: "VCTL1Xz6YLmBfuFeRdpi4CYkDuvmIvi9n9aKG8NKBfWtA67FZPX1ffk/rAQEGzk8OULBgmIvVW/oPp9XF3UBsfGiwv8/AOVTgAntRo59LNBT4fIy7435bmrnDuXpa/Be55MIOrWyM2XykONUOznRCUq5ygt5z8s/HsSmscht+P298MhK3+5Hd2fGDV627Ixc35hkSsfzK1bonlrOjBHYEOrC2LRepUBmghW3f2aDgntcLqB90BEwxp1wdenpQvj1L1r0GZZwELB/nVFYRX8ikBZ4w3MVPZD/Wdr9pdMX0qABKaa7P+Z4+FDVfTOGGfvwzI8TKiEbemWYykunFZAnBu5kRo5zrQrKwv6yxvgaNKjF3CyIw5Gp2vECQVFZnyxcVP3H8jOYgSBsmmp52Dp1IqavD4Ne4FMHJI2KqWG5zhYy0GBquMcsGyKoU5+LtxlPBm6RF/vJ63t3792wijLml+CmJZuJV4h5fBLnRlsqQb92VCZ735ou/c3g6LWiVa2B0MuTL6Rx+6DGXKXMs189S+D1cBjw8n0RLiZcJINcrSRoSsEsxxpH6aUsF2lLLc884yOknj20gYkjkQuOKr8kQ4c15OrCnFT3CImT2qrh7xOMZdfjRXTDdQFNy2Q1XF2RvxAuKY9Ga3XCSvrqQm3iTpGNPAnrTjMBKoOLVk9BTpA="
     skip_cleanup: true
     on:
-        branch: master
         condition: "$DEPLOY = On"
         tags: true
 

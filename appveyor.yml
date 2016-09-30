@@ -90,7 +90,6 @@ deploy:
       publish: true
       override: true
       on:
-          branch: master
           DEPLOY: On
           appveyor_repo_tag: true
 
