@@ -13,6 +13,12 @@ Welcome to CeCe project documentation. You can find basic project's documenation
 * [Writing a simulation]({{ site.url }}/documentation/writing-a-simulation/)
 * [Sample simulation]({{ site.url }}/documentation/sample-simulation/)
 
+## Examples
+
+More detailed [examples](https://github.com/GeorgievLab/CeCe-examples) explanation.
+
+* [Agglutination]({{ site.url }}/documentation/examples/agglutination/)
+
 ## Programmer
 
 * [Custom plugin]({{ site.url }}/documentation/custom-plugin/)

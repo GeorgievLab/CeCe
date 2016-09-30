@@ -16,7 +16,18 @@ The simplest simulation that can be run is:
 <simulation world-size="300um 300um" dt="1s" />
 ```
 
-It doesn't contain or do anything. It defines a simulation with 300um x 300um simulation world with simulation step which takes 1 second.
+It doesn't contain or do anything. It defines a simulation with `300um` x `300um` (`u` means *micro*) simulation world with simulation step which takes 1 second. You might notice `um` suffixes in `world-size` attribute. Values to the simulator can be passed with SI units suffix like `um`, `mm`, `um/s`. Simulator do proper conversion and checks so you cannot pass for example time value to length value (`world-size="30s 50s"` causes error).
+If you doesn't like suffixes you can omit them but you must calculate with values in same way how the simulator does. Following table shows what value is used for value `1` without suffix in SI base units.
+
+| SI base unit              | Base value |
+| ------------------------- | ---------- |
+| length                    | `1um`      |
+| time                      | `1s`       |
+| mass                      | `1ug`      |
+| electric current          | `1A`       |
+| thermodynamic temperature | `1K`       |
+| amount of substance       | `1umol`    |
+| luminous intensity        | `1cd`      |
 
 You can add an object to the simulation but first you need to import a plugin with defines your object because core CeCe doesn't have support for anything usable. Because we want to add a cell object we need to import `cell` plugin which contains support for basic cell objects.
 
