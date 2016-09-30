@@ -92,6 +92,6 @@ deploy:
       on:
           branch: master
           DEPLOY: On
-          appveyor_repo_tag: false
+          appveyor_repo_tag: true
 
 # ######################################################################### #
