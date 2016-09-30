@@ -8,7 +8,7 @@
         "name": "@BINTRAY_VERSION@"
     },
     "files": [
-        {"includePattern": "build/(CeCe.*.tar.gz)", "uploadPattern":"\$1"}
+        {"includePattern": "build/(CeCe.*.tar.gz)", "uploadPattern":"\$1", "matrixParams": { "override": 1 }}
     ],
     "publish": true
 }
