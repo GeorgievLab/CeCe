@@ -109,5 +109,6 @@ deploy:
     on:
         branch: master
         condition: "$DEPLOY = On"
+        tags: true
 
 # ######################################################################### #
