@@ -1,15 +1,42 @@
 
 - os: Windows 32bit
+  version: 0.6.0
+  date: 2016-09-30
+  lastest: true
+  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Win32.zip
+
+- os: Windows 64bit
+  version: 0.6.0
+  date: 2016-09-30
+  lastest: true
+  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Win64.zip
+
+- os: macOS
+  version: 0.6.0
+  date: 2016-09-30
+  lastest: true
+  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Darwin.zip
+
+- os: Linux 64bit
+  version: 0.6.0
+  date: 2016-09-30
+  lastest: true
+  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Linux.zip
+
+- os: Windows 32bit
   version: 0.5
   date: 2016-06-12
+  lastest: false
   link: https://github.com/GeorgievLab/CeCe/releases/download/v0.5/CeCe-0.5.0-win32.zip
 
 - os: macOS
   version: 0.5
   date: 2016-06-12
+  lastest: false
   link: https://github.com/GeorgievLab/CeCe/releases/download/v0.5/CeCe-0.5.0-Darwin.tar.gz
 
 - os: Linux 64bit
   version: 0.5
   date: 2016-06-12
+  lastest: false
   link: https://github.com/GeorgievLab/CeCe/releases/download/v0.5/CeCe-0.5.0-Linux.tar.gz

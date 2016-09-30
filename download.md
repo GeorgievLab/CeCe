@@ -10,10 +10,18 @@ share: false
 Stable builds contain whole package (CLI application, plugins and examples).
 
 | Version | Release date | OS | Download |
-| ------- | ------------ | -- | -------- |{% for link in site.data.build_stable %}
-| {{ link.version }} | {{ link.date }} | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) |{% endfor %}
+| ------- | ------------ | -- | -------- |{% for link in site.data.build_stable %}{% if link.lastest == true %}
+| {{ link.version }} | {{ link.date }} | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) |{% endif %}{% endfor %}
 
-> If you want to use python plugins you also need python 2.7 installed. On macOS/OSX and Linux there should be already installed but on Windows you need to install it ([64bit](https://www.python.org/ftp/python/2.7.12/python-2.7.12.amd64.msi) for 0.6 and above and [32bit](https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi) for 0.5)
+> If you want to use python plugins you also need python 2.7 installed. On macOS/OSX and Linux there should be already installed but on Windows you need to install it according to the selected architecture: [64bit](https://www.python.org/ftp/python/2.7.12/python-2.7.12.amd64.msi) or [32bit](https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi).
+>
+> If python is not installed or wrong version is installed you get warning messages for plugins using python and when you try use one of those plugins you get an error message.
+
+### Older versions
+
+| Version | Release date | OS | Download |
+| ------- | ------------ | -- | -------- |{% for link in site.data.build_stable %}{% if link.lastest == false %}
+| {{ link.version }} | {{ link.date }} | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) |{% endif %}{% endfor %}
 
 ## CI builds
 
