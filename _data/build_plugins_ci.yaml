@@ -1,0 +1,16 @@
+
+- os: Windows 64bit
+  link: https://bintray.com/georgievlab/CeCe-plugins-ci/win64/_latestVersion#files
+  all: https://bintray.com/georgievlab/CeCe-plugins-ci/win64#files
+
+- os: Windows 32bit
+  link: https://bintray.com/georgievlab/CeCe-plugins-ci/win32/_latestVersion#files
+  all: https://bintray.com/georgievlab/CeCe-plugins-ci/win32#files
+
+- os: macOS
+  link: https://bintray.com/georgievlab/CeCe-plugins-ci/macOS/_latestVersion#files
+  all: https://bintray.com/georgievlab/CeCe-plugins-ci/macOS#files
+
+- os: Linux 64bit
+  link: https://bintray.com/georgievlab/CeCe-plugins-ci/linux-x64/_latestVersion#files
+  all: https://bintray.com/georgievlab/CeCe-plugins-ci/linux-x64#files

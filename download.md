@@ -35,6 +35,14 @@ Command line application. Usage requires some basic knowledge about command line
 | -- | -------- |{% for link in site.data.build_cli_ci %}
 | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
 
+### Plugins
+
+Packages contain the lastest version of CeCe standard plugins which might not be in CLI application package.
+
+| OS | Latest | Older |
+| -- | -------- |{% for link in site.data.build_plugins_ci %}
+| {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
+
 ## Source code
 
 Whole project is released as open-source under [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) license and source is available on [GitHub](https://github.com). Project is split into separate parts which can be used separately. You can use only core library and plugins and create own version of CLI or GUI application.

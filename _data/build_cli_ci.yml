@@ -3,6 +3,10 @@
   link: https://bintray.com/georgievlab/CeCe-cli-ci/win64/_latestVersion#files
   all: https://bintray.com/georgievlab/CeCe-cli-ci/win64#files
 
+- os: Windows 32bit
+  link: https://bintray.com/georgievlab/CeCe-cli-ci/win32/_latestVersion#files
+  all: https://bintray.com/georgievlab/CeCe-cli-ci/win32#files
+
 - os: macOS
   link: https://bintray.com/georgievlab/CeCe-cli-ci/macOS/_latestVersion#files
   all: https://bintray.com/georgievlab/CeCe-cli-ci/macOS#files
