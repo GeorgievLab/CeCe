@@ -15,13 +15,13 @@
   version: 0.6.0
   date: 2016-09-30
   lastest: true
-  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Darwin.zip
+  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Darwin.tar.gz
 
 - os: Linux 64bit
   version: 0.6.0
   date: 2016-09-30
   lastest: true
-  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Linux.zip
+  link: https://github.com/GeorgievLab/CeCe/releases/download/v0.6.0/CeCe-0.6.0-Linux.tar.gz
 
 - os: Windows 32bit
   version: 0.5
