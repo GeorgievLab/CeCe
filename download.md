@@ -17,6 +17,8 @@ Stable builds contain whole package (CLI application, plugins and examples).
 >
 > If python is not installed or wrong version is installed you get warning messages for plugins using python and when you try use one of those plugins you get an error message.
 
+> You can download newer version of plugins separately and replace the original ones. This is handy in cases when a bug doesn't allow you to run your simulation. Just scroll down to *CI builds* *Plugins*, click on your required platform and download the lastest one. Extract the package and copy files from `lib` (`bin` on Windows) to same directory in your simulator directory (it should replace the original files).
+
 ### Older versions
 
 | Version | Release date | OS | Download |
