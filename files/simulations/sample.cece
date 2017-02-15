@@ -17,7 +17,7 @@
     <!-- Parameters -->
 
     <!-- Define parameter detection concentration (Yeast cells) -->
-    <parameter name="DC" value="10nM" />
+    <parameter name="DC" value="0.010uM" />
 
     <!-- Define parameter prodution rate (Main cell signal) -->
     <parameter name="PR" value="150/s" />
@@ -178,8 +178,8 @@
         color [random]: The signal color in the simulation.
         saturation [1umol/um3]: How much concentration is required to obtain full color in visualization.
       -->
-      <signal name="Protein2" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="blue" saturation="13nM" />
-      <signal name="Protein3" diffusion-rate="30um2/s" degradation-rate="0.001/s" color="red" saturation="10nM" />
+      <signal name="Protein2" diffusion-rate="50um2/s" degradation-rate="0.01/s" color="blue" saturation="0.013uM" />
+      <signal name="Protein3" diffusion-rate="30um2/s" degradation-rate="0.001/s" color="red" saturation="0.010uM" />
       <!-- More signals... -->
     </module>
 
@@ -216,8 +216,8 @@
             layer-density="density"
             layer-dynamics="fluid"
     >
-        <boundary name="i1" type="inlet" position="top" inlet-flow-rate="0.00005nl/s" inlet-profile="constant" />
-        <boundary name="i2" type="inlet" position="bottom" inlet-flow-rate="0.00005nl/s" inlet-profile="constant" />
+        <boundary name="i1" type="inlet" position="top" inlet-flow-rate="0.00000005ul/s" inlet-profile="constant" />
+        <boundary name="i2" type="inlet" position="bottom" inlet-flow-rate="0.00000005ul/s" inlet-profile="constant" />
 
         <boundary name="o" type="outlet" position="right" />
     </module>
