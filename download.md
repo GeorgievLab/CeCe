@@ -37,6 +37,14 @@ Command line application. Usage requires some basic knowledge about command line
 | -- | -------- |{% for link in site.data.build_cli_ci %}
 | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
 
+### GUI
+
+Experimental GUI application.
+
+| OS | Latest | Older |
+| -- | -------- |{% for link in site.data.build_gui_ci %}
+| {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
+
 ### Plugins
 
 Packages contain the lastest version of CeCe standard plugins which might not be in CLI application package.
