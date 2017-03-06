@@ -29,7 +29,7 @@ cmake_minimum_required(VERSION 3.1)
 
 set(CECE_VERSION_MAJOR 0)
 set(CECE_VERSION_MINOR 6)
-set(CECE_VERSION_PATCH 0)
+set(CECE_VERSION_PATCH 1)
 set(CECE_VERSION ${CECE_VERSION_MAJOR}.${CECE_VERSION_MINOR}.${CECE_VERSION_PATCH})
 
 # ######################################################################### #
