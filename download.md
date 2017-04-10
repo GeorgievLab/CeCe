@@ -53,6 +53,14 @@ Packages contain the lastest version of CeCe standard plugins which might not be
 | -- | -------- |{% for link in site.data.build_plugins_ci %}
 | {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
 
+### Plugins - Experimental
+
+Package with experimental plugins which might work, work only partially or not work at all. Use with caution.
+
+| OS | Latest | Older |
+| -- | -------- |{% for link in site.data.build_plugins_ci_experimental %}
+| {{ link.os }} | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.link }}) | [<i class="fa fa-download" aria-hidden="true"></i> Download]({{ link.all }}) | {% endfor %}
+
 ## Source code
 
 Whole project is released as open-source under [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) license and source is available on [GitHub](https://github.com). Project is split into separate parts which can be used separately. You can use only core library and plugins and create own version of CLI or GUI application.
