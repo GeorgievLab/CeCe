@@ -27,9 +27,9 @@ Application is stored in `bin` directory and you have to execute it from termina
 
 When you have a simulation file (you can obtain one from [examples](https://github.com/GeorgievLab/CeCe-examples)), just pass path to the simulation file as application argument:
 
-* *Windows* -- `bin\cece-cli.exe ..\demo.cece`
-* *macOS/OSX* -- `./bin/cece-cli ../demo.cece`
-* *Linux* -- `./bin/cece-cli ../demo.cece`
+* *Windows* -- `bin\cece-cli.exe examples\Cytometry.cece`
+* *macOS/OSX* -- `./bin/cece-cli examples/Cytometry.cece`
+* *Linux* -- `./bin/cece-cli examples/Cytometry.cece`
 
 Simulation file may require some plugins to work (plugins do most of the simulation work). Plugins that are available to you for using in simulations can be obtained by calling.
 
