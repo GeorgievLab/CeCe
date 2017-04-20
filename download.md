@@ -77,7 +77,7 @@ $("a.download").click(function () {
     ga('send', 'event', {
         'eventCategory': self.data('category'),
         'eventAction': 'Download',
-        'eventLabel': self.prop('href');
+        'eventLabel': self.prop('href')
     });
 });
 </script>
