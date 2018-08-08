@@ -339,6 +339,7 @@
 	margin-top: (3 * (0rem + ($doc-line-height / $doc-font-size)));
 	padding-bottom: $gutter;
 	font-family: $alt-font;
+    position: relative;
   /* Copyright text */
 	.copyright {
 		@include font-size(12);
@@ -349,3 +350,9 @@
 		}
 	}
 }
+
+#elixir-logo {
+    position: absolute;
+    right: 0;
+}
+
